@@ -1,0 +1,985 @@
+#!/usr/bin/env python3
+"""Evaluate embedding models on SFU-specific academic queries.
+
+Unlike the general benchmark (benchmark_embeddings.py), this script tests
+models specifically on the institutional domains where SFU has unique coverage:
+  - Indigenous Studies
+  - Canadian Studies
+  - Criminology (SFU-unique program)
+  - Interactive Arts & Technology / SIAT (SFU-unique)
+  - Biomedical Physiology and Kinesiology (SFU-unique)
+  - Health Sciences, Finance, History, etc.
+
+These are the queries where off-the-shelf models fail most severely and where
+a fine-tuned SFU model should show the largest improvement.
+
+Usage:
+    python scripts/evaluate_sfu_queries.py
+    python scripts/evaluate_sfu_queries.py --custom-model models/sfu-academic-embed-v1
+    python scripts/evaluate_sfu_queries.py --queries data/sfu_eval_queries.json
+    python scripts/evaluate_sfu_queries.py --output results/sfu_eval_results.json
+"""
+
+import argparse
+import json
+import logging
+import math
+import os
+import time
+from pathlib import Path
+
+import numpy as np
+import requests
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
+
+OPENALEX_BASE = "https://api.openalex.org"
+HEADERS = {"User-Agent": "SFULibraryMCP-Eval/1.0 (mailto:<contact>)"}
+DEFAULT_EVAL_QUERIES = str(Path(__file__).parent.parent / "data/sfu_eval_queries.json")
+
+
+def _load_dotenv() -> None:
+    """Load .env so OPENALEX_API_KEY is available without exporting manually.
+
+    .env is treated as the canonical source — values here override any
+    pre-existing process env. Without this, a stale key baked into the
+    container session at startup would silently win over a freshly-rotated
+    key in the file (and worse, the stale key would be sent on every API
+    request and end up in error logs).
+    """
+    env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        k = k.strip()
+        v = v.strip().strip("'").strip('"')
+        if k:
+            os.environ[k] = v
+
+
+_load_dotenv()
+OPENALEX_API_KEY = os.environ.get("OPENALEX_API_KEY", "").strip()
+if OPENALEX_API_KEY:
+    logger.info("OpenAlex API key loaded from environment (premium quota)")
+else:
+    logger.info("No OPENALEX_API_KEY set; using anonymous polite pool (10 req/s shared)")
+QUERY_CACHE_FILE = Path(__file__).parent.parent / "data/openalex_eval_cache.json"
+
+
+def _load_query_cache() -> dict:
+    if QUERY_CACHE_FILE.exists():
+        try:
+            return json.loads(QUERY_CACHE_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_query_cache(cache: dict) -> None:
+    QUERY_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    QUERY_CACHE_FILE.write_text(json.dumps(cache))
+
+
+_QUERY_CACHE = _load_query_cache()
+
+
+def _reconstruct_abstract(inv_index: dict | None) -> str:
+    if not inv_index:
+        return ""
+    positions = []
+    for word, pos_list in inv_index.items():
+        for p in pos_list:
+            positions.append((p, word))
+    positions.sort()
+    return " ".join(w for _, w in positions)
+
+
+def fetch_openalex_results(query: str, k: int = 50, use_cache: bool = True) -> list[dict]:
+    """Fetch top-k OpenAlex results for a query via BM25.
+
+    Cached on disk by (query, k) so re-runs across multiple models share fetches
+    and avoid rate-limiting. Includes 429 retry-with-backoff.
+    """
+    cache_key = f"{k}::{query}"
+    if use_cache and cache_key in _QUERY_CACHE:
+        return _QUERY_CACHE[cache_key]
+
+    params = {
+        "search": query,
+        "per_page": k,
+        "sort": "relevance_score:desc",
+        "select": "id,title,publication_year,cited_by_count,abstract_inverted_index,type",
+    }
+    if OPENALEX_API_KEY:
+        params["api_key"] = OPENALEX_API_KEY
+    else:
+        params["mailto"] = "<contact>"  # polite-pool fallback
+
+    backoff = 5.0
+    for attempt in range(5):
+        try:
+            resp = requests.get(
+                f"{OPENALEX_BASE}/works",
+                params=params,
+                headers=HEADERS,
+                timeout=30,
+            )
+            if resp.status_code == 429:
+                logger.info("  429 from OpenAlex, backing off %.1fs (attempt %d/4)", backoff, attempt + 1)
+                time.sleep(backoff)
+                backoff *= 2
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+            break
+        except Exception as e:
+            # Strip api_key from any error string so it never lands in logs.
+            err_str = str(e)
+            if OPENALEX_API_KEY:
+                err_str = err_str.replace(OPENALEX_API_KEY, "<api-key-redacted>")
+            if attempt == 4:
+                logger.warning("OpenAlex fetch failed for '%s': %s", query, err_str)
+                return []
+            time.sleep(backoff)
+            backoff *= 2
+    else:
+        return []
+
+    results = []
+    for w in data.get("results", []):
+        abstract = _reconstruct_abstract(w.pop("abstract_inverted_index", None))
+        w["abstract"] = abstract
+        if w.get("title"):
+            results.append(w)
+
+    if use_cache and results:
+        _QUERY_CACHE[cache_key] = results
+        _save_query_cache(_QUERY_CACHE)
+    return results
+
+
+def fetch_opensearch_results(
+    query: str,
+    url: str = "http://localhost:9200",
+    index: str = "openalex_works",
+    k: int = 50,
+    splade: bool = False,
+) -> list[dict]:
+    """Fetch top-k results from a local OpenSearch index (P.11 eval path).
+
+    Uses BM25F (multi_match) by default. With splade=True the caller must have
+    pre-encoded the query into a rank_features body — not yet supported here
+    (requires P.3 index). For now this path validates the BM25F pilot (P.4).
+
+    Returns dicts compatible with the existing eval pipeline; ``cited_by_count``
+    is set to 0 since the current index doesn't store it (P.3 TODO). Use
+    ``_score`` (0-1 normalized) as a proxy relevance signal instead.
+    """
+    body = {
+        "size": k,
+        "query": {
+            "multi_match": {
+                "query": query,
+                "fields": ["title^3", "abstract", "concepts^2"],
+                "type": "best_fields",
+                "tie_breaker": 0.3,
+            }
+        },
+        "_source": ["doi", "title", "abstract", "publication_year", "type", "is_oa"],
+    }
+    try:
+        resp = requests.post(
+            f"{url.rstrip('/')}/{index}/_search",
+            json=body,
+            headers={"Content-Type": "application/json"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as exc:
+        logger.warning("OpenSearch fetch failed for '%s': %s", query, exc)
+        return []
+
+    hits = (data.get("hits") or {}).get("hits") or []
+    if not hits:
+        return []
+    max_score = max(h.get("_score", 0.0) for h in hits) or 1.0
+    results = []
+    for hit in hits:
+        src = hit.get("_source") or {}
+        title = src.get("title", "")
+        if not title:
+            continue
+        norm_score = hit.get("_score", 0.0) / max_score
+        results.append({
+            "id": hit.get("_id", ""),
+            "title": title,
+            "abstract": src.get("abstract", ""),
+            "doi": src.get("doi", ""),
+            "publication_year": src.get("publication_year"),
+            "type": src.get("type", ""),
+            "is_oa": src.get("is_oa", False),
+            # Use normalized OpenSearch score as relevance proxy.
+            # Not directly comparable to citation-count proxy — see P.11 notes.
+            "cited_by_count": int(norm_score * 1000),
+        })
+    return results
+
+
+def evaluate_opensearch(
+    eval_queries: list[dict],
+    opensearch_url: str,
+    opensearch_index: str,
+    k: int = 10,
+    results_per_query: int = 50,
+    model=None,
+    fusion: str = "none",
+) -> dict:
+    """Evaluate BM25F (or SPLADE) OpenSearch retrieval on the eval query set (P.11).
+
+    Relevance proxy: normalized OpenSearch _score (0-1000 integer).
+    Note: this proxy differs from the citation-count proxy used for OpenAlex;
+    cross-system NDCG comparisons require the same ground truth.
+    Gate (from plan): SPLADE NDCG@10 >= OpenAlex baseline NDCG@10 - 0.02.
+    """
+    all_ndcg: list[float] = []
+    all_mrr: list[float] = []
+    all_recall: list[float] = []
+    subject_ndcg: dict[str, list[float]] = {}
+    query_results: list[dict] = []
+
+    for qi, q_item in enumerate(eval_queries):
+        query = q_item["query"]
+        subject = q_item.get("subject", "Unknown")
+
+        logger.info("  [OpenSearch %d/%d] '%s'", qi + 1, len(eval_queries), query[:60])
+
+        papers = fetch_opensearch_results(
+            query, url=opensearch_url, index=opensearch_index, k=results_per_query
+        )
+        if not papers:
+            logger.warning("  No OpenSearch results for: %s", query)
+            continue
+
+        relevance_scores = compute_relevance_proxy(papers)
+
+        if model is not None:
+            if fusion == "rrf":
+                reranked = rerank_with_rrf(query, papers, model)
+            else:
+                reranked = rerank_with_embedding(query, papers, model)
+            reranked_relevance = compute_relevance_proxy(reranked)
+        else:
+            reranked_relevance = relevance_scores
+
+        ndcg = ndcg_at_k(reranked_relevance, relevance_scores, k)
+        mrr = mrr_at_k(reranked_relevance, relevance_scores, k)
+        rec = recall_at_k(reranked_relevance, relevance_scores, k)
+        all_ndcg.append(ndcg)
+        all_mrr.append(mrr)
+        all_recall.append(rec)
+
+        subject_ndcg.setdefault(subject, []).append(ndcg)
+        query_results.append({
+            "query": query,
+            "subject": subject,
+            "ndcg_at_k": ndcg,
+            "mrr_at_k": mrr,
+            "recall_at_k": rec,
+            "num_results": len(papers),
+            "notes": q_item.get("notes", ""),
+        })
+
+    mean_ndcg = float(np.mean(all_ndcg)) if all_ndcg else 0.0
+    subject_breakdown = {
+        subj: {"mean_ndcg": float(np.mean(scores)), "queries": len(scores)}
+        for subj, scores in subject_ndcg.items()
+    }
+    return {
+        "model": "opensearch-bm25f" if model is None else f"opensearch+{model}",
+        "source": "opensearch",
+        "opensearch_url": opensearch_url,
+        "opensearch_index": opensearch_index,
+        "mean_ndcg_at_k": mean_ndcg,
+        "median_ndcg_at_k": float(np.median(all_ndcg)) if all_ndcg else 0.0,
+        "std_ndcg_at_k": float(np.std(all_ndcg)) if all_ndcg else 0.0,
+        "mean_mrr_at_k": float(np.mean(all_mrr)) if all_mrr else 0.0,
+        "mean_recall_at_k": float(np.mean(all_recall)) if all_recall else 0.0,
+        "num_queries": len(all_ndcg),
+        "k": k,
+        "subject_breakdown": subject_breakdown,
+        "per_query": sorted(query_results, key=lambda x: x["ndcg_at_k"]),
+    }
+
+
+def compute_relevance_proxy(papers: list[dict]) -> list[float]:
+    """Citation-count relevance proxy (same method as benchmark_embeddings.py).
+
+    NDCG uses log(citation_count + 1) as the relevance grade.
+    This rewards papers that are both returned AND highly cited.
+    """
+    scores = []
+    for p in papers:
+        score = math.log1p(p.get("cited_by_count", 0))
+        scores.append(score)
+    return scores
+
+
+def fetch_seed_paper_text(seed_id: str) -> str:
+    """Fetch title + abstract for a seed paper from OpenAlex.
+
+    Accepts either a DOI (``10.xxx/yyy`` or ``https://doi.org/10.xxx``) or an
+    OpenAlex work ID (``W123...`` or ``https://openalex.org/W123...``).  The
+    eval queries populated by Phase M.6 use OpenAlex IDs because the cached
+    eval results don't carry DOIs for every paper.
+
+    Returns an empty string on failure so the caller can fall back to the
+    citation-only proxy rather than crashing.  Results are cached in the same
+    on-disk cache as query results to avoid redundant API calls.
+    """
+    s = seed_id.strip()
+    # Detect identifier shape: OpenAlex IDs are W-prefixed; DOIs aren't
+    is_openalex = s.startswith("W") or "openalex.org/W" in s
+    if is_openalex:
+        # Normalize to bare W-id for the API path
+        wid = s.split("/")[-1] if "/" in s else s
+        cache_key = f"openalex::{wid}"
+    else:
+        # Strip any DOI URL prefix
+        for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
+            if s.startswith(prefix):
+                s = s[len(prefix):]
+        cache_key = f"doi::{s}"
+    if cache_key in _QUERY_CACHE:
+        return _QUERY_CACHE[cache_key]
+
+    if is_openalex:
+        params = {"select": "title,abstract_inverted_index"}
+        url = f"{OPENALEX_BASE}/works/{wid}"
+    else:
+        params = {
+            "filter": f"doi:{s}",
+            "select": "title,abstract_inverted_index",
+        }
+        url = f"{OPENALEX_BASE}/works"
+    if OPENALEX_API_KEY:
+        params["api_key"] = OPENALEX_API_KEY
+    else:
+        params["mailto"] = "<contact>"
+
+    try:
+        resp = requests.get(
+            url,
+            params=params,
+            headers=HEADERS,
+            timeout=20,
+        )
+        resp.raise_for_status()
+        body = resp.json()
+        if is_openalex:
+            w = body
+        else:
+            results = body.get("results", [])
+            if not results:
+                logger.warning("Seed paper not found for DOI: %s", seed_id)
+                return ""
+            w = results[0]
+        abstract = _reconstruct_abstract(w.get("abstract_inverted_index"))
+        text = f"{w.get('title', '')} {abstract}".strip()
+    except Exception as e:
+        err = str(e)
+        if OPENALEX_API_KEY:
+            err = err.replace(OPENALEX_API_KEY, "<api-key-redacted>")
+        logger.warning("Failed to fetch seed paper %s: %s", seed_id, err)
+        text = ""
+
+    _QUERY_CACHE[cache_key] = text
+    _save_query_cache(_QUERY_CACHE)
+    return text
+
+
+def compute_query_cosine_proxy(
+    papers: list[dict],
+    query_embedding: np.ndarray,
+    paper_embeddings: np.ndarray,
+) -> list[float]:
+    """Query-cosine proxy: 0.5 * log(cite+1) + 0.5 * cosine(paper, query).
+
+    Stronger debiasing than the seed-paper variant: the cosine reference is the
+    query itself (computed by an independent proxy model), so it doesn't bias
+    toward whatever paper OpenAlex BM25 happened to rank first.  Use this when
+    canonical seed papers aren't available or are likely auto-picked from the
+    same BM25 results we're trying to evaluate.
+    """
+    cosines = (paper_embeddings @ query_embedding).tolist()
+    scores = []
+    for p, cos in zip(papers, cosines):
+        scores.append(0.5 * math.log1p(p.get("cited_by_count", 0)) + 0.5 * cos)
+    return scores
+
+
+def compute_mixed_relevance_proxy(
+    papers: list[dict],
+    seed_embedding: np.ndarray,
+    paper_embeddings: np.ndarray,
+) -> list[float]:
+    """Mixed relevance proxy: 0.5 * log(cite+1) + 0.5 * cosine(paper, seed).
+
+    The cosine term anchors relevance to a human-chosen seed paper rather than
+    trusting citation count alone.  Citation count correlates with OpenAlex BM25
+    score, creating a circular evaluation; the seed-paper cosine breaks that
+    correlation for queries where a canonical paper is known.
+
+    Both terms contribute equally.  Cosine ranges [-1, 1]; log1p(cite) ranges
+    [0, ~15].  Equal weights therefore still skew toward citation for
+    well-cited results — this is intentional.  When all candidates have low
+    cosine similarity to the seed (subject mismatch), the proxy degrades
+    gracefully to near-citation-only.
+    """
+    cosines = (paper_embeddings @ seed_embedding).tolist()
+    scores = []
+    for p, cos in zip(papers, cosines):
+        scores.append(0.5 * math.log1p(p.get("cited_by_count", 0)) + 0.5 * cos)
+    return scores
+
+
+def ndcg_at_k(ranked_relevance: list[float], ideal_relevance: list[float], k: int) -> float:
+    """Compute NDCG@k given ranked and ideal relevance lists."""
+    def dcg(rels: list[float], k: int) -> float:
+        return sum(r / math.log2(i + 2) for i, r in enumerate(rels[:k]))
+
+    dcg_val = dcg(ranked_relevance, k)
+    ideal_dcg = dcg(sorted(ideal_relevance, reverse=True), k)
+    return dcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+
+
+def mrr_at_k(ranked_relevance: list[float], ideal_relevance: list[float], k: int) -> float:
+    """Mean Reciprocal Rank @k.  A document is 'relevant' if its score exceeds
+    the median of the ideal list — same threshold used for the relevance proxy."""
+    if not ideal_relevance:
+        return 0.0
+    threshold = sorted(ideal_relevance, reverse=True)[min(k - 1, len(ideal_relevance) - 1)]
+    for rank, rel in enumerate(ranked_relevance[:k], start=1):
+        if rel >= threshold:
+            return 1.0 / rank
+    return 0.0
+
+
+def recall_at_k(ranked_relevance: list[float], ideal_relevance: list[float], k: int) -> float:
+    """Recall@k: fraction of the top-k ideal docs that appear in the top-k ranked list.
+
+    Uses the same relevance threshold as mrr_at_k.
+    """
+    if not ideal_relevance:
+        return 0.0
+    threshold = sorted(ideal_relevance, reverse=True)[min(k - 1, len(ideal_relevance) - 1)]
+    ideal_count = sum(1 for r in ideal_relevance[:k] if r >= threshold)
+    if ideal_count == 0:
+        return 0.0
+    ranked_count = sum(1 for r in ranked_relevance[:k] if r >= threshold)
+    return ranked_count / ideal_count
+
+
+def encode_texts(model, texts: list[str]) -> np.ndarray:
+    """Encode texts using a sentence-transformer model.
+
+    Force numpy output — sentence-transformers >=5.0 may return Tensor objects
+    or wrapper types if convert_to_numpy is not explicitly set.
+    """
+    result = model.encode(
+        texts,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+        convert_to_numpy=True,
+    )
+    return np.array(result, dtype=np.float32)
+
+
+def rerank_with_embedding(query: str, papers: list[dict], model) -> list[dict]:
+    """Rerank papers by cosine similarity to the query embedding."""
+    texts = [query] + [
+        f"{p.get('title', '')} {p.get('abstract', '')}" for p in papers
+    ]
+    embeddings = encode_texts(model, texts)
+    query_emb = embeddings[0]
+    paper_embs = embeddings[1:]
+    scores = (paper_embs @ query_emb).tolist()
+
+    # Sort by index to avoid dict comparison when scores are tied
+    ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+    return [papers[i] for i in ranked]
+
+
+def rerank_with_rrf(query: str, papers: list[dict], model, k: int = 60) -> list[dict]:
+    """Rerank by Reciprocal Rank Fusion of OpenAlex BM25 rank + embedding rank.
+
+    RRF score:  Σ_r  1 / (k + rank_r(d))    (k=60 is the literature default)
+
+    The input `papers` arrives in OpenAlex BM25 order (rank 0..N-1). We compute
+    the embedding rank separately, then fuse. Documents that score well on
+    either ranker bubble up; documents both rankers agree on bubble up the most.
+    Crucially, neither ranker gets to fully suppress a result the other one
+    rates highly — which is why RRF rescues queries where one signal is blind.
+    """
+    bm25_rank = {id(p): i for i, p in enumerate(papers)}
+
+    embed_ranked = rerank_with_embedding(query, papers, model)
+    embed_rank = {id(p): i for i, p in enumerate(embed_ranked)}
+
+    fused = sorted(
+        range(len(papers)),
+        key=lambda i: (
+            1.0 / (k + bm25_rank[id(papers[i])])
+            + 1.0 / (k + embed_rank[id(papers[i])])
+        ),
+        reverse=True,
+    )
+    return [papers[i] for i in fused]
+
+
+def evaluate_model(
+    model_name: str,
+    model,
+    eval_queries: list[dict],
+    k: int = 10,
+    results_per_query: int = 50,
+    delay: float = 0.5,
+    fusion: str = "none",
+    use_mixed_proxy: bool = False,
+    proxy_model=None,
+    proxy_mode: str = "seed",
+) -> dict:
+    """Evaluate a model on the SFU eval query set. Returns per-query and aggregate metrics.
+
+    fusion: "none" → embedding cosine alone (current behaviour)
+            "rrf"  → reciprocal rank fusion of BM25 + embedding ranks
+
+    use_mixed_proxy: when True and the query has a ``seed_doi`` field, relevance
+        grades use the mixed citation+cosine proxy (M.3).  Falls back to
+        citation-only when seed_doi is absent or the seed paper can't be fetched.
+    proxy_model: separate sentence-transformer used only to compute the seed-cosine
+        term of the mixed relevance proxy.  Lets BM25-only / no-model evaluations
+        be scored against the same de-biased proxy as the embedding models.
+        If None, the evaluated `model` is used (legacy behaviour).
+    """
+    all_ndcg: list[float] = []
+    all_mrr: list[float] = []
+    all_recall: list[float] = []
+    subject_ndcg: dict[str, list[float]] = {}
+    query_results: list[dict] = []
+
+    for qi, q_item in enumerate(eval_queries):
+        query = q_item["query"]
+        subject = q_item.get("subject", "Unknown")
+        seed_doi = q_item.get("seed_doi", "").strip() if use_mixed_proxy else ""
+
+        logger.info("  [%d/%d] '%s'", qi + 1, len(eval_queries), query[:60])
+
+        # Fetch OpenAlex results (BM25 ranking)
+        cache_key = f"{results_per_query}::{query}"
+        was_cached = cache_key in _QUERY_CACHE
+        papers = fetch_openalex_results(query, k=results_per_query)
+        if not papers:
+            logger.warning("  No results for query: %s", query)
+            continue
+
+        # Compute relevance grades — mixed proxy when enabled, else citation-only.
+        # Use proxy_model (a fixed off-the-shelf model) if provided so all
+        # configurations (including BM25-only) score against the same proxy.
+        relevance_model = proxy_model or model
+        seed_emb = None
+        ref_emb = None  # what the cosine term anchors on (seed paper OR query)
+        ref_text = ""
+
+        if use_mixed_proxy and relevance_model is not None:
+            if proxy_mode == "query":
+                ref_text = query
+            elif proxy_mode == "seed" and seed_doi:
+                ref_text = fetch_seed_paper_text(seed_doi)
+
+        if ref_text:
+            paper_texts = [f"{p.get('title', '')} {p.get('abstract', '')}" for p in papers]
+            all_texts = [ref_text] + paper_texts
+            embs = encode_texts(relevance_model, all_texts)
+            ref_emb = embs[0]
+            paper_embs = embs[1:]
+            if proxy_mode == "query":
+                relevance_scores = compute_query_cosine_proxy(papers, ref_emb, paper_embs)
+            else:
+                seed_emb = ref_emb
+                relevance_scores = compute_mixed_relevance_proxy(papers, ref_emb, paper_embs)
+            use_seed = True
+        else:
+            relevance_scores = compute_relevance_proxy(papers)
+            use_seed = False
+
+        if model is not None:
+            if fusion == "rrf":
+                reranked = rerank_with_rrf(query, papers, model)
+            else:
+                reranked = rerank_with_embedding(query, papers, model)
+            if use_seed:
+                # Re-embed in the reranked order using the proxy model (so the
+                # relevance score is consistent with the ideal ordering above).
+                reranked_texts = [f"{p.get('title', '')} {p.get('abstract', '')}" for p in reranked]
+                reranked_embs = encode_texts(relevance_model, reranked_texts)
+                if proxy_mode == "query":
+                    reranked_relevance = compute_query_cosine_proxy(reranked, ref_emb, reranked_embs)
+                else:
+                    reranked_relevance = compute_mixed_relevance_proxy(reranked, ref_emb, reranked_embs)
+            else:
+                reranked_relevance = compute_relevance_proxy(reranked)
+        else:
+            # BM25 only — keep OpenAlex order, score against the same proxy
+            reranked_relevance = relevance_scores
+
+        ndcg = ndcg_at_k(reranked_relevance, relevance_scores, k)
+        mrr = mrr_at_k(reranked_relevance, relevance_scores, k)
+        rec = recall_at_k(reranked_relevance, relevance_scores, k)
+        all_ndcg.append(ndcg)
+        all_mrr.append(mrr)
+        all_recall.append(rec)
+
+        if subject not in subject_ndcg:
+            subject_ndcg[subject] = []
+        subject_ndcg[subject].append(ndcg)
+
+        query_results.append({
+            "query": query,
+            "subject": subject,
+            "ndcg_at_k": ndcg,
+            "mrr_at_k": mrr,
+            "recall_at_k": rec,
+            "num_results": len(papers),
+            "notes": q_item.get("notes", ""),
+        })
+
+        # Only delay if we actually hit the API
+        if not was_cached:
+            time.sleep(delay)
+
+    # Aggregate metrics
+    mean_ndcg = float(np.mean(all_ndcg)) if all_ndcg else 0.0
+    median_ndcg = float(np.median(all_ndcg)) if all_ndcg else 0.0
+    std_ndcg = float(np.std(all_ndcg)) if all_ndcg else 0.0
+    mean_mrr = float(np.mean(all_mrr)) if all_mrr else 0.0
+    mean_recall = float(np.mean(all_recall)) if all_recall else 0.0
+
+    # Subject-level breakdown
+    subject_breakdown = {
+        subj: {
+            "mean_ndcg": float(np.mean(scores)),
+            "queries": len(scores),
+        }
+        for subj, scores in subject_ndcg.items()
+    }
+
+    return {
+        "model": model_name,
+        "mean_ndcg_at_k": mean_ndcg,
+        "median_ndcg_at_k": median_ndcg,
+        "std_ndcg_at_k": std_ndcg,
+        "mean_mrr_at_k": mean_mrr,
+        "mean_recall_at_k": mean_recall,
+        "num_queries": len(all_ndcg),
+        "k": k,
+        "subject_breakdown": subject_breakdown,
+        "per_query": sorted(query_results, key=lambda x: x["ndcg_at_k"]),
+    }
+
+
+def print_results_table(all_results: list[dict], k: int) -> None:
+    """Print a comparison table of all evaluated models."""
+    print(f"\n{'='*85}")
+    print(f"SFU-SPECIFIC EMBEDDING MODEL EVALUATION  (NDCG@{k} | MRR@{k} | Recall@{k})")
+    print(f"{'='*85}")
+
+    # Summary table
+    print(f"\n{'Model':<35} {'NDCG':>8} {'Median':>8} {'Std':>6} {'MRR':>8} {'Recall':>8} {'N':>5}")
+    print("-" * 85)
+    for r in sorted(all_results, key=lambda x: x["mean_ndcg_at_k"], reverse=True):
+        print(
+            f"{r['model']:<35} {r['mean_ndcg_at_k']:>8.4f} {r['median_ndcg_at_k']:>8.4f} "
+            f"{r['std_ndcg_at_k']:>6.4f} {r.get('mean_mrr_at_k', 0.0):>8.4f} "
+            f"{r.get('mean_recall_at_k', 0.0):>8.4f} {r['num_queries']:>5}"
+        )
+
+    # Subject breakdown (if multiple models)
+    if len(all_results) >= 2:
+        all_subjects = sorted({
+            subj
+            for r in all_results
+            for subj in r["subject_breakdown"]
+        })
+
+        print(f"\n{'Subject':<40}", end="")
+        for r in all_results:
+            name = r["model"][:14]
+            print(f" {name:>14}", end="")
+        print()
+        print("-" * (40 + 15 * len(all_results)))
+
+        for subj in all_subjects:
+            subj_short = subj[:39]
+            print(f"{subj_short:<40}", end="")
+            for r in all_results:
+                bd = r["subject_breakdown"].get(subj, {})
+                mean = bd.get("mean_ndcg", 0.0)
+                print(f" {mean:>14.4f}", end="")
+            print()
+
+    # Per-query detail for the best model
+    best = max(all_results, key=lambda x: x["mean_ndcg_at_k"])
+    print(f"\nPer-query results for best model ({best['model']}):")
+    print(f"{'Query':<55} {'NDCG':>6} {'Subject'}")
+    print("-" * 80)
+    for q in sorted(best["per_query"], key=lambda x: x["ndcg_at_k"], reverse=True):
+        q_short = q["query"][:54]
+        subj_short = q["subject"][:25]
+        flag = " ← SFU-specific" if q.get("ndcg_at_k", 0) < 0.05 else ""
+        print(f"{q_short:<55} {q['ndcg_at_k']:>6.4f} {subj_short}{flag}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Evaluate embedding models on SFU-specific academic queries"
+    )
+    parser.add_argument("--queries", default=DEFAULT_EVAL_QUERIES,
+                        help="Path to SFU eval queries JSON file")
+    parser.add_argument("--custom-model", type=str, default=None,
+                        help="Path to fine-tuned model to evaluate")
+    parser.add_argument("--baseline-model", type=str,
+                        default="sentence-transformers/all-MiniLM-L6-v2",
+                        help="Off-the-shelf baseline model to compare against")
+    parser.add_argument("--bm25-only", action="store_true",
+                        help="Evaluate BM25-only baseline (no embedding)")
+    parser.add_argument("--k", type=int, default=10, help="NDCG@k cutoff")
+    parser.add_argument("--results-per-query", type=int, default=50,
+                        help="OpenAlex results to fetch per query")
+    parser.add_argument("--output", type=str, default=None,
+                        help="Save full results to JSON file")
+    parser.add_argument("--history", type=str,
+                        default=str(Path(__file__).parent.parent / "results/sfu_eval_history.jsonl"),
+                        help="Append-only history JSONL (M.4); one line per run")
+    parser.add_argument("--delay", type=float, default=1.2,
+                        help="Delay between OpenAlex API requests (seconds)")
+    parser.add_argument("--fusion", choices=["none", "rrf", "both"], default="none",
+                        help="Reranking strategy: 'none' = embedding only, "
+                             "'rrf' = reciprocal rank fusion of BM25 + embedding, "
+                             "'both' = run each custom model twice (with and without RRF)")
+    parser.add_argument("--mixed-proxy", action="store_true",
+                        help="Use mixed citation+cosine relevance proxy for queries that have "
+                             "a seed_doi field (Phase M.3). Falls back to citation-only when "
+                             "seed_doi is absent.")
+    parser.add_argument("--proxy-mode", choices=["seed", "query"], default="query",
+                        help="Mixed proxy reference: 'seed' uses the seed_doi paper "
+                             "(can be biased if auto-picked from BM25 results); "
+                             "'query' uses the query embedding directly (stronger debiasing).")
+    parser.add_argument("--proxy-model", type=str,
+                        default="sentence-transformers/all-mpnet-base-v2",
+                        help="Fixed model used to compute the seed-cosine term of the mixed "
+                             "proxy. Stays constant across all eval configurations so BM25-only "
+                             "and embedding models are scored against the same reference. "
+                             "mpnet is the default because it's structurally distinct from both "
+                             "the MiniLM baseline and the BGE-based custom model.")
+    # Phase P.11 — OpenSearch eval path
+    parser.add_argument("--source", choices=["openalex", "opensearch"], default="openalex",
+                        help="Retrieval source: 'openalex' (live API, default) or "
+                             "'opensearch' (local BM25F/SPLADE index, Phase P.4/P.11). "
+                             "OpenSearch must be running and indexed before use.")
+    parser.add_argument("--opensearch-url", type=str,
+                        default=os.environ.get("SFU_OPENSEARCH_URL", "http://localhost:9200"),
+                        help="OpenSearch base URL (default: SFU_OPENSEARCH_URL env or localhost:9200)")
+    parser.add_argument("--opensearch-index", type=str, default="openalex_works",
+                        help="OpenSearch index name (default: openalex_works)")
+    args = parser.parse_args()
+
+    # Load eval queries
+    queries_path = Path(args.queries)
+    if not queries_path.exists():
+        logger.error("Eval queries file not found: %s", queries_path)
+        raise SystemExit(1)
+
+    with queries_path.open() as f:
+        eval_queries = json.load(f)
+    logger.info("Loaded %d SFU eval queries", len(eval_queries))
+
+    all_results = []
+
+    # Phase P.11 — OpenSearch source path (BM25F pilot, P.4; SPLADE eval, P.11)
+    if args.source == "opensearch":
+        logger.info(
+            "Source: OpenSearch (%s / index=%s)", args.opensearch_url, args.opensearch_index
+        )
+        # Quick availability check
+        try:
+            health = requests.get(
+                f"{args.opensearch_url.rstrip('/')}/_cluster/health", timeout=5
+            ).json()
+            logger.info("OpenSearch cluster health: %s", health.get("status", "unknown"))
+        except Exception as exc:
+            logger.error("OpenSearch not reachable at %s: %s", args.opensearch_url, exc)
+            raise SystemExit(1)
+
+        result = evaluate_opensearch(
+            eval_queries=eval_queries,
+            opensearch_url=args.opensearch_url,
+            opensearch_index=args.opensearch_index,
+            k=args.k,
+            results_per_query=args.results_per_query,
+        )
+        all_results.append(result)
+
+        # Save to dated file in data/eval_results/
+        import datetime
+        today = datetime.date.today().isoformat()
+        out_dir = Path(__file__).parent.parent / "data" / "eval_results"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"bm25f_pilot_{today}.json"
+        out_path.write_text(json.dumps(result, indent=2))
+        logger.info("OpenSearch eval results saved to %s", out_path)
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(json.dumps(all_results, indent=2))
+
+        print_results_table(all_results, args.k)
+        return
+
+    from sentence_transformers import SentenceTransformer
+
+    # Proxy model — fixed reference for the seed-cosine term of the mixed proxy.
+    # Loaded eagerly so BM25-only is scored against the same proxy as the embedding models.
+    proxy_model_obj = None
+    mixed_proxy_arg = getattr(args, "mixed_proxy", False)
+    if mixed_proxy_arg:
+        logger.info("Loading proxy model (fixed seed-cosine reference): %s", args.proxy_model)
+        proxy_model_obj = SentenceTransformer(args.proxy_model)
+
+    # BM25-only baseline
+    if args.bm25_only:
+        logger.info("\nEvaluating: BM25-only (no embedding reranking)")
+        result = evaluate_model(
+            "BM25-only (OpenAlex)",
+            model=None,
+            eval_queries=eval_queries,
+            k=args.k,
+            results_per_query=args.results_per_query,
+            delay=args.delay,
+            use_mixed_proxy=mixed_proxy_arg,
+            proxy_model=proxy_model_obj,
+            proxy_mode=args.proxy_mode,
+        )
+        all_results.append(result)
+
+    # Load models
+    models_to_eval: list[tuple[str, object]] = []
+
+    # Baseline embedding model
+    if args.baseline_model:
+        logger.info("Loading baseline model: %s", args.baseline_model)
+        baseline = SentenceTransformer(args.baseline_model)
+        models_to_eval.append((Path(args.baseline_model).name or args.baseline_model, baseline))
+
+    # Custom fine-tuned model
+    if args.custom_model:
+        custom_path = Path(args.custom_model)
+        if not custom_path.exists():
+            logger.error("Custom model not found: %s", custom_path)
+        else:
+            logger.info("Loading custom model: %s", custom_path)
+            custom = SentenceTransformer(str(custom_path))
+            models_to_eval.append((f"sfu-custom ({custom_path.name})", custom))
+
+    fusion_modes = ["none", "rrf"] if args.fusion == "both" else [args.fusion]
+
+    mixed_proxy = getattr(args, "mixed_proxy", False)
+    seed_doi_count = sum(1 for q in eval_queries if q.get("seed_doi"))
+    if mixed_proxy:
+        logger.info("Mixed proxy enabled: %d/%d queries have seed_doi", seed_doi_count, len(eval_queries))
+
+    for model_name, model in models_to_eval:
+        for fusion in fusion_modes:
+            label = model_name if fusion == "none" else f"{model_name} + RRF"
+            logger.info("\nEvaluating: %s", label)
+            result = evaluate_model(
+                model_name=label,
+                model=model,
+                eval_queries=eval_queries,
+                k=args.k,
+                results_per_query=args.results_per_query,
+                delay=args.delay,
+                fusion=fusion,
+                use_mixed_proxy=mixed_proxy,
+                proxy_model=proxy_model_obj,
+                proxy_mode=args.proxy_mode,
+            )
+            all_results.append(result)
+
+    if not all_results:
+        logger.error("No models evaluated. Use --bm25-only or provide a --baseline-model.")
+        raise SystemExit(1)
+
+    # Print results
+    print_results_table(all_results, args.k)
+
+    # Save to file
+    if args.output:
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(all_results, indent=2))
+        logger.info("Full results saved to %s", output_path)
+
+    # Append to history JSONL (M.4) — one compact line per model per run
+    import datetime
+    history_path = Path(args.history)
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    proxy_label = args.proxy_mode if mixed_proxy else "citation_only"
+    with history_path.open("a") as hf:
+        for r in all_results:
+            entry = {
+                "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+                "model": r["model"],
+                "fusion": r.get("fusion", "none"),
+                "proxy": proxy_label,
+                "mixed_proxy": mixed_proxy,
+                "ndcg10": r["mean_ndcg_at_k"],
+                "mrr10": r.get("mean_mrr_at_k", 0.0),
+                "recall10": r.get("mean_recall_at_k", 0.0),
+                "num_queries": r["num_queries"],
+                "k": r["k"],
+                "per_subject": {s: v["mean_ndcg"] for s, v in r["subject_breakdown"].items()},
+            }
+            hf.write(json.dumps(entry) + "\n")
+    logger.info("History appended to %s", history_path)
+
+    # Print improvement summary if comparing custom vs baseline
+    custom_results = [r for r in all_results if r["model"].startswith("sfu-custom")]
+    baseline_results = [r for r in all_results if not r["model"].startswith("sfu-custom")
+                        and r["model"] != "BM25-only (OpenAlex)"]
+    if custom_results and baseline_results:
+        custom_mean = custom_results[0]["mean_ndcg_at_k"]
+        baseline_mean = baseline_results[0]["mean_ndcg_at_k"]
+        if baseline_mean > 0:
+            improvement_pct = 100 * (custom_mean - baseline_mean) / baseline_mean
+            print(f"\nImprovement: {improvement_pct:+.1f}% over {baseline_results[0]['model']}")
+
+        # Check key SFU-specific subjects
+        print("\nKey SFU subject improvements:")
+        for subj in ["Indigenous Studies", "Canadian Studies", "Criminology",
+                     "Interactive Arts and Technology (SIAT)"]:
+            cust_bd = custom_results[0]["subject_breakdown"].get(subj, {})
+            base_bd = baseline_results[0]["subject_breakdown"].get(subj, {})
+            if cust_bd and base_bd:
+                c = cust_bd.get("mean_ndcg", 0)
+                b = base_bd.get("mean_ndcg", 0)
+                mult = c / b if b > 0 else float("inf")
+                print(f"  {subj:<45} baseline={b:.4f}  custom={c:.4f}  ({mult:.1f}x)")
+
+
+if __name__ == "__main__":
+    main()

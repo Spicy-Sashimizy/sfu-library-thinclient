@@ -1,0 +1,20 @@
+{
+  "completed_strategies": [
+    "strategy1",
+    "strategy2",
+    "strategy3",
+    "strategy4"
+  ],
+  "triplets_per_strategy": {
+    "strategy1": 1901,
+    "strategy2": 2853,
+    "strategy3": 4000,
+    "strategy4": 480
+  },
+  "total_triplets": 9234,
+  "output_file": "data/sfu_training_triplets.jsonl",
+  "quality_check_done": true,
+  "splits_done": true,
+  "started_at": "2026-05-04T15:09:12.570814",
+  "updated_at": "2026-05-04T15:24:40.993268"
+}

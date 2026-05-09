@@ -1,0 +1,27 @@
+{
+  "total_read": 9234,
+  "removed_duplicate_pair": 503,
+  "removed_too_short": 0,
+  "removed_too_long": 0,
+  "removed_anchor_eq_positive": 7,
+  "kept": 8724,
+  "strategy_breakdown": {
+    "citation_pair": 1625,
+    "synthetic_query": 2769,
+    "provider_aware": 3854,
+    "cross_subject_hard_negative": 476
+  },
+  "subject_coverage": 108,
+  "top_subjects": {
+    "General & Multidisciplinary": 456,
+    "English - General": 310,
+    "Economics": 297,
+    "History": 274,
+    "Biological Sciences": 269,
+    "Finance": 266,
+    "Business Administration": 239,
+    "Political Science": 225,
+    "Physics": 218,
+    "Canadian Studies": 177
+  }
+}
