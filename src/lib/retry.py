@@ -3,6 +3,7 @@
 import asyncio
 import functools
 import logging
+import threading
 import time
 from typing import Callable, TypeVar
 
@@ -30,43 +31,56 @@ class CircuitBreaker:
         self.failure_count = 0
         self.state = self.CLOSED
         self.last_failure_time: float = 0.0
+        self._probe_in_flight = False
+        self._lock = threading.Lock()
 
     def record_success(self) -> None:
         """Record a successful call."""
-        self.failure_count = 0
-        self.state = self.CLOSED
+        with self._lock:
+            self.failure_count = 0
+            self.state = self.CLOSED
+            self._probe_in_flight = False
 
     def record_failure(self) -> None:
         """Record a failed call."""
-        self.failure_count += 1
-        self.last_failure_time = time.time()
-        if self.failure_count >= self.threshold:
-            self.state = self.OPEN
-            logger.warning(
-                "Circuit breaker OPEN after %d failures", self.failure_count
-            )
+        with self._lock:
+            self.failure_count += 1
+            self.last_failure_time = time.time()
+            self._probe_in_flight = False
+            if self.failure_count >= self.threshold:
+                self.state = self.OPEN
+                logger.warning(
+                    "Circuit breaker OPEN after %d failures", self.failure_count
+                )
 
     def can_proceed(self) -> bool:
         """Check if a request should be allowed through."""
-        if self.state == self.CLOSED:
-            return True
+        with self._lock:
+            if self.state == self.CLOSED:
+                return True
 
-        if self.state == self.OPEN:
-            elapsed = time.time() - self.last_failure_time
-            if elapsed >= self.timeout:
-                self.state = self.HALF_OPEN
-                logger.info("Circuit breaker HALF_OPEN, allowing test request")
+            if self.state == self.OPEN:
+                elapsed = time.time() - self.last_failure_time
+                if elapsed >= self.timeout:
+                    self.state = self.HALF_OPEN
+                    self._probe_in_flight = True
+                    logger.info("Circuit breaker HALF_OPEN, allowing test request")
+                    return True
+                return False
+
+            # HALF_OPEN: allow only a single test request through.
+            if not self._probe_in_flight:
+                self._probe_in_flight = True
                 return True
             return False
 
-        # HALF_OPEN: allow one request
-        return True
-
     def reset(self) -> None:
         """Reset the circuit breaker to closed state."""
-        self.failure_count = 0
-        self.state = self.CLOSED
-        self.last_failure_time = 0.0
+        with self._lock:
+            self.failure_count = 0
+            self.state = self.CLOSED
+            self.last_failure_time = 0.0
+            self._probe_in_flight = False
 
 
 class CircuitBreakerOpenError(Exception):
@@ -113,8 +127,6 @@ def retry_with_backoff(
                     raise
                 except retry_on as e:
                     last_exception = e
-                    if circuit_breaker:
-                        circuit_breaker.record_failure()
 
                     if attempt < max_retries:
                         delay = min(base_delay * (2 ** attempt), max_delay)
@@ -138,6 +150,12 @@ def retry_with_backoff(
                         )
                         time.sleep(delay)
 
+            # Record at most ONE failure per logical request: only after all
+            # retries are exhausted. Recording per-attempt would over-count and
+            # trip the breaker after a single failing request (e.g. max_retries=3
+            # would log 4 failures, opening a threshold-5 breaker prematurely).
+            if circuit_breaker:
+                circuit_breaker.record_failure()
             raise last_exception  # type: ignore[misc]
 
         @functools.wraps(func)
@@ -158,8 +176,6 @@ def retry_with_backoff(
                     raise
                 except retry_on as e:
                     last_exception = e
-                    if circuit_breaker:
-                        circuit_breaker.record_failure()
 
                     if attempt < max_retries:
                         delay = min(base_delay * (2 ** attempt), max_delay)
@@ -179,6 +195,9 @@ def retry_with_backoff(
                         )
                         await asyncio.sleep(delay)
 
+            # Record at most ONE failure per logical request (see sync_wrapper).
+            if circuit_breaker:
+                circuit_breaker.record_failure()
             raise last_exception  # type: ignore[misc]
 
         if asyncio.iscoroutinefunction(func):
