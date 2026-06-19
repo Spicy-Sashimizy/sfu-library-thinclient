@@ -1,0 +1,44 @@
+/* SFU Library Suite — shared UX / accessibility baseline.
+ * Linked by every app AFTER its own <style>, so these layer on top.
+ * Implements widely-recommended best practices: respect reduced-motion,
+ * visible keyboard focus, text-zoom safety, long-text wrapping, fluid media,
+ * and a small-screen sidebar safeguard. Kept deliberately conservative so it
+ * never fights the prototypes' inline styling (except where !important is the
+ * whole point, e.g. honoring a motion preference). */
+
+/* 1) Respect users who request less motion (vestibular safety). !important is
+      required to override the apps' inline transition/animation declarations. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 2) Visible focus ring for keyboard users only (mouse/touch stays clean).
+      Uses each app's accent token with a sane fallback. */
+:focus-visible {
+  outline: 2px solid var(--accent-red, var(--c-red, #b3261e));
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+:where(a, button, input, select, textarea):focus:not(:focus-visible) { outline: none; }
+
+/* 3) Honor browser/OS text-zoom; prevent mobile auto-inflation surprises. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* 4) Never let long unbroken tokens (DOIs, URLs, IDs) blow out the layout. */
+body { overflow-wrap: break-word; text-rendering: optimizeLegibility; }
+
+/* 5) Fluid media (the apps are SVG/CSS-driven, but be safe for any <img>). */
+img, video { max-width: 100%; height: auto; }
+
+/* 6) Smooth in-page scrolling (forced to auto under reduced-motion by rule 1). */
+html { scroll-behavior: smooth; }
+
+/* 7) Small-window safeguard: shrink the sidebar so content keeps room on
+      narrow laptops / split-screen. Full 256px returns at >=1100px. */
+@media (max-width: 1100px) { :root { --sidebar-width: 208px !important; } }
+@media (max-width: 920px)  { :root { --sidebar-width: 184px !important; } }

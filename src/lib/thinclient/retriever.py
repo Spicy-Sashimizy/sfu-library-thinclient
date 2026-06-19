@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sqlite3
 import threading
 import time
@@ -41,6 +42,40 @@ _leg_metrics: dict[str, dict] = {}
 _metrics_lock = threading.Lock()
 
 
+def _mem_available_gb() -> float | None:
+    """MemAvailable in GiB (kernel's reclaim-aware free estimate), or None if
+    /proc/meminfo is unreadable (non-Linux)."""
+    try:
+        with open("/proc/meminfo") as fh:
+            for line in fh:
+                if line.startswith("MemAvailable"):
+                    return int(line.split()[1]) / 1024 / 1024
+    except OSError:
+        return None
+    return None
+
+
+def _guard_load_mem(next_shard_bytes: int, floor_gb: float, ctx: str) -> None:
+    """Abort the load CLEANLY if pulling the next BMP shard would drive
+    MemAvailable below `floor_gb`. BMP loads resident (~3.07x on disk), so a big
+    shard can swing several GB; we project the shard's resident cost and refuse
+    *before* the allocation rather than letting the OOM-killer SIGKILL us mid-
+    construction (which leaves no actionable error). See BMP_RESIDENT_RATIO."""
+    avail = _mem_available_gb()
+    if avail is None:
+        return
+    projected = next_shard_bytes / 1073741824 * BMP_RESIDENT_RATIO
+    if avail - projected < floor_gb:
+        raise RuntimeError(
+            f"thinclient load aborted at {ctx}: MemAvailable {avail:.1f} GB, "
+            f"next BMP shard needs ~{projected:.1f} GB resident "
+            f"(~{BMP_RESIDENT_RATIO:.2f}x on disk), which would breach the "
+            f"{floor_gb:.1f} GB floor. BMP has no mmap mode; the full 150M "
+            f"SPLADE set is ~211 GB resident and cannot serve on this host. "
+            f"Raise host RAM, serve fewer sections, or set "
+            f"SFU_LOAD_MEM_FLOOR_GB lower to override (will risk OOM-kill).")
+
+
 def _record_leg(leg: str, ms: float, error: bool = False) -> None:
     with _metrics_lock:
         m = _leg_metrics.setdefault(leg, {"count": 0, "errors": 0, "total_ms": 0.0})
@@ -48,6 +83,18 @@ def _record_leg(leg: str, ms: float, error: bool = False) -> None:
         m["total_ms"] += ms
         if error:
             m["errors"] += 1
+
+# BMP is a load-into-memory engine (no mmap mode in 0.2.6): `bmp.Searcher`
+# deserializes each *.bmp shard into ANONYMOUS RAM at a measured ~3.07x its
+# on-disk size (probe 2026-06-17, 569 MB shard -> 1747 MB steady-state RSS;
+# ratio holds from 12 MB to 569 MB shards). The full 150M SPLADE set is 68.6 GB
+# on disk -> ~211 GB resident. _load() builds ALL shards eagerly, so on a host
+# that can't hold the set the process is OOM-killed *inside* construction —
+# before any per-query mem-floor guard can run. The guard below samples
+# MemAvailable before each shard and aborts CLEANLY (RuntimeError) instead, so
+# the failure is diagnosable rather than a SIGKILL. Gate: SFU_LOAD_MEM_FLOOR_GB.
+BMP_RESIDENT_RATIO = 3.07       # measured anon-RAM expansion of bmp.Searcher
+LOAD_MEM_FLOOR_GB = 1.5         # abort load if MemAvailable would drop below this
 
 RRF_K = 60
 QUANT_SCALE = 70                # must match builder.QUANT_SCALE (saturation-free)
@@ -75,7 +122,12 @@ class ThinClientRetriever:
     ):
         repo_root = Path(__file__).resolve().parents[3]
         self.root = Path(index_root or repo_root / "data" / "thinclient_index")
-        self.splade_model_path = splade_model_path or str(repo_root / "models" / "splade_onnx")
+        # SFU_SPLADE_MODEL_PATH lets serving point at a faster query encoder
+        # (e.g. models/splade_onnx_fp16) without a code change — the query-side
+        # SPLADE encode is the dominant warm latency (~1-2s) and the cold model
+        # load is ~115s, so fp16 here is a real demo lever. Default unchanged.
+        self.splade_model_path = (splade_model_path or os.environ.get("SFU_SPLADE_MODEL_PATH")
+                                  or str(repo_root / "models" / "splade_onnx"))
         self.dense_model_path = dense_model_path or str(repo_root / "models" / "sfu-academic-embed-v5")
         self.remote_abstracts = remote_abstracts
         self.openalex_mailto = openalex_mailto
@@ -92,6 +144,20 @@ class ThinClientRetriever:
         self._dense_cache = None   # query-driven warm cache (dense_cache.py)
         self._loaded = False
 
+        # Off-BMP serving gate. SFU_SPLADE_BACKEND=qdrant routes the SPLADE leg
+        # to the Qdrant on_disk sparse collection (flat ~GB RAM) instead of the
+        # load-into-RAM BMP shards (~211 GB resident at 150M). Default "bmp"
+        # preserves existing behavior. Engine/quality parity measured 2026-06-19
+        # (scripts/eval_quant_fidelity.py: overlap@10 0.987, NDCG@10 ties exactly;
+        # Qdrant sparse is exact vs BMP block-max approximate). See THIN_CLIENT_SWAP.md.
+        self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "bmp").lower()
+        self._splade_qdrant_url = os.environ.get(
+            "SFU_SPLADE_QDRANT_URL", "http://localhost:6333")
+        self._splade_collection = os.environ.get(
+            "SFU_SPLADE_QDRANT_COLLECTION", "splade_150m")
+        self._qdrant_client = None   # lazy, only when backend=qdrant
+        self._bert_vocab = None      # token->id map shared with the ingest
+
     # ── lazy loading ────────────────────────────────────────────────────────
 
     def _manifest(self) -> dict:
@@ -104,11 +170,24 @@ class ThinClientRetriever:
         with self._lock:
             if self._loaded:
                 return
+            import os
+
             import bmp
             import tantivy
 
             from lib.thinclient.abstracts import AbstractStore
 
+            load_floor = float(os.environ.get("SFU_LOAD_MEM_FLOOR_GB",
+                                              LOAD_MEM_FLOOR_GB))
+            # SFU_SKIP_BMP: load tantivy/meta/dense only, skip the resident BMP
+            # shards. The BM25F leg (tantivy, mmap) then runs on hosts too small
+            # to hold the ~211 GB SPLADE set — used by the section-wave parity
+            # eval, which records the SPLADE leg shard-by-shard in separate
+            # processes. See scripts/eval_parity_section_waves.py.
+            # backend=qdrant serves SPLADE from Qdrant, so the resident BMP set
+            # is never queried — skip it (this is what reclaims the ~211 GB).
+            skip_bmp = (os.environ.get("SFU_SKIP_BMP") == "1"
+                        or self._splade_backend == "qdrant")
             sections_dir = self.root / "sections"
             if sections_dir.is_dir():
                 for sdir in sorted(sections_dir.iterdir()):
@@ -117,7 +196,10 @@ class ThinClientRetriever:
                     idx = tantivy.Index.open(str(sdir / "tantivy"))
                     idx.reload()
                     shards = []
-                    for p in sorted(sdir.glob("splade_*.bmp")):
+                    for p in ([] if skip_bmp
+                              else sorted(sdir.glob("splade_*.bmp"))):
+                        _guard_load_mem(p.stat().st_size, load_floor,
+                                        f"{sdir.name}/{p.name}")
                         vocab_path = p.with_suffix(".vocab.zst")
                         vocab = None
                         if vocab_path.exists():
@@ -160,7 +242,6 @@ class ThinClientRetriever:
                     "rescore": np.load(dense_dir / "rescore_int8.npy", mmap_mode="r"),
                     "ids": json.loads((dense_dir / "ids.json").read_text()),
                 }
-            import os
             if os.environ.get("SFU_DENSE_WARMCACHE", "1") != "0":
                 try:
                     from lib.thinclient.dense_cache import DenseWarmCache
@@ -401,8 +482,75 @@ class ThinClientRetriever:
         merged.sort(key=lambda t: -t[1])
         return merged[:top_k]
 
+    # ── SPLADE query-vector helpers (shared by both backends) ─────────────────
+
+    def _encode_splade_top(self, query: str):
+        """Encode the query and return its top-SPLADE_QUERY_TERMS terms, or None
+        if the encoder is unavailable/empty (caller degrades to the BM25F leg)."""
+        from lib.opensearch_retriever import encode_splade
+        try:
+            sparse = encode_splade(query, self.splade_model_path)
+        except Exception as exc:
+            # Missing/corrupt ONNX model must degrade the leg, not the query:
+            # RRF still fuses BM25F (+dense) while this leg mirrors BM25F.
+            logger.warning("SPLADE encoder failed (%s); falling back to BM25F leg", exc)
+            return None
+        if not sparse:
+            logger.warning("SPLADE encoding empty; falling back to BM25F leg")
+            return None
+        return dict(sorted(sparse.items(), key=lambda x: -x[1])[:SPLADE_QUERY_TERMS])
+
+    def _bert_vocab_map(self) -> dict:
+        """bert-base-uncased token->id map — the SAME bijection the Qdrant ingest
+        used to place doc sparse vectors (scripts/spike_qdrant_sparse._vocab)."""
+        if self._bert_vocab is None:
+            from transformers import AutoTokenizer
+            self._bert_vocab = AutoTokenizer.from_pretrained("bert-base-uncased").get_vocab()
+        return self._bert_vocab
+
+    def _qdrant(self):
+        if self._qdrant_client is None:
+            from qdrant_client import QdrantClient
+            self._qdrant_client = QdrantClient(url=self._splade_qdrant_url, timeout=30)
+        return self._qdrant_client
+
+    def _splade_leg_qdrant(self, query: str, top_k: int,
+                           f: dict | None) -> list[tuple[str, float]]:
+        """SPLADE leg served from the Qdrant on_disk sparse collection. Uses the
+        raw f32 query (top-64 terms) measured at parity with BMP's 8-bit path
+        (eval_quant_fidelity 2026-06-19). Any failure degrades to the BM25F leg,
+        matching the encoder-failure contract — RRF still fuses the other legs."""
+        from qdrant_client import models
+        top_terms = self._encode_splade_top(query)
+        if not top_terms:
+            return self._bm25f_leg(query, top_k, f)
+        vocab = self._bert_vocab_map()
+        idx, val = [], []
+        for tok, w in top_terms.items():
+            i = vocab.get(tok)
+            if i is not None:
+                idx.append(int(i)); val.append(float(w))
+        if not idx:
+            return self._bm25f_leg(query, top_k, f)
+        fetch = top_k * (OVERFETCH_FILTERED if f else OVERFETCH)
+        try:
+            res = self._qdrant().query_points(
+                collection_name=self._splade_collection,
+                query=models.SparseVector(indices=idx, values=val),
+                using="splade", limit=fetch, with_payload=True)
+        except Exception as exc:
+            logger.warning("Qdrant SPLADE leg failed (%s); falling back to BM25F leg", exc)
+            return self._bm25f_leg(query, top_k, f)
+        merged = [(p.payload.get("oaid"), float(p.score))
+                  for p in res.points if p.payload and p.payload.get("oaid")]
+        if f:
+            merged = self._post_filter(merged, f)
+        return merged[:top_k]
+
     def _splade_leg(self, query: str, top_k: int,
                     f: dict | None) -> list[tuple[str, float]]:
+        if self._splade_backend == "qdrant":
+            return self._splade_leg_qdrant(query, top_k, f)
         from lib.opensearch_retriever import encode_splade
         try:
             sparse = encode_splade(query, self.splade_model_path)

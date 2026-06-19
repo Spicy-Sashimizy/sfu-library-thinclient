@@ -20,6 +20,7 @@ block maxima internally (measured-negligible loss in the BMP paper / SIGIR'24).
 from __future__ import annotations
 
 import logging
+import os
 import sqlite3
 from pathlib import Path
 
@@ -43,15 +44,33 @@ BMP_BLOCK_SIZE = 256
 # Docs are buffered and sorted by top SPLADE term in chunks before BMP
 # insertion (bounded-RAM approximation of global clustering; the win comes
 # from term locality within 256-doc blocks, which chunk-local sorting keeps).
-BMP_CLUSTER_CHUNK_DOCS = 500_000
-TANTIVY_WRITER_HEAP = 1_000_000_000
+# Halved from 500k/1GB on 2026-06-12: the era split runs TWO builders per
+# section worker (recent+archive), and 3 workers x 2 builders OOM-killed the
+# 150M build on the 31 GB host (BrokenProcessPool ~1 min into BUILD). Chunk
+# size only bounds the clustering window — the measured win comes from
+# 256-doc-block locality, which 250k chunks preserve.
+BMP_CLUSTER_CHUNK_DOCS = 250_000
+TANTIVY_WRITER_HEAP = 512_000_000
+# Commit + TRUNCATE the meta -wal every this many docs WITHIN a slice. The
+# per-slice truncate alone was insufficient (measured 2026-06-13): a section's
+# ~2h slices let the uncommitted meta -wal grow to GB before the slice-boundary
+# commit (other 5.8G, social_sciences 5.3G), re-creating the 31G-host swap
+# pressure. Mid-slice commits are safe because meta rows are INSERT OR REPLACE
+# (idempotent on the whole-slice re-feed resume performs) and only the meta db
+# is touched — tantivy/BMP still commit/rotate at the slice boundary, so the
+# atomic-slice resume model is unchanged. Env-overridable so the resume parity
+# test can force frequent mid-slice truncates on tiny slices.
+META_WAL_TRUNCATE_DOCS = int(os.environ.get("SFU_META_WAL_TRUNCATE_DOCS", "250000"))
 
 
 # v2 meta schema: W-ids stored as INTEGER PRIMARY KEY (rowid alias, varint on
 # disk) — measured 166.8 -> 99.4 B/doc vs TEXT ids (storage_levers_eval, ~10 GB
 # at 150M). Ids that don't round-trip W<digits> go to the docs_other TEXT table.
+# WAL (not OFF): per-slice resume needs the db to survive a SIGKILL intact —
+# WAL+synchronous=OFF is crash-consistent to the last commit (not power-safe,
+# which is fine: every failure so far has been a process kill, 2026-06-12).
 META_SCHEMA = (
-    "PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF;"
+    "PRAGMA journal_mode=WAL; PRAGMA synchronous=OFF;"
     "CREATE TABLE IF NOT EXISTS docs ("
     "  id INTEGER PRIMARY KEY, title TEXT, doi TEXT, year INTEGER,"
     "  type TEXT, is_oa INTEGER, section TEXT);"
@@ -82,7 +101,8 @@ class SectionBuilder:
 
     def __init__(self, index_root: Path, section: str, hot: bool,
                  meta_db: sqlite3.Connection,
-                 bmp_shard_docs: int = DEFAULT_BMP_SHARD_DOCS):
+                 bmp_shard_docs: int = DEFAULT_BMP_SHARD_DOCS,
+                 resume_state: dict | None = None):
         import tantivy
 
         from lib.thinclient.abstracts import AbstractStoreWriter
@@ -95,6 +115,13 @@ class SectionBuilder:
         self._meta_batch: list[tuple] = []
         self._meta_batch_other: list[tuple] = []
         self._bmp_shard_docs = bmp_shard_docs
+
+        # Resume: shards below next_shard are durable (rotated at a slice
+        # checkpoint); anything at/after it is a partial from the crashed run.
+        start_shard = (resume_state or {}).get("next_shard", 0)
+        for f in self.dir.glob("splade_*"):
+            if int(f.name.split("_")[1].split(".")[0]) >= start_shard:
+                f.unlink()
 
         tantivy_dir = self.dir / "tantivy"
         tantivy_dir.mkdir(exist_ok=True)
@@ -111,14 +138,20 @@ class SectionBuilder:
         self._tantivy_mod = tantivy
 
         self._bmp = None
-        self._bmp_shard_idx = 0
+        self._bmp_shard_idx = start_shard
         self._bmp_in_shard = 0
         self._bmp_vocab: set[str] = set()
         self._bmp_chunk: list[tuple[str, str, dict]] = []  # (top_term, id, vec)
 
         self._abstracts = (AbstractStoreWriter(self.dir / "abstracts.sqlite")
                            if hot else None)
-        self.count = 0
+        self.count = (resume_state or {}).get("count", 0)
+        self._last_wal_truncate = self.count
+        # A crash between the tantivy commit and the progress-file write means
+        # the first re-fed slice may already be committed; the first add() of
+        # that slice probes for its doc and skips tantivy adds if found.
+        self._probe_tantivy = False
+        self._skip_tantivy_slice = False
 
     def _bmp_indexer(self):
         import bmp
@@ -142,6 +175,16 @@ class SectionBuilder:
             self._bmp = None
             self._bmp_shard_idx += 1
 
+    def begin_slice(self, probe_tantivy: bool = False) -> None:
+        """Arm the duplicate-commit probe for the first re-fed slice on resume."""
+        self._probe_tantivy = probe_tantivy
+        self._skip_tantivy_slice = False
+
+    def _tantivy_has(self, doc_id: str) -> bool:
+        self._tantivy.reload()
+        q = self._tantivy.parse_query(f'id:"{doc_id}"', ["id"])
+        return bool(self._tantivy.searcher().search(q, 1).hits)
+
     def add(self, doc: dict) -> None:
         """doc keys: id (openalex W-id), title, abstract, publication_year,
         type, is_oa, doi, sparse_field ({term: float weight})."""
@@ -152,10 +195,18 @@ class SectionBuilder:
         dtype = doc.get("type") or ""
         is_oa = bool(doc.get("is_oa"))
 
-        self._writer.add_document(self._tantivy_mod.Document(
-            id=doc_id, title=title, abstract=abstract,
-            year=year, doctype=dtype, is_oa=is_oa,
-        ))
+        if self._probe_tantivy:
+            self._probe_tantivy = False
+            self._skip_tantivy_slice = self._tantivy_has(doc_id)
+            if self._skip_tantivy_slice:
+                logger.info("section %s: slice already committed to tantivy "
+                            "(crash hit the checkpoint window) — skipping "
+                            "tantivy re-adds for this slice", self.section)
+        if not self._skip_tantivy_slice:
+            self._writer.add_document(self._tantivy_mod.Document(
+                id=doc_id, title=title, abstract=abstract,
+                year=year, doctype=dtype, is_oa=is_oa,
+            ))
 
         sparse = doc.get("sparse_field") or {}
         if sparse:
@@ -177,6 +228,14 @@ class SectionBuilder:
         if len(self._meta_batch) + len(self._meta_batch_other) >= 5_000:
             self._flush_meta()
         self.count += 1
+        # Bound the meta -wal mid-slice (see META_WAL_TRUNCATE_DOCS): commit the
+        # rows so far and TRUNCATE the now-checkpointable frames. Idempotent on
+        # resume (INSERT OR REPLACE), and tantivy/BMP are untouched here.
+        if self.count - self._last_wal_truncate >= META_WAL_TRUNCATE_DOCS:
+            self._flush_meta()
+            self._meta.commit()
+            self._meta.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            self._last_wal_truncate = self.count
 
     def _flush_bmp_chunk(self, final: bool = False) -> None:
         """Sort the buffered chunk by top SPLADE term, then stream into BMP
@@ -205,6 +264,42 @@ class SectionBuilder:
                 "INSERT OR REPLACE INTO docs_other VALUES (?,?,?,?,?,?,?)",
                 self._meta_batch_other)
             self._meta_batch_other.clear()
+
+    def slice_checkpoint(self) -> dict:
+        """Make everything added so far durable at a spool-slice boundary and
+        return the state the worker persists in its progress file. Rotating
+        the open BMP shard here means shards never span slices, so a resume
+        can simply delete shards at/after the recorded next_shard. Measured
+        per-slice era minimum is 18.6k docs (med_bio archive, 2026-06-12),
+        comfortably above the 5k tail bar; <500 would leave the shard's
+        sparse leg empty (lexical still covers it), hence the warning.
+
+        The tantivy commit goes LAST: everything before it is idempotent on
+        re-feed, so the only crash window needing the resume probe is the
+        few ms between this commit and the worker's progress write — keep
+        the slow steps (abstracts zstd-19 flush, BMP shard write) out of it."""
+        self._flush_bmp_chunk()
+        if self._bmp is not None:
+            if self._bmp_in_shard < 500:
+                logger.warning("section %s: rotating a %d-doc BMP shard at a "
+                               "slice boundary — below BMP's working minimum",
+                               self.section, self._bmp_in_shard)
+            self._rotate_bmp()
+        if self._abstracts is not None:
+            self._abstracts.checkpoint()
+        self._flush_meta()
+        self._meta.commit()
+        # TRUNCATE the WAL back to zero each slice: a plain commit only does a
+        # PASSIVE checkpoint, leaving the -wal file at its high-water mark
+        # (measured 2026-06-13: other=5.8G, social_sciences=3.3G, cs_math=1.9G —
+        # ~11G across 3 workers, which evicted the page cache and drove the
+        # 31G host into swap-thrash). No concurrent readers here, so TRUNCATE
+        # always fully checkpoints; data is already durable from the commit
+        # above, so a kill mid-truncate is still crash-consistent.
+        self._meta.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        self._writer.commit()
+        self._skip_tantivy_slice = False
+        return {"next_shard": self._bmp_shard_idx, "count": self.count}
 
     def finish(self) -> dict:
         self._flush_meta()

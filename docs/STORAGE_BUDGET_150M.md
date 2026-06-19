@@ -1,7 +1,8 @@
 # Whole-DB Storage Budget @150.4M docs — measured levers + hypothetical totals
 
-**Date:** 2026-06-11 · **Status:** all numbers below are MEASURED unless marked
-*est.* · Sources: `scripts/eval_storage_levers.py` →
+**Date:** 2026-06-11 · **Updated:** 2026-06-16 (§1 now carries the AS-BUILT 150M
+footprint; the completed build supersedes the earlier `meta.sqlite` estimate) ·
+**Status:** all numbers below are MEASURED unless marked *est.* · Sources: `scripts/eval_storage_levers.py` →
 `data/eval_results/storage_levers_eval.json`, `scripts/eval_text_compression.py`
 → `data/eval_results/text_compression_eval.json`, component sizes from the 1M
 validation build (`data/thinclient_1m`), full method detail in
@@ -21,15 +22,64 @@ validation build (`data/thinclient_1m`), full method detail in
 IN the builder, not just measured — BMP b256+clustered (`af09836`), abstracts v3
 script-bucketed 32 KB blocks + per-script dicts (`d978ba3`), meta v2 INTEGER-PK
 schema (`9a6d195`; implemented v2 measured **~10 GB** at 150M, better than the
-14.4 GB lever estimate above). The running 150M migration's build phase is armed
-to pick these up (`scripts/restart_at_build_phase.sh`). Sections have since also
-split into era sub-sections (`7fe689a`), which changes layout but not totals.
+14.4 GB lever estimate above — **SUPERSEDED 2026-06-16: the completed 150M
+build's `meta.sqlite` measured 24.9 GB, not ~10 GB; the early figure did not
+hold at full build, cause not yet diagnosed — see "AS BUILT" below and
+`THIN_CLIENT_SWAP.md` §BUILD COMPLETE**). Sections have since also split into
+era sub-sections (`7fe689a`), which changes layout but not totals.
 
-Persona steady state (political_science: hot `social_sciences` live + 4 cold
-sections packed at the measured 2.10× artifact ratio): **≈ 95 GB** on disk
-(hot live ≈ 34 GB incl. abstracts, packed cold ≈ 47 GB, meta 14 GB). *Pack
-ratio was measured on bsize-32 artifacts; denser b256 shards will pack
-slightly less (est.).*
+**Persona steady state — AS BUILT (measured 2026-06-16, supersedes the estimate
+below):** political_science (hot `social_sciences__recent` live + 9 cold
+sub-sections packed): **≈ 104 GB** on disk — hot live 34.0 GB (incl. 26.3M
+abstracts), packed cold 45.0 GB (live 84.3 GB → **1.875×** aggregate, range
+1.86–2.01×), `meta.sqlite` **24.9 GB**, dense 0.36 GB. Excludes the reclaimable
+131 GB `spool_backup/` build intermediate. The 1.875× ratio confirms the est.
+below that b256 packs under the 2.10× bsize-32 figure; the +9 GB vs the ≈ 95 GB
+estimate is entirely `meta.sqlite` (24.9 GB built vs 14 GB assumed). Source:
+`data/thinclient_index/manifest.json`, `logs/migration_150m.log` (DONE
+2026-06-16T03:00:21).
+
+**Serving RAM ≠ on-disk size (measured 2026-06-17).** Disk is ~104 GB but the RAM
+to *serve the SPLADE leg* is dominated by BMP, which has no mmap mode:
+`bmp.Searcher` loads each `*.bmp` into anonymous RAM at **3.07×** on disk (probe:
+569 MB shard → 1747 MB resident). Holding **all** 68.6 GB of live+packed SPLADE
+shards resident at once → **~211 GB**. Every other leg is mmap/paged and serves at
+~0 resident: tantivy/BM25F (29 GB on disk), `meta.sqlite` (24 GB), dense/usearch
+(0.34 GB).
+
+> **⚠ ~211 GB is NOT a serving recommendation — do not size a host to it.** A
+> search DB should never hold the whole index in RAM, and the rest of this stack
+> doesn't. That number is the worst case of one specific weakness — **BMP 0.2.6
+> is load-into-memory only** — multiplied by the eval's all-sections-at-once
+> access pattern. The right fixes, in order:
+>
+> 1. **mmap-backed SPLADE (the actual fix).** Make the sparse leg page from disk
+>    like the others — a BMP build/fork with mmap, or an alternative impact-ranked
+>    sparse engine (Seismic / PISA), or fold SPLADE term-impacts into tantivy as
+>    quantized payloads. Then SPLADE serving RAM = hot working set, not 211 GB,
+>    and a 150M index serves on commodity RAM like BM25F already does. *(future
+>    work; unimplemented as of 2026-06-18.)*
+> 2. **Hot/cold residency (partial, already built).** Production serves the live
+>    section(s) and packs the rest (`packer.py`); you never load all 10. But at
+>    3.07× even one hot `__recent` section is ~25–40 GB resident, so this suits a
+>    64–128 GB server, not a 24 GB laptop — it narrows the gap, the mmap fix
+>    closes it.
+> 3. **Benchmarking on any host — section-shard-wave eval** (`scripts/
+>    eval_parity_section_waves.py`): records SPLADE shard-by-shard in fresh
+>    processes and merges offline, so it needs only one wave's worth of shards
+>    resident (~8 GB) regardless of corpus size. This is how the 150M parity
+>    numbers were produced on the 24 GB host; it is an **eval** tool, not a
+>    serving path.
+>
+> The single-process `record-tc`/`run_parity_safe.sh` path *would* need ~232 GB
+> (211 GB + headroom) to hold one engine whole — that figure describes that
+> brute-force path only, and exists to explain why we use the wave eval instead,
+> not to recommend buying RAM. See `docs/THIN_CLIENT_SWAP.md` BMP note.
+
+Persona steady state (ESTIMATE 2026-06-11, superseded above): hot live ≈ 34 GB
++ packed cold ≈ 47 GB (2.10× est.) + meta 14 GB = **≈ 95 GB**. *Pack ratio was
+measured on bsize-32 artifacts; denser b256 shards will pack slightly less
+(est.).*
 
 Old-era levers already baked into this design (do NOT double-count): SPLADE
 stored once (old `nosrc_splade`, −36.9%), positions off (old `freqs`, −8.6%),

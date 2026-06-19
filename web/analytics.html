@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23b3261e'/%3E%3Ccircle%20cx='14'%20cy='14'%20r='6'%20fill='none'%20stroke='white'%20stroke-width='2.6'/%3E%3Cpath%20d='M18.5%2018.5L25%2025'%20stroke='white'%20stroke-width='2.6'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="lib/base.css">
+<title>About this index — SFU Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Lora:ital,wght@0,400;0,500;0,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<!-- Shared suite client: live backend with mock fallback + demo-data banner -->
+<script src="lib/mock.js"></script>
+<script src="lib/api.js"></script>
+<script src="lib/ui.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: oklch(97.5% 0.006 80);
+    --bg-panel: oklch(99% 0.004 80);
+    --bg-soft: oklch(95% 0.008 80);
+    --bg-sidebar: oklch(18% 0.012 250);
+    --bg-sidebar-hover: oklch(24% 0.014 250);
+    --bg-sidebar-active: oklch(28% 0.016 250);
+    --text: oklch(16% 0.012 250);
+    --text-secondary: oklch(44% 0.014 250);
+    --text-muted: oklch(60% 0.010 250);
+    --text-faint: oklch(72% 0.008 250);
+    --text-sidebar: oklch(78% 0.010 250);
+    --text-sidebar-active: oklch(96% 0.006 80);
+    --border: oklch(88% 0.010 250);
+    --border-light: oklch(92% 0.007 250);
+
+    --c-red: oklch(52% 0.18 25);
+    --c-red-soft: oklch(94% 0.04 25);
+    --c-teal: oklch(52% 0.12 200);
+    --c-teal-soft: oklch(93% 0.04 200);
+    --c-amber: oklch(68% 0.13 75);
+    --c-amber-soft: oklch(96% 0.04 75);
+    --c-amber-ink: oklch(50% 0.11 70);
+    --c-green: oklch(64% 0.11 145);
+    --c-green-soft: oklch(94% 0.04 145);
+    --c-violet: oklch(58% 0.10 295);
+    --c-indigo: oklch(55% 0.10 260);
+
+    --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.08), 0 1px 2px oklch(0% 0 0 / 0.05);
+    --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.10), 0 2px 6px oklch(0% 0 0 / 0.06);
+
+    --radius: 8px;
+    --radius-sm: 5px;
+    --radius-lg: 12px;
+
+    --font-ui: 'DM Sans', system-ui, sans-serif;
+    --font-serif: 'Lora', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --sidebar-width: 256px;
+  }
+  html, body, #root { height: 100%; }
+  body { font-family: var(--font-ui); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+  button { cursor: pointer; font-family: var(--font-ui); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="analytics.js"></script>
+</body>
+</html>
