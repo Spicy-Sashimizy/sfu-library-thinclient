@@ -1,0 +1,8 @@
+out/
+flat/
+# persona-sized index data (multi-GB runtime artifacts — never commit).
+# persona_med_bio/ = R3-v1 .bmflat shards; persona_med_bio_zd/ = R3-v2 zero-decode shards.
+persona_med_bio/
+persona_med_bio_zd/
+*.pyc
+__pycache__/

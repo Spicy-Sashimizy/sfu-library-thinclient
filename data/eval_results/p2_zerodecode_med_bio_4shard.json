@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "engine": "immsparse-flat-persona-zerodecode",
+    "section": "med_bio",
+    "k": 50,
+    "alpha": 0.8,
+    "beta": 1.0,
+    "built_utc": "2026-06-26",
+    "cold_mode": "posix_fadvise (weak cold)",
+    "shards": 4,
+    "flat_mb": 2397.1,
+    "rss_after_load_gb": 4.054,
+    "rssanon_after_load_gb": 1.976,
+    "qdrant_p50_ms_ref": 66.0,
+    "layout": "R3-v2 zero-decode: bytemuck cast_slice + flat_block_score (vs R3-v1 decode-per-query)"
+  },
+  "cold": {
+    "n": 120,
+    "p50": 31.07,
+    "p95": 85.0
+  },
+  "warm": {
+    "n": 120,
+    "p50": 25.63,
+    "p95": 57.01
+  },
+  "blocks_scored": {
+    "n": 120,
+    "p50": 3481,
+    "p95": 7370,
+    "max": 7424
+  },
+  "gate": {
+    "G3a_warm_le_qdrant": true,
+    "G3b_cold_le_3x_warm": true,
+    "cold_over_warm_p95": 1.49
+  }
+}

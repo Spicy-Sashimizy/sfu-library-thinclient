@@ -1,0 +1,448 @@
+{
+  "config": {
+    "n": 500000,
+    "queries": 40,
+    "topk": 50,
+    "harvest_scan": 5000000,
+    "output": "data/eval_results/quant_fidelity_live_150m_20260624_2345.json",
+    "live_qdrant": true,
+    "qdrant_url": "http://localhost:6333",
+    "qdrant_collection": "splade_150m"
+  },
+  "provenance": {
+    "metric": "bmp_vs_qdrant_quant_fidelity",
+    "backend": "qdrant-live",
+    "scale": "150m-live",
+    "corpus_size": 150413098,
+    "query_set": "data/eval_results/diverse_queries.json (40 paraphrases)",
+    "eval_script": "scripts/eval_quant_fidelity.py",
+    "judge": "data/eval_results/llm_judge_cache.json (reused, no re-judge)",
+    "baseline_ref": "data/eval_results/quant_fidelity_30mscan.json",
+    "git_commit": "25fb437",
+    "timestamp": "2026-06-24T23:45:43Z"
+  },
+  "summary": {
+    "pool_docs": 0,
+    "queries": 40,
+    "mean_overlap@10": 1.0,
+    "mean_overlap@50": 1.0,
+    "mean_kendall_tau": 1.0,
+    "ndcg_queries_with_coverage": 14,
+    "mean_ndcg@10_f32": 0.6039399544904459,
+    "mean_ndcg@10_quant": 0.6039399544904459,
+    "ndcg_delta_f32_minus_quant": 0.0,
+    "gate": {
+      "overlap@10": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg_delta": 0.0,
+      "thresholds": {
+        "overlap@10_min": 0.98,
+        "kendall_tau_min": 0.97,
+        "ndcg_abs_delta_max": 0.005
+      },
+      "pass": true
+    }
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.3093005080911691,
+      "ndcg@10_quant": 0.3093005080911691,
+      "n_judged": 32,
+      "n_judged_in_pool": 11
+    },
+    {
+      "query": "What initiatives and programs exist to revitalize Indigenous languages among Fir",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "How are First Nations in British Columbia working to preserve and revitalize the",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.8818370670556825,
+      "ndcg@10_quant": 0.8818370670556825,
+      "n_judged": 32,
+      "n_judged_in_pool": 17
+    },
+    {
+      "query": "What are the intergenerational effects of residential school trauma on Indigenou",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "How does trauma from residential schools continue to affect Indigenous communiti",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.6791794470574439,
+      "ndcg@10_quant": 0.6791794470574439,
+      "n_judged": 29,
+      "n_judged_in_pool": 22
+    },
+    {
+      "query": "How have Canadian institutions and governments implemented the Truth and Reconci",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What progress has Canada made in responding to the Truth and Reconciliation Comm",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.5565343230319435,
+      "ndcg@10_quant": 0.5565343230319435,
+      "n_judged": 35,
+      "n_judged_in_pool": 18
+    },
+    {
+      "query": "How does the land back movement relate to Indigenous rights and treaty negotiati",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What role does the land back movement play in shaping contemporary treaty negoti",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "housing affordability crisis Metro Vancouver rental market",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.6703701717385514,
+      "ndcg@10_quant": 0.6703701717385514,
+      "n_judged": 30,
+      "n_judged_in_pool": 10
+    },
+    {
+      "query": "What factors are contributing to the housing affordability crisis in Metro Vanco",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "Canadian immigration settlement services multicultural policy",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.7673069986259896,
+      "ndcg@10_quant": 0.7673069986259896,
+      "n_judged": 37,
+      "n_judged_in_pool": 16
+    },
+    {
+      "query": "How do Canadian settlement services for immigrants align with and reflect multic",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What is the relationship between Canada's multicultural policy and the design of",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "BC provincial politics electoral reform referendum",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.9669846004917844,
+      "ndcg@10_quant": 0.9669846004917844,
+      "n_judged": 33,
+      "n_judged_in_pool": 11
+    },
+    {
+      "query": "What electoral reform referendums has British Columbia held, and what impact did",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "In what ways have British Columbians used referendums to push for electoral refo",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "Chinese Canadian discrimination exclusion act immigration history",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.840950796970781,
+      "ndcg@10_quant": 0.840950796970781,
+      "n_judged": 29,
+      "n_judged_in_pool": 12
+    },
+    {
+      "query": "What was the history of discrimination and exclusion acts against Chinese Canadi",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Can",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "restorative justice alternatives incarceration recidivism reduction",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.6362006808405154,
+      "ndcg@10_quant": 0.6362006808405154,
+      "n_judged": 31,
+      "n_judged_in_pool": 14
+    },
+    {
+      "query": "How effective are restorative justice programs as alternatives to incarceration ",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "To what extent can restorative justice approaches decrease re-offending rates co",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "police use of force racial profiling Black Indigenous communities Canada",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.5972066560951599,
+      "ndcg@10_quant": 0.5972066560951599,
+      "n_judged": 31,
+      "n_judged_in_pool": 13
+    },
+    {
+      "query": "How does racial profiling by Canadian police contribute to the use of force agai",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What are the documented patterns and disparities in police use of force and raci",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "cybercrime financial fraud digital forensics investigation",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.46692474155501906,
+      "ndcg@10_quant": 0.46692474155501906,
+      "n_judged": 33,
+      "n_judged_in_pool": 17
+    },
+    {
+      "query": "How do investigators use digital forensics techniques to detect and prosecute fi",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What investigative methods and digital forensics approaches are most effective f",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "prison population mental health services rehabilitation programs",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.4989303177545519,
+      "ndcg@10_quant": 0.4989303177545519,
+      "n_judged": 37,
+      "n_judged_in_pool": 6
+    },
+    {
+      "query": "How do mental health services in prisons support rehabilitation outcomes for inc",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What mental health and rehabilitation programs are most effective for individual",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "interactive media experience design user engagement game mechanics",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.17993148201117176,
+      "ndcg@10_quant": 0.17993148201117176,
+      "n_judged": 36,
+      "n_judged_in_pool": 12
+    },
+    {
+      "query": "How do game mechanics enhance user engagement in interactive media experience de",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "What design strategies most effectively combine game mechanics with interactive ",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": null,
+      "ndcg@10_quant": null,
+      "n_judged": 0,
+      "n_judged_in_pool": 0
+    },
+    {
+      "query": "virtual reality augmented reality immersive learning environments",
+      "overlap@10": 1.0,
+      "overlap@50": 1.0,
+      "kendall_tau": 1.0,
+      "ndcg@10_f32": 0.4035015715464803,
+      "ndcg@10_quant": 0.4035015715464803,
+      "n_judged": 26,
+      "n_judged_in_pool": 15
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+2026-06-25 00:01:39,152 INFO thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True
+2026-06-25 00:01:39,152 INFO thin-client live sections: ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent']
+2026-06-25 00:02:59,045 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-06-25 00:03:03,052 INFO SPLADE ONNX model loaded (CPU)
+2026-06-25 00:03:05,206 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2026-06-25 00:03:05,213 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:11,462 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:16,459 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:19,513 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:26,695 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:31,144 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:37,436 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:42,969 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:48,303 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:50,758 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:03:50,869 INFO [tc] 10/40 queries (MemAvailable 15.2 GB)
+2026-06-25 00:03:55,471 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:00,295 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:03,425 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:08,732 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:12,744 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:15,500 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:23,454 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:29,572 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:31,139 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:35,693 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:35,773 INFO [tc] 20/40 queries (MemAvailable 15.6 GB)
+2026-06-25 00:04:41,242 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:43,318 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:47,652 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:50,824 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:52,874 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:04:57,573 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:01,716 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:05,377 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:09,981 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:15,136 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:15,183 INFO [tc] 30/40 queries (MemAvailable 16.0 GB)
+2026-06-25 00:05:20,914 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:25,959 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:31,847 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:33,952 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:37,663 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:42,475 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:46,771 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:49,780 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:53,376 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:57,073 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-25 00:05:57,180 INFO [tc] 40/40 queries (MemAvailable 16.3 GB)
+2026-06-25 00:05:57,184 INFO [tc] wrote 40 records -> data/eval_results/parity_record_tc_qdrant_20260625_0001.json

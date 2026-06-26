@@ -1,0 +1,12 @@
+{
+ "gate": "G1 (zero-decode v2 layout)",
+ "section": "1M test shards (5 sections: cs_math, med_bio, other, phys_eng, social_sciences)",
+ "date_utc": "2026-06-26",
+ "result": "PASS 50/50 byte-identical (ids + scores) vs spike/mmap_bmp/out/baseline.json",
+ "check": "spike/mmap_bmp/compare_flat.py (transcodes .bmp -> v2 .bmflat, compares top-k to stock baseline)",
+ "stash_venv": "/tmp/bmp-fork-work/zerodecode-venv (cp311, pyo3 0.21, bytemuck cast_slice)",
+ "layout": "[num_terms:u32][TermEntry{term_id:u16,pair_len:u16}][FlatPair{doc_off:u8,score:u8}] per block; reader = bytemuck::cast_slice (zero decode, zero alloc); scorer = flat_block_score (faithful twin of block_score)",
+ "disk": "1165MB bmp -> 880MB flat (0.75-0.77x, G3c holds)",
+ "warm_lat_1m_p50_ms": 1.92,
+ "note": "1M shards fit page cache; warm p50 here is directional only (faster than stock 4.67ms = the FORMAT-WALL-predicted direction). The deciding number is the persona 4-shard G3a (measure_p2_cold.py)."
+}

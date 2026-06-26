@@ -47,6 +47,18 @@ shards resident at once → **~211 GB**. Every other leg is mmap/paged and serve
 ~0 resident: tantivy/BM25F (29 GB on disk), `meta.sqlite` (24 GB), dense/usearch
 (0.34 GB).
 
+> **⚠ SUPERSEDED 2026-06-25 (BMP decommission, Workstream D):** the BMP SPLADE
+> leg is **retired as the default** (`SFU_SPLADE_BACKEND=qdrant` since 2026-06-24)
+> and the **68.66 GB of 150M `.bmp`+`.vocab.zst` artifacts are deleted** — so the
+> BMP "~211 GB resident / 68.6 GB on disk" figures below are now **historical
+> (the decommission rationale)**, not the current on-disk footprint. The
+> thin-client SPLADE leg is now served from the Qdrant `on_disk` sparse
+> collection (205 GB on disk, ~1.4 GB resident at rest for 30M, RAM-bound at
+> 150M on a 24 GB host); see `docs/THIN_CLIENT_SWAP.md` off-BMP section + the
+> B1/B2 parity gate in `docs/bmp_decommission_plan/VALIDATION_REPORT.md`.
+> Post-deletion `data/thinclient_index` = 230 GB (was 298 GB). The non-BMP legs
+> below (tantivy/meta.sqlite/dense) are unchanged.
+
 > **⚠ ~211 GB is NOT a serving recommendation — do not size a host to it.** A
 > search DB should never hold the whole index in RAM, and the rest of this stack
 > doesn't. That number is the worst case of one specific weakness — **BMP 0.2.6

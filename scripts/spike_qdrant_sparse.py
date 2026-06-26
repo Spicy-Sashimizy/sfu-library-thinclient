@@ -223,9 +223,59 @@ def _wait_qdrant(timeout=300):
     raise SystemExit("qdrant not ready after %ds: %s" % (timeout, last))
 
 
+def _upsert_wait_retry(client, collection, points, worker_id,
+                       max_attempts=20, base_sleep=10.0, max_sleep=120.0):
+    """Upsert with wait=True, retrying with exponential backoff so a transient
+    `status=red` optimizer stall self-heals instead of killing the worker.
+
+    Failure mode this fixes (observed 2026-06-20 on the 150M ingest, see
+    docs/THIN_CLIENT_SWAP.md Off-BMP section): when Qdrant hits `status=red`
+    (optimizer overloaded under sustained ingest), a `wait=True` upsert blocks
+    past the 600s gRPC timeout and the worker process DIES — the parent's
+    `pool.map_async` cannot detect a dead child, so it keeps logging aggregate
+    stats while N/8 workers silently disappear. The watchdog
+    (`scripts/bmp_ingest_watchdog.sh`) catches this after a 12-min stale window,
+    but relaunching a worker mid-slice is heavier than healing in place.
+
+    Safe to retry in place: point IDs are deterministic (id_base + local), so
+    re-upserting the same batch is idempotent — no duplicates, no drift. We do
+    NOT pop `points` until an attempt succeeds.
+
+    Backoff: base_sleep * 2^(attempt-1), capped at max_sleep (≈10s..120s). With
+    max_attempts=20 the cumulative budget is ~17 min per batch — comfortably
+    more than the longest optimizer-red stall observed (~2 h was MULTIPLE batches
+    blocking in a dead process; here each batch gets its own budget and the
+    worker stays alive to report it). On exhausting attempts, raises (worker
+    exits, watchdog re-launches it from the last good checkpoint)."""
+    last = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            client.upsert(collection_name=collection, points=points, wait=True)
+            return
+        except Exception as exc:   # grpc.RpcError / ConnectionError / timeout
+            last = exc
+            sleep = min(max_sleep, base_sleep * (2 ** (attempt - 1)))
+            status = "?"
+            try:
+                status = str(client.get_collection(collection).status)
+            except Exception:
+                status = "unreachable"
+            logger.warning("worker %d upsert FAILED (attempt %d/%d, status=%s, %s); "
+                           "backing off %.0fs and retrying (batch idempotent)",
+                           worker_id, attempt, max_attempts, status, exc, sleep)
+            time.sleep(sleep)
+    raise RuntimeError("worker %d upsert failed after %d attempts: %s"
+                       % (worker_id, max_attempts, last))
+
+
 def _parallel_worker(task):
     """One ingest worker: owns a subset of slices, upserts with wait=True (bounded
     in-flight -> no server backlog, no runaway RAM) over gRPC.
+
+    Upserts go through _upsert_wait_retry so a transient `status=red` optimizer
+    stall self-heals in place (the 2026-06-20 stall root cause) rather than
+    killing the worker; the watchdog (scripts/bmp_ingest_watchdog.sh) remains the
+    operational backstop for unrecoverable worker loss.
 
     Resumable: a per-worker checkpoint (slice_idx, line_no, local id offset, done)
     is fsync'd after every batch. On restart the worker skips completed slices and
@@ -283,7 +333,7 @@ def _parallel_worker(task):
                     vector={"splade": models.SparseVector(indices=idx, values=val)}))
                 local += 1
                 if len(points) >= batch:
-                    client.upsert(collection_name=collection, points=points, wait=True)
+                    _upsert_wait_retry(client, collection, points, worker_id)
                     done += len(points); points = []
                     _write_ckpt(ckpt, {"slice_idx": si, "line_no": ln + 1,
                                        "local": local, "done": done, "complete": False})
@@ -292,7 +342,7 @@ def _parallel_worker(task):
                                            "local": local, "done": done, "complete": True})
                         return done
     if points:
-        client.upsert(collection_name=collection, points=points, wait=True); done += len(points)
+        _upsert_wait_retry(client, collection, points, worker_id); done += len(points)
     _write_ckpt(ckpt, {"slice_idx": len(slice_files), "line_no": 0,
                        "local": local, "done": done, "complete": True})
     return done

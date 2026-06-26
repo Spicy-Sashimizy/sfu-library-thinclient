@@ -31,6 +31,19 @@ vocab id (the same bijection scripts/spike_qdrant_sparse.py uses).
 Usage:
   scripts/eval_quant_fidelity.py --n 500000 --queries 40 \
       --output data/eval_results/quant_fidelity.json
+
+  # Workstream B1: score the f32 (Qdrant) leg against the LIVE production index
+  # (the exact serving collection) instead of an in-memory recompute, so the gate
+  # uses the real index. TRUE head-to-head: Qdrant returns the live top-cand hits
+  # with their STORED f32 vectors (with_vectors=True); we score the query against
+  # those SAME docs BOTH as raw f32 (Qdrant's exact scoring) AND as BMP ×70 8-bit
+  # (min(255,max(1,round(w*70))) doc + max(1,round(w*70)) query) — isolating the
+  # quantization-reordering risk on the live index's own retrieved set.
+  # Corpus-size-independent, so a 30M-style pool scan is NOT required; --n is
+  # unused in live mode (kept for arg compatibility). Requires a running Qdrant.
+  scripts/eval_quant_fidelity.py --live-qdrant \
+      --qdrant-collection splade_150m --queries 40 \
+      --output data/eval_results/quant_fidelity_live_150m.json
 """
 from __future__ import annotations
 
@@ -209,6 +222,33 @@ def _kendall_tau_union(rank_a, rank_b):
     return tau
 
 
+def _qdrant_top_live(client, collection, idx, val, topk):
+    """Query the LIVE Qdrant collection (the exact production index) for the f32
+    top-k ranking AND fetch each hit's stored f32 vector (with_vectors=True), so
+    the in-memory BMP-quant scoring and the Qdrant f32 scoring run over the
+    IDENTICAL doc universe (the live hits). No full-collection scroll: the f32
+    leg is scored by the real index and its stored weights are fetched per-hit
+    (≤ topk point retrievals per query, O(1) in corpus size).
+
+    Returns (ranked_wids, scored, f32vec) where f32vec is {oaid: {tok: weight}}."""
+    from qdrant_client import models
+    res = client.query_points(
+        collection_name=collection,
+        query=models.SparseVector(indices=idx, values=val),
+        using="splade", limit=topk, with_payload=True, with_vectors=True)
+    wids, scored, f32vec = [], [], {}
+    for p in res.points:
+        oaid = (p.payload or {}).get("oaid")
+        if not oaid:
+            continue
+        wids.append(oaid)
+        scored.append((oaid, float(p.score)))
+        vec = (p.vector or {}).get("splade")
+        if vec:
+            f32vec[oaid] = dict(zip(vec.indices, vec.values))
+    return wids, scored, f32vec
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=500_000, help="random docs in the pool")
@@ -217,9 +257,25 @@ def main():
     ap.add_argument("--harvest-scan", type=int, default=5_000_000,
                     help="scan this many docs to harvest judged docs into the pool")
     ap.add_argument("--output", default=str(REPO_ROOT / "data/eval_results/quant_fidelity.json"))
+    ap.add_argument("--live-qdrant", action="store_true",
+                    help="score the f32 (Qdrant) leg against the LIVE production "
+                         "collection instead of an in-memory recompute — uses the "
+                         "exact serving index (Workstream B1). Requires --qdrant-url.")
+    ap.add_argument("--qdrant-url", default="http://localhost:6333")
+    ap.add_argument("--qdrant-collection", default="splade_150m")
     args = ap.parse_args()
 
     from lib.opensearch_retriever import encode_splade
+    live_client = None
+    live_pts = 0
+    if args.live_qdrant:
+        from qdrant_client import QdrantClient
+        live_client = QdrantClient(url=args.qdrant_url, timeout=120)
+        info = live_client.get_collection(args.qdrant_collection)
+        live_pts = int(info.points_count or 0)
+        logger.info("LIVE QDRANT mode: collection=%s points=%s status=%s "
+                    "(f32 leg = exact production index, not in-memory recompute)",
+                    args.qdrant_collection, info.points_count, info.status)
 
     vocab = _vocab()
     queries = _load_queries(args.queries)
@@ -230,8 +286,17 @@ def main():
         judged_wids |= set(judge.get(q[:80], {}).keys())
     logger.info("queries=%d judge-prefixes=%d judged-wids-for-these-queries=%d",
                 len(queries), len(judge), len(judged_wids))
-    wids, D_f32, D_q, V = _load_pool(args.n, vocab, judged_wids, args.harvest_scan)
-    wid_set = set(wids.tolist())
+    # The in-memory pool is only needed for the non-live f32 path. Live mode
+    # scores against the LIVE index's own retrieved set, so skip the (multi-GB,
+    # minutes-long) spool scan entirely.
+    if args.live_qdrant:
+        V = max(vocab.values()) + 1
+        wids, D_f32, D_q = np.asarray([]), None, None
+        wid_set = set()
+        logger.info("live mode: skipping in-memory pool scan (V=%d)", V)
+    else:
+        wids, D_f32, D_q, V = _load_pool(args.n, vocab, judged_wids, args.harvest_scan)
+        wid_set = set(wids.tolist())
 
     per_q = []
     for q in queries:
@@ -241,31 +306,84 @@ def main():
         top = sorted(wt.items(), key=lambda x: -x[1])[:SPLADE_QUERY_TERMS]
         qf = np.zeros(V, dtype=np.float32)
         qq = np.zeros(V, dtype=np.float32)
+        qidx, qval = [], []   # raw f32 query terms (for the live Qdrant call)
         for tok, w in top:
             i = vocab.get(tok)
             if i is None:
                 continue
             qf[i] = float(w)
             qq[i] = max(1, int(round(float(w) * QUANT_SCALE)))
-        s_f = D_f32.dot(qf)
-        s_q = D_q.dot(qq)
+            qidx.append(int(i)); qval.append(float(w))
+
         kk = args.topk
-        top_f = wids[np.argsort(-s_f, kind="stable")[:kk]]
-        top_q = wids[np.argsort(-s_q, kind="stable")[:kk]]
+        if args.live_qdrant:
+            # TRUE head-to-head on the LIVE index's own retrieved set: fetch the
+            # live top-kk hits' stored f32 vectors, score the query against them
+            # BOTH as raw f32 (Qdrant's exact scoring) AND as BMP ×70 8-bit-quant
+            # (min(255,max(1,round(w*70))) on doc + max(1,round(w*70)) on query
+            # top-64 — the BMP build path). Same docs, same sparsity → the
+            # comparison isolates EXACTLY the quantization-reordering risk on the
+            # live production index's hits (corpus-size-independent by construction).
+            cand = max(kk * 4, 200)   # over-fetch so quant-reordered docs compete
+            live_wids, _, f32vec = _qdrant_top_live(
+                live_client, args.qdrant_collection, qidx, qval, cand)
+            if not live_wids:
+                logger.warning("live Qdrant returned no hits for query — skipping")
+                continue
+            # universe = the live hits that returned a stored vector.
+            uni = np.asarray([w for w in live_wids if w in f32vec], dtype=object)
+            if len(uni) == 0:
+                logger.warning("no live f32 vectors fetched for query — skipping")
+                continue
+            indptr_u, indices_u, data_f32, data_q = [0], [], [], []
+            for w in uni:
+                fv_map = f32vec[w]
+                for tok, fv in fv_map.items():
+                    i = vocab.get(tok)
+                    if i is None:
+                        continue
+                    indices_u.append(i)
+                    data_f32.append(float(fv))
+                    data_q.append(min(BMP_IMPACT_MAX, max(1.0, round(float(fv) * QUANT_SCALE))))
+                indptr_u.append(len(indices_u))
+            indptr_u = np.asarray(indptr_u, dtype=np.int64)
+            idx_u = np.asarray(indices_u, dtype=np.int32)
+            Du_f32 = sp.csr_matrix(
+                (np.asarray(data_f32, dtype=np.float32), idx_u, indptr_u),
+                shape=(len(uni), V))
+            Du_q = sp.csr_matrix(
+                (np.asarray(data_q, dtype=np.float32), idx_u, indptr_u),
+                shape=(len(uni), V))
+            s_f = Du_f32.dot(qf)          # Qdrant exact f32 scoring
+            s_q = Du_q.dot(qq)            # BMP ×70 8-bit scoring, SAME docs
+            top_f = uni[np.argsort(-s_f, kind="stable")[:kk]].tolist()
+            top_q = uni[np.argsort(-s_q, kind="stable")[:kk]].tolist()
+        else:
+            s_f = D_f32.dot(qf)
+            s_q = D_q.dot(qq)
+            top_f = wids[np.argsort(-s_f, kind="stable")[:kk]].tolist()
+            top_q = wids[np.argsort(-s_q, kind="stable")[:kk]].tolist()
         sf, sq = set(top_f), set(top_q)
         ov10 = len(set(top_f[:10]) & set(top_q[:10])) / 10.0
         ov50 = len(sf & sq) / float(kk)
         tau = _kendall_tau_union(list(top_f), list(top_q))
         judged = judge.get(q[:80], {})
-        judged_in_pool = {w: g for w, g in judged.items() if w in wid_set}
-        # NDCG is meaningful only where judged docs actually compete in the pool;
-        # the f32-vs-quant DELTA is the parity signal.
-        ndcg_f = _ndcg_at_k(list(top_f), judged_in_pool, 10)
-        ndcg_q = _ndcg_at_k(list(top_q), judged_in_pool, 10)
+        if args.live_qdrant:
+            # In live mode the competition universe is the union (live f32 ∪ pool),
+            # not just the spool pool — so judged docs the live index surfaced but
+            # that were never in the pool still count toward the head-to-head NDCG.
+            judged_in_comp = {w: g for w, g in judged.items()
+                              if w in sf or w in sq}
+        else:
+            judged_in_comp = {w: g for w, g in judged.items() if w in wid_set}
+        # NDCG is meaningful only where judged docs actually compete; the
+        # f32-vs-quant DELTA is the parity signal.
+        ndcg_f = _ndcg_at_k(list(top_f), judged_in_comp, 10)
+        ndcg_q = _ndcg_at_k(list(top_q), judged_in_comp, 10)
         per_q.append({
             "query": q[:80], "overlap@10": ov10, "overlap@50": ov50,
             "kendall_tau": tau, "ndcg@10_f32": ndcg_f, "ndcg@10_quant": ndcg_q,
-            "n_judged": len(judged), "n_judged_in_pool": len(judged_in_pool),
+            "n_judged": len(judged), "n_judged_in_pool": len(judged_in_comp),
         })
 
     def _mean(key, sub=per_q):
@@ -284,7 +402,44 @@ def main():
     }
     if summary["mean_ndcg@10_f32"] is not None:
         summary["ndcg_delta_f32_minus_quant"] = summary["mean_ndcg@10_f32"] - summary["mean_ndcg@10_quant"]
-    out = {"config": vars(args), "summary": summary, "per_query": per_q}
+    # Gate (PLAN.md Workstream B1): overlap@10>=0.98, Kendall-τ>=0.97, |NDCGΔ|<=0.005
+    gate = {
+        "overlap@10": summary["mean_overlap@10"],
+        "kendall_tau": summary["mean_kendall_tau"],
+        "ndcg_delta": summary.get("ndcg_delta_f32_minus_quant"),
+        "thresholds": {"overlap@10_min": 0.98, "kendall_tau_min": 0.97,
+                       "ndcg_abs_delta_max": 0.005},
+    }
+    def _ge(v, thr): return v is not None and v >= thr
+    def _le_abs(v, thr): return v is not None and abs(v) <= thr
+    gate["pass"] = bool(
+        _ge(summary["mean_overlap@10"], 0.98)
+        and _ge(summary["mean_kendall_tau"], 0.97)
+        and _le_abs(summary.get("ndcg_delta_f32_minus_quant"), 0.005))
+    summary["gate"] = gate
+    import datetime as _dt
+    import subprocess as _sp
+    try:
+        git_commit = _sp.run(["git", "rev-parse", "--short", "HEAD"],
+                             capture_output=True, text=True,
+                             cwd=str(REPO_ROOT)).stdout.strip()
+    except Exception:
+        git_commit = None
+    # Provenance per the metrics-cataloging procedure (PLAN.md §"Cataloging").
+    provenance = {
+        "metric": "bmp_vs_qdrant_quant_fidelity",
+        "backend": "qdrant-live" if args.live_qdrant else "qdrant-f32-inmemory",
+        "scale": ("150m-live" if args.live_qdrant else "%d-pool" % len(wids)),
+        "corpus_size": live_pts if args.live_qdrant else int(len(wids)),
+        "query_set": "data/eval_results/diverse_queries.json (%d paraphrases)" % len(per_q),
+        "eval_script": "scripts/eval_quant_fidelity.py",
+        "judge": "data/eval_results/llm_judge_cache.json (reused, no re-judge)",
+        "baseline_ref": "data/eval_results/quant_fidelity_30mscan.json",
+        "git_commit": git_commit,
+        "timestamp": _dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    out = {"config": vars(args), "provenance": provenance,
+           "summary": summary, "per_query": per_q}
     Path(args.output).write_text(json.dumps(out, indent=2))
 
     logger.info("=" * 64)

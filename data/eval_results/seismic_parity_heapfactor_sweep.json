@@ -1,0 +1,12 @@
+{
+  "meta": {"engine": "seismic-pyseismic-lsr-0.5.0", "built_utc": "2026-06-26",
+           "purpose": "R-PARAM separation: is G2 overlap@10 0.479 due to heap_factor (query-time prune) or static index-time pruning?",
+           "method": "6-common queries, heap_factor ∈ {0.8, 0.5, 0.0} on the SAME 2M med_bio index, Qdrant scoped the same way"},
+  "results": [
+    {"heap_factor": 0.8, "overlap@10": 0.517},
+    {"heap_factor": 0.5, "overlap@10": 0.517},
+    {"heap_factor": 0.0, "overlap@10": 0.517}
+  ],
+  "finding": "overlap@10 is IDENTICAL (0.517) across heap_factor ∈ {0.8,0.5,0.0}. The query-time heap prune is NOT the cause. The gap survives heap_factor=0 (no heap pruning). Static INDEX-TIME pruning (n_postings=3500, max_fraction=1.5) + summary-vector approximation are the cause — these are build params, not query params. Overlap bar 0.95 is unreachable at best_configs without rebuild.",
+  "implication": "G2 FAIL is NOT R-PARM-tunable at query time; recovering near-Qdrant overlap requires an index-time param sweep (n_postings ↑, max_fraction ↑) — a rebuild per param point. Since heap_factor=0 already loses, SEISMIC's default approximate index is structurally below Qdrant-pure for our queries."
+}

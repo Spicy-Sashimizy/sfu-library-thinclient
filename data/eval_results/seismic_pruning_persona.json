@@ -1,0 +1,479 @@
+{
+  "meta": {
+    "engine": "seismic-instrumented-fork",
+    "mode": "instrumented (direct candidates_scored)",
+    "built_utc": "2026-06-26",
+    "params": {
+      "heap_factor": 0.8,
+      "query_cut": null,
+      "top_k": 50,
+      "n_queries": 34
+    },
+    "purpose": "G4: pruning sub-linearity \u2014 candidates_scored/corpus must FALL as corpus grows (BMP failed at ~0.95 stable = linear)"
+  },
+  "small_corpus": {
+    "label": "small(0.93M)",
+    "corpus": 929000,
+    "dim": 27463,
+    "n_queries": 34,
+    "n_candidates": {
+      "p50": 11660,
+      "p95": 17488,
+      "max": 18438
+    },
+    "ratio_scored_per_corpus": {
+      "p50": 0.01,
+      "p95": 0.02,
+      "max": 0.0198
+    },
+    "lat_ms": {
+      "p50": 13.93,
+      "p95": 18.71
+    },
+    "rows": [
+      {
+        "query": "indigenous language revitalization First Nations British Columbia",
+        "n_candidates": 7990,
+        "lat_ms": 8.86,
+        "ratio": 0.0086
+      },
+      {
+        "query": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+        "n_candidates": 11288,
+        "lat_ms": 11.27,
+        "ratio": 0.0122
+      },
+      {
+        "query": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+        "n_candidates": 10496,
+        "lat_ms": 13.93,
+        "ratio": 0.0113
+      },
+      {
+        "query": "residential school trauma intergenerational effects Indigenous communities",
+        "n_candidates": 13499,
+        "lat_ms": 14.97,
+        "ratio": 0.0145
+      },
+      {
+        "query": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+        "n_candidates": 17488,
+        "lat_ms": 17.31,
+        "ratio": 0.0188
+      },
+      {
+        "query": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+        "n_candidates": 16608,
+        "lat_ms": 20.26,
+        "ratio": 0.0179
+      },
+      {
+        "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+        "n_candidates": 14340,
+        "lat_ms": 16.17,
+        "ratio": 0.0154
+      },
+      {
+        "query": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+        "n_candidates": 14263,
+        "lat_ms": 15.66,
+        "ratio": 0.0154
+      },
+      {
+        "query": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+        "n_candidates": 12974,
+        "lat_ms": 11.22,
+        "ratio": 0.014
+      },
+      {
+        "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+        "n_candidates": 8774,
+        "lat_ms": 9.03,
+        "ratio": 0.0094
+      },
+      {
+        "query": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+        "n_candidates": 12579,
+        "lat_ms": 10.77,
+        "ratio": 0.0135
+      },
+      {
+        "query": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+        "n_candidates": 14054,
+        "lat_ms": 15.48,
+        "ratio": 0.0151
+      },
+      {
+        "query": "housing affordability crisis Metro Vancouver rental market",
+        "n_candidates": 11165,
+        "lat_ms": 14.16,
+        "ratio": 0.012
+      },
+      {
+        "query": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+        "n_candidates": 18438,
+        "lat_ms": 17.18,
+        "ratio": 0.0198
+      },
+      {
+        "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+        "n_candidates": 10693,
+        "lat_ms": 13.69,
+        "ratio": 0.0115
+      },
+      {
+        "query": "Canadian immigration settlement services multicultural policy",
+        "n_candidates": 9107,
+        "lat_ms": 9.46,
+        "ratio": 0.0098
+      },
+      {
+        "query": "How do Canadian settlement services for immigrants align with and reflect multicultural policy objectives?",
+        "n_candidates": 13236,
+        "lat_ms": 15.54,
+        "ratio": 0.0142
+      },
+      {
+        "query": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+        "n_candidates": 10178,
+        "lat_ms": 13.81,
+        "ratio": 0.011
+      },
+      {
+        "query": "BC provincial politics electoral reform referendum",
+        "n_candidates": 5540,
+        "lat_ms": 7.15,
+        "ratio": 0.006
+      },
+      {
+        "query": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+        "n_candidates": 4583,
+        "lat_ms": 5.59,
+        "ratio": 0.0049
+      },
+      {
+        "query": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+        "n_candidates": 10501,
+        "lat_ms": 13.91,
+        "ratio": 0.0113
+      },
+      {
+        "query": "Chinese Canadian discrimination exclusion act immigration history",
+        "n_candidates": 12130,
+        "lat_ms": 10.99,
+        "ratio": 0.0131
+      },
+      {
+        "query": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+        "n_candidates": 16985,
+        "lat_ms": 18.71,
+        "ratio": 0.0183
+      },
+      {
+        "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Canadian settlement and community experiences?",
+        "n_candidates": 11660,
+        "lat_ms": 10.28,
+        "ratio": 0.0126
+      },
+      {
+        "query": "restorative justice alternatives incarceration recidivism reduction",
+        "n_candidates": 11134,
+        "lat_ms": 14.25,
+        "ratio": 0.012
+      },
+      {
+        "query": "How effective are restorative justice programs as alternatives to incarceration in reducing recidivism?",
+        "n_candidates": 16461,
+        "lat_ms": 16.13,
+        "ratio": 0.0177
+      },
+      {
+        "query": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+        "n_candidates": 9879,
+        "lat_ms": 9.57,
+        "ratio": 0.0106
+      },
+      {
+        "query": "police use of force racial profiling Black Indigenous communities Canada",
+        "n_candidates": 11035,
+        "lat_ms": 12.32,
+        "ratio": 0.0119
+      },
+      {
+        "query": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+        "n_candidates": 11345,
+        "lat_ms": 15.25,
+        "ratio": 0.0122
+      },
+      {
+        "query": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+        "n_candidates": 9340,
+        "lat_ms": 9.02,
+        "ratio": 0.0101
+      },
+      {
+        "query": "cybercrime financial fraud digital forensics investigation",
+        "n_candidates": 11999,
+        "lat_ms": 14.87,
+        "ratio": 0.0129
+      },
+      {
+        "query": "How do investigators use digital forensics techniques to detect and prosecute financial fraud in cybercrime cases?",
+        "n_candidates": 12017,
+        "lat_ms": 14.31,
+        "ratio": 0.0129
+      },
+      {
+        "query": "What investigative methods and digital forensics approaches are most effective for identifying perpetrators of financial fraud committed through cybercrimes?",
+        "n_candidates": 16448,
+        "lat_ms": 16.35,
+        "ratio": 0.0177
+      },
+      {
+        "query": "prison population mental health services rehabilitation programs",
+        "n_candidates": 4647,
+        "lat_ms": 7.25,
+        "ratio": 0.005
+      }
+    ]
+  },
+  "large_corpus": {
+    "label": "large(2.0M)",
+    "corpus": 2000000,
+    "dim": 27896,
+    "n_queries": 34,
+    "n_candidates": {
+      "p50": 12108,
+      "p95": 17512,
+      "max": 18387
+    },
+    "ratio_scored_per_corpus": {
+      "p50": 0.01,
+      "p95": 0.01,
+      "max": 0.0092
+    },
+    "lat_ms": {
+      "p50": 14.56,
+      "p95": 17.27
+    },
+    "rows": [
+      {
+        "query": "indigenous language revitalization First Nations British Columbia",
+        "n_candidates": 8980,
+        "lat_ms": 9.63,
+        "ratio": 0.0045
+      },
+      {
+        "query": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+        "n_candidates": 13065,
+        "lat_ms": 11.07,
+        "ratio": 0.0065
+      },
+      {
+        "query": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+        "n_candidates": 11713,
+        "lat_ms": 14.44,
+        "ratio": 0.0059
+      },
+      {
+        "query": "residential school trauma intergenerational effects Indigenous communities",
+        "n_candidates": 12825,
+        "lat_ms": 14.98,
+        "ratio": 0.0064
+      },
+      {
+        "query": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+        "n_candidates": 16071,
+        "lat_ms": 16.01,
+        "ratio": 0.008
+      },
+      {
+        "query": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+        "n_candidates": 17512,
+        "lat_ms": 20.88,
+        "ratio": 0.0088
+      },
+      {
+        "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+        "n_candidates": 15286,
+        "lat_ms": 16.06,
+        "ratio": 0.0076
+      },
+      {
+        "query": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+        "n_candidates": 16129,
+        "lat_ms": 16.55,
+        "ratio": 0.0081
+      },
+      {
+        "query": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+        "n_candidates": 13084,
+        "lat_ms": 15.74,
+        "ratio": 0.0065
+      },
+      {
+        "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+        "n_candidates": 9585,
+        "lat_ms": 13.73,
+        "ratio": 0.0048
+      },
+      {
+        "query": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+        "n_candidates": 12958,
+        "lat_ms": 14.86,
+        "ratio": 0.0065
+      },
+      {
+        "query": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+        "n_candidates": 14285,
+        "lat_ms": 17.27,
+        "ratio": 0.0071
+      },
+      {
+        "query": "housing affordability crisis Metro Vancouver rental market",
+        "n_candidates": 12590,
+        "lat_ms": 14.48,
+        "ratio": 0.0063
+      },
+      {
+        "query": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+        "n_candidates": 15925,
+        "lat_ms": 15.97,
+        "ratio": 0.008
+      },
+      {
+        "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+        "n_candidates": 8318,
+        "lat_ms": 12.52,
+        "ratio": 0.0042
+      },
+      {
+        "query": "Canadian immigration settlement services multicultural policy",
+        "n_candidates": 8559,
+        "lat_ms": 14.01,
+        "ratio": 0.0043
+      },
+      {
+        "query": "How do Canadian settlement services for immigrants align with and reflect multicultural policy objectives?",
+        "n_candidates": 10912,
+        "lat_ms": 15.1,
+        "ratio": 0.0055
+      },
+      {
+        "query": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+        "n_candidates": 10654,
+        "lat_ms": 10.01,
+        "ratio": 0.0053
+      },
+      {
+        "query": "BC provincial politics electoral reform referendum",
+        "n_candidates": 6966,
+        "lat_ms": 7.61,
+        "ratio": 0.0035
+      },
+      {
+        "query": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+        "n_candidates": 4356,
+        "lat_ms": 6.9,
+        "ratio": 0.0022
+      },
+      {
+        "query": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+        "n_candidates": 8748,
+        "lat_ms": 8.93,
+        "ratio": 0.0044
+      },
+      {
+        "query": "Chinese Canadian discrimination exclusion act immigration history",
+        "n_candidates": 9947,
+        "lat_ms": 9.52,
+        "ratio": 0.005
+      },
+      {
+        "query": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+        "n_candidates": 18387,
+        "lat_ms": 16.49,
+        "ratio": 0.0092
+      },
+      {
+        "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Canadian settlement and community experiences?",
+        "n_candidates": 11015,
+        "lat_ms": 14.3,
+        "ratio": 0.0055
+      },
+      {
+        "query": "restorative justice alternatives incarceration recidivism reduction",
+        "n_candidates": 12108,
+        "lat_ms": 14.79,
+        "ratio": 0.0061
+      },
+      {
+        "query": "How effective are restorative justice programs as alternatives to incarceration in reducing recidivism?",
+        "n_candidates": 15488,
+        "lat_ms": 16.17,
+        "ratio": 0.0077
+      },
+      {
+        "query": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+        "n_candidates": 10499,
+        "lat_ms": 14.34,
+        "ratio": 0.0052
+      },
+      {
+        "query": "police use of force racial profiling Black Indigenous communities Canada",
+        "n_candidates": 12218,
+        "lat_ms": 14.59,
+        "ratio": 0.0061
+      },
+      {
+        "query": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+        "n_candidates": 11160,
+        "lat_ms": 10.84,
+        "ratio": 0.0056
+      },
+      {
+        "query": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+        "n_candidates": 10590,
+        "lat_ms": 9.89,
+        "ratio": 0.0053
+      },
+      {
+        "query": "cybercrime financial fraud digital forensics investigation",
+        "n_candidates": 11041,
+        "lat_ms": 14.56,
+        "ratio": 0.0055
+      },
+      {
+        "query": "How do investigators use digital forensics techniques to detect and prosecute financial fraud in cybercrime cases?",
+        "n_candidates": 12605,
+        "lat_ms": 15.58,
+        "ratio": 0.0063
+      },
+      {
+        "query": "What investigative methods and digital forensics approaches are most effective for identifying perpetrators of financial fraud committed through cybercrimes?",
+        "n_candidates": 15981,
+        "lat_ms": 16.6,
+        "ratio": 0.008
+      },
+      {
+        "query": "prison population mental health services rehabilitation programs",
+        "n_candidates": 4448,
+        "lat_ms": 7.28,
+        "ratio": 0.0022
+      }
+    ]
+  },
+  "g4_verdict": "PASS \u2014 sub-linear (worst-query ratio 0.0198\u21920.0092 as corpus grew 2.15\u00d7; candidates_scored grew slower than corpus \u2014 the pruning that failed for BMP at ~0.95 stable works here)",
+  "evidence": {
+    "small_ratio_max": 0.0198,
+    "large_ratio_max": 0.0092,
+    "delta": -0.0106,
+    "small_corpus": 929000,
+    "large_corpus": 2000000,
+    "corpus_growth": 2.15,
+    "relative_ratio_drop": 0.5354,
+    "linearity_probe": "same queries, two corpus sizes; ratio const & high => linear (BMP ~0.95 pattern)",
+    "bmp_failure_ref": "BMP ratio stayed ~0.95 stable as corpus grew (linear) \u2014 SEISMIC here falls",
+    "150M_projection": "if linear, scoring ~const-fraction of all blocks/query at 150M (BMP projected ~557K block-scores/q at 150M). SEISMIC fell here, so 150M block-docs/q should grow < linearly."
+  }
+}

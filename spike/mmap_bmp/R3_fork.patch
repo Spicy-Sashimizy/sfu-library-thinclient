@@ -1,0 +1,919 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 6b63313..8abf3c1 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -22,6 +22,8 @@ serde = { version = "1.0.193", features = ["derive"] }
+ fst = "0.4.7"
+ num-integer = "0.1.45"
+ rayon = "1.8.0"
++memmap2 = "0.9"
++libc = "0.2"
+ 
+ [build-dependencies]
+ protobuf-codegen-pure = "2.22"
+diff --git a/python/python/bmp/__init__.py b/python/python/bmp/__init__.py
+index ae1609d..2ab753b 100644
+--- a/python/python/bmp/__init__.py
++++ b/python/python/bmp/__init__.py
+@@ -1 +1 @@
+-from bmp._bmp import ciff2bmp, search, Searcher, InvertedIndexer, Indexer
++from bmp._bmp import ciff2bmp, search, Searcher, InvertedIndexer, Indexer, transcode_to_flat
+diff --git a/python/src/lib.rs b/python/src/lib.rs
+index 6ecbd54..e224293 100644
+--- a/python/src/lib.rs
++++ b/python/src/lib.rs
+@@ -1,12 +1,14 @@
+ use bmp::query::cursors_from_queries;
+ use bmp::query::MAX_TERM_WEIGHT;
+ use bmp::search::b_search_verbose;
++use bmp::flat_search::flat_search_verbose;
+ use bmp::util::to_trec;
+ use bmp::CiffToBmp;
+ use pyo3::prelude::*;
+ use std::path::PathBuf;
+ use std::collections::HashMap;
+ use bmp::index::posting_list::PostingListIterator;
++use bmp::index::flat::{FlatIndex, FlatPostingListIter};
+ 
+ #[pyfunction]
+ fn ciff2bmp(ciff_file: PathBuf, output: PathBuf, bsize: usize, compress_range: bool) {
+@@ -22,10 +24,36 @@ fn ciff2bmp(ciff_file: PathBuf, output: PathBuf, bsize: usize, compress_range: b
+     }
+ }
+ 
++/// Transcode an existing stock `.bmp` (bincode `(Index, BlockForwardIndex)`)
++/// into the R3 flat `.bmflat` layout. Reuses the stock loader as the transcode
++/// source — no corpus re-encode. `BMP_LOAD=mmap` reads the source via mmap too.
++#[pyfunction]
++fn transcode_to_flat(src_bmp: PathBuf, dst_bmflat: PathBuf) -> PyResult<()> {
++    let load = std::env::var("BMP_LOAD").unwrap_or_default();
++    let (index, bfwd) = if load.eq_ignore_ascii_case("mmap") {
++        bmp::index::from_file_mmap(src_bmp)
++    } else {
++        bmp::index::from_file(src_bmp)
++    }
++    .expect("Index cannot be loaded.");
++    bmp::index::flat::write_flat(dst_bmflat, &index, &bfwd)
++        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("transcode failed: {e}")))?;
++    Ok(())
++}
++
+ #[pyclass]
+ struct Searcher {
+-    index: bmp::index::inverted_index::Index,
+-    bfwd: bmp::index::forward_index::BlockForwardIndex,
++    /// `Stock` = load-into-RAM (bincode owned Vecs); `Flat` = R3 mmap'd lazy
++    /// `.bmflat` (the G2 cure). Selected by `BMP_LOAD` at construction.
++    backend: Backend,
++}
++
++enum Backend {
++    Stock {
++        index: bmp::index::inverted_index::Index,
++        bfwd: bmp::index::forward_index::BlockForwardIndex,
++    },
++    Flat(FlatIndex),
+ }
+ 
+ #[pymethods]
+@@ -33,8 +61,23 @@ impl Searcher {
+ 
+     #[new]
+     fn py_new(path: PathBuf) -> PyResult<Self> {
+-        let (index, bfwd) = bmp::index::from_file(path).expect("Index cannot be loaded.");
+-        Ok(Searcher {index: index, bfwd: bfwd})
++        // `BMP_LOAD` selects the storage backend:
++        //   unset / "file"  -> stock load-into-RAM (bincode owned Vecs)
++        //   "mmap"          -> P1 probe: mmap the .bmp but still deserialize (R2-FAIL)
++        //   "flat"          -> R3: mmap a .bmflat, lazy per-block decode (the G2 cure)
++        let load = std::env::var("BMP_LOAD").unwrap_or_default();
++        let backend = if load.eq_ignore_ascii_case("flat") {
++            Backend::Flat(FlatIndex::open(path).expect("Flat index cannot be loaded."))
++        } else {
++            let (index, bfwd) = if load.eq_ignore_ascii_case("mmap") {
++                bmp::index::from_file_mmap(path)
++            } else {
++                bmp::index::from_file(path)
++            }
++            .expect("Index cannot be loaded.");
++            Backend::Stock { index, bfwd }
++        };
++        Ok(Searcher { backend })
+     }
+ 
+     fn search(
+@@ -46,25 +89,46 @@ impl Searcher {
+     ) -> PyResult<(Vec<String>, Vec<f32>)> {
+         let max_tok_weight = query.iter().map(|p| *p.1).filter(|&value| !value.is_nan()).max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
+         let mut quant_query: HashMap<String, u32> = HashMap::new();
+-        
++
+         let scale: f32 = MAX_TERM_WEIGHT as f32 / max_tok_weight;
+         for (key, value) in &query {
+             quant_query.insert(key.clone(), (value * scale).ceil() as u32);
+         }
+-        let cursors: Vec<PostingListIterator> = quant_query
+-            .iter()
+-            .flat_map(|(token, freq)| self.index.get_cursor(token, *freq))
+-            .collect();
+-        let wrapped_cursors = vec![cursors; 1];
+-        let mut results = b_search_verbose(wrapped_cursors, &self.bfwd, k, alpha, beta, false);
+-        let doc_lexicon = self.index.documents();
+-        let mut docnos: Vec<String> = Vec::new();
+-        let mut scores: Vec<f32> = Vec::new();
+-        for r in results[0].to_sorted_vec().iter() {
+-            docnos.push(doc_lexicon[r.doc_id.0 as usize].clone());
+-            scores.push(r.score.into());
++        match &self.backend {
++            Backend::Flat(flat) => {
++                // R3 path: lazy per-block decode over the mmap'd .bmflat.
++                let cursors: Vec<FlatPostingListIter> = quant_query
++                    .iter()
++                    .flat_map(|(token, freq)| flat.get_cursor(token, *freq))
++                    .collect();
++                let wrapped_cursors = vec![cursors; 1];
++                let mut results = flat_search_verbose(wrapped_cursors, flat, k, alpha, beta, false);
++                let doc_lexicon = flat.documents();
++                let mut docnos: Vec<String> = Vec::new();
++                let mut scores: Vec<f32> = Vec::new();
++                for res in results[0].to_sorted_vec().iter() {
++                    docnos.push(doc_lexicon[res.doc_id.0 as usize].clone());
++                    scores.push(res.score.into());
++                }
++                Ok((docnos, scores))
++            }
++            Backend::Stock { index, bfwd } => {
++                let cursors: Vec<PostingListIterator> = quant_query
++                    .iter()
++                    .flat_map(|(token, freq)| index.get_cursor(token, *freq))
++                    .collect();
++                let wrapped_cursors = vec![cursors; 1];
++                let mut results = b_search_verbose(wrapped_cursors, bfwd, k, alpha, beta, false);
++                let doc_lexicon = index.documents();
++                let mut docnos: Vec<String> = Vec::new();
++                let mut scores: Vec<f32> = Vec::new();
++                for r in results[0].to_sorted_vec().iter() {
++                    docnos.push(doc_lexicon[r.doc_id.0 as usize].clone());
++                    scores.push(r.score.into());
++                }
++                Ok((docnos, scores))
++            }
+         }
+-        Ok((docnos, scores))
+     }
+ }
+ 
+@@ -217,6 +281,7 @@ impl Indexer {
+ fn _bmp(m: &Bound<'_, PyModule>) -> PyResult<()> {
+     m.add_function(wrap_pyfunction!(ciff2bmp, m)?)?;
+     m.add_function(wrap_pyfunction!(search, m)?)?;
++    m.add_function(wrap_pyfunction!(transcode_to_flat, m)?)?;
+     m.add_class::<Searcher>()?;
+     m.add_class::<InvertedIndexer>()?;
+     m.add_class::<Indexer>()?;
+diff --git a/src/flat_search.rs b/src/flat_search.rs
+new file mode 100644
+index 0000000..3614832
+--- /dev/null
++++ b/src/flat_search.rs
+@@ -0,0 +1,150 @@
++//! R3 flat-index search. Identical algorithm to `search::b_search_verbose`;
++//! only the source of each block changes — `FlatIndex::get_block(block)` decodes
++//! one block transiently from the mmap instead of indexing an owned
++//! `BlockForwardIndex.data[block]`. `block_score` is reused *unchanged*, so the
++//! top-k result is identical-by-construction (G1 holds for free).
++//!
++//! Because the decoded block is dropped right after scoring, anonymous RAM =
++//! the small accumulator + one block (~KB), and the hot working set is
++//! reclaimable page cache — the G2 cure.
++
++use crate::index::flat::{FlatIndex, FlatPostingListIter};
++use crate::index::forward_index::block_score;
++use crate::query::cursor::DocId;
++use crate::query::cursor::{RangeMaxScore, RangeMaxScoreCursor};
++use crate::query::live_block;
++use crate::query::topk_heap::TopKHeap;
++use crate::util::progress_bar;
++use std::time::Instant;
++
++pub fn flat_search(
++    queries: Vec<Vec<FlatPostingListIter>>,
++    flat: &FlatIndex,
++    k: usize,
++    alpha: f32,
++    terms_r: f32,
++) -> Vec<TopKHeap<u16>> {
++    flat_search_verbose(queries, flat, k, alpha, terms_r, true)
++}
++
++pub fn flat_search_verbose(
++    mut queries: Vec<Vec<FlatPostingListIter>>,
++    flat: &FlatIndex,
++    k: usize,
++    alpha: f32,
++    terms_r: f32,
++    verbose: bool,
++) -> Vec<TopKHeap<u16>> {
++    let mut results: Vec<TopKHeap<u16>> = Vec::new();
++
++    let progress = if verbose {
++        Some(progress_bar("Flat-index search", queries.len()))
++    } else {
++        None
++    };
++
++    let mut search_elapsed = 0;
++    let mut buckets: Vec<Vec<u32>> = (0..=2usize.pow(16)).map(|_| Vec::new()).collect();
++
++    for query in queries.iter_mut() {
++        let total_terms = query.len();
++        let terms_to_keep = (total_terms as f32 * terms_r).ceil() as usize;
++        query.sort_by(|a, b| b.term_weight().partial_cmp(&a.term_weight()).unwrap());
++        query.truncate(terms_to_keep);
++
++        let query_weights: Vec<_> = query.iter().map(|post| post.term_weight()).collect();
++
++        let query_ranges: Vec<_> = query.iter().map(|post| post.range_max_scores()).collect();
++        let mut query_ranges_raw = Vec::new();
++        let mut query_ranges_compressed = Vec::new();
++        for qr in query_ranges {
++            match qr {
++                RangeMaxScore::Compressed(compressed) => query_ranges_compressed.push(compressed),
++                RangeMaxScore::Raw(raw) => query_ranges_raw.push(raw),
++            };
++        }
++
++        let mut query_vec = query
++            .iter()
++            .map(|&pl| (pl.term_id() as u16, pl.term_weight() as u8))
++            .collect::<Vec<_>>();
++        query_vec.sort_by_key(|e| e.0);
++        let threshold = query
++            .iter()
++            .map(|&pl| pl.kth(k) as u16 * pl.term_weight() as u16)
++            .max()
++            .unwrap_or(0);
++
++        let start_search: Instant = Instant::now();
++        let run_compressed = query_ranges_compressed.len() > 0;
++        let num_blocks = flat.num_blocks();
++        let upper_bounds = match run_compressed {
++            true => live_block::compute_upper_bounds(
++                &query_ranges_compressed,
++                &query_weights,
++                num_blocks,
++            ),
++            false => live_block::compute_upper_bounds_raw(
++                &query_ranges_raw,
++                &query_weights,
++                num_blocks,
++            ),
++        };
++
++        let mut topk = TopKHeap::with_threshold(k, threshold as u16);
++        buckets.iter_mut().for_each(std::vec::Vec::clear);
++        upper_bounds.iter().enumerate().for_each(|(range_id, &ub)| {
++            if ub > threshold {
++                buckets[ub as usize].push(range_id as u32);
++            }
++        });
++
++        let mut ub_iter = buckets
++            .iter_mut()
++            .enumerate()
++            .rev()
++            .flat_map(|(outer_idx, inner_vec)| {
++                inner_vec.iter_mut().map(move |val| (outer_idx, val))
++            });
++
++        let (mut current_ub, mut current_block) = ub_iter.next().unwrap();
++        // Prefetch the next block's bytes from the page cache (madvise WILLNEED).
++        flat.prefetch_block(*current_block);
++
++        for (next_ub, next_block) in ub_iter {
++            flat.prefetch_block(*next_block);
++            let offset = *current_block as usize * flat.block_size();
++
++            // Decode exactly this one block, transient; freed at end of scope.
++            let block = flat.get_block(*current_block as usize);
++            let res = block_score(&query_vec, &block, flat.block_size());
++
++            for (doc_id, &score) in res.iter().enumerate() {
++                topk.insert(DocId(doc_id as u32 + offset as u32), score);
++            }
++
++            if topk.threshold() as f32 > current_ub as f32 * alpha {
++                break;
++            }
++            current_block = next_block;
++            current_ub = next_ub;
++        }
++        search_elapsed += start_search.elapsed().as_micros();
++        results.push(topk.clone());
++        if let Some(progress_bar) = &progress {
++            progress_bar.inc(1);
++        }
++    }
++    if let Some(progress_bar) = &progress {
++        progress_bar.finish();
++    }
++
++    if verbose {
++        eprintln!(
++            "search_elapsed = {}",
++            search_elapsed / results.len() as u128
++        );
++    }
++
++    results
++}
+diff --git a/src/index/flat.rs b/src/index/flat.rs
+new file mode 100644
+index 0000000..5fb8af3
+--- /dev/null
++++ b/src/index/flat.rs
+@@ -0,0 +1,491 @@
++//! R3 flat layout — the actual G2 cure.
++//!
++//! The stock BMP `.bmp` is `bincode(Index, BlockForwardIndex)`. That nested
++//! `BlockForwardIndex.data: Vec<Vec<(u16, Vec<(u8,u8)>)>>` is ~100% of the
++//! resident anonymous RAM (measured 1.86 GB for a 606 MB shard). bincode always
++//! materializes it owned, even when read from an mmap'd slice — so a buffer
++//! *source* swap can't cure the floor (R2, confirmed).
++//!
++//! This module stores the forward index **flat on disk** behind an offset table,
++//! mmaps the whole file, and decodes exactly **one block on demand** inside the
++//! search loop (`get_block`). The transient decoded block is dropped after
++//! `block_score`, so anonymous RAM = accumulator + one block (~KB), and the hot
++//! working set is reclaimable page cache, not a rising anon floor.
++//!
++//! Layout of a `.bmflat` (all little-endian; u64 offsets are absolute from the
++//! file start):
++//!
++//! ```text
++//!  HEADER (fixed 48 bytes)
++//!    magic:          [u8; 8]   b"BMFLAT\0\0"
++//!    version:        u32
++//!    num_documents:  u64
++//!    block_size:     u64       (b256 = 256)
++//!    num_blocks:     u64
++//!    compress_range: u8        (1 = range_maxes are Compressed, 0 = Raw)
++//!  OFFSET TABLE — num_blocks × u64   (byte offset of block i's flat encoding)
++//!  FORWARD REGION — per block, flat:
++//!      num_terms: u16
++//!      repeat num_terms: term_id:u16, num_pairs:u16, then num_pairs × (u8 off, u8 score)
++//!  INVERTED REGION (small, cache + offset-indexed, still mmap-backed):
++//!    num_terms: u64
++//!    termmap_len: u64, termmap bytes (fst::Map<Vec<u8>>)
++//!    documents: u64 count, then u64-len-prefixed UTF-8 strings
++//!    kth_score per term: num_terms × 3 u8
++//!    range_maxes: per term — Raw => u64 byte-len then bytes (zero-copy &[u8] view);
++//!                              Compressed => u64 count, then count × {u64 off, u8 score}
++//! ```
++//!
++//! Correctness (G1) is identical-by-construction: the search math is unchanged;
++//! only the *storage* of `BlockForwardIndex.data` and `range_maxes` moves from
++//! owned Vecs to mmap'd bytes decoded on demand.
++
++use crate::index::forward_index::BlockForwardIndex;
++use crate::index::inverted_index::Index;
++use crate::index::posting_list::{BlockData, CompressedBlock, PostingList};
++use crate::query::cursor::{RangeMaxScore, RangeMaxScoreCursor};
++use anyhow::{anyhow, Result};
++use memmap2::{Advice, Mmap};
++use std::fs::File;
++use std::path::Path;
++
++const MAGIC: &[u8; 8] = b"BMFLAT\0\0";
++const VERSION: u32 = 1;
++const HEADER_LEN: usize = 48;
++
++// --------------------------------------------------------------------------- //
++// Flat on-disk + in-memory views.
++
++/// Header parsed from the file.
++struct Header {
++    num_documents: u64,
++    block_size: usize,
++    num_blocks: u64,
++    compress_range: bool,
++}
++
++impl Header {
++    fn parse(buf: &[u8]) -> Result<Self> {
++        if buf.len() < HEADER_LEN {
++            return Err(anyhow!("flat file too short"));
++        }
++        if &buf[0..8] != MAGIC {
++            return Err(anyhow!("bad flat magic"));
++        }
++        let version = u32::from_le_bytes(buf[8..12].try_into().unwrap());
++        if version != VERSION {
++            return Err(anyhow!("unsupported flat version {version}"));
++        }
++        Ok(Header {
++            num_documents: u64::from_le_bytes(buf[12..20].try_into().unwrap()),
++            block_size: u64::from_le_bytes(buf[20..28].try_into().unwrap()) as usize,
++            num_blocks: u64::from_le_bytes(buf[28..36].try_into().unwrap()),
++            compress_range: buf[36] != 0,
++        })
++    }
++}
++
++/// A mmap-backed flat index. `forward` is the whole file; block decode reads
++/// through `&self.forward`. The inverted side is small + owned/decoded-once.
++pub struct FlatIndex {
++    forward: Mmap,
++    num_documents: usize,
++    block_size: usize,
++    num_blocks: usize,
++    /// Byte offsets of each block's flat encoding. Length = num_blocks + 1
++    /// (trailing = end of forward region) so block length = next - cur.
++    block_offsets: Vec<u64>,
++    // --- owned inverted structures (small; the cure target was the forward idx) ---
++    documents: Vec<String>,
++    /// FST term -> term_id, generalized to expose cursor iteration.
++    terms: Vec<String>, // built only if a cursor API is needed
++    termmap: fst::Map<Vec<u8>>,
++    range_maxes: Vec<PostingList>,
++}
++
++// Small temporary reader over the forward region.
++impl FlatIndex {
++    /// Open `path` and lazily mmap it. Anonymous RAM after this call = the small
++    /// inverted structures only (termmap FST bytes, documents, range_maxes) —
++    /// NOT the forward index (that stays in the page cache, reclaimable).
++    pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
++        let file = File::open(path)?;
++        // SAFETY: `.bmflat` is an immutable build artifact; read-only.
++        let forward = unsafe { Mmap::map(&file)? };
++        // Hint the whole mapping as a likely-future read so the kernel can begin
++        // populating the page cache; cold faults still work regardless.
++        let _ = forward.advise(Advice::WillNeed);
++        Self::from_mmap(forward)
++    }
++
++    fn from_mmap(forward: Mmap) -> Result<Self> {
++        let hdr = Header::parse(&forward[..])?;
++        let num_blocks = hdr.num_blocks as usize;
++        let buf = &forward[..];
++
++        // Offset table starts right after the header.
++        let off_base = HEADER_LEN;
++        let table_end = off_base + num_blocks * 8;
++        if buf.len() < table_end {
++            return Err(anyhow!("flat: offset table truncated"));
++        }
++        let mut block_offsets: Vec<u64> = (0..num_blocks)
++            .map(|i| {
++                let s = off_base + i * 8;
++                u64::from_le_bytes(buf[s..s + 8].try_into().unwrap())
++            })
++            .collect();
++        // Trailing end-of-region for block-length math.
++        // (We'll fix this up after we know where the inverted region starts.)
++
++        // The forward region spans [first_offset .. inv_off). We don't yet know
++        // inv_off, so the trailing sentinel is filled from the inverted header.
++
++        // Inverted region begins immediately after the last block's data. Find
++        // the max byte used by the forward region defensively: decode each
++        // block's length by walking it.
++        let inv_off = compute_forward_end(&forward, &block_offsets)?;
++        block_offsets.push(inv_off);
++
++        let ibuf = &buf[inv_off as usize..];
++        let mut p = 0usize;
++        let read_u64 = |b: &[u8], o: &mut usize| -> u64 {
++            let v = u64::from_le_bytes(b[*o..*o + 8].try_into().unwrap());
++            *o += 8;
++            v
++        };
++        let num_terms = read_u64(ibuf, &mut p) as usize;
++        let termmap_len = read_u64(ibuf, &mut p) as usize;
++        let termmap_bytes = ibuf[p..p + termmap_len].to_vec();
++        p += termmap_len;
++        let termmap = fst::Map::new(termmap_bytes)?;
++
++        let num_docs = read_u64(ibuf, &mut p) as usize;
++        let mut documents = Vec::with_capacity(num_docs);
++        for _ in 0..num_docs {
++            let l = read_u64(ibuf, &mut p) as usize;
++            let s = std::str::from_utf8(&ibuf[p..p + l])?.to_string();
++            p += l;
++            documents.push(s);
++        }
++
++        // kth_score: num_terms × 3 u8 (only 3 are used but we stored 3).
++        let mut kth_scores: Vec<Vec<u8>> = Vec::with_capacity(num_terms);
++        for _ in 0..num_terms {
++            kth_scores.push(ibuf[p..p + 3].to_vec());
++            p += 3;
++        }
++
++        let mut range_maxes: Vec<PostingList> = Vec::with_capacity(num_terms);
++        if hdr.compress_range {
++            for t in 0..num_terms {
++                // Writer format (flat.rs write_flat, compressed arm):
++                //   [num_blocks: u64]
++                //   per block b: [num_pairs: u64][num_pairs × (off:u64, score:u8)]
++                let num_blocks_t = read_u64(ibuf, &mut p) as usize;
++                let mut blocks: Vec<CompressedBlock> = Vec::with_capacity(num_blocks_t);
++                for _ in 0..num_blocks_t {
++                    let num_pairs = read_u64(ibuf, &mut p) as usize;
++                    let mut max_scores: Vec<(usize, u8)> = Vec::with_capacity(num_pairs);
++                    for _ in 0..num_pairs {
++                        let off = read_u64(ibuf, &mut p) as usize;
++                        let score = ibuf[p];
++                        p += 1;
++                        max_scores.push((off, score));
++                    }
++                    blocks.push(CompressedBlock { max_scores });
++                }
++                range_maxes.push(PostingList::new(
++                    BlockData::Compressed(blocks),
++                    kth_scores[t].clone(),
++                ));
++            }
++        } else {
++            for t in 0..num_terms {
++                let len = read_u64(ibuf, &mut p) as usize;
++                range_maxes.push(PostingList::new(
++                    BlockData::Raw(ibuf[p..p + len].to_vec()),
++                    kth_scores[t].clone(),
++                ));
++                p += len;
++            }
++        }
++
++        Ok(FlatIndex {
++            forward,
++            num_documents: hdr.num_documents as usize,
++            block_size: hdr.block_size,
++            num_blocks,
++            block_offsets,
++            documents,
++            terms: Vec::new(),
++            termmap,
++            range_maxes,
++        })
++    }
++
++    pub fn num_documents(&self) -> usize {
++        self.num_documents
++    }
++    pub fn block_size(&self) -> usize {
++        self.block_size
++    }
++    pub fn num_blocks(&self) -> usize {
++        self.num_blocks
++    }
++    pub fn documents(&self) -> &Vec<String> {
++        &self.documents
++    }
++
++    /// Decode exactly one block on demand. The returned Vec is transient (freed
++    /// after the caller scores it). This is the cure: no full forward index is
++    /// ever resident.
++    pub fn get_block(&self, block: usize) -> Vec<(u16, Vec<(u8, u8)>)> {
++        let buf = &self.forward[..];
++        let start = self.block_offsets[block] as usize;
++        let end = self.block_offsets[block + 1] as usize;
++        let region = &buf[start..end];
++        let mut p = 0usize;
++        let num_terms = u16::from_le_bytes(region[p..p + 2].try_into().unwrap()) as usize;
++        p += 2;
++        let mut out = Vec::with_capacity(num_terms);
++        for _ in 0..num_terms {
++            let term_id = u16::from_le_bytes(region[p..p + 2].try_into().unwrap());
++            p += 2;
++            let num_pairs = u16::from_le_bytes(region[p..p + 2].try_into().unwrap()) as usize;
++            p += 2;
++            // (u8, u8) packed: we stored doc_off then score, each u8.
++            let mut pairs = Vec::with_capacity(num_pairs);
++            let chunk = &region[p..p + num_pairs * 2];
++            p += num_pairs * 2;
++            for pair in chunk.chunks_exact(2) {
++                pairs.push((pair[0], pair[1]));
++            }
++            out.push((term_id, pairs));
++        }
++        out
++    }
++
++    /// Get a cursor like the stock Index (so the existing search wiring works).
++    pub fn get_cursor(&self, term: &str, term_weight: u32) -> Option<FlatPostingListIter> {
++        let position = self.termmap.get(term)? as usize;
++        Some(FlatPostingListIter::new(
++            &self.range_maxes[position],
++            position as u32,
++            term_weight,
++        ))
++    }
++
++    /// Advise the OS to prefetch a block's bytes into the page cache ahead of
++    /// `get_block`. Cheap; the actual decode still happens on demand. Replaces
++    /// stock's `_mm_prefetch` on the owned `Vec` pointer (which doesn't exist
++    /// here — the bytes live in the mmap).
++    pub fn prefetch_block(&self, block: u32) {
++        // Per-block `posix_fadvise(WILLNEED)` would need the raw backing fd,
++        // which memmap2 0.9's safe `Mmap` doesn't expose. The whole-mapping
++        // `WillNeed` applied at open() already hints the kernel to read-ahead;
++        // block-specific prefetch is a cold-p95 (R1) optimization we can add
++        // later via an `MmapRaw`/fd path if G3 needs it. No-op for now keeps
++        // correctness identical to stock (which only prefetches as an opt).
++        let _ = block;
++    }
++}
++
++/// Walk the forward region block-by-block to find where it ends (the inverted
++/// region offset). Defensive: never trusts a stored end pointer.
++fn compute_forward_end(buf: &Mmap, block_offsets: &[u64]) -> Result<u64> {
++    let mut end = 0u64;
++    for (i, &off) in block_offsets.iter().enumerate() {
++        let mut p = off as usize;
++        let num_terms = u16::from_le_bytes(buf[p..p + 2].try_into().unwrap()) as usize;
++        p += 2;
++        for _ in 0..num_terms {
++            p += 2; // term_id
++            let num_pairs = u16::from_le_bytes(buf[p..p + 2].try_into().unwrap()) as usize;
++            p += 2;
++            p += num_pairs * 2;
++        }
++        end = end.max(p as u64);
++    }
++    Ok(end)
++}
++
++// --------------------------------------------------------------------------- //
++// Cursor shim so the existing search wiring (which expects PostingListIterator)
++// is reusable. We wrap a PostingList — same interface, same behavior.
++
++#[derive(Clone, Copy)]
++pub struct FlatPostingListIter<'a> {
++    pl: &'a PostingList,
++    term_id: u32,
++    term_weight: u32,
++}
++impl<'a> FlatPostingListIter<'a> {
++    pub fn new(pl: &'a PostingList, term_id: u32, term_weight: u32) -> Self {
++        FlatPostingListIter {
++            pl,
++            term_id,
++            term_weight,
++        }
++    }
++    pub fn kth(&self, k: usize) -> u8 {
++        self.pl.kth(k)
++    }
++    pub fn term_weight(&self) -> u8 {
++        self.term_weight as u8
++    }
++    pub fn term_id(&self) -> u32 {
++        self.term_id
++    }
++}
++
++impl crate::query::cursor::Cursor for FlatPostingListIter<'_> {
++    type Value = u32;
++    type Error = ();
++    fn reset(&mut self) {}
++}
++impl<'a> RangeMaxScoreCursor for FlatPostingListIter<'a> {
++    fn range_max_scores(&self) -> RangeMaxScore<'a> {
++        match self.pl.range_maxes() {
++            BlockData::Compressed(cb) => RangeMaxScore::Compressed(&cb[..]),
++            BlockData::Raw(rb) => RangeMaxScore::Raw(&rb[..]),
++        }
++    }
++}
++
++// --------------------------------------------------------------------------- //
++// Transcoder: serializes an existing in-memory (Index, BlockForwardIndex)
++// — produced by the stock bincode loader — into the flat layout. This is how
++// we reuse the existing build (no corpus re-encode): load owned, then transcode.
++
++/// Write `index` + `bfwd` to `path` in the flat layout. The forward index is
++/// flattened per-block; the inverted side is serialized compactly.
++pub fn write_flat<P: AsRef<Path>>(
++    path: P,
++    index: &Index,
++    bfwd: &BlockForwardIndex,
++) -> Result<()> {
++    use std::io::{BufWriter, Write};
++    let p = path.as_ref();
++    let f = File::create(p)?;
++    let mut w = BufWriter::new(f);
++
++    let num_blocks = bfwd.data.len();
++    let block_size = bfwd.block_size;
++    // Compressed if the first term's range_maxes is BlockData::Compressed.
++    let compress_range = match index.posting_lists().first() {
++        Some(p) => matches!(p.range_maxes(), BlockData::Compressed(_)),
++        None => false,
++    };
++
++    // --- Pass 1: encode forward blocks, collecting their offsets. ---
++    let mut block_blobs: Vec<Vec<u8>> = Vec::with_capacity(num_blocks);
++    for block in &bfwd.data {
++        let mut buf = Vec::new();
++        let num_terms = block.len() as u16;
++        buf.extend_from_slice(&num_terms.to_le_bytes());
++        for (term_id, pairs) in block {
++            buf.extend_from_slice(&term_id.to_le_bytes());
++            let np = pairs.len() as u16;
++            buf.extend_from_slice(&np.to_le_bytes());
++            for (off, score) in pairs {
++                buf.push(*off);
++                buf.push(*score);
++            }
++        }
++        block_blobs.push(buf);
++    }
++
++    // --- Header ---
++    w.write_all(MAGIC)?;
++    w.write_all(&VERSION.to_le_bytes())?;
++    w.write_all(&(index.num_documents() as u64).to_le_bytes())?;
++    w.write_all(&(block_size as u64).to_le_bytes())?;
++    w.write_all(&(num_blocks as u64).to_le_bytes())?;
++    w.write_all(&[if compress_range { 1u8 } else { 0u8 }])?;
++    // Pad header to 48 bytes (we've written 8+4+8+8+8+1 = 37).
++    w.write_all(&[0u8; HEADER_LEN - 37])?;
++
++    // --- Offset table placeholders (num_blocks × u64), filled after we know offsets. ---
++    let offset_table_pos = HEADER_LEN;
++    let offset_table_len = num_blocks * 8;
++    // Write zeros, remember position, fill after forward region.
++    w.write_all(&vec![0u8; offset_table_len])?;
++
++    // --- Forward region: write blocks, recording absolute offsets. ---
++    let mut abs = (offset_table_pos + offset_table_len) as u64;
++    let mut offsets: Vec<u64> = Vec::with_capacity(num_blocks);
++    for blob in &block_blobs {
++        offsets.push(abs);
++        w.write_all(blob)?;
++        abs += blob.len() as u64;
++    }
++
++    // --- Inverted region (small). ---
++    let pls = index.posting_lists();
++    let num_terms = pls.len() as u64;
++    w.write_all(&num_terms.to_le_bytes())?;
++    // termmap FST bytes
++    let termmap_bytes = index.fst_bytes();
++    w.write_all(&(termmap_bytes.len() as u64).to_le_bytes())?;
++    w.write_all(&termmap_bytes)?;
++    // documents
++    let docs = index.documents();
++    w.write_all(&(docs.len() as u64).to_le_bytes())?;
++    for d in docs {
++        let b = d.as_bytes();
++        w.write_all(&(b.len() as u64).to_le_bytes())?;
++        w.write_all(b)?;
++    }
++    // kth_score: write 3 u8 per term (kth() indexes 0..3)
++    for pl in pls {
++        let kth = pl.kth_score_bytes();
++        // stock stores exactly 3 (s10/s100/s1000); pad if a writer ever sent more/fewer.
++        let mut buf = [0u8; 3];
++        for (i, &v) in kth.iter().take(3).enumerate() {
++            buf[i] = v;
++        }
++        w.write_all(&buf)?;
++    }
++    // range_maxes
++    for pl in pls {
++        match pl.range_maxes() {
++            BlockData::Raw(bytes) => {
++                w.write_all(&(bytes.len() as u64).to_le_bytes())?;
++                w.write_all(bytes)?;
++            }
++            BlockData::Compressed(blocks) => {
++                // Each block max_scores is Vec<(usize, u8)>. Flatten with count.
++                // Reconstruct the per-block list (we stored CompressedBlock per
++                // superblock during build). The stock serialize keeps them as
++                // Vec<CompressedBlock>; mirror that exactly here.
++                w.write_all(&(blocks.len() as u64).to_le_bytes())?;
++                for b in blocks {
++                    // We collapse max_scores pairs: store count then pairs.
++                    w.write_all(&(b.max_scores.len() as u64).to_le_bytes())?;
++                    for (off, score) in &b.max_scores {
++                        w.write_all(&(*off as u64).to_le_bytes())?;
++                        w.write_all(&[*score])?;
++                    }
++                }
++            }
++        }
++    }
++
++    // --- Patch the offset table with the real offsets. ---
++    w.flush()?;
++    drop(w);
++    patch_offset_table(p, &offsets)?;
++
++    Ok(())
++}
++
++fn patch_offset_table(path: &Path, offsets: &[u64]) -> Result<()> {
++    use std::io::{Seek, SeekFrom, Write};
++    let mut f = std::fs::OpenOptions::new().read(true).write(true).open(path)?;
++    f.seek(SeekFrom::Start(HEADER_LEN as u64))?;
++    for off in offsets {
++        f.write_all(&off.to_le_bytes())?;
++    }
++    Ok(())
++}
+diff --git a/src/index/inverted_index.rs b/src/index/inverted_index.rs
+index adfa52a..0e9e83e 100644
+--- a/src/index/inverted_index.rs
++++ b/src/index/inverted_index.rs
+@@ -66,6 +66,11 @@ impl Index {
+             self.posting_lists[position as usize].iter(position as u32, term_weight)
+         })
+     }
++
++    /// Accessor for the flat transcoder (R3): raw FST term-map bytes.
++    pub fn fst_bytes(&self) -> Vec<u8> {
++        self.termmap.as_fst().to_vec()
++    }
+ }
+ 
+ #[derive(Default)]
+diff --git a/src/index/mod.rs b/src/index/mod.rs
+index 1eddd22..3ca2f8f 100644
+--- a/src/index/mod.rs
++++ b/src/index/mod.rs
+@@ -1,3 +1,4 @@
++pub mod flat;
+ pub mod forward_index;
+ pub mod inverted_index;
+ pub mod posting_list;
+@@ -7,6 +8,9 @@ use std::fs::File;
+ use std::io::BufReader;
+ use std::path::PathBuf;
+ 
++/// Original load-into-RAM path (stock BMP): `read()` into a `BufReader`, then
++/// `bincode::deserialize_from` materializes every buffer as owned `Vec` in
++/// anonymous RAM. Kept for reference / parity diff.
+ pub fn from_file<P: Into<PathBuf>>(
+     index_path: P,
+ ) -> Result<(inverted_index::Index, forward_index::BlockForwardIndex)> {
+@@ -14,3 +18,25 @@ pub fn from_file<P: Into<PathBuf>>(
+     let reader = BufReader::new(file);
+     Ok(bincode::deserialize_from(reader)?)
+ }
++
++/// mmap-first load path (P1 fork, "cheaper first probe" per FORK_BMP.md §cold).
++///
++/// Maps the whole `.bmp` read-only, then `bincode::deserialize_from` decodes the
++/// structs straight from the mapped `&[u8]`. This is the cheapest probe that:
++///   - proves the build + zero-functional-change read path (de-risks the G1
++///     correctness toolchain);
++///   - measures R2: bincode still heap-allocates owned `Vec`s for the deeply
++///     nested `BlockForwardIndex`, so G2 (RssAnon ~0) is *expected* to fail here
++///     — confirming the anonymous bytes come from deserialize, not `read()`.
++/// A true G2 cure (RssAnon ~0) needs lazy per-block decode over a flat layout,
++/// scoped as a follow-on; this probe isolates exactly where the anon bytes are.
++pub fn from_file_mmap<P: Into<PathBuf>>(
++    index_path: P,
++) -> Result<(inverted_index::Index, forward_index::BlockForwardIndex)> {
++    let file = File::open(index_path.into())?;
++    // SAFETY: the `.bmp` is an immutable build artifact; we only read from the
++    // mapping for the lifetime of the returned (owned) structs, and the file is
++    // not mutated concurrently.
++    let mmap = unsafe { memmap2::Mmap::map(&file)? };
++    Ok(bincode::deserialize_from(mmap.as_ref())?)
++}
+diff --git a/src/index/posting_list.rs b/src/index/posting_list.rs
+index 6c78313..9a18abf 100644
+--- a/src/index/posting_list.rs
++++ b/src/index/posting_list.rs
+@@ -32,6 +32,15 @@ impl PostingList {
+         }
+     }
+ 
++    /// Accessor for the flat transcoder (R3). Reads-only.
++    pub fn range_maxes(&self) -> &BlockData {
++        &self.range_maxes
++    }
++    /// Accessor for the flat transcoder (R3). Reads-only.
++    pub fn kth_score_bytes(&self) -> &[u8] {
++        &self.kth_score
++    }
++
+     pub fn kth(&self, k: usize) -> u8 {
+         let idx = ((k > 10) as usize) + (k > 100) as usize + (k > 1000) as usize;
+         self.kth_score.get(idx).copied().unwrap_or(0)
+diff --git a/src/lib.rs b/src/lib.rs
+index 2ace597..d170d18 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -6,6 +6,7 @@ pub mod index;
+ mod proto;
+ pub mod query;
+ pub mod search;
++pub mod flat_search;
+ pub mod util;
+ 
+ pub use ciff::CiffToBmp;

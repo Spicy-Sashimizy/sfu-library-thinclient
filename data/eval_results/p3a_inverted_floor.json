@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "engine": "immsparse-flat-persona-zerodecode",
+    "section": "med_bio",
+    "k": 50,
+    "built_utc": "2026-06-26",
+    "shards_loaded": 4,
+    "purpose": "P3a evidence: ledger row 4 (inverted-side anon floor at scale)"
+  },
+  "per_shard": [
+    {
+      "shard": "splade_000.bmflat",
+      "docs": 2000000,
+      "rssanon_gb": 0.6741,
+      "delta_gb": 0.6685
+    },
+    {
+      "shard": "splade_001.bmflat",
+      "docs": 928594,
+      "rssanon_gb": 0.9452,
+      "delta_gb": 0.2711
+    },
+    {
+      "shard": "splade_002.bmflat",
+      "docs": 2000000,
+      "rssanon_gb": 0.9682,
+      "delta_gb": 0.023
+    },
+    {
+      "shard": "splade_003.bmflat",
+      "docs": 929905,
+      "rssanon_gb": 0.9905,
+      "delta_gb": 0.0223
+    }
+  ],
+  "summary": {
+    "rssanon_after_all_loaded_gb": 0.9905,
+    "docs_loaded": 5858499,
+    "first_shard_delta_gb": 0.6685,
+    "first_shard_b_per_doc": 334.2,
+    "survives_gc": true,
+    "note_on_shared_termmap": "co-located shards share the termmap, so incremental deltas here UNDERcount the per-shard cost; the first-shard rate (~335 B/doc) matches the recorded 8.26 GB / 23.4M-docs = 353 B/doc",
+    "recorded_16shard_persona_ref_gb": 8.26,
+    "projected_16shard_persona_gb_first_rate": 7.82,
+    "projected_150m_gb_first_rate": 50.14
+  },
+  "row4_verdict": {
+    "claim": "inverted side .to_vec()'d -> anon scales linearly with corpus; forward-only cure leaves a rising floor",
+    "status": "CONFIRMED \u2014 anon rises ~linearly per-doc (~334 B/doc on a fresh shard, matching the recorded 353 B/doc), survives gc (resident, not cache). ~7.8 GB at 16-shard persona (ref 8.26) and ~50 GB at 150M \u2014 the forward-only cure does NOT beat Qdrant's 6.55 GB floor at target scale.",
+    "implication": "P3a (mmap the inverted side: documents + range_maxes/kth_scores) is mandatory, not optional, for the floor cure."
+  }
+}

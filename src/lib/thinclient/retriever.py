@@ -144,13 +144,22 @@ class ThinClientRetriever:
         self._dense_cache = None   # query-driven warm cache (dense_cache.py)
         self._loaded = False
 
-        # Off-BMP serving gate. SFU_SPLADE_BACKEND=qdrant routes the SPLADE leg
-        # to the Qdrant on_disk sparse collection (flat ~GB RAM) instead of the
-        # load-into-RAM BMP shards (~211 GB resident at 150M). Default "bmp"
-        # preserves existing behavior. Engine/quality parity measured 2026-06-19
-        # (scripts/eval_quant_fidelity.py: overlap@10 0.987, NDCG@10 ties exactly;
-        # Qdrant sparse is exact vs BMP block-max approximate). See THIN_CLIENT_SWAP.md.
-        self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "bmp").lower()
+        # Off-BMP serving gate. SFU_SPLADE_BACKEND selects the SPLADE leg engine:
+        #   qdrant (default) — Qdrant on_disk sparse collection (flat ~GB RAM,
+        #                      page-cache resident like the old OpenSearch leg);
+        #   bmp              — load-into-RAM BMP shards (~211 GB resident at 150M,
+        #                      env-gated FALLBACK, kept for parity/forensics only;
+        #                      cannot be served on a 24 GB host). BMP's 68.6 GB of
+        #                      .bmp disk artifacts are slated for decommission once
+        #                      the parity gate is signed off (see
+        #                      docs/bmp_decommission_plan/PLAN.md Workstream D).
+        # Default flipped bmp→qdrant 2026-06-24: the Qdrant backend passed the
+        # 30M quality-parity gate (scripts/eval_quant_fidelity.py: overlap@10 0.987,
+        # Kendall-τ 0.972, NDCG@10 ties exactly) and is the only engine physically
+        # servable at 150M on real hardware. Qdrant sparse search is exact; BMP is
+        # block-max approximate (WAND pruning), so recall(qdrant) ≥ recall(bmp) by
+        # construction. See docs/THIN_CLIENT_SWAP.md + docs/bmp_decommission_plan/.
+        self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "qdrant").lower()
         self._splade_qdrant_url = os.environ.get(
             "SFU_SPLADE_QDRANT_URL", "http://localhost:6333")
         self._splade_collection = os.environ.get(
@@ -172,7 +181,6 @@ class ThinClientRetriever:
                 return
             import os
 
-            import bmp
             import tantivy
 
             from lib.thinclient.abstracts import AbstractStore
@@ -186,6 +194,10 @@ class ThinClientRetriever:
             # processes. See scripts/eval_parity_section_waves.py.
             # backend=qdrant serves SPLADE from Qdrant, so the resident BMP set
             # is never queried — skip it (this is what reclaims the ~211 GB).
+            # `import bmp` is deferred to the BMP branch below so the qdrant
+            # serving path has NO dependency on the pisa engine being installed
+            # (2026-06-25, Workstream D: BMP artifacts decommissioned; the BMP
+            # package need not be present on a qdrant-only deploy).
             skip_bmp = (os.environ.get("SFU_SKIP_BMP") == "1"
                         or self._splade_backend == "qdrant")
             sections_dir = self.root / "sections"
@@ -196,8 +208,10 @@ class ThinClientRetriever:
                     idx = tantivy.Index.open(str(sdir / "tantivy"))
                     idx.reload()
                     shards = []
-                    for p in ([] if skip_bmp
-                              else sorted(sdir.glob("splade_*.bmp"))):
+                    bmp_paths = [] if skip_bmp else sorted(sdir.glob("splade_*.bmp"))
+                    if bmp_paths:
+                        import bmp  # deferred: only the BMP branch needs pisa
+                    for p in bmp_paths:
                         _guard_load_mem(p.stat().st_size, load_floor,
                                         f"{sdir.name}/{p.name}")
                         vocab_path = p.with_suffix(".vocab.zst")

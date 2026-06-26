@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "engine": "seismic-pyseismic-lsr-0.5.0",
+    "built_utc": "2026-06-26",
+    "index": "/tmp/seismic_testbed/index/med_bio_2m.index.seismic",
+    "docs": 2000000,
+    "dim": 27896,
+    "nnz": 152996652,
+    "purpose": "P2 G3: resident RAM/doc with forward-vs-inverted/summary split + 150M projection"
+  },
+  "rss_gb": {
+    "baseline": 0.008,
+    "after_load": 1.7074,
+    "after_gc": 1.7074,
+    "anon_delta": 1.6994,
+    "rssfile": {
+      "baseline": 0.0067,
+      "after_load": 0.0071,
+      "after_gc": 0.0071
+    },
+    "pss_anon": {
+      "baseline": 0.008,
+      "after_load": 1.7074,
+      "after_gc": 1.7074
+    }
+  },
+  "space_usage_bytes": {
+    "forward_index": 627986672,
+    "posting_lists_total": 1030097113,
+    "packed_postings": 275173240,
+    "block_offsets": 24128704,
+    "summaries": 730795169,
+    "knn": 0,
+    "total": 1658083785,
+    "forward_vs_inverted_split": {
+      "forward_index": 627986672,
+      "inverted_block_summary": 1030097113,
+      "split_note": "which side dominates decides the cheap Path C scope (mmap-forward-only vs whole-index)"
+    }
+  },
+  "ram_floor": {
+    "anon_delta_gb": 1.6994,
+    "resid_fraction_of_total": 1.1005,
+    "per_doc_bytes": 912.35,
+    "proj_150m_gb": 137.23,
+    "refs": {
+      "qdrant_b_per_doc": 307.81,
+      "qdrant_150m_gb": 6.55,
+      "bmp_150m_gb": 211.0
+    }
+  },
+  "g3_verdict": "G3 FAIL \u2014 RAM-resident (Path A): 912 B/doc \u2273 Qdrant 43 B/doc; 150M proj 137.2 GB. Path A is RAM-NO-GO; routes to B-vs-C."
+}
