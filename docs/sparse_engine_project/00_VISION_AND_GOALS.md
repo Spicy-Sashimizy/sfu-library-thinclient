@@ -1,10 +1,5 @@
 # 00 · Vision & Goals
 
-> **CLOSED — line MEASURED & STOPPED 2026-06-26.** Written while the mmap-BMP /
-> `immsparse` engine was a live option. At the 150M target scale the bespoke engine
-> loses to FOSS (pruning linear in corpus; inverted-side RAM ~7.6× the Qdrant floor).
-> Historical design context only — current verdict in `README.md` + `07_INTEGRATION_PLAN.md` §8.
-
 ## Vision
 
 A single **no-JVM, immutable, mmap-backed** retrieval engine that serves the

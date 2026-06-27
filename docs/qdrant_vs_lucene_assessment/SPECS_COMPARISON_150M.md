@@ -4,6 +4,15 @@
 row. See `FINDINGS.md` for interpretation and `QDRANT_VS_LUCENE_RAM.md` for the RAM
 deep-dive.
 
+> **⚠ CORRECTION 2026-06-26 (uint8 ~4× claim):** the rows below that present
+> `uint8` as a "~4× smaller searchable index" must be read with this nuance: the
+> `on_disk=true` sparse index is **already f16-bitpacked**, and **raw values stay
+> on disk regardless of `datatype`** — so `uint8` only further quantizes the *search*
+> index, a small incremental win, **not** a 4× shrink of the on-disk footprint the
+> table's columns imply. Authoritative corrected stance + what shipped
+> (locked `float16`, demoted `uint8` to tier-2, real shrink lever = SPLADE pruning):
+> **`docs/qdrant_config_tuning/CONFIG_LEVERS.md` §1**.
+
 ## The two stacks
 
 | | **Stack A — Thin-client (current default)** | **Stack B — OpenSearch (legacy baseline)** |

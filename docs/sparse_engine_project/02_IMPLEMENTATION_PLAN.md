@@ -1,13 +1,11 @@
 # 02 · Implementation Plan (phased, gated)
 
-> **CLOSED — line MEASURED & STOPPED 2026-06-26.** P2's RED was flipped to
-> **FORMAT-WALL** by the zero-decode tiebreaker (`06_NEXT_STEPS_ZERO_DECODE.md`), which
-> re-opened the line provisionally. The §4 follow-ons that gated re-open were then
-> measured (P3a/P3b) and **both fail at the 150M target scale**: pruning is linear in
-> corpus and the inverted-side RAM projects to ~7.6× the Qdrant floor. **Final verdict:
-> STOP** — no repo spun off; thin client ships on Qdrant. See `07_INTEGRATION_PLAN.md`
-> §8 (decision record) and `README.md`. This doc is retained as the historical
-> P0→P2 record only.
+> **SUPERSEDED for the forward path (2026-06-26).** P2's RED was flipped to
+> **FORMAT-WALL** by the zero-decode tiebreaker (`06_NEXT_STEPS_ZERO_DECODE.md`). The
+> live plan is now **`07_INTEGRATION_PLAN.md`** — it re-enters the gate ladder with
+> P3a (inverted-side mmap), P3b (pruning/parallel reality), P3c (150M projection) as
+> gating prerequisites before any spin-off. This doc is retained as the historical
+> P0→P2 record; read `07` for what happens next.
 
 Each phase has a **deliverable** and an **exit gate** (full pass/fail numbers in
 `03_GO_NO_GO_GATES.md`). Stop at any failed HARD gate.

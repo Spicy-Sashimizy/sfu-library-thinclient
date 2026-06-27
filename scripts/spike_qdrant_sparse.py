@@ -159,7 +159,14 @@ def cmd_build_spool(args):
         client.create_collection(
             collection_name=name, vectors_config={},
             sparse_vectors_config={"splade": models.SparseVectorParams(
-                index=models.SparseIndexParams(on_disk=True))},
+                # datatype=float16 locks the compressed-mmap path explicitly
+                # (on_disk already enables it; FLOAT16 makes it unlazily explicit
+                # so a Qdrant default change can't silently regress us). See
+                # docs/qdrant_config_tuning/CONFIG_LEVERS.md §1 — uint8 was
+                # considered + demoted to tier-2 (not a 4x disk shrink).
+                index=models.SparseIndexParams(
+                    on_disk=True,
+                    datatype=models.Datatype.FLOAT16))},
             on_disk_payload=True)
         logger.info("created collection %s (sparse on_disk=True)", name)
     vocab = _vocab()
@@ -370,7 +377,14 @@ def cmd_build_spool_parallel(args):
         client.create_collection(
             collection_name=name, vectors_config={},
             sparse_vectors_config={"splade": models.SparseVectorParams(
-                index=models.SparseIndexParams(on_disk=True))},
+                # datatype=float16 locks the compressed-mmap path explicitly
+                # (on_disk already enables it; FLOAT16 makes it unlazily explicit
+                # so a Qdrant default change can't silently regress us). See
+                # docs/qdrant_config_tuning/CONFIG_LEVERS.md §1 — uint8 was
+                # considered + demoted to tier-2 (not a 4x disk shrink).
+                index=models.SparseIndexParams(
+                    on_disk=True,
+                    datatype=models.Datatype.FLOAT16))},
             on_disk_payload=True,
             optimizers_config=models.OptimizersConfigDiff(
                 default_segment_number=args.segments,
@@ -430,7 +444,14 @@ def cmd_build(args):
             vectors_config={},  # no dense vectors in this spike
             sparse_vectors_config={
                 "splade": models.SparseVectorParams(
-                    index=models.SparseIndexParams(on_disk=True))},
+                    # datatype=float16 locks the compressed-mmap path explicitly
+                    # (on_disk already enables it; FLOAT16 makes it unlazily
+                    # explicit so a default change can't silently regress us).
+                    # See docs/qdrant_config_tuning/CONFIG_LEVERS.md §1 — uint8
+                    # was considered + demoted to tier-2 (not a 4x disk shrink).
+                    index=models.SparseIndexParams(
+                        on_disk=True,
+                        datatype=models.Datatype.FLOAT16))},
             on_disk_payload=True,
         )
         logger.info("created collection %s (sparse on_disk=True)", name)
