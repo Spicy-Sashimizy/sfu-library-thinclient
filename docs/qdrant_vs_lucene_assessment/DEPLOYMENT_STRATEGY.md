@@ -2,17 +2,6 @@
 
 **Date:** 2026-06-25 · The capstone decision, given everything in this directory.
 
-> **⚠ CORRECTION 2026-06-26:** the "Qdrant uint8" tier recommendations below treat
-> `datatype: uint8` as a meaningful fix for the 150M RAM bound. Per
-> **`docs/qdrant_config_tuning/CONFIG_LEVERS.md` §1** that is over-optimistic: the
-> on_disk sparse index is **already f16-bitpacked** and raw values stay on disk
-> regardless of datatype, so uint8 is a tier-2 incremental lever, not a cure — the
-> strategy's own "uint8 is a mitigation, not a cure" hedging is the correct read;
-> treat the implied ~4× index shrink as retracted. Ship-on-Qdrant is confirmed;
-> the no-JVM cure the assessment then pursued (the engine spike) is **MEASURED &
-> STOPPED** (`docs/sparse_engine_project/`) — we ship on Qdrant and *tune* it
-> (`docs/qdrant_config_tuning/`).
-
 ## The answer
 
 **No — do not build two fully separate deployments. Build ONE stack with a

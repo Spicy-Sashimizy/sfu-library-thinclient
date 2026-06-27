@@ -1,0 +1,59 @@
+{
+  "c1a_verdict": "C1a FAILS_GATE — failing axis: FLOOR/ANON (RssAnon did not drop to baseline — a borrow path re-materializes the floor into anon: likely the leaked mmap doc_mapping/token_map metadata, or a slice being copied). anon Δ vs base=+0.186GB, file-resident=0.741GB vs 1.71GB index, mmap p50 0.10ms = 1.01x path_a (0.10ms, budget 1.2x), parity_ok=true. Re-examine before C2; 07 §4 routes to Step D (Path B) on floor/latency fail.",
+  "config": {
+    "first_sorted": true,
+    "heap_factor": 1.0,
+    "index_book": "/tmp/seismic_testbed/index/med_bio_2m.index.seismic",
+    "k": 10,
+    "latency_budget_mult": 1.2,
+    "mmap_disk_gb": 1.707963015,
+    "n_docs": 2000000,
+    "n_knn": 0,
+    "n_posting_lists": 27896,
+    "n_queries": 30,
+    "query_cut": 8,
+    "warm_iters": 3
+  },
+  "floor_anon_ok": false,
+  "floor_delta_anon_gb": 0.186,
+  "floor_file_ok": false,
+  "floor_ok": false,
+  "latency_ms": {
+    "mmap": {
+      "n_samples": 90,
+      "warm_p50": 0.097454,
+      "warm_p95": 0.204746
+    },
+    "path_a": {
+      "n_samples": 90,
+      "warm_p50": 0.09624300000000001,
+      "warm_p95": 0.212088
+    }
+  },
+  "latency_ok": true,
+  "meta": {
+    "built_utc": "2026-06-27",
+    "doc_refs": [
+      "07_G3_RAM_FIX_PLAN.md §4.3 (C1a) + §6 (exit criteria: anon≈0, latency held)",
+      "spike/seismic_upstream/src/mmap_index.rs (MmapQuantizedSummary/PostingList/InvertedIndex borrow structs)",
+      "spike/seismic_upstream/src/mmap_io.rs (write_mmap_index + MmapSeismicIndex reader)",
+      "spike/toolkit_fork (DArrayView/EliasFanoView/InventoriesView), spike/vectorium_fork (MmapSparseStorage)"
+    ],
+    "engine": "seismic-pyseismic-lsr-0.4.0 (C1a mmap fork: toolkit+vectorium *View/*Mmap* borrow views)",
+    "index_provenance": "real persona bincode index: /tmp/seismic_testbed/index/med_bio_2m.index.seismic (produced by build_persona_seismic.py; the same index seismic_ram_floor_persona_2m.json measured at 912 B/doc anon)",
+    "purpose": "G3 Path C / Step C1a: mmap integration gate. C0+C0.5 de-risked the format; C1a measures the integration (RssAnon→0 anon + latency held end-to-end over the real 2M persona index)."
+  },
+  "mmap_vs_path_a_lat_x": 1.013,
+  "parity_failures": [],
+  "parity_ok": true,
+  "rss_kb": {
+    "after_mmap_anon_post_fault_in": 193328,
+    "after_mmap_file_post_fault_in": 743036,
+    "floor_anon_delta_vs_baseline_gb": 0.186,
+    "floor_file_resident_gb": 0.741,
+    "mmap_baseline_anon_after_owned_drop": 7260,
+    "mmap_baseline_file_after_owned_drop": 2396,
+    "path_a_anon_after_load": 1782308,
+    "path_a_file_after_load": 2336
+  }
+}

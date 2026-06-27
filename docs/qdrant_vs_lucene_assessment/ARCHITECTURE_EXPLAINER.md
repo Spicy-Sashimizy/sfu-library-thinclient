@@ -5,16 +5,6 @@ Lucene/tantivy don't, why a "bounded heap" is a red herring, and whether a Rust
 engine exists that would unify the lexical + sparse legs with ~0 resident RAM and
 no JVM. **Verdict up front: that engine does NOT exist in production today** (§6).
 
-> **⚠ CORRECTION 2026-06-26 (uint8 claim):** this doc (line ~59) cites the 205 GB
-> on-disk footprint as fixable with `datatype: uint8`. That is **too optimistic**:
-> the `on_disk=true` sparse index is **already f16-bitpacked**, and **raw values are
-> retained on disk regardless of `datatype`** — so `uint8` is a small incremental
-> quantization win, **not** the disk-shrink fix implied. The corrected stance + what
-> we actually did (locked `float16` explicitly, demoted `uint8` to tier-2) lives in
-> **`docs/qdrant_config_tuning/CONFIG_LEVERS.md` §1** — that is now authoritative for
-> the datatype question. The mutable-vs-immutable id-tracker analysis below remains
-> correct; only the "uint8 fixes the disk" framing is superseded.
-
 ---
 
 ## 1. How the JVM bounded heap works with Lucene/OpenSearch

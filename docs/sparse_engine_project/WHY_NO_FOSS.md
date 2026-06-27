@@ -1,5 +1,11 @@
 # Why is there no off-the-shelf FOSS for this exact use case?
 
+> **CLOSED — line MEASURED & STOPPED 2026-06-26.** The build-vs-buy case here argued the
+> gap justified owning an engine; the later P3a/P3b measurements showed the bespoke build
+> loses to FOSS at 150M (pruning linear in corpus; inverted-side RAM ~7.6× the Qdrant
+> floor) → ship on Qdrant; pivot to SEISMIC if 150M-single-collection ever goes hard.
+> Historical context only — current verdict in `README.md` + `07_INTEGRATION_PLAN.md` §8.
+
 Short answer: **there is FOSS for every piece, and for the whole thing with a JVM
 (OpenSearch) or as a young C++ DB (Infinity). What's missing is your specific
 intersection** — and that intersection is empty for structural, not accidental,

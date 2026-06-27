@@ -1,5 +1,10 @@
 # Decision Trail — how we got to "build mmap-BMP (+ optional Lance unification)"
 
+> **CLOSED — line MEASURED & STOPPED 2026-06-26.** This trail converged on *building*
+> the engine; the later P3a/P3b measurements reversed that — at 150M the bespoke engine
+> loses to FOSS (pruning linear in corpus; inverted-side RAM ~7.6× the Qdrant floor).
+> Historical reasoning only — current verdict in `README.md` + `07_INTEGRATION_PLAN.md` §8.
+
 The chain of questions and findings (2026-06-25 session) that converged on the
 build. Each step: **Q** asked → **finding** → **what it forced**.
 

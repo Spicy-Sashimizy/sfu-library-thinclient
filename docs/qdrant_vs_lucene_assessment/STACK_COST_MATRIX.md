@@ -5,14 +5,6 @@ RAM column = **non-reclaimable resident floor** (what the engine forces into RAM
 page cache is reclaimable and listed separately where it matters. Sources in
 `SPECS_COMPARISON_150M.md` / `FINDINGS.md`.
 
-> **⚠ CORRECTION 2026-06-26:** the "Present + uint8 (move 1)" rows below overstate
-> the uint8 win ("~4× smaller searchable index", "~7 GB est."). The on_disk sparse
-> index is **already f16-bitpacked** and **raw values stay on disk regardless of
-> `datatype`**, so uint8 is a small incremental quantization, not a 4× shrink —
-> treat those *est.* figures as retracted. Corrected stance + what shipped (locked
-> `float16` explicitly, demoted uint8 to tier-2): see
-> **`docs/qdrant_config_tuning/CONFIG_LEVERS.md` §1**.
-
 ---
 
 ## Table 1 — per-leg engine options (the building blocks)

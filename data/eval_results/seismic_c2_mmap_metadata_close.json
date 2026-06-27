@@ -1,0 +1,59 @@
+{
+  "c2_verdict": "C2 KEEPS_GATE — parity OK; floor cured: anon Δ vs baseline +0.041 GB (≈0), file-resident 1.647 GB vs 1.71 GB index (slab in reclaimable file cache); mmap p50 0.04ms = 0.97x path_a (0.04ms), within 1.2x budget. Proceed to G2 + Python mmap loader integration.",
+  "config": {
+    "first_sorted": true,
+    "heap_factor": 1.0,
+    "index_book": "/tmp/seismic_testbed/index/med_bio_2m.index.seismic",
+    "k": 10,
+    "latency_budget_mult": 1.2,
+    "mmap_disk_gb": 1.707963015,
+    "n_docs": 2000000,
+    "n_knn": 0,
+    "n_posting_lists": 27896,
+    "n_queries": 30,
+    "query_cut": 8,
+    "warm_iters": 3
+  },
+  "floor_anon_ok": true,
+  "floor_delta_anon_gb": 0.041,
+  "floor_file_ok": true,
+  "floor_ok": true,
+  "latency_ms": {
+    "mmap": {
+      "n_samples": 90,
+      "warm_p50": 0.041492,
+      "warm_p95": 0.099534
+    },
+    "path_a": {
+      "n_samples": 90,
+      "warm_p50": 0.042741999999999995,
+      "warm_p95": 0.081083
+    }
+  },
+  "latency_ok": true,
+  "meta": {
+    "built_utc": "2026-06-27",
+    "doc_refs": [
+      "07_G3_RAM_FIX_PLAN.md §4.4 (C2) + §6 (exit criteria: anon≈0, latency held)",
+      "spike/seismic_upstream/src/mmap_index.rs (MmapQuantizedSummary/PostingList/InvertedIndex borrow structs)",
+      "spike/seismic_upstream/src/mmap_io.rs (write_mmap_index + MmapSeismicIndex reader + MmapDocMapping)",
+      "spike/toolkit_fork (DArrayView/EliasFanoView/InventoriesView), spike/vectorium_fork (MmapSparseStorage)"
+    ],
+    "engine": "seismic-pyseismic-lsr-0.4.0 (C2 mmap metadata-slab close: toolkit+vectorium *View/*Mmap* + flat doc_mapping slab + dense fault-in)",
+    "index_provenance": "real persona bincode index: /tmp/seismic_testbed/index/med_bio_2m.index.seismic (produced by build_persona_seismic.py; the same index seismic_ram_floor_persona_2m.json measured at 912 B/doc anon)",
+    "purpose": "G3 Path C / Step C2: close C1a's metadata floor gaps. document_mapping moved from per-doc String allocations to a flat mmap'd string slab; touch_slab rewritten as file-by-file dense pass with madvise(WILLNEED|SEQUENTIAL)."
+  },
+  "mmap_vs_path_a_lat_x": 0.971,
+  "parity_failures": [],
+  "parity_ok": true,
+  "rss_kb": {
+    "after_mmap_anon_post_fault_in": 48612,
+    "after_mmap_file_post_fault_in": 1649112,
+    "floor_anon_delta_vs_baseline_gb": 0.041,
+    "floor_file_resident_gb": 1.647,
+    "mmap_baseline_anon_after_owned_drop": 7296,
+    "mmap_baseline_file_after_owned_drop": 2496,
+    "path_a_anon_after_load": 1782312,
+    "path_a_file_after_load": 2420
+  }
+}

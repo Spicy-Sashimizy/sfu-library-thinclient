@@ -3,20 +3,6 @@
 **Date:** 2026-06-25 · Condensed decision guide. Numbers/cited claims live in
 `SPECS_COMPARISON_150M.md` + `FINDINGS.md`. Online survey at the bottom.
 
-> **⚠ CORRECTION 2026-06-26 (uint8 — was "move 1"):** the recommendation below to
-> recreate `splade_150m` with sparse `datatype: uint8` as move #1, and the claims
-> that uint8 "shrinks the searchable index ~4×" / "~quarter the on-disk index" /
-> "~7 GB est. vs the f32 index", are **over-optimistic and SUPERSEDED**. The
-> `on_disk=true` sparse index is **already f16-bitpacked** and **raw values are
-> retained on disk regardless of `datatype`** — so uint8 is a small incremental
-> quantization win, **not a 4× shrink**. The real index-shrink lever is SPLADE
-> doc-term pruning (fewer/shorter postings), not a smaller per-value type.
-> Authoritative corrected stance: **`docs/qdrant_config_tuning/CONFIG_LEVERS.md`
-> §1** — where uint8 is demoted to tier-2 and `float16` is the datatype we locked.
-> The keep-Qdrant verdict itself stands; only the "uint8 as the cheap big win"
-> framing is corrected. Downstream, the engine spike the assessment seeded is
-> also now **MEASURED & STOPPED** (`docs/sparse_engine_project/`) — we ship on Qdrant.
-
 ## Goal-driven framing (no-JVM is a weighted goal) — read this first (added 2026-06-25)
 
 **Decision frame:** rank by goals, not by language — but **no-JVM is itself a real

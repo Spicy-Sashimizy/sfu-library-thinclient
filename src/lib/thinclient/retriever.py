@@ -166,6 +166,7 @@ class ThinClientRetriever:
             "SFU_SPLADE_QDRANT_COLLECTION", "splade_150m")
         self._qdrant_client = None   # lazy, only when backend=qdrant
         self._bert_vocab = None      # token->id map shared with the ingest
+        self._seismic = None         # lazy, only when backend=seismic (testbed only)
 
     # ── lazy loading ────────────────────────────────────────────────────────
 
@@ -199,7 +200,7 @@ class ThinClientRetriever:
             # (2026-06-25, Workstream D: BMP artifacts decommissioned; the BMP
             # package need not be present on a qdrant-only deploy).
             skip_bmp = (os.environ.get("SFU_SKIP_BMP") == "1"
-                        or self._splade_backend == "qdrant")
+                        or self._splade_backend in ("qdrant", "seismic"))
             sections_dir = self.root / "sections"
             if sections_dir.is_dir():
                 for sdir in sorted(sections_dir.iterdir()):
@@ -561,10 +562,45 @@ class ThinClientRetriever:
             merged = self._post_filter(merged, f)
         return merged[:top_k]
 
+    def _seismic_backend(self):
+        """Lazy-load the SEISMIC Path-A index ONCE per process (testbed only).
+        The index is RAM-resident (G3 FAIL at ~912 B/doc → 137 GB @150M) — this
+        is a measurement adapter, never a served path. Clean error (mirrors the
+        SFU_LOAD_MEM_FLOOR_GB gate) if the index path is unset, never a silent
+        fallback to another leg."""
+        if self._seismic is None:
+            idx = os.environ.get("SFU_SEISMIC_INDEX")
+            if not idx:
+                raise RuntimeError(
+                    "SFU_SPLADE_BACKEND=seismic requires SFU_SEISMIC_INDEX "
+                    "(path stem or full *.index.seismic)")
+            from lib.thinclient.seismic_backend import SeismicBackend
+            self._seismic = SeismicBackend(idx, self.splade_model_path)
+        return self._seismic
+
+    def _splade_leg_seismic(self, query: str, top_k: int,
+                            f: dict | None) -> list[tuple[str, float]]:
+        """SPLADE leg served from the SEISMIC Path-A index (testbed only — G6/G5).
+        Same return shape as the Qdrant leg: [(oaid, score)]. Any failure
+        degrades to the BM25F leg, matching the encoder-failure contract so RRF
+        still fuses the other legs. SEISMIC is block-summary approximate
+        (overlap@10 0.479 vs Qdrant at default params), so its recall ≤ Qdrant's
+        by construction — this is the G2/G6 quality delta under measurement."""
+        try:
+            res = self._seismic_backend().search(query, top_k)
+        except Exception as exc:
+            logger.warning("SEISMIC SPLADE leg failed (%s); falling back to BM25F leg", exc)
+            return self._bm25f_leg(query, top_k, f)
+        if f:
+            res = self._post_filter(res, f)
+        return res[:top_k]
+
     def _splade_leg(self, query: str, top_k: int,
                     f: dict | None) -> list[tuple[str, float]]:
         if self._splade_backend == "qdrant":
             return self._splade_leg_qdrant(query, top_k, f)
+        if self._splade_backend == "seismic":
+            return self._splade_leg_seismic(query, top_k, f)
         from lib.opensearch_retriever import encode_splade
         try:
             sparse = encode_splade(query, self.splade_model_path)
