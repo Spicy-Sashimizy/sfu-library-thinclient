@@ -1,0 +1,44 @@
+22:37:33 INFO reconcile: 8 shards from data/eval_results/seismic_c25_shards_150m_mmap.json (load_mode mmap)
+22:37:34 INFO baseline anon+swap: 0.016 GB
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard0of8.mmap
+22:37:34 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard1of8.mmap
+22:37:34 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard2of8.mmap
+22:37:34 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard3of8.mmap
+22:37:34 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard4of8.mmap
+22:37:34 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard5of8.mmap
+22:37:34 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard6of8.mmap
+22:37:34 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:37:34 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard7of8.mmap
+22:37:34 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:37:34 INFO loaded 8 shards in 0.5s | anon+swap 0.141 GB | total_docs 150413098
+22:37:38 INFO slice oaid set: 2000000 oaids (from /tmp/seismic_testbed/jsonl/med_bio_2000000.jsonl)
+22:38:54 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+22:38:58 INFO SPLADE ONNX model loaded (CPU)
+22:39:30 INFO post-warmup anon+swap: 1.423 GB
+22:42:10 INFO [5/40] ov_unsc mean=1.000 ov_sc mean=0.000 rbo_unsc mean=0.994 (anon+swap 1.432 GB)
+22:44:48 INFO [10/40] ov_unsc mean=0.990 ov_sc mean=0.000 rbo_unsc mean=0.988 (anon+swap 1.432 GB)
+22:47:29 INFO [15/40] ov_unsc mean=0.987 ov_sc mean=0.000 rbo_unsc mean=0.983 (anon+swap 1.432 GB)
+22:50:06 INFO [20/40] ov_unsc mean=0.975 ov_sc mean=0.000 rbo_unsc mean=0.967 (anon+swap 1.432 GB)
+22:52:46 INFO [25/40] ov_unsc mean=0.932 ov_sc mean=0.040 rbo_unsc mean=0.927 (anon+swap 1.432 GB)
+22:55:22 INFO [30/40] ov_unsc mean=0.943 ov_sc mean=0.100 rbo_unsc mean=0.924 (anon+swap 1.432 GB)
+22:57:56 INFO [35/40] ov_unsc mean=0.949 ov_sc mean=0.171 rbo_unsc mean=0.927 (anon+swap 1.432 GB)
+23:00:40 INFO [40/40] ov_unsc mean=0.935 ov_sc mean=0.150 rbo_unsc mean=0.925 (anon+swap 1.432 GB)
+23:00:40 INFO overlap@10 unscoped=0.935 scoped=0.150 | RBO(50) unscoped=0.925 scoped=0.150 | τ unscoped=0.801 | identical_top10=28/40
+23:00:40 INFO VERDICT: PROPAGATION THESIS SURVIVES — slice-scoped overlap@10 = 0.150 (close to G2's 0.479) even under the full-corpus SEISMIC leg, so the 0.479 floor is a real slice-scoped divergence that holds at full corpus; 0.935 is simply the unscoped, full-corpus agreement.
+23:00:40 INFO wrote data/eval_results/seismic_legoverlap_reconcile_20260628.json
+{
+  "overlap@10_unscoped": 0.935,
+  "overlap@10_slice_scoped": 0.15,
+  "rbo@50_unscoped": 0.9255,
+  "rbo@50_slice_scoped": 0.15,
+  "kendall_tau_unscoped": 0.8013,
+  "propagation_verdict": "SURVIVES",
+  "identical_top10": "28/40",
+  "result_file": "data/eval_results/seismic_legoverlap_reconcile_20260628.json"
+}

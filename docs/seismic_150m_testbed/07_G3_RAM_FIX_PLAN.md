@@ -21,8 +21,12 @@
 > traversal), **not** posting retention; **no index-time knob reclaims it.** The
 > G2 *quality* risk is now the live open problem (separate from the cured G3
 > floor). Next: `centroid_fraction` (clustering density — not a posting-retention
-> lever; untested, unlikely to move top-10), or the looser G6 RRF system gate;
-> C2.5 (pyo3 loader) is deprioritized until quality clears.
+> lever; untested, unlikely to move top-10), or the looser G6 RRF system gate.
+> **2026-06-28: C2.5 (pyo3 mmap loader) DONE — MMAP_SERVE_READY** (§4.4 item 2):
+> the G7 150M sharded build unblocked serving as the new highest-value step, so
+> C2.5 was done now despite the G2 quality risk (it gates the full-corpus G6 run,
+> the one remaining quality escape). G2 remains the live open quality risk;
+> C2.5 doesn't move the 0.479 floor — it unblocks *serving* 150M on 32 GB.
 > Path B (OpenSearch+SEISMIC) remains the documented fallback but is no longer the
 > default.
 
@@ -428,11 +432,22 @@ remain ≪ the 31.6 GB host budget at 150M.
    approximation (summary-skip + in-block traversal), not posting-list retention.
    **G2 is not closed** — escapes remain (`centroid_fraction`, clustering density — not a
    posting-retention lever, untested, unlikely to move top-10; looser G6 RRF system gate).
-2. **C2.5 Python mmap-loader integration** — expose `MmapSeismicIndex::from_mmap`
-   through pyo3 so `measure_seismic_ram.py` can run the §6 measurement and the
-   serving path can load mmap'd indexes directly. (Diminished priority now that
-   G2 quality is the live risk, not the mmap floor — but still needed if G6/untested
-   levers pass and Path C ships.)
+2. **C2.5 Python mmap-loader integration — DONE 2026-06-28 (MMAP_SERVE_READY).**
+   `MmapSeismicIndex::from_mmap` is now exposed through pyo3 as
+   `seismic.MmapSeismicIndex` (new pyclass `spike/seismic_upstream/src/pylib/mmap_index.rs`,
+   registered in `lib.rs` `#[pymodule]`). Validated at the **Python serve boundary**
+   (not just the Rust bin): parity bit-identical (30 real SPLADE queries vs owned
+   reference), floor anon Δ **0.000 GB**, RssFile 96% of on-disk after `touch_slab`
+   fault-in, mmap p50 0.441 ms — `data/eval_results/seismic_c25_mmap_serve_validate.json`
+   (`06_FINDINGS.md` 2026-06-28 C2.5 row). Federation re-gated under `--load-mode mmap`:
+   overlap@10 0.9967, bit-identical to stock (`seismic_federation_overlap_929k_mmap.json`).
+   This closes the stock-`.load()` serve hole that gated Plan 02 + Plan 01's serve step.
+   **The 150M serve still needs the 8 stock shards converted to the flat mmap layout**
+   (turnkey driver `scripts/seismic_testbed/convert_shard_to_mmap.py`, serial, ~9.9 GB
+   peak/shard — fits 32 GB one at a time; run not started — gated on a box with the
+   budget). Load-bearing caveat: converted dirs MUST use the C2 flat doc-mapping layout
+   (`document_mapping_strings.bin` + `document_mapping_offsets.bin`), not the stale C1a
+   writer — else the reader loads `doc_mapping=None` and search falls back to numeric ids.
 3. **Cold-axis validation** — re-run with `posix_fadvise(DONTNEED)` on the mmap
    files to confirm the cold fault-in latency budget.
 

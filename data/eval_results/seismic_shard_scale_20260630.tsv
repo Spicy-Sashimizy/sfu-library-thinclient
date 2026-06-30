@@ -1,0 +1,5 @@
+n_shards	docs_M	warm_p50_ms	cold_p50_ms	warm_trav_ms	warm_enc_ms	vmrss_peak_gb	vmswap_gb
+1	18.8	50	112	14	34	5.6366	0.0
+2	37.6	32	357	11	20	10.2451	0.0
+4	75.2	48	251	26	21	20.2855	0.0
+8	150.4	82	786	52	29	41.9531	0.0

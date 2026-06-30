@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "engine": "seismic-pyseismic-lsr-0.5.0",
+    "variant": "standard",
+    "section": "med_bio_8m",
+    "built_utc": "2026-06-26",
+    "params": {
+      "n_postings": 3500,
+      "centroid_fraction": 0.1,
+      "min_cluster_size": 2,
+      "summary_energy": 0.4,
+      "max_fraction": 1.5,
+      "doc_cut": 15,
+      "param_source": "MS MARCO best_configs; recall-matched vs Qdrant in G2 (R-PARAM)"
+    },
+    "purpose": "P1 G1: build persona SEISMIC index from stored sparse_field, no re-encode"
+  },
+  "build_seconds": 484.32,
+  "save_seconds": 7.15,
+  "docs": 8000000,
+  "dim": 28363,
+  "nnz": 613614267,
+  "avg_nnz_per_doc": 76.7,
+  "peak_rss_gb": 5.108,
+  "rssanon_gb": {
+    "before_load": 0.0082,
+    "after_build": 4.4877,
+    "after_gc": 4.4877
+  },
+  "mem_available_gb": {
+    "before": 8.84,
+    "after": 9.24
+  },
+  "space_usage_bytes": {
+    "forward_index": 2518457132,
+    "posting_lists_total": 1070666924,
+    "packed_postings": 305333048,
+    "block_offsets": 25678720,
+    "summaries": 739655156,
+    "knn": 0,
+    "total": 3589124056,
+    "forward_vs_inverted_split": {
+      "forward_index": 2518457132,
+      "inverted_block_summary": 1070666924
+    }
+  },
+  "on_disk_gb": 3.7452,
+  "index_path": "/tmp/seismic_testbed/index/med_bio_8m.index.seismic",
+  "g1_verdict": "PASS \u2014 index built from stored sparse_field, no OOM"
+}

@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "engine": "seismic-pyseismic-lsr-0.5.0",
+    "purpose": "08_LATENCY_RESEARCH.md \u00a7C1: query_cut\u00d7heap_factor latency-vs-overlap@10 Pareto",
+    "measured_utc": "2026-06-30",
+    "index": {
+      "path": "data/thin_client_poc/seismic_idx",
+      "docs": 100000,
+      "dim": 26603,
+      "nnz": 11818778
+    },
+    "model": "models/splade_onnx_fp16",
+    "n_queries": 60,
+    "top_k_fetch": 50,
+    "overlap_k": 10,
+    "warmup_repeats_per_cell": 5,
+    "note": "overlap@10 is vs the all-terms/hf=0.8 baseline (self-relative recall), NOT vs a live Qdrant. Absolute latency is swap-confounded off a clean host; the encode/traverse split + relative recall are the clean signals here."
+  },
+  "baseline": {
+    "query_cut": "all-terms",
+    "heap_factor": 0.8,
+    "traverse_ms_p50": 9.981,
+    "warm_encode_ms_mean": 38.57,
+    "n_queries": 60
+  },
+  "grid": [
+    {
+      "query_cut": 10,
+      "heap_factor": 0.6,
+      "overlap@10_vs_base": 0.9967,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 3.924,
+      "warm_encode_ms_mean": 35.03,
+      "traverse_speedup_vs_base": 2.54,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 10,
+      "heap_factor": 0.7,
+      "overlap@10_vs_base": 0.995,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 3.149,
+      "warm_encode_ms_mean": 30.01,
+      "traverse_speedup_vs_base": 3.17,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 10,
+      "heap_factor": 0.8,
+      "overlap@10_vs_base": 0.995,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 2.482,
+      "warm_encode_ms_mean": 27.64,
+      "traverse_speedup_vs_base": 4.02,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 15,
+      "heap_factor": 0.6,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 5.307,
+      "warm_encode_ms_mean": 26.59,
+      "traverse_speedup_vs_base": 1.88,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 15,
+      "heap_factor": 0.7,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 4.443,
+      "warm_encode_ms_mean": 26.54,
+      "traverse_speedup_vs_base": 2.25,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 15,
+      "heap_factor": 0.8,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 3.577,
+      "warm_encode_ms_mean": 25.79,
+      "traverse_speedup_vs_base": 2.79,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 20,
+      "heap_factor": 0.6,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 6.719,
+      "warm_encode_ms_mean": 27.88,
+      "traverse_speedup_vs_base": 1.49,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 20,
+      "heap_factor": 0.7,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 5.587,
+      "warm_encode_ms_mean": 26.53,
+      "traverse_speedup_vs_base": 1.79,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 20,
+      "heap_factor": 0.8,
+      "overlap@10_vs_base": 1.0,
+      "overlap@10_min": 1.0,
+      "traverse_ms_p50": 4.577,
+      "warm_encode_ms_mean": 25.67,
+      "traverse_speedup_vs_base": 2.18,
+      "n_queries": 60
+    }
+  ],
+  "pareto_winners": [
+    {
+      "query_cut": 10,
+      "heap_factor": 0.8,
+      "overlap@10_vs_base": 0.995,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 2.482,
+      "warm_encode_ms_mean": 27.64,
+      "traverse_speedup_vs_base": 4.02,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 10,
+      "heap_factor": 0.7,
+      "overlap@10_vs_base": 0.995,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 3.149,
+      "warm_encode_ms_mean": 30.01,
+      "traverse_speedup_vs_base": 3.17,
+      "n_queries": 60
+    },
+    {
+      "query_cut": 15,
+      "heap_factor": 0.8,
+      "overlap@10_vs_base": 0.9983,
+      "overlap@10_min": 0.9,
+      "traverse_ms_p50": 3.577,
+      "warm_encode_ms_mean": 25.79,
+      "traverse_speedup_vs_base": 2.79,
+      "n_queries": 60
+    }
+  ]
+}

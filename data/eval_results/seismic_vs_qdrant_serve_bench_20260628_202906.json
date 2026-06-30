@@ -1,0 +1,279 @@
+{
+  "meta": {
+    "benchmark": "SEISMIC vs Qdrant serving footprint",
+    "date_utc": "20260628_202906",
+    "num_docs": 150413098,
+    "top_k": 50,
+    "num_queries": 30,
+    "query_encoding": "SPLADE (top-64 terms) + BERT-base-uncased vocab",
+    "splade_model": "models/splade_onnx_fp16",
+    "seismic_load_mode": "mmap",
+    "seismic_shards": 8
+  },
+  "seismic": {
+    "engine": "ShardedSeismicBackend (mmap, federated 8 shards)",
+    "anon_floor_gb": 1.1704,
+    "vmrss_peak_gb": 10.8864,
+    "anon_bytes_per_doc": 7.78,
+    "load_seconds": 0.5,
+    "latency_ms": {
+      "p50": 30944.27,
+      "p95": 63284.171,
+      "mean": 34410.593
+    }
+  },
+  "qdrant": {
+    "engine": "QdrantClient (separate server, splade_150m collection)",
+    "anon_floor_gb": 3.3499,
+    "vmrss_peak_gb": 6.5801,
+    "anon_bytes_per_doc": 22.27,
+    "latency_ms": {
+      "p50": 7417.189,
+      "p95": 9570.576,
+      "mean": 7326.378
+    }
+  },
+  "verdict": "SEISMIC wins on anon floor by 2.179 GB (1.170 vs 3.350 GB); Qdrant faster on latency (34410.59ms vs 7326.38ms p50 30944.27ms vs 7417.19ms)",
+  "per_query_results": [
+    {
+      "query_idx": 0,
+      "query_text": "indigenous language revitalization First Nations British Columbia",
+      "seismic_latency_ms": 29758.156,
+      "qdrant_latency_ms": 6733.487,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 1,
+      "query_text": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+      "seismic_latency_ms": 30148.455,
+      "qdrant_latency_ms": 6687.145,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 2,
+      "query_text": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+      "seismic_latency_ms": 30239.756,
+      "qdrant_latency_ms": 6563.4,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 3,
+      "query_text": "residential school trauma intergenerational effects Indigenous communities",
+      "seismic_latency_ms": 29630.266,
+      "qdrant_latency_ms": 7417.189,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 4,
+      "query_text": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+      "seismic_latency_ms": 30262.119,
+      "qdrant_latency_ms": 8582.73,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 5,
+      "query_text": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+      "seismic_latency_ms": 30846.994,
+      "qdrant_latency_ms": 7314.32,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 6,
+      "query_text": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "seismic_latency_ms": 30978.379,
+      "qdrant_latency_ms": 9027.952,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 7,
+      "query_text": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+      "seismic_latency_ms": 30704.316,
+      "qdrant_latency_ms": 8906.16,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 8,
+      "query_text": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+      "seismic_latency_ms": 31114.29,
+      "qdrant_latency_ms": 8890.571,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 9,
+      "query_text": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "seismic_latency_ms": 30557.527,
+      "qdrant_latency_ms": 6369.962,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 10,
+      "query_text": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+      "seismic_latency_ms": 30944.27,
+      "qdrant_latency_ms": 8181.793,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 11,
+      "query_text": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+      "seismic_latency_ms": 31737.099,
+      "qdrant_latency_ms": 8610.628,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 12,
+      "query_text": "housing affordability crisis Metro Vancouver rental market",
+      "seismic_latency_ms": 31166.736,
+      "qdrant_latency_ms": 3922.745,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 13,
+      "query_text": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+      "seismic_latency_ms": 31601.523,
+      "qdrant_latency_ms": 5905.11,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 14,
+      "query_text": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+      "seismic_latency_ms": 30787.034,
+      "qdrant_latency_ms": 5189.321,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 15,
+      "query_text": "Canadian immigration settlement services multicultural policy",
+      "seismic_latency_ms": 31260.833,
+      "qdrant_latency_ms": 5586.206,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 17,
+      "query_text": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+      "seismic_latency_ms": 31683.304,
+      "qdrant_latency_ms": 9430.322,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 18,
+      "query_text": "BC provincial politics electoral reform referendum",
+      "seismic_latency_ms": 31941.742,
+      "qdrant_latency_ms": 4036.256,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 19,
+      "query_text": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+      "seismic_latency_ms": 32270.257,
+      "qdrant_latency_ms": 6942.545,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 20,
+      "query_text": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+      "seismic_latency_ms": 48206.583,
+      "qdrant_latency_ms": 8385.132,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 21,
+      "query_text": "Chinese Canadian discrimination exclusion act immigration history",
+      "seismic_latency_ms": 29705.568,
+      "qdrant_latency_ms": 8237.475,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 22,
+      "query_text": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+      "seismic_latency_ms": 30761.244,
+      "qdrant_latency_ms": 9380.276,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 24,
+      "query_text": "restorative justice alternatives incarceration recidivism reduction",
+      "seismic_latency_ms": 27798.023,
+      "qdrant_latency_ms": 10049.469,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 26,
+      "query_text": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+      "seismic_latency_ms": 28838.901,
+      "qdrant_latency_ms": 6234.74,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 27,
+      "query_text": "police use of force racial profiling Black Indigenous communities Canada",
+      "seismic_latency_ms": 50790.158,
+      "qdrant_latency_ms": 5927.2,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 28,
+      "query_text": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+      "seismic_latency_ms": 63544.699,
+      "qdrant_latency_ms": 7752.342,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 29,
+      "query_text": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+      "seismic_latency_ms": 59020.984,
+      "qdrant_latency_ms": 7869.347,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 30,
+      "query_text": "cybercrime financial fraud digital forensics investigation",
+      "seismic_latency_ms": 63284.171,
+      "qdrant_latency_ms": 9570.576,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 33,
+      "query_text": "prison population mental health services rehabilitation programs",
+      "seismic_latency_ms": 27900.133,
+      "qdrant_latency_ms": 5137.177,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 35,
+      "query_text": "What mental health and rehabilitation programs are most effective for individuals currently serving sentences in the prison system?",
+      "seismic_latency_ms": 14834.262,
+      "qdrant_latency_ms": 6949.77,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    }
+  ]
+}

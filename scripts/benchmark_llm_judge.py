@@ -101,9 +101,21 @@ JUDGE_CACHE: dict = _load_cache()
 _cache_lock = None  # set to threading.Lock() in main
 
 # Set by main() before workers start — avoids threading an args object everywhere
-_JUDGE_BACKEND: str = "claude"       # "claude" | "ollama"
+_JUDGE_BACKEND: str = "claude"       # "claude" | "ollama" | "neuralwatt"
 _OLLAMA_MODEL: str = "qwen3:1.7b"
 _OLLAMA_URL: str = "http://localhost:11434"
+
+# NeuralWatt (OpenAI-compatible). Falls back to .env values set above. Use a
+# `-flex` model id for the discounted async tier (e.g. kimi-k2.7-code-flex).
+_NEURALWATT_MODEL: str = os.environ.get("NEURALWATT_MODEL", "kimi-k2.7-code-flex").strip()
+_NEURALWATT_BASE_URL: str = os.environ.get("NEURALWATT_BASE_URL", "https://api.neuralwatt.com/v1").strip().rstrip("/")
+_NEURALWATT_API_KEY: str = os.environ.get("NEURALWATT_API_KEY", "").strip()
+# Kimi is a reasoning model — it spends tokens on internal "reasoning" BEFORE any
+# visible content is emitted. If max_tokens is too low (e.g. 512), the reasoning
+# alone exhausts the budget → content comes back None (finish_reason=length) and
+# the caller crashes on .strip(). 2048 leaves room for reasoning (~2k chars on a
+# 12-paper batch) + the JSON score object. Override per-call via the env var.
+_NEURALWATT_MAX_TOKENS: int = int(os.environ.get("NEURALWATT_MAX_TOKENS", "2048"))
 
 
 def _cache_key(query: str, openalex_id: str) -> str:
@@ -146,10 +158,51 @@ def _call_ollama(prompt: str, timeout: int = 120) -> str:
     return resp.json().get("response", "").strip()
 
 
+def _call_neuralwatt(prompt: str, timeout: int = 120) -> str:
+    """Call a NeuralWatt (OpenAI-compatible) chat/completions endpoint.
+
+    Reads NEURALWATT_API_KEY / NEURALWATT_BASE_URL / NEURALWATT_MODEL from the
+    environment (the .env loader above populates these). Use a `-flex` model id
+    for the discounted async tier (e.g. kimi-k2.7-code-flex). Raises on a missing
+    key or a non-2xx response so the caller's retry loop can recover."""
+    if not _NEURALWATT_API_KEY:
+        raise RuntimeError("NEURALWATT_API_KEY not set (check .env) — "
+                           "judge backend 'neuralwatt' needs it")
+    resp = requests.post(
+        f"{_NEURALWATT_BASE_URL}/chat/completions",
+        headers={"Authorization": f"Bearer {_NEURALWATT_API_KEY}"},
+        json={"model": _NEURALWATT_MODEL,
+              "messages": [{"role": "system", "content": JUDGE_SYSTEM},
+                            {"role": "user", "content": prompt}],
+              "max_tokens": _NEURALWATT_MAX_TOKENS,
+              "temperature": 0},
+        timeout=timeout,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    # OpenAI shape: choices[0].message.content (the `-flex` async tier still
+    # returns synchronously; content is populated when max_tokens clears the
+    # model's reasoning budget). Kimi is a reasoning model: if max_tokens is too
+    # low the reasoning exhausts the budget → content is None and finish_reason
+    # is "length". Raise so the caller's retry loop can recover / the user is told
+    # to bump NEURALWATT_MAX_TOKENS, rather than crashing on None.strip().
+    choice = data.get("choices", [{}])[0]
+    content = choice.get("message", {}).get("content")
+    if not content or not content.strip():
+        finish = choice.get("finish_reason", "unknown")
+        raise RuntimeError(
+            f"NeuralWatt returned empty content (finish_reason={finish}); the "
+            f"{_NEURALWATT_MODEL} reasoning likely exhausted max_tokens="
+            f"{_NEURALWATT_MAX_TOKENS}. Raise NEURALWATT_MAX_TOKENS in .env.")
+    return content.strip()
+
+
 def _call_judge(prompt: str, timeout: int = 120) -> str:
     """Dispatch to the active judge backend."""
     if _JUDGE_BACKEND == "ollama":
         return _call_ollama(prompt, timeout=timeout)
+    if _JUDGE_BACKEND == "neuralwatt":
+        return _call_neuralwatt(prompt, timeout=timeout)
     return _call_haiku(prompt, timeout=min(timeout, 90))
 
 
@@ -377,8 +430,13 @@ def main():
                         help="Papers per judge call (default 12)")
     parser.add_argument("--workers", type=int, default=4,
                         help="Parallel judge workers (default 4)")
-    parser.add_argument("--judge", default="claude", choices=["claude", "ollama"],
-                        help="Judge backend: 'claude' (Haiku subprocess) or 'ollama' (local, free)")
+    parser.add_argument("--judge", default="claude", choices=["claude", "ollama", "neuralwatt"],
+                        help="Judge backend: 'claude' (Haiku subprocess), "
+                             "'ollama' (local, free), or 'neuralwatt' (OpenAI-compatible, "
+                             "reads NEURALWATT_* from .env)")
+    parser.add_argument("--neuralwatt-model", default=None,
+                        help="NeuralWatt model id (default: NEURALWATT_MODEL from .env, "
+                             "or kimi-k2.7-code-flex). Use a `-flex` id for the async tier.")
     parser.add_argument("--ollama-model", default="qwen3:1.7b",
                         help="Ollama model name (default: qwen3:1.7b)")
     parser.add_argument("--ollama-url", default="http://localhost:11434",
@@ -397,12 +455,20 @@ def main():
                         help="RRF k constant for BM25F+SPLADE fusion sweep (default 60)")
     args = parser.parse_args()
 
-    global _JUDGE_BACKEND, _OLLAMA_MODEL, _OLLAMA_URL
+    global _JUDGE_BACKEND, _OLLAMA_MODEL, _OLLAMA_URL, _NEURALWATT_MODEL
     _JUDGE_BACKEND = args.judge
     _OLLAMA_MODEL = args.ollama_model
     _OLLAMA_URL = args.ollama_url
-    log.info("Judge backend: %s%s", _JUDGE_BACKEND,
-             f" ({_OLLAMA_MODEL} @ {_OLLAMA_URL})" if _JUDGE_BACKEND == "ollama" else "")
+    if args.neuralwatt_model:
+        _NEURALWATT_MODEL = args.neuralwatt_model.strip()
+    _backend_label = {
+        "ollama": f" ({_OLLAMA_MODEL} @ {_OLLAMA_URL})",
+        "neuralwatt": f" ({_NEURALWATT_MODEL} @ {_NEURALWATT_BASE_URL})",
+    }.get(_JUDGE_BACKEND, "")
+    log.info("Judge backend: %s%s", _JUDGE_BACKEND, _backend_label)
+    if _JUDGE_BACKEND == "neuralwatt" and not _NEURALWATT_API_KEY:
+        raise SystemExit("Judge backend 'neuralwatt' set but NEURALWATT_API_KEY is empty "
+                         "(set it in .env or export it before running).")
 
     with open(args.queries) as f:
         eval_queries = json.load(f)
@@ -583,7 +649,8 @@ def main():
     }
 
     print()
-    judge_label = f"Ollama/{_OLLAMA_MODEL}" if _JUDGE_BACKEND == "ollama" else "Claude Haiku"
+    judge_label = {"ollama": f"Ollama/{_OLLAMA_MODEL}",
+                   "neuralwatt": f"NeuralWatt/{_NEURALWATT_MODEL}"}.get(_JUDGE_BACKEND, "Claude Haiku")
     print("=" * 95)
     print(f"  LLM-JUDGED IR BENCHMARK  —  TREC 0-3 relevance via {judge_label}")
     print(f"  {len(eval_queries)} queries  |  NDCG@{args.k}  |  top_n={args.top_n}  |  workers={args.workers}")
@@ -658,7 +725,10 @@ def main():
     output.parent.mkdir(parents=True, exist_ok=True)
     result = {
         "benchmark": "llm_judged_ndcg",
-        "judge": f"ollama/{_OLLAMA_MODEL}" if _JUDGE_BACKEND == "ollama" else "claude-haiku-4-5-20251001 via claude CLI subprocess",
+        "judge": {"ollama": f"ollama/{_OLLAMA_MODEL}",
+                  "neuralwatt": f"neuralwatt/{_NEURALWATT_MODEL} via OpenAI-compatible "
+                                f"{_NEURALWATT_BASE_URL}/chat/completions"}.get(
+                     _JUDGE_BACKEND, "claude-haiku-4-5-20251001 via claude CLI subprocess"),
         "relevance_scale": JUDGE_SCALE,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "k": args.k,

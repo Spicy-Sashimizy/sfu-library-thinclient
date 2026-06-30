@@ -166,7 +166,7 @@ class ThinClientRetriever:
             "SFU_SPLADE_QDRANT_COLLECTION", "splade_150m")
         self._qdrant_client = None   # lazy, only when backend=qdrant
         self._bert_vocab = None      # token->id map shared with the ingest
-        self._seismic = None         # lazy, only when backend=seismic (testbed only)
+        self._seismic = None         # lazy, only when backend=seismic (testbed/served-federated)
 
     # ── lazy loading ────────────────────────────────────────────────────────
 
@@ -563,31 +563,84 @@ class ThinClientRetriever:
         return merged[:top_k]
 
     def _seismic_backend(self):
-        """Lazy-load the SEISMIC Path-A index ONCE per process (testbed only).
-        The index is RAM-resident (G3 FAIL at ~912 B/doc → 137 GB @150M) — this
-        is a measurement adapter, never a served path. Clean error (mirrors the
-        SFU_LOAD_MEM_FLOOR_GB gate) if the index path is unset, never a silent
-        fallback to another leg."""
+        """Lazy-load the SEISMIC backend ONCE per process.
+
+        Two forms, selected by env:
+
+        - **Federated (served 150M path):** `SFU_SEISMIC_SHARD_MANIFEST` set →
+          `ParallelSeismicBackend.from_manifest(...)` or
+          `SequentialSeismicBackend.from_manifest(...)` (two distinct serving
+          classes, picked by `SFU_SEISMIC_FEDERATION`) with
+          `load_mode=SFU_SEISMIC_LOAD_MODE` (default **`mmap`** — Path C). This is
+          what makes `SFU_SPLADE_BACKEND=seismic` work against the real 150M
+          corpus: 8 mmap'd shards served federated, anon floor ~0 (page-cache
+          resident). `mmap` raises a clean RuntimeError if a shard's converted
+          `.mmap/` dir is absent — NEVER a silent fallback to stock Path-A (which
+          would re-introduce the ~137 GB anon floor G3 killed). Serving method is
+          `SFU_SEISMIC_FEDERATION` (default **`parallel`** — the server-side
+          `ThreadPoolExecutor` fan-out; `sequential` is the localized, RAM-efficient
+          method that searches shards one at a time for a bounded resident working
+          set on a RAM-constrained host — `docs/seismic_sequential_serving/`,
+          bit-identical results).
+        - **Single (testbed/persona):** else `SFU_SEISMIC_INDEX` set → the
+          single `SeismicBackend` (Path-A owned anon, RAM-resident — fine at
+          persona scale, NOT servable at 150M). Kept for bit-for-bit
+          reproducibility of the G2/G6 persona results.
+
+        Clean error (mirrors the SFU_LOAD_MEM_FLOOR_GB gate) if neither is set,
+        never a silent fallback to another leg."""
         if self._seismic is None:
-            idx = os.environ.get("SFU_SEISMIC_INDEX")
-            if not idx:
-                raise RuntimeError(
-                    "SFU_SPLADE_BACKEND=seismic requires SFU_SEISMIC_INDEX "
-                    "(path stem or full *.index.seismic)")
-            from lib.thinclient.seismic_backend import SeismicBackend
-            self._seismic = SeismicBackend(idx, self.splade_model_path)
+            manifest = os.environ.get("SFU_SEISMIC_SHARD_MANIFEST")
+            if manifest:
+                load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")
+                # Pick the concrete serving class directly (two distinct methods,
+                # no shared mutable instance state — see sharded_seismic_backend.py).
+                # Default 'parallel' = the historical server-side fan-out; the env
+                # name/default are unchanged so served-path callers don't cascade.
+                federation = os.environ.get("SFU_SEISMIC_FEDERATION", "parallel")
+                if federation == "sequential":
+                    from lib.thinclient.sharded_seismic_backend import SequentialSeismicBackend
+                    self._seismic = SequentialSeismicBackend.from_manifest(
+                        manifest, splade_model_path=self.splade_model_path,
+                        load_mode=load_mode)
+                else:
+                    from lib.thinclient.sharded_seismic_backend import ParallelSeismicBackend
+                    self._seismic = ParallelSeismicBackend.from_manifest(
+                        manifest, splade_model_path=self.splade_model_path,
+                        load_mode=load_mode)
+            else:
+                idx = os.environ.get("SFU_SEISMIC_INDEX")
+                if not idx:
+                    raise RuntimeError(
+                        "SFU_SPLADE_BACKEND=seismic requires SFU_SEISMIC_SHARD_MANIFEST "
+                        "(federated 150M serve, mmap) or SFU_SEISMIC_INDEX "
+                        "(single persona-scale index, path stem or full *.index.seismic)")
+                from lib.thinclient.seismic_backend import SeismicBackend
+                self._seismic = SeismicBackend(idx, self.splade_model_path)
         return self._seismic
 
     def _splade_leg_seismic(self, query: str, top_k: int,
                             f: dict | None) -> list[tuple[str, float]]:
-        """SPLADE leg served from the SEISMIC Path-A index (testbed only — G6/G5).
-        Same return shape as the Qdrant leg: [(oaid, score)]. Any failure
-        degrades to the BM25F leg, matching the encoder-failure contract so RRF
-        still fuses the other legs. SEISMIC is block-summary approximate
-        (overlap@10 0.479 vs Qdrant at default params), so its recall ≤ Qdrant's
-        by construction — this is the G2/G6 quality delta under measurement."""
+        """SPLADE leg served from SEISMIC (testbed single-index, or served
+        federated 150M mmap via SFU_SEISMIC_SHARD_MANIFEST — G6/G5/G8). Same
+        return shape as the Qdrant leg: [(oaid, score)]. Any failure degrades
+        to the BM25F leg, matching the encoder-failure contract so RRF still
+        fuses the other legs. SEISMIC is block-summary approximate (overlap@10
+        0.479 vs Qdrant at default params), so its recall ≤ Qdrant's by
+        construction — this is the G2/G6 quality delta under measurement.
+
+        Federated over-fetch knobs (env, default → 4×top_k per-shard; no-ops for
+        the single-index backend, whose `.search` ignores k_prime):
+        SFU_SEISMIC_K_PRIME, SFU_SEISMIC_QUERY_CUT, SFU_SEISMIC_HEAP_FACTOR."""
         try:
-            res = self._seismic_backend().search(query, top_k)
+            k_prime = os.environ.get("SFU_SEISMIC_K_PRIME")
+            k_prime = int(k_prime) if k_prime else None
+            qc_env = os.environ.get("SFU_SEISMIC_QUERY_CUT")
+            query_cut = int(qc_env) if qc_env else None
+            heap_factor = float(os.environ.get("SFU_SEISMIC_HEAP_FACTOR", "0.8"))
+            res = self._seismic_backend().search(
+                query, top_k, query_cut=query_cut,
+                heap_factor=heap_factor, k_prime=k_prime)
         except Exception as exc:
             logger.warning("SEISMIC SPLADE leg failed (%s); falling back to BM25F leg", exc)
             return self._bm25f_leg(query, top_k, f)

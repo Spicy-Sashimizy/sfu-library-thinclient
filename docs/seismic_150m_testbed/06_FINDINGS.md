@@ -7,8 +7,19 @@ value, verdict, eval script + result file. Unmeasured claims are marked `est.`
 
 | Date | Gate | Value | Verdict | Note / evidence |
 |---|---|---|---|---|
+| 2026-06-30 | **SEISMIC 150M retrieval quality** (neuralwatt/Kimi judged, served mmap path) | First absolute quality number on the SEISMIC 8-shard 150M mmap serving path (`ParallelSeismicBackend`, `query_cut=10`), not the deprecated OpenSearch SPLADE path. 120 SFU eval queries × top-10, **1197/1197 (100%) OpenAlex metadata coverage**, Kimi (`kimi-k2.7-code-flex`) graded all 1200 (query,doc) pairs 0–3. **NDCG@10 = 0.944, MRR@10 = 0.996, P@10(≥2) = 0.773, mean grade 2.15/3, 928/1200 relevant (≥2).** | ✅ **QUALITY VALIDATED** — SEISMIC's top-10 are highly relevant (~77% relevant, #1 hit almost always relevant, well-ordered). **RAM-INVARIANT**: SEISMIC retrieval is deterministic w.r.t. page-cache state, so this one number holds at every RAM level (the RAM sweep changes latency, never the returned ids). | New harness `scripts/seismic_testbed/seismic_quality_eval.py` wires the `benchmark_llm_judge` neuralwatt judge onto SEISMIC retrieval + OpenAlex metadata; **isolated Kimi cache** `data/eval_results/seismic_kimi_judge_cache.json` (the Haiku `llm_judge_cache.json` is never touched). Result `data/eval_results/seismic_quality_kimi_20260630_084905.json`. **CAVEATS:** (1) Kimi is ~0.27 grade **stricter** than Haiku (agreement study `BENCHMARK_METHODOLOGY.md`), so 0.944 is **NOT directly comparable** to the Haiku-judged BM25F/SPLADE/RRF numbers in `benchmark_llm_judge_final.json` — a Kimi re-judge of those baselines would be needed for a head-to-head. (2) NDCG ideal is within SEISMIC's own retrieved top-10 (no cross-method pool), so it scores ranking quality of what SEISMIC returns, not pooled recall. |
+| 2026-06-28 | **Leg-overlap reconciliation** (G2's 0.479 vs G6's 0.935 contradiction) | DEFINITION DIFF, then re-measured under ONE consistent full-corpus definition (federated 8 mmap shards, mmap mode, 40 diverse queries, stored Qdrant SPLADE top-50). **0.479 ≠ 0.935 because they are different metrics**: G2 scopes Qdrant to the 2M med_bio oaid set (client-side id-filter of a **500k-deep over-fetch**, re-ranked), so its top-10 is the *slice's* ranking; G6/rerun leaves both legs **unscoped over all 150M** (50-deep). Same `overlap()` formula; different corpus scope + over-fetch depth. **Re-measure, both ways at full corpus:** overlap@10 **unscoped = 0.935** (reproduces G6 exactly) vs **slice-scoped = 0.150** (G2's regime run WITH the full-corpus SEISMIC leg + stored Qdrant 50-deep). **Depth-aware (overlap@10 is blind below rank 10):** RBO@50 (p=0.9) **unscoped = 0.925**, Kendall-τ@50 **= 0.801**; RBO of the RRF-fused lists **= 0.940**. **28/40 queries have IDENTICAL top-10 sets**; on the 6 queries where the slice had a hit, slice-scoped overlap was **1.0** (the (1-2) med_bio docs agreed perfectly). | ✅ **RESOLVED — propagation thesis DOES NOT survive**: "the 0.479 floor propagates to a system-level drag" is **not supported**. Under one consistent full-corpus definition the legs are strongly coupled (0.935 / RBO 0.925 / τ 0.801) — the G6 Δ=-0.0076 (INCONCLUSIVE) is **sub-rank-10 reordering, not a 0.479 leg gap**. 0.479 and 0.935 are **not in tension**: G2 measures divergence on a 2M slice, G6/rerun measures agreement over all 150M. The slice-scoped value (0.150) is **below** 0.479 because G2's 500k over-fetch surfaced more slice docs than the 50-deep stored list reaches → **0.479 was partly an over-fetch-depth product**, not a clean propagation floor. The G6 row's "0.935 in tension with floor-propagates" note is now **REPOINTED** (see below): the tension was apparent, not real. | Eval `scripts/seismic_testbed/reconcile_legoverlap.py` (federated mmap leg + RBO/Kendall-τ + both-definition overlap; RBO hand-validated: identical=1.0, disjoint=0.0, shifted-canonical=0.81) → `data/eval_results/seismic_legoverlap_reconcile_20260628.json` + log `_legoverlap_reconcile.log`. RAM-safe on the 32 GB swap-pressured box: anon+swap floor held at **1.43 GB** across all 40 queries (mmap anon floor ~0.15 GB + in-process SPLADE encoder; no OOM risk). Re-uses the existing stored 40-query parity record — no LLM judging, no new host. The reconciliation does NOT close G6 (still INCONCLUSIVE at 40 queries; needs ≈200 paired judged for SEM<0.005), it only shows the leg-gap framing of that open G6 was wrong. |
+
+| 2026-06-28 | **G7 150M build (Plan 01 step 2 — full sharded build)** | **BUILT the full 150,413,098 docs** (= `TARGET_DOCS`, zero loss) as **K=8 shards, serially (one at a time, never concurrent)** on the **32 GB host**. Each shard ~18.8M docs: **peak RSS 9.925–9.932 GB** (max 9.932 GB) << **20 GB G7 budget**; on-disk ~8.28 GB/shard, **66.26 GB total** (du-verified); 8353s build (1040–1123s/shard); `standard` variant, dim 28,700–28,725; nnz 13,180,353,682 total (~87.6/doc). Balance across all 40 section-shards: max/min doc **1.001–1.0017**. Per-shard G3 split (shard 0): forward 6.74 GB / inverted+summary 1.17 GB = **85% forward** (vs 38%/62% at 2M — forward dominates at scale). | ✅ **PASS — G7_BUILT_UNDERSPECS** | The sharded reality ran at **per-shard ~10 GB peak (serial)**, NOT the prior 25–60 GB band — that band was a *single-index 150M* projection; splitting the corpus linearly split the peak. The 20M-point projection (9.54 GB) extrapolated near-perfectly (sub-linear power-law c=0.55 held). Gate-zero balance condition met → even build-RAM. Driver `scripts/seismic_testbed/build_plan01_150m_shards.py` → `data/eval_results/build_global_shard{0..7}.json` + `seismic_plan01_shards_150m.json` (manifest); build log `plan01_150m_build.log`; indexes at `/tmp/seismic_testbed/index/plan01/` (external ext4). **Build half COMPLETE & lossless.** Serve half still gated on C2.5 (stock `.load()` = owned-anon Path A, not mmap). G6 RRF parity on the sharded 150M leg is the actual remaining goal (build now unblocks it). |
+| 2026-06-28 | **Plan 01 federation gate** (sharded build result-safety) | overlap@10 of (2-shard federated top-k) vs (1-shard single) over the SAME 929k med_bio docs = **0.9967** over 60 queries (58/60 bit-identical @1.0, 2/60 @0.9 — one top-10 doc differs). Pre-registered bar ≥0.98 / STOP <0.95. Built the 2 shards by hash-partitioning the existing 929k jsonl (shard0 ∪ shard1 == exact 929k docs, balance 1.000), parity DEFAULTS, ~57s/shard build. | ✅ **PASS — FEDERATION_RESULT_SAFE** | The ONE quality variable Plan 01 introduces (per-shard pruning/k-means vs global) perturbs ~0.3% of top-10 → a sharded 150M build is result-safe to trust a G6 number on. Unblocks the build half of Plan 01 (8×18.8M, one shard at a time, fits 32 GB); the 150M serve half still needs C2.5 (see next row). Eval `scripts/seismic_testbed/g_federation_overlap.py` → `data/eval_results/seismic_federation_overlap_929k.json`. Scripts: `shard_spool.py`, `seismic_federated.py`. |
+| 2026-06-28 | **Stock `SeismicIndex.load()` is NOT mmap** (Plan 02/01 serve-floor measurement) | On the saved 2M index: baseline RssAnon 0.006 GB → after `.load()` RssAnon **1.706 GB**, RssFile **0.007 GB** (flat). `.load()` deserializes the whole index into owned anonymous RAM = Path A (→137 GB @150M). | ⚠️ **serve-floor hole (affects Plans 02 + 01)** — **RESOLVED same-day by C2.5 (next row)** | The memory note "pyseismic has no load API" is stale — the live 0.4.0 `.so` exposes `.load()` + `.search_with_stats()` — but `.load()` is a vanilla deserialize, NOT the Path-C mmap reader. Plan 02's "no new code" serve premise is FALSE; Plan 01's serve step used to carry the same hole. The real mmap reader (`MmapSeismicIndex`, C2 / `07_G3_RAM_FIX_PLAN.md` §4.4) existed only as a gitignored Rust bin — **now pyo3-exposed by C2.5 (same date, next row)**. The 150M serve step *used to* need C2.5; that is now DONE. Measured in-session via `/proc/self/status` RssAnon/RssFile on `seismic.SeismicIndex.load`. |
+| 2026-06-28 | **C2.5 — pyo3 mmap reader (the 150M-serve unblock)** | New pyclass `seismic.MmapSeismicIndex` wrapping the C2 mmap reader. Validated at the **Python serve boundary** (not just the Rust bin): parity **bit-identical** (0 mismatches, 30 real SPLADE queries vs owned reference), floor anon Δ **0.000 GB** (2.019 → 2.019 GB; zero anon floor at the pyo3 boundary — no hidden re-materialization), RssFile **1.916 GB** resident vs **1.69 GB** on-disk = **96% file-resident** after `touch_slab` fault-in, mmap warm p50 **0.441 ms**, construct **0.03s**. | ✅ **PASS — C2.5 MMAP_SERVE_READY** | The make-or-break for the 150M serve: does the C2 floor cure hold when the index is constructed from Python? Yes — bit-identical to the C2 Rust-bin measurement at the pyo3 boundary. The 150M serve is now unblocked at the binding layer. Also re-ran the federation gate in `--load-mode mmap` (2-shard federated-mmap vs 1-shard single-stock, same 929k docs): overlap@10 **0.9967** = bit-identical to stock mode → federation result-safe under Path C. New file `spike/seismic_upstream/src/pylib/mmap_index.rs` (gitignored spike; the built `.so` is in the venv); `seismic_federated.py` gains `--load-mode mmap` (default stock, back-compat). **Load-bearing finding:** converted shards MUST use the C2 flat doc-mapping layout (`document_mapping_strings.bin` + `document_mapping_offsets.bin`), NOT the stale C1a writer (`document_mapping.bin`) — the C2 reader loads `doc_mapping=None` from the old layout → search falls back to numeric ids → overlap collapses to 0; the `c1a_mmap_index` bin must be built against the current (C2) writer. Turnkey conversion driver `convert_shard_to_mmap.py` (Piece E) shipped. **8-shard 150M conversion DONE 2026-06-28** (same session): 8/8 OK, bit-identical parity every shard, peak RSS **9.878 GB** (≈half the 20 GB/shard budget; ~14× under Path A's ~137 GB floor), floor anon Δ **0.044 GB**, ~97% file-resident, 66.2 GB on-disk total (== the 66 GB source), **~7 min wall-clock** whole run (NOT multi-hour). Manifest → `data/eval_results/seismic_c25_shards_150m_mmap.json`, verdict `C2.5 150M_MMAP_READY`. The 150M serve is now unblocked end-to-end (binding + 8 converted shards); only the federated 150M G6 measurement remains. Eval `scripts/seismic_testbed/c25_mmap_serve_validate.py` → `data/eval_results/seismic_c25_mmap_serve_validate.json`; federation-mmap → `seismic_federation_overlap_929k_mmap.json`. |
+| 2026-06-29 | **G6 full-corpus RRF parity — n=120 re-measure** (the tighter estimate) | Same scorer `g6_rrf_parity_fullcorpus.py`, **120 queries** (vs the 2026-06-28 n=40 run). Reused the committed n=120 Qdrant baseline record (`parity_record_tc_qdrant_n120_20260629.json`) — only the SEISMIC treatment leg is live. **More disciplined than the n=40 run: paired n=108** (vs 38), Δ=**−0.0059** (vs −0.0076), SEM(Δ)=**0.0049** (vs 0.0067), 95% CI ±**0.0096**. Baseline 0.5088 / treatment 0.5050. Full-corpus SEISMIC-vs-Qdrant leg overlap@10 = **0.9017** (n=120; the n=40 run measured 0.935 — same magnitude, n=120 is the authoritative figure). | ⚠️ **STILL INCONCLUSIVE (under-powered)** — but tighter: Δ shrank (−0.0076 → −0.0059) and n tripled → CI half-width 0.0116 → 0.0096. Still exceeds the ±0.005 bar (needs n≳400 paired at sd≈0.051). NOT PASS, NOT FAIL. Directional signal unchanged (mild SEISMIC-under, within noise). | **Confirms the n=40 finding at 3× the power** — the full-corpus escape delivers measurement feasibility (non-degenerate both legs) but cannot resolve ±0.005 at n≤120 structurally. Leg-overlap 0.9017 reinforces the leg-overlap reconciliation (d219f01): the SEISMIC-vs-Qdrant divergence is small (≈90% top-10 shared), the residual Δ is sub-rank-10 reordering absorbed by RRF, NOT the G2 0.479 leg gap propagating. Result `data/eval_results/seismic_g6_rrf_fullcorpus_n120_20260629.json` + log `seismic_g6_fullcorpus_n120_20260629.log`; eval `scripts/seismic_testbed/g6_rrf_parity_fullcorpus.py` (--queries 120). Measured 2026-06-29. |
+| 2026-06-28 | **G6 full-corpus RRF parity** (federated 8 mmap shards, all 150M) | The **full-corpus escape** from the persona-2M INCONCLUSIVE. SEISMIC leg = `ShardedSeismicBackend` over all 8 mmap'd shards (150,413,098 docs, load 0.5s / 0.15 GB anon floor / peak ~11.9 GB RSS — **G8-adjacent: served 150M end-to-end without OOM on 32 GB**), vs the stored full-corpus Qdrant baseline. **The escape worked**: 38/40 queries pair (vs persona-2M's degenerate n=11), both legs measurable, no client-filter baseline. But the point estimate does NOT clear the ±0.005 bar: paired Δ=**−0.0076** (n=38, SEM=0.0059, 95% CI ±0.0116 *straddles the bar* → signal/noise indistinguishable). Baseline 0.5445 vs treatment 0.5369 (39-headline regime: baseline=0.5378, 34-common anchor=0.5597). Per-query sign 25 unchanged / 11 worse / 2 better (directional small drag, not a regression). Full-corpus SEISMIC-vs-Qdrant leg overlap@10 = **0.935** (NOT comparable to G2's 0.479 — that was slice-scoped). **DUMB-CHECK (2026-06-28):** this 0.935 is in *tension* with "the 0.479 floor propagates": at full corpus the SEISMIC and Qdrant SPLADE legs agree 93.5% @10, and 8 of the 13 NDCG-moving queries had **identical top-10 sets** — i.e. the system-level drag comes from **sub-rank-10 reordering**, NOT a 0.479 leg gap. So this run does not confirm the floor propagates; if anything it argues the 0.479 was a slice/metric artifact. **RECONCILED 2026-06-28 (see the "Leg-overlap reconciliation" row above):** re-measured under ONE consistent full-corpus definition — overlap@10 unscoped = 0.935 (reproduces G6) vs slice-scoped = 0.150 (G2's regime, full-corpus leg); RBO@50 = 0.925, Kendall-τ = 0.801, 28/40 identical top-10 sets. The "0.479 floor propagates" thesis DOES NOT SURVIVE — the system drag is sub-rank-10 reordering, not a 0.479 leg gap; 0.479 was partly a 500k-over-fetch-depth artifact (it surfaced more slice docs than the 50-deep stored list reaches). The apparent tension was a definition diff, now closed. | ⚠️ **INCONCLUSIVE (under-powered)** — G6 stays open: NOT PASS (Δ exceeds bar), NOT FAIL (indistinguishable from noise at n=38). The earlier framing "the G2 0.479 floor propagates as a drag" is NOT supported by this run (0.935 leg overlap; divergence is sub-rank-10). | The C2.5 + Plan-01 chain delivered the *measurement feasibility* (full-corpus G6 now runs; persona was structurally unmeasurable) but did not by itself clear the quality bar — the quality floor stays the live open risk. New script `scripts/seismic_testbed/g6_rrf_parity_fullcorpus.py` (federated mmap-mode, copies the persona RRF/NDCG math so `g6_rrf_parity.py` stays bit-reproducible; no degenerate-detector at full corpus). Eval → `data/eval_results/seismic_g6_rrf_fullcorpus_150m.json` + log `seismic_g6_fullcorpus_150m.log`. **DUMB-CHECK addenda (2026-06-28):** (1) **Gate is structurally unresolvable at 40 queries** — to push SEM(Δ) under the 0.005 bar (CI half-width < 0.005) needs ≈ **200 paired judged queries** (sd≈0.0364 → n≳203); the diverse set maxes at ~38 paired, so *re-running this eval never closes G6* — it needs a ~5× larger judged set or a revised bar. (2) **The 0.560 absolute gate is NOT reproduced** — both arms land at ~0.538 (treatment 0.5369 vs the 0.560 target = **−0.023**, ~5× outside the bar in absolute terms); the run is only "within noise" under the *paired-delta* re-interpretation of the gate (a better test, but a re-interpretation). The 0.560 regime was a 34-common-subset/judge-regime number, not reproduced at full corpus. Arithmetic of this run independently re-verified: n=38, Δ, SEM, CI, 25/11/2 split all reproduce exactly from the per-query data. |
+| 2026-06-28 | **Serving footprint: SEISMIC vs Qdrant @ 150M** (DUMB-CHECKED + warm re-run) | Head-to-head RAM + latency, identical SPLADE queries (top-k=50, same encoding). **RAM — TRUE anon floor = RssAnon + VmSwap** (the OOM-relevant number; RssAnon alone undercounts on a swap-pressured host): **SEISMIC ≈ 0.15 GB index** (1.1 GB in-process incl. SPLADE encoder), **file-backed mmap → VmSwap 0**, page cache ~8–12 GB but reclaimable. **Qdrant ≈ 17 GB** (live `/proc/112`: **RssAnon 3.35 GB + VmSwap 13.64 GB**; matches the 2026-06-26 OOM-era "resting 17.4 GB") — postings are anon heap the kernel pages to swap to dodge OOM. → **SEISMIC wins anon floor by ~14×–100× (≈16 GB), NOT the 2.18 GB first reported.** **Latency (warm re-run, 20 q × 2 passes):** SEISMIC COLD p50 30.2 s / WARM p50 **31.3 s** (warm ≈ cold → **compute-bound, NOT cache-bound**); Qdrant COLD 7.6 s / WARM **6.8 s**. | ⚠️ **RAM: SEISMIC decisive win (≈16 GB true-anon-floor saving, the architectural point — file-backed mmap never swaps; Qdrant's anon swap-thrashes).** **LATENCY: NO VERDICT** — both numbers were taken on a **swap-thrashing host (swap ~15/16 GB used)** and are NOT representative of a provisioned box (Qdrant on_disk is normally tens of ms). Warm≈cold rules out the "cold-cache artifact" hypothesis for SEISMIC, but the encode-vs-search split is uninstrumented (could be the in-process CPU SPLADE encoder, not SEISMIC traversal) — so "SEISMIC too slow" is a **next-step to isolate on a no-swap host**, not a structural conclusion. | **Corrections vs the original 2026-06-28 row** (`c9356ec`): (1) anon floor must include **VmSwap** — Qdrant's RssAnon-only 3.35 GB hid 13.64 GB of swapped anon; (2) Qdrant "OOM" was the force-**optimize/build** peak, not serving — it serves 150M only via `on_disk: true` config + swapping; (3) latency is swap-distorted on this host → not a verdict; (4) SEISMIC's in-process anon bundles the encoder, so its index-only floor (~0.15 GB, per G6 row) is the fair figure. Fairness: SEISMIC `/proc/self/` (in-proc), Qdrant `/proc/<pid>/` (server). Script `scripts/seismic_testbed/serve_footprint_bench.py` (now captures VmSwap + cold/warm passes) → warm results `data/eval_results/seismic_vs_qdrant_serve_bench_warm_20260628_213539.json`; original cold run `…_20260628_202906.json`. **Net: the SEISMIC-pivot RAM premise is confirmed and strengthened; serving latency remains the open question, blocked on a non-swapping test host.** |
 | 2026-06-27 | **G2 follow-up** (param sweep) | overlap@10 frozen at **0.479** across P0/P1/P3: `max_fraction` 1.5→5.0→10.0, `doc_cut` 15→1, `summary_energy` 0.4→0.9 (index 1.69→5.28 GB, peak RSS 2.83→7.92 GB). Per-query overlap **bit-identical** across configs. | ❌ **FAIL (not tunable on named levers)** | The 06 hypothesis ("likely recoverable via index-time pruning shrink") is **falsified**. The lever `max_fraction` is proven inert: 2× more retained docs/list changes zero top-10 results (the pruning tail ranks below top-10). Two escapes remain: untested `n_postings`/`centroid_fraction`, and the looser G6 RRF system-level gate. Eval `scripts/seismic_testbed/g2_param_sweep.py` → `data/eval_results/seismic_g2_param_sweep.json`. See §"G2 param-sweep" below. |
 | 2026-06-27 | **G2 follow-up #2** (`n_postings` sweep) | overlap@10 frozen at **0.479** across P0/N1/N3: `n_postings` 3500→7000→14000 (index 1.69→2.91 GB, peak RSS 2.83→7.35 GB, avg list 5485→...→2808 post-prune). Per-query overlap **bit-identical** (every one of 34 queries unchanged; programmatic check N1==P0 AND N3==P0). | ❌ **FAIL (server-side pruning is NOT the gap)** | N3 saturates the **global** selection (budget 390.5M > 153M total postings `idx.nnz` → every posting selected); only the per-list cap (21,000) still clips the hottest lists, and the `max_fraction` sweep already proved that cap is irrelevant to top-10. So 0.479 is the **query-time approximation floor** (summary-skip + in-block coordinate traversal), not a posting-retention gap — **no index knob reclaims it**. The "untested `n_postings`" escape (G2 follow-up #1) is **closed**. Only `centroid_fraction` and the **G6 RRF** system-level gate remain. Eval `scripts/seismic_testbed/g2_param_sweep.py --lever n_postings` → `data/eval_results/seismic_g2_npostings_sweep.json`. See §"G2 n_postings sweep" below. |
+| 2026-06-27 | **G2 follow-up #3** (`centroid_fraction` sweep — the LAST open escape) | overlap@10 P0/C1/C2=**0.4794/0.4794/0.4794**, C3 (cf→0.4)=**0.4824** — the only non-inert axis (block membership shifts → 2/34 queries' top-10 changed) but the reachable movement is **+0.003** at ~1.8× RSS (2.83→5.07 GB). The 4×-density ceiling is still 97% below the 0.95 bar (+0.003 vs the +0.471 needed ≈ 157× shortfall). | ⚠️ **TUNABLE-NOT-REACHED** (categorically not bit-identically inert like #1/#2, but the reachable gain is negligible and RAM-expensive) | `centroid_fraction` is NOT a posting-retention lever (it changes block membership, not which postings survive pruning) — so unlike sweeps #1/#2 it perturbs per-query top-10. But quadrupling clustering density buys +0.003; extrapolating cf upward hits the RAM wall fast (cf=0.4 already 5 GB at 2M; 150M-scale dense clustering is astronomically more RAM) and cannot reach 0.95. **→ no SEISMIC index knob clears the G2 quality bar on ANY axis (per-list-cap, global-budget, clustering-density).** 0.479 is the structural query-time approximation floor. Only the looser G6 RRF system gate remains (measured INCONCLUSIVE / persona-unmeasurable 2026-06-27). Eval `scripts/seismic_testbed/g2_param_sweep.py --lever centroid_fraction` → `data/eval_results/seismic_g2_centroid_fraction_sweep.json`. |
 | 2026-06-26 | **GZ** (algorithm prunes at scale) | SEISMIC validated on **138M passages, MS MARCO v2** (ECIR 2025) | ✅ **PASS** | The pruning that BMP lacked is validated at ≈ our target scale. Source: [arXiv:2501.11628](https://arxiv.org/abs/2501.11628) "Investigating the Scalability of Approximate Sparse Retrieval Algorithms to Massive Datasets" (Bruch, Nardini, Rulli, Venturini, Venuta). Mechanism (cross-ref 2026-06-26): SEISMIC = "Spilled Clustering of Inverted Lists with Summaries" — geometrically-cohesive **blocks + per-block summary-vector ("sketch") skipping + static per-posting-list pruning** (top-entries, "concentration of importance") + forward index for in-block scoring, coordinate-at-a-time traversal. Source: [arXiv:2404.18812](https://arxiv.org/abs/2404.18812) (SIGIR 2024). **Caveat:** the RAM/latency tables at 138M did not decode in the PDF fetch — pull them before setting G8 expectations (`04_BUILD_AND_GATHER.md`). |
 | 2026-06-26 | **GZ** (no-JVM / embeddable) | pure-Rust, **MIT**, `cargo add seismic` + `pyseismic-lsr` Python bindings | ✅ **PASS** | Clears the two gates OpenSearch+SEISMIC fails (no-JVM, embeddable). Source: [github.com/TusKANNy/seismic](https://github.com/TusKANNy/seismic) README (fetched 2026-06-26). |
 | 2026-06-26 | **GZ** (RAM cure out-of-box) | **No mmap / on-disk / out-of-core mode** in the FOSS repo as of 2026-06-26; index is RAM-resident | ⚠️ **OPEN RISK (R-RAM)** | The reference impl loads forward+inverted into RAM — same class as BMP (retired at 211 GB) and the prior `STACK_COST_MATRIX` row ("Seismic standalone … RAM-resident … ~8 GB/9M → not viable @150M"). The paper's own future-work names "retrieval where indexes cannot fit in main memory" → confirms it's an open direction, not shipped. **This is why the testbed exists rather than just wiring up the crate.** Source: repo README + `docs/qdrant_vs_lucene_assessment/STACK_COST_MATRIX.md`. |
@@ -166,11 +177,57 @@ coordinate traversal), which is structural to SEISMIC's block-summaries design
 and is not addressed by any `n_postings`/`max_fraction`/`doc_cut` combination.
 Path B (OpenSearch+SEISMIC) inherits this same floor.
 
-**Remaining escapes from "G2 KILL":** (1) `centroid_fraction` (clustering
-density — not a posting-retention lever; per the above mechanism, unlikely to
-move top-10, and untested), and (2) the **G6 RRF system-level gate** (looser
+**Remaining escapes from "G2 KILL":** (1) ~~`centroid_fraction`~~ — **CLOSED
+2026-06-27** (sweep #3: the only non-inert axis, but quadrupling clustering
+density buys only +0.003 → 0.4824, still 97% below the 0.95 bar; the reachable
+movement is negligible and RAM-expensive; see §"G2 centroid_fraction sweep"
+below); the only escape left is (2) the **G6 RRF system-level gate** (looser
 than the B1 leg-level bar — a divergent leg at 0.479 can still RRF-fuse within
-±0.005 of 0.560; this is now the load-bearing escape hatch for the quality goal).
+±0.005 of 0.560) — measured INCONCLUSIVE / persona-unmeasurable 2026-06-27 (see
+below); a real G6 verdict needs the full-corpus G7/G8 run.
+
+## G2 centroid_fraction sweep (2026-06-27 — the clustering-density lever, MEASURED, FOLLOW-UP #3)
+
+The LAST open G2 quality escape: `centroid_fraction` (the fraction of docs used
+as k-means centroids → controls block COUNT and SIZE, i.e. clustering density).
+Categorically NOT a posting-retention lever — it changes which docs cluster
+together, not which postings survive pruning — so, unlike sweeps #1 (`max_fraction`) and #2 (`n_postings`) which both left per-query top-10 bit-identical
+to P0, a real run here is *expected* to perturb top-10 (block membership shifts
+when density changes). The question: does that movement reach toward 0.95, or is
+0.479 also a structural floor on this axis?
+
+Grid (2M med_bio, 34 queries, offline vs cached Qdrant — `g2_param_sweep.py
+--lever centroid_fraction`):
+| config | centroid_fraction | overlap@10 | peak RSS | note |
+|---|---|---|---|---|
+| P0_cf0.1 | 0.1 (default) | 0.4794 | 2.83 GB | anchor — reproduces 0.479 exactly |
+| C1_cf0.05 | 0.05 (½ density) | 0.4794 | 4.98 GB | **identical to P0** — coarser blocks change nothing |
+| C2_cf0.2 | 0.2 (2× density) | 0.4794 | 4.98 GB | **identical to P0** — finer blocks change nothing |
+| C3_cf0.4 | 0.4 (4× density) | **0.4824** | 5.07 GB | +0.003; only 2/34 queries' top-10 changed |
+
+**VERDICT: `G2 TUNABLE via centroid_fraction` — but TUNABLE-NOT-REACHED, and the
+reachable gain is negligible.** This is the only non-inert axis of the three
+sweeps: halving (C1) and doubling (C2) clustering density left every per-query
+top-10 identical to P0 (same bit-identical signature as the inert axes), but
+quadrupling density (C3) *did* perturb results — 2 of 34 queries shifted, for a
++0.003 overlap gain. However:
+- The ceiling (0.4824) is still **97% below the 0.95 bar** — +0.003 vs the +0.471
+  needed to reach the bar is a **~157× shortfall**.
+- The gain is RAM-expensive: 4× density costs ~1.8× the build RSS (2.83→5.07 GB
+  at 2M). Extrapolating cf upward toward a meaningful gain hits the RAM wall
+  fast (cf=0.4 already 5 GB at 2M; at 150M scale, the k-means clustering of a
+  4×-denser-centroid budget is astronomically more RAM) and cannot reach 0.95.
+
+**Conclusion.** `centroid_fraction` does not bit-identically freeze like
+`max_fraction`/`n_postings`, but its reachable top-10 movement is negligible and
+RAM-bound. **No SEISMIC index knob clears the G2 quality bar on any axis** (per-list-cap, global-budget, clustering-density) — all three are now closed
+(either inert or non-reachable). The 0.479 overlap is the query-time
+approximation floor (summary-skip + in-block coordinate traversal), structural
+to SEISMIC's block-summaries design and not retrievable by tuning. The only
+remaining quality escape is the looser G6 RRF system gate (measured INCONCLUSIVE / persona-unmeasurable — see next section; a real verdict needs the full-corpus G7/G8 run).
+
+Eval: `scripts/seismic_testbed/g2_param_sweep.py --lever centroid_fraction` →
+`data/eval_results/seismic_g2_centroid_fraction_sweep.json`.
 
 ## G6 RRF parity (2026-06-27 — persona-scale attempt, MEASURED → INCONCLUSIVE, persona-unmeasurable)
 
@@ -229,15 +286,146 @@ config flip, not a rebuild.
 Eval: `scripts/seismic_testbed/g6_rrf_parity.py` →
 `data/eval_results/seismic_g6_rrf_persona_2m.json` (social_sciences 2M slice).
 
+## G7 150M build-RAM projection (2026-06-27 — measured-curve, *proj.*, NOT a 150M build)
+
+The user question: "does the 150M db need 160 GB RAM?" Answered by measuring the
+peak-RSS-vs-docs scaling curve at the largest scales this 31 GB host fits, NOT by
+attempting a 150M build (RAM-impossible here — `SeismicIndex.build()` holds the
+forward index + k-means clustering resident; pyseismic 0.4.0 has no on-disk/streaming
+build path). A 2-point linear extrapolation had produced the "~128 GB / 160 GB host"
+claim; this run refutes it with a measured 4-point curve.
+
+**4 measured points (DEFAULTS, parity-matched — not the unpruned sweep configs):**
+
+| docs | peak RSS | on-disk | rss/doc |
+|---|---|---|---|
+| 929k | 1.91 GB | 1.16 GB | 2.06 MB/M |
+| 2.0M | 2.81 GB | 1.69 GB | 1.41 MB/M |
+| 8.0M | 5.11 GB | 3.75 GB | 0.64 MB/M |
+| 20.0M | 9.54 GB | 7.70 GB | 0.48 MB/M |
+
+The rss/doc column *falls* monotonically (2.06→0.48 MB/M-doc) → scaling is
+**decisively sub-linear**. Two fits, both excellent (R² 0.99+, backfit the
+largest point within 1-6%):
+- **linear** `rss = a + b·docs` → 150M proj **60 GB**
+- **power-law** `rss = a·docs^c` (c=0.51) → 150M proj **25 GB**
+- naive `rss/doc@20M × 150M` → 72 GB (over-estimates because it ignores the
+  sub-linear trend)
+
+**Band: 25–60 GB peak RSS for the 150M build.** The data cannot resolve this
+2.4× band further without a >20M measured build (itself RAM-impossible on this
+host). The sub-linear trend (rss/doc falling) favors the lower end (~25 GB),
+but the rigorously-honest statement is the band.
+
+**Verdict:** the 150M build does **NOT** need 160 GB. The "128/160 GB" figure was
+a 2-point linear over-estimate, refuted by the 8M+20M points (which exposed the
+circurvature). A host sized for the ~60 GB upper bound + safety (≈75-80 GB) would
+clearly suffice; ~30 GB if the sub-linear trend holds. This is *proj.* (curve fit
+over measured points ≤20M, NOT a measured 150M build) — labelled as such per the
+CLAUDE.md efficacy rule; a true G7 build remains pending a sized host.
+
+Eval: `scripts/seismic_testbed/project_150m_ram.py` (4-point fit + projection) +
+`build_persona_seismic.py` (the 8M/20M scale builds) →
+`data/eval_results/seismic_build_scale_{8m,20m}.json` +
+`seismic_g7_150m_ram_projection.json`.
+
+## G8 150M RAM + latency served (2026-06-29 — served-package promotion + RAM measured)
+
+**The served-package gap is closed.** Until 2026-06-29 the federated
+`ShardedSeismicBackend` lived only in `scripts/seismic_testbed/`, and the live
+retriever's `_seismic_backend()` wired only the single Path-A `SeismicBackend` —
+so `SFU_SPLADE_BACKEND=seismic` could NOT serve the real 150M corpus. This
+session:
+
+1. **Promoted `ShardedSeismicBackend`** (+ `_EncoderShim`, `_load_manifest`,
+   new `from_manifest()` classmethod) into the served package
+   `src/lib/thinclient/sharded_seismic_backend.py`; the testbed
+   `seismic_federated.py` is now a back-compat re-export shim (all harnesses
+   `from seismic_federated import ShardedSeismicBackend` unchanged).
+2. **Wired `_seismic_backend()`** (`retriever.py`) to the federated manifest:
+   `SFU_SEISMIC_SHARD_MANIFEST` → `ShardedSeismicBackend.from_manifest()` with
+   `load_mode=SFU_SEISMIC_LOAD_MODE` (default **`mmap`**; clean `RuntimeError`
+   on a missing `.mmap/` dir — never a silent Path-A fallback). Federated
+   over-fetch knobs `SFU_SEISMIC_K_PRIME` / `SFU_SEISMIC_QUERY_CUT` /
+   `SFU_SEISMIC_HEAP_FACTOR` threaded into `_splade_leg_seismic` (no-op `k_prime`
+   added to the single backend so both share one call signature).
+3. **Verified end-to-end:** `SFU_SPLADE_BACKEND=seismic` +
+   `SFU_SEISMIC_SHARD_MANIFEST=data/eval_results/seismic_c25_shards_150m_mmap.json`
+   + `SFU_SEISMIC_LOAD_MODE=mmap` returns scored OpenAlex ids against the live
+   8-shard 150M corpus (cold first-touch mmap fault 167s for one query; warm
+   latency separate).
+
+**G8 RAM — the deciding axis — MEASURED 2026-06-29** (`serve_footprint_bench.py`,
+40 queries served federated over the 8 mmap shards, swap-heavy 32 GB host — swap
+does not contaminate the anon-floor reading, only latency). The bench computes
+the **TRUE anon floor = RssAnon + VmSwap** (resident anon + anon paged OUT to
+swap — the OOM-relevant demand the kernel hides by swapping), which is the
+honest cross-engine number on a memory-pressured host:
+
+| Metric (TRUE floor = RssAnon + VmSwap) | SEISMIC | Qdrant |
+|---|---|---|
+| **TRUE anon floor** | **1.10 GB** | **16.99 GB** |
+| resident RssAnon | 1.10 GB | 6.75 GB |
+| VmSwap (anon paged out) | **0.0 GB** | **10.23 GB** |
+| VmRSS peak | 1.43 GB | 9.02 GB |
+| anon bytes/doc | 7.86 B/doc | 121.3 B/doc |
+
+SEISMIC's index is file-backed mmap → reclaimable page cache → **zero swap**;
+of the 1.10 GB anon, ~0.9 GB is the in-process SPLADE encoder + Python runtime
+(client-side encode cost the Qdrant path also pays), and the **index anon floor
+itself is ≈ 0.14 GB** (measured post-load, before the encoder warms).
+Qdrant serving the *same* 150M SPLADE leg had to page **10.23 GB of its anon
+heap out to swap** under the same host pressure. **Path-C cure proven at 150M
+served** — ~0 GB index anon, ~15× lower TRUE floor than Qdrant, clears the
+gate's "materially < Qdrant 6.55 GB" bar decisively.
+
+**G8 latency — MEASURED but SWAP-CONFOUNDED (recorded, NOT a verdict).** Single
+COLD pass (`--passes 1`, so `warm=null`); 32 GB host with 15/16 GiB swap used
+→ both engines thrashing. p50 / p95 / mean over 40 queries:
+
+| Latency | SEISMIC | Qdrant |
+|---|---|---|
+| p50 | **76.7 s** | **7.9 s** |
+| p95 | 99.1 s | 11.7 s |
+| mean | 77.3 s | 7.7 s |
+| min | 59.7 s | 3.6 s |
+
+SEISMIC ~10× slower here. **Neither number is representative of a provisioned
+host**: SEISMIC's 77 s/query is its 66 GB mmap working set page-faulting across
+40 different query postings on a box that can't hold them; Qdrant's 7.9 s is its
+own swap-thrash (10.23 GB paged out, `status=grey` collection). This is the
+item-#3 caveat in full force — recorded as a baseline, not concluded. The run
+used the **pre-instrumentation** bench (no `encode_ms`/`traverse_ms` keys); the
+encode-vs-traverse split shipped `efce80e` (2026-06-29, after this run completed)
+so the next run attributes SEISMIC's p50 to SPLADE encode vs fan-out traversal.
+Result JSON + log: `data/eval_results/seismic_g8_150m_serve_20260629.{json,log}`;
+latency remediation roadmap: `docs/seismic_150m_testbed/08_LATENCY_RESEARCH.md`.
+
+**Verdict:** G8 RAM ✅ decisive (Path-C TRUE floor 1.10 GB vs Qdrant 16.99 GB,
+index anon ≈ 0.14 GB, zero swap). Latency ❌ swap-confounded — needs a no-swap
+host (RAM ≥ ~7.5 GB resident set), `--passes 2` for a real warm p50, and the
+encode-vs-traverse split before any latency verdict (item #3).
+
+
 ## Open gates (next measurements, in priority order)
 
-1. **G2 follow-up — DONE 2026-06-27** (see §"G2 param-sweep" and §"G2 n_postings sweep" below): BOTH index-time lever
-   axes are now measured and inert. The per-list-cap axis (`max_fraction`, `doc_cut`, `summary_energy`) and the
+> **2026-06-29 update:** the served-package gap that made `SFU_SPLADE_BACKEND=seismic`
+> unable to serve the real 150M corpus is **CLOSED** — see §"G8 150M RAM + latency
+> served" above. `ShardedSeismicBackend` is promoted into `src/lib/thinclient/` and
+> `_seismic_backend()` wires it via `SFU_SEISMIC_SHARD_MANIFEST` (mmap default).
+> **G8 RAM ✅** (anon floor 0.142 GB vs Qdrant 6.71 GB). The remaining open items
+> below are now: G8 latency (no-swap host re-run), G6 (n≳400 judged, or re-baseline
+> to the paired-Δ reading the n=120 run supports), G5 persona latency, G9 ownership.
+
+1. **G2 follow-up — DONE 2026-06-27** (see §"G2 param-sweep", §"G2 n_postings sweep", and §"G2 centroid_fraction sweep" below): ALL THREE
+   index-time lever axes are now measured. The per-list-cap axis (`max_fraction`, `doc_cut`, `summary_energy`) and the
    global-budget axis (`n_postings`, swept to the selection-saturated ceiling) both leave overlap@10 frozen at 0.479
-   with bit-identical per-query top-10. **No index-time pruning knob reclaims the 0.479 gap.** Two escapes from
-   "G2 KILL" remain: (a) **`centroid_fraction`** (clustering density — not a posting-retention lever; untested and,
-   per the measured mechanism, unlikely to move top-10), and (b) the **G6 RRF system-level gate** (looser than the B1
-   leg-level bar; a divergent leg can still fuse — open, not closed by G2).
+   with bit-identical per-query top-10; the clustering-density axis (`centroid_fraction`, sweep #3) is the only
+   non-inert axis but its reachable movement is negligible (+0.003 → 0.4824, still 97% below 0.95). **No SEISMIC index
+   knob reclaims the 0.479 gap on any axis.** Two escapes from
+   "G2 KILL" remain: (a) ~~`centroid_fraction`~~ — **CLOSED 2026-06-27 (sweep #3 below): the last axis proved non-reachable** (the only non-inert
+   lever, but quadrupling clustering density buys only +0.003 → 0.4824, still 97% below 0.95 at ~1.8× RSS; cannot reach the bar), and (b) the **G6 RRF system-level gate** (looser than the B1
+   leg-level bar; a divergent leg can still fuse — open but persona-unmeasurable per the 2026-06-27 run).
 2. **G5 latency at persona**: the G4 run already recorded per-query ms (sub-ms
    warm); formalize vs the Qdrant persona 66 ms ref.
 3. **G6 RRF parity** (P3) — **MEASURED 2026-06-27 → INCONCLUSIVE (persona-unmeasurable)**,
@@ -250,27 +438,29 @@ Eval: `scripts/seismic_testbed/g6_rrf_parity.py` →
    directly. SEISMIC→retriever wiring + social_sciences index + treatment leg are
    recorded for that eventual run.
 
-> G4 + G3 + G2-sweeps (#1 max_fraction + #2 n_postings) measured. G4 (the decisive gate) is GREEN; G3 is as
+> G4 + G3 + G2-sweeps (#1 max_fraction + #2 n_postings + #3 centroid_fraction) measured. G4 (the decisive gate) is GREEN; G3 is as
 > pre-registered (R-RAM) and now *cured* on Path C (C2, 07 §4.4); G2 fails at default configs AND is not recoverable
-> via any index-time pruning lever (both the per-list-cap axis and the global-budget axis proven inert, bit-identical
-> to the selection-saturated ceiling). No 150M host spent.
+> via any index-time lever (all three axes: per-list-cap + global-budget proven bit-identically inert; clustering-density
+> the only non-inert axis but +0.003 → 97% below bar). No 150M host spent.
 
 ## Current one-line status
 
 **P0 ✓ (gate-zero). P1 ✓ (G1 PASS). P2: G4 ✓ PASS (decisive), G3 ✗ FAIL as
 predicted (R-RAM) → **cured on Path C** (C2 KEEPS_GATE, 07 §4.4), G2 ✗ FAIL
-(defaults) AND ✗ not-tunable on any index-time pruning lever (both lever axes
-proven inert 2026-06-27: per-list-cap `max_fraction`/α/`doc_cut` AND global-budget
-`n_postings` to the selection-saturated ceiling → bit-identical 0.479).** SEISMIC
-prunes where BMP couldn't — the pivot is validated on the RAM/scale axis. The
-no-JVM + RAM-cured goal is structurally solved (Path C). The **remaining open
+(defaults) AND ✗ not-recoverable on ANY index-time lever (all three axes
+measured 2026-06-27: per-list-cap `max_fraction`/α/`doc_cut` AND global-budget
+`n_postings` to the selection-saturated ceiling → bit-identical 0.479; AND
+clustering-density `centroid_fraction` swept 0.05→0.4 → the only non-inert axis,
+but +0.003 → 0.4824, still 97% below the 0.95 bar at ~1.8× RSS — non-reachable).**
+SEISMIC prunes where BMP couldn't — the pivot is validated on the RAM/scale axis.
+The no-JVM + RAM-cured goal is structurally solved (Path C). The **remaining open
 risk is quality** (G2): 0.479 overlap@10 is the query-time approximation floor
 (summary-skip + in-block coordinate traversal), structural to SEISMIC's
-block-summaries design and **not retrievable by any index knob**. **G6 (the looser
-system-level escape) was measured 2026-06-27 → INCONCLUSIVE: a persona-scale
-±0.005 verdict is unmeasurable (any 2M slice holds ≤4% of judged docs; the
-client-filtered matched-baseline is degenerate; n=11 paired, SEM 0.0058 > bar).**
-The quality goal now hangs on (a) untested `centroid_fraction` (clustering density
-— not a posting-retention lever, unlikely to move top-10), or (b) a full-corpus
-G6 run (G7/G8) where the judge has real coverage — the persona path cannot
-resolve it either way.
+block-summaries design and **not retrievable by any index knob (all three lever
+axes now exhausted)**. **G6 (the looser system-level escape) was measured
+2026-06-27 → INCONCLUSIVE: a persona-scale ±0.005 verdict is unmeasurable (any
+2M slice holds ≤4% of judged docs; the client-filtered matched-baseline is
+degenerate; n=11 paired, SEM 0.0058 > bar).** The quality goal now hangs on a
+full-corpus G6 run (G7/G8) where the judge has real coverage — the persona path
+cannot resolve it either way, and `centroid_fraction` (the last index escape) is
+now closed as non-reachable.

@@ -1,0 +1,467 @@
+# 08 · Latency Research — RAM-efficient ways to speed up the SEISMIC serve leg
+
+**Created 2026-06-30.** Status: RESEARCH / DESIGN-ONLY. Every number below that is
+not tagged `[OURS]` is an **external literature figure** (paper/benchmark on a
+different corpus + host) — per the CLAUDE.md efficacy rule it is **not a measured
+result for our index** and must not be quoted as one. Treat them as *candidate*
+techniques ranked for our G5/G8 latency work, with source links to read before
+implementing.
+
+## Why this doc exists (the forcing observation)
+
+> **UPDATE 2026-06-30 (RESOLVED):** the swap confound below is solved (SEISMIC-only,
+> Qdrant stopped), and the follow-on RAM-starvation question is now answered too.
+> Two same-box runs: at a **32 GB** WSL cap latency was page-cache-starved (warm
+> p50 **18.1 s**); raising the cap to **56 GB** to cache the working set dropped
+> warm p50 to **0.55 s — a 33× collapse with no other change**, proving the 15–18 s
+> was RAM starvation, *not* the engine. **SEISMIC at 150 M is ~0.5 s warm when
+> provisioned to cache the working set (~40 GB here); RAM floor stays 1.13 GB vs
+> Qdrant ~17 GB.** Details in **§A1 measured** (#1 and #2).
+
+The G8 latency bench (2026-06-29/30) is **swap-contaminated and not a verdict**:
+
+- 66 GB mmap'd 8-shard working set on a **31.6 GB** host already **~15/16 GiB into
+  swap**. Each query touches different postings → faults new pages from swap.
+- Observed `[OURS]`: ~86 s/paired query; Qdrant portion ~6–7 s (itself inflated —
+  `splade_150m` is `status=grey`, not optimized); inferred SEISMIC ~80 s/query is
+  **almost entirely swap page-fault time, not engine traversal**.
+- The RAM half is already clean and decisive `[OURS]`: anon floor **0.142 GB**
+  (SEISMIC mmap) vs **6.71 GB** (Qdrant). The *latency* half is the open question.
+
+So this doc splits into two jobs: **(A) make the measurement clean** (you cannot
+research latency on a thrashing host), and **(B/C/D) the techniques that lower
+latency while keeping the RAM win** — the whole point of the SEISMIC pivot is the
+mmap RAM floor, so any latency fix that re-inflates anon RAM is self-defeating.
+
+Cross-refs: G5/G8 rows in [`02_GO_NO_GO_GATES.md`](02_GO_NO_GO_GATES.md); the serve
+footprint finding in [`06_FINDINGS.md`](06_FINDINGS.md) (2026-06-28 row); the mmap
+reader C2/C2.5 in [`07_G3_RAM_FIX_PLAN.md`](07_G3_RAM_FIX_PLAN.md).
+
+---
+
+## A. Make the measurement clean FIRST (no new index work needed)
+
+These do not change the index — they change *how we measure*, so the next run
+attributes latency instead of measuring swap. **Do these before any B/C/D work.**
+
+### A1. Bound the working set so a faulted page never goes to swap
+On a host where RAM < working set, the kernel swaps *anonymous* pages to dodge
+OOM, which thrashes everything. Two complementary controls:
+- **cgroup v2 `memory.swap.max = 0`** on the serving slice → the workload never
+  swaps; file-backed mmap pages are simply reclaimed/re-read from the index file
+  (cheap, sequential-ish) instead of fighting the anon swap. This converts
+  "swap thrash" into "honest page-cache miss," which is the latency we actually
+  want to measure. Pair with `memory.low` so the kernel reclaims from *other*
+  procs first. ([cgroup2 memory controller](https://facebookmicrosites.github.io/cgroup2/docs/memory-controller.html),
+  [Chris Down — in defence of swap](https://chrisdown.name/2018/01/02/in-defence-of-swap.html))
+- **The real fix is a host whose RAM ≥ resident set** (expect ~7.5 GB anon +
+  page cache for the 8 mmap shards, per the G8 projection). On such a box the
+  mmap pages stay in page cache and the swap term vanishes — that is the *only*
+  configuration that yields a trustworthy SEISMIC-vs-Qdrant p50.
+  > **CORRECTION — MEASURED 2026-06-30 (see "A1 measured" below):** the ~7.5 GB
+  > VmRSS figure is the *instantaneous* resident window, **not** the cache a warm
+  > p50 needs. 40 diverse queries touch postings spanning the **full ~62 GB
+  > index**, so a host with only ~7.5 GB free still re-faults continuously. The
+  > true requirement is **RAM ≥ ~62 GB (whole index cacheable)**; "RAM ≥ resident
+  > set" is necessary but **insufficient**.
+
+> **Turnkey wrapper (2026-06-30):** `scripts/seismic_testbed/run_g8_latency_noswap.sh`
+> stages the whole §A1 + §C1 + §A4 recipe as one command. It (1) tries to bound
+> swap — cgroup v2 `memory.swap.max=0` first, `swapoff -a` second, and if
+> *neither* is permitted (the common read-only-cgroup / WSL2 case) prints a loud
+> CAVEAT instead of silently proceeding; (2) pre-stages the §C1 lever
+> (`SFU_SEISMIC_QUERY_CUT=10` default → 4× traverse @ overlap@10 0.995) and
+> `--passes 2` (real warm p50); (3) runs `serve_footprint_bench.py` with the
+> §A4 encode/traverse split; (4) captures the **actual resident set** (RssAnon
+> / VmSwap / VmRSS-peak + encode p50 / traverse p50) so the ~7.5 GB projection
+> above finally gets a measured number, and reads `vmswap_gb` from the result to
+> say definitively whether the run was clean (≈0 swap → verdict) or still
+> swap-confounded (>0 swap → record, do not conclude — same status as the
+> 2026-06-29 run). The bench now honors `SFU_SEISMIC_QUERY_CUT`/`HEAP_FACTOR`/
+> `K_PRIME` (matching the served retriever's env) and accepts plain-list
+> manifests via `_load_manifest`. **Env-gated reality on this container
+> (measured 2026-06-30):** `/sys/fs/cgroup` is mounted **read-only** and
+> `swapoff` reports "Not superuser" even under sudo → the cgroup/swapoff paths
+> are walled off here; getting a real no-swap run needs either a host with
+> writable cgroup v2, or the operator setting `memory.swap.max=0` on this
+> container's slice. Run:
+> ```bash
+> sudo env "PATH=$PATH" scripts/seismic_testbed/run_g8_latency_noswap.sh \
+>     --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap.json \
+>     --queries 40 --passes 2
+> # disable C1 to measure the all-terms baseline: SFU_SEISMIC_QUERY_CUT= ./...
+> # Path-A control on a testbed index: SFU_SEISMIC_LOAD_MODE=stock ./...
+> ```
+
+#### A1 measured — first clean SEISMIC-only G8 run `[OURS]` (2026-06-30)
+
+Run on the `claudebox-sfu-library-thinclient-app` container (Docker-in-WSL2,
+**64 GB physical / 32 GB WSL2 cap**). The 2026-06-29 run was confounded by
+**anon swap thrash** caused by co-loading Qdrant's ~17 GB heap; this run removed
+that by **stopping the Qdrant process** (`supervisorctl stop qdrant-spike`),
+which drained swap **12 GiB → 0.17 GiB** before launch. SEISMIC-only, 8-shard
+150 M mmap (`federation=parallel`), `SFU_SEISMIC_QUERY_CUT=10`, 40 queries × 2
+passes.
+
+- **Eval:** `scripts/seismic_testbed/run_g8_latency_noswap.sh` → `serve_footprint_bench.py`
+- **Result:** `data/eval_results/seismic_g8_150m_serve_noswap_20260630_065143.json`
+  (corpus `total_docs=150,413,098`)
+
+| Metric `[OURS]` | Value | Note |
+|---|---|---|
+| mmap load (8 shards) | **0.41 s** | lazy mmap; post-load RssAnon 0.14 GB |
+| RssAnon floor | **1.12 GB** | the decisive RAM win (vs Qdrant ~17 GB) |
+| **VmRSS peak** | **7.71 GB** | ← the §A1 "~7.5 GB projection" **CONFIRMED measured** |
+| VmSwap | 0.69 GB | minor anon; the 17 GB swap thrash is **gone** |
+| encode p50 (SPLADE) | cold 65 / warm 74 ms | trivial — **not** the bottleneck |
+| traverse p50 (8-shard fan-out) | cold **15.1 s** / warm **18.0 s** | ~99.6 % of latency |
+| end-to-end p50 | cold **15.2 s** / warm **18.1 s** | warm ≥ cold (see below) |
+
+**Verdict: latency is DISK-FAULT-BOUND, not a compute verdict.** Two confounds
+were conflated in 2026-06-29; this run separates them:
+
+1. **Anon swap (SOLVED).** Stopping Qdrant removed the 17 GB heap → swap drained,
+   SEISMIC VmSwap fell to 0.69 GB. The swap-thrash story is closed.
+2. **Index > cacheable RAM (the real 150 M wall).** `RssFile` could hold only
+   ~7.5 GB of the **62 GB** index at once; 40 diverse queries faulted different
+   postings across all 8 shards, so the page cache (~29 GB, maxed) churned and
+   re-read from the vhdx disk continuously (**majflt ≈ 661 k**). Decisive tell:
+   **warm p50 (18.1 s) ≥ cold p50 (15.2 s)** — there is *no* warm-cache benefit
+   because the working set never fits, so pass 2 re-faults as much as pass 1.
+
+**Why the full-corpus warm p50 was unmeasurable at the 32 GB cap** *(largely
+RESOLVED — see "A1 measured #2" below)*: a warm p50 needs the touched working
+set in page cache. At 32 GB the cache (~29 GB) was smaller than the ~40 GB the
+40-query set touches, so it churned. **Raising the WSL2 cap to 56 GB (2026-06-30)
+fit the working set and dropped warm p50 from 18.1 s → 0.55 s — a 33× collapse,
+proving the 15–18 s was RAM starvation, not the engine.** The *fully*-clean
+(zero-swap) verdict still wants a ≥72 GB host (62 GB index + process + OS), but
+the engine-speed question is now answered. Other paths to a perfectly-clean or
+smaller-RAM result: (a) a ≥72 GB-RAM host; (b) shrink the index under cacheable
+RAM (compression / fewer-larger shards / stronger `query_cut` pruning); (c) the
+`sequential` backend's mechanism-B `MADV_DONTNEED` bounded-resident streaming.
+
+**The compute floor IS measurable per-shard (fits cache):** the 1-shard smoke
+(`data/eval_results/_g8_host_smoke.json`) gave warm **266 ms** (encode 41 +
+traverse 223 ms), agreeing with the manifest's build-time `mmap_p50_ms ≈ 0.17 ms`
+per shard. That is the engine-traversal latency; the 15–18 s above is *purely*
+the can't-cache-62 GB penalty, not the engine.
+
+**Wrapper/bench verdict gate — FIXED 2026-06-30:** previously the clean/verdict
+gate keyed only on anon `VmSwap` (so it printed "needs RAM ≥ ~7.5 GB resident")
+and the bench hardcoded a "swap-thrashing host" caveat — both **misleading** when
+the dominant cost is **`RssFile` mmap re-faulting**. Both now use a **data-driven
+gate**: a run is a verdict only if `VmSwap≈0` **AND** warm p50 < cold p50 (page
+cache actually helped). Either symptom present — anon swap *or* warm ≥ cold
+(index exceeds page cache) — is reported (composed, both if both), with the
+unified root cause (**host RAM < working set**) and fix (**RAM ≥ index-on-disk
+size + headroom**). On this run it correctly emits: *"NOT A VERDICT: VmSwap=0.69 GB
+anon paged to swap; warm 18061 ms ≥ cold 15217 ms (index exceeds page cache →
+re-fault from disk)."*
+
+#### A1 measured #2 — same box, WSL2 cap 32 GB → 56 GB `[OURS]` (2026-06-30)
+
+The #1 run was page-cache-starved (32 GB VM < ~40 GB touched working set). Raised
+`%UserProfile%\.wslconfig` `memory=32GB → 56GB` (+ `swap=8GB`,
+`autoMemoryReclaim=gradual`, `pageReporting=true`; `memory=` is a ceiling-on-demand
+so idle RAM returns to Windows), `wsl --shutdown`, re-ran the **identical**
+SEISMIC-only bench (8-shard 150 M mmap, `query_cut=10`, 40 q × 2 passes).
+
+- **Result:** `data/eval_results/seismic_g8_150m_serve_noswap_56gb_20260630_074056.json`
+
+| Metric `[OURS]` | 32 GB cap (#1) | **56 GB cap (#2)** | change |
+|---|---|---|---|
+| **warm p50** | 18,061 ms | **549 ms** | **33× faster** |
+| warm p95 | 26,181 ms | 2,178 ms | 12× |
+| cold p50 | 15,217 ms | 3,985 ms | 3.8× |
+| warm traverse / encode p50 | 17,987 / 74 ms | **509 / 37 ms** | — |
+| VmRSS peak | 7.7 GB | **40.4 GB** | working set now cached |
+| VmSwap | 0.69 GB | 0.38 GB | residual (cold-pass peak) |
+| RssAnon floor | 1.12 GB | 1.13 GB | RAM win unchanged |
+
+**Finding — the engine is fast at 150 M; the 18 s was RAM starvation.** With the
+working set cached, warm p50 is **~0.55 s** (traverse 509 ms + SPLADE encode
+37 ms). Cold p50 also fell to ~4 s (first-touch faults still hit disk, but the
+cache no longer thrashes). The 33× warm collapse with *no other change* isolates
+the cause beyond doubt: prior 15–18 s = page-cache miss, not traversal cost.
+
+**Caveats (why this is "near-clean", not a perfect verdict):**
+- Residual `VmSwap=0.38 GB` — minor anon paged at the cold-pass peak (VmRSS hit
+  40 GB + ~8 GB bench anon ≈ the 54 GB usable cap). The verdict gate still flags
+  it `NOT A VERDICT (swap)` — correctly conservative — but warm (549) ≪ cold
+  (3985) shows the *cache hit was real*; the swap is a cold-pass artifact, not a
+  warm-steady-state confound.
+- warm **p95 2.18 s** and max 2.3 s: the working set (~40 GB) mostly but not
+  wholly fits, so a tail of warm queries still faults uncached postings. The true
+  fully-cached compute floor is nearer the warm **min 93 ms** / the 1-shard smoke
+  266 ms.
+
+> **A1 measured #2b — max host RAM, FULLY-CLEAN verdict `[OURS]` (2026-06-30):**
+> bumped the WSL cap to the practical host max **58 GB** (leave ~6 GB for Windows;
+> `.wslconfig`), re-ran the identical 40-query bench. **VmSwap = 0.0 GB** (the
+> 0.38 GB residual is gone) → the fixed verdict gate emits *"VmSwap≈0 and warm <
+> cold → CLEAN. This p50 IS a verdict."* warm p50 **668 ms** (traverse 625 +
+> encode 39), p95 2.18 s, min **126 ms**, VmRSS peak 41.2 GB, RssAnon 1.09 GB.
+> Result `data/eval_results/seismic_g8_150m_serve_noswap_58gb_20260630_093602.json`.
+> The 549↔668 ms warm-p50 wobble vs #2 is run-to-run noise (different cache start
+> state); the decisive result is **zero swap → SEISMIC 150 M warm ≈ 0.5–0.7 s is a
+> definitive clean verdict, not swap/cache-confounded.** 58 GB sufficed to zero-out
+> swap for this ~41 GB working set; a working set touching the whole 62 GB index
+> would still want ≥72 GB or `vmtouch` pre-fault (§A2).
+
+**Net:** RAM axis decisive (1.13 GB vs Qdrant ~17 GB) **and** latency now
+answered directionally — **~0.5 s warm at 150 M when provisioned to cache the
+working set.** Deployment implication: provision serving RAM ≥ touched working
+set (here ~40 GB), or shrink the index (§B) to make a smaller box sufficient.
+
+**Still open (not measured here):** the §C1 `query_cut=10` overlap@10 ≥ 0.99
+check at 150 M, and the paired all-terms baseline — both need the same
+cache-resident host, so they are deferred behind the hardware blocker above.
+
+#### A1 measured #3 — RAM-vs-latency sweep, the knee `[OURS]` (2026-06-30)
+
+Stepped the **container** memory cap down (`docker update --memory`, no WSL restart;
+cgroup `memory.max` forces page-cache reclaim → re-fault) and re-ran the bench
+(12 q × 2 passes, SEISMIC-only) at each level. Working set for this 12-query set
+≈ **25 GB** (smaller than the 40-query run's ~40 GB — the working set scales with
+query diversity).
+
+| container cap | warm p50 | VmRSS peak | state |
+|---|---|---|---|
+| 48 GB | 65 ms | 24.9 GB | fits |
+| 42 GB | 81 ms | 25.0 GB | fits |
+| 36 GB | 67 ms | 24.7 GB | fits |
+| 30 GB | 70 ms | 24.5 GB | fits |
+| **24 GB** | **42,355 ms** | 6.7 GB | **cliff** |
+| 18 GB | — | — | stopped early (knee already clear) |
+
+**The curve is flat-then-cliff, not a slope.** Warm p50 holds ~65–80 ms from 48
+down to 30 GB (working set cached), then at **24 GB it falls off a cliff — ~650×
+to 42 s** as cache (collapsed to 6.7 GB resident) drops below the ~25 GB working
+set. **Deployment implication:** there is *no graceful-degradation zone* — provision
+serving RAM ≥ touched working set **plus margin**; cross the knee and latency goes
+from tens-of-ms to tens-of-seconds. The knee location scales with query
+diversity/volume (more distinct queries → larger working set → knee at higher RAM).
+Sweep data `data/eval_results/seismic_ram_sweep_20260630.tsv`; driver
+`scripts/seismic_testbed/ram_sweep.sh`.
+
+#### A1 measured #4 — corpus-size scaling: serve N of 8 shards `[OURS]` (2026-06-30)
+
+Served N of the existing 8 shards (sub-manifests; **no rebuild, no restart** — the
+cheapest scaling knob) at the 56 GB cap, 40 q × 2 passes. N shards ≈ N×18.8 M docs.
+
+| shards | docs | warm p50 | warm traverse | warm encode | VmRSS peak | swap |
+|---|---|---|---|---|---|---|
+| 1 | 18.8 M | 50 ms | 14 ms | 34 ms | 5.6 GB | 0 |
+| 2 | 37.6 M | 32 ms | 11 ms | 20 ms | 10.2 GB | 0 |
+| 4 | 75.2 M | 48 ms | 26 ms | 21 ms | 20.3 GB | 0 |
+| 8 | 150.4 M | **82 ms** | 52 ms | 29 ms | 41.9 GB | 0 |
+
+**Latency scales flat; RAM scales linear.** Over an **8× corpus increase
+(18.8 M→150 M)** warm p50 rose only **50→82 ms (~1.6×)** — the parallel federation
+makes latency ≈ **slowest shard + merge**, not the sum. The SPLADE **encode
+(~20–34 ms) is corpus-independent** (per-query, not per-shard); **traverse grows
+sub-linearly 14→52 ms**. Working set (VmRSS) scales ~linearly, ≈ **5 GB/shard**.
+**Caveat (cache-warm best case):** these warm passes ran with a hot cache (sequential
+N=1,2,4,8 + the prior 58 GB bench reused the same 40 queries), so **82 ms is the
+asymptotic fully-cached 150 M warm latency** — better than the 58 GB cold-start
+bench's 668 ms (#2b), which warmed from a fresh post-restart cache. Takeaway:
+**the engine traversal is fast (tens of ms); absolute warm latency is governed by
+cache residency, not corpus size.** Data `data/eval_results/seismic_shard_scale_20260630.tsv`;
+driver `scripts/seismic_testbed/shard_scale.sh`.
+
+### A2. Pin / pre-fault the hot pages (measure warm, not fault-storm)
+- **`vmtouch`** to (a) report what % of each shard is resident before a run and
+  (b) `vmtouch -t` to pre-load shards into page cache so the first queries aren't
+  a cold-fault storm. ([vmtouch](https://hoytech.com/vmtouch/))
+- **`mlock`/`MAP_POPULATE`** in the C2 reader to keep the inverted+summary side
+  (the hot, repeatedly-traversed structure) resident, letting only the larger
+  forward index page in on demand. Note the G3 split `[OURS]`: at 150M scale the
+  **forward index dominates (~85%)**, so mlocking *everything* won't fit — mlock
+  the inverted/summary side only. ([mlock + page cache](https://biriukov.dev/docs/page-cache/4-page-cache-eviction-and-page-reclaim/))
+
+### A3. madvise the mmap correctly for SEISMIC's access pattern
+SEISMIC chases random posting/forward pointers, not a sequential scan:
+- **`MADV_RANDOM`** on the forward-index mmap → tells the kernel to *stop*
+  read-ahead (default read-ahead wastes IO + cache on neighbours we won't read).
+- **`MADV_WILLNEED`** (advisory) or `MAP_POPULATE` to warm the inverted/summary
+  region at construct time. Caveat: `WILLNEED` is advisory — kernel may ignore it
+  and gives no completion signal; `MAP_POPULATE` is the harder guarantee.
+  ([madvise(2)](https://man7.org/linux/man-pages/man2/madvise.2.html),
+  [Rigtorp — virtual memory latency](https://rigtorp.se/virtual-memory/))
+- Action: add the madvise calls in `spike/seismic_upstream/src/pylib/mmap_index.rs`
+  (the C2.5 reader) and re-measure resident-% with vmtouch.
+
+### A4. Instrument the encode-vs-traverse split (the suspect)
+The ~80 s/query is currently un-attributed. The in-process SPLADE ONNX encoder
+runs in the same process as SEISMIC search, so part of that wall could be the
+**encoder**, not traversal. Add two timers in
+`scripts/seismic_testbed/serve_footprint_bench.py` / `seismic_backend.py`:
+`t_encode` (around `encode_query`) and `t_search` (around `index.search`), write
+both to the result JSON per query. **Small, non-disruptive change — does not
+affect a running process.** Without this split, no latency number is actionable.
+
+---
+
+## B. Shrink the working set (latency win *via* RAM — the aligned lever)
+
+Smaller index ⇒ more of it fits in page cache ⇒ fewer faults ⇒ lower latency,
+*and* the RAM floor stays low. This is the lever that doesn't trade the pivot away.
+
+### B1. Forward-index compression — DotVByte `[literature]`
+The forward index is ~85% of our 150M on-disk size `[OURS]`, so compressing it
+shrinks the dominant working set directly. The 2026 forward-index-compression
+study evaluated VByte/Elias/Zeta/StreamVByte and a new **DotVByte**:
+- DotVByte: **~32% size reduction at ~1.2× decode cost** (near-zero-decode,
+  SIMD inner product in-register, 8 values/register). The classic codecs
+  (VByte/Zeta) cut more size (~40–53%) but cost **24–32× decode** → unusable for
+  our random-access mmap pattern. StreamVByte ~30% size / ~4× decode is the
+  fallback. End-to-end (MS MARCO, SPLADE): uncompressed 289 µs / 5.8 GB →
+  DotVByte 309 µs / 5.1 GB. ([Forward Index Compression for LSR, arXiv 2602.05445](https://arxiv.org/html/2602.05445))
+- **Fit for us:** a zero-/cheap-decode codec is exactly the FORMAT-WALL constraint
+  this project already proved matters (696→25.63 ms zero-decode flip,
+  `sparse_engine_project` G1). DotVByte/StreamVByte preserve the mmap zero-copy
+  property; Zeta/Elias break it. **Design-only — not yet in our Rust reader.**
+
+### B2. 4-bit quantization of block/superblock max-weights `[literature]`
+The superblock-efficiency paper reports **~30–35% extra memory savings** from
+quantizing the per-block max term weights 8-bit→4-bit, at **negligible latency
+cost and 99.8% of safe retrieval quality**. These are the summary/skip structures
+(the part we'd want mlock'd in A2) — shrinking them makes A2 affordable.
+([Efficiency Optimizations for Superblock-based Sparse Retrieval, arXiv 2602.02883](https://arxiv.org/html/2602.02883v1))
+
+### B3. Lightweight flat inverted index `[literature]`
+Same paper: a flat inverted index (no per-vector Rust `Vec` 24-byte overhead)
+gives **6.2× memory reduction vs BMP-Inv (3.6 GB vs 19 GB)** for the inverted
+side, optimal for blocks ≥96 docs. Relevant because our C2 mmap layout is already
+a flat-file design — this validates the direction and gives a target.
+
+---
+
+## C. Algorithmic latency (faster traversal) — watch the RAM trade-off
+
+These cut traversal work but several **add** RAM, so they're only worth it once
+A (clean measurement) shows traversal — not swap/encode — is the bottleneck.
+
+### C1. Tune `query_cut` / `heap_factor` (FREE — no rebuild) — do this first
+Our backend currently uses **all 64 query terms** (`query_cut=len(tokens)`) and
+`heap_factor=0.8` (`seismic_backend.py:72-89`) — deliberately recall-first while
+G2 was open. SEISMIC's own MS MARCO best-configs use a **small `query_cut`** and
+lower `heap_factor` for big latency wins at modest recall cost. Sweep
+`query_cut ∈ {10,15,20}` × `heap_factor ∈ {0.6,0.7,0.8}` and plot latency vs
+overlap@10 — pure query-time knobs, zero rebuild, zero extra RAM.
+([Seismic SIGIR'24 / scalability ECIR'25, arXiv 2501.11628](https://arxiv.org/pdf/2501.11628))
+
+> **MEASURED 2026-06-30** (commit on this date) — the §C1 sweep is done.
+> Script: `scripts/seismic_testbed/g_sweep_querycut_heapfactor.py`. Results:
+> `data/eval_results/seismic_sweep_c1_querycut_heapfactor_20260630.json`.
+> **Index:** 100K-doc stock testbed index (`data/thin_client_poc/seismic_idx`,
+> len=100000, dim=26603, nnz=11.8M), `models/splade_onnx_fp16` query encoder,
+> n=60 queries from `data/eval_results/diverse_queries.json`. **overlap@10 is
+> self-relative** — agreement with the recall-max baseline (all-terms, hf=0.8),
+> NOT vs a live Qdrant (not running on this box, not needed for the lever
+> study). Per-cell traverse is the p50 of 5 warm repeats; warm-encode is timed
+> separately (the §A4/§D split). Absolute latency is swap-confounded off a
+> clean host — the relative recall + the encode/traverse split are the clean
+> signals.
+>
+> **Baseline (all-64-terms, hf=0.8):** traverse p50 **9.98 ms**, warm-encode
+> **~38.6 ms**.
+>
+> | query_cut | heap_factor | overlap@10 (vs base) | traverse p50 (ms) | speedup |
+> |-----------|------------|----------------------|-------------------|---------|
+> | 10 | 0.8 | 0.9950 | 2.482 | **4.02×** |
+> | 10 | 0.7 | 0.9950 | 3.149 | 3.17× |
+> | 10 | 0.6 | 0.9967 | 3.924 | 2.54× |
+> | 15 | 0.8 | 0.9983 | 3.577 | 2.79× |
+> | 15 | 0.7 | 0.9983 | 4.443 | 2.25× |
+> | 15 | 0.6 | 0.9983 | 5.307 | 1.88× |
+> | 20 | 0.8 | **1.0000** | 4.577 | 2.18× |
+> | 20 | 0.7 | 0.9983 | 5.587 | 1.79× |
+> | 20 | 0.6 | 0.9983 | 6.719 | 1.49× |
+>
+> **Verdict — biggest free latency win on the SEISMIC leg, ~zero recall cost:**
+> `query_cut=10, heap_factor=0.8` → **4.02× faster traversal at overlap@10
+> 0.995** (0.995–0.9967 across the qc=10 row). `query_cut` is the dominant
+> lever (traversal falls monotonically 20→15→10 at every heap_factor); the
+0.6–0.8 `heap_factor` band is inert-to-mild within a query_cut (so ship
+> 0.8 = the recall-safe end). The served path currently pays **4× the
+> traversal it needs** at the all-terms default. **Caveat (scoped):** measured
+> on the 100K testbed index, not 150M; the 0.995 floor is *self-relative*
+> recall vs the un-pruned run (a recall-vs-baseline proxy, not a NDCG-vs-Qdrant
+> verdict). Re-verify overlap@10 ≥0.99 holds at 150M before flipping the served
+> default — but no rebuild is needed to do so (pure query-time knob).
+>
+> **Encode dominates warm wall (reinforces §D):** warm-encode is **~26–35 ms**
+> vs traverse **1.7–6.7 ms** — the SPLADE ONNX fp16 encoder is the post-cache
+> latency mass, not the SEISMIC fan-out. The cold model load (~78 s on this
+> box) is amortized by a one-query warmup. So §D (int8 SPLADE encoder) is the
+> next latency lever *after* C1 lands; C1 is the no-build change to ship first.
+
+### C2. Dynamic superblock pruning `[literature]` — latency↑ but RAM↑
+Group blocks into superblocks; reject whole superblocks by a max/avg score bound
+before touching child blocks. Reported **up to 2.9× faster than BMP at 99%
+recall**. **Cost: +1–2 GB index** (stores per-superblock max/avg weights) — so
+only adopt if B2's 4-bit quant offsets it, else it erodes the RAM win.
+([Dynamic Superblock Pruning, arXiv 2504.17045](https://arxiv.org/html/2504.17045v1))
+
+### C3. Top-γ superblock inclusion (LSP/0) `[literature]` — latency↑ AND RAM↓
+The 2026 superblock paper's headline: guarantee visiting the top-γ superblocks +
+µ-prune the rest. Reports **1.8–17× faster than SP, 1.8–12× faster than BMP, 2×
+faster than SeismicWave**, *and* a smaller index (fewer safeness guards), with
+robust fixed params (γ=250–1000, β=0.33) — no per-dataset grid search. Most
+attractive of the algorithmic options because it claims latency↑ *with* RAM↓, but
+it's a different index structure (build-side work, not a config flip).
+([arXiv 2602.02883](https://arxiv.org/html/2602.02883v1))
+
+### C4. κ-NN graph augmentation `[literature]`
+Adding a κ-NN (κ=10–20) graph over doc vectors keeps SEISMIC Pareto-efficient vs
+HNSW at higher accuracy. Adds graph RAM — characterize before considering; lower
+priority than B/C1 for our RAM-constrained case. ([arXiv 2501.11628](https://arxiv.org/pdf/2501.11628))
+
+---
+
+## D. Encoder-side latency (the other half of A4's split)
+
+If A4 shows the SPLADE encoder is a big slice of per-query wall:
+- **Dynamic INT8 quantization of the SPLADE ONNX encoder** — literature reports
+  **1.5–3× CPU speedup** (one example 24.8 ms→6.1 ms) with negligible Recall@10
+  loss; best on x86-64 with VNNI. We run `models/splade_onnx_fp16` on CPU
+  in-process, so this is a direct candidate.
+  ([ONNX Runtime quantization](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html),
+  [Sentence-Transformers efficiency](https://sbert.net/docs/sparse_encoder/usage/efficiency.html))
+- **Caveat:** the doc vectors were built from the **fp16** encoder; re-quantizing
+  the *query* encoder to int8 risks an encoder-asymmetry quality hit. Validate
+  overlap@10 parity before/after — the symmetry guarantee in `seismic_backend.py`
+  (raw-float query vs raw-float doc) is load-bearing for G2 attribution.
+
+---
+
+## Prioritized next steps (for our G5/G8 work)
+
+1. **A4 — encode-vs-traverse split instrumentation.** Tiny, non-disruptive, makes
+   every later number actionable. Do now (does not touch the running bench).
+2. **A1 — DONE 2026-06-30 (see "A1 measured" #1 + #2).** Swap confound solved
+   (Qdrant stopped); RAM-starvation question answered by raising the WSL cap
+   32→56 GB → **warm p50 18.1 s → 0.55 s (33×)**, proving the engine is fast at
+   150 M and the prior latency was page-cache starvation. Remaining polish (not
+   blocking): a *perfectly* zero-swap verdict wants a ≥72 GB host or `vmtouch`
+   pre-fault (§A2); **the strategic win is §B index shrink** so a smaller box
+   caches the whole working set.
+3. **C1 — `query_cut`/`heap_factor` sweep.** Free, no rebuild, likely the biggest
+   single latency lever; record latency-vs-overlap@10 Pareto. **✅ DONE 2026-06-30**
+   — measured above (4.02× faster traversal at overlap@10 0.995; `query_cut=10`
+   is the dominant lever). Ship C1 before B/D.
+4. **B1 + B2 — DotVByte forward-index + 4-bit summary quant** in the C2 reader.
+   Shrinks the dominant working set → fewer faults → lower latency *and* keeps the
+   RAM floor (the pivot's whole point). Build-side work.
+5. **C3 (LSP/0) / C2 (dynamic superblock)** — only if A shows traversal is the
+   real bottleneck; prefer C3 (claims latency↑ + RAM↓) over C2 (RAM↑).
+6. **D — int8 SPLADE encoder** only if A4 shows the encoder dominates; gate on
+   overlap@10 parity.
+
+> Reminder (CLAUDE.md efficacy rule): none of B/C/D is "done" until *we* measure it
+> on *our* index and record before→after numbers + eval script + result file here.
+> The figures above are external and only justify which technique to try first.
+</content>
+</invoke>

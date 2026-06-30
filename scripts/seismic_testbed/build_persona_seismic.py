@@ -196,12 +196,18 @@ def main():
              f"{b.get('Total',0):,}")
 
     t0 = time.perf_counter()
-    idx.save(str(idx_path))
+    # seismic.save() UNCONDITIONALLY appends '.index.seismic' to the path it's
+    # given (verified 2026-06-30: save("x.index.seismic") writes
+    # "x.index.seismic.index.seismic"). So strip a trailing suffix if present
+    # so the on-disk file is exactly <stem>.index.seismic, then stat that — the
+    # prior `endswith` check stat'd a non-existent single-suffix path and
+    # crashed the script's tail (FileNotFoundError) even though the build worked.
+    save_stem = str(idx_path)
+    if save_stem.endswith(".index.seismic"):
+        save_stem = save_stem[: -len(".index.seismic")]
+    idx.save(save_stem)
     save_s = time.perf_counter() - t0
-    # seismic.save() appends '.index.seismic' to the path it's given, so the
-    # real on-disk file is <index_path>.index.seismic — stat THAT, not the stem.
-    actual = idx_path if idx_path.name.endswith(".index.seismic") \
-        else idx_path.with_name(idx_path.name + ".index.seismic")
+    actual = Path(save_stem + ".index.seismic")
     size_gb = actual.stat().st_size / 1e9
     log.info("SAVED %.1fs -> %s (%.3f GB)", save_s, actual, size_gb)
 
@@ -244,7 +250,7 @@ def main():
         rpath = Path(args.result_file); rpath.parent.mkdir(parents=True, exist_ok=True)
         json.dump(result, open(rpath, "w"), indent=2)
         log.info("wrote %s", rpath)
-    print(json.dumps({"index_path": str(idx_path), "docs": idx.len, "on_disk_gb": round(size_gb, 4),
+    print(json.dumps({"index_path": str(actual), "docs": idx.len, "on_disk_gb": round(size_gb, 4),
                       "g1": result["g1_verdict"]}))
 
 

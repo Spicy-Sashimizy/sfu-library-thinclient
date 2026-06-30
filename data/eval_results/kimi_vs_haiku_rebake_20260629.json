@@ -1,0 +1,357 @@
+{
+  "meta": {
+    "description": "Kimi-flex (NeuralWatt) vs Haiku judge agreement, same (query,doc) pairs",
+    "kimi_model": "kimi-k2.7-code-flex",
+    "kimi_base": "https://api.neuralwatt.com/v1",
+    "haiku_model": "claude-haiku-4-5-20251001",
+    "n_queries": 10,
+    "date": "2026-06-29",
+    "note": "does NOT modify llm_judge_cache.json; reads it read-only"
+  },
+  "overall": {
+    "n_pairs": 343,
+    "exact_agree": 172,
+    "exact_rate": 0.5015,
+    "within_1": 260,
+    "within_1_rate": 0.758,
+    "haiku_mean_grade": 2.0117,
+    "kimi_mean_grade": 1.7434,
+    "kimi_minus_haiku_mean": -0.2682
+  },
+  "confusion_haiku_row_kimi_col": {
+    "0": {
+      "3": 11,
+      "2": 24,
+      "1": 11,
+      "0": 25
+    },
+    "1": {
+      "1": 21,
+      "0": 9,
+      "3": 1,
+      "2": 4
+    },
+    "2": {
+      "2": 26,
+      "0": 9,
+      "1": 15,
+      "3": 6
+    },
+    "3": {
+      "3": 100,
+      "0": 35,
+      "2": 43,
+      "1": 3
+    }
+  },
+  "haiku_grade_dist": {
+    "0": 71,
+    "1": 35,
+    "3": 181,
+    "2": 56
+  },
+  "kimi_grade_dist": {
+    "3": 118,
+    "2": 97,
+    "1": 50,
+    "0": 78
+  },
+  "per_query": [
+    {
+      "judge_key": "mental health primary care integration collaborative care stepped model",
+      "n_pairs": 42,
+      "n_judged_kimi": 42,
+      "exact_agree": 13,
+      "exact_rate": 0.31,
+      "haiku_grades": {
+        "0": 31,
+        "1": 1,
+        "3": 7,
+        "2": 3
+      },
+      "kimi_grades": {
+        "3": 8,
+        "2": 16,
+        "1": 8,
+        "0": 10
+      }
+    },
+    {
+      "judge_key": "cardiovascular disease exercise intervention prevention outcomes",
+      "n_pairs": 37,
+      "n_judged_kimi": 37,
+      "exact_agree": 16,
+      "exact_rate": 0.432,
+      "haiku_grades": {
+        "3": 20,
+        "0": 3,
+        "1": 7,
+        "2": 7
+      },
+      "kimi_grades": {
+        "3": 9,
+        "2": 13,
+        "0": 6,
+        "1": 9
+      }
+    },
+    {
+      "judge_key": "formative assessment feedback learning outcomes student achievement",
+      "n_pairs": 36,
+      "n_judged_kimi": 36,
+      "exact_agree": 21,
+      "exact_rate": 0.583,
+      "haiku_grades": {
+        "3": 31,
+        "1": 2,
+        "2": 2,
+        "0": 1
+      },
+      "kimi_grades": {
+        "0": 5,
+        "3": 19,
+        "2": 11,
+        "1": 1
+      }
+    },
+    {
+      "judge_key": "atmospheric chemistry particulate matter aerosol air quality urban",
+      "n_pairs": 35,
+      "n_judged_kimi": 35,
+      "exact_agree": 22,
+      "exact_rate": 0.629,
+      "haiku_grades": {
+        "3": 23,
+        "1": 4,
+        "2": 8
+      },
+      "kimi_grades": {
+        "3": 17,
+        "1": 4,
+        "2": 7,
+        "0": 7
+      }
+    },
+    {
+      "judge_key": "GIS remote sensing land use change deforestation spatial analysis",
+      "n_pairs": 34,
+      "n_judged_kimi": 34,
+      "exact_agree": 14,
+      "exact_rate": 0.412,
+      "haiku_grades": {
+        "3": 23,
+        "2": 6,
+        "1": 4,
+        "0": 1
+      },
+      "kimi_grades": {
+        "2": 12,
+        "0": 9,
+        "3": 9,
+        "1": 4
+      }
+    },
+    {
+      "judge_key": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "n_pairs": 33,
+      "n_judged_kimi": 33,
+      "exact_agree": 21,
+      "exact_rate": 0.636,
+      "haiku_grades": {
+        "3": 27,
+        "2": 5,
+        "1": 1
+      },
+      "kimi_grades": {
+        "3": 20,
+        "2": 5,
+        "0": 4,
+        "1": 4
+      }
+    },
+    {
+      "judge_key": "digital art interactive installation immersive media generative algorithm",
+      "n_pairs": 33,
+      "n_judged_kimi": 33,
+      "exact_agree": 14,
+      "exact_rate": 0.424,
+      "haiku_grades": {
+        "0": 29,
+        "2": 1,
+        "3": 2,
+        "1": 1
+      },
+      "kimi_grades": {
+        "2": 11,
+        "0": 10,
+        "1": 3,
+        "3": 9
+      }
+    },
+    {
+      "judge_key": "educational technology blended learning student engagement STEM",
+      "n_pairs": 32,
+      "n_judged_kimi": 32,
+      "exact_agree": 18,
+      "exact_rate": 0.562,
+      "haiku_grades": {
+        "2": 16,
+        "3": 11,
+        "1": 4,
+        "0": 1
+      },
+      "kimi_grades": {
+        "0": 6,
+        "2": 11,
+        "1": 8,
+        "3": 7
+      }
+    },
+    {
+      "judge_key": "restorative justice alternatives incarceration recidivism reduction",
+      "n_pairs": 31,
+      "n_judged_kimi": 31,
+      "exact_agree": 13,
+      "exact_rate": 0.419,
+      "haiku_grades": {
+        "1": 5,
+        "3": 19,
+        "2": 4,
+        "0": 3
+      },
+      "kimi_grades": {
+        "2": 6,
+        "3": 8,
+        "0": 12,
+        "1": 5
+      }
+    },
+    {
+      "judge_key": "wildfire management prescribed burning Indigenous traditional ecological knowled",
+      "n_pairs": 30,
+      "n_judged_kimi": 30,
+      "exact_agree": 20,
+      "exact_rate": 0.667,
+      "haiku_grades": {
+        "3": 18,
+        "1": 6,
+        "2": 4,
+        "0": 2
+      },
+      "kimi_grades": {
+        "3": 12,
+        "0": 9,
+        "1": 4,
+        "2": 5
+      }
+    }
+  ],
+  " disagreements_sample": [],
+  "worst_disagreements": [
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W4312866155",
+      "haiku": 0,
+      "kimi": 3,
+      "delta": 3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W4213198913",
+      "haiku": 0,
+      "kimi": 3,
+      "delta": 3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W2969753828",
+      "haiku": 0,
+      "kimi": 3,
+      "delta": 3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W2133430131",
+      "haiku": 0,
+      "kimi": 3,
+      "delta": 3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W7090794059",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W7090804573",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "doc": "W6927564006",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "cardiovascular disease exercise intervention prevention outcomes",
+      "doc": "W7073557643",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "cardiovascular disease exercise intervention prevention outcomes",
+      "doc": "W6902397217",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "cardiovascular disease exercise intervention prevention outcomes",
+      "doc": "W6958932032",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "formative assessment feedback learning outcomes student achievement",
+      "doc": "W7046797609",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "formative assessment feedback learning outcomes student achievement",
+      "doc": "W7047829317",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "formative assessment feedback learning outcomes student achievement",
+      "doc": "W7093072001",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "formative assessment feedback learning outcomes student achievement",
+      "doc": "W7093095525",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    },
+    {
+      "query": "atmospheric chemistry particulate matter aerosol air quality urban",
+      "doc": "W6959374587",
+      "haiku": 3,
+      "kimi": 0,
+      "delta": -3
+    }
+  ]
+}

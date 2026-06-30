@@ -129,7 +129,34 @@ N_POSTINGS_GRID = [
      "n_postings": 14000},
 ]
 
-GRIDS = {"max_fraction": SWEEP_GRID, "n_postings": N_POSTINGS_GRID}
+# Sweep #3 (2026-06-27): centroid_fraction. The LAST open G2 quality escape
+# (per 02_GO_NO_GO_GATES G2 row: "clustering density — not a posting-retention
+# lever; untested, unlikely to move top-10"). n_postings (#2) closed the global-
+# budget axis and max_fraction (#1) closed the per-list-cap axis; this is the
+# only SEISMIC build param NOT yet swept. Lever semantics: centroid_fraction is
+# the fraction of docs used as k-means centroids → controls block COUNT and
+# SIZE (clustering density). It is categorically NOT a posting-retention lever
+# (it changes which docs cluster together, not which postings survive pruning),
+# so — unlike n_postings — a real run is EXPECTED to perturb per-query top-10
+# (block membership shifts). The question is whether that moves overlap@10
+# toward 0.95 or whether 0.479 is also a structural floor on this axis.
+# Grid brackets the reachable: C1 halves density (coarser blocks), C2 doubles,
+# C3 quadruples (finer blocks; RSS rises with centroid count). cf=0.4 stays
+# under the host's ~8 GB available budget (clustering overhead ∝ n_centroids).
+# P0 anchors harness faithfulness (must reproduce 0.479).
+CENTROID_FRACTION_GRID = [
+    {"name": "P0_cf0.1", "comment": "anchor — reproduce 0.479 centroid_fraction=0.1 (= DEFAULTS; harness-faithful check)",
+     **DEFAULTS},
+    {"name": "C1_cf0.05", "comment": "halve clustering density: centroid_fraction 0.1→0.05 (fewer/coarser blocks → bigger blocks, more per-block approx)",
+     "centroid_fraction": 0.05},
+    {"name": "C2_cf0.2", "comment": "double clustering density: centroid_fraction 0.1→0.2 (more/finer blocks → smaller blocks, tighter summaries)",
+     "centroid_fraction": 0.2},
+    {"name": "C3_cf0.4", "comment": "ceiling: 4× denser clustering centroid_fraction→0.4 (RSS rises; bounds the reachable ceiling on this axis)",
+     "centroid_fraction": 0.4},
+]
+
+GRIDS = {"max_fraction": SWEEP_GRID, "n_postings": N_POSTINGS_GRID,
+         "centroid_fraction": CENTROID_FRACTION_GRID}
 
 
 def load_cached_qdrant(baseline_path: Path) -> dict[str, dict]:
@@ -278,14 +305,17 @@ def main():
                          "was attributed to static pruning, NOT query heap)")
     ap.add_argument("--query-cut", type=int, default=None,
                     help="SEISMIC query_cut (default all 64 — recall-first)")
-    ap.add_argument("--lever", choices=("max_fraction", "n_postings"),
+    ap.add_argument("--lever", choices=("max_fraction", "n_postings", "centroid_fraction"),
                     default="max_fraction",
                     help="which single lever to sweep. max_fraction=#1 (proven inert "
                          "2026-06-27): raises per-list cap, SAME postings selected → "
                          "bit-identical 0.4794. n_postings=#2: raises the GLOBAL budget "
                          "`dim*n_postings` (changes which postings exist at all) — the "
                          "only knob that can move the top-10. N3 saturates the global "
-                         "selection (budget > total postings).")
+                         "selection (budget > total postings). centroid_fraction=#3 "
+                         "(open): clustering density — NOT a posting-retention lever; "
+                         "changes block membership, expected to perturb per-query top-10; "
+                         "tests whether 0.479 is also a floor on this axis.")
     ap.add_argument("--result-file", default=None)
     args = ap.parse_args()
 
@@ -380,6 +410,52 @@ def main():
                         "local floor on this budget axis but not a bit-identical structural "
                         "ceiling — query-time summary/quantization still the prime suspect.")
             return "G2 INCONCLUSIVE (n_postings) — missing a config result."
+        if args.lever == "centroid_fraction":
+            # Sweep #3 (2026-06-27): clustering-density axis. Categorically NOT a
+            # posting-retention lever — it changes block membership, so unlike
+            # n_postings a real per-query change IS expected if the lever can move
+            # top-10. bit-identical-to-P0 across C1/C2/C3 would be an even stronger
+            # "structural floor" signal (the lever perturbs clustering yet top-10 is
+            # invariant). The four points span a density halving→quadrupling.
+            p0 = by.get("P0_cf0.1", {}).get("overlap@10", {}).get("mean")
+            c1 = by.get("C1_cf0.05", {}).get("overlap@10", {}).get("mean")
+            c2 = by.get("C2_cf0.2", {}).get("overlap@10", {}).get("mean")
+            c3 = by.get("C3_cf0.4", {}).get("overlap@10", {}).get("mean")
+            if p0 is not None and abs(p0 - 0.479) > 0.03:
+                return (f"HARNESS DRIFT — P0 anchor {p0:.3f} ≠ 0.479; re-check before "
+                        "trusting the centroid_fraction deltas.")
+            p0c = by.get("P0_cf0.1", {})
+            c3c = by.get("C3_cf0.4", {})
+            if c3 is not None and c3 >= B1_OVERLAP_BAR:
+                return (f"G2 RECOVERABLE via centroid_fraction — ceiling C3 overlap@10 {c3:.3f} ≥ "
+                        f"{B1_OVERLAP_BAR} (P0 {p0:.3f}); bisect centroid_fraction to the minimal "
+                        "config that clears the bar.")
+            c3_identical = _bit_identical_to_p0(c3c, p0c)
+            c1_identical = _bit_identical_to_p0(by.get("C1_cf0.05", {}), p0c)
+            c2_identical = _bit_identical_to_p0(by.get("C2_cf0.2", {}), p0c)
+            if c3 is not None:
+                # Strongest "floor" signal: a 4× clustering-density change left
+                # every per-query top-10 identical to P0 — the lever perturbs
+                # clustering yet top-10 is invariant → 0.479 is structural here.
+                if c3_identical and (c1 is None or c1_identical) and (c2 is None or c2_identical):
+                    return (f"G2 CEILING (clustering density is NOT the gap) — centroid_fraction swept "
+                            f"0.05→0.1→0.2→0.4 (density halved→quadrupled, RSS rises) yet every "
+                            f"per-query top-10 is BIT-IDENTICAL to P0 (P0 {p0:.3f} / C1 {c1:.3f} / "
+                            f"C2 {c2:.3f} / C3 {c3:.3f}). 0.479 is the query-time approximation floor, "
+                            "invariant to clustering density too. This is the LAST open G2 quality lever → "
+                            "all three server-side pruning axes (per-list-cap, global-budget, clustering-"
+                            "density) are now proven inert; 0.479 is not retrievable by any index knob.")
+                if c3 > (p0 or 0) or (c2 is not None and c2 > (p0 or 0)) or (c1 is not None and c1 > (p0 or 0)):
+                    return (f"G2 TUNABLE via centroid_fraction — overlap rose (P0 {p0:.3f}→C1 {c1:.3f}"
+                            f"→C2 {c2:.3f}→C3 {c3:.3f}, not invariant to clustering) but C3 < "
+                            f"{B1_OVERLAP_BAR}: extrapolate centroid_fraction further (finer clustering, "
+                            "more RSS). Reopens the quality path — follow-up bisect required.")
+                return (f"G2 CEILING — centroid_fraction {p0:.3f}→{c1:.3f}→{c2:.3f}→{c3:.3f} "
+                        f"frozen < {B1_OVERLAP_BAR} and not monotonic-improving → 0.479 is also a "
+                        "floor on the clustering-density axis. The last open G2 quality lever is now "
+                        "closed; 0.479 is the structural approximation ceiling not tunable on any "
+                        "SEISMIC index-time knob.")
+            return "G2 INCONCLUSIVE (centroid_fraction) — missing a config result."
         # max_fraction branch (sweep #1, retained): single-lever, monotonically-identical expected
         p0 = by.get("P0_baseline", {}).get("overlap@10", {}).get("mean")
         p1 = by.get("P1_mf5.0", {}).get("overlap@10", {}).get("mean")
@@ -399,7 +475,8 @@ def main():
         return "G2 INCONCLUSIVE — missing a config result."
 
     verdict = _verdict(configs_out)
-    p0_name = "P0_np3500" if args.lever == "n_postings" else "P0_baseline"
+    p0_name = {"n_postings": "P0_np3500", "centroid_fraction": "P0_cf0.1"}.get(
+        args.lever, "P0_baseline")
     p0_mean = next((c["overlap@10"]["mean"] for c in configs_out if c["name"] == p0_name), None)
     result = {
         "meta": {"engine": "seismic-pyseismic-lsr-0.4.0",
@@ -419,13 +496,20 @@ def main():
                              "changes which postings exist). Follow-up to the max_fraction inert result. "
                              "N3 hits the unpruned ceiling (budget > total corpus postings). If overlap "
                              "still freezes bit-identical, server-side pruning is NOT the gap "
-                             "(query-time summary/quantization is)."}[args.lever]},
+                             "(query-time summary/quantization is).",
+                             "centroid_fraction":
+                             "G2 sweep #3: clustering-density lever (the LAST open G2 quality escape). "
+                             "Categorically NOT a posting-retention lever — changes block membership, not "
+                             "which postings survive pruning. Closes the last axis after sweeps #1 (per-list "
+                             "cap) + #2 (global budget) both proved inert. If overlap stays bit-identical to "
+                             "P0 across a 0.05→0.4 density range, 0.479 is the structural approximation floor "
+                             "invariant to clustering, and ALL three server-side pruning axes are exhausted."}[args.lever]},
         "configs": configs_out,
         "g2_verdict": verdict,
     }
-    default_name = (f"data/eval_results/seismic_g2_npostings_sweep.json"
-                    if args.lever == "n_postings"
-                    else f"data/eval_results/seismic_g2_param_sweep.json")
+    default_name = {"n_postings": "data/eval_results/seismic_g2_npostings_sweep.json",
+                    "centroid_fraction": "data/eval_results/seismic_g2_centroid_fraction_sweep.json"
+                    }.get(args.lever, "data/eval_results/seismic_g2_param_sweep.json")
     rpath = (Path(args.result_file) if args.result_file
              else REPO_ROOT / default_name)
     rpath.parent.mkdir(parents=True, exist_ok=True)

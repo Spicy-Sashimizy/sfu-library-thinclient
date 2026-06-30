@@ -1,0 +1,54 @@
+{
+  "c25_verdict": "C2.5 MMAP_SERVE_READY",
+  "parity_ok": true,
+  "parity_failures": [],
+  "n_paired_queries": 30,
+  "floor_anon_ok": true,
+  "floor_file_ok": true,
+  "floor_ok": true,
+  "floor_anon_delta_gb": 0.0,
+  "floor_file_gb": 1.9164,
+  "mmap_disk_gb": 1.708,
+  "latency_ms": {
+    "mmap_warm_p50": 0.4411,
+    "mmap_warm_p95": 0.8607,
+    "mmap_load_secs": 0.0267
+  },
+  "rss_kb": {
+    "baseline_anon": 1157672,
+    "baseline_file": 269172,
+    "path_a_anon_after_load": 2736280,
+    "path_a_file_after_load": 269408,
+    "mmap_base_anon_after_drop": 2019260,
+    "mmap_base_file_after_drop": 269660,
+    "mmap_anon_pre_fault": 2019260,
+    "mmap_file_pre_fault": 269788,
+    "mmap_anon_after_fault_in": 2019260,
+    "mmap_file_after_fault_in": 1916396,
+    "touch_slab_bytes_touched": 42132153,
+    "touch_slab_secs": 0.5574
+  },
+  "config": {
+    "stock_index": "/tmp/seismic_testbed/index/med_bio_2m.index.seismic",
+    "mmap_dir": "/tmp/seismic_testbed/mmap_c2",
+    "n_docs": 2000000,
+    "dim": 27896,
+    "nnz": 152996652,
+    "n_queries": 30,
+    "top_k": 10,
+    "query_cut": 8,
+    "heap_factor": 1.0,
+    "query_source": "/workspaces/sfu-library-thinclient/data/eval_results/diverse_queries.json"
+  },
+  "meta": {
+    "built_utc": "2026-06-28",
+    "purpose": "C2.5: validate the pyo3 mmap reader at the Python serve boundary \u2014 same parity + floor as the C2 Rust bin, but constructed from `seismic.MmapSeismicIndex`.",
+    "engine": "seismic-pyseismic-lsr-0.4.0 spike-fork (C2.5 pyo3 mmap binding)",
+    "doc_refs": [
+      "docs/seismic_150m_testbed/07_G3_RAM_FIX_PLAN.md \u00a74.4 (C2.5)",
+      "spike/seismic_upstream/src/pylib/mmap_index.rs (PyMmapIndex pyclass)",
+      ".claude/plans/seismic-c25-pyo3-mmap-binding.md",
+      "C2 baseline: data/eval_results/seismic_c2_mmap_metadata_close.json (KEEPS_GATE)"
+    ]
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "date_utc": "2026-06-28T22:02:45.453505",
+    "benchmark": "SEISMIC vs Qdrant serving footprint at 150M docs",
+    "total_docs": 150413098,
+    "queries": 20,
+    "top_k": 50,
+    "query_encoding": "encode_splade + top-64 terms",
+    "seismic_load_mode": "mmap",
+    "qdrant_available": true
+  },
+  "seismic": {
+    "engine": "seismic-pyseismic + ShardedSeismicBackend (8 mmap shards)",
+    "load_seconds": 0.51,
+    "load_mode": "mmap",
+    "ram": {
+      "anon_abs_gb": 1.0991,
+      "pss_anon_abs_gb": 1.0991,
+      "anon_floor_gb": 1.0991,
+      "anon_delta_gb": 1.0824,
+      "pss_anon_gb": 1.0991,
+      "vmrss_peak_gb": 8.4264,
+      "vmrss_peak_bytes": 9047793664,
+      "anon_bytes_per_doc": 7.845716734057296,
+      "baseline_anon_gb": 0.0167
+    },
+    "latency_ms": {
+      "p50_ms": 30791.242773004342,
+      "p95_ms": 31739.22811601369,
+      "mean_ms": 30609.67,
+      "min_ms": 28728.240275988355,
+      "max_ms": 32248.268602008466,
+      "n": 40,
+      "cold": {
+        "p50_ms": 30238.543336992734,
+        "p95_ms": 31267.633522991673,
+        "mean_ms": 30079.73,
+        "min_ms": 28728.240275988355,
+        "max_ms": 31267.633522991673,
+        "n": 20
+      },
+      "warm": {
+        "p50_ms": 31253.452504999586,
+        "p95_ms": 32248.268602008466,
+        "mean_ms": 31139.61,
+        "min_ms": 30134.68251901213,
+        "max_ms": 32248.268602008466,
+        "n": 20
+      },
+      "n_passes": 2
+    },
+    "latency_by_pass_ms": [
+      [
+        28728.2,
+        29751.6,
+        30255.9,
+        28856.9,
+        29405.7,
+        30799.6,
+        30109.8,
+        29132.4,
+        29732.2,
+        29488.3,
+        30117.3,
+        30434.8,
+        30310.0,
+        30598.1,
+        29899.7,
+        30238.5,
+        30666.4,
+        30799.6,
+        31267.6,
+        31001.7
+      ],
+      [
+        31336.4,
+        31267.3,
+        31739.2,
+        30356.3,
+        32248.3,
+        31500.0,
+        31381.0,
+        30420.6,
+        30648.6,
+        30791.2,
+        31148.6,
+        31280.8,
+        31225.1,
+        31474.0,
+        31239.0,
+        30134.7,
+        30830.9,
+        31238.1,
+        31278.8,
+        31253.5
+      ]
+    ]
+  },
+  "qdrant": {
+    "engine": "Qdrant sparse_150m collection (on_disk)",
+    "server_pid": 112,
+    "available": true,
+    "ram": {
+      "anon_abs_gb": 3.3478,
+      "pss_anon_abs_gb": 3.3478,
+      "anon_floor_gb": 3.3478,
+      "anon_delta_gb": -0.0018,
+      "pss_anon_gb": 3.3478,
+      "vmrss_peak_gb": 5.5686,
+      "vmrss_peak_bytes": 5979189248,
+      "anon_bytes_per_doc": 23.898868488168496,
+      "baseline_anon_gb": 3.3496
+    },
+    "latency_ms": {
+      "p50_ms": 6900.030980003066,
+      "p95_ms": 10827.264541003387,
+      "mean_ms": 7292.48,
+      "min_ms": 3696.0669590043835,
+      "max_ms": 11152.713217001292,
+      "n": 40,
+      "cold": {
+        "p50_ms": 7564.957857000991,
+        "p95_ms": 11152.713217001292,
+        "mean_ms": 7390.23,
+        "min_ms": 3696.0669590043835,
+        "max_ms": 11152.713217001292,
+        "n": 20
+      },
+      "warm": {
+        "p50_ms": 6808.455701000639,
+        "p95_ms": 10827.264541003387,
+        "mean_ms": 7194.73,
+        "min_ms": 3839.075600990327,
+        "max_ms": 10827.264541003387,
+        "n": 20
+      },
+      "n_passes": 2
+    },
+    "latency_by_pass_ms": [
+      [
+        10063.2,
+        6298.3,
+        6450.3,
+        6900.0,
+        8480.7,
+        7565.0,
+        8943.3,
+        9181.2,
+        9025.6,
+        6206.0,
+        7995.8,
+        8349.1,
+        3696.1,
+        5880.4,
+        5317.2,
+        5750.2,
+        11152.7,
+        9834.3,
+        4034.5,
+        6680.8
+      ],
+      [
+        5192.4,
+        6358.6,
+        6595.0,
+        6808.5,
+        8649.2,
+        7818.6,
+        9155.8,
+        9173.8,
+        9066.7,
+        6225.3,
+        8173.5,
+        8611.8,
+        3839.1,
+        5930.2,
+        5250.2,
+        5489.8,
+        10827.3,
+        10191.3,
+        3950.1,
+        6587.5
+      ]
+    ]
+  },
+  "verdict": "RAM: SEISMIC anon floor 1.099 GB vs Qdrant 3.348 GB (delta -2.249 GB; note SEISMIC's in-process figure bundles the SPLADE encoder while Qdrant's is the server process only, so the index-only SEISMIC win is larger). Latency WARM p50/p95 (steady-state, cache resident): SEISMIC 31253.452504999586/32248.268602008466 ms vs Qdrant 6808.455701000639/10827.264541003387 ms. COLD p50 (first-fault): SEISMIC 30238.543336992734 ms vs Qdrant 7564.957857000991 ms. Passes=2. WARM is the serving number; COLD is mmap first-touch + cold OS page cache, not steady-state serving cost."
+}

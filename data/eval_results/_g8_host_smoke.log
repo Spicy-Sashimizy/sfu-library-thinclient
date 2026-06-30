@@ -1,0 +1,26 @@
+=== SEISMIC vs Qdrant Serving Footprint Benchmark ===
+Date: 2026-06-30T06:08:24.006844
+Queries: 5
+Total docs: 150413098
+
+SEISMIC:
+  Load time: 0.1s
+  Anon floor: 0.9767 GB
+  Pss_Anon: 0.9767 GB
+  VmRSS peak: 1.9859 GB
+  Anon bytes/doc: 6.972206423140091
+  Latency p50: 503.62224700006664 ms
+  Latency p95: 1373.1161539999448 ms
+  Latency mean: 456.59 ms
+
+QDRANT (PID 112):
+  Anon floor: 16.9817 GB
+  Pss_Anon: None GB
+  VmRSS peak: 22.1854 GB
+  Anon bytes/doc: 121.2260316318995
+  Latency p50: 2928.2901560000028 ms
+  Latency p95: 12595.745975 ms
+  Latency mean: 3644.41 ms
+
+VERDICT:
+RAM (TRUE anon floor = RssAnon + VmSwap): SEISMIC 0.977 GB (rss 0.9767 + swap 0.0) vs Qdrant 16.982 GB (rss 16.9817 + swap 0.0) — delta -16.005 GB. RssAnon ALONE undercounts the floor by VmSwap on a swap-pressured host. SEISMIC's index is file-backed mmap (reclaimable page cache, ~0 swap); Qdrant's postings are anon heap that the kernel pages to swap. NOTE: SEISMIC's in-process figure also bundles the SPLADE encoder, so the index-only SEISMIC win is even larger. Latency WARM p50/p95: SEISMIC 266.15966500003196/573.3633549999695 ms vs Qdrant 2167.3583939999617/3945.2786940000806 ms; COLD p50: SEISMIC 503.62224700006664 ms vs Qdrant 2928.2901560000028 ms (2 passes). CAVEAT: both latencies are measured on a swap-thrashing host (swap ~full) and are NOT representative of a properly-provisioned box — latency is a NEXT-STEP, not a verdict.

@@ -1,0 +1,17 @@
+SEISMIC vs Qdrant Serving Footprint Benchmark
+Date: 20260628_202906
+Docs: 150413098
+Queries: 30
+
+SEISMIC (mmap'd, in-process):
+  Anon floor: 1.1704 GB
+  VmRSS peak: 10.8864 GB
+  Latency p50/p95/mean: 30944.27/63284.171/34410.593 ms
+
+Qdrant (server, splade_150m):
+  Anon floor: 3.3499 GB
+  VmRSS peak: 6.5801 GB
+  Latency p50/p95/mean: 7417.189/9570.576/7326.378 ms
+
+Verdict:
+SEISMIC wins on anon floor by 2.179 GB (1.170 vs 3.350 GB); Qdrant faster on latency (34410.59ms vs 7326.38ms p50 30944.27ms vs 7417.19ms)

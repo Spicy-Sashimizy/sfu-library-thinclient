@@ -20,9 +20,10 @@ query weights (the doc vectors were stored raw float too, no QUANT), so the
 scorer is symmetric, matching the docs' identical-compute guarantee where
 Qdrant also uses raw f32 queries.
 
-TESTBED-ONLY — this is the `SFU_SPLADE_BACKEND=seismic` adapter; wiring it is a
-testbed measurement step (G6/G5), NOT a served Path-A-GO decision. The served
-SPLADE leg stays Qdrant.
+TESTBED-ONLY — this is the `SFU_SPLADE_BACKEND=seismic` adapter for the SINGLE
+persona-scale index. Serving the real 150M corpus uses the federated
+`ShardedSeismicBackend` (`src/lib/thinclient/sharded_seismic_backend.py`, mmap'd
+shards). The served SPLADE leg otherwise stays Qdrant.
 """
 import logging
 import os
@@ -71,11 +72,17 @@ class SeismicBackend:
 
     def search(self, query: str, top_k: int,
                query_cut: int | None = None,
-               heap_factor: float = 0.8) -> list[tuple[str, float]]:
+               heap_factor: float = 0.8,
+               k_prime: int | None = None) -> list[tuple[str, float]]:
         """Return [(openalex_id, score)] for the top_k SPLADE matches.
         query_cut defaults to the number of query terms (use all) — SEISMIC's
         own MS MARCO best_configs use query_cut small, but recall-first means we
-        evaluate the full top-64 query until G2 proves otherwise."""
+        evaluate the full top-64 query until G2 proves otherwise.
+
+        `k_prime` is a no-op here (single index, no federation over-fetch) —
+        accepted only so `_splade_leg_seismic` can call `.search(..., k_prime=)`
+        uniformly across this backend and the federated `ShardedSeismicBackend`."""
+        del k_prime  # federated-only; unused on the single index.
         q = self.encode_query(query)
         if not q:
             return []

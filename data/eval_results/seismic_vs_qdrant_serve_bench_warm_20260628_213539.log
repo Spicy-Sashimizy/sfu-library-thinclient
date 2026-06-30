@@ -1,0 +1,26 @@
+=== SEISMIC vs Qdrant Serving Footprint Benchmark ===
+Date: 2026-06-28T22:02:45.464035
+Queries: 20
+Total docs: 150413098
+
+SEISMIC:
+  Load time: 0.5s
+  Anon floor: 1.0991 GB
+  Pss_Anon: 1.0991 GB
+  VmRSS peak: 8.4264 GB
+  Anon bytes/doc: 7.845716734057296
+  Latency p50: 30791.242773004342 ms
+  Latency p95: 31739.22811601369 ms
+  Latency mean: 30609.67 ms
+
+QDRANT (PID 112):
+  Anon floor: 3.3478 GB
+  Pss_Anon: 3.3478 GB
+  VmRSS peak: 5.5686 GB
+  Anon bytes/doc: 23.898868488168496
+  Latency p50: 6900.030980003066 ms
+  Latency p95: 10827.264541003387 ms
+  Latency mean: 7292.48 ms
+
+VERDICT:
+RAM: SEISMIC anon floor 1.099 GB vs Qdrant 3.348 GB (delta -2.249 GB; note SEISMIC's in-process figure bundles the SPLADE encoder while Qdrant's is the server process only, so the index-only SEISMIC win is larger). Latency WARM p50/p95 (steady-state, cache resident): SEISMIC 31253.452504999586/32248.268602008466 ms vs Qdrant 6808.455701000639/10827.264541003387 ms. COLD p50 (first-fault): SEISMIC 30238.543336992734 ms vs Qdrant 7564.957857000991 ms. Passes=2. WARM is the serving number; COLD is mmap first-touch + cold OS page cache, not steady-state serving cost.

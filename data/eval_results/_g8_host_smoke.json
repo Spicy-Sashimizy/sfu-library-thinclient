@@ -1,0 +1,214 @@
+{
+  "meta": {
+    "date_utc": "2026-06-30T06:08:24.001679",
+    "benchmark": "SEISMIC vs Qdrant serving footprint at 150M docs",
+    "total_docs": 150413098,
+    "queries": 5,
+    "top_k": 50,
+    "query_encoding": "encode_splade + top-64 terms",
+    "seismic_load_mode": "mmap",
+    "seismic_federation": "parallel",
+    "qdrant_available": true
+  },
+  "seismic": {
+    "engine": "seismic-pyseismic + ParallelSeismicBackend (1 shard, mmap, parallel)",
+    "load_seconds": 0.15,
+    "load_mode": "mmap",
+    "federation": "parallel",
+    "query_cut": "10",
+    "heap_factor": "0.8",
+    "k_prime": null,
+    "ram": {
+      "anon_floor_gb": 0.9767,
+      "rss_anon_gb": 0.9767,
+      "vmswap_gb": 0.0,
+      "anon_delta_gb": 0.9594,
+      "pss_anon_gb": 0.9767,
+      "vmrss_peak_gb": 1.9859,
+      "vmrss_peak_bytes": 2132385792,
+      "anon_bytes_per_doc": 6.972206423140091,
+      "baseline_anon_gb": 0.0173
+    },
+    "latency_ms": {
+      "p50_ms": 503.62224700006664,
+      "p95_ms": 1373.1161539999448,
+      "mean_ms": 456.59,
+      "min_ms": 48.399041999914516,
+      "max_ms": 1373.1161539999448,
+      "n": 10,
+      "cold": {
+        "p50_ms": 503.62224700006664,
+        "p95_ms": 1373.1161539999448,
+        "mean_ms": 603.18,
+        "min_ms": 48.399041999914516,
+        "max_ms": 1373.1161539999448,
+        "n": 5
+      },
+      "warm": {
+        "p50_ms": 266.15966500003196,
+        "p95_ms": 573.3633549999695,
+        "mean_ms": 310.0,
+        "min_ms": 99.92812400003004,
+        "max_ms": 573.3633549999695,
+        "n": 5
+      },
+      "n_passes": 2
+    },
+    "latency_by_pass_ms": [
+      [
+        48.4,
+        503.6,
+        695.0,
+        1373.1,
+        395.8
+      ],
+      [
+        504.5,
+        266.2,
+        99.9,
+        106.1,
+        573.4
+      ]
+    ],
+    "encode_ms": {
+      "p50_ms": 35.99440599998616,
+      "p95_ms": 45.86177499993482,
+      "mean_ms": 34.29,
+      "min_ms": 19.05825099993308,
+      "max_ms": 45.86177499993482,
+      "n": 10,
+      "cold": {
+        "p50_ms": 35.33586399998967,
+        "p95_ms": 42.95617399998264,
+        "mean_ms": 33.69,
+        "min_ms": 22.88510400001087,
+        "max_ms": 42.95617399998264,
+        "n": 5
+      },
+      "warm": {
+        "p50_ms": 41.493196000033095,
+        "p95_ms": 45.86177499993482,
+        "mean_ms": 34.9,
+        "min_ms": 19.05825099993308,
+        "max_ms": 45.86177499993482,
+        "n": 5
+      },
+      "n_passes": 2
+    },
+    "traverse_ms": {
+      "p50_ms": 460.59205099993505,
+      "p95_ms": 1350.1910379999345,
+      "mean_ms": 422.26,
+      "min_ms": 17.073449000008623,
+      "max_ms": 1350.1910379999345,
+      "n": 10,
+      "cold": {
+        "p50_ms": 460.59205099993505,
+        "p95_ms": 1350.1910379999345,
+        "mean_ms": 569.44,
+        "min_ms": 17.073449000008623,
+        "max_ms": 1350.1910379999345,
+        "n": 5
+      },
+      "warm": {
+        "p50_ms": 223.4370090000084,
+        "p95_ms": 554.2747740000777,
+        "mean_ms": 275.07,
+        "min_ms": 60.19431999993685,
+        "max_ms": 554.2747740000777,
+        "n": 5
+      },
+      "n_passes": 2
+    },
+    "encode_by_pass_ms": [
+      [
+        31.3,
+        43.0,
+        36.0,
+        22.9,
+        35.3
+      ],
+      [
+        41.5,
+        42.7,
+        25.4,
+        45.9,
+        19.1
+      ]
+    ],
+    "traverse_by_pass_ms": [
+      [
+        17.1,
+        460.6,
+        659.0,
+        1350.2,
+        360.4
+      ],
+      [
+        462.9,
+        223.4,
+        74.5,
+        60.2,
+        554.3
+      ]
+    ]
+  },
+  "qdrant": {
+    "engine": "Qdrant sparse_150m collection (on_disk)",
+    "server_pid": 112,
+    "available": true,
+    "ram": {
+      "anon_floor_gb": 16.9817,
+      "rss_anon_gb": 16.9817,
+      "vmswap_gb": 0.0,
+      "anon_delta_gb": 1.9099,
+      "pss_anon_gb": null,
+      "vmrss_peak_gb": 22.1854,
+      "vmrss_peak_bytes": 23821393920,
+      "anon_bytes_per_doc": 121.2260316318995,
+      "baseline_anon_gb": 15.0718
+    },
+    "latency_ms": {
+      "p50_ms": 2928.2901560000028,
+      "p95_ms": 12595.745975,
+      "mean_ms": 3644.41,
+      "min_ms": 1157.73112699992,
+      "max_ms": 12595.745975,
+      "n": 10,
+      "cold": {
+        "p50_ms": 2928.2901560000028,
+        "p95_ms": 12595.745975,
+        "mean_ms": 4780.78,
+        "min_ms": 1987.6292039999726,
+        "max_ms": 12595.745975,
+        "n": 5
+      },
+      "warm": {
+        "p50_ms": 2167.3583939999617,
+        "p95_ms": 3945.2786940000806,
+        "mean_ms": 2508.04,
+        "min_ms": 1157.73112699992,
+        "max_ms": 3945.2786940000806,
+        "n": 5
+      },
+      "n_passes": 2
+    },
+    "latency_by_pass_ms": [
+      [
+        12595.7,
+        2928.3,
+        1987.6,
+        4236.4,
+        2155.8
+      ],
+      [
+        3505.3,
+        2167.4,
+        1157.7,
+        3945.3,
+        1764.5
+      ]
+    ]
+  },
+  "verdict": "RAM (TRUE anon floor = RssAnon + VmSwap): SEISMIC 0.977 GB (rss 0.9767 + swap 0.0) vs Qdrant 16.982 GB (rss 16.9817 + swap 0.0) \u2014 delta -16.005 GB. RssAnon ALONE undercounts the floor by VmSwap on a swap-pressured host. SEISMIC's index is file-backed mmap (reclaimable page cache, ~0 swap); Qdrant's postings are anon heap that the kernel pages to swap. NOTE: SEISMIC's in-process figure also bundles the SPLADE encoder, so the index-only SEISMIC win is even larger. Latency WARM p50/p95: SEISMIC 266.15966500003196/573.3633549999695 ms vs Qdrant 2167.3583939999617/3945.2786940000806 ms; COLD p50: SEISMIC 503.62224700006664 ms vs Qdrant 2928.2901560000028 ms (2 passes). CAVEAT: both latencies are measured on a swap-thrashing host (swap ~full) and are NOT representative of a properly-provisioned box \u2014 latency is a NEXT-STEP, not a verdict."
+}

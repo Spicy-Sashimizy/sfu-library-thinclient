@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "engine": "seismic-pyseismic-lsr-0.4.0",
+    "built_utc": "2026-06-27",
+    "purpose": "G7 150M build-RAM requirement \u2014 CONFIRMED BY MEASUREMENT + curve fit, NOT by a 150M build (host RAM-impossible). Projected from the measured peak-RSS-vs-docs scaling curve.",
+    "target_docs": 150413098,
+    "target_docs_source": "data/thinclient_index/manifest.json sum over 9 sections",
+    "host_physical_gb": 31.0,
+    "host_constraint": "pyseismic 0.4.0 SeismicIndex.build() holds the forward index + k-means clustering resident (no on-disk/streaming build path) \u2192 build RSS scales with corpus.",
+    "caveat": "*proj.* \u2014 curve fit over measured points <= the largest scale, NOT a measured 150M build. The 150M figure is a projection with a stated band; treat the band, not a single number."
+  },
+  "measured_points": [
+    {
+      "docs": 929000,
+      "peak_rss_gb": 1.912,
+      "on_disk_gb": 1.1628,
+      "source": "seismic_build_persona_929k.json"
+    },
+    {
+      "docs": 2000000,
+      "peak_rss_gb": 2.814,
+      "on_disk_gb": 1.6942,
+      "source": "seismic_build_persona_2m.json"
+    },
+    {
+      "docs": 8000000,
+      "peak_rss_gb": 5.108,
+      "on_disk_gb": 3.7452,
+      "source": "seismic_build_scale_8m.json"
+    },
+    {
+      "docs": 18796836,
+      "peak_rss_gb": 9.925,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18797196,
+      "peak_rss_gb": 9.926,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18797227,
+      "peak_rss_gb": 9.926,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18799322,
+      "peak_rss_gb": 9.922,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18801216,
+      "peak_rss_gb": 9.926,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18801448,
+      "peak_rss_gb": 9.928,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18807611,
+      "peak_rss_gb": 9.931,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 18812242,
+      "peak_rss_gb": 9.932,
+      "on_disk_gb": null,
+      "source": "manual-override"
+    },
+    {
+      "docs": 20000000,
+      "peak_rss_gb": 9.535,
+      "on_disk_gb": 7.7031,
+      "source": "seismic_build_scale_20m.json"
+    }
+  ],
+  "fits": {
+    "linear": {
+      "a": 1.7335,
+      "b_gb_per_doc": 4.3003045387479127e-07,
+      "r2": 0.992,
+      "projected_150m_gb": 66.4,
+      "backfit_largest_gb": 10.33
+    },
+    "power_law": {
+      "a": 0.0009,
+      "exponent_c": 0.5549,
+      "r2": 0.9899,
+      "projected_150m_gb": 30.8,
+      "backfit_largest_gb": 10.05
+    },
+    "naive_rss_per_doc_scale": {
+      "rss_per_doc_gb": 4.77e-07,
+      "at_docs": 20000000,
+      "projected_150m_gb": 71.7
+    }
+  },
+  "projection": {
+    "linear_gb": 66.4,
+    "power_law_gb": 30.8,
+    "band_lo_gb": 30.8,
+    "band_hi_gb": 66.4,
+    "naive_scale_gb": 71.7
+  },
+  "verdict": {
+    "host_impossible_on_current": false,
+    "note": "150M build projected at ~66 GB peak RSS (band 31\u201366 GB, +30% safety \u2192 \u226586 GB host) vs this host's 31 GB physical. projection fits on this host \u2014 re-check the inputs."
+  }
+}
