@@ -1,0 +1,3385 @@
+{
+  "meta": {
+    "date_utc": "2026-06-30T21:37:30",
+    "judge": "neuralwatt/kimi-k2.7-code-flex",
+    "engine": "SEISMIC 8-shard 150M SPLADE (n120 stored top10)",
+    "source_record": "data/eval_results/seismic_g6_rrf_fullcorpus_n120_20260629.json",
+    "n_queries": 120,
+    "top_k": 10,
+    "metadata_coverage": "877/877",
+    "kimi_cache_entries_before": 3735,
+    "kimi_cache_entries_after": 4184,
+    "api_calls_this_run": 449,
+    "note": "Kimi-judged with the SAME isolated cache + scorers as seismic_quality_kimi (SEISMIC 0.944) and rejudge_kimi_qdrant (Qdrant 0.9065), so directly comparable. NDCG ideal is within SEISMIC's own retrieved top-k (no cross-method pool). The seismic_top10 IDs come from the G6 full-corpus run on the exact same 120 parity queries the Qdrant record uses."
+  },
+  "scores": {
+    "ndcg@10": 0.9262,
+    "mrr@10": 0.9833,
+    "p@10(>=2)": 0.7592,
+    "mean_grade": 2.105,
+    "n_relevant_ge2": 911,
+    "n_judged": 1200
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "judge_key": "indigenous language revitalization First Nations British Columbia",
+      "seismic": [
+        "W2765197911",
+        "W2549791808",
+        "W4414898055",
+        "W4411864999",
+        "W6942371972",
+        "W4381596769",
+        "W2735679914",
+        "W7002264130",
+        "W2943307008",
+        "W2971853639"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+      "judge_key": "indigenous language revitalization First Nations British Columbia",
+      "seismic": [
+        "W2765197911",
+        "W4411864999",
+        "W4381596769",
+        "W7132348565",
+        "W4414898055",
+        "W7019667087",
+        "W6942371972",
+        "W2613937268",
+        "W2968138358",
+        "W7002264130"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+      "judge_key": "indigenous language revitalization First Nations British Columbia",
+      "seismic": [
+        "W2735679914",
+        "W4411864999",
+        "W2765197911",
+        "W3154058571",
+        "W7019667087",
+        "W6945030394",
+        "W2613937268",
+        "W2904321466",
+        "W2968138358",
+        "W2336997675"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "judge_key": "residential school trauma intergenerational effects Indigenous communities",
+      "seismic": [
+        "W3000231508",
+        "W2989569213",
+        "W2738616233",
+        "W2903817244",
+        "W3034514579",
+        "W2626273645",
+        "W7067264383",
+        "W2922056177",
+        "W4243119408",
+        "W7053303909"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+      "judge_key": "residential school trauma intergenerational effects Indigenous communities",
+      "seismic": [
+        "W3000231508",
+        "W2903817244",
+        "W2989569213",
+        "W2738616233",
+        "W3034514579",
+        "W2626273645",
+        "W4243119408",
+        "W7053303909",
+        "W2922056177",
+        "W7067264383"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+      "judge_key": "residential school trauma intergenerational effects Indigenous communities",
+      "seismic": [
+        "W3000231508",
+        "W2738616233",
+        "W2903817244",
+        "W2989569213",
+        "W4309595647",
+        "W4243119408",
+        "W4390232885",
+        "W4413095342",
+        "W3208434932",
+        "W2626273645"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        2.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "judge_key": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "seismic": [
+        "W2901200530",
+        "W6910990988",
+        "W4382682467",
+        "W4404381098",
+        "W3132644076",
+        "W3112584853",
+        "W4327747197",
+        "W7001132940",
+        "W6961123648",
+        "W4367678360"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+      "judge_key": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "seismic": [
+        "W4382682467",
+        "W2901200530",
+        "W6910990988",
+        "W7063690133",
+        "W7001132940",
+        "W2917884525",
+        "W2947523816",
+        "W3132644076",
+        "W4362692966",
+        "W3035930081"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+      "judge_key": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "seismic": [
+        "W3035930081",
+        "W4382682467",
+        "W4391662337",
+        "W6961123648",
+        "W2901200530",
+        "W7081928672",
+        "W2773788585",
+        "W7063690133",
+        "W3132644076",
+        "W4362692966"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "judge_key": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "seismic": [
+        "W4297319212",
+        "W7018715181",
+        "W7064674859",
+        "W2904321466",
+        "W3025421485",
+        "W2766565836",
+        "W2514584961",
+        "W7137473572",
+        "W2896816223",
+        "W7033549577"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+      "judge_key": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "seismic": [
+        "W7057929679",
+        "W4297319212",
+        "W7018715181",
+        "W4224299152",
+        "W2904321466",
+        "W2782308289",
+        "W6907188631",
+        "W6906945171",
+        "W2167364478",
+        "W6982960501"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+      "judge_key": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "seismic": [
+        "W7018715181",
+        "W3196090296",
+        "W6906945171",
+        "W6907188631",
+        "W7057929679",
+        "W2782308289",
+        "W4297319212",
+        "W4410569380",
+        "W2341104589",
+        "W7098937025"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "query": "housing affordability crisis Metro Vancouver rental market",
+      "judge_key": "housing affordability crisis Metro Vancouver rental market",
+      "seismic": [
+        "W4320151285",
+        "W6960896831",
+        "W2312953418",
+        "W7042966500",
+        "W2916957661",
+        "W3006712579",
+        "W2108370886",
+        "W6886090116",
+        "W3092110346",
+        "W7005955554"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+      "judge_key": "housing affordability crisis Metro Vancouver rental market",
+      "seismic": [
+        "W4409555876",
+        "W6960896831",
+        "W6886090116",
+        "W4320151285",
+        "W7072389704",
+        "W7042966500",
+        "W3006712579",
+        "W2312953418",
+        "W2108370886",
+        "W4404693331"
+      ],
+      "grades": [
+        1.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+      "judge_key": "housing affordability crisis Metro Vancouver rental market",
+      "seismic": [
+        "W7042966500",
+        "W6960896831",
+        "W6961152185",
+        "W7128219259",
+        "W7082678340",
+        "W6886090116",
+        "W2736263791",
+        "W7005955554",
+        "W4410104211",
+        "W7030114063"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        3.0,
+        0.0,
+        3.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "Canadian immigration settlement services multicultural policy",
+      "judge_key": "Canadian immigration settlement services multicultural policy",
+      "seismic": [
+        "W2567364625",
+        "W7073693506",
+        "W2599380825",
+        "W7028244464",
+        "W2399786034",
+        "W2950294241",
+        "W7128702126",
+        "W7128688132",
+        "W3211277619",
+        "W4255632938"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do Canadian settlement services for immigrants align with and reflect multicultural policy objectives?",
+      "judge_key": "Canadian immigration settlement services multicultural policy",
+      "seismic": [
+        "W2599380825",
+        "W7128702126",
+        "W7128688132",
+        "W4392644635",
+        "W4255632938",
+        "W3211277619",
+        "W2567364625",
+        "W7073693506",
+        "W7028244464",
+        "W2399786034"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+      "judge_key": "Canadian immigration settlement services multicultural policy",
+      "seismic": [
+        "W7133000522",
+        "W4235359249",
+        "W4238246476",
+        "W2567364625",
+        "W7073693506",
+        "W7028244464",
+        "W2399786034",
+        "W2950294241",
+        "W7128702126",
+        "W7128688132"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "BC provincial politics electoral reform referendum",
+      "judge_key": "BC provincial politics electoral reform referendum",
+      "seismic": [
+        "W7033396267",
+        "W2955865983",
+        "W6993630256",
+        "W7137597934",
+        "W3015173886",
+        "W7095484416",
+        "W4388930250",
+        "W6894297958",
+        "W7113653793",
+        "W3205141741"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+      "judge_key": "BC provincial politics electoral reform referendum",
+      "seismic": [
+        "W2955865983",
+        "W7137597934",
+        "W7019557541",
+        "W7033396267",
+        "W6993630256",
+        "W7137624316",
+        "W4365451400",
+        "W7099704393",
+        "W6894297958",
+        "W2766565836"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+      "judge_key": "BC provincial politics electoral reform referendum",
+      "seismic": [
+        "W7033396267",
+        "W7098443496",
+        "W7033388839",
+        "W2792611097",
+        "W2910074002",
+        "W2775375933",
+        "W4388930250",
+        "W4240124070",
+        "W3010349369",
+        "W3035983010"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "Chinese Canadian discrimination exclusion act immigration history",
+      "judge_key": "Chinese Canadian discrimination exclusion act immigration history",
+      "seismic": [
+        "W7065057645",
+        "W6950374204",
+        "W4385474985",
+        "W4385665906",
+        "W7084386523",
+        "W6887815262",
+        "W6906514617",
+        "W4205829668",
+        "W4379386403",
+        "W4411077423"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+      "judge_key": "Chinese Canadian discrimination exclusion act immigration history",
+      "seismic": [
+        "W7065057645",
+        "W4385665906",
+        "W7084386523",
+        "W4385474985",
+        "W6950374204",
+        "W6887815262",
+        "W6906514617",
+        "W4293693678",
+        "W6942657814",
+        "W3157199576"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Canadian settlement and community experiences?",
+      "judge_key": "Chinese Canadian discrimination exclusion act immigration history",
+      "seismic": [
+        "W7133071775",
+        "W7028173624",
+        "W7139535518",
+        "W2562708630",
+        "W7132465184",
+        "W4233380349",
+        "W3204415278",
+        "W4246193739",
+        "W4255394177",
+        "W4411077423"
+      ],
+      "grades": [
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "query": "restorative justice alternatives incarceration recidivism reduction",
+      "judge_key": "restorative justice alternatives incarceration recidivism reduction",
+      "seismic": [
+        "W6964876032",
+        "W7116778013",
+        "W2749262797",
+        "W2888979222",
+        "W7024426230",
+        "W3165882590",
+        "W6996239315",
+        "W7080047361",
+        "W4416746437",
+        "W4411842430"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How effective are restorative justice programs as alternatives to incarceration in reducing recidivism?",
+      "judge_key": "restorative justice alternatives incarceration recidivism reduction",
+      "seismic": [
+        "W4402888121",
+        "W6964876032",
+        "W7116778013",
+        "W4375867217",
+        "W4408500852",
+        "W4400660683",
+        "W4416773019",
+        "W4412063507",
+        "W4412847406",
+        "W4391810885"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0,
+        3.0,
+        2.0,
+        1.0,
+        2.0,
+        1.0
+      ]
+    },
+    {
+      "query": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+      "judge_key": "restorative justice alternatives incarceration recidivism reduction",
+      "seismic": [
+        "W4412847406",
+        "W7116778013",
+        "W7117891323",
+        "W4408500852",
+        "W7131022073",
+        "W4375867217",
+        "W4409572655",
+        "W4407205193",
+        "W4411842725",
+        "W6906838411"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        1.0,
+        1.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "police use of force racial profiling Black Indigenous communities Canada",
+      "judge_key": "police use of force racial profiling Black Indigenous communities Canada",
+      "seismic": [
+        "W3130131812",
+        "W4404066507",
+        "W4404090000",
+        "W7125935157",
+        "W7125923822",
+        "W4300893906",
+        "W2582660180",
+        "W4379012900",
+        "W2970749572",
+        "W2518373336"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+      "judge_key": "police use of force racial profiling Black Indigenous communities Canada",
+      "seismic": [
+        "W4404066507",
+        "W4404090000",
+        "W2518373336",
+        "W4404090054",
+        "W4404090021",
+        "W137734308",
+        "W4409157233",
+        "W3130131812",
+        "W4405631084",
+        "W4405631040"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+      "judge_key": "police use of force racial profiling Black Indigenous communities Canada",
+      "seismic": [
+        "W4404066507",
+        "W4404090000",
+        "W2518373336",
+        "W6992756409",
+        "W4404090021",
+        "W4404090054",
+        "W6907357367",
+        "W2807872135",
+        "W2910773212",
+        "W4387473419"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "query": "cybercrime financial fraud digital forensics investigation",
+      "judge_key": "cybercrime financial fraud digital forensics investigation",
+      "seismic": [
+        "W4402656060",
+        "W4411447647",
+        "W4402198663",
+        "W7123283761",
+        "W7123256934",
+        "W4300942556",
+        "W4409617253",
+        "W4404822423",
+        "W4293187832",
+        "W4406287005"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How do investigators use digital forensics techniques to detect and prosecute financial fraud in cybercrime cases?",
+      "judge_key": "cybercrime financial fraud digital forensics investigation",
+      "seismic": [
+        "W4402198663",
+        "W4225153951",
+        "W4409617253",
+        "W4313017926",
+        "W4282582506",
+        "W4411447647",
+        "W4384914957",
+        "W4402656060",
+        "W7142358726",
+        "W4399716954"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What investigative methods and digital forensics approaches are most effective for identifying perpetrators of financial fraud committed through cybercrimes?",
+      "judge_key": "cybercrime financial fraud digital forensics investigation",
+      "seismic": [
+        "W4415101608",
+        "W4402198663",
+        "W4411447647",
+        "W4402656060",
+        "W7123283761",
+        "W7123256934",
+        "W7109689258",
+        "W4409617253",
+        "W2608680041",
+        "W4404822423"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "prison population mental health services rehabilitation programs",
+      "judge_key": "prison population mental health services rehabilitation programs",
+      "seismic": [
+        "W7124596303",
+        "W4380224742",
+        "W4401593553",
+        "W4388168892",
+        "W7111729874",
+        "W4404908804",
+        "W4413190476",
+        "W7122662722",
+        "W7009317535",
+        "W3163665339"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do mental health services in prisons support rehabilitation outcomes for incarcerated populations?",
+      "judge_key": "prison population mental health services rehabilitation programs",
+      "seismic": [
+        "W4282971774",
+        "W2954977508",
+        "W2994941245",
+        "W2219709199",
+        "W4220962840",
+        "W4366235182",
+        "W2604473354",
+        "W7114998180",
+        "W7066437318",
+        "W4412112534"
+      ],
+      "grades": [
+        1.0,
+        1.0,
+        0.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What mental health and rehabilitation programs are most effective for individuals currently serving sentences in the prison system?",
+      "judge_key": "prison population mental health services rehabilitation programs",
+      "seismic": [
+        "W7009317535",
+        "W7122662722",
+        "W6999606863",
+        "W2963742714",
+        "W4407040177",
+        "W4403923278",
+        "W4413873368",
+        "W4390490816",
+        "W7020215986",
+        "W4412847406"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0
+      ]
+    },
+    {
+      "query": "interactive media experience design user engagement game mechanics",
+      "judge_key": "interactive media experience design user engagement game mechanics",
+      "seismic": [
+        "W7058774670",
+        "W7029045850",
+        "W3203246446",
+        "W2801257253",
+        "W3208055983",
+        "W7020801890",
+        "W7141898682",
+        "W4390563948",
+        "W4407312418",
+        "W4404681578"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do game mechanics enhance user engagement in interactive media experience design?",
+      "judge_key": "interactive media experience design user engagement game mechanics",
+      "seismic": [
+        "W4410237150",
+        "W4407312418",
+        "W3203246446",
+        "W4404681578",
+        "W7120723858",
+        "W6999577068",
+        "W7135166264",
+        "W2898575288",
+        "W2801257253",
+        "W3208055983"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What design strategies most effectively combine game mechanics with interactive media to create engaging user experiences?",
+      "judge_key": "interactive media experience design user engagement game mechanics",
+      "seismic": [
+        "W3119919514",
+        "W4393162056",
+        "W1980973850",
+        "W4407312418",
+        "W4200003506",
+        "W7097630661",
+        "W4285283900",
+        "W4415517397",
+        "W7043540179",
+        "W2810448967"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "virtual reality augmented reality immersive learning environments",
+      "judge_key": "virtual reality augmented reality immersive learning environments",
+      "seismic": [
+        "W2897431653",
+        "W4205703046",
+        "W4387704919",
+        "W6927181699",
+        "W6945880629",
+        "W7131384555",
+        "W6939364747",
+        "W4303444953",
+        "W6901697598",
+        "W6911918521"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How do virtual reality and augmented reality technologies create immersive learning environments?",
+      "judge_key": "virtual reality augmented reality immersive learning environments",
+      "seismic": [
+        "W7131384555",
+        "W4387704919",
+        "W4205703046",
+        "W2897431653",
+        "W6939364747",
+        "W4303444953",
+        "W6901697598",
+        "W6911918521",
+        "W6968137268",
+        "W6968189691"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What are the design principles and effectiveness of immersive learning experiences using VR and AR?",
+      "judge_key": "virtual reality augmented reality immersive learning environments",
+      "seismic": [
+        "W4405764295",
+        "W4404859906",
+        "W7142699664",
+        "W4407171643",
+        "W4401952315",
+        "W3013662535",
+        "W4404859597",
+        "W7124311362",
+        "W7133338174",
+        "W2897431653"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "computational art generative algorithms creative machine learning",
+      "judge_key": "computational art generative algorithms creative machine learning",
+      "seismic": [
+        "W7126405650",
+        "W7130312935",
+        "W4406153371",
+        "W4288777604",
+        "W4402915703",
+        "W3139948516",
+        "W4287239377",
+        "W7135183860",
+        "W4410068319",
+        "W7037896638"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How are generative algorithms and machine learning being applied in contemporary computational art?",
+      "judge_key": "computational art generative algorithms creative machine learning",
+      "seismic": [
+        "W4288777604",
+        "W7126405650",
+        "W4210540254",
+        "W7130312935",
+        "W4380626880",
+        "W7037896638",
+        "W4403589345",
+        "W4387584934",
+        "W3190513080",
+        "W4412188808"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        0.0,
+        2.0,
+        1.0,
+        3.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What are the primary approaches for incorporating machine learning into creative artistic processes and algorithmic art creation?",
+      "judge_key": "computational art generative algorithms creative machine learning",
+      "seismic": [
+        "W2922210744",
+        "W7130312935",
+        "W6889833637",
+        "W4303468395",
+        "W4410068319",
+        "W7132821045",
+        "W4406208409",
+        "W3026944467",
+        "W7094446827",
+        "W7057434431"
+      ],
+      "grades": [
+        1.0,
+        2.0,
+        3.0,
+        0.0,
+        3.0,
+        3.0,
+        0.0,
+        3.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "human computer interaction accessibility inclusive design",
+      "judge_key": "human computer interaction accessibility inclusive design",
+      "seismic": [
+        "W4414980383",
+        "W4400484205",
+        "W4408650698",
+        "W4416237025",
+        "W4394948253",
+        "W4403582766",
+        "W4409014249",
+        "W4391335048",
+        "W4307136741",
+        "W7126674439"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How can human-computer interaction design principles support accessibility and inclusive design?",
+      "judge_key": "human computer interaction accessibility inclusive design",
+      "seismic": [
+        "W4414980383",
+        "W4408650698",
+        "W4400484205",
+        "W4416155163",
+        "W4391335048",
+        "W4409014249",
+        "W7124462221",
+        "W4416237025",
+        "W4394948253",
+        "W4403582766"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What strategies and approaches make human-computer interfaces more accessible and inclusive for diverse users?",
+      "judge_key": "human computer interaction accessibility inclusive design",
+      "seismic": [
+        "W4408112568",
+        "W4408650698",
+        "W7120555828",
+        "W4414980383",
+        "W4411069977",
+        "W7058505262",
+        "W6946641116",
+        "W4400484205",
+        "W2294822949",
+        "W4307136741"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "biomedical physiology exercise rehabilitation muscle physiology",
+      "judge_key": "biomedical physiology exercise rehabilitation muscle physiology",
+      "seismic": [
+        "W7133509542",
+        "W4396862952",
+        "W2921394672",
+        "W7112342808",
+        "W7111712710",
+        "W7131875106",
+        "W7111562072",
+        "W4403405113",
+        "W4250842436",
+        "W7073785097"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How does muscle physiology respond and adapt to exercise during rehabilitation?",
+      "judge_key": "biomedical physiology exercise rehabilitation muscle physiology",
+      "seismic": [
+        "W4403405113",
+        "W7133509542",
+        "W4409864518",
+        "W4407597253",
+        "W7131875106",
+        "W4361981420",
+        "W4392443782",
+        "W4406815752",
+        "W4317888330",
+        "W7083671283"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        3.0,
+        3.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What are the biomedical mechanisms by which exercise improves muscle function in rehabilitation?",
+      "judge_key": "biomedical physiology exercise rehabilitation muscle physiology",
+      "seismic": [
+        "W7131875106",
+        "W4410899508",
+        "W4396862952",
+        "W4409864518",
+        "W4403405113",
+        "W4412151047",
+        "W4377029304",
+        "W4294844134",
+        "W7097594199",
+        "W4412690567"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "kinesiology sport performance motor learning biomechanics",
+      "judge_key": "kinesiology sport performance motor learning biomechanics",
+      "seismic": [
+        "W4319288285",
+        "W6968458730",
+        "W6949535287",
+        "W2741757170",
+        "W3013568486",
+        "W7010270623",
+        "W4412919981",
+        "W7113121709",
+        "W7112029906",
+        "W4248428475"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How does motor learning relate to sport performance improvement through the principles of biomechanics and kinesiology?",
+      "judge_key": "kinesiology sport performance motor learning biomechanics",
+      "seismic": [
+        "W6968458730",
+        "W6949535287",
+        "W4319288285",
+        "W3013568486",
+        "W7126033801",
+        "W7126086174",
+        "W4409734950",
+        "W4412919981",
+        "W4383860856",
+        "W7120830430"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        1.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What biomechanical and kinesiological factors influence motor learning and athletic sport performance?",
+      "judge_key": "kinesiology sport performance motor learning biomechanics",
+      "seismic": [
+        "W6968458730",
+        "W6949535287",
+        "W4412637363",
+        "W3013568486",
+        "W7020332370",
+        "W6930782449",
+        "W6911961333",
+        "W4412919981",
+        "W4409792221",
+        "W2914605750"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "cardiovascular disease exercise intervention prevention outcomes",
+      "judge_key": "cardiovascular disease exercise intervention prevention outcomes",
+      "seismic": [
+        "W7131977617",
+        "W7061248430",
+        "W4411051498",
+        "W2065375731",
+        "W3183395044",
+        "W4413054413",
+        "W4232759104",
+        "W3137372500",
+        "W2626596737",
+        "W2971477402"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        0.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How effective are exercise programs at preventing cardiovascular disease?",
+      "judge_key": "cardiovascular disease exercise intervention prevention outcomes",
+      "seismic": [
+        "W2320261507",
+        "W7096749315",
+        "W4224211750",
+        "W2903235350",
+        "W6939400028",
+        "W6976928198",
+        "W4399208831",
+        "W4213066542",
+        "W4414575335",
+        "W6923608302"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What outcomes can be expected from exercise interventions designed to prevent cardiovascular disease?",
+      "judge_key": "cardiovascular disease exercise intervention prevention outcomes",
+      "seismic": [
+        "W7131977617",
+        "W4377019258",
+        "W4411051498",
+        "W2065375731",
+        "W3035145066",
+        "W7061248430",
+        "W3183395044",
+        "W2626596737",
+        "W4413054413",
+        "W7076801360"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        2.0,
+        0.0,
+        1.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "ESG sustainable investing responsible finance portfolio performance",
+      "judge_key": "ESG sustainable investing responsible finance portfolio performance",
+      "seismic": [
+        "W7097741005",
+        "W6962425069",
+        "W2762341395",
+        "W3150778729",
+        "W3127236039",
+        "W3159759907",
+        "W4322507213",
+        "W6981840513",
+        "W7070802433",
+        "W2552561299"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        2.0,
+        1.0,
+        3.0,
+        1.0,
+        3.0,
+        2.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What is the impact of ESG and sustainable investing on portfolio performance?",
+      "judge_key": "ESG sustainable investing responsible finance portfolio performance",
+      "seismic": [
+        "W4406990282",
+        "W4393193078",
+        "W4408845234",
+        "W4400286590",
+        "W7080187927",
+        "W4416822322",
+        "W6990687617",
+        "W6889810073",
+        "W4360945730",
+        "W4415282362"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "How does responsible finance affect investment returns and financial outcomes?",
+      "judge_key": "ESG sustainable investing responsible finance portfolio performance",
+      "seismic": [
+        "W2252451828",
+        "W2608382331",
+        "W3036196600",
+        "W4312292307",
+        "W2612227315",
+        "W3186531035",
+        "W3124964217",
+        "W7099435027",
+        "W7136132136",
+        "W7136252023"
+      ],
+      "grades": [
+        3.0,
+        0.0,
+        2.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "Canadian banking regulation financial stability macroprudential policy",
+      "judge_key": "Canadian banking regulation financial stability macroprudential policy",
+      "seismic": [
+        "W3125710069",
+        "W3189449850",
+        "W2731383471",
+        "W6960092566",
+        "W6989690144",
+        "W3023424483",
+        "W4296130135",
+        "W4312895850",
+        "W7052865920",
+        "W4237760400"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do macroprudential policies in Canadian banking regulation contribute to financial stability?",
+      "judge_key": "Canadian banking regulation financial stability macroprudential policy",
+      "seismic": [
+        "W3125710069",
+        "W2731383471",
+        "W6960092566",
+        "W3189449850",
+        "W7128365932",
+        "W7128356674",
+        "W6989690144",
+        "W2479988709",
+        "W3113570786",
+        "W7056516295"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What role do Canadian banking regulators play in maintaining financial stability through macroprudential policy implementation?",
+      "judge_key": "Canadian banking regulation financial stability macroprudential policy",
+      "seismic": [
+        "W7111708058",
+        "W3025798615",
+        "W2725461713",
+        "W3125710069",
+        "W6989690144",
+        "W1492946757",
+        "W3087116688",
+        "W4237760400",
+        "W2921159328",
+        "W4312895850"
+      ],
+      "grades": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        2.0,
+        0.0,
+        2.0
+      ]
+    },
+    {
+      "query": "venture capital startup ecosystem innovation funding",
+      "judge_key": "venture capital startup ecosystem innovation funding",
+      "seismic": [
+        "W7118752318",
+        "W4399277153",
+        "W4416816739",
+        "W4385220204",
+        "W4407671561",
+        "W4393055028",
+        "W2561966786",
+        "W4286620544",
+        "W4324153653",
+        "W1585881858"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        0.0,
+        2.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How does venture capital funding drive innovation within startup ecosystems?",
+      "judge_key": "venture capital startup ecosystem innovation funding",
+      "seismic": [
+        "W7118752318",
+        "W2900317847",
+        "W1585881858",
+        "W4286620544",
+        "W2886928119",
+        "W4408894070",
+        "W7117665862",
+        "W4417115795",
+        "W4400894936",
+        "W3009224873"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What role does venture capital investment play in developing and sustaining startup ecosystems?",
+      "judge_key": "venture capital startup ecosystem innovation funding",
+      "seismic": [
+        "W4404584745",
+        "W7033836975",
+        "W4324153653",
+        "W7067771995",
+        "W4416532957",
+        "W4313314418",
+        "W4408487765",
+        "W6991794167",
+        "W3207260417",
+        "W3007664020"
+      ],
+      "grades": [
+        1.0,
+        3.0,
+        1.0,
+        2.0,
+        1.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "query": "salmon aquaculture disease management Pacific Northwest fisheries",
+      "judge_key": "salmon aquaculture disease management Pacific Northwest fisheries",
+      "seismic": [
+        "W6910903369",
+        "W7133280020",
+        "W6923711943",
+        "W6932321700",
+        "W3128697466",
+        "W7140218273",
+        "W4412960842",
+        "W3094210020",
+        "W3164953934",
+        "W6946204399"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What disease management strategies are used in salmon aquaculture operations in the Pacific Northwest?",
+      "judge_key": "salmon aquaculture disease management Pacific Northwest fisheries",
+      "seismic": [
+        "W4412960842",
+        "W3164953934",
+        "W7140218273",
+        "W3094210020",
+        "W4389607935",
+        "W6923711943",
+        "W6932321700",
+        "W4416239081",
+        "W4411982371",
+        "W6910903369"
+      ],
+      "grades": [
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        2.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How does disease management in salmon farms relate to broader Pacific Northwest fisheries sustainability and outcomes?",
+      "judge_key": "salmon aquaculture disease management Pacific Northwest fisheries",
+      "seismic": [
+        "W2591619973",
+        "W3138678149",
+        "W6958240269",
+        "W4283021564",
+        "W6932321700",
+        "W6923711943",
+        "W2472741339",
+        "W6910903369",
+        "W4417513144",
+        "W4414360362"
+      ],
+      "grades": [
+        0.0,
+        1.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "wildfire management prescribed burning Indigenous traditional ecological knowledge",
+      "judge_key": "wildfire management prescribed burning Indigenous traditional ecological knowled",
+      "seismic": [
+        "W3209692193",
+        "W6945933374",
+        "W6908655941",
+        "W7088390059",
+        "W7074604507",
+        "W2516003715",
+        "W4383115210",
+        "W4400769367",
+        "W4296173642",
+        "W4319593197"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How does Indigenous traditional ecological knowledge inform the practice of prescribed burning in wildfire management?",
+      "judge_key": "wildfire management prescribed burning Indigenous traditional ecological knowled",
+      "seismic": [
+        "W3209692193",
+        "W6945933374",
+        "W6908655941",
+        "W7088390059",
+        "W6987094084",
+        "W6892150013",
+        "W6931644692",
+        "W6893915685",
+        "W2947242962",
+        "W4281550898"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "In what ways can Indigenous traditional ecological knowledge be integrated into prescribed burning strategies for more effective wildfire management?",
+      "judge_key": "wildfire management prescribed burning Indigenous traditional ecological knowled",
+      "seismic": [
+        "W3209692193",
+        "W7130512324",
+        "W4416193200",
+        "W7088390059",
+        "W7135212915",
+        "W6945933374",
+        "W6908655941",
+        "W4400769367",
+        "W2516003715",
+        "W7074604507"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "old growth forest conservation biodiversity British Columbia",
+      "judge_key": "old growth forest conservation biodiversity British Columbia",
+      "seismic": [
+        "W3151709312",
+        "W6894184008",
+        "W6923614085",
+        "W2137832967",
+        "W7055435378",
+        "W3107007822",
+        "W6946320418",
+        "W6969637657",
+        "W6904715460",
+        "W4313825841"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How does old growth forest conservation contribute to maintaining biodiversity in British Columbia?",
+      "judge_key": "old growth forest conservation biodiversity British Columbia",
+      "seismic": [
+        "W6894184008",
+        "W6923614085",
+        "W3151709312",
+        "W3107007822",
+        "W6946320418",
+        "W7055435378",
+        "W4413616743",
+        "W6969637657",
+        "W6904715460",
+        "W4313825841"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What are the most effective strategies for protecting biodiversity in British Columbia's old growth forests?",
+      "judge_key": "old growth forest conservation biodiversity British Columbia",
+      "seismic": [
+        "W7080140040",
+        "W2588452350",
+        "W7037343029",
+        "W3151709312",
+        "W7100609176",
+        "W6942184156",
+        "W6991537615",
+        "W4415635486",
+        "W2292969048",
+        "W6894245984"
+      ],
+      "grades": [
+        2.0,
+        1.0,
+        3.0,
+        3.0,
+        2.0,
+        0.0,
+        1.0,
+        3.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "query": "Northern Gateway pipeline environmental assessment First Nations opposition",
+      "judge_key": "Northern Gateway pipeline environmental assessment First Nations opposition",
+      "seismic": [
+        "W2984923647",
+        "W2554227111",
+        "W6983706238",
+        "W4206723242",
+        "W4206492965",
+        "W7045894380",
+        "W2036519736",
+        "W4248145116",
+        "W7114227338",
+        "W4417239337"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "What environmental concerns did First Nations raise in their opposition to the Northern Gateway pipeline?",
+      "judge_key": "Northern Gateway pipeline environmental assessment First Nations opposition",
+      "seismic": [
+        "W2984923647",
+        "W1424082147",
+        "W6983706238",
+        "W6912555147",
+        "W6893673594",
+        "W7045894380",
+        "W3085192148",
+        "W7037904777",
+        "W2554227111",
+        "W4400933127"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        0.0,
+        3.0,
+        0.0,
+        0.0,
+        3.0,
+        0.0
+      ]
+    },
+    {
+      "query": "How did the environmental assessment of the Northern Gateway pipeline address or fail to address First Nations perspectives?",
+      "judge_key": "Northern Gateway pipeline environmental assessment First Nations opposition",
+      "seismic": [
+        "W2996099539",
+        "W4206492965",
+        "W4206723242",
+        "W2554227111",
+        "W2984923647",
+        "W7025264507",
+        "W4285036797",
+        "W6923816363",
+        "W4388042687",
+        "W7000655173"
+      ],
+      "grades": [
+        0.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        0.0,
+        0.0,
+        3.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "opioid crisis fentanyl overdose harm reduction policy Canada",
+      "judge_key": "opioid crisis fentanyl overdose harm reduction policy Canada",
+      "seismic": [
+        "W3016175696",
+        "W7028899712",
+        "W4366597513",
+        "W4387302886",
+        "W3048524474",
+        "W4393957022",
+        "W2401653577",
+        "W4399828584",
+        "W4404410008",
+        "W7047673531"
+      ],
+      "grades": [
+        1.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What harm reduction policies has Canada implemented to address opioid overdose and the fentanyl crisis?",
+      "judge_key": "opioid crisis fentanyl overdose harm reduction policy Canada",
+      "seismic": [
+        "W7047673531",
+        "W7028899712",
+        "W2994178804",
+        "W4393957022",
+        "W2483856294",
+        "W4387302886",
+        "W3210044375",
+        "W6940108421",
+        "W6958755204",
+        "W4412084251"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How effective are harm reduction strategies at preventing fentanyl-related overdose deaths in Canada?",
+      "judge_key": "opioid crisis fentanyl overdose harm reduction policy Canada",
+      "seismic": [
+        "W3024994821",
+        "W2801784147",
+        "W2401653577",
+        "W3202686093",
+        "W2769349719",
+        "W4387302886",
+        "W4387823364",
+        "W3187821863",
+        "W2994178804",
+        "W7140801878"
+      ],
+      "grades": [
+        0.0,
+        3.0,
+        1.0,
+        0.0,
+        0.0,
+        3.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "Indigenous health disparities social determinants healthcare access",
+      "judge_key": "Indigenous health disparities social determinants healthcare access",
+      "seismic": [
+        "W4412191325",
+        "W2075016509",
+        "W2004895061",
+        "W2988771365",
+        "W4415725775",
+        "W4402568055",
+        "W4281905329",
+        "W2956670013",
+        "W2963418828",
+        "W2793997063"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do social determinants of health contribute to disparities in health outcomes for Indigenous populations?",
+      "judge_key": "Indigenous health disparities social determinants healthcare access",
+      "seismic": [
+        "W4412191325",
+        "W4404229970",
+        "W2988771365",
+        "W4402568055",
+        "W2956670013",
+        "W2963418828",
+        "W2793997063",
+        "W6906307678",
+        "W2946112813",
+        "W2075016509"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What barriers to healthcare access do Indigenous communities face, and how do these barriers affect their health disparities?",
+      "judge_key": "Indigenous health disparities social determinants healthcare access",
+      "seismic": [
+        "W3212672711",
+        "W4312016722",
+        "W6943970597",
+        "W6904508291",
+        "W6894266291",
+        "W7117789882",
+        "W2615349050",
+        "W2889773123",
+        "W4304114278",
+        "W7129482621"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "long COVID post-acute sequelae epidemiology treatment",
+      "judge_key": "long COVID post-acute sequelae epidemiology treatment",
+      "seismic": [
+        "W6906892271",
+        "W7140193364",
+        "W3198941023",
+        "W4385066179",
+        "W7055532524",
+        "W4367048877",
+        "W7084057476",
+        "W7120134457",
+        "W4416913698",
+        "W4394622766"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What is the epidemiology and prevalence of long COVID post-acute sequelae across different populations?",
+      "judge_key": "long COVID post-acute sequelae epidemiology treatment",
+      "seismic": [
+        "W6906892271",
+        "W7055532524",
+        "W4389395200",
+        "W3214374194",
+        "W3215603779",
+        "W4384282593",
+        "W7084057476",
+        "W7120134457",
+        "W4393314949",
+        "W4414991224"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0
+      ]
+    },
+    {
+      "query": "What treatment approaches are most effective for managing long COVID post-acute sequelae?",
+      "judge_key": "long COVID post-acute sequelae epidemiology treatment",
+      "seismic": [
+        "W7140193364",
+        "W4386801724",
+        "W7073711526",
+        "W4211245846",
+        "W7110886641",
+        "W4367048877",
+        "W4394622766",
+        "W3186833021",
+        "W4385066179",
+        "W4319602546"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "political risk country ratings international investment data",
+      "judge_key": "political risk country ratings international investment data",
+      "seismic": [
+        "W6969082928",
+        "W7052027517",
+        "W6932074001",
+        "W7095149058",
+        "W7099305182",
+        "W1518043567",
+        "W7069615998",
+        "W2510093957",
+        "W7053866814",
+        "W6981349733"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        0.0,
+        2.0,
+        0.0,
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How do political risk country ratings influence international investment decisions and capital flows?",
+      "judge_key": "political risk country ratings international investment data",
+      "seismic": [
+        "W7052027517",
+        "W7095149058",
+        "W3134420046",
+        "W3122472402",
+        "W3124930878",
+        "W7099305182",
+        "W6981357837",
+        "W6981349733",
+        "W6981337061",
+        "W6945988636"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What data sources and methodologies are available for measuring and comparing political risk ratings across countries?",
+      "judge_key": "political risk country ratings international investment data",
+      "seismic": [
+        "W7095149058",
+        "W7052027517",
+        "W3122861961",
+        "W4313229587",
+        "W2894761280",
+        "W7069615998",
+        "W7099305182",
+        "W4283271754",
+        "W7100351460",
+        "W6959001650"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        1.0,
+        0.0,
+        3.0,
+        2.0,
+        2.0,
+        0.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "query": "media framing political polarization social media misinformation",
+      "judge_key": "media framing political polarization social media misinformation",
+      "seismic": [
+        "W4388672462",
+        "W7108088113",
+        "W7131791801",
+        "W2901056853",
+        "W4404483807",
+        "W7034385116",
+        "W7117120503",
+        "W4404147600",
+        "W4297543272",
+        "W2885284910"
+      ],
+      "grades": [
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How does media framing on social media platforms contribute to political polarization and the spread of misinformation?",
+      "judge_key": "media framing political polarization social media misinformation",
+      "seismic": [
+        "W2905498624",
+        "W3136755003",
+        "W6887808666",
+        "W7113626348",
+        "W6944165363",
+        "W2410631379",
+        "W4399755416",
+        "W3125069964",
+        "W7131791801",
+        "W7025420766"
+      ],
+      "grades": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "query": "What is the relationship between how news and content are framed on social media and the reinforcement of political polarization through misinformation?",
+      "judge_key": "media framing political polarization social media misinformation",
+      "seismic": [
+        "W4401384961",
+        "W7113626348",
+        "W6887808666",
+        "W2177582922",
+        "W7139356343",
+        "W6977420367",
+        "W4402141244",
+        "W3198526561",
+        "W3007492632",
+        "W2963951513"
+      ],
+      "grades": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "income inequality poverty measurement Gini coefficient Canada",
+      "judge_key": "income inequality poverty measurement Gini coefficient Canada",
+      "seismic": [
+        "W4399441121",
+        "W2794179535",
+        "W4391849072",
+        "W4205990904",
+        "W7095919702",
+        "W7134246398",
+        "W2337173254",
+        "W7010835845",
+        "W3193744778",
+        "W3149412268"
+      ],
+      "grades": [
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How does Canada use the Gini coefficient to measure income inequality and poverty?",
+      "judge_key": "income inequality poverty measurement Gini coefficient Canada",
+      "seismic": [
+        "W4391849072",
+        "W4399441121",
+        "W1574044002",
+        "W2885255146",
+        "W2794179535",
+        "W7010835845",
+        "W122466728",
+        "W3193744778",
+        "W4205990904",
+        "W2736414982"
+      ],
+      "grades": [
+        1.0,
+        1.0,
+        1.0,
+        2.0,
+        0.0,
+        1.0,
+        2.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "What are the main approaches and metrics used in Canada for measuring poverty and income inequality?",
+      "judge_key": "income inequality poverty measurement Gini coefficient Canada",
+      "seismic": [
+        "W225665492",
+        "W7020563022",
+        "W831637061",
+        "W7002084739",
+        "W4214946047",
+        "W7019889639",
+        "W1963248982",
+        "W7113441736",
+        "W2913487731",
+        "W4417466204"
+      ],
+      "grades": [
+        1.0,
+        0.0,
+        2.0,
+        0.0,
+        2.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        2.0
+      ]
+    },
+    {
+      "query": "digital humanities text mining archival primary sources",
+      "judge_key": "digital humanities text mining archival primary sources",
+      "seismic": [
+        "W3108514304",
+        "W2732448554",
+        "W2153422025",
+        "W3164086944",
+        "W2913008665",
+        "W28080241",
+        "W3000371129",
+        "W3099809604",
+        "W2898865206",
+        "W7072165343"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        1.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do digital humanities researchers use text mining to analyze primary sources from archives?",
+      "judge_key": "digital humanities text mining archival primary sources",
+      "seismic": [
+        "W2732448554",
+        "W4412782081",
+        "W3108514304",
+        "W4365455100",
+        "W1416349383",
+        "W3135397309",
+        "W3186548377",
+        "W3126968526",
+        "W7072165343",
+        "W6968315971"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "query": "What text mining techniques and methods are available for working with archival primary sources in digital humanities research?",
+      "judge_key": "digital humanities text mining archival primary sources",
+      "seismic": [
+        "W28080241",
+        "W2732448554",
+        "W2794821671",
+        "W3214795480",
+        "W7046741232",
+        "W3108514304",
+        "W3126968526",
+        "W1416349383",
+        "W3135397309",
+        "W3090699150"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        2.0,
+        1.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "feminist theory gender studies intersectionality labour",
+      "judge_key": "feminist theory gender studies intersectionality labour",
+      "seismic": [
+        "W7137625122",
+        "W3002344171",
+        "W4417334430",
+        "W7010417384",
+        "W7010953705",
+        "W3194237750",
+        "W6892958274",
+        "W6948947368",
+        "W4408441100",
+        "W3044380507"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "How do feminist theories apply intersectionality to understand gender and labour?",
+      "judge_key": "feminist theory gender studies intersectionality labour",
+      "seismic": [
+        "W7137625122",
+        "W4417334430",
+        "W4414019076",
+        "W4408441100",
+        "W199728351",
+        "W4367019124",
+        "W6948356371",
+        "W7132903097",
+        "W3194237750",
+        "W7010953705"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do gender studies scholars approach labour through an intersectional lens?",
+      "judge_key": "feminist theory gender studies intersectionality labour",
+      "seismic": [
+        "W7010417384",
+        "W7039108227",
+        "W7137625122",
+        "W7099572484",
+        "W7005591978",
+        "W7015882557",
+        "W4367019124",
+        "W2981099789",
+        "W3125395605",
+        "W2788709138"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        1.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0
+      ]
+    },
+    {
+      "query": "machine learning public health disease surveillance prediction",
+      "judge_key": "machine learning public health disease surveillance prediction",
+      "seismic": [
+        "W4405128863",
+        "W4411682760",
+        "W4413380191",
+        "W7140205608",
+        "W4416305730",
+        "W4386610128",
+        "W4318676890",
+        "W2737816061",
+        "W4410030328",
+        "W6941706987"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How can machine learning be used to predict disease outbreaks and support public health surveillance efforts?",
+      "judge_key": "machine learning public health disease surveillance prediction",
+      "seismic": [
+        "W3158972464",
+        "W6941706987",
+        "W4415593818",
+        "W2806113561",
+        "W4403989693",
+        "W7064040034",
+        "W3129110142",
+        "W3206549309",
+        "W7124166061",
+        "W4304607071"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What machine learning techniques enable early disease prediction and improve disease monitoring systems in public health?",
+      "judge_key": "machine learning public health disease surveillance prediction",
+      "seismic": [
+        "W4401049747",
+        "W2944012984",
+        "W4394780590",
+        "W4388589726",
+        "W6939263475",
+        "W6901689869",
+        "W2891702319",
+        "W4286512640",
+        "W3080812499",
+        "W4409438821"
+      ],
+      "grades": [
+        2.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "query": "deep learning convolutional neural networks image recognition benchmark",
+      "judge_key": "deep learning convolutional neural networks image recognition benchmark",
+      "seismic": [
+        "W3097546826",
+        "W2921416943",
+        "W6931721194",
+        "W2926516160",
+        "W3201144059",
+        "W2970610469",
+        "W4400422415",
+        "W4393361501",
+        "W2990282984",
+        "W3092908049"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How do convolutional neural networks perform on image recognition benchmarks?",
+      "judge_key": "deep learning convolutional neural networks image recognition benchmark",
+      "seismic": [
+        "W7032728741",
+        "W7062786972",
+        "W3123844590",
+        "W3210592283",
+        "W3084848959",
+        "W6912866728",
+        "W4324127827",
+        "W6982373872",
+        "W7119428099",
+        "W7131935387"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        1.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What deep learning methods are most effective for image recognition according to benchmark evaluations?",
+      "judge_key": "deep learning convolutional neural networks image recognition benchmark",
+      "seismic": [
+        "W7027601757",
+        "W4321472491",
+        "W2970610469",
+        "W7132330668",
+        "W4221042425",
+        "W2995447947",
+        "W3207909476",
+        "W7006218296",
+        "W4405909256",
+        "W4404984330"
+      ],
+      "grades": [
+        2.0,
+        1.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        1.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "distributed systems Byzantine fault tolerance consensus algorithm",
+      "judge_key": "distributed systems Byzantine fault tolerance consensus algorithm",
+      "seismic": [
+        "W6893234148",
+        "W6949952569",
+        "W6929247649",
+        "W4412188665",
+        "W4386541372",
+        "W4377371890",
+        "W4409494698",
+        "W4380881694",
+        "W4380075699",
+        "W2092739151"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How do consensus algorithms achieve Byzantine fault tolerance in distributed systems?",
+      "judge_key": "distributed systems Byzantine fault tolerance consensus algorithm",
+      "seismic": [
+        "W2962872076",
+        "W6893234148",
+        "W6949952569",
+        "W4409494698",
+        "W4412188665",
+        "W4386541372",
+        "W2257997837",
+        "W2509179838",
+        "W2513474836",
+        "W2092739151"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        0.0,
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What mechanisms enable distributed systems to maintain consensus despite Byzantine failures?",
+      "judge_key": "distributed systems Byzantine fault tolerance consensus algorithm",
+      "seismic": [
+        "W4224903279",
+        "W4372272768",
+        "W6892289778",
+        "W3212243311",
+        "W6967565354",
+        "W6967770576",
+        "W7136071935",
+        "W2092739151",
+        "W3007598514",
+        "W7107942311"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "query": "privacy preserving federated learning differential privacy data sharing",
+      "judge_key": "privacy preserving federated learning differential privacy data sharing",
+      "seismic": [
+        "W4390188553",
+        "W4363675960",
+        "W4390418537",
+        "W4405183010",
+        "W4281563311",
+        "W4404137125",
+        "W4382319677",
+        "W4294712151",
+        "W3136120147",
+        "W4409047274"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How can federated learning be implemented with privacy-preserving techniques and differential privacy to enable secure data sharing?",
+      "judge_key": "privacy preserving federated learning differential privacy data sharing",
+      "seismic": [
+        "W4382319677",
+        "W4281563311",
+        "W2956355137",
+        "W2974175488",
+        "W4415593759",
+        "W4391799132",
+        "W4390418537",
+        "W4386410429",
+        "W2792706211",
+        "W4409047274"
+      ],
+      "grades": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "query": "What mechanisms and guarantees exist for protecting sensitive data in federated learning systems and multi-party data sharing scenarios?",
+      "judge_key": "privacy preserving federated learning differential privacy data sharing",
+      "seismic": [
+        "W4285820426",
+        "W4382319677",
+        "W3212058519",
+        "W4412404305",
+        "W4211102442",
+        "W4391991728",
+        "W4399039277",
+        "W4312889016",
+        "W4224312993",
+        "W4392910956"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0,
+        1.0,
+        1.0,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "query": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "judge_key": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "seismic": [
+        "W4409054388",
+        "W4406161734",
+        "W7117992068",
+        "W7117991615",
+        "W4394844664",
+        "W7043047891",
+        "W4417220302",
+        "W4405217191",
+        "W2406290201",
+        "W3014586229"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "What retrofitting methods improve the structural resilience of buildings against earthquakes?",
+      "judge_key": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "seismic": [
+        "W4239605215",
+        "W2478910356",
+        "W7117992068",
+        "W7117991615",
+        "W7130067626",
+        "W3022359838",
+        "W4407319298",
+        "W4417220302",
+        "W4409054388",
+        "W4210979180"
+      ],
+      "grades": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "query": "How does seismic engineering address the retrofitting of buildings to enhance their resilience to seismic events?",
+      "judge_key": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "seismic": [
+        "W4409054388",
+        "W2559152443",
+        "W7117992068",
+        "W7117991615",
+        "W3099504720",
+        "W7134021044",
+        "W7130067626",
+        "W2406290201",
+        "W4405217191",
+        "W3014586229"
+      ],
+      "grades": [
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0
+      ]
+    },
+    {
+      "query": "life cycle assessment carbon footprint sustainable manufacturing materials",
+      "judge_key": "life cycle assessment carbon footprint sustainable manufacturing materials",
+      "seismic": [
+        "W7108337117",
+        "W4414832297",
+        "W7108329667",
+        "W4404113963",
+        "W3193480845",
+        "W7095013737",
+        "W7094998032",
+        "W3181180449",
+        "W4403942405",
+        "W7127565975"
+      ],
+      "grades": [
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "How can life cycle assessment be used to evaluate the carbon footprint of sustainable manufacturing?",
+      "judge_key": "life cycle assessment carbon footprint sustainable manufacturing materials",
+      "seismic": [
+        "W4387899810",
+        "W3181180449",
+        "W7111411228",
+        "W7095013737",
+        "W7094998032",
+        "W7108337117",
+        "W4414832297",
+        "W7108329667",
+        "W4407832976",
+        "W4403942405"
+      ],
+      "grades": [
+        1.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    {
+      "query": "Which materials have the lowest carbon footprint when considering their full life cycle in manufacturing?",
+      "judge_key": "life cycle assessment carbon footprint sustainable manufacturing materials",
+      "seismic": [
+        "W4404113963",
+        "W4395052002",
+        "W4392734747",
+        "W4403942405",
+        "W4394961045",
+        "W4412429879",
+        "W2814810142",
+        "W7095013737",
+        "W7094998032",
+        "W3193480845"
+      ],
+      "grades": [
+        3.0,
+        1.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        3.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    }
+  ]
+}

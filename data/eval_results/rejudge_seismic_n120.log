@@ -1,0 +1,14 @@
+21:28:29 INFO: judge=neuralwatt model=kimi-k2.7-code-flex  Kimi cache=seismic_kimi_judge_cache.json (3735 entries)
+21:28:29 INFO: G6 record: 120 queries; seismic_top10 present for 120/120
+21:28:29 INFO: fetching OpenAlex metadata for 877 unique ids…
+21:29:22 INFO: metadata coverage: 877/877
+21:30:17 INFO:   judged 20/120 (cache now 3774, +39 since start)
+21:31:46 INFO:   judged 40/120 (cache now 3855, +120 since start)
+21:32:56 INFO:   judged 60/120 (cache now 3944, +209 since start)
+21:34:26 INFO:   judged 80/120 (cache now 4014, +279 since start)
+21:35:59 INFO:   judged 100/120 (cache now 4095, +360 since start)
+21:37:30 INFO:   judged 120/120 (cache now 4184, +449 since start)
+21:37:30 INFO: === SEISMIC 8-shard 150M SPLADE (n120 stored top10) — Kimi-judged (n=120) ===
+21:37:30 INFO:   ndcg@10=0.9262  mrr@10=0.9833  p@10(>=2)=0.7592  mean_grade=2.105
+21:37:30 INFO:   api_calls_this_run=449  (cache 3735 -> 4184)
+21:37:30 INFO: result: /workspaces/sfu-library-thinclient/data/eval_results/rejudge_kimi_seismic_n120_20260630_2137.json

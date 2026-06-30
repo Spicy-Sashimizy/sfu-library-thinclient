@@ -1,0 +1,39 @@
+{
+  "date_utc": "2026-06-30T21:30:00",
+  "judge": "neuralwatt/kimi-k2.7-code-flex",
+  "metric": "SPLADE-leg NDCG@10, ideal within own top-10",
+  "aggregate_per_engine_DIFFERENT_query_sets": {
+    "SEISMIC": {
+      "n": 120,
+      "ndcg@10": 0.944,
+      "note": "keyword queries (sfu_eval_queries.json)"
+    },
+    "Qdrant": {
+      "n": 120,
+      "ndcg@10": 0.9065,
+      "note": "40 keyword + 80 NL questions (parity n120)"
+    },
+    "OpenSearch": {
+      "n": 40,
+      "ndcg@10": 0.8772,
+      "note": "parity baseline subset"
+    }
+  },
+  "matched_paired_RIGOROUS": {
+    "SEISMIC_vs_Qdrant_n40": {
+      "n": 40,
+      "delta": -0.002,
+      "ci95": 0.0035,
+      "t": -1.13,
+      "A_mean": 0.9475,
+      "B_mean": 0.9495
+    },
+    "all_three_common_n14": {
+      "queries": 14,
+      "SEISMIC": 0.9613,
+      "Qdrant": 0.9607,
+      "OpenSearch": 0.9489
+    }
+  },
+  "verdict": "SEISMIC SPLADE quality is statistically INDISTINGUISHABLE from Qdrant under one consistent judge (matched \u0394 -0.002 \u00b10.0035, t=-1.13, ns; 9/14 identical on 3-way set). The aggregate 0.944>0.907 is a query-SET artifact (keyword vs NL), not a real edge. Quality-neutral -> the ~15x RAM win is free."
+}
