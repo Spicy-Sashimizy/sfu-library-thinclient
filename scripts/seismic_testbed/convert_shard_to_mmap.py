@@ -91,9 +91,10 @@ def parse_c1a_stdout_json(stdout: str) -> dict:
 def convert_one_shard(index_path: str, mmap_dir: str, abort_rss_gb: float,
                       n_queries: int) -> dict:
     """Run the c1a bin on one shard (RSS-watched, serial). Returns a manifest
-    entry. Aborts the whole run if VmRSS exceeds the budget."""
-    stem = shard_stem_from_index_path(index_path)
-    target = f"{stem}.mmap"
+    entry. Aborts the whole run if VmRSS exceeds the budget. `mmap_dir` is the
+    converted output dir (may be a persistent path != sibling of the source)."""
+    target = mmap_dir
+    Path(target).parent.mkdir(parents=True, exist_ok=True)
     cmd = [str(C1A_BIN), "--index-book", str(index_path),
            "--mmap-dir", target, "--n-queries", str(n_queries)]
     log.info("converting %s -> %s", index_path, target)
@@ -180,6 +181,12 @@ def main() -> int:
                     help="convert only shards 0..N-1 (checkpoint)")
     ap.add_argument("--out-manifest", default=None,
                     help="output manifest path (default <results-dir>/seismic_c25_shards_150m_mmap.json)")
+    ap.add_argument("--mmap-out-dir", default=None,
+                    help="PERSISTENT directory to write converted .mmap/ dirs into "
+                         "(overrides the default 'sibling .mmap next to the source'). "
+                         "G7 sources can live on volatile /tmp scratch; this keeps the "
+                         "served mmap shards on a non-volatile path that survives reboot. "
+                         "The per-shard dir is <mmap-out-dir>/<global_shardKofN>.mmap.")
     ap.add_argument("--list-only", action="store_true",
                     help="print the shard -> mmap-dir plan and exit (no conversion)")
     args = ap.parse_args()
@@ -201,8 +208,18 @@ def main() -> int:
         if not ip or not Path(ip).exists():
             log.warning("skip shard %s: index_path missing/absent (%s)", s.get("shard"), ip)
             continue
+        stem = shard_stem_from_index_path(ip)
+        # Default: converted mmap dir = sibling <stem>.mmap next to the source.
+        # With --mmap-out-dir: write to a PERSISTENT dir (survives /tmp wipes) so
+        # the served shards are not on volatile scratch. The source G7 .index.seismic
+        # may stay on /tmp (regenerable from spool_backup); only the served mmap dir
+        # needs to persist. Per-shard dir name keeps the source stem for traceability.
+        if args.mmap_out_dir:
+            mmap_dir = str(Path(args.mmap_out_dir) / f"{Path(stem).name}.mmap")
+        else:
+            mmap_dir = f"{stem}.mmap"
         plan.append({"shard": s["shard"], "index_path": ip,
-                     "mmap_dir": f"{shard_stem_from_index_path(ip)}.mmap",
+                     "mmap_dir": mmap_dir,
                      "docs": s.get("docs"), "nnz": s.get("nnz")})
     if not plan:
         log.error("no convertible shards resolved from %s", args.g7_manifest)

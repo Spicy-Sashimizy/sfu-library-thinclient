@@ -107,7 +107,9 @@ def main():
                         datefmt="%H:%M:%S")
     load_mode = args.load_mode or os.environ.get("SFU_SEISMIC_LOAD_MODE", "stock")
     federation = args.federation or os.environ.get("SFU_SEISMIC_FEDERATION", "parallel")
-    index_paths = _load_manifest(args.manifest)
+    # Pass load_mode so mmap mode reads the C2.5 manifest's `mmap_dir` (persistent)
+    # rather than the G7 `index_path` (which may live on volatile /tmp scratch).
+    index_paths = _load_manifest(args.manifest, load_mode=load_mode)
     assert index_paths, f"no shard indexes from --manifest {args.manifest}"
     log.info("federated: %d shards (load_mode=%s, federation=%s)",
              len(index_paths), load_mode, federation)

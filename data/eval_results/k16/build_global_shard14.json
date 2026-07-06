@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "engine": "seismic-pyseismic-lsr-0.5.0",
+    "variant": "standard",
+    "section": "_global_shard14",
+    "built_utc": "2026-06-26",
+    "params": {
+      "n_postings": 3500,
+      "centroid_fraction": 0.1,
+      "min_cluster_size": 2,
+      "summary_energy": 0.4,
+      "max_fraction": 1.5,
+      "doc_cut": 15,
+      "param_source": "MS MARCO best_configs; recall-matched vs Qdrant in G2 (R-PARAM)"
+    },
+    "purpose": "P1 G1: build persona SEISMIC index from stored sparse_field, no re-encode"
+  },
+  "build_seconds": 654.26,
+  "save_seconds": 11.07,
+  "docs": 9395416,
+  "dim": 28648,
+  "nnz": 823417041,
+  "avg_nnz_per_doc": 87.64,
+  "peak_rss_gb": 6.086,
+  "rssanon_gb": {
+    "before_load": 0.0082,
+    "after_build": 5.3098,
+    "after_gc": 5.3098
+  },
+  "mem_available_gb": {
+    "before": 28.64,
+    "after": 22.72
+  },
+  "space_usage_bytes": {
+    "forward_index": 3368831556,
+    "posting_lists_total": 1195143031,
+    "packed_postings": 326202688,
+    "block_offsets": 26438984,
+    "summaries": 842501359,
+    "knn": 0,
+    "total": 4563974587,
+    "forward_vs_inverted_split": {
+      "forward_index": 3368831556,
+      "inverted_block_summary": 1195143031
+    }
+  },
+  "on_disk_gb": 4.7479,
+  "index_path": "/tmp/seismic_testbed/index/plan01_k16/global_shard14of16.index.seismic",
+  "g1_verdict": "PASS \u2014 index built from stored sparse_field, no OOM"
+}

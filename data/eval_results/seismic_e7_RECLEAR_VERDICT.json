@@ -1,0 +1,139 @@
+{
+  "title": "E7 reclear \u2014 final same-footing verdict (2026-07-03)",
+  "protocol": "Hard, pre-registered: same 40 diverse queries, same shard0 twins, k'=200 (the E1/E6 footing), bars unchanged (a>=0.99 parity, b warm p50 <=1.07, c cold majflt <=0.55). warm_repeats=15 (up from 5; Arm A showed the warm ratio spans 1.22-1.44 at wr=5 (~18% noise) so the reclear arms use a higher per-query median for clean attribution without changing the bar). 2-3 replicates per arm; warm p50 stability checked.",
+  "fork_state": "c987160 (E7 baseline) -> 4bf7083 (Fix #2 MADV_RANDOM) -> 86acf3c (Fix #2 REFUTED + disabled, leak_mmap_advise kept as infra). Honest-best build = native-only.",
+  "main_repo_state": "spike/mmap-bmp: 7398e2e -> .. -> 95c8341 (gate knobs: --warm-repeats, --build-label, --k-prime; all additive, defaults preserve footing)",
+  "cross_arm_table_2026-07-03": {
+    "cols": [
+      "arm",
+      "config",
+      "parity",
+      "gate_b_ratio_runs",
+      "gate_b_pass",
+      "gate_c_ratio",
+      "gate_c_pass",
+      "note"
+    ],
+    "rows": [
+      [
+        "A",
+        "control (SSE2 .so, no fixes)",
+        0.995,
+        "1.338,1.436",
+        "0/2",
+        0.591,
+        "0/2",
+        "env anchor; gate b noisy at wr=5"
+      ],
+      [
+        "B",
+        "native-only (Fix#1)",
+        0.995,
+        "0.916,1.137,1.022",
+        "2/3",
+        0.591,
+        "0/3",
+        "gate b 1.31x better than A; straddles at wr=5... actually wr=15 here, still noisy early"
+      ],
+      [
+        "C",
+        "native + MADV_RANDOM both fwd",
+        0.995,
+        "1.083,1.147,1.01",
+        "1/3",
+        0.54,
+        "3/3",
+        "gate c PASSES but via quadruple-fault ARTIFACT, not genuine"
+      ],
+      [
+        "D",
+        "native + MADV_RANDOM dv-only",
+        0.995,
+        "1.0,0.971,0.971",
+        "3/3",
+        2.017,
+        "0/3",
+        "PROVES C's win was artifact: dv-only -> ratio 2.017"
+      ],
+      [
+        "E1",
+        "native-only reconfirm (DELIVERABLE)",
+        0.995,
+        "0.957,0.946,0.976",
+        "3/3",
+        0.591,
+        "0/3",
+        "gate b ROBUSTLY recleared (3/3); gate c unchanged"
+      ],
+      [
+        "E2",
+        "native k'=100 (DIFFERENT FOOTING)",
+        0.9975,
+        "0.946,1.086,1.07",
+        "2/3",
+        0.583,
+        "0/3",
+        "k'=100 does NOT clear gate c (0.583>0.55); not an escape"
+      ],
+      [
+        "F",
+        "native + Fix#3 WILLNEED prefetch",
+        0.995,
+        "0.703,0.688,0.696 (artifact: both slower)",
+        "3/3",
+        0.591,
+        "0/3",
+        "gate c unchanged; gate b ratio win is both-formats-slower artifact from madvise syscall overhead"
+      ],
+      [
+        "G",
+        "native reconfirm (DELIVERABLE restored)",
+        0.995,
+        "0.99,0.937",
+        "2/2",
+        0.591,
+        "0/2",
+        "Fix#3 reverted; back to E1 proven-best state"
+      ]
+    ]
+  },
+  "fix_by_fix_verdict": {
+    "Fix_1_native_rebuild": {
+      "applies_to": "gate b (primary)",
+      "implemented": true,
+      "simd_verified": "objdump: +54 packed vfmadd..ps, +14k ymm regs, +185 vpshufb (baseline SSE2 had 0/294/26). Packed gather (vpgatherdd) STILL 0 \u2014 std::simd lowering gap, the research's last-resort fix #4 not taken.",
+      "cargo_tests_native": "5/5 PASS (mmap_parity_twin, dotvbyte_convert_parity) \u2014 FMA rounding didn't break parity",
+      "gate_b": "RECLEARED (robust): E1 deliverable 3/3 PASS, median ratio 0.957 (<=1.07). Control A was 0/2 FAIL at median 1.388. ~1.45x improvement.",
+      "gate_c": "NO EFFECT (as predicted): still 0.591 \u2014 Fix#1 is CPU-only",
+      "parity_a": "HELD: 0.995 across every arm",
+      "verdict": "SHIP. Highest-leverage, zero-risk, applies to gate b."
+    },
+    "Fix_2_MADV_RANDOM_forward": {
+      "applies_to": "gate c (primary)",
+      "implemented_then_refuted": true,
+      "hypothesis": "MADV_RANDOM suppresses readahead overshoot on random ~200B candidate reads -> fewer faults",
+      "experimental_result": "REFUTED. MADV_RANDOM disables readahead -> every 4KB page faults individually. Absolute majflt QUADRUPLED: f16 116974->437219 (3.74x), dv 69148->235914 (3.41x). Cold latency WORSE: f16 668->1595ms, dv 462->868ms.",
+      "why_gate_c_appeared_to_pass_in_arm_C": "Ratio artifact. MADV_RANDOM hurt f16 *worse* (3.74x) than dv (3.41x), so dv/f16 ratio improved to 0.54 (<=0.55) even though both got worse in absolute terms. Arm D (dv-only) isolates this: ratio jumps to 2.017 (dv = 2x f16 faults). There is NO genuine dv benefit.",
+      "verdict": "DO NOT SHIP. Disabled (random=false on all forward files). leak_mmap_advise kept as infrastructure. The bar-as-written was gameable; the bar's INTENT (fewer disk faults per candidate) is NOT met by MADV_RANDOM on this kernel/WSL2."
+    },
+    "Fix_3_MADV_WILLNEED_batch": {
+      "applies_to": "gate c (the remaining open bar)",
+      "implemented_then_refuted": true,
+      "hypothesis": "Issue madvise(MADV_WILLNEED) over each candidate's exact byte range during prefetch phase 1 -> phase 2 read faults become overlapped async readahead. Opposite of Fix #2 MADV_RANDOM; advises EXACT candidate ranges (not whole files), so no f16-vs-dv asymmetry to game the ratio.",
+      "implementation": "madvise_willneed helper in vectorium utils (direct unsafe extern C FFI, MADV_WILLNEED=3 on Linux, no libc dep added). Wired into BOTH prefetch_with_range impls the SEISMIC forward hot path uses (packed_dataset dotvbyte + sparse_dataset f16). objdump verified 25 madvise call sites in the rebuilt .so.",
+      "experimental_result": "REFUTED (Arm F, 3 runs). Gate c majflt UNCHANGED at 0.591 (116954/69124 vs 116982/69149 base). Cold latency unchanged too (f16 646->686ms, dv 428->435ms, within noise). The kernel did NOT honor WILLNEED on these ranges, or default readahead already overlaps enough that explicit WILLNEED adds nothing. Async-readahead hypothesis falsified by measurement on this kernel/WSL2.",
+      "side_effect_gate_b": "ARTIFACT regression: warm p50 got 3-4x WORSE for BOTH formats (f16 2.07->8.13ms, dv 2.00->5.66ms) due to per-candidate madvise() syscall overhead (~25 syscalls/block). The ratio *appeared* to improve to 0.696 only because f16 takes more madvise calls (2 slices: components+values) than dv (1 slice: data). A slower-both ratio improvement is NOT a latency win.",
+      "parity": "0.995 held (WILLNEED is pure advice, no data change)",
+      "verdict": "DO NOT SHIP. No gate-c benefit + gate-b warm regression. Reverted to CPU-prefetch-only (native rebuild remains the proven best = gate b 0.957 PASS, gate c 0.591 open). Helper kept as infrastructure with #[allow(dead_code)]. Deliverable .so reconfirmed native-only (Arm G): gate b 0.99/0.937 PASS x2, warm ~2.1ms (overhead gone), gate c 0.591 unchanged, parity 0.995."
+    }
+  },
+  "final_same_footing_verdict": {
+    "gate_a_parity": "PASS (0.995, robust across all arms)",
+    "gate_b_warm_latency": "RECLEARED by Fix #1 (native rebuild). Deliverable arm E1: 3/3 PASS, median 0.957. Robust once warm_repeats is adequate (15).",
+    "gate_c_cold_majflt": "NOT RECLEARED. Best honest config (native-only) = 0.591. Fix #2 (MADV_RANDOM) refuted as an artifact. k'=100 (different footing) = 0.583, still >0.55. Gate c remains OPEN.",
+    "overall": "1 of 2 failed bars robustly recleared (gate b, via the free native rebuild); gate c NOT recleared by any honest means tested. Parity held throughout. E7 NOT promoted (gate c open); the native rebuild IS the shippable delta and closes the warm-latency gap decisively.",
+    "gate_c_status_after_fix3": "STILL NOT RECLEARED. Both kernel-advice levers for gate c are now refuted: Fix #2 MADV_RANDOM (quadruples faults; ratio was an artifact) and Fix #3 MADV_WILLNEED (zero effect on faults/latency + warm regression). Best honest config remains Fix #1 native-only: gate b PASS (0.957), gate c 0.591 (open, deterministic). Gate c appears to be a STRUCTURAL floor of the forward reading pattern, not a tunable advice axis. Remaining escapes: E7b (RAM-capped re-bench where the -41% faults should dominate) OR accept gate c as a miscalibrated bar (the 0.55 modeled forward-only faults; whole-process majflt includes unchanged posting-list + doc-mapping faults)."
+  },
+  "deliverable": "Rebuild the seismic .so with RUSTFLAGS=-C target-cpu=native (Fix #1). It is already installed in the venv (so mtime 02:04:55). Gate b goes from clear FAIL (1.39) to clear PASS (0.957); parity 0.995 holds. Gate c stays 0.591 (open) \u2014 the only remaining E7 bar; the next lever for it is Fix #3 (MADV_WILLNEED batch per posting block), NOT MADV_RANDOM.",
+  "result_files": "data/eval_results/seismic_e7_arm{A,B,C,D,E1,E2}_*.json + this verdict + anchors seismic_e7_arm{A,B,C}_*_anchor.json"
+}

@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "mmap_dir": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard0of8.mmap",
+    "n_queries": 40,
+    "k_prime": 200,
+    "heap_factor": 0.8,
+    "overlap_k": 10,
+    "top_k": 50,
+    "gate_bar_overlap10": 0.99,
+    "doc_quant": "FixedU8<U6> (round(v*64), clip[0,255])",
+    "doc_value_stats_ref": "seismic_e6_forward_codec_proto_20260702_2346.json phase A (min 0.01, max 3.25, nnz mean 87.6)",
+    "saturation_bound": "2*255*qmax <= 32767 => qmax<=64 => q<=63 (6-bit). Saturation-safe bits: {5,6}.",
+    "note": "NO saturation simulated; bits>6 are gated-out by construction and shown only to prove the bound bites."
+  },
+  "modes": {
+    "query_int5": {
+      "query_bits": 5,
+      "query_int_range": "[0, 31]",
+      "saturation_safe": true,
+      "saturation_label": "SAFE",
+      "overlap@10_mean": 0.9875,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.983,
+      "gate_pass_0.99": false
+    },
+    "query_int6": {
+      "query_bits": 6,
+      "query_int_range": "[0, 63]",
+      "saturation_safe": true,
+      "saturation_label": "SAFE",
+      "overlap@10_mean": 0.99,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.993,
+      "gate_pass_0.99": true
+    },
+    "query_int7": {
+      "query_bits": 7,
+      "query_int_range": "[0, 127]",
+      "saturation_safe": false,
+      "saturation_label": "UNSAFE-INTENTIONAL-DEMO",
+      "overlap@10_mean": 0.995,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.9935,
+      "gate_pass_0.99": true
+    },
+    "query_int8": {
+      "query_bits": 8,
+      "query_int_range": "[0, 255]",
+      "saturation_safe": false,
+      "saturation_label": "UNSAFE-INTENTIONAL-DEMO",
+      "overlap@10_mean": 0.9975,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.993,
+      "gate_pass_0.99": true
+    }
+  },
+  "zero_gather_inventory": {
+    "doc_term_slots": 822843,
+    "present_in_query_nonzero_gather": 191732,
+    "absent_from_query_zero_gather": 631111,
+    "zero_gather_fraction": 0.767,
+    "meaning": "fraction of kernel gather lanes that fetch 0 from the dense query array (doc term not in query) -> the wasted-FMA lanes M1 (vptest skip) would elide"
+  },
+  "verdict": {
+    "m2_query_int6_overlap10": 0.99,
+    "bar": 0.99,
+    "pass": true,
+    "overall": "M2 GO",
+    "rationale": "6-bit query quant preserves top-10 ranking under integer dot -> vpmaddubsw kernel is quality-safe to implement (saturation-free by construction)."
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "plan": "01_SHARDED_BUILD_FEDERATED_QUERY \u2014 step 2 (full 150M build)",
-  "built_utc": "2026-06-28",
+  "plan": "01_SHARDED_BUILD_FEDERATED_QUERY \u2014 step 2 (full 150M rebuild, persistent-target)",
+  "built_utc": "2026-06-30",
   "n_shards": 8,
   "hash_seed": "sfu-seismic-plan01",
   "hash_fn": "blake2b(seed+oaid, digest_size=8) int % K \u2014 sections concatenated (global shard k = UNION of section shard-k)",
@@ -21,15 +21,10 @@
     "param_source": "G2-locked MS MARCO best_configs; recall-matched vs Qdrant in G2 (R-PARAM)"
   },
   "abort_rss_gb": 20.0,
-  "limit": null,
   "shards": [
     {
       "shard": 0,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard0.jsonl",
-      "concat_docs": 18799322,
-      "concat_gb": 30.455,
-      "rss_peak_gb_observed": 9.786,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18799322,
       "nnz": 1647141424,
       "avg_nnz_per_doc": 87.62,
@@ -38,6 +33,10 @@
       "peak_rss_gb": 9.922,
       "on_disk_gb": 8.2805,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard0of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1122.96,
       "save_seconds": 14.32,
       "space_usage_bytes": {
@@ -54,15 +53,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard0.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard0.jsonl"
     },
     {
       "shard": 1,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard1.jsonl",
-      "concat_docs": 18812242,
-      "concat_gb": 30.48,
-      "rss_peak_gb_observed": 9.575,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18812242,
       "nnz": 1648544675,
       "avg_nnz_per_doc": 87.63,
@@ -71,6 +66,10 @@
       "peak_rss_gb": 9.932,
       "on_disk_gb": 8.2869,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard1of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1039.94,
       "save_seconds": 14.32,
       "space_usage_bytes": {
@@ -87,15 +86,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard1.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard1.jsonl"
     },
     {
       "shard": 2,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard2.jsonl",
-      "concat_docs": 18797227,
-      "concat_gb": 30.456,
-      "rss_peak_gb_observed": 9.683,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18797227,
       "nnz": 1647226210,
       "avg_nnz_per_doc": 87.63,
@@ -104,6 +99,10 @@
       "peak_rss_gb": 9.926,
       "on_disk_gb": 8.2806,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard2of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1032.74,
       "save_seconds": 14.45,
       "space_usage_bytes": {
@@ -120,15 +119,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard2.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard2.jsonl"
     },
     {
       "shard": 3,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard3.jsonl",
-      "concat_docs": 18801448,
-      "concat_gb": 30.464,
-      "rss_peak_gb_observed": 9.584,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18801448,
       "nnz": 1647660174,
       "avg_nnz_per_doc": 87.63,
@@ -137,6 +132,10 @@
       "peak_rss_gb": 9.928,
       "on_disk_gb": 8.2826,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard3of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1041.33,
       "save_seconds": 15.68,
       "space_usage_bytes": {
@@ -153,15 +152,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard3.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard3.jsonl"
     },
     {
       "shard": 4,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard4.jsonl",
-      "concat_docs": 18807611,
-      "concat_gb": 30.472,
-      "rss_peak_gb_observed": 9.608,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18807611,
       "nnz": 1648113221,
       "avg_nnz_per_doc": 87.63,
@@ -170,6 +165,10 @@
       "peak_rss_gb": 9.931,
       "on_disk_gb": 8.2846,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard4of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1021.0,
       "save_seconds": 14.86,
       "space_usage_bytes": {
@@ -186,15 +185,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard4.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard4.jsonl"
     },
     {
       "shard": 5,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard5.jsonl",
-      "concat_docs": 18801216,
-      "concat_gb": 30.458,
-      "rss_peak_gb_observed": 9.628,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18801216,
       "nnz": 1647323769,
       "avg_nnz_per_doc": 87.62,
@@ -203,6 +198,10 @@
       "peak_rss_gb": 9.926,
       "on_disk_gb": 8.2815,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard5of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1024.07,
       "save_seconds": 14.23,
       "space_usage_bytes": {
@@ -219,15 +218,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard5.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard5.jsonl"
     },
     {
       "shard": 6,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard6.jsonl",
-      "concat_docs": 18796836,
-      "concat_gb": 30.454,
-      "rss_peak_gb_observed": 9.603,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18796836,
       "nnz": 1647102673,
       "avg_nnz_per_doc": 87.63,
@@ -236,6 +231,10 @@
       "peak_rss_gb": 9.925,
       "on_disk_gb": 8.2804,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard6of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1044.74,
       "save_seconds": 14.98,
       "space_usage_bytes": {
@@ -252,15 +251,11 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard6.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard6.jsonl"
     },
     {
       "shard": 7,
-      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard7.jsonl",
-      "concat_docs": 18797196,
-      "concat_gb": 30.456,
-      "rss_peak_gb_observed": 9.613,
-      "build_rc": 0,
+      "status": "OK",
       "docs": 18797196,
       "nnz": 1647241536,
       "avg_nnz_per_doc": 87.63,
@@ -269,6 +264,10 @@
       "peak_rss_gb": 9.926,
       "on_disk_gb": 8.2807,
       "index_path": "/tmp/seismic_testbed/index/plan01/global_shard7of8.index.seismic",
+      "concat_docs": null,
+      "concat_gb": null,
+      "rss_peak_gb_observed": null,
+      "build_rc": 0,
       "build_seconds": 1026.37,
       "save_seconds": 14.71,
       "space_usage_bytes": {
@@ -285,7 +284,7 @@
         }
       },
       "result_file": "data/eval_results/build_global_shard7.json",
-      "status": "OK"
+      "concat_jsonl": "/tmp/seismic_testbed/jsonl/plan01/_global_shard7.jsonl"
     }
   ],
   "totals": {
@@ -294,17 +293,7 @@
     "docs_total": 150413098,
     "nnz_total": 13180353682,
     "peak_rss_gb_max_per_shard": 9.932,
-    "peak_rss_gb_sum_naive": 79.416,
-    "on_disk_gb_total": 66.258,
-    "peak_rss_note": "builds ran SERIALLY (one shard at a time); max_per_shard is the G7 gate, sum_naive is a hypothetical-concurrent upper bound only."
+    "on_disk_gb_total": 66.258
   },
-  "g7_verdict": {
-    "shards_ok": 8,
-    "max_peak_rss_gb": 9.932,
-    "budget_gb": 20.0,
-    "under_budget": true,
-    "g7_projection_band_gb": "25-60 (power-law c=0.51 -> 25 / linear -> 60, from 4-pt curve)",
-    "actually_built_150m": true,
-    "pass": true
-  }
+  "note": "Rebuild after /tmp wipe 2026-06-30; deduped from shards.json (which carried 16 entries \u2014 8 stale-resume + 8 fresh). Sources on volatile /tmp; converted mmap shards persist at data/seismic_150m/index/plan01/ via convert --mmap-out-dir."
 }

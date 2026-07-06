@@ -1,0 +1,21 @@
+{
+  "sfr1": {
+    "overlap@10_mean": 0.995,
+    "overlap@10_min": 0.9,
+    "overlap@50_mean": 0.9975,
+    "gate_pass_0.99": true
+  },
+  "fixedu8": {
+    "overlap@10_mean": 0.995,
+    "overlap@10_min": 0.9,
+    "overlap@50_mean": 0.9945,
+    "gate_pass_0.99": true
+  },
+  "meta": {
+    "purpose": "E6b: FixedU8Q (global 1/64 fixed-point, DotVByteFixedU8 value type) vs SFR1 per-doc u8 \u2014 decides reuse-DotVByte vs custom-SFR1 for the reader fork",
+    "method": "E6 phase-C proxy: real engine top-200 on shard0 mmap, 40 diverse queries, re-scored per quantizer, overlap of re-ranked lists",
+    "measured_utc": "2026-07-02 23:58",
+    "decision": "REUSE DotVByteFixedU8 \u2014 FixedU8Q passes the 0.99 gate at the same overlap@10 as SFR1",
+    "script": "scripts/seismic_testbed/e6b_fixedu8_quality.py"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "anchor": "Arm B — native rebuild only (Fix #1: RUSTFLAGS=-C target-cpu=native), no Fix #2",
+  "so": "venv seismic.so rebuilt 2026-07-03 01:08:37 (maturin develop --release, target-cpu=native)",
+  "simd_verified": {
+    "vfmadd_ps_packed": {"baseline_sse2": 0, "native": 54, "delta": 54},
+    "vfmadd_ss_scalar": {"baseline_sse2": 1, "native": 34, "delta": 33},
+    "vpshufb_avx2_shuffle": {"baseline_sse2": 26, "native": 211, "delta": 185},
+    "vbroadcastss_avx2_splat": {"baseline_sse2": 0, "native": 24, "delta": 24},
+    "ymm_regs_256bit": {"baseline_sse2": 294, "native": 14314, "delta": 14020},
+    "vpgatherdd_packed_gather": {"baseline_sse2": 0, "native": 0, "delta": 0, "note": "std::simd gather_select_unchecked still does NOT emit VPGATHERDD even with native (LLVM portable-SIMD lowering gap); the f32x8 FMA accumulate + u8x16 shuffle decode DID get AVX2. FMA lands in DotProduct/ScalarSparseQuantizer/search fn (50 insts)."},
+    "verdict": "FMA + broad AVX2 vectorization ENABLED (the substantive decode acceleration). Packed gather NOT enabled (last-resort tune if needed)."
+  },
+  "cargo_unit_tests_native": "5/5 PASS (mmap_parity_twin, dotvbyte_convert_parity + 3) — FMA float-rounding did NOT break code-level parity",
+  "runs": [
+    {"run": 1, "parity": 0.995, "warm_ratio_b": 0.916, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 2.39, "dv_warm_p50_ms": 2.19, "b_pass": true},
+    {"run": 2, "parity": 0.995, "warm_ratio_b": 1.137, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 2.16, "dv_warm_p50_ms": 2.45, "b_pass": false},
+    {"run": 3, "parity": 0.995, "warm_ratio_b": 1.022, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 2.08, "dv_warm_p50_ms": 2.13, "b_pass": true}
+  ],
+  "vs_armA_control": {
+    "gate_b_median_ratio": {"control_A": 1.338, "native_B": 1.022, "improvement": "1.31x (clear FAIL -> clear PASS on median)"},
+    "gate_c_majflt_ratio": {"control_A": 0.591, "native_B": 0.591, "note": "unchanged (Fix #1 is CPU-only; fault count unaffected, as predicted)"},
+    "warm_absolute": {"control_A_f16": 5.58, "native_B_f16": 2.16, "control_A_dv": 8.01, "native_B_dv": 2.19, "note": "native ~halved BOTH formats' warm p50 (AVX2 benefits f16 too); dv improvement relatively larger (8.01->2.19 ~3.7x vs f16 5.58->2.16 ~2.6x)"}
+  },
+  "verdict_gate_b": "MARGINALLY RECLEARED: median ratio 1.022 (PASS), 2/3 runs pass, but run-to-run noise (0.916-1.137) straddles the 1.07 bar. NOT a robust reclear at this sample size on the 32GB/no-swap host. Direction: strong native win.",
+  "verdict_gate_c": "NOT RECLEARED: 0.591 unchanged (needs Fix #2 MADV_RANDOM).",
+  "synthetic": "Fix #1 (native rebuild) is the highest-leverage fix: +54 packed FMA + +14k ymm regs in the dot-product hot path turned a clear gate-b FAIL (1.33) into a marginal PASS (1.02 median). Parity held. Gate c untouched as expected."
+}

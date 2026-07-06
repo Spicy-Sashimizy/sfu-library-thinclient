@@ -1,0 +1,43 @@
+00:38:52 INFO === STAGE 2: build 8 global shards serially (abort RSS 20 GB) ===
+00:38:52 INFO   shard 0 already built (18799322 docs) — skipping
+00:38:52 INFO   shard 1 already built (18812242 docs) — skipping
+00:38:52 INFO   shard 2 already built (18797227 docs) — skipping
+00:38:52 INFO   shard 3 already built (18801448 docs) — skipping
+00:38:52 INFO   shard 4 already built (18807611 docs) — skipping
+00:38:52 INFO   shard 5 already built (18801216 docs) — skipping
+00:38:52 INFO   shard 6 already built (18796836 docs) — skipping
+00:38:52 INFO   shard 7 already built (18797196 docs) — skipping
+00:38:52 INFO --- global shard 0/8 ---
+00:40:18 INFO   cat global shard 0: 18799322 docs / 30.45 GB from 5 files in 86s
+00:59:30 INFO   build done rc=0 in 1152s (VmRSS peak 9.58 GB)
+00:59:32 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard0.jsonl
+00:59:32 INFO --- global shard 1/8 ---
+01:01:11 INFO   cat global shard 1: 18812242 docs / 30.48 GB from 5 files in 98s
+01:19:53 INFO   build done rc=0 in 1122s (VmRSS peak 9.63 GB)
+01:19:54 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard1.jsonl
+01:19:55 INFO --- global shard 2/8 ---
+01:21:38 INFO   cat global shard 2: 18797227 docs / 30.46 GB from 5 files in 104s
+01:39:56 INFO   build done rc=0 in 1098s (VmRSS peak 9.60 GB)
+01:39:57 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard2.jsonl
+01:39:58 INFO --- global shard 3/8 ---
+01:41:24 INFO   cat global shard 3: 18801448 docs / 30.46 GB from 5 files in 87s
+02:00:24 INFO   build done rc=0 in 1140s (VmRSS peak 9.62 GB)
+02:00:26 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard3.jsonl
+02:00:26 INFO --- global shard 4/8 ---
+02:02:13 INFO   cat global shard 4: 18807611 docs / 30.47 GB from 5 files in 107s
+02:20:51 INFO   build done rc=0 in 1118s (VmRSS peak 9.62 GB)
+02:20:52 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard4.jsonl
+02:20:52 INFO --- global shard 5/8 ---
+02:22:32 INFO   cat global shard 5: 18801216 docs / 30.46 GB from 5 files in 100s
+02:41:34 INFO   build done rc=0 in 1142s (VmRSS peak 9.70 GB)
+02:41:35 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard5.jsonl
+02:41:35 INFO --- global shard 6/8 ---
+02:43:16 INFO   cat global shard 6: 18796836 docs / 30.45 GB from 5 files in 101s
+03:01:54 INFO   build done rc=0 in 1118s (VmRSS peak 9.88 GB)
+03:01:55 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard6.jsonl
+03:01:56 INFO --- global shard 7/8 ---
+03:03:22 INFO   cat global shard 7: 18797196 docs / 30.46 GB from 5 files in 87s
+03:21:48 INFO   build done rc=0 in 1106s (VmRSS peak 9.63 GB)
+03:21:50 INFO   reclaimed concat /tmp/seismic_testbed/jsonl/plan01/_global_shard7.jsonl
+03:21:50 INFO === wrote manifest /tmp/seismic_testbed/jsonl/plan01/shards.json ===
+{"manifest": "/tmp/seismic_testbed/jsonl/plan01/shards.json", "n_shards": 8, "built": 16, "totals": {"shards_ok": 16, "shards_attempted": 16, "docs_total": 300826196, "nnz_total": 26360707364, "peak_rss_gb_max_per_shard": 9.932, "peak_rss_gb_sum_naive": 158.82, "on_disk_gb_total": 132.516, "peak_rss_note": "builds ran SERIALLY (one shard at a time); max_per_shard is the G7 gate, sum_naive is a hypothetical-concurrent upper bound only."}, "g7_verdict": {"shards_ok": 16, "max_peak_rss_gb": 9.932, "budget_gb": 20.0, "under_budget": true, "g7_projection_band_gb": "25-60 (power-law c=0.51 -> 25 / linear -> 60, from 4-pt curve)", "actually_built_150m": false, "pass": false}}

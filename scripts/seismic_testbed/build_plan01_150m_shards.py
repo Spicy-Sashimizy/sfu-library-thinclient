@@ -189,7 +189,7 @@ def build_one_shard(shard_k, out_dir, index_dir, results_dir, abort_rss_gb,
             return None
         section_shards.append(sp)
     concat = out_dir / f"_global_shard{shard_k}.jsonl"
-    index_path = index_dir / f"global_shard{shard_k}of{K}"
+    index_path = index_dir / f"global_shard{shard_k}of{n_shards}"
     result_file = results_dir / f"build_global_shard{shard_k}.json"
 
     docs, nbytes = cat_global_shard(shard_k, section_shards, concat)
@@ -382,7 +382,7 @@ def main():
         "shards": entries,
         "totals": _totals(entries),
     }
-    manifest["g7_verdict"] = _g7_verdict(entries, args.abort_rss_gb)
+    manifest["g7_verdict"] = _g7_verdict(entries, args.abort_rss_gb, args.n_shards)
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     json.dump(manifest, open(manifest_path, "w"), indent=2)
     log.info("=== wrote manifest %s ===", manifest_path)
@@ -437,7 +437,7 @@ def _totals(entries):
     }
 
 
-def _g7_verdict(entries, budget):
+def _g7_verdict(entries, budget, n_shards):
     ok = [e for e in entries if e and e.get("status") == "OK"]
     if not ok:
         return "NO_SHARDS_BUILT"
@@ -450,7 +450,7 @@ def _g7_verdict(entries, budget):
         "budget_gb": budget,
         "under_budget": (max_peak is not None and max_peak <= budget),
         "g7_projection_band_gb": "25-60 (power-law c=0.51 -> 25 / linear -> 60, from 4-pt curve)",
-        "actually_built_150m": (n_ok == K and sum(e.get("docs") or 0 for e in ok) >= 150_000_000),
+        "actually_built_150m": (n_ok == n_shards and sum(e.get("docs") or 0 for e in ok) >= 150_000_000),
     }
     verdict["pass"] = verdict["under_budget"] and verdict["actually_built_150m"]
     return verdict

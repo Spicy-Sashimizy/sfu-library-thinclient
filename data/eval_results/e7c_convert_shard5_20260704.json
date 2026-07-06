@@ -1,0 +1,23 @@
+{
+  "component_mapping_trained": true,
+  "dst": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.mmap",
+  "encode_seconds": 176.107409361,
+  "forward_bytes": {
+    "dotvbyte": 3968362112,
+    "f16": 6739704812,
+    "ratio": 1.6983593285551457
+  },
+  "n_docs": 18801216,
+  "nnz": 1647323769,
+  "packs_rewritten": 40379027,
+  "page_align": {
+    "enabled": false,
+    "growth_pct": 0.0,
+    "pad_words": 0
+  },
+  "postings_rewrite_seconds": 33.513954507,
+  "sanity_docs_checked": 2001,
+  "sanity_max_value_absdiff": 0.0078125,
+  "src": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard5of8.mmap",
+  "total_seconds": 237.942475487
+}

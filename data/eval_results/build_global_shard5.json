@@ -15,36 +15,36 @@
     },
     "purpose": "P1 G1: build persona SEISMIC index from stored sparse_field, no re-encode"
   },
-  "build_seconds": 1024.07,
-  "save_seconds": 14.23,
+  "build_seconds": 1122.86,
+  "save_seconds": 16.0,
   "docs": 18801216,
   "dim": 28719,
   "nnz": 1647323769,
   "avg_nnz_per_doc": 87.62,
-  "peak_rss_gb": 9.926,
+  "peak_rss_gb": 9.925,
   "rssanon_gb": {
     "before_load": 0.0082,
-    "after_build": 9.6206,
-    "after_gc": 9.6206
+    "after_build": 9.6179,
+    "after_gc": 9.6179
   },
   "mem_available_gb": {
-    "before": 23.63,
-    "after": 13.71
+    "before": 29.67,
+    "after": 19.83
   },
   "space_usage_bytes": {
     "forward_index": 6739704868,
-    "posting_lists_total": 1169754362,
-    "packed_postings": 323491680,
-    "block_offsets": 26328792,
-    "summaries": 819933890,
+    "posting_lists_total": 1169867282,
+    "packed_postings": 323491720,
+    "block_offsets": 26338592,
+    "summaries": 820036970,
     "knn": 0,
-    "total": 7909459230,
+    "total": 7909572150,
     "forward_vs_inverted_split": {
       "forward_index": 6739704868,
-      "inverted_block_summary": 1169754362
+      "inverted_block_summary": 1169867282
     }
   },
-  "on_disk_gb": 8.2815,
+  "on_disk_gb": 8.2816,
   "index_path": "/tmp/seismic_testbed/index/plan01/global_shard5of8.index.seismic",
   "g1_verdict": "PASS \u2014 index built from stored sparse_field, no OOM"
 }

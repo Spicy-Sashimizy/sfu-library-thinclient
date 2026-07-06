@@ -1,0 +1,48 @@
+04:30:34 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+04:30:34 INFO Result file: data/eval_results/seismic_serve_bench_parallel_20260701.json
+04:30:34 INFO Log file: data/eval_results/seismic_serve_bench_parallel_20260701.log
+04:30:34 INFO loaded 40 unique queries
+04:30:35 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=parallel)...
+04:30:35 INFO SEISMIC baseline: RssAnon=0.0173 Pss_Anon=0.0173 VmRSS=0.03 GB
+04:30:35 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.mmap
+04:30:35 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+04:30:35 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.mmap
+04:30:35 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+04:30:35 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.mmap
+04:30:35 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+04:30:35 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.mmap
+04:30:36 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+04:30:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.mmap
+04:30:36 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+04:30:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.mmap
+04:30:36 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+04:30:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.mmap
+04:30:36 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+04:30:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.mmap
+04:30:36 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+04:30:36 INFO SEISMIC post-load (1.5s): RssAnon=0.1419 Pss_Anon=0.1419 VmRSS=0.1556 GB
+04:30:36 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+04:30:36 INFO warmup SEISMIC...
+04:31:51 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+04:31:55 INFO SPLADE ONNX model loaded (CPU)
+04:33:55 INFO SEISMIC post-warmup: RssAnon=1.044 Pss_Anon=1.044 VmRSS=10.4905 GB
+04:33:55 INFO running 40 queries x 2 pass(es)...
+04:49:07 INFO pass 1/2 (COLD): SEISMIC p50=15876.5 ms [encode 38.7 / traverse 15836.1]  Qdrant p50=-1.0 ms
+05:04:50 INFO pass 2/2 (WARM): SEISMIC p50=15734.0 ms [encode 40.3 / traverse 15674.3]  Qdrant p50=-1.0 ms
+05:04:50 INFO SEISMIC post-queries: RssAnon=0.7884 Pss_Anon=0.7874 VmRSS=25.6398 GB
+05:04:50 INFO result written to data/eval_results/seismic_serve_bench_parallel_20260701.json
+05:04:50 INFO 
+=== RESULTS ===
+05:04:50 INFO SEISMIC:
+05:04:50 INFO   Anon floor: 1.0589 GB
+05:04:50 INFO   Pss_Anon: 0.7874 GB
+05:04:50 INFO   VmRSS peak: 25.6398 GB
+05:04:50 INFO   Anon bytes/doc: 7.559294018397254
+05:04:50 INFO   Latency p50/p95/mean: 15824.549425997247 / 77056.78113100294 / 23178.62 ms
+05:04:50 INFO   encode (SPLADE ONNX) p50/mean: 39.828234002925456 / 39.03 ms
+05:04:50 INFO   traverse (8-shard fan-out) p50/mean: 15749.468328998773 / 23139.55 ms
+05:04:50 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+05:04:50 WARNING QDRANT: NOT AVAILABLE
+05:04:50 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. CAVEAT: latency is DISK/SWAP-bound, NOT a compute verdict — VmSwap=0.27 GB anon paged to swap; warm p50 15825 ms >= cold 16628 ms (mmap index exceeds page cache → queries re-fault from disk). Root cause: host RAM < working set; needs RAM >= index-on-disk size (+ headroom) so the index stays cached and anon never swaps.
+05:04:50 INFO log written to data/eval_results/seismic_serve_bench_parallel_20260701.log

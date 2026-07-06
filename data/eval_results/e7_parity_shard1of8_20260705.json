@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "purpose": "E7 implementation gates \u2014 dotvbyte compressed forward vs f16, 10_FORWARD_COMPRESSION_DESIGN.md \u00a75",
+    "measured_utc": "2026-07-05 20:16",
+    "f16_dir": "data/seismic_150m/index/plan01/global_shard1of8.mmap",
+    "dv_dir": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap",
+    "n_queries": 40,
+    "k_prime": 200,
+    "heap_factor": 0.8,
+    "warm_repeats": 5,
+    "params_note": "recall-max: all terms passed, query_cut=all, k'=200 (the E1/E6 baseline convention)",
+    "rss": {
+      "pre_load": {
+        "vmrss_gb": 0.033,
+        "rssanon_gb": 0.017,
+        "rssfile_gb": 0.017,
+        "vmswap_gb": 0.0
+      },
+      "post_load": {
+        "vmrss_gb": 0.165,
+        "rssanon_gb": 0.148,
+        "rssfile_gb": 0.017,
+        "vmswap_gb": 0.0
+      },
+      "end": {
+        "vmrss_gb": 9.793,
+        "rssanon_gb": 1.111,
+        "rssfile_gb": 8.682,
+        "vmswap_gb": 0.0
+      }
+    },
+    "build_label": "g8d-8shard-parity-fullcorpus",
+    "prefloor_on": 0
+  },
+  "on_disk_bytes": {
+    "f16": 8284486237,
+    "dotvbyte": 5509092566,
+    "ratio": 1.504
+  },
+  "f16": {
+    "label": "f16",
+    "cold_traverse_ms_p50": 961.0,
+    "warm_traverse_ms_p50": 1.792,
+    "warm_traverse_ms_mean": 1.852,
+    "majflt_cold_pass": 117193,
+    "prefloor_bytes": 0
+  },
+  "dotvbyte": {
+    "label": "dotvbyte",
+    "cold_traverse_ms_p50": 623.51,
+    "warm_traverse_ms_p50": 1.897,
+    "warm_traverse_ms_mean": 1.92,
+    "majflt_cold_pass": 69158,
+    "prefloor_bytes": 0
+  },
+  "gates": {
+    "a_parity": {
+      "overlap@10_mean": 0.985,
+      "overlap@10_min": 0.9,
+      "bar": ">= 0.99",
+      "pass": false
+    },
+    "b_latency": {
+      "warm_p50_ratio": 1.059,
+      "bar": "<= 1.07",
+      "pass": true
+    },
+    "c_pages": {
+      "majflt_cold_ratio": 0.59,
+      "bar": "<= 0.55",
+      "pass": false
+    }
+  },
+  "verdict": "E7_GATE_FAIL: a_parity,c_pages"
+}

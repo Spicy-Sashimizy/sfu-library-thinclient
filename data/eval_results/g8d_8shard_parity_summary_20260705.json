@@ -1,0 +1,68 @@
+{
+  "purpose": "G8d full-corpus dotvbyte-vs-f16 gate-a parity \u2014 per-shard overlap@10 across all 8 shards",
+  "measured_utc": "2026-07-05 20:35",
+  "convention": "E6b/E7 gate-a: 40 diverse queries, k'=200, hf=0.8, all-terms; overlap@10 of dv-vs-f16 top-10",
+  "per_shard": [
+    {
+      "shard": 0,
+      "overlap@10_mean": 0.995,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.503
+    },
+    {
+      "shard": 1,
+      "overlap@10_mean": 0.985,
+      "overlap@10_min": 0.9,
+      "pass_0.99": false,
+      "dv_ratio": 1.504
+    },
+    {
+      "shard": 2,
+      "overlap@10_mean": 0.985,
+      "overlap@10_min": 0.9,
+      "pass_0.99": false,
+      "dv_ratio": 1.504
+    },
+    {
+      "shard": 3,
+      "overlap@10_mean": 0.99,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.504
+    },
+    {
+      "shard": 4,
+      "overlap@10_mean": 0.99,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.503
+    },
+    {
+      "shard": 5,
+      "overlap@10_mean": 0.9975,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.503
+    },
+    {
+      "shard": 6,
+      "overlap@10_mean": 0.9925,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.504
+    },
+    {
+      "shard": 7,
+      "overlap@10_mean": 0.99,
+      "overlap@10_min": 0.9,
+      "pass_0.99": true,
+      "dv_ratio": 1.503
+    }
+  ],
+  "corpus_overlap@10_mean_of_shard_means": 0.9906,
+  "corpus_overlap@10_worst_shard_mean": 0.985,
+  "corpus_overlap@10_global_min": 0.9,
+  "all_8_shards_pass_0.99": false,
+  "note": "PER-SHARD parity (extends the shard0-only E6b/E7 record to all 8). NOT the federated-merge overlap, which needs f16+dv full corpora co-resident (>32GB)."
+}

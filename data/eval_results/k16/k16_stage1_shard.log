@@ -1,0 +1,18 @@
+18:42:01 INFO === STAGE 1: shard 5 sections into K=16 (seed=sfu-seismic-plan01, limit=None) ===
+18:42:01 INFO shard_spool: cs_math -> /tmp/seismic_testbed/jsonl/plan01_k16/cs_math
+19:02:39 INFO   cs_math sharded: 22761787 docs into 16 shards in 1239s (balance max/min=1.002)
+19:02:39 INFO shard_spool: med_bio -> /tmp/seismic_testbed/jsonl/plan01_k16/med_bio
+19:23:25 INFO   med_bio sharded: 23429381 docs into 16 shards in 1246s (balance max/min=1.003)
+19:23:25 INFO shard_spool: other -> /tmp/seismic_testbed/jsonl/plan01_k16/other
+20:19:12 INFO   other sharded: 57820012 docs into 16 shards in 3347s (balance max/min=1.002)
+20:19:12 INFO shard_spool: phys_eng -> /tmp/seismic_testbed/jsonl/plan01_k16/phys_eng
+20:38:21 INFO   phys_eng sharded: 22225825 docs into 16 shards in 1150s (balance max/min=1.003)
+20:38:21 INFO shard_spool: social_sciences -> /tmp/seismic_testbed/jsonl/plan01_k16/social_sciences
+21:02:33 INFO   social_sciences sharded: 24176093 docs into 16 shards in 1452s (balance max/min=1.002)
+21:02:33 INFO   balance cs_math: max/min=1.0017 per=[1422841, 1422533, 1422065, 1423133, 1421759, 1423404, 1421334, 1422411, 1421113, 1423249, 1423477, 1422794, 1423116, 1422321, 1422889, 1423348]
+21:02:33 INFO   balance med_bio: max/min=1.0028 per=[1465028, 1463961, 1463337, 1464471, 1466513, 1465190, 1463676, 1463719, 1463546, 1466150, 1465073, 1463236, 1464623, 1463093, 1462463, 1465302]
+21:02:33 INFO   balance other: max/min=1.0017 per=[3610940, 3615103, 3614176, 3612973, 3612393, 3614145, 3615777, 3612645, 3616829, 3615123, 3611895, 3615064, 3616956, 3612302, 3611728, 3611963]
+21:02:33 INFO   balance phys_eng: max/min=1.0029 per=[1389296, 1390218, 1389427, 1389525, 1388850, 1388885, 1390470, 1388802, 1386823, 1390209, 1386988, 1389317, 1390858, 1390374, 1387334, 1388449]
+21:02:33 INFO   balance social_sciences: max/min=1.0025 per=[1511105, 1512467, 1509809, 1510364, 1511198, 1511562, 1510163, 1509486, 1511801, 1513229, 1510980, 1510571, 1511345, 1509940, 1511002, 1511071]
+21:02:33 INFO === sharding done. worst balance ratio=1.0029 (want ~1.0) ===
+21:02:33 INFO --shard-only: stopping after sharding.

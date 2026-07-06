@@ -1,0 +1,20 @@
+--- section cs_math ---
+22:28:37 INFO balance: max/min docs per shard = 1.001 (want ~1.0)
+22:28:37 INFO wrote manifest /tmp/seismic_testbed/jsonl/plan01/cs_math/cs_math_shards8_manifest.json
+{"docs_total": 22761787, "n_shards": 8, "per_shard": [2843954, 2845782, 2845542, 2845927, 2844875, 2845725, 2844223, 2845759], "manifest": "/tmp/seismic_testbed/jsonl/plan01/cs_math/cs_math_shards8_manifest.json", "max_min_ratio": 1.0006937524305948}
+--- section med_bio ---
+22:51:32 INFO balance: max/min docs per shard = 1.002 (want ~1.0)
+22:51:32 INFO wrote manifest /tmp/seismic_testbed/jsonl/plan01/med_bio/med_bio_shards8_manifest.json
+{"docs_total": 23429381, "n_shards": 8, "per_shard": [2928574, 2930111, 2928410, 2927707, 2931136, 2928283, 2926139, 2929021], "manifest": "/tmp/seismic_testbed/jsonl/plan01/med_bio/med_bio_shards8_manifest.json", "max_min_ratio": 1.0017077110827612}
+--- section other ---
+23:51:58 INFO balance: max/min docs per shard = 1.001 (want ~1.0)
+23:51:58 INFO wrote manifest /tmp/seismic_testbed/jsonl/plan01/other/other_shards8_manifest.json
+{"docs_total": 57820012, "n_shards": 8, "per_shard": [7227769, 7230226, 7226071, 7228037, 7229349, 7226447, 7227505, 7224608], "manifest": "/tmp/seismic_testbed/jsonl/plan01/other/other_shards8_manifest.json", "max_min_ratio": 1.0007776200452676}
+--- section phys_eng ---
+00:12:33 INFO balance: max/min docs per shard = 1.002 (want ~1.0)
+00:12:33 INFO wrote manifest /tmp/seismic_testbed/jsonl/plan01/phys_eng/phys_eng_shards8_manifest.json
+{"docs_total": 22225825, "n_shards": 8, "per_shard": [2776119, 2780427, 2776415, 2778842, 2779708, 2779259, 2777804, 2777251], "manifest": "/tmp/seismic_testbed/jsonl/plan01/phys_eng/phys_eng_shards8_manifest.json", "max_min_ratio": 1.0015518066768752}
+--- section social_sciences ---
+00:38:35 INFO balance: max/min docs per shard = 1.002 (want ~1.0)
+00:38:35 INFO wrote manifest /tmp/seismic_testbed/jsonl/plan01/social_sciences/social_sciences_shards8_manifest.json
+{"docs_total": 24176093, "n_shards": 8, "per_shard": [3022906, 3025696, 3020789, 3020935, 3022543, 3021502, 3021165, 3020557], "manifest": "/tmp/seismic_testbed/jsonl/plan01/social_sciences/social_sciences_shards8_manifest.json", "max_min_ratio": 1.0017013418386078}

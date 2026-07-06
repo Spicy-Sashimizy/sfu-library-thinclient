@@ -15,36 +15,36 @@
     },
     "purpose": "P1 G1: build persona SEISMIC index from stored sparse_field, no re-encode"
   },
-  "build_seconds": 1041.33,
-  "save_seconds": 15.68,
+  "build_seconds": 1122.19,
+  "save_seconds": 15.71,
   "docs": 18801448,
   "dim": 28700,
   "nnz": 1647660174,
   "avg_nnz_per_doc": 87.63,
-  "peak_rss_gb": 9.928,
+  "peak_rss_gb": 9.925,
   "rssanon_gb": {
-    "before_load": 0.0082,
-    "after_build": 8.9581,
-    "after_gc": 8.9581
+    "before_load": 0.0083,
+    "after_build": 9.617,
+    "after_gc": 9.617
   },
   "mem_available_gb": {
-    "before": 23.61,
-    "after": 14.43
+    "before": 29.53,
+    "after": 19.9
   },
   "space_usage_bytes": {
     "forward_index": 6741052344,
-    "posting_lists_total": 1169538534,
-    "packed_postings": 323439512,
-    "block_offsets": 26334376,
-    "summaries": 819764646,
+    "posting_lists_total": 1169455008,
+    "packed_postings": 323439488,
+    "block_offsets": 26327672,
+    "summaries": 819687848,
     "knn": 0,
-    "total": 7910590878,
+    "total": 7910507352,
     "forward_vs_inverted_split": {
       "forward_index": 6741052344,
-      "inverted_block_summary": 1169538534
+      "inverted_block_summary": 1169455008
     }
   },
-  "on_disk_gb": 8.2826,
+  "on_disk_gb": 8.2825,
   "index_path": "/tmp/seismic_testbed/index/plan01/global_shard3of8.index.seismic",
   "g1_verdict": "PASS \u2014 index built from stored sparse_field, no OOM"
 }

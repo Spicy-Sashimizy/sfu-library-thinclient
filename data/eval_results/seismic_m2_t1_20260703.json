@@ -1,0 +1,30 @@
+{
+  "stage": "M2 Stage 1 — Rust edit + T1 (05_TESTING_PROTOCOL.md)",
+  "date": "2026-07-03",
+  "edit": "spike/vectorium_fork/src/encoders/dotvbyte_fixedu8.rs — dot_product_int6() u8xu8->u16->u32 std::simd kernel; DotVByteFixedU8QueryEvaluator::with_int6_query (6-bit query quant, f64 intermediates, ties-to-even, matches m2_pregate_query_integer_dot.py::dot_integer); opt-in via SFU_SEISMIC_M2_INT6 env (default OFF = f32 path byte-identical)",
+  "cargo_tests": {
+    "command": "cargo test (spike/vectorium_fork)",
+    "unit": {"passed": 122, "failed": 0},
+    "doctests": {"passed": 27, "failed": 0, "ignored": 2},
+    "new_int6_tests": [
+      "dotvbyte_int6_matches_python_reference_model (the kernel-match safety net: Rust integer dot == Stage-0 Python pre-gate model exactly, packed loop + scalar remainder both exercised)",
+      "dotvbyte_int6_saturation_edge_exact (16 terms at 255*63; total 257040 overflows i16 — u32 accumulator exact)",
+      "dotvbyte_int6_within_quantization_envelope_of_f32 (<2% rel divergence, synthetic 90-term doc)",
+      "dotvbyte_int6_with_component_mapping_matches_reference (trained-encoder permutation invariant)",
+      "dotvbyte_int6_off_is_f32_path (flag off == pre-M2 behavior)"
+    ]
+  },
+  "so_build": {
+    "command": "RUSTFLAGS='-C target-cpu=native' maturin build --release -i .venv/bin/python3 (spike/seismic_upstream) + sudo venv pip install",
+    "wheel": "pyseismic_lsr-0.4.0-cp311-cp311-manylinux_2_34_x86_64.whl",
+    "vfmadd_count": 81,
+    "note": "native build confirmed (baseline SSE2 would be 0; pre-M2 native was ~88 — delta is the recompile, kernel unchanged on the f32 path)"
+  },
+  "t1_keystone": {
+    "command": ".venv/bin/python3 -m pytest scripts/tests/test_seismic_sequential.py -q",
+    "default_f32_path": {"tests": 10, "failures": 0, "errors": 0, "time_s": 108.7},
+    "SFU_SEISMIC_M2_INT6=1": {"tests": 10, "failures": 0, "errors": 0, "time_s": 77.9},
+    "semantics": "T1 here = sequential==parallel (bit-identical oaid order, scores within 1e-6) under BOTH kernel modes; new!=old f32 equality is not claimed for int6 (integer dot changes scores by design — the kernel-match cargo test is the M2 safety net per 05_TESTING_PROTOCOL.md Stage 1)"
+  },
+  "verdict": "STAGE 1 PASS — all bars green, GO to Stage 2 (E7 gates)"
+}

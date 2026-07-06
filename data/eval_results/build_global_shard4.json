@@ -15,33 +15,33 @@
     },
     "purpose": "P1 G1: build persona SEISMIC index from stored sparse_field, no re-encode"
   },
-  "build_seconds": 1021.0,
-  "save_seconds": 14.86,
+  "build_seconds": 1098.49,
+  "save_seconds": 17.23,
   "docs": 18807611,
   "dim": 28709,
   "nnz": 1648113221,
   "avg_nnz_per_doc": 87.63,
-  "peak_rss_gb": 9.931,
+  "peak_rss_gb": 9.93,
   "rssanon_gb": {
-    "before_load": 0.0082,
-    "after_build": 9.2069,
-    "after_gc": 9.2069
+    "before_load": 0.0083,
+    "after_build": 9.0669,
+    "after_gc": 9.0669
   },
   "mem_available_gb": {
-    "before": 23.57,
-    "after": 14.14
+    "before": 29.62,
+    "after": 20.42
   },
   "space_usage_bytes": {
     "forward_index": 6742913836,
-    "posting_lists_total": 1169573748,
-    "packed_postings": 323479640,
-    "block_offsets": 26326600,
-    "summaries": 819767508,
+    "posting_lists_total": 1169567894,
+    "packed_postings": 323479680,
+    "block_offsets": 26326368,
+    "summaries": 819761846,
     "knn": 0,
-    "total": 7912487584,
+    "total": 7912481730,
     "forward_vs_inverted_split": {
       "forward_index": 6742913836,
-      "inverted_block_summary": 1169573748
+      "inverted_block_summary": 1169567894
     }
   },
   "on_disk_gb": 8.2846,

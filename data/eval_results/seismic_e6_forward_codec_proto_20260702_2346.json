@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "purpose": "E6: SFR1 compressed interleaved forward record \u2014 corpus-customized codec prototype + quality proxy (design for the 09-audit forward-width LAYOUT lever)",
+    "measured_utc": "2026-07-02 23:46",
+    "shard": "data/seismic_150m/index/plan01/global_shard0of8.mmap",
+    "seed": 42,
+    "spec": "u16 first_id(dfrank) | f16 vmax | LEB128(gap-1) | u8 codes; nnz from offsets(u32); one file"
+  },
+  "phase_a_stats": {
+    "n_docs": 18799322,
+    "nnz": {
+      "mean": 87.6,
+      "min": 7,
+      "max": 256,
+      "p50": 82,
+      "p99": 255,
+      "cap_note": "7<=nnz<=256 over ALL 18.8M docs (top-256 build cap) \u2014 nnz derived from offsets, never stored in SFR1"
+    },
+    "sortedness": "all 50000 fully-decoded sampled docs strictly ascending",
+    "gap_coding_bytes_per_doc": {
+      "current_ids": {
+        "varint_first_bytes_per_doc": 113.6,
+        "gap_entropy_bits": 8.23
+      },
+      "dfrank_ids": {
+        "varint_first_bytes_per_doc": 105.2,
+        "gap_entropy_bits": 7.4
+      }
+    },
+    "values": {
+      "min": 0.01,
+      "max": 3.25,
+      "all_nonneg": true,
+      "u8_perdoc_linear_relL2_mean_pct": 0.329,
+      "u8_perdoc_linear_relL2_p95_pct": 0.431,
+      "u8_global_quantile_codebook_relL2_mean_pct": 1.276,
+      "verdict": "per-doc linear WINS on this corpus (scale adapts per doc)"
+    }
+  },
+  "phase_b_codec": {
+    "sample_docs_encoded": 50000,
+    "component_roundtrip": "LOSSLESS (asserted per doc)",
+    "value_relL2_mean_pct": 0.329,
+    "record_bytes": {
+      "mean": 194.8,
+      "p50": 183,
+      "p99": 523,
+      "current_two_file_mean": 350.5
+    },
+    "compression_ratio": 1.8,
+    "expected_pages_per_candidate": {
+      "current": 2.09,
+      "sfr1": 1.05
+    },
+    "projected_shard0_forward_gb": {
+      "current": 6.59,
+      "sfr1": 3.66,
+      "offsets_u64_to_u32_mb": "150 -> 75"
+    },
+    "projected_corpus_forward_gb_8shards": {
+      "current": 52.7,
+      "sfr1_est": 29.3
+    },
+    "python_encode_decode_s_total": 4.6,
+    "decode_cost_note": "Python reference only \u2014 Rust decode cost is the implementation gate (C0.5 precedent: 1.07x envelope)"
+  },
+  "phase_c_quality_proxy": {
+    "n_queries": 40,
+    "candidates_rescored_per_query": 200,
+    "engine_vs_python_exact_rel_diff_max": 0.0,
+    "overlap@10_mean": 0.995,
+    "overlap@10_min": 0.9,
+    "overlap@50_mean": 0.9975,
+    "gate": "overlap@10 >= 0.99",
+    "gate_pass": true,
+    "caveat": "scoring-side proxy on the engine's own top-k' candidates; heap/skip second-order effect gated at implementation parity run",
+    "rss": {
+      "pre_load": {
+        "vmrss_gb": 3.229,
+        "rssanon_gb": 0.098,
+        "rssfile_gb": 3.131,
+        "vmswap_gb": 0.0
+      },
+      "post_load": {
+        "vmrss_gb": 3.231,
+        "rssanon_gb": 0.1,
+        "rssfile_gb": 3.131,
+        "vmswap_gb": 0.0
+      },
+      "end": {
+        "vmrss_gb": 10.537,
+        "rssanon_gb": 1.336,
+        "rssfile_gb": 9.202,
+        "vmswap_gb": 0.0
+      }
+    }
+  }
+}

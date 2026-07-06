@@ -13,6 +13,24 @@ Usage (repo root, project venv):
         scripts/seismic_testbed/serve_footprint_bench.py \
         --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap.json \
         --result-file data/eval_results/seismic_vs_qdrant_serve_bench.json
+
+G8 compression matrix (the RAM-residency lever — see 08_LATENCY_RESEARCH.md §A1
++ the open-items plan). One bench invocation measures ONE cell of the 2×2:
+
+    │              │ mem-compression OFF        │ mem-compression ON             │
+    │ load = mmap  │ SFU_SEISMIC_LOAD_MODE=mmap │ + SFU_MEMCOMPRESSION_REGIME=   │
+    │ (file-backed)│ (default; the 15.8 s disk  │   zram|zswap|                 │
+    │              │  re-fault baseline)         │   windows_compression          │
+    │ load = stock │ SFU_SEISMIC_LOAD_MODE=stock│ + same regime override         │
+    │ (owned-anon, │ (Path A; OOMs/swaps to disk│ (anon compressed IN RAM ~2–3×, │
+    │  Path A)     │  at 150M)                   │  decompress at GB/s — the win) │
+
+The two axes are independent env vars already wired: load mode picks file-backed
+mmap vs Path-A owned anon (stock = SeismicIndex.load()); SFU_MEMCOMPRESSION_REGIME
+tells the verdict gate which swap regime those pages live under, so the gate does
+not mislabel the compressed cell. Run the cell you want by setting the two vars
+together (and recording the cell in the result-file name). The gate's reading of
+VmSwap is regime-dependent — see detect_memcompression() + _latency_caveat().
 """
 import argparse
 import json
@@ -123,6 +141,187 @@ def _get_process_ram(pid):
 def gb(kb):
     """Convert KB to GB."""
     return round(kb / 1024 / 1024, 4) if kb is not None else None
+
+
+# ── Memory-compression regime detection (G8 2×2 matrix) ───────────────────────
+# The G8 latency verdict gate (_latency_caveat) reads VmSwap to decide whether a
+# latency is a "real" compute number vs a swap/page-fault artifact. That reading
+# is REGIME-DEPENDENT: under zram/zswap/Windows-memory-compression the "swapped"
+# anon pages are actually compressed *in RAM* (decompress at multiple GB/s) —
+# the exact mechanism the G8 compression cell wants to test — NOT a disk re-fault.
+# So a VmSwap>0.1 GB read on a zram-backed host is NOT the disk-confound symptom
+# it would be on a plain-partition-swap host. We detect and record the regime so
+# the gate can treat them differently, and so each result self-documents its cell.
+
+# Operator assertions for regimes the process can't introspect from /proc (e.g.
+# Windows host memory compression, visible only from the hypervisor side, or a
+# zram device the container can't see). Set SFU_MEMCOMPRESSION_REGIME to override.
+_REGIME_VALUES = ("zram", "zswap", "windows_compression", "disk_swap", "off", "unknown")
+
+
+def detect_memcompression():
+    """Detect the host's anonymous-page compression/swap regime.
+
+    Returns dict: regime (one of _REGIME_VALUES), sources (the /proc files /
+    env var that decided it), zram_devs (list), zswap_enabled (bool|None).
+
+    precedence (first match wins — most-specific-to-least):
+      1. SFU_MEMCOMPRESSION_REGIME env (operator assertion; validated; trumps all)
+         — needed for Windows host compression (not visible from WSL2 /proc) and
+           for zram devices the container can't enumerate.
+      2. zram block devices present (/sys/block/zram*) — compressed-in-RAM swap.
+         zswap can sit IN FRONT of a zram/swap partition too, so check both.
+      3. zswap enabled (/sys/module/zswap/parameters/enabled == 'Y') — frontswap
+         that compresses anon into a RAM pool before it touches backing swap.
+      4. disk_swap — a plain /proc/swaps partition is anon paged to disk (the
+         historical 15.8 s re-fault regime). Distinguishes a real confound from the
+         compressed regimes above.
+      5. off — no swap configured at all (unusual; meanmlock'd box).
+      6. unknown — can't determine and no assertion (the safe default: the verdict
+         gate treats VmSwap as the historical confound).
+    """
+    sources = []
+    zram_devs = []
+    zswap_enabled = None
+    reg = os.environ.get("SFU_MEMCOMPRESSION_REGIME", "").strip().lower()
+
+    # 1. operator assertion trumps introspection
+    if reg:
+        if reg not in _REGIME_VALUES:
+            raise ValueError(
+                f"SFU_MEMCOMPRESSION_REGIME={reg!r} invalid — must be one of "
+                f"{_REGIME_VALUES}. Used by the G8 verdict gate to decide whether "
+                f"VmSwap is a compressed-in-RAM win or a disk re-fault confound.")
+        return {"regime": reg, "sources": ["SFU_MEMCOMPRESSION_REGIME env (operator assertion)"],
+                "zram_devs": [], "zswap_enabled": None}
+
+    # 2. zram block devices — compressed-RAM swap
+    try:
+        for dev in sorted(os.listdir("/sys/block")):
+            if dev.startswith("zram"):
+                zram_devs.append(dev)
+    except OSError:
+        pass
+    if zram_devs:
+        sources.append("/sys/block/zram* (compressed-RAM swap device)")
+        return {"regime": "zram", "sources": sources,
+                "zram_devs": zram_devs, "zswap_enabled": None}
+
+    # 3. zswap enabled (frontswap compression in front of backing swap)
+    try:
+        val = open("/sys/module/zswap/parameters/enabled").read().strip()
+        zswap_enabled = val == "Y"
+        if zswap_enabled:
+            sources.append("/sys/module/zswap/parameters/enabled=Y (frontswap compression)")
+            return {"regime": "zswap", "sources": sources,
+                    "zram_devs": [], "zswap_enabled": True}
+    except OSError:
+        pass
+
+    # 4. plain disk swap partition (the historical confound regime)
+    try:
+        swaps = [ln for ln in open("/proc/swaps").read().splitlines()[1:] if ln.strip()]
+        if swaps:
+            disk_swp = [s for s in swaps if not s.split()[0].startswith("/dev/zram")]
+            if disk_swp:
+                sources.append("/proc/swaps (partition-backed swap → disk re-fault)")
+                return {"regime": "disk_swap", "sources": sources,
+                        "zram_devs": [], "zswap_enabled": zswap_enabled}
+    except OSError:
+        pass
+
+    # 5. no swap configured at all
+    try:
+        st = open("/proc/meminfo").read()
+        total_kb = 0
+        for ln in st.splitlines():
+            if ln.startswith("SwapTotal:"):
+                total_kb = int(ln.split()[1])
+                break
+        if total_kb == 0:
+            sources.append("/proc/meminfo SwapTotal=0 (no swap)")
+            return {"regime": "off", "sources": sources,
+                    "zram_devs": [], "zswap_enabled": zswap_enabled}
+    except (OSError, ValueError):
+        pass
+
+    return {"regime": "unknown", "sources": ["unable to determine + no env assertion"],
+            "zram_devs": [], "zswap_enabled": None}
+
+
+def _regime_is_compressed_in_ram(regime):
+    """A regime where VmSwap anon pages are compressed in RAM, not paged to disk.
+
+    The G8 verdict gate must know this: under these regimes VmSwap>0 is the
+    compression mechanism working as intended (decompress at GB/s, no re-fault),
+    NOT the disk-re-fault confound a 'disk_swap'/'unknown' VmSwap reading implies.
+    """
+    return regime in ("zram", "zswap", "windows_compression")
+
+
+def _stat(stats, band, key):
+    """band='warm' (steady-state) or 'cold' (first-fault); falls back to top-level."""
+    if not stats:
+        return None
+    return ((stats.get(band) or stats) if band == "warm" else (stats.get(band) or {})).get(key)
+
+
+def _latency_caveat(ram_summary, stats, load_mode, regime):
+    """Data-driven honesty gate (08_LATENCY_RESEARCH.md §A1 measured): a latency
+    is a verdict only if VmSwap≈0 AND warm p50 < cold p50 (page cache actually
+    helped). Two symptoms — often co-occurring — mean it is NOT a verdict, and
+    both share one root cause (host RAM < working set):
+      (1) anon swap  — VmSwap > 0 → anon pages paged out, latency is swap noise.
+      (2) cache miss — warm >= cold → the mmap index exceeds page cache, so
+          queries re-fault different postings from disk (I/O-bound, not compute).
+    Report every symptom present, then the unified cause/fix.
+
+    REGIME-AWARE (G8 compression matrix): the VmSwap reading only means a
+    disk-confound under a plain disk-swap / unverified regime. Under
+    zram/zswap/windows_compression the 'swapped' anon pages are compressed IN
+    RAM (decompress at GB/s) — the G8 compression mechanism working as
+    intended, NOT the disk re-fault the old gate assumed. detect_memcompression()
+    resolves the regime; the operator asserts it via SFU_MEMCOMPRESSION_REGIME
+    when /proc can't see it (Windows host compression). Without this fix the
+    owned-anon+zram cell would be mislabeled 'not a verdict'.
+
+    The 'index exceeds page cache' (warm>=cold) symptom is mmap-specific: under
+    owned-anon stock load there is no file-backed page cache to exceed, so that
+    explanation can't apply — gated on load_mode=='mmap'. (File-backed pages
+    re-fault under ANY regime: compression compresses anon, it does not cache
+    dropped file pages, so the mmap symptom stands regardless of regime.)"""
+    swap = (ram_summary or {}).get("vmswap_gb") or 0.0
+    cold = _stat(stats, "cold", "p50_ms")
+    warm = _stat(stats, "warm", "p50_ms")
+    regime_name = regime.get("regime", "unknown") if regime else "unknown"
+    compressed_in_ram = _regime_is_compressed_in_ram(regime_name)
+
+    issues = []
+    # VmSwap symptom — ONLY a disk confound under a non-compressed regime.
+    # Under zram/zswap/windows_compression the swapped anon is compressed in RAM.
+    if swap > 0.1 and not compressed_in_ram:
+        issues.append(f"VmSwap={swap:.2f} GB anon paged to disk swap "
+                      f"(regime={regime_name})")
+    # mmap page-cache-exceeds symptom — file-backed pages only.
+    if load_mode == "mmap" and cold and warm and warm >= 0.9 * cold and warm > 1000:
+        issues.append(f"warm p50 {warm:.0f} ms >= cold {cold:.0f} ms (file-backed mmap "
+                      f"index exceeds page cache → queries re-fault from disk)")
+    if issues:
+        return ("CAVEAT: latency is DISK/SWAP-bound, NOT a compute verdict — "
+                + "; ".join(issues) + ". Root cause: host RAM < working set; needs "
+                "RAM >= index-on-disk size (+ headroom) so the file-backed index stays "
+                "cached and anon never hits a non-compressed swap.")
+    # No disk/page-cache confound. Distinguish the compressed-cell verdict from
+    # the classic clean one so the result self-documents which matrix cell ran.
+    if compressed_in_ram and swap > 0.1:
+        return (f"Latency is a VERDICT (warm < cold, no disk re-fault; load_mode="
+                f"{load_mode}, regime={regime_name}). VmSwap={swap:.2f} GB is anon "
+                f"compressed IN RAM under {regime_name} — the G8 compression mechanism, "
+                f"decompress at GB/s, NOT a disk confound. Effective resident set "
+                f"includes these compressed pages.")
+    return (f"Latency measured with VmSwap~0 (regime={regime_name}) and warm < cold "
+            f"(page-cache hit) — representative of a properly-provisioned host for "
+            f"this working set (load_mode={load_mode}).")
 
 
 def find_qdrant_pid():
@@ -318,6 +517,16 @@ def main():
     log.info("Result file: %s", result_file)
     log.info("Log file: %s", log_file)
 
+    # ── G8 2×2 matrix: record the load + mem-compression cell this run measures.
+    # detect_memcompression() reads the host's swap regime (zram/zswap/disk_swap/
+    # off) or honors an operator assertion via SFU_MEMCOMPRESSION_REGIME (needed
+    # for Windows host compression, invisible from WSL2 /proc). load_mode is set
+    # below from SFU_SEISMIC_LOAD_MODE (mmap=Path C / stock=Path A owned anon).
+    memcomp = detect_memcompression()
+    load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")  # set before the log line
+    log.info("G8 matrix cell: load_mode=%s  mem_compression regime=%s (%s)",
+             load_mode, memcomp["regime"], "; ".join(memcomp["sources"]) or "detected")
+
     # ── 0. Load queries ────────────────────────────────────────────────────────
     qrecs = json.loads((REPO / "data" / "eval_results" / "diverse_queries.json").read_text())
     seen, queries = set(), []
@@ -333,16 +542,17 @@ def main():
     # ── 1. Load SEISMIC ─────────────────────────────────────────────────────────
     # Reuse the backend's own manifest parser (_load_manifest accepts the
     # {shards:[{index_path}]} dict, a plain JSON list, or csv) so a valid manifest
-    # never crashes here on a shape the backend already accepts. Honor
-    # SFU_SEISMIC_LOAD_MODE (default mmap = the served 150M path) instead of a
-    # hardcoded mmap, so the bench can also run a stock Path-A control on a
-    # testbed index (no .mmap/ dir) when SFU_SEISMIC_LOAD_MODE=stock.
+    # never crashes here on a shape the backend already accepts. load_mode was
+    # already read above (for the G8 matrix-cell log line) from
+    # SFU_SEISMIC_LOAD_MODE (default mmap = the served 150M path); it can be
+    # set to 'stock' to run a Path-A control on a testbed index (no .mmap/ dir).
     from seismic_federated import (
         ParallelSeismicBackend, SequentialSeismicBackend, _load_manifest)
-    index_paths = _load_manifest(args.shard_manifest)
+    # Pass load_mode so mmap mode reads the C2.5 manifest's `mmap_dir` (the
+    # persistent converted path) rather than the G7 `index_path` (volatile /tmp).
+    index_paths = _load_manifest(args.shard_manifest, load_mode=load_mode)
     if not index_paths:
         raise RuntimeError(f"no shard paths parsed from {args.shard_manifest}")
-    load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")
     # --federation wins; SFU_SEISMIC_FEDERATION is the fallback so an operator can
     # set it once for a serve-bench run. Default 'parallel' = historical path.
     federation = args.federation or os.environ.get("SFU_SEISMIC_FEDERATION", "parallel")
@@ -579,39 +789,10 @@ def main():
         qdrant_ram_summary = compute_engine_ram_summary(qdrant_ram_baseline, qdrant_ram_post_queries)
 
     # ── 8. Verdict ──────────────────────────────────────────────────────
-    def _stat(stats, band, key):
-        """band='warm' (steady-state) or 'cold' (first-fault); falls back to top-level."""
-        if not stats:
-            return None
-        return ((stats.get(band) or stats) if band == "warm" else (stats.get(band) or {})).get(key)
-
-    def _latency_caveat(ram_summary, stats):
-        """Data-driven honesty gate (08_LATENCY_RESEARCH.md §A1 measured): a latency
-        is a verdict only if VmSwap≈0 AND warm p50 < cold p50 (page cache actually
-        helped). Two symptoms — often co-occurring — mean it is NOT a verdict, and
-        both share one root cause (host RAM < working set):
-          (1) anon swap  — VmSwap > 0 → anon pages paged out, latency is swap noise.
-          (2) cache miss — warm >= cold → the mmap index exceeds page cache, so
-              queries re-fault different postings from disk (I/O-bound, not compute).
-        Report every symptom present, then the unified cause/fix."""
-        swap = (ram_summary or {}).get("vmswap_gb") or 0.0
-        cold = _stat(stats, "cold", "p50_ms")
-        warm = _stat(stats, "warm", "p50_ms")
-        issues = []
-        if swap > 0.1:
-            issues.append(f"VmSwap={swap:.2f} GB anon paged to swap")
-        if cold and warm and warm >= 0.9 * cold and warm > 1000:
-            issues.append(f"warm p50 {warm:.0f} ms >= cold {cold:.0f} ms (mmap index exceeds "
-                          f"page cache → queries re-fault from disk)")
-        if issues:
-            return ("CAVEAT: latency is DISK/SWAP-bound, NOT a compute verdict — "
-                    + "; ".join(issues) + ". Root cause: host RAM < working set; needs "
-                    "RAM >= index-on-disk size (+ headroom) so the index stays cached and "
-                    "anon never swaps.")
-        return ("Latency measured with VmSwap~0 and warm < cold (page-cache hit) — "
-                "representative of a properly-provisioned host for this working set.")
-
-    lat_caveat = _latency_caveat(seismic_ram_summary, seismic_stats)
+    # _stat + _latency_caveat are module-level (pure helpers, no closure deps)
+    # so the regime-aware verdict gate is testable without running a full bench.
+    lat_caveat = _latency_caveat(seismic_ram_summary, seismic_stats,
+                                 load_mode, memcomp)
     verdict = ""
     if seismic_ram_summary and qdrant_ram_summary:
         s_anon = seismic_ram_summary.get("anon_floor_gb") or float("inf")
@@ -652,6 +833,20 @@ def main():
             "seismic_load_mode": load_mode,
             "seismic_federation": federation,
             "qdrant_available": qdrant_available,
+            # G8 2×2 matrix cell: load axis (mmap=Path C file-backed / stock=Path A
+            # owned anon) × mem-compression axis (zram/zswap/windows_compression/
+            # disk_swap/off/unknown). detect_memcompression() resolves the regime;
+            # SFU_MEMCOMPRESSION_REGIME overrides when /proc can't see it (Windows
+            # host compression). The verdict gate is regime-dependent — see
+            # _latency_caveat() + detect_memcompression().
+            "g8_matrix_cell": {
+                "load_mode": load_mode,
+                "memcompression_regime": memcomp["regime"],
+                "regime_compressed_in_ram": _regime_is_compressed_in_ram(memcomp["regime"]),
+                "regime_sources": memcomp["sources"],
+                "zram_devs": memcomp["zram_devs"],
+                "zswap_enabled": memcomp["zswap_enabled"],
+            },
         },
         "seismic": {
             "engine": f"seismic-pyseismic + {type(sb).__name__} "

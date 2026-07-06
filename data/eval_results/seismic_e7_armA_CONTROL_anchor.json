@@ -1,0 +1,16 @@
+{
+  "anchor": "Arm A — control re-run with stock 00:18 .so (SSE2 baseline, no Fix #1/Fix #2)",
+  "fork_sha": "c987160",
+  "purpose": "env-stability anchor + noise floor assessment before applying any fix",
+  "runs": [
+    {"run": 1, "parity_overlap10": 0.995, "warm_ratio_b": 1.338, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 5.43, "dv_warm_p50_ms": 7.27, "result": "seismic_e7_armA_control_run1.json"},
+    {"run": 2, "parity_overlap10": 0.995, "warm_ratio_b": 1.436, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 5.58, "dv_warm_p50_ms": 8.01, "result": "seismic_e7_armA_control_run2.json"}
+  ],
+  "prior_0032": {"parity_overlap10": 0.995, "warm_ratio_b": 1.223, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 5.823, "dv_warm_p50_ms": 7.123},
+  "findings": {
+    "parity_a": "ROCK-STABLE: 0.995 across all 3 runs. Deterministic. The correctness backstop is reliable.",
+    "gate_c_majflt": "ROCK-STABLE: 0.591 across all 3 runs (deterministic fault count). Fix #2's effect on c will be cleanly readable.",
+    "gate_b_warm_ratio": "NOISY: 1.223->1.338->1.436 across 3 same-config runs (~18% span). WARM_REPEATS=5 x 40 queries is under-sampled for a sub-ms warm microbench. The ratio amplifies f16+dv variance. Fix #1's signal (~1.2x codec speedup) is COMPARABLE to this noise floor -> MUST take more warm samples per arm to attribute cleanly."
+  },
+  "protocol_adjustment": "Increase WARM_REPEATS and replicate warm p50 across more query medians for arms B/C so a native-induced ~1.1-1.2x dv improvement is separable from the ~18% noise floor. Gate b verdict needs replicates, not a single ratio."
+}

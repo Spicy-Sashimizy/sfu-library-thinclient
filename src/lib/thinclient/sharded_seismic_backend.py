@@ -104,17 +104,24 @@ class _EncoderShim:
         return encode_splade(query, self.splade_model_path)
 
 
-def _load_manifest(manifest_path: str) -> list[str]:
+def _load_manifest(manifest_path: str, load_mode: str = "stock") -> list[str]:
     """A Plan-01 shard manifest lists built shard index paths; but the splitter's
     manifest lists the *jsonl* inputs, not the built .index.seismic. So this helper
     accepts EITHER:
       - a manifest.json with a 'shards' key (G7/C2.5 build+convert manifests;
-        each shard record carries `index_path`), or
+        each shard record carries `index_path`, and C2.5 records ALSO carry
+        `mmap_dir`), or
       - a manifest.json with a 'shard_indexes' key (built-index manifest), or
       - a plain JSON list of index paths, or
       - a comma-separated string of index paths.
     The build step (build_persona_seismic.py per shard) produces the .index.seismic
-    files; the overlap-gate harness assembles the path list."""
+    files; the overlap-gate harness assembles the path list.
+
+    `load_mode="mmap"` prefers each shard's `mmap_dir` field when present (the C2.5
+    converted-shard manifest) — this decouples the served mmap location from the
+    G7 source's `index_path`, which may live on volatile scratch (`/tmp`). Only
+    when no `mmap_dir` is recorded does it fall back to `index_path`, whose stem
+    the loader derives `.mmap/` from."""
     p = Path(manifest_path)
     if p.exists() and p.suffix == ".json":
         data = json.load(open(p))
@@ -122,7 +129,13 @@ def _load_manifest(manifest_path: str) -> list[str]:
             return data
         if isinstance(data, dict):
             if "shards" in data and isinstance(data["shards"], list):
-                # G7/C2.5 shape: shard records carry `index_path`.
+                # C2.5 records carry BOTH index_path and mmap_dir; mmap_dir is the
+                # authoritative served path (persistent, post /tmp-wipe-safe).
+                if load_mode == "mmap":
+                    out = [s.get("mmap_dir") for s in data["shards"] if s.get("mmap_dir")]
+                    if out:
+                        return out
+                # G7/stock shape: shard records carry `index_path`.
                 out = [s.get("index_path") for s in data["shards"] if s.get("index_path")]
                 if out:
                     return out
@@ -133,15 +146,23 @@ def _load_manifest(manifest_path: str) -> list[str]:
 
 def _load_one_shard(seismic_module, p: str, load_mode: str):
     """Load one shard by `load_mode` (pure: takes the seismic module + the mode,
-    no instance state). `mmap` requires a sibling `.mmap/` dir (produced by
+    no instance state). `mmap` requires a `.mmap/` dir (produced by
     convert_shard_to_mmap.py); it raises a clean RuntimeError if absent — NEVER
     silent-fallback to stock, which would re-introduce the Path-A anon floor and
-    silently break the 32 GB serve budget."""
+    silently break the 32 GB serve budget.
+
+    `p` in mmap mode may be EITHER:
+      - a `.mmap/` dir directly (the C2.5 manifest's `mmap_dir` field — the
+        authoritative persistent path), or
+      - a stock `X.index.seismic` path or `X` stem whose sibling `X.mmap/` dir
+        the loader derives (G7-manifest fallback)."""
     if load_mode == "mmap":
-        # A shard path may be the stock `X.index.seismic` or its `X` stem; the
-        # converted mmap layout lives in a sibling `X.mmap/` dir.
-        stem = p[:-len(".index.seismic")] if p.endswith(".index.seismic") else p
-        mmap_dir = f"{stem}.mmap"
+        if p.endswith(".mmap") and Path(p).is_dir():
+            mmap_dir = p
+        else:
+            # Stock `X.index.seismic` or stem → sibling `X.mmap/` dir.
+            stem = p[:-len(".index.seismic")] if p.endswith(".index.seismic") else p
+            mmap_dir = f"{stem}.mmap"
         if not Path(mmap_dir).is_dir():
             raise RuntimeError(
                 f"load_mode=mmap but converted mmap dir not found: {mmap_dir}\n"
@@ -256,7 +277,7 @@ class _SeismicBackendBase:
 
         `load_mode` selects Path-A stock vs Path-C mmap; the serving method is
         chosen by which concrete class you call this on (Parallel vs Sequential)."""
-        index_paths = _load_manifest(manifest_path)
+        index_paths = _load_manifest(manifest_path, load_mode=load_mode)
         if not index_paths:
             raise RuntimeError(f"no shard indexes parsed from manifest {manifest_path}")
         return cls(index_paths, splade_model_path=splade_model_path, load_mode=load_mode)

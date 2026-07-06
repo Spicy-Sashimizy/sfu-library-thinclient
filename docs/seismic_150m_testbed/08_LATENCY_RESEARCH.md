@@ -463,5 +463,84 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 > Reminder (CLAUDE.md efficacy rule): none of B/C/D is "done" until *we* measure it
 > on *our* index and record before→after numbers + eval script + result file here.
 > The figures above are external and only justify which technique to try first.
-</content>
-</invoke>
+
+---
+
+## E. RAM-compression lever (owned-anon load + memory compression) — WIRED, UNMEASURED
+
+**Added 2026-07-01 (commit `219c7e1`).** Status: **EFFICACY UNMEASURED** — the
+harness is wired and regression-tested; the measurement is the operator's
+Windows-host G8 run (where memory compression is default-on). This is a G8
+**RAM-residency** lever, NOT a storage lever: the constraint is how much of the
+~62 GB mmap working set stays resident on a host whose RAM < index size, not
+the on-disk footprint.
+
+### Why file compression was ruled out (set aside, not tracked here)
+- **Whole-file zstd** breaks mmap (forces full-shard owned-anon load →
+  re-introduces the Path-A floor G3 killed). [design]
+- **Transparent FS compression** (`chattr +c` / NTFS) leaves the *decompressed
+  resident set* unchanged on fault + adds per-fault CPU → doesn't touch the
+  actual constraint. [design]
+
+### The candidate: owned-anon load + a compressed-RAM regime
+Load the index **owned-anonymous** (Path A, `SFU_SEISMIC_LOAD_MODE=stock`)
+instead of file-backed mmap, with **memory compression enabled** (zram/zswap on
+Linux; Windows memory compression, default-on). Anonymous pages under a
+compressed-RAM regime get compressed **in RAM** (~2–3×, decompress at multiple
+GB/s) instead of paged out — potentially converting the ~15 s **disk re-fault**
+(file-backed pages dropped from page cache, re-read from the vhdx) into a
+~µs **CPU decompress**. Crucial asymmetry: an owned-anon page compressed to
+zram/zswap *stays in RAM* (just smaller); a file-backed page, once evicted,
+*must re-fault from disk*. So compression only helps the **owned-anon** cell,
+not the file-backed mmap cell. [design — the asymmetry is the mechanism; the
+~2–3× ratio + GB/s decompress are external figures, not measured on our index]
+
+### The 2×2 matrix (one bench invocation per cell)
+
+|              | mem-compression OFF | mem-compression ON |
+|--------------|---------------------|--------------------|
+| `load_mode=mmap` (Path C) | the 15.8 s disk-re-fault baseline (measured, §A1 #1) | moot — file pages don't compress; expected ≈ baseline |
+| `load_mode=stock` (Path A) | OOMs / swaps to disk swap at 150 M (the floor G3 killed) | **the candidate win** — anon compressed in RAM |
+
+### ✅ Harness wiring (shipped, efficacy unmeasured)
+- **`detect_memcompression()`** (`scripts/seismic_testbed/serve_footprint_bench.py`)
+  resolves the host's anon regime (`zram`/`zswap`/`windows_compression`/
+  `disk_swap`/`off`/`unknown`) from `/proc`, honoring an operator
+  **`SFU_MEMCOMPRESSION_REGIME`** override for the Windows case `/proc` can't
+  see; recorded in result `meta.g8_matrix_cell`.
+- **`_latency_caveat()` verdict gate is regime-aware — the load-bearing fix.**
+  Under zram/zswap/windows_compression, `VmSwap>0` is compressed-in-RAM (a
+  VERDICT, decompress at GB/s), NOT the disk-re-fault the old gate flagged.
+  Without this fix the stock+zram cell would be mislabeled "not a verdict".
+  The 'mmap exceeds page cache' (warm>=cold) symptom is gated on
+  `load_mode=='mmap'` (owned-anon has no file-backed page cache to exceed).
+- **Tests:** `scripts/tests/test_serve_footprint_g8_matrix.py` (14 unit tests
+  pinning the gate across all cells).
+
+### Invocation (the cells to run on the Windows host)
+```bash
+# (mmap, off) — disk-re-fault baseline:
+SFU_SEISMIC_LOAD_MODE=mmap .venv/bin/python3 scripts/seismic_testbed/serve_footprint_bench.py \
+    --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap.json --queries 40 --passes 2 \
+    --result-file data/eval_results/seismic_g8_cell_mmap_off_<date>.json
+# (stock, windows_compression) — THE candidate win:
+SFU_SEISMIC_LOAD_MODE=stock SFU_MEMCOMPRESSION_REGIME=windows_compression \
+    .venv/bin/python3 scripts/seismic_testbed/serve_footprint_bench.py \
+    --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap.json --queries 40 --passes 2 \
+    --result-file data/eval_results/seismic_g8_cell_stock_wincomp_<date>.json
+```
+
+### Decision rule
+- **stock+compression cell** → warm p50 in a usable band AND `VmSwap>0` flagged
+  **compressed-in-RAM verdict** ⇒ G8-latency clears **without a bigger box**;
+  G9 weighs Path-C build cost vs this (cheaper) Path-A-with-compression win.
+- stock cell still re-faults (warm≈cold) AND `VmSwap` reads as disk (regime
+  not compressed) ⇒ memory compression isn't enough; Tier 2 #5 (no-swap host /
+  pre-fault+mlock) or a bigger box remains the only resolution.
+
+### Bigger-lift note (→ G9 / Path C, not this spike)
+A succinct / Elias-Fano compressed index format (§B1 DotVByte / §B2 4-bit
+summary quant) genuinely shrinks the resident set and is queryable-while-
+compressed, but needs a SEISMIC build+traversal fork — not a config knob.
+Design-only; not in our Rust reader.
+

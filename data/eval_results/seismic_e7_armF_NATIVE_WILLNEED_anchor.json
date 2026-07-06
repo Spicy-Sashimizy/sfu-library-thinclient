@@ -1,0 +1,17 @@
+{
+  "anchor": "Arm F — Fix #1 (native) + Fix #3 (MADV_WILLNEED in prefetch_with_range)",
+  "so": "venv seismic.so rebuilt 2026-07-03 03:11:07 (native + madvise_willneed in BOTH prefetch_with_range impls: packed_dataset dotvbyte + sparse_dataset f16)",
+  "verified_in_binary": "objdump shows 25 madvise call sites in the .so (WILLNEED advice wired into the forward hot path for both formats)",
+  "runs": [
+    {"run": 1, "parity": 0.995, "warm_ratio_b": 0.703, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 8.25, "dv_warm_p50_ms": 5.80, "f16_cold_ms": 678, "dv_cold_ms": 435, "f16_majflt": 116954, "dv_majflt": 69124},
+    {"run": 2, "parity": 0.995, "warm_ratio_b": 0.688, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 8.07, "dv_warm_p50_ms": 5.55, "f16_cold_ms": 686, "dv_cold_ms": 439, "f16_majflt": 116954, "dv_majflt": 69124},
+    {"run": 3, "parity": 0.995, "warm_ratio_b": 0.696, "majflt_ratio_c": 0.591, "f16_warm_p50_ms": 8.13, "dv_warm_p50_ms": 5.66, "f16_cold_ms": 690, "dv_cold_ms": 425, "f16_majflt": 116954, "dv_majflt": 69124}
+  ],
+  "vs_armE1_native_only": {
+    "gate_c_majflt_ratio": {"E1": 0.591, "F1": 0.591, "verdict": "UNCHANGED. WILLNEED had ZERO effect on fault count (116954/69124 vs 116982/69149)"},
+    "cold_latency": {"E1_f16": 646, "F1_f16": 686, "E1_dv": 428, "F1_dv": 435, "verdict": "essentially unchanged (within noise). Hypothesis REFUTED: WILLNEED did NOT convert serial faults to overlapped async readahead on this kernel/WSL2 — either the kernel ignores WILLNEED on these ranges or default readahead already overlaps enough that explicit WILLNEED adds nothing."},
+    "gate_b_warm_ratio": {"E1": 0.957, "F1": 0.696, "verdict": "ARTIFACT not a win. Both formats got SLOWER (f16 2.07->8.13ms, dv 2.00->5.66ms ~3-4x worse). Ratio 'improved' only because per-candidate madvise() syscall overhead (~25/block) hurt f16 MORE (2 slices: components+values) than dv (1 slice: data). A slower-both ratio improvement is NOT a latency win."},
+    "parity_a": "0.995 held (WILLNEED is pure advice)"
+  },
+  "verdict": "DO NOT SHIP Fix #3. (1) Did NOT reclear gate c (the target) — majflt 0.591 + cold latency unchanged; the async-readahead hypothesis is refuted on this kernel. (2) Introduced a gate-b warm regression via per-candidate madvise syscall overhead (artifact ratio 'win' is both-formats-slower). Net negative. Fix #3 disabled below (prefetch_with_range reverted to CPU-prefetch-only)."
+}

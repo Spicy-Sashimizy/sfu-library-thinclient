@@ -118,7 +118,7 @@ def main():
     queries = json.loads(args.queries.read_text())
     if args.limit:
         queries = queries[:args.limit]
-    index_paths = _load_manifest(args.shard_manifest)
+    index_paths = _load_manifest(args.shard_manifest, load_mode="mmap")
     log.info("loading %d SEISMIC shards (mmap)…", len(index_paths))
     t0 = time.perf_counter()
     backend = ParallelSeismicBackend(index_paths, load_mode="mmap")

@@ -2,6 +2,8 @@
 
 > Created 2026-06-30. Runbook for rematerializing the 8 served mmap shards after
 > the `/tmp` wipe, to a path that survives container/host restarts.
+> **BUILT 2026-06-30/07-01 — COMPLETE & VERIFIED.** The served path loads
+> end-to-end against the persistent shards (see "Result" below).
 
 ## What happened
 A host reboot (uptime ~2.5h at 2026-06-30 22:00) wiped `/tmp/seismic_testbed/` —
@@ -54,3 +56,37 @@ rebuilt federation overlap@10 reproduces ≈ 0.9967 (sharded-vs-single gate).
   G6 PASS verdict stands regardless).
 - `SequentialSeismicBackend` efficacy measurement (Tier 1 #3, UNMEASURED):
   `serve_footprint_bench.py --federation {parallel,sequential}` RAM/swap/latency.
+
+## Result (2026-06-30/07-01 rebuild — COMPLETE & VERIFIED)
+All three stages ran clean, serially, on the 32 GB host:
+- **Stage 1 (shard all 5 sections → K=8):** 150,413,098 docs reconstructed from
+  `spool_backup` (exact match to the 2026-06-28 G7 TARGET_DOCS). Balance max/min
+  1.0007–1.0020 per section. Log `data/eval_results/rebuild_stage1_shard.log`.
+- **Stage 2 (build 8 global shards):** 8/8 OK, peak RSS 9.62–9.93 GB/shard (under
+  the 20 GB budget; matches the G7 record's 9.932 max), 66.26 GB on-disk total.
+  Clean deduped G7 manifest at `data/eval_results/seismic_plan01_shards_150m.json`
+  (old one backed up `.pre-2026-06-30-rebuild.bak`). Log
+  `data/eval_results/rebuild_stage2_build.log`.
+- **Stage 3 (convert → persistent mmap):** 8/8 OK, parity bit-identical every
+  shard, anon Δ ~0.044 GB/shard (floor cured), peak RSS ~10.2 GB. Served mmap
+  shards at **persistent** `data/seismic_150m/index/plan01/global_shard{0..7}of8.mmap`
+  (62 GB; G7 `.index.seismic` sources stayed on `/tmp` scratch — regenerable).
+  C2.5 manifest `data/eval_results/seismic_c25_shards_150m_mmap.json` now carries
+  the persistent `mmap_dir` per shard (verdict `C2.5 150M_MMAP_READY`).
+  Log `data/eval_results/rebuild_stage3_convert.log`.
+
+**Served-path wiring fixed in the same session:** `_load_manifest` now takes
+`load_mode` and, in mmap mode, prefers the C2.5 manifest's `mmap_dir` (persistent)
+over the G7 `index_path` (volatile /tmp). `_load_one_shard` mmap mode accepts a
+path that is already a `.mmap` dir. `from_manifest` + the 3 harness scripts
+(`seismic_federated`, `serve_footprint_bench`, `seismic_quality_eval`) thread
+`load_mode` through. Without this the served path derived `/tmp/.../X.mmap` (absent)
+and would RuntimeError.
+
+**End-to-end verified:** `ParallelSeismicBackend` loads 8 persistent shards in
+1.2s, **150,413,098 total docs (exact)**, returns real OpenAlex ids. Cold
+first-query ~127s (page-fault-in + cold SPLADE encoder — the Tier 2 #5 cold-start
+item; warm is sub-second). Result-safety vs the prior 2026-06-29 build: n=10
+mean overlap@10 **0.980**, 8/10 exact top-10 sets, 10/10 top-1 match (the 2
+non-exact are sub-rank-10 reordering, in the federation-gate 0.3% band) → the
+G6 PASS verdict holds on the rebuilt index.
