@@ -537,7 +537,14 @@ honest moves, in information-per-cost order:
    behind. Fix #5A adds a datum to its forecast: readahead already absorbs
    *adjacent* continuation reads, so E5's win must be simulated at page-touch
    granularity (the §7.4 pack-walk method) before building the id-indirection
-   it requires.
+   it requires. **→ SIMULATED GO 2026-07-09 (roadmap Q6):** on real
+   `search_visited` candidate sets (shards 1–2, n=100), the buildable
+   posting-pack-walk first-touch order simulates to **0.376–0.400× unique
+   forward pages/query** (bar ≤0.45; dv geometry 0.382–0.400; log-driven
+   ceiling 0.345–0.358; random control 1.01; 64KiB-cluster proxy 0.35–0.37,
+   so fault-around only helps further). Converter build green-lit.
+   `data/eval_results/q6_e5_coaccess_sim_20260709.json`, doc 06 row
+   2026-07-09.
 3. Re-calibrate the bar 0.55 → 0.57 (fully-calibrated footing) — records the
    truth but moves the goalposts; only defensible bundled WITH an E7b verdict.
    **→ MOOT 2026-07-03: §7.5 closes gate c as superseded rather than
@@ -665,6 +672,14 @@ shards 1–2 above 0.99 at zero serve-time cost. Row:
 also produced a binding protocol change: quality gates now run on shards 1–2
 (the measured worst case), never shard0-only
 (`math_optimization/05_TESTING_PROTOCOL.md`, 2026-07-05 amendment).
+
+> **E8 Stage-0 MEASURED (2026-07-08): GO.** The per-doc-scale proxy re-score
+> on real shard-1/2 candidates (n=100) ranked at overlap@10 **0.997 / 0.993**
+> vs FixedU8Q's 0.985 / 0.984 on the same queries — the §2.4 error advantage
+> survives ranking, and the FixedU8Q arm reproduces G8d's 0.985 (method
+> validation). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`,
+> `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. Next: Stage 1
+> (dv-v2 encoder/loader, shards 1–2 only) per `12_EXECUTION_ROADMAP.md` Q1.
 
 ## 8. What the compressed forward does NOT change
 

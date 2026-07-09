@@ -235,3 +235,73 @@ class _env_patch:
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = old
+
+
+# ── 2026-07-06 promotion guards ───────────────────────────────────────────────
+# Added with the qdrant→seismic default flip + manifest hardening. One test per
+# new load-bearing behavior, same conventions as the three guards above.
+
+def test_default_splade_backend_is_seismic(monkeypatch):
+    """The 2026-07-06 promotion: an UNSET SFU_SPLADE_BACKEND must select the
+    SEISMIC leg (was `qdrant` 2026-06-24 → 2026-07-06). A regression here
+    silently un-promotes the engine."""
+    monkeypatch.delenv("SFU_SPLADE_BACKEND", raising=False)
+    from lib.thinclient.retriever import ThinClientRetriever
+    r = ThinClientRetriever(index_root="", remote_abstracts=False, splade_model_path="")
+    assert r._splade_backend == "seismic"
+
+
+def test_partial_manifest_refuses_partial_corpus(tmp_path):
+    """A manifest whose shard records don't ALL carry the path field for the
+    requested load_mode must raise — never silently federate a subset of the
+    corpus (guard added 2026-07-06 with the mixed-manifest fix)."""
+    from lib.thinclient.sharded_seismic_backend import _load_manifest
+
+    mixed = tmp_path / "mixed_manifest.json"
+    mixed.write_text(json.dumps({"shards": [
+        {"shard": 0, "mmap_dir": "a.mmap", "index_path": "a.index.seismic"},
+        {"shard": 1, "index_path": "b.index.seismic"},   # no mmap_dir
+        {"shard": 2, "mmap_dir": "c.mmap", "index_path": "c.index.seismic"},
+    ]}))
+    with pytest.raises(RuntimeError, match="partial corpus"):
+        _load_manifest(str(mixed), load_mode="mmap")
+
+    # declared n_shards must match the record count (aborted-conversion shape)
+    short = tmp_path / "short_manifest.json"
+    short.write_text(json.dumps({"n_shards": 8, "shards": [
+        {"shard": 0, "mmap_dir": "a.mmap"}]}))
+    with pytest.raises(RuntimeError, match="n_shards"):
+        _load_manifest(str(short), load_mode="mmap")
+
+    # all-records-complete manifests keep working unchanged (both modes)
+    ok = tmp_path / "ok_manifest.json"
+    ok.write_text(json.dumps({"n_shards": 2, "shards": [
+        {"shard": 0, "mmap_dir": "a.mmap", "index_path": "a.index.seismic"},
+        {"shard": 1, "mmap_dir": "b.mmap", "index_path": "b.index.seismic"}]}))
+    assert _load_manifest(str(ok), load_mode="mmap") == ["a.mmap", "b.mmap"]
+    assert _load_manifest(str(ok), load_mode="stock") == [
+        "a.index.seismic", "b.index.seismic"]
+
+
+def test_filtered_seismic_leg_overfetches():
+    """With a post-filter active the SEISMIC leg must over-fetch
+    top_k × OVERFETCH_FILTERED from the backend (the Qdrant/BMP-leg
+    convention), not fetch exactly top_k and then thin it below top_k
+    (bug fixed 2026-07-06)."""
+    from lib.thinclient.retriever import OVERFETCH_FILTERED, ThinClientRetriever
+
+    r = ThinClientRetriever(index_root="", remote_abstracts=False, splade_model_path="")
+    seen = {}
+
+    class _RecordingBackend:
+        def search(self, query, top_k, **kw):
+            seen["fetch"] = top_k
+            return []
+    r._seismic = _RecordingBackend()
+
+    r._splade_leg_seismic("receptor kinase signaling", top_k=10,
+                          f={"year_from": 2020})
+    assert seen["fetch"] == 10 * OVERFETCH_FILTERED, \
+        f"filtered leg fetched {seen['fetch']}, expected 10×{OVERFETCH_FILTERED}"
+    r._splade_leg_seismic("receptor kinase signaling", top_k=10, f=None)
+    assert seen["fetch"] == 10, "unfiltered leg must fetch exactly top_k"

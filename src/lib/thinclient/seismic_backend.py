@@ -5,7 +5,7 @@ SEISMIC-backed RRF pipeline for the G6 system-parity gate.
 
 Loaded ONCE per process; serves `search(query, top_k) -> [(oaid, score)]` using
 the SAME query encoder as the Qdrant/BMP paths
-(`lib.opensearch_retriever.encode_splade` + `models/splade_onnx_fp16`), so
+(`lib.opensearch_retriever.encode_splade` + `models/splade_onnx_fused`, D2 2026-07-09), so
 SEISMIC vs Qdrant quality is attributable to SEISMIC's approximation/pruning,
 not a different encoder.
 
@@ -23,7 +23,8 @@ Qdrant also uses raw f32 queries.
 TESTBED-ONLY — this is the `SFU_SPLADE_BACKEND=seismic` adapter for the SINGLE
 persona-scale index. Serving the real 150M corpus uses the federated
 `ShardedSeismicBackend` (`src/lib/thinclient/sharded_seismic_backend.py`, mmap'd
-shards). The served SPLADE leg otherwise stays Qdrant.
+shards) — since 2026-07-06 that federated path is the DEFAULT SPLADE leg
+(`SFU_SPLADE_BACKEND` default `seismic`); Qdrant is the env-selected fallback.
 """
 import logging
 import os
@@ -44,7 +45,7 @@ class SeismicBackend:
     retriever's other legs return, so RRF fusion and `record-tc` records are
     byte-compatible with the Qdrant leg (ids join on `oaid`)."""
 
-    def __init__(self, index_path: str, splade_model_path: str = "models/splade_onnx_fp16"):
+    def __init__(self, index_path: str, splade_model_path: str = "models/splade_onnx_fused"):
         import seismic
         self._seismic = seismic
         # seismic.save() appends '.index.seismic' to the path it's given, so the

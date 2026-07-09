@@ -1,0 +1,224 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/q6_e5_coaccess_sim.py",
+    "fork_hook": "search_visited (fork commit 8af7088)",
+    "n_queries": 100,
+    "k_prime": 200,
+    "heap_factor": 0.8,
+    "query_cut": "all-terms (E1 verdict)",
+    "shards": [
+      "global_shard1of8",
+      "global_shard2of8"
+    ],
+    "candidate_capture": "f16 traversal visited set; dv shares doc order",
+    "excluded_slabs": "forward_offsets + doc mapping (symmetric floor, Fix #4/#5B)",
+    "model_note": "unique 4KiB pages ~ cold majflt; fault-around favors clustered orders beyond this model (Fix #5A), so clustered-order ratios are conservative (upper bounds)",
+    "bar": "GO iff block_walk page_ratio <= 0.45 on BOTH shards (doc 12 Q6; worst-case-shard rule)",
+    "wall_seconds": 358.6
+  },
+  "shards": {
+    "global_shard1of8": {
+      "n_docs": 18812242,
+      "candidates_per_query": {
+        "mean": 17806.41,
+        "p50": 16848,
+        "min": 5217,
+        "max": 36893
+      },
+      "geometries": {
+        "f16": {
+          "identity": {
+            "queries": 100,
+            "mean_pages_per_query": 18064.94,
+            "page_ratio_vs_identity": 1.0,
+            "page_ratio_perquery_mean": 1.0,
+            "cluster64k_ratio_vs_identity": 1.0
+          },
+          "random": {
+            "queries": 100,
+            "mean_pages_per_query": 18349.28,
+            "page_ratio_vs_identity": 1.0157398806749427,
+            "page_ratio_perquery_mean": 1.0138182469180848,
+            "cluster64k_ratio_vs_identity": 1.1753837573888872
+          },
+          "block_walk": {
+            "queries": 100,
+            "mean_pages_per_query": 6799.26,
+            "page_ratio_vs_identity": 0.3763787756837277,
+            "page_ratio_perquery_mean": 0.3897440035401199,
+            "cluster64k_ratio_vs_identity": 0.3522474957711967
+          },
+          "block_walk_testhalf": {
+            "queries": 50,
+            "mean_pages_per_query": 7017.0,
+            "page_ratio_vs_identity": 0.37650182214648426,
+            "page_ratio_perquery_mean": 0.3929629999517515,
+            "cluster64k_ratio_vs_identity": 0.35485180417459705
+          },
+          "coaccess_sig": {
+            "queries": 50,
+            "mean_pages_per_query": 6494.6,
+            "page_ratio_vs_identity": 0.3484721011988822,
+            "page_ratio_perquery_mean": 0.31566991069616895,
+            "cluster64k_ratio_vs_identity": 0.3133048498298098
+          },
+          "coaccess_walk": {
+            "queries": 50,
+            "mean_pages_per_query": 8519.22,
+            "page_ratio_vs_identity": 0.4571044396845905,
+            "page_ratio_perquery_mean": 0.43179447469499377,
+            "cluster64k_ratio_vs_identity": 0.3309667280036012
+          }
+        },
+        "dotvbyte": {
+          "identity": {
+            "queries": 100,
+            "mean_pages_per_query": 18233.45,
+            "page_ratio_vs_identity": 1.0,
+            "page_ratio_perquery_mean": 1.0,
+            "cluster64k_ratio_vs_identity": 1.0
+          },
+          "random": {
+            "queries": 100,
+            "mean_pages_per_query": 18479.57,
+            "page_ratio_vs_identity": 1.0134982682926161,
+            "page_ratio_perquery_mean": 1.0119861263795327,
+            "cluster64k_ratio_vs_identity": 1.1549238175180578
+          },
+          "block_walk": {
+            "queries": 100,
+            "mean_pages_per_query": 6974.06,
+            "page_ratio_vs_identity": 0.3824871321664304,
+            "page_ratio_perquery_mean": 0.39585751566893035,
+            "cluster64k_ratio_vs_identity": 0.348314072237167
+          },
+          "block_walk_testhalf": {
+            "queries": 50,
+            "mean_pages_per_query": 7199.28,
+            "page_ratio_vs_identity": 0.38265384222879884,
+            "page_ratio_perquery_mean": 0.39905306914308414,
+            "cluster64k_ratio_vs_identity": 0.3505043624824995
+          },
+          "coaccess_sig": {
+            "queries": 50,
+            "mean_pages_per_query": 6728.38,
+            "page_ratio_vs_identity": 0.3576247151069837,
+            "page_ratio_perquery_mean": 0.32502735522473786,
+            "cluster64k_ratio_vs_identity": 0.3082674971266668
+          },
+          "coaccess_walk": {
+            "queries": 50,
+            "mean_pages_per_query": 8916.94,
+            "page_ratio_vs_identity": 0.47395036058101164,
+            "page_ratio_perquery_mean": 0.44981231387455006,
+            "cluster64k_ratio_vs_identity": 0.32822753476317845
+          }
+        }
+      }
+    },
+    "global_shard2of8": {
+      "n_docs": 18797227,
+      "candidates_per_query": {
+        "mean": 17737.67,
+        "p50": 16673,
+        "min": 5507,
+        "max": 35426
+      },
+      "geometries": {
+        "f16": {
+          "identity": {
+            "queries": 100,
+            "mean_pages_per_query": 18005.79,
+            "page_ratio_vs_identity": 1.0,
+            "page_ratio_perquery_mean": 1.0,
+            "cluster64k_ratio_vs_identity": 1.0
+          },
+          "random": {
+            "queries": 100,
+            "mean_pages_per_query": 18275.05,
+            "page_ratio_vs_identity": 1.0149540786602531,
+            "page_ratio_perquery_mean": 1.0134089442788041,
+            "cluster64k_ratio_vs_identity": 1.1748170139367573
+          },
+          "block_walk": {
+            "queries": 100,
+            "mean_pages_per_query": 7071.05,
+            "page_ratio_vs_identity": 0.39270978946216745,
+            "page_ratio_perquery_mean": 0.4118884164862316,
+            "cluster64k_ratio_vs_identity": 0.37197628154365536
+          },
+          "block_walk_testhalf": {
+            "queries": 50,
+            "mean_pages_per_query": 7223.28,
+            "page_ratio_vs_identity": 0.3935573085058042,
+            "page_ratio_perquery_mean": 0.4170423428711285,
+            "cluster64k_ratio_vs_identity": 0.3756446557183534
+          },
+          "coaccess_sig": {
+            "queries": 50,
+            "mean_pages_per_query": 6325.06,
+            "page_ratio_vs_identity": 0.3446181775782916,
+            "page_ratio_perquery_mean": 0.3163143775790657,
+            "cluster64k_ratio_vs_identity": 0.30648843089242844
+          },
+          "coaccess_walk": {
+            "queries": 50,
+            "mean_pages_per_query": 8331.34,
+            "page_ratio_vs_identity": 0.4539294817100745,
+            "page_ratio_perquery_mean": 0.43336582319291145,
+            "cluster64k_ratio_vs_identity": 0.32462891917975384
+          }
+        },
+        "dotvbyte": {
+          "identity": {
+            "queries": 100,
+            "mean_pages_per_query": 18163.49,
+            "page_ratio_vs_identity": 1.0,
+            "page_ratio_perquery_mean": 1.0,
+            "cluster64k_ratio_vs_identity": 1.0
+          },
+          "random": {
+            "queries": 100,
+            "mean_pages_per_query": 18406.86,
+            "page_ratio_vs_identity": 1.013398856717514,
+            "page_ratio_perquery_mean": 1.011907658256352,
+            "cluster64k_ratio_vs_identity": 1.1549851363696784
+          },
+          "block_walk": {
+            "queries": 100,
+            "mean_pages_per_query": 7259.85,
+            "page_ratio_vs_identity": 0.399694662204235,
+            "page_ratio_perquery_mean": 0.41892579177839934,
+            "cluster64k_ratio_vs_identity": 0.36765145420780193
+          },
+          "block_walk_testhalf": {
+            "queries": 50,
+            "mean_pages_per_query": 7418.26,
+            "page_ratio_vs_identity": 0.4005803838049807,
+            "page_ratio_perquery_mean": 0.42421384000178497,
+            "cluster64k_ratio_vs_identity": 0.37077580940745264
+          },
+          "coaccess_sig": {
+            "queries": 50,
+            "mean_pages_per_query": 6555.0,
+            "page_ratio_vs_identity": 0.3539650020141716,
+            "page_ratio_perquery_mean": 0.3257066470589799,
+            "cluster64k_ratio_vs_identity": 0.3018692730604765
+          },
+          "coaccess_walk": {
+            "queries": 50,
+            "mean_pages_per_query": 8718.0,
+            "page_ratio_vs_identity": 0.47076535279321857,
+            "page_ratio_perquery_mean": 0.4511493944279449,
+            "cluster64k_ratio_vs_identity": 0.3221212583995113
+          }
+        }
+      }
+    }
+  },
+  "verdict": {
+    "buildable_cell_worst_shard_page_ratio_f16": 0.3927,
+    "q6_e5": "GO"
+  }
+}

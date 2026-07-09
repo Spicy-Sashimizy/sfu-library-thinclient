@@ -40,7 +40,9 @@ the on-disk index). Disk holds the full index; RAM governs latency.
 
 For the **30M tech-demo corpus**, the smallest droplet that keeps p50 in the fitting-tier
 range (~66 ms) and leaves headroom for the SPLADE query encoder (ONNX fp16, cold 6.1 s /
-warm ~45 ms — set `SFU_SPLADE_MODEL_PATH=models/splade_onnx_fp16` + a boot-time warm-up
+warm ~45 ms — set `SFU_SPLADE_MODEL_PATH=models/splade_onnx_fp16` (2026-07-09:
+the code default is now the faster `models/splade_onnx_fused`, so no env var
+needed — doc `seismic_150m_testbed/08` §D) + a boot-time warm-up
 query so no user pays the cold load):
 
 > **32 GB RAM / 60 GB+ NVMe disk, dedicated to Qdrant + the thin-client server.**

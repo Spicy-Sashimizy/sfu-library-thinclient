@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/d2_ort_fusion_matrix.py",
+    "baseline": "production _get_splade_model singleton (ORT_ENABLE_ALL, default threads, spinning on), models/splade_onnx_fp16",
+    "method": "one arm session co-resident with baseline at a time, interleaved per query (D1 lesson)",
+    "n_queries": 100,
+    "top_k": 50,
+    "warm_passes_recorded": 2,
+    "environment": "devcontainer (16 cores, avx2, drvfs); warm-only",
+    "not_tested": "graph_opt_level < ALL (baseline already ALL); optimized_model_filepath (init-time only); fp16/bf16 CPU (no native fp16 on avx2); batching/IOBinding (serving is batch-1)",
+    "bars": "[qvec exact 100/100 OR (overlap@10 >= 0.99 AND sequential identity 0 mismatches)] AND speedup_p50 > 1.05",
+    "wall_seconds": 749.6
+  },
+  "build": {
+    "fused": {
+      "built": "built",
+      "mb": 531.9,
+      "fused_ops": {
+        "EmbedLayerNormalization": 1,
+        "Attention": 12,
+        "BiasGelu": 13,
+        "LayerNormalization": 1,
+        "SkipLayerNormalization": 24
+      },
+      "seconds": 36.6
+    },
+    "fused_gelu": {
+      "built": "built",
+      "mb": 531.9,
+      "fused_ops": {
+        "EmbedLayerNormalization": 1,
+        "Attention": 12,
+        "FastGelu": 13,
+        "LayerNormalization": 1,
+        "SkipLayerNormalization": 24
+      },
+      "seconds": 19.7
+    }
+  },
+  "arms": {
+    "fused": {
+      "session_init_s": 2.99,
+      "base_ms_p50_paired": 37.29,
+      "arm_ms": {
+        "p50": 33.45,
+        "p95": 49.21
+      },
+      "speedup_p50": 1.11,
+      "qvec_exact": "37/100"
+    },
+    "fused_gelu": {
+      "session_init_s": 2.65,
+      "base_ms_p50_paired": 35.49,
+      "arm_ms": {
+        "p50": 31.07,
+        "p95": 49.11
+      },
+      "speedup_p50": 1.14,
+      "qvec_exact": "0/100"
+    },
+    "base_t8": {
+      "session_init_s": 2.67,
+      "base_ms_p50_paired": 38.48,
+      "arm_ms": {
+        "p50": 44.79,
+        "p95": 60.81
+      },
+      "speedup_p50": 0.86,
+      "qvec_exact": "100/100"
+    },
+    "base_t4": {
+      "session_init_s": 2.8,
+      "base_ms_p50_paired": 41.0,
+      "arm_ms": {
+        "p50": 51.42,
+        "p95": 64.1
+      },
+      "speedup_p50": 0.8,
+      "qvec_exact": "100/100"
+    },
+    "base_t2": {
+      "session_init_s": 2.83,
+      "base_ms_p50_paired": 33.25,
+      "arm_ms": {
+        "p50": 51.67,
+        "p95": 62.16
+      },
+      "speedup_p50": 0.64,
+      "qvec_exact": "100/100"
+    },
+    "base_t1": {
+      "session_init_s": 2.76,
+      "base_ms_p50_paired": 20.68,
+      "arm_ms": {
+        "p50": 51.57,
+        "p95": 72.27
+      },
+      "speedup_p50": 0.4,
+      "qvec_exact": "100/100"
+    },
+    "base_nospin": {
+      "session_init_s": 2.61,
+      "base_ms_p50_paired": 19.72,
+      "arm_ms": {
+        "p50": 30.18,
+        "p95": 38.24
+      },
+      "speedup_p50": 0.65,
+      "qvec_exact": "100/100"
+    }
+  },
+  "gates": {
+    "fused_gelu": {
+      "overlap@10_mean": 0.99,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.993,
+      "n_queries": 100
+    }
+  },
+  "sequential_identity": {
+    "fused_gelu": {
+      "mismatches": 0,
+      "verdict": "IDENTICAL"
+    }
+  },
+  "flip_verdict": "FLIP:fused_gelu"
+}

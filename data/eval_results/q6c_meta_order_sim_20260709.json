@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/q6c_meta_order_sim.py",
+    "lineage": "q6/q6b machinery on the same cached candidate sets",
+    "orders": "bespoke meta.sqlite keys (section,year[,home-term])",
+    "shards": [
+      "global_shard1of8",
+      "global_shard2of8"
+    ],
+    "wall_seconds": 2829.7
+  },
+  "shards": {
+    "global_shard1of8": {
+      "meta_stats": {
+        "distinct_sections": 10,
+        "rows_missing_from_meta": 0,
+        "table_rows_scanned": 150413098
+      },
+      "meta_section_year": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.9985574267060948,
+        "cluster64k_ratio_vs_identity": 0.9875760122885698,
+        "mean_pages_per_query": 18038.88
+      },
+      "meta_section_year_home": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.7675109909028206,
+        "cluster64k_ratio_vs_identity": 0.7250448521581521,
+        "mean_pages_per_query": 13865.04
+      }
+    },
+    "global_shard2of8": {
+      "meta_stats": {
+        "distinct_sections": 10,
+        "rows_missing_from_meta": 0,
+        "table_rows_scanned": 150413098
+      },
+      "meta_section_year": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.9988470375362591,
+        "cluster64k_ratio_vs_identity": 0.9863598036606831,
+        "mean_pages_per_query": 17985.03
+      },
+      "meta_section_year_home": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.767088808655438,
+        "cluster64k_ratio_vs_identity": 0.724896524306769,
+        "mean_pages_per_query": 13812.04
+      }
+    }
+  },
+  "verdict": {
+    "worst_shard_page_ratio": {
+      "meta_section_year": 0.9988,
+      "meta_section_year_home": 0.7675
+    },
+    "note": "compare against q6b_order_sweep block_walk cells"
+  }
+}

@@ -27,7 +27,9 @@ parallel path.
    sibling dir per shard, produced by `convert_shard_to_mmap.py`.
 3. **A shard manifest** — JSON listing each shard's `index_path` + `mmap_dir`
    (same shape as `data/eval_results/seismic_c25_shards_150m_mmap.json`).
-4. **The SPLADE encoder** — `models/splade_onnx_fp16` (unchanged, shared).
+4. **The SPLADE encoder** — `models/splade_onnx_fused` since 2026-07-09 D2
+   (bert-fused export of the same fp32 weights, shared by both serving
+   methods; was `models/splade_onnx_fp16`).
 
 **Sequential requires zero artifacts the parallel path doesn't already produce.**
 It does not re-shard, re-convert, or re-encode anything.

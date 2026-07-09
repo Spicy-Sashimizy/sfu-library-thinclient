@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/q6b_order_sweep.py",
+    "lineage": "q6_e5_coaccess_sim.py (candidate cache + eval reused)",
+    "geometry": "f16 (2 B/entry, one of two identical-structure files); Q6 showed dv geometry tracks f16 within 0.01",
+    "selection_rule": "best append-friendly order if within +0.03 of best global order (worst-shard f16 page ratio); else best global order",
+    "shards": [
+      "global_shard1of8",
+      "global_shard2of8"
+    ],
+    "wall_seconds": 475.4
+  },
+  "shards": {
+    "global_shard1of8": {
+      "block_walk_canonical": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.3763787756837277,
+        "cluster64k_ratio_vs_identity": 0.3522474957711967,
+        "mean_pages_per_query": 6799.26
+      },
+      "block_walk_hotfirst": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.3850580184600669,
+        "cluster64k_ratio_vs_identity": 0.36409375403148586,
+        "mean_pages_per_query": 6956.05
+      },
+      "block_walk_coldfirst": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.6355764259388628,
+        "cluster64k_ratio_vs_identity": 0.6112898430995786,
+        "mean_pages_per_query": 11481.65
+      },
+      "home_component": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.7436476401250156,
+        "cluster64k_ratio_vs_identity": 0.6386666869659909,
+        "mean_pages_per_query": 13433.95
+      },
+      "home_component_val": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.7123278571642087,
+        "cluster64k_ratio_vs_identity": 0.6356322050915513,
+        "mean_pages_per_query": 12868.16
+      },
+      "coaccess_sig_ceiling": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.3484721011988822,
+        "cluster64k_ratio_vs_identity": 0.3133048498298098,
+        "mean_pages_per_query": 6494.6
+      }
+    },
+    "global_shard2of8": {
+      "block_walk_canonical": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.39270978946216745,
+        "cluster64k_ratio_vs_identity": 0.37197628154365536,
+        "mean_pages_per_query": 7071.05
+      },
+      "block_walk_hotfirst": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.39453975637836497,
+        "cluster64k_ratio_vs_identity": 0.3734526736964948,
+        "mean_pages_per_query": 7104.0
+      },
+      "block_walk_coldfirst": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.6367329620083317,
+        "cluster64k_ratio_vs_identity": 0.6135804032586427,
+        "mean_pages_per_query": 11464.88
+      },
+      "home_component": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.742894924354888,
+        "cluster64k_ratio_vs_identity": 0.6376635493044446,
+        "mean_pages_per_query": 13376.41
+      },
+      "home_component_val": {
+        "append_friendly": true,
+        "page_ratio_vs_identity": 0.7121325973478531,
+        "cluster64k_ratio_vs_identity": 0.6342074130595783,
+        "mean_pages_per_query": 12822.51
+      },
+      "coaccess_sig_ceiling": {
+        "append_friendly": false,
+        "page_ratio_vs_identity": 0.3446181775782916,
+        "cluster64k_ratio_vs_identity": 0.30648843089242844,
+        "mean_pages_per_query": 6325.06
+      }
+    }
+  },
+  "verdict": {
+    "worst_shard_page_ratio": {
+      "block_walk_canonical": 0.3927,
+      "block_walk_hotfirst": 0.3945,
+      "block_walk_coldfirst": 0.6367,
+      "home_component": 0.7436,
+      "home_component_val": 0.7123
+    },
+    "best_global": "block_walk_canonical",
+    "best_append_friendly": "home_component_val",
+    "chosen_order": "block_walk_canonical",
+    "chosen_is_append_friendly": false
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/d1_int8_query_encoder.py",
+    "quantization": "dynamic int8 per-channel, AutoQuantizationConfig.avx2 (host has no VNNI)",
+    "source_model": "models/splade_onnx_fp16 (fp32 weights; byte-identical to models/splade_onnx, md5 2c54704e3cb76cb7122587be6b82cfc0)",
+    "backend": "ParallelSeismicBackend(load_mode=mmap), dv manifest, served defaults (k'=100, heap_factor=0.8)",
+    "n_queries": 100,
+    "top_k": 50,
+    "warm_passes_recorded": 3,
+    "environment": "devcontainer (16 cores, avx2, drvfs); warm-only",
+    "bars": "merged overlap@10 mean >= 0.99 AND encode speedup_p50 > 1.0 -> flip served encoder default to models/splade_onnx_int8",
+    "wall_seconds": 623.5
+  },
+  "quantize": {
+    "quantized": "built",
+    "fp32_mb": 532.0,
+    "int8_mb": 134.5,
+    "quantize_seconds": 15.1
+  },
+  "encode_latency": {
+    "fp32_ms": {
+      "p50": 36.4,
+      "p95": 53.66
+    },
+    "int8_ms": {
+      "p50": 22.9,
+      "p95": 42.42
+    },
+    "paired_delta_ms_p50": 14.21,
+    "speedup_p50": 1.59
+  },
+  "gate": {
+    "overlap@10_mean": 0.791,
+    "overlap@10_min": 0.3,
+    "overlap@50_mean": 0.8092,
+    "qvec_top64_jaccard_mean": 0.6902,
+    "qvec_weight_mae_shared_terms": 0.11359,
+    "n_queries": 100
+  },
+  "flip_verdict": "KEEP_FP32"
+}

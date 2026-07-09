@@ -1,8 +1,8 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index b9deec5..bb6b956 100644
+index b9deec5..7daa64a 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -37,17 +37,48 @@ num-traits = "0.2"
+@@ -37,17 +37,54 @@ num-traits = "0.2"
  pyo3 = { version = "0.26", features = ["extension-module"], optional = true }
  numpy = { version = "0.26", optional = true }
  indicatif = { version = "0.18", features = ["rayon"] }
@@ -50,6 +50,12 @@ index b9deec5..bb6b956 100644
 +[[bin]]
 +name = "convert_f16_to_dotvbyte"
 +path = "src/bin/convert_f16_to_dotvbyte.rs"
++
++# E5 (2026-07-09): permute a shard dir's forward index into a supplied doc
++# order (cold-page locality). See 13_E5_FORWARD_REORDER_DESIGN.md §2.
++[[bin]]
++name = "reorder_mmap_shard"
++path = "src/bin/reorder_mmap_shard.rs"
 +
  [profile.release]
  lto = true
@@ -1189,6 +1195,65 @@ index 0000000..67743d7
 +        }
 +    }
 +}
+diff --git a/src/bin/reorder_mmap_shard.rs b/src/bin/reorder_mmap_shard.rs
+new file mode 100644
+index 0000000..c301fd3
+--- /dev/null
++++ b/src/bin/reorder_mmap_shard.rs
+@@ -0,0 +1,53 @@
++//! E5 (2026-07-09) — permute an mmap shard dir's forward index (f16 OR
++//! dotvbyte) into a supplied doc order, remapping every packed posting's
++//! 48-bit range. Thin CLI over `seismic::mmap_io::reorder_mmap_dir` (the
++//! pack rewrite lives in the lib — `convert_f16_to_dotvbyte` convention).
++//! Prints ONE JSON report to stdout (everything else on stderr).
++//!
++//!   cargo run --release --bin reorder_mmap_shard -- \
++//!       --src-mmap-dir data/.../global_shard1of8.mmap \
++//!       --dst-mmap-dir data/.../global_shard1of8.e5.mmap \
++//!       --perm-file    data/.../shard1_block_walk.perm.bin \
++//!       --order-name   block_walk_canonical
++//!
++//! perm file: u64[n_docs] native-endian, perm[new_row] = old_row (a validated
++//! bijection). Derivation: scripts/seismic_testbed/e5_derive_order.py.
++//! See docs/seismic_150m_testbed/13_E5_FORWARD_REORDER_DESIGN.md §2.
++
++use std::path::PathBuf;
++
++use seismic::mmap_io::reorder_mmap_dir;
++
++fn arg(name: &str) -> Option<String> {
++    let args: Vec<String> = std::env::args().collect();
++    args.iter()
++        .position(|a| a == name)
++        .and_then(|i| args.get(i + 1).cloned())
++}
++
++fn main() {
++    let src = PathBuf::from(arg("--src-mmap-dir").expect("--src-mmap-dir required"));
++    let dst = PathBuf::from(arg("--dst-mmap-dir").expect("--dst-mmap-dir required"));
++    let perm = PathBuf::from(arg("--perm-file").expect("--perm-file required"));
++    let order_name = arg("--order-name").expect("--order-name required");
++    let sample_check: usize = arg("--sanity-docs")
++        .map(|s| s.parse().expect("--sanity-docs must be an integer"))
++        .unwrap_or(2000);
++
++    eprintln!("reorder_mmap_shard: {} -> {} (order {}, sanity {} docs)",
++              src.display(), dst.display(), order_name, sample_check);
++    let t0 = std::time::Instant::now();
++    match reorder_mmap_dir(&src, &dst, &perm, &order_name, sample_check) {
++        Ok(mut report) => {
++            report["total_seconds"] =
++                serde_json::json!(t0.elapsed().as_secs_f64());
++            report["src"] = serde_json::json!(src.display().to_string());
++            report["dst"] = serde_json::json!(dst.display().to_string());
++            println!("{}", serde_json::to_string_pretty(&report).unwrap());
++        }
++        Err(e) => {
++            eprintln!("REORDER FAILED: {e}");
++            std::process::exit(1);
++        }
++    }
++}
 diff --git a/src/index_traits.rs b/src/index_traits.rs
 index 7054e0a..4d98e6e 100644
 --- a/src/index_traits.rs
@@ -1994,10 +2059,10 @@ index 0000000..9eeebea
 +}
 diff --git a/src/mmap_io.rs b/src/mmap_io.rs
 new file mode 100644
-index 0000000..6ce2459
+index 0000000..ce74c1d
 --- /dev/null
 +++ b/src/mmap_io.rs
-@@ -0,0 +1,1861 @@
+@@ -0,0 +1,2305 @@
 +//! C1a (2026-06-27) — the flat-file writer + mmap reader for the SEISMIC index.
 +//!
 +//! This is the *integration* piece: `write_mmap_index` serializes a built
@@ -2126,6 +2191,12 @@ index 0000000..6ce2459
 +    /// its end-anchored SIMD values tail (see `page_align_packed_forward`).
 +    #[serde(default)]
 +    forward_page_aligned: bool,
++    /// E5 (2026-07-09): provenance of a forward-reorder pass (`reorder_mmap_dir`)
++    /// — the ordering-method name (e.g. "block_walk_canonical"). Absent/None ⇒
++    /// build/insertion order. Provenance only: packs carry absolute offsets, so
++    /// the reader is order-transparent (doc 13 §2.2).
++    #[serde(default, skip_serializing_if = "Option::is_none")]
++    forward_reordered: Option<String>,
 +}
 +
 +impl MmapManifest {
@@ -2339,6 +2410,7 @@ index 0000000..6ce2459
 +        forward_data_words: 0,
 +        forward_nnz: 0,
 +        forward_page_aligned: false,
++        forward_reordered: None, // build/insertion order
 +    };
 +    let manifest_json = serde_json::to_string_pretty(&manifest)?;
 +    write_file(&dir.join("manifest.json"), manifest_json.as_bytes())?;
@@ -2700,6 +2772,38 @@ index 0000000..6ce2459
 +        for<'q> <EncoderFor<MmapForward<'static>> as VectorEncoder>::QueryVector<'q>:
 +            From<SparseVectorView<'q, u16, f32>>,
 +    {
++        self.search_raw_visited(
++            query_components_original, query_values, k, query_cut, heap_factor,
++            n_knn, first_sorted,
++        ).0
++    }
++
++    /// Q6/E5 (2026-07-09): `search_raw` + the traversal's `visited` set — the
++    /// forward-range START of every candidate the engine actually scored
++    /// (`evaluate_posting_block`'s dedup key). This is the real per-query
++    /// candidate set the E5 co-access reordering sim needs (top-k' winners are
++    /// a ~200-doc subset of the ~10^4–10^5 scored candidates whose page
++    /// touches dominate cold cost). Read-only instrumentation: identical
++    /// traversal, results are byte-identical to `search_raw` (it now delegates
++    /// here). Starts are forward component indices (f16) resolvable to rows by
++    /// binary search over `forward_offsets.bin`.
++    #[allow(clippy::too_many_arguments)]
++    pub fn search_raw_visited(
++        &self,
++        query_components_original: &[String],
++        query_values: &[f32],
++        k: usize,
++        query_cut: usize,
++        heap_factor: f32,
++        n_knn: usize,
++        first_sorted: bool,
++    ) -> (Vec<ScoredVectorDotProduct>, Vec<usize>)
++    where
++        MmapForward<'static>: SeismicSearchDataset,
++        EncoderFor<MmapForward<'static>>: VectorEncoder<Distance = DotProduct>,
++        for<'q> <EncoderFor<MmapForward<'static>> as VectorEncoder>::QueryVector<'q>:
++            From<SparseVectorView<'q, u16, f32>>,
++    {
 +        use crate::utils::KHeap;
 +        use rustc_hash::FxHashSet;
 +        use vectorium::dataset::ScoredRange;
@@ -2768,13 +2872,17 @@ index 0000000..6ce2459
 +            );
 +        }
 +
-+        heap.into_sorted_vec()
-+            .into_iter()
-+            .map(|scored| ScoredVectorDotProduct {
-+                distance: scored.distance,
-+                vector: self.forward.id_from_range(scored.range),
-+            })
-+            .collect()
++        let visited_starts: Vec<usize> = visited.into_iter().collect();
++        (
++            heap.into_sorted_vec()
++                .into_iter()
++                .map(|scored| ScoredVectorDotProduct {
++                    distance: scored.distance,
++                    vector: self.forward.id_from_range(scored.range),
++                })
++                .collect(),
++            visited_starts,
++        )
 +    }
 +
 +    /// The mmap'd forward index (read access; used by tests/bins).
@@ -3159,6 +3267,24 @@ index 0000000..6ce2459
 +        heap_factor: f32,
 +        first_sorted: bool,
 +    ) -> Vec<ScoredVectorDotProduct> {
++        self.search_raw_visited(
++            query_components_original, query_values, k, query_cut, heap_factor,
++            first_sorted,
++        ).0
++    }
++
++    /// Q6/E5 (2026-07-09): mirror of the f16 twin's `search_raw_visited` —
++    /// results + the traversal's scored-candidate range starts (word offsets
++    /// into `forward_data.bin` for this layout). See the f16 doc comment.
++    pub fn search_raw_visited(
++        &self,
++        query_components_original: &[String],
++        query_values: &[f32],
++        k: usize,
++        query_cut: usize,
++        heap_factor: f32,
++        first_sorted: bool,
++    ) -> (Vec<ScoredVectorDotProduct>, Vec<usize>) {
 +        use crate::utils::KHeap;
 +        use rustc_hash::FxHashSet;
 +        use vectorium::dataset::ScoredRange;
@@ -3210,13 +3336,17 @@ index 0000000..6ce2459
 +            );
 +        }
 +
-+        heap.into_sorted_vec()
-+            .into_iter()
-+            .map(|scored| ScoredVectorDotProduct {
-+                distance: scored.distance,
-+                vector: self.forward.id_from_range(scored.range),
-+            })
-+            .collect()
++        let visited_starts: Vec<usize> = visited.into_iter().collect();
++        (
++            heap.into_sorted_vec()
++                .into_iter()
++                .map(|scored| ScoredVectorDotProduct {
++                    distance: scored.distance,
++                    vector: self.forward.id_from_range(scored.range),
++                })
++                .collect(),
++            visited_starts,
++        )
 +    }
 +
 +    /// The compressed forward dataset (read access; used by bins/gates).
@@ -3612,6 +3742,232 @@ index 0000000..6ce2459
 +}
 +
 +// ---------------------------------------------------------------------------
++// E5 (2026-07-09): reorder_mmap_dir — forward-locality permutation converter.
++// Design: docs/seismic_150m_testbed/13_E5_FORWARD_REORDER_DESIGN.md §2.
++// ---------------------------------------------------------------------------
++
++/// Rewrite an mmap shard dir (f16 OR dotvbyte) with its forward index permuted
++/// into a supplied doc order, remapping every packed posting's 48-bit range.
++/// Records move verbatim (byte-exact, NO padding — E7 Fix #5A refuted padding);
++/// summaries / block_offsets / EF structures are order-transparent and are
++/// carried inside the posting_lists.bin byte copy untouched. The doc-mapping
++/// slabs ARE permuted (rows are positional — the known E5 trap, doc 13 §2.1).
++///
++/// `perm_file`: u64[n_docs] little-endian, `perm[new_row] = old_row`, validated
++/// as a bijection. `order_name` lands in the manifest as `forward_reordered`
++/// provenance. `sample_check`: step-sampled byte-compare of moved records +
++/// doc-mapping strings (0 disables).
++pub fn reorder_mmap_dir(
++    src: &Path,
++    dst: &Path,
++    perm_file: &Path,
++    order_name: &str,
++    sample_check: usize,
++) -> Result<serde_json::Value, std::io::Error> {
++    use std::time::Instant;
++    let inval = |m: String| std::io::Error::new(std::io::ErrorKind::InvalidData, m);
++
++    let manifest_json = std::fs::read_to_string(src.join("manifest.json"))?;
++    let mut manifest: MmapManifest = serde_json::from_str(&manifest_json)
++        .map_err(|e| inval(e.to_string()))?;
++    if manifest.has_knn {
++        return Err(inval("knn-carrying index unsupported by the reorder converter".into()));
++    }
++    if manifest.forward_page_aligned {
++        return Err(inval("page-aligned source unsupported (reorder would break the \
++                          alignment invariant; re-run the dv convert without --page-align)".into()));
++    }
++    let n_docs = manifest.n_docs;
++    let is_dv = manifest.is_dotvbyte();
++    std::fs::create_dir_all(dst)?;
++
++    // ---- 0. permutation: read + validate bijection, build inverse ----
++    let perm_bytes = std::fs::read(perm_file)?;
++    if perm_bytes.len() != n_docs * 8 {
++        return Err(inval(format!(
++            "perm file carries {} u64s, index has {n_docs} docs", perm_bytes.len() / 8)));
++    }
++    let perm: &[u64] = bytemuck::cast_slice(&perm_bytes);
++    let mut inv_perm = vec![u64::MAX; n_docs];
++    for (new_row, &old_row) in perm.iter().enumerate() {
++        let o = old_row as usize;
++        if o >= n_docs || inv_perm[o] != u64::MAX {
++            return Err(inval(format!("perm is not a bijection at new_row {new_row}")));
++        }
++        inv_perm[o] = new_row as u64;
++    }
++
++    // ---- 1. forward permute (offsets + payload, entry units per layout) ----
++    let t_fwd = Instant::now();
++    let old_offsets_mmap = leak_mmap(src.join("forward_offsets.bin"))?;
++    let old_offsets: &'static [usize] = bytemuck::cast_slice(old_offsets_mmap);
++    if old_offsets.len() != n_docs + 1 {
++        return Err(inval("forward_offsets cardinality != n_docs + 1".into()));
++    }
++    let mut new_offsets = Vec::with_capacity(n_docs + 1);
++    new_offsets.push(0usize);
++    for &old_row in perm.iter() {
++        let o = old_row as usize;
++        let len = old_offsets[o + 1] - old_offsets[o];
++        new_offsets.push(new_offsets.last().unwrap() + len);
++    }
++    if *new_offsets.last().unwrap() != old_offsets[n_docs] {
++        return Err(inval("permuted offsets do not preserve total length".into()));
++    }
++    write_pod_slice(&dst.join("forward_offsets.bin"), &new_offsets)?;
++
++    // Payload copy in new order. Entry width differs per layout; both payload
++    // kinds are POD byte runs, so one generic byte-level pass per file.
++    let permute_payload = |src_file: &str, dst_file: &str, entry_bytes: usize|
++        -> Result<u64, std::io::Error> {
++        let src_mmap = leak_mmap(src.join(src_file))?;
++        let mut out = std::io::BufWriter::with_capacity(
++            8 << 20, std::fs::File::create(dst.join(dst_file))?);
++        let mut moved: u64 = 0;
++        for &old_row in perm.iter() {
++            let o = old_row as usize;
++            let (s, e) = (old_offsets[o] * entry_bytes, old_offsets[o + 1] * entry_bytes);
++            std::io::Write::write_all(&mut out, &src_mmap[s..e])?;
++            moved += (e - s) as u64;
++        }
++        std::io::Write::flush(&mut out)?;
++        Ok(moved)
++    };
++    let payload_bytes = if is_dv {
++        permute_payload("forward_data.bin", "forward_data.bin", 8)?
++    } else {
++        permute_payload("forward_components.bin", "forward_components.bin", 2)?
++            + permute_payload("forward_values.bin", "forward_values.bin", 2)?
++    };
++    let forward_s = t_fwd.elapsed().as_secs_f64();
++
++    // ---- 2. posting lists: the E7 in-place pack rewrite, permutation-driven ----
++    let t_pl = Instant::now();
++    let mut pl = std::fs::read(src.join("posting_lists.bin"))?;
++    let mut cursor = 0usize;
++    let mut rewritten: u64 = 0;
++    for plm in &manifest.posting_lists {
++        let start = {
++            let align = std::mem::align_of::<u64>();
++            cursor + (align - (cursor % align)) % align
++        };
++        for w in 0..plm.packed_postings_words {
++            let p = start + w * 8;
++            let word = u64::from_ne_bytes(pl[p..p + 8].try_into().unwrap());
++            let elem_start = (word >> 16) as usize;
++            let len = (word & (u16::MAX as u64)) as usize;
++            let doc = old_offsets.partition_point(|&o| o <= elem_start) - 1;
++            if old_offsets[doc] != elem_start || old_offsets[doc + 1] - elem_start != len {
++                return Err(inval(format!(
++                    "pack word does not match a doc boundary (elem_start={elem_start} len={len})"
++                )));
++            }
++            let new_row = inv_perm[doc] as usize;
++            let ns = new_offsets[new_row];
++            let nlen = new_offsets[new_row + 1] - ns;
++            if nlen != len {
++                return Err(inval(format!("length drift for doc {doc}: {len} -> {nlen}")));
++            }
++            assert!(ns < (1u64 << 48) as usize, "offset exceeds 48-bit pack");
++            let new_word = ((ns as u64) << 16) | (nlen as u64);
++            pl[p..p + 8].copy_from_slice(&new_word.to_ne_bytes());
++            rewritten += 1;
++        }
++        cursor = start + plm.packed_postings_words * 8;
++        cursor = skip_pod::<usize>(cursor, plm.block_offsets_len);
++        cursor = skip_pod::<u64>(cursor, plm.ef_high_bits_n_words);
++        cursor = skip_pod::<i64>(cursor, plm.inv_block_inventory_len);
++        cursor = skip_pod::<u16>(cursor, plm.inv_subblock_inventory_len);
++        cursor = skip_pod::<usize>(cursor, plm.inv_overflow_positions_len);
++        cursor = skip_pod::<u64>(cursor, plm.ef_low_bits_n_words);
++        cursor = skip_pod::<u64>(cursor, plm.summaries_ids_n_words);
++        cursor += plm.values_len;
++        cursor = skip_pod::<f32>(cursor, plm.minimums_len);
++        cursor = skip_pod::<f32>(cursor, plm.quants_len);
++        if plm.has_component_ids {
++            cursor = skip_pod::<u16>(cursor, plm.component_ids_len);
++        }
++    }
++    if cursor > pl.len() || pl.len() - cursor >= 8 {
++        return Err(inval(format!(
++            "posting walk desync: cursor {cursor} vs file {} — layout drift?", pl.len())));
++    }
++    write_file(&dst.join("posting_lists.bin"), &pl)?;
++    let postings_s = t_pl.elapsed().as_secs_f64();
++
++    // ---- 3. doc mapping PERMUTED (rows are positional — doc 13 §2.1 trap) ----
++    let (map_strings, map_offsets) = (src.join("document_mapping_strings.bin"),
++                                      src.join("document_mapping_offsets.bin"));
++    let had_mapping = map_strings.exists() && map_offsets.exists();
++    if had_mapping {
++        let old_blob = std::fs::read(&map_strings)?;
++        let off_bytes = std::fs::read(&map_offsets)?;
++        let old_moff: &[usize] = bytemuck::cast_slice(&off_bytes);
++        if old_moff.len() != n_docs + 1 {
++            return Err(inval("doc-mapping offsets cardinality != n_docs + 1".into()));
++        }
++        let mut new_blob = Vec::with_capacity(old_blob.len());
++        let mut new_moff = Vec::with_capacity(n_docs + 1);
++        new_moff.push(0usize);
++        for &old_row in perm.iter() {
++            let o = old_row as usize;
++            new_blob.extend_from_slice(&old_blob[old_moff[o]..old_moff[o + 1]]);
++            new_moff.push(new_blob.len());
++        }
++        write_file(&dst.join("document_mapping_strings.bin"), &new_blob)?;
++        write_pod_slice(&dst.join("document_mapping_offsets.bin"), &new_moff)?;
++    }
++
++    // ---- 4. verbatim copies + manifest provenance ----
++    for f in ["config.json", "token_to_id_map.bin", "forward_encoder.bin"] {
++        if src.join(f).exists() {
++            std::fs::copy(src.join(f), dst.join(f))?;
++        }
++    }
++    manifest.forward_reordered = Some(order_name.to_string());
++    let manifest_json = serde_json::to_string_pretty(&manifest)
++        .map_err(|e| inval(e.to_string()))?;
++    write_file(&dst.join("manifest.json"), manifest_json.as_bytes())?;
++
++    // ---- 5. sample verify: moved records byte-exact against the source ----
++    let mut checked = 0usize;
++    if sample_check > 0 {
++        let entry_bytes: &[(&str, usize)] = if is_dv {
++            &[("forward_data.bin", 8)]
++        } else {
++            &[("forward_components.bin", 2), ("forward_values.bin", 2)]
++        };
++        let step = (n_docs / sample_check.max(1)).max(1);
++        for (fname, eb) in entry_bytes {
++            let old_m = leak_mmap(src.join(fname))?;
++            let new_m = leak_mmap(dst.join(fname))?;
++            for new_row in (0..n_docs).step_by(step) {
++                let o = perm[new_row] as usize;
++                let old = &old_m[old_offsets[o] * eb..old_offsets[o + 1] * eb];
++                let new = &new_m[new_offsets[new_row] * eb..new_offsets[new_row + 1] * eb];
++                if old != new {
++                    return Err(inval(format!(
++                        "verify FAIL: {fname} record mismatch at new_row {new_row}")));
++                }
++            }
++        }
++        checked = n_docs.div_ceil(step);
++    }
++
++    Ok(serde_json::json!({
++        "n_docs": n_docs,
++        "layout": if is_dv { "dotvbyte_fixedu8" } else { "f16" },
++        "order_name": order_name,
++        "forward_seconds": forward_s,
++        "postings_rewrite_seconds": postings_s,
++        "packs_rewritten": rewritten,
++        "forward_payload_bytes_moved": payload_bytes,
++        "doc_mapping_permuted": had_mapping,
++        "verify_docs_checked": checked,
++    }))
++}
++
++// ---------------------------------------------------------------------------
 +// read_rss_kb — /proc/self/status RssAnon + RssFile
 +// ---------------------------------------------------------------------------
 +
@@ -3858,6 +4214,159 @@ index 0000000..6ce2459
 +        }
 +        eprintln!("dotvbyte_page_align_parity OK ({} docs, pad_words={})", n_docs, pad_words);
 +    }
++
++    /// E5 (2026-07-09): reorder-converter parity, BOTH layouts. A shuffled
++    /// forward must return the SAME doc-id strings with bit-equal scores —
++    /// rows move, so identity is checked through the (permuted) doc mapping,
++    /// which is exactly the doc 13 §2.1 trap this test exists to catch.
++    #[test]
++    fn reorder_parity_both_layouts() {
++        let base = std::path::PathBuf::from(format!("/tmp/seismic_e5_test_{}", std::process::id()));
++        let f16_dir = base.join("f16");
++        let dv_dir = base.join("dv");
++        let f16_e5 = base.join("f16_e5");
++        let dv_e5 = base.join("dv_e5");
++        let perm_path = base.join("perm.bin");
++        let _ = std::fs::remove_dir_all(&base);
++        std::fs::create_dir_all(&f16_dir).expect("create test dirs");
++
++        // Same synthetic geometry as the page-align test (600 docs, 2048 vocab).
++        let dim = 2048usize;
++        let mut token_to_id_map = HashMap::new();
++        for i in 0..dim {
++            token_to_id_map.insert(format!("t{}", i), i);
++        }
++        let encoder = ScalarSparseQuantizer::<u16, f32, f16, DotProduct>::new(dim, dim);
++        let mut ds = SparseDatasetGrowable::new(encoder);
++        let mut rng_state = 0xDEADBEEFCAFEF00Du64;
++        let mut next = move || {
++            rng_state ^= rng_state << 13;
++            rng_state ^= rng_state >> 7;
++            rng_state ^= rng_state << 17;
++            rng_state
++        };
++        let n_docs = 600usize;
++        for _ in 0..n_docs {
++            let nnz = 60 + (next() % 41) as usize;
++            let mut comps: Vec<u16> = (0..nnz)
++                .map(|_| (next() % dim as u64) as u16)
++                .collect();
++            comps.sort_unstable();
++            comps.dedup();
++            let vals: Vec<f32> = comps.iter().map(|_| 0.1 + (next() % 30) as f32 / 10.0).collect();
++            ds.push(SparseVectorView::new(&comps, &vals));
++        }
++        let frozen: OwnedForward = ds.into();
++        let doc_mapping: Vec<String> = (0..n_docs).map(|i| format!("doc{}", i)).collect();
++        let owned = SeismicIndex::new(
++            frozen,
++            Configuration::default(),
++            Some(doc_mapping),
++            None::<Vec<Option<String>>>,
++            token_to_id_map,
++        );
++        write_mmap_index(&owned, &f16_dir).expect("write_mmap_index");
++        convert_f16_dir_to_dotvbyte(&f16_dir, &dv_dir, n_docs, false).expect("dv convert");
++
++        // Deterministic Fisher–Yates shuffle as perm[new_row] = old_row.
++        let mut perm: Vec<u64> = (0..n_docs as u64).collect();
++        for i in (1..n_docs).rev() {
++            let j = (next() % (i as u64 + 1)) as usize;
++            perm.swap(i, j);
++        }
++        let mut bytes = Vec::with_capacity(n_docs * 8);
++        for p in &perm {
++            bytes.extend_from_slice(&p.to_ne_bytes());
++        }
++        std::fs::write(&perm_path, &bytes).unwrap();
++
++        let rep_f16 = reorder_mmap_dir(&f16_dir, &f16_e5, &perm_path, "test_shuffle", n_docs)
++            .expect("reorder f16");
++        let rep_dv = reorder_mmap_dir(&dv_dir, &dv_e5, &perm_path, "test_shuffle", n_docs)
++            .expect("reorder dv");
++        assert_eq!(rep_f16["verify_docs_checked"], n_docs);
++        assert_eq!(rep_dv["doc_mapping_permuted"], true);
++
++        // Provenance landed; payload byte-counts conserved (pure permutation).
++        let man: MmapManifest = serde_json::from_str(
++            &std::fs::read_to_string(f16_e5.join("manifest.json")).unwrap()).unwrap();
++        assert_eq!(man.forward_reordered.as_deref(), Some("test_shuffle"));
++        for (a, b, f) in [(&f16_dir, &f16_e5, "forward_values.bin"),
++                          (&dv_dir, &dv_e5, "forward_data.bin")] {
++            assert_eq!(std::fs::metadata(a.join(f)).unwrap().len(),
++                       std::fs::metadata(b.join(f)).unwrap().len(), "{f} size drift");
++        }
++
++        // Search parity through the doc mapping. The E5 parity CONTRACT
++        // (doc 13 §2.3): score sequences bit-equal per rank; doc-id SETS equal
++        // within each score-tie group — `ScoredRange::cmp` tie-breaks on
++        // `range.start` (vectorium dataset.rs:52-58), which the permutation
++        // changes, so equal-score docs may legally reorder, and a tie group
++        // straddling the k-boundary may legally swap members (quality-neutral:
++        // identical scores either way). Only the boundary group's SIZE is
++        // checked; every interior group must match exactly as a set.
++        fn assert_tie_aware_parity(
++            tag: &str,
++            q: u64,
++            a: &[(String, f32)],
++            b: &[(String, f32)],
++        ) {
++            assert_eq!(a.len(), b.len(), "{tag} result count mismatch at q{q}");
++            for (i, (x, y)) in a.iter().zip(b.iter()).enumerate() {
++                assert_eq!(x.1.to_bits(), y.1.to_bits(),
++                    "{tag} score not bit-equal q{q} rank {i}");
++            }
++            let boundary_score = a.last().map(|x| x.1.to_bits());
++            let mut i = 0;
++            while i < a.len() {
++                let mut j = i + 1;
++                while j < a.len() && a[j].1.to_bits() == a[i].1.to_bits() {
++                    j += 1;
++                }
++                if Some(a[i].1.to_bits()) != boundary_score {
++                    let mut sa: Vec<&str> = a[i..j].iter().map(|x| x.0.as_str()).collect();
++                    let mut sb: Vec<&str> = b[i..j].iter().map(|x| x.0.as_str()).collect();
++                    sa.sort_unstable();
++                    sb.sort_unstable();
++                    assert_eq!(sa, sb, "{tag} tie-group doc-id set mismatch q{q} ranks {i}..{j}");
++                }
++                i = j;
++            }
++        }
++
++        let f16_a = MmapSeismicIndex::from_mmap(&f16_dir).expect("f16 from_mmap");
++        let f16_b = MmapSeismicIndex::from_mmap(&f16_e5).expect("f16_e5 from_mmap");
++        let dv_a = MmapSeismicIndexDotVByte::from_mmap(&dv_dir).expect("dv from_mmap");
++        let dv_b = MmapSeismicIndexDotVByte::from_mmap(&dv_e5).expect("dv_e5 from_mmap");
++        for q in 0..20u64 {
++            let toks: Vec<String> = (0..8)
++                .map(|j| format!("t{}", (q * 251 + j * 97) % dim as u64))
++                .collect();
++            let vals: Vec<f32> = (0..8).map(|j| 1.0 + j as f32 * 0.3).collect();
++
++            let named = |res: &[vectorium::dataset::ScoredItemGeneric<DotProduct, u64>],
++                         doc_id: &dyn Fn(usize) -> Option<&'static str>|
++                -> Vec<(String, f32)> {
++                res.iter()
++                    .map(|s| (doc_id(s.vector as usize).expect("doc id").to_string(),
++                              s.distance.distance()))
++                    .collect()
++            };
++            let ra = named(&f16_a.search_raw(&toks, &vals, 10, 8, 0.8, 0, true),
++                           &|i| f16_a.doc_id(i));
++            let rb = named(&f16_b.search_raw(&toks, &vals, 10, 8, 0.8, 0, true),
++                           &|i| f16_b.doc_id(i));
++            assert_tie_aware_parity("f16", q, &ra, &rb);
++
++            let da = named(&dv_a.search_raw(&toks, &vals, 10, 8, 0.8, true),
++                           &|i| dv_a.doc_id(i));
++            let db = named(&dv_b.search_raw(&toks, &vals, 10, 8, 0.8, true),
++                           &|i| dv_b.doc_id(i));
++            assert_tie_aware_parity("dv", q, &da, &db);
++        }
++        eprintln!("reorder_parity_both_layouts OK ({n_docs} docs, packs f16={} dv={})",
++            rep_f16["packs_rewritten"], rep_dv["packs_rewritten"]);
++    }
 +}
 diff --git a/src/posting_list.rs b/src/posting_list.rs
 index 42040f6..9447449 100644
@@ -3891,10 +4400,10 @@ index 42040f6..9447449 100644
      pub fn pack(range: std::ops::Range<usize>) -> Self {
 diff --git a/src/pylib/mmap_index.rs b/src/pylib/mmap_index.rs
 new file mode 100644
-index 0000000..a306a22
+index 0000000..6a21b38
 --- /dev/null
 +++ b/src/pylib/mmap_index.rs
-@@ -0,0 +1,274 @@
+@@ -0,0 +1,340 @@
 +//! C2.5 (2026-06-28): pyo3 exposure of the C2 mmap reader.
 +//!
 +//! The C1a/C2 `MmapSeismicIndex` (`crate::mmap_io::MmapSeismicIndex`) cures the
@@ -4121,6 +4630,72 @@ index 0000000..a306a22
 +                (query_id.clone(), score, doc_id)
 +            })
 +            .collect()
++    }
++
++    /// Q6/E5 (2026-07-09): `search` + the traversal's scored-candidate set —
++    /// the forward-range START of every candidate `evaluate_posting_block`
++    /// actually scored (its `visited` dedup key), NOT just the top-k winners.
++    /// Feeds the E5 co-access reordering page-touch simulation
++    /// (`scripts/seismic_testbed/q6_e5_coaccess_sim.py`): cold cost is
++    /// pages-touched-per-candidate, and winners are a ~k' subset of the
++    /// ~10^4–10^5 scored candidates. Starts are component indices into the
++    /// forward arrays (f16) or word offsets into `forward_data.bin`
++    /// (dotvbyte); resolve to doc rows by `np.searchsorted(forward_offsets,
++    /// starts)`. Results are identical to `search` (same traversal — `search`
++    /// delegates to the same body); unsorted candidate order (set iteration).
++    ///
++    /// Returns: (results, visited_starts) where results matches `search`'s
++    /// shape exactly.
++    #[pyo3(signature = (
++        query_id, query_components, query_values, k, query_cut, heap_factor,
++        n_knn=0, sorted=true
++    ))]
++    #[pyo3(
++        text_signature = "(self, query_id, query_components, query_values, k, query_cut, heap_factor, n_knn=0, sorted=True)"
++    )]
++    #[allow(clippy::too_many_arguments)]
++    pub fn search_visited<'py>(
++        &self,
++        query_id: String,
++        query_components: PyReadonlyArrayDyn<'py, PyFixedUnicode<MAX_TOKEN_LEN>>,
++        query_values: PyReadonlyArrayDyn<'py, f32>,
++        k: usize,
++        query_cut: usize,
++        heap_factor: f32,
++        n_knn: usize,
++        sorted: bool,
++    ) -> (Vec<(String, f32, String)>, Vec<u64>) {
++        let components: Vec<String> = query_components
++            .to_vec()
++            .unwrap_or_default()
++            .iter()
++            .map(|x| x.to_string())
++            .collect();
++        let values: Vec<f32> = query_values.to_vec().unwrap_or_default();
++
++        let (results, visited) = match &self.idx {
++            AnyMmapIndex::F16(i) => i.search_raw_visited(
++                &components, &values, k, query_cut, heap_factor, n_knn, sorted,
++            ),
++            AnyMmapIndex::DotVByte(i) => i.search_raw_visited(
++                &components, &values, k, query_cut, heap_factor, sorted,
++            ),
++        };
++        let mapped = results
++            .into_iter()
++            .map(|scored| {
++                let score = scored.distance.distance();
++                let doc_idx = scored.vector as usize;
++                let doc_id = match &self.idx {
++                    AnyMmapIndex::F16(i) => i.doc_id(doc_idx),
++                    AnyMmapIndex::DotVByte(i) => i.doc_id(doc_idx),
++                }
++                .map(|s| s.to_owned())
++                .unwrap_or_else(|| doc_idx.to_string());
++                (query_id.clone(), score, doc_id)
++            })
++            .collect();
++        (mapped, visited.into_iter().map(|s| s as u64).collect())
 +    }
 +
 +    /// Number of documents in the index (mirror of `SeismicIndex.len`).

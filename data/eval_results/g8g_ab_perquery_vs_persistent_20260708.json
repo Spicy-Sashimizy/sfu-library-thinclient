@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/g8g_ab_perquery_vs_persistent.py",
+    "backend": "ParallelSeismicBackend(load_mode=mmap); arm A = pre-fix per-query executor replica, arm B = shipped persistent executor; interleaved per query, same process",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_dotvbyte.json",
+    "n_queries": 100,
+    "top_k": 50,
+    "k_prime": "served default max(2*top_k,100) = 100",
+    "heap_factor": 0.8,
+    "warm_passes_recorded": 3,
+    "environment": "devcontainer (16 cores, drvfs); warm-only",
+    "purpose": "unconfounded efficacy of the persistent executor (A minus B = what per-query pool construction cost)",
+    "wall_seconds": 636.9
+  },
+  "identity_across_arms": {
+    "n_paired": 100,
+    "mismatches": 0
+  },
+  "profile": {
+    "A_perquery": {
+      "traverse_ms_p50": 26.42,
+      "fanout_ms_p50": 26.29,
+      "max_shard_ms_p50": 6.39,
+      "mean_shard_ms_p50": 3.52,
+      "sched_overhead_ms_p50": 19.95,
+      "merge_ms_p50": 0.14,
+      "per_shard_ms_p50": [
+        3.07,
+        3.07,
+        3.19,
+        3.12,
+        5.88,
+        3.04,
+        3.11,
+        3.14
+      ],
+      "n_rows": 300
+    },
+    "B_persistent": {
+      "traverse_ms_p50": 22.83,
+      "fanout_ms_p50": 22.69,
+      "max_shard_ms_p50": 12.89,
+      "mean_shard_ms_p50": 5.54,
+      "sched_overhead_ms_p50": 9.7,
+      "merge_ms_p50": 0.13,
+      "per_shard_ms_p50": [
+        2.82,
+        8.68,
+        3.6,
+        12.17,
+        2.83,
+        7.85,
+        2.88,
+        2.88
+      ],
+      "n_rows": 300
+    }
+  },
+  "delta_A_minus_B": {
+    "traverse_ms_p50": 3.59,
+    "fanout_ms_p50": 3.6,
+    "sched_overhead_ms_p50": 10.25,
+    "max_shard_ms_p50": -6.5,
+    "mean_shard_ms_p50": -2.02,
+    "traverse_ms_paired_delta_p50": 2.33
+  }
+}

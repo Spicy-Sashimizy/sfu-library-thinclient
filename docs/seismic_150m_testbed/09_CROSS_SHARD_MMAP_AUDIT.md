@@ -250,6 +250,15 @@ env-exposed (`SFU_SEISMIC_K_PRIME`, `retriever.py:634-641`). **Recommendation
 served default from 200 to 100 is recall-safe on this shard; a federated G6-
 style re-check before flipping the production default is the owed follow-up.
 
+> **FOLLOW-UP PAID + FLIPPED (G8f, 2026-07-08).** The federated-level gate
+> ran at n=100 on the served dv path: merged top-k overlap (k'=100 vs
+> k'=200) **overlap@10 0.999 / overlap@50 0.994**, federated traverse
+> **1.47× faster** (38.3 → 26.0 ms p50) — E1's per-shard 1.41× carries to
+> the federation. **Served default flipped to `max(2×top_k, 100)`**
+> (`sharded_seismic_backend._prepare_query`, same commit).
+> `data/eval_results/g8f_shardmerge_profile_kprime_20260708.json`; the
+> per-shard/merge attribution from the same run lives in doc 08 §A4.
+
 **2.3 Early-exit / ordering of shards — two different verdicts.**
 - *Shard ordering for pruning:* useless — shards are exchangeable (§1.1);
   there is no "most promising shard" to visit first.
@@ -323,6 +332,14 @@ working set of 40 diverse queries over 8 shards and the ~25 GB of 12 queries
 (A1 #3, `seismic_ram_sweep_20260630.tsv`). Treat as a sanity envelope, not a
 measurement.
 
+> **MEASURED 2026-07-09 (Q6):** the fork's `search_visited` hook exported the
+> real traversal `visited` set on shards 1–2, n=100, k'=200/hf=0.8/qc=all:
+> **mean ~17.8k candidates/query/shard (p50 ~16.8k, range 5.2k–36.9k)** —
+> ~0.09% of docs, so the envelope above was ~4× high, but the ~2
+> pages/candidate model is exact (measured 2.03 on the shipped f16 layout).
+> ≈ 140 MB faulted per shard per cold diverse query (f16, both files).
+> `data/eval_results/q6_e5_coaccess_sim_20260709.json`.
+
 **Why pages are THE serving currency here:** the RAM-latency curve is
 flat-then-cliff — warm p50 65–80 ms while the touched set fits page cache,
 **~650× cliff to 42 s** one step below it (A1 #3, measured 2026-06-30,
@@ -348,7 +365,7 @@ levers that exist are *fewer pages touched* and *smaller on-disk blocks*.
 | `summary_energy` α | summary nnz per block | step-1 pages | **LAYOUT — rebuild** | quality-inert in the 0.4→0.9 sweep (2026-06-27); size axis: index grew 1.69→5.28 GB at α 0.9 — so α↓ *shrinks*, floor at default 0.4 |
 | forward value/component width (DotVByte ~32% smaller fwd @1.2× decode; 4-bit summaries ~30-35%) | on-disk bytes per candidate/summary | same touches, smaller pages-per-candidate footprint → more of the index fits cache | **LAYOUT + reader fork** (writer AND `MmapSparseStorage` change) | **E6 design + E7 IMPLEMENTATION (2026-07-03)**: dotvbyte forward shipped (shard0 fwd 6.74→3.97 GB, majflt −41%, cold 1.43× faster, parity 0.995); warm recleared 0.957× by the native rebuild. **E7b RAM-capped verdict (2026-07-03, host): PROMOTED for RAM-constrained deploys** — at a 4 GB cap f16 cliffs (warm p50 1.3–1.9 s, ~100–173k majflt/pass) while dotvbyte stays warm (3.3 ms, 0 majflt); f16 stays default when RAM is ample. See `10_FORWARD_COMPRESSION_DESIGN.md` §7.5 |
 | shard count K | per-shard file sizes, fan-out, merge width | total bytes unchanged; more shards = more (smaller) mmap regions + wider merge | **LAYOUT — re-shard + rebuild** (a K=16 split is mid-flight per the 2026-07-01 stage-1 commit `f23562b`) | corpus-scaling measured near-flat for parallel latency (A1 #4: 8× docs → 1.6× warm p50) |
-| **forward-index doc ordering** (§3.4) | WHERE candidate docs sit in the forward files | co-locates docs that are scored together → candidate faults share pages | **LAYOUT — converter-level rewrite** (permute forward + remap the 48-bit offsets in every packed posting; no SEISMIC re-clustering needed) | UNMEASURED — E5, the audit's main novel proposal |
+| **forward-index doc ordering** (§3.4) | WHERE candidate docs sit in the forward files | co-locates docs that are scored together → candidate faults share pages | **LAYOUT — converter-level rewrite** (permute forward + remap the 48-bit offsets in every packed posting; no SEISMIC re-clustering needed) | **Q6 SIM GO 2026-07-09**: buildable posting-pack-walk order simulates to **0.376–0.400× pages/query** (bar ≤0.45, both shards, both codecs; log-driven ceiling 0.345); converter build green-lit — E5 (see §4 E5 note) |
 
 ### 3.4 The forward-locality observation (new in this audit)
 
@@ -366,9 +383,13 @@ forward index rather than postings compression. It requires **no change to
 SEISMIC's clustering or scores** — a pure permutation of the forward arrays
 plus rewriting each packed posting's 48-bit offset (`posting_list.rs:52`) and
 the doc-mapping order at convert time; parity must stay bit-identical (scores
-don't depend on doc position). Expected-gain and cost are **UNMEASURED** —
-experiment E5. It is also the page-economics argument FOR the semantic-docid
-Stage-1 spike (§1.4): the same ordering key serves both routing and locality.
+don't depend on doc position). Expected gain **SIMULATED 2026-07-09 (Q6): the
+posting-pack-walk first-touch order — derivable from the index alone, no
+semantic key — simulates to 0.376–0.400× unique pages/query** (see §4 E5
+note); converter cost still unmeasured. It is also the page-economics
+argument FOR the semantic-docid Stage-1 spike (§1.4) — though Q6 showed the
+pack-walk key alone captures most of the log-driven ceiling, so routing, not
+locality, is now that design's main argument.
 
 ---
 
@@ -436,6 +457,23 @@ one shard re-convert (~10 GB RSS, minutes) + bench hours; the riskiest
 engineering of the five. Kill: majflt/query reduction <15% — then forward
 locality can't be bought by ordering and the semantic-docid design loses its
 page-economics argument (its routing argument, §1.4, stands independently).
+
+> **Q6 SIMULATION GO (2026-07-09, container).** The pre-build sim doc 12 §Q6
+> gates this behind ran on shards 1–2, both geometries, n=100, real
+> scored-candidate sets via the fork's new `search_visited` hook
+> (`q6_e5_coaccess_sim.py`, `q6_e5_coaccess_sim_20260709.json`): the
+> **buildable, query-independent `block_walk` order (first-touch over the
+> canonical posting-pack walk — no semantic key needed) simulates to
+> 0.376–0.400× unique forward pages/query** (worst shard 0.393, bar ≤0.45),
+> ~identical on held-out queries; the query-log ceiling (`coaccess_sig`) is
+> only modestly better at 0.345–0.358, so the index-derived order captures
+> most of the win; random control 1.01; 64KiB-cluster ratios 0.35–0.37
+> (fault-around makes the model conservative). **Candidates/query/shard
+> measured for the first time at 150M: mean ~17.8k, p50 ~16.8k, range
+> 5.2k–36.9k** — §3.2's 60–90k envelope was ~4× high, but its ~2
+> pages/candidate model is exact (2.03 measured). → E5 converter is GO;
+> the permutation key should be the posting-pack walk order, not the
+> semantic key this entry originally guessed.
 
 ---
 

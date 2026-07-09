@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/g8g_persistent_executor_gate.py",
+    "backend": "ParallelSeismicBackend(load_mode=mmap), persistent per-backend executor (this gate's change)",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_dotvbyte.json",
+    "n_queries": 100,
+    "top_k": 50,
+    "k_prime": "served default max(2*top_k,100) = 100",
+    "heap_factor": 0.8,
+    "warm_passes_recorded": 3,
+    "environment": "devcontainer (16 cores, drvfs); warm-only",
+    "baselines": {
+      "g8f_k100_traverse_ms_p50": 26.0,
+      "g8f_k200_sched_overhead_ms_p50": 27.7,
+      "g8e_total_ms_p50_at_k200": 64.2
+    },
+    "bars": "identity 100/100 AND sched_overhead_ms_p50 < 5",
+    "wall_seconds": 679.7
+  },
+  "identity": {
+    "n_queries": 100,
+    "mismatches": 0,
+    "verdict": "IDENTICAL"
+  },
+  "profile": {
+    "traverse_ms_p50": 23.19,
+    "fanout_ms_p50": 23.09,
+    "max_shard_ms_p50": 12.25,
+    "mean_shard_ms_p50": 5.32,
+    "sched_overhead_ms_p50": 10.26,
+    "merge_ms_p50": 0.12,
+    "per_shard_ms_p50": [
+      2.87,
+      8.29,
+      3.63,
+      11.82,
+      2.99,
+      7.67,
+      2.89,
+      3.02
+    ],
+    "n_rows": 300
+  },
+  "warm_e2e": {
+    "encode_ms_p50": 19.52,
+    "traverse_ms_p50": 33.69,
+    "total_ms_p50": 53.8,
+    "total_ms_p95": 79.29,
+    "encode_share": 0.363
+  },
+  "gate_verdict": "FAIL"
+}

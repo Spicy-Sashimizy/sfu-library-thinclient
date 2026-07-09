@@ -122,12 +122,14 @@ class ThinClientRetriever:
     ):
         repo_root = Path(__file__).resolve().parents[3]
         self.root = Path(index_root or repo_root / "data" / "thinclient_index")
-        # SFU_SPLADE_MODEL_PATH lets serving point at a faster query encoder
-        # (e.g. models/splade_onnx_fp16) without a code change — the query-side
-        # SPLADE encode is the dominant warm latency (~1-2s) and the cold model
-        # load is ~115s, so fp16 here is a real demo lever. Default unchanged.
+        # SFU_SPLADE_MODEL_PATH lets serving point at a different query encoder
+        # without a code change. Default 2026-07-09 (D2): the offline bert-FUSED
+        # export (same fp32 weights, exact GELU) — 1.11x encode, merged
+        # overlap@10 0.999 vs unfused (doc seismic_150m_testbed/08 §D).
+        # Regenerate via scripts/seismic_testbed/d2_ort_fusion_matrix.py;
+        # models/splade_onnx is the unfused fallback.
         self.splade_model_path = (splade_model_path or os.environ.get("SFU_SPLADE_MODEL_PATH")
-                                  or str(repo_root / "models" / "splade_onnx"))
+                                  or str(repo_root / "models" / "splade_onnx_fused"))
         self.dense_model_path = dense_model_path or str(repo_root / "models" / "sfu-academic-embed-v5")
         self.remote_abstracts = remote_abstracts
         self.openalex_mailto = openalex_mailto
@@ -144,22 +146,25 @@ class ThinClientRetriever:
         self._dense_cache = None   # query-driven warm cache (dense_cache.py)
         self._loaded = False
 
-        # Off-BMP serving gate. SFU_SPLADE_BACKEND selects the SPLADE leg engine:
-        #   qdrant (default) — Qdrant on_disk sparse collection (flat ~GB RAM,
-        #                      page-cache resident like the old OpenSearch leg);
+        # Serving gate. SFU_SPLADE_BACKEND selects the SPLADE leg engine:
+        #   seismic (default) — federated SEISMIC over the 8 dotvbyte mmap shards
+        #                      (Path C, anon floor ~0; dv 25.2 GB page-cache
+        #                      resident at 150M vs f16's 41.9 GB — the only
+        #                      layout that fits this 32 GB container, G8b);
+        #   qdrant           — Qdrant on_disk sparse collection (the 2026-06-24
+        #                      default; being split into the archival container,
+        #                      reachable via SFU_SPLADE_QDRANT_URL — the one-env
+        #                      rollback path);
         #   bmp              — load-into-RAM BMP shards (~211 GB resident at 150M,
-        #                      env-gated FALLBACK, kept for parity/forensics only;
-        #                      cannot be served on a 24 GB host). BMP's 68.6 GB of
-        #                      .bmp disk artifacts are slated for decommission once
-        #                      the parity gate is signed off (see
-        #                      docs/bmp_decommission_plan/PLAN.md Workstream D).
-        # Default flipped bmp→qdrant 2026-06-24: the Qdrant backend passed the
-        # 30M quality-parity gate (scripts/eval_quant_fidelity.py: overlap@10 0.987,
-        # Kendall-τ 0.972, NDCG@10 ties exactly) and is the only engine physically
-        # servable at 150M on real hardware. Qdrant sparse search is exact; BMP is
-        # block-max approximate (WAND pruning), so recall(qdrant) ≥ recall(bmp) by
-        # construction. See docs/THIN_CLIENT_SWAP.md + docs/bmp_decommission_plan/.
-        self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "qdrant").lower()
+        #                      forensics only; 150M artifacts deleted 2026-06-25,
+        #                      see docs/bmp_decommission_plan/).
+        # Default flipped qdrant→seismic 2026-07-06: G6 system parity PASS
+        # (paired-delta 2026-06-30 — SEISMIC leg NDCG@10 0.9262 vs Qdrant 0.9065,
+        # Δ=+0.0197, 95% CI +0.0098..+0.0297 clears zero, n=120), C2.5
+        # MMAP_SERVE_READY, dv full-corpus parity 0.9906 vs f16 (G8d, accepted
+        # 2026-07-05; shards 1-2 at 0.985 — E8 is the pre-registered recovery
+        # lever). See docs/THIN_CLIENT_SWAP.md + docs/SEISMIC_ARCHIVE_SPLIT.md.
+        self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "seismic").lower()
         self._splade_qdrant_url = os.environ.get(
             "SFU_SPLADE_QDRANT_URL", "http://localhost:6333")
         self._splade_collection = os.environ.get(
@@ -587,10 +592,42 @@ class ThinClientRetriever:
           persona scale, NOT servable at 150M). Kept for bit-for-bit
           reproducibility of the G2/G6 persona results.
 
-        Clean error (mirrors the SFU_LOAD_MEM_FLOOR_GB gate) if neither is set,
-        never a silent fallback to another leg."""
+        Since the 2026-07-06 promotion, an UNSET manifest env defaults to the
+        E7c dotvbyte manifest (`data/eval_results/
+        seismic_c25_shards_150m_mmap_dotvbyte.json`) when that file exists
+        AND this retriever serves the real index root (`data/
+        thinclient_index`) — so the promoted dev container serves SEISMIC
+        with zero env config, while synthetic/test index_roots never silently
+        load the 150M corpus.
+
+        Clean error (mirrors the SFU_LOAD_MEM_FLOOR_GB gate) if nothing is
+        set and the default manifest is absent, never a silent fallback to
+        another leg."""
         if self._seismic is None:
             manifest = os.environ.get("SFU_SEISMIC_SHARD_MANIFEST")
+            repo_root = Path(__file__).resolve().parents[3]
+            if (not manifest
+                    and self.root == repo_root / "data" / "thinclient_index"):
+                # Promotion default (2026-07-09): the E5 forward-reordered
+                # 8-shard dotvbyte manifest — quality-identical to the plain
+                # dv manifest (all 8 shards bit-identical parity; served
+                # federated top-10 exact; doc 13) but with block_walk_canonical
+                # forward locality: cold majflt ~0.53–0.54×, cold p50
+                # ~1.46–1.51× faster (shards 1,2 gated 2026-07-09), warm
+                # neutral-to-faster. Falls back to the plain dv manifest
+                # (2026-07-06 promotion) if the E5 manifest is absent.
+                # Gated on the REAL serving root so synthetic/test index_roots
+                # never silently pick up the 150M corpus; only used when the
+                # file exists so single-index testbeds (SFU_SEISMIC_INDEX) keep
+                # working without it. A *set* env var always wins (one-env
+                # rollback to the dv manifest) and a missing set path fails
+                # loudly downstream.
+                eval_dir = repo_root / "data" / "eval_results"
+                e5_manifest = eval_dir / "seismic_c25_shards_150m_mmap_e5.json"
+                dv_manifest = eval_dir / "seismic_c25_shards_150m_mmap_dotvbyte.json"
+                default_manifest = e5_manifest if e5_manifest.exists() else dv_manifest
+                if default_manifest.exists():
+                    manifest = str(default_manifest)
             if manifest:
                 load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")
                 # Pick the concrete serving class directly (two distinct methods,
@@ -629,7 +666,8 @@ class ThinClientRetriever:
         0.479 vs Qdrant at default params), so its recall ≤ Qdrant's by
         construction — this is the G2/G6 quality delta under measurement.
 
-        Federated over-fetch knobs (env, default → 4×top_k per-shard; no-ops for
+        Federated over-fetch knobs (env, default → max(2×top_k, 100) per-shard,
+        G8f 2026-07-08; no-ops for
         the single-index backend, whose `.search` ignores k_prime):
         SFU_SEISMIC_K_PRIME, SFU_SEISMIC_QUERY_CUT, SFU_SEISMIC_HEAP_FACTOR."""
         try:
@@ -638,8 +676,13 @@ class ThinClientRetriever:
             qc_env = os.environ.get("SFU_SEISMIC_QUERY_CUT")
             query_cut = int(qc_env) if qc_env else None
             heap_factor = float(os.environ.get("SFU_SEISMIC_HEAP_FACTOR", "0.8"))
+            # Over-fetch before post-filtering, matching the Qdrant/BMP legs
+            # (fixed 2026-07-06: this leg previously fetched exactly top_k and
+            # then filtered, thinning filtered results below top_k). The default
+            # k' = max(2×fetch, 100) scales with it inside the backend (G8f).
+            fetch = top_k * (OVERFETCH_FILTERED if f else 1)
             res = self._seismic_backend().search(
-                query, top_k, query_cut=query_cut,
+                query, fetch, query_cut=query_cut,
                 heap_factor=heap_factor, k_prime=k_prime)
         except Exception as exc:
             logger.warning("SEISMIC SPLADE leg failed (%s); falling back to BM25F leg", exc)

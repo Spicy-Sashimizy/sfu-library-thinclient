@@ -83,13 +83,16 @@ per-shard work multiply across all 8:
 - **`query_cut`** (currently all 64 terms) and **`heap_factor`** (currently 0.8) —
   the free quality↔speed dials (see
   [`../seismic_150m_testbed/08_LATENCY_RESEARCH.md`](../seismic_150m_testbed/08_LATENCY_RESEARCH.md) §C1).
-- **`k′` over-fetch** per shard (default 4×k) — smaller k′ = less per-shard heap
-  work; the federation-overlap gate bounds how low it can go safely.
+- **`k′` over-fetch** per shard (default `max(2×k, 100)` since 2026-07-08, G8f;
+  previously 4×k) — smaller k′ = less per-shard heap work; the federation-overlap
+  gate bounds how low it can go safely (measured: k′=100 @ top_k=50 is merged-
+  overlap-safe at 0.999, `g8f_shardmerge_profile_kprime_20260708.json`).
 
 ## Code touch-points (IMPLEMENTED — two distinct classes, 2026-06-30)
 
 **Shape (Option 3 — lowest cascade risk):** two DISTINCT serving classes —
-`ParallelSeismicBackend` (server-side, `ThreadPoolExecutor` fan-out) and
+`ParallelSeismicBackend` (server-side, persistent `ThreadPoolExecutor` fan-out
+since 2026-07-08 G8g) and
 `SequentialSeismicBackend` (localized, RAM-efficient, serial one-shard-at-a-time
 loop) — sharing **pure module-level helpers** (`_merge_topk`, `_load_one_shard`,
 `_prepare_query`, `_load_manifest`, `_EncoderShim`), with NO inheritance coupling
@@ -103,7 +106,9 @@ that matters most for a system whose correctness story is "bit-identical top-k")
     (the ONLY per-query behavior that differs); inherits a private construction +
     thin-wrapper shell. `SequentialSeismicBackend._fan_out` is the serial loop
     (mechanism A — kernel reclaims idle shards' file-backed pages);
-    `ParallelSeismicBackend._fan_out` is the `ThreadPoolExecutor` fan-out.
+    `ParallelSeismicBackend._fan_out` is the `ThreadPoolExecutor` fan-out
+    (persistent per-backend pool since 2026-07-08 G8g — built once in
+    `__init__`; per-instance, so no cross-class shared state).
   - `_merge_topk` (module fn) — the ONE shared score-merge, order-independent →
     bit-identical top-k across both classes (the load-bearing property).
   - `ShardedSeismicBackend` — back-compat `__new__` selector returning the matching

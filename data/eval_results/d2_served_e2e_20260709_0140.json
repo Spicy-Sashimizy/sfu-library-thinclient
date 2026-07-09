@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "inline post-D2 e2e (see docs 08 \u00a7D D2 note)",
+    "backend": "ParallelSeismicBackend(load_mode=mmap), DEFAULT encoder = models/splade_onnx_fused (the D2 flip), k'=100",
+    "baseline": "g8g warm e2e 53.8 ms = encode 19.5 + traverse 33.7 (fp32 unfused)",
+    "environment": "devcontainer (16 cores, avx2, drvfs); warm-only"
+  },
+  "warm_e2e": {
+    "encode_ms_p50": 23.2,
+    "traverse_ms_p50": 40.96,
+    "total_ms_p50": 63.12,
+    "n": 300,
+    "encode_share": 0.368
+  }
+}

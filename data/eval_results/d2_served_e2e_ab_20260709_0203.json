@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scratchpad d2_e2e_ab.py, recorded in docs 08 \u00a7D D2 note",
+    "method": "same process, same backend traverse, encode via the two sessions interleaved per query; n=100 x 3 warm passes",
+    "note": "supersedes d2_served_e2e_20260709_0140.json (single-arm, drift-confounded: its traverse leg moved +7ms vs g8g with no encoder involvement)",
+    "environment": "devcontainer (16 cores, avx2, drvfs); warm-only"
+  },
+  "e2e": {
+    "fp32": {
+      "encode_ms_p50": 36.04,
+      "traverse_ms_p50": 38.61,
+      "total_ms_p50": 73.9
+    },
+    "fused": {
+      "encode_ms_p50": 32.43,
+      "traverse_ms_p50": 36.15,
+      "total_ms_p50": 68.68
+    },
+    "paired_total_delta_ms_p50": 5.56,
+    "encode_speedup_p50": 1.11
+  }
+}

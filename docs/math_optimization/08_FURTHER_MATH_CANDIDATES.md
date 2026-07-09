@@ -18,7 +18,21 @@ G8b (2026-07-04, `data/eval_results/g8b_fullcorpus_*.json`) measured
 full-corpus parallel-federated warm p50 ≈ 65 ms while the single-shard warm
 kernel traverse is ~2–3 ms (E7 Arm E1; E7b warm 3.3 ms). So at deploy scale
 the kernel is **~a few percent of federated latency** — encode, fan-out, and
-merge dominate. Kernel wins multiply only in three regimes:
+merge dominate. **Quantified by G8e (2026-07-08,
+`data/eval_results/g8e_encode_traverse_split_20260708.json`): warm p50
+64.2 ms = encode 20.0 ms (31%) + traverse/fan-out/merge 43.7 ms (69%)** —
+with the single-shard kernel at ~3–6 ms, the federation machinery itself is
+the largest addressable component (doc `seismic_150m_testbed/08` §A4).
+*(2026-07-08 G8g update: after the k'→100 flip + persistent executor, the
+served warm p50 is **53.8 ms = encode 19.5 (36%) + traverse 33.7**; the G8g
+A/B showed the remaining fan-out overhead is GIL result-materialization +
+contention, not an executor cost — **encode is now the largest single
+addressable component**, doc 08 §A4 G8g note. 2026-07-09: dynamic-int8
+quantization of the query encoder was gated and KILLED — overlap@10 ≈ 0.79
+vs the fp32-encoded index — and the lossless mechanism shipped instead:
+**ORT bert fusion (exact GELU) promoted as the served encoder default,
+encode 1.11× / overlap@10 0.999 / paired e2e −5.6 ms p50**; thread pinning
+and spinning-off refuted. Doc 08 §D.)* Kernel wins multiply only in three regimes:
 
 1. **Sequential federation** (`SFU_SEISMIC_FEDERATION=sequential`): latency =
    Σ per-shard traverses, so a kernel speedup applies ~8×.
@@ -194,6 +208,23 @@ thirds (b)+(c) work and moves the hot query structure into L1. The honest
 unknown is the pack-level distribution — measured by the sim before any
 Rust.
 
+> **MEASURED 2026-07-08 — KILL.** The Stage-0 sim
+> (`scripts/seismic_testbed/m7_pack_membership_sim.py`, shards 1–2, n=100,
+> engine top-k'=200 candidates,
+> `data/eval_results/m7_pack_membership_sim_20260708.json`): all-miss-pack
+> rate **0.194** (shard1 0.197 / shard2 0.190) — below the pre-registered
+> 0.3 KILL bar. The pre-gate's own caveat was exactly right: query hits
+> anti-cluster across packs (hits-per-pack histogram mode is 1, ~80% of
+> packs carry ≥1 hit), so the pack skip almost never fires. Per-lane zero
+> rate 0.7646 reproduces 06's 76.7% inventory, validating the sim.
+> Recorded consequences: (a) M7's pack-skip leg is dead at the current
+> LANES=8 pack width; (b) the bitmap-gather *cache-residency* observation
+> (3.6 KB L1 vs 115 KB L2 query table) was pre-assigned only to the
+> 0.3–0.5 band, so it is NOT promoted by this result — if it resurfaces,
+> it does so as a new pre-registered row, likely folded into M8's batch
+> loop; (c) M1 (post-gather FMA skip) inherits the same anti-clustering
+> fact and its 03 ranking (lowest) stands reinforced.
+
 ---
 
 ## M8 — Batched multi-candidate scoring (register blocking)
@@ -300,6 +331,12 @@ width, or at minimum `vcvtph2ps` batching can shrink convert cost.
 > scale, `seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md`) ahead of all of
 > them. Recipes: `seismic_150m_testbed/12_EXECUTION_ROADMAP.md`. The original
 > order below stands as the pre-G8d record.
+>
+> **AMENDED 2026-07-08 (Stage-0 results in):** E8 Stage-0 **GO**
+> (per-doc 0.997/0.993 vs FixedU8Q 0.985/0.984, shards 1–2, n=100 —
+> `data/eval_results/e8_stage0_perdoc_scale_20260708.json`) and M7 Stage-0
+> **KILL** (all-miss-pack rate 0.194, §M7 above). **The executing order is
+> now E8 Stage-1 → M8 instrument → M2b → M6.**
 
 1. **M2b** (backlog row, `std::simd` i32-widen, 7-bit) — cheapest, reuses
    everything M2 built, and its quality answer gates M6 too.

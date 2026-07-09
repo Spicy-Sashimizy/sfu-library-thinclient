@@ -13,9 +13,11 @@ import ShardedSeismicBackend` unchanged).
 **One system, two DISTINCT serving methods.** The same 8 immutable C2 mmap shards
 are served by two independent classes, pickable per deployment:
 
-- `ParallelSeismicBackend` — **server-side.** A `ThreadPoolExecutor` fans the
-  query out to all shards at once. Latency ≈ the slowest shard; resident working
-  set ≈ all shards (~66 GB at 150M). Best on a host with RAM ≥ the resident set.
+- `ParallelSeismicBackend` — **server-side.** A persistent per-backend
+  `ThreadPoolExecutor` (created once at construction; measured −2.3 ms traverse
+  p50 vs the old per-query construction, G8g A/B 2026-07-08) fans the query out
+  to all shards at once. Latency ≈ the slowest shard; resident working set ≈ all
+  shards (~66 GB at 150M). Best on a host with RAM ≥ the resident set.
 - `SequentialSeismicBackend` — **localized, RAM-efficient.** Searches shards one
   at a time, keeping only ~one shard's pages faulted in at any instant; the kernel
   reclaims idle shards' file-backed mmap pages under memory pressure. Latency ≈ Σ
@@ -83,6 +85,12 @@ import numpy as np
 
 log = logging.getLogger("sharded_seismic_backend")
 
+# Manifests record shard paths relative to the repo root (e.g.
+# `data/seismic_150m/index/plan01/...`); the serving process's cwd is not
+# guaranteed to be the repo root (MCP server launch), so relative paths that
+# don't resolve from cwd are anchored here.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+
 
 # ── shared pure helpers ──────────────────────────────────────────────────────
 # ONE copy each. Pure functions / stateless tools shared by BOTH serving classes.
@@ -123,21 +131,46 @@ def _load_manifest(manifest_path: str, load_mode: str = "stock") -> list[str]:
     when no `mmap_dir` is recorded does it fall back to `index_path`, whose stem
     the loader derives `.mmap/` from."""
     p = Path(manifest_path)
+    if not p.exists() and not Path(manifest_path).is_absolute():
+        p = _REPO_ROOT / manifest_path
     if p.exists() and p.suffix == ".json":
         data = json.load(open(p))
         if isinstance(data, list):
             return data
         if isinstance(data, dict):
             if "shards" in data and isinstance(data["shards"], list):
+                records = data["shards"]
+                # A partially-converted manifest must fail loudly, never serve a
+                # partial corpus (guard added 2026-07-06; same contract as the
+                # mmap no-silent-fallback rule).
+                expected = data.get("n_shards")
+                if expected is not None and len(records) != expected:
+                    raise RuntimeError(
+                        f"manifest {p} declares n_shards={expected} but carries "
+                        f"{len(records)} shard records — refusing a partial corpus")
                 # C2.5 records carry BOTH index_path and mmap_dir; mmap_dir is the
                 # authoritative served path (persistent, post /tmp-wipe-safe).
                 if load_mode == "mmap":
-                    out = [s.get("mmap_dir") for s in data["shards"] if s.get("mmap_dir")]
+                    out = [s.get("mmap_dir") for s in records if s.get("mmap_dir")]
                     if out:
+                        if len(out) != len(records):
+                            missing = [s.get("shard") for s in records
+                                       if not s.get("mmap_dir")]
+                            raise RuntimeError(
+                                f"manifest {p}: {len(out)}/{len(records)} shard "
+                                f"records carry mmap_dir (shards {missing} lack it)"
+                                " — refusing to silently serve a partial corpus")
                         return out
                 # G7/stock shape: shard records carry `index_path`.
-                out = [s.get("index_path") for s in data["shards"] if s.get("index_path")]
+                out = [s.get("index_path") for s in records if s.get("index_path")]
                 if out:
+                    if len(out) != len(records):
+                        missing = [s.get("shard") for s in records
+                                   if not s.get("index_path")]
+                        raise RuntimeError(
+                            f"manifest {p}: {len(out)}/{len(records)} shard records "
+                            f"carry index_path (shards {missing} lack it)"
+                            " — refusing to silently serve a partial corpus")
                     return out
             if "shard_indexes" in data:
                 return list(data["shard_indexes"])
@@ -155,7 +188,15 @@ def _load_one_shard(seismic_module, p: str, load_mode: str):
       - a `.mmap/` dir directly (the C2.5 manifest's `mmap_dir` field — the
         authoritative persistent path), or
       - a stock `X.index.seismic` path or `X` stem whose sibling `X.mmap/` dir
-        the loader derives (G7-manifest fallback)."""
+        the loader derives (G7-manifest fallback).
+
+    Relative paths that don't resolve from the process cwd are re-anchored at
+    the repo root (manifests record repo-root-relative paths; the MCP server's
+    cwd is not guaranteed to be the repo root)."""
+    if not Path(p).is_absolute() and not Path(p).exists():
+        anchored = _REPO_ROOT / p
+        if anchored.exists():
+            p = str(anchored)
     if load_mode == "mmap":
         if p.endswith(".mmap") and Path(p).is_dir():
             mmap_dir = p
@@ -186,13 +227,23 @@ def _prepare_query(q: dict[str, float], top_k: int, string_dtype,
                     query_cut: int | None, k_prime: int | None):
     """Build the SEISMIC search inputs from a sparse query dict (pure). Returns
     `(qcomp, qvals, qc, kp)` — the numpy token/value arrays, the effective
-    query_cut, and the per-shard over-fetch k'."""
+    query_cut, and the per-shard over-fetch k'.
+
+    Default k' = max(2×top_k, 100) — flipped from 4×top_k on 2026-07-08 (G8f):
+    at the served top_k=50 shape, k'=100 vs the old 200 is recall-safe on the
+    MERGED federated top-k (overlap@10 0.999, overlap@50 0.994, n=100) and
+    1.47× faster federated traverse (38.3 → 26.0 ms p50);
+    `data/eval_results/g8f_shardmerge_profile_kprime_20260708.json`. The floor
+    of 100 keeps small-top_k requests at or above their pre-flip candidate
+    depth (e.g. top_k=10: old 40 → new 100); top_k > 50 halves its over-fetch
+    (measured only at top_k=50 — the E1 mechanism, a sooner-full heap raising
+    the block-skip threshold, is top_k-independent, *est.* for other shapes)."""
     tokens = list(q.keys())
     values = [float(v) for v in q.values()]
     qc = query_cut if query_cut is not None else len(tokens)
     qcomp = np.array(tokens, dtype=string_dtype)
     qvals = np.array(values, dtype=np.float32)
-    kp = k_prime if k_prime is not None else max(top_k * 4, top_k)
+    kp = k_prime if k_prime is not None else max(top_k * 2, 100)
     return qcomp, qvals, qc, kp
 
 
@@ -242,7 +293,7 @@ class _SeismicBackendBase:
 
     federation: str = ""          # set by each concrete subclass
 
-    def __init__(self, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fp16",
+    def __init__(self, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fused",
                  load_mode: str = "stock"):
         import seismic
         from lib.thinclient.seismic_backend import SeismicBackend
@@ -263,7 +314,7 @@ class _SeismicBackendBase:
             self.shards.append(idx)
 
     @classmethod
-    def from_manifest(cls, manifest_path: str, *, splade_model_path: str = "models/splade_onnx_fp16",
+    def from_manifest(cls, manifest_path: str, *, splade_model_path: str = "models/splade_onnx_fused",
                       load_mode: str = "stock"):
         """Build from a shard manifest. Accepts EITHER:
           - a manifest.json with a 'shards' key (G7/C2.5 build+convert manifests;
@@ -295,7 +346,8 @@ class _SeismicBackendBase:
                heap_factor: float = 0.8,
                k_prime: int | None = None) -> list[tuple[str, float]]:
         """Federated search: fan the qvec across all K shards, merge by score.
-        k_prime = per-shard over-fetch (default 4×top_k). Returns global top-k
+        k_prime = per-shard over-fetch (default max(2×top_k, 100), G8f
+        2026-07-08). Returns global top-k
         [(oaid, score)]. Same return shape as SeismicBackend.search for harness
         compatibility. Serving method = `self._fan_out` (parallel vs sequential)."""
         q = self.encode_query(query)
@@ -364,13 +416,39 @@ class ParallelSeismicBackend(_SeismicBackendBase):
 
     The pyseismic `.so` releases the GIL during C-level search, so the
     ThreadPoolExecutor gets real parallelism despite the GIL. Building more shards
-    than cores just queues — no RSS stacking (shards are loaded once at startup)."""
+    than cores just queues — no RSS stacking (shards are loaded once at startup).
+
+    The executor is PERSISTENT: created once at construction, reused by every
+    query (2026-07-08). Measured efficacy — same-process interleaved A/B vs the
+    old per-query `ThreadPoolExecutor(...)` construction (G8g, n=100×3 warm,
+    served k'=100 shape, results bit-identical across arms,
+    `data/eval_results/g8g_ab_perquery_vs_persistent_20260708.json`): traverse
+    p50 26.4 → 22.8 ms, paired per-query delta −2.3 ms. Real but modest — the
+    G8f "scheduling overhead" was mostly NOT pool construction: per-query
+    thread spawns staggered the 8 shard searches (each ran less contended,
+    max-shard 6.4 ms), while the persistent pool overlaps them genuinely
+    (max-shard 12.9 ms of memory-bandwidth contention) yet still lowers the
+    total wall. The executor is per-INSTANCE state (never shared with a
+    SequentialSeismicBackend, preserving the no-shared-mutable-state cascade
+    property) and construction-time only — no per-query mutation. Concurrent
+    callers share the K workers (submissions queue; `ThreadPoolExecutor` is
+    thread-safe). Idle workers park on the work queue between queries; the
+    interpreter joins them at exit, so no explicit shutdown is required."""
 
     federation = "parallel"
 
+    def __init__(self, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fused",
+                 load_mode: str = "stock"):
+        super().__init__(index_paths, splade_model_path=splade_model_path,
+                         load_mode=load_mode)
+        # max(1, …): a zero-shard backend must stay constructible (the selector
+        # contract tests build one); ThreadPoolExecutor rejects max_workers=0.
+        self._executor = cf.ThreadPoolExecutor(
+            max_workers=max(1, len(self.shards)),
+            thread_name_prefix="seismic-shard")
+
     def _fan_out(self, _search_one) -> list:
-        with cf.ThreadPoolExecutor(max_workers=len(self.shards)) as ex:
-            return list(ex.map(_search_one, self.shards))
+        return list(self._executor.map(_search_one, self.shards))
 
 
 class SequentialSeismicBackend(_SeismicBackendBase):
@@ -441,7 +519,7 @@ class ShardedSeismicBackend(_SeismicBackendBase):
 
     federation = "parallel"   # selector default; the instance's real class sets its own
 
-    def __new__(cls, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fp16",
+    def __new__(cls, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fused",
                 load_mode: str = "stock", federation: str = "parallel"):
         if federation not in ("parallel", "sequential"):
             raise ValueError(

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/d2b_fused_exact_gate.py",
+    "arm": "fused (offline bert fusion, exact GELU), models/splade_onnx_fused",
+    "companion": "d2_ort_fusion_matrix_20260709_0103.json (latency: fused 1.11x, fused_gelu 1.14x)",
+    "n_queries": 100,
+    "top_k": 50,
+    "decision_rule": "prefer fused over fused_gelu for the flip if overlap@10 >= 0.995",
+    "wall_seconds": 533.6
+  },
+  "gate": {
+    "overlap@10_mean": 0.999,
+    "overlap@10_min": 0.9,
+    "overlap@50_mean": 1.0,
+    "n_queries": 100
+  },
+  "sequential_identity": {
+    "mismatches": 0,
+    "verdict": "IDENTICAL"
+  }
+}

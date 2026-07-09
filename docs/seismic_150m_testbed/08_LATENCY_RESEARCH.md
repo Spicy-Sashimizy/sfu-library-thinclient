@@ -301,6 +301,76 @@ runs in the same process as SEISMIC search, so part of that wall could be the
 both to the result JSON per query. **Small, non-disruptive change — does not
 affect a running process.** Without this split, no latency number is actionable.
 
+> **MEASURED on the promoted served path (G8e, 2026-07-08, container).**
+> `ParallelSeismicBackend(load_mode=mmap)` over the 8 dv shards via its
+> `search_with_timing` hook, 40 diverse queries, top_k=50, 3 warm passes
+> (`scripts/seismic_testbed/g8e_encode_traverse_split.py`,
+> `data/eval_results/g8e_encode_traverse_split_20260708.json`):
+> **warm p50 total 64.2 ms = encode 20.0 ms (31%) + traverse/fan-out/merge
+> 43.7 ms (69%)** — the total reproduces G8b's 64.5 ms warm p50, confirming
+> G8b's figure INCLUDED encode. Attribution consequence: the single-shard
+> warm kernel traverse is ~3–6 ms (E1/E7b), so **most of the 43.7 ms is
+> federation machinery** (thread fan-out, per-shard k'=200 result
+> materialization, Python merge, GIL) — the largest addressable latency
+> component, ahead of encode (~20 ms) and far ahead of the dot kernel
+> (~3 ms). Cold pass (as-found cache, not drop_caches): p50 5.3 s /
+> p95 23.1 s, encode share 0.7% — cold remains a fault problem, not an
+> encode problem. Next split (unmeasured): per-shard traverse walls vs
+> merge inside the 43.7 ms.
+
+> **G8f attribution (2026-07-08, same day):** instrumented replica of
+> `search_encoded` (per-shard walls timed inside the fan-out threads),
+> n=100, top_k=50, 3 warm passes
+> (`scripts/seismic_testbed/g8f_shardmerge_profile_kprime.py`,
+> `data/eval_results/g8f_shardmerge_profile_kprime_20260708.json`). At the
+> pre-flip k'=200: **traverse p50 38.3 ms = max-shard 10.1 ms +
+> scheduling overhead 27.7 ms + merge 0.26 ms** (per-shard p50 walls
+> 4.5–8.8 ms). The dominant cost is neither shard search nor merge — it is
+> **`ParallelSeismicBackend._fan_out` constructing a fresh
+> `ThreadPoolExecutor` per query** (8 thread spawns/teardowns each search).
+> A persistent per-backend executor is the obvious next lever
+> (`*est.*` −20+ ms of the ~64 ms served warm p50 — UNMEASURED, needs its
+> own gate + T1 re-run). *(2026-07-08 later that day: estimate REFUTED —
+> measured −2.3 ms; see the G8g note below.)* Second finding: **k' 200→100 federated gate
+> PASSED at n=100** (merged overlap@10 0.999 / @50 0.994, traverse 1.47×:
+> 38.3 → 26.0 ms) → **served default FLIPPED to `max(2×top_k, 100)`**
+> (2026-07-08, `sharded_seismic_backend._prepare_query`), closing doc 09
+> §4's open recommendation.
+
+> **G8g — persistent executor SHIPPED; the −20 ms estimate REFUTED
+> (2026-07-08, container).** `ParallelSeismicBackend` now builds its
+> `ThreadPoolExecutor` once in `__init__` and reuses it every query
+> (`scripts/seismic_testbed/g8g_persistent_executor_gate.py` +
+> `g8g_ab_perquery_vs_persistent.py`;
+> `data/eval_results/g8g_persistent_executor_gate_20260708.json`,
+> `g8g_ab_perquery_vs_persistent_20260708.json`). Results, n=100, top_k=50,
+> served k'=100, 3 warm passes:
+> - **Identity:** served fan-out ≡ serial per-shard reference, 100/100
+>   bit-identical merged top-50 (real-corpus complement to T1; the 17-test
+>   sequential + served-path suites pass).
+> - **Efficacy (same-process interleaved A/B — unconfounded):** per-query
+>   executor traverse p50 26.4 ms → persistent 22.8 ms; **paired per-query
+>   delta −2.3 ms p50**, arms bit-identical (100/100). The pre-registered
+>   gate bar (sched_overhead_ms_p50 < 5) **FAILED** (10.3 ms) — the change
+>   is kept anyway: strictly faster, bit-identical results, zero quality
+>   risk.
+> - **Attribution correction (why the −20 ms estimate was wrong):** G8f's
+>   "27.7 ms scheduling overhead" was mostly NOT pool construction — it is
+>   k'-dependent (19.6 ms already at k'=100 in G8f's own k100 arm) and
+>   partly a measurement artifact: per-query thread spawns STAGGER the 8
+>   shard searches, so each ran less contended (max-shard 6.4 ms) with the
+>   stagger booked as "overhead"; the persistent pool overlaps them
+>   genuinely — max-shard rises to 12.9 ms (memory-bandwidth contention)
+>   while the total wall still drops. The remaining ~10 ms of
+>   fanout-wall−max-shard is GIL-serialized per-shard result
+>   materialization + contention, not an executor cost → **no large
+>   federation-machinery lever remains**; encode (~20 ms) is now the
+>   largest single addressable component of the served warm path.
+> - **New served warm headline (k'-flip + persistent executor stacked):**
+>   `search_with_timing` end-to-end **warm p50 53.8 ms = encode 19.5 ms
+>   (36%) + traverse 33.7 ms** (p95 79.3 ms), vs G8e's 64.2 ms measured at
+>   the pre-flip k'=200 default.
+
 ---
 
 ## B. Shrink the working set (latency win *via* RAM — the aligned lever)
@@ -427,13 +497,75 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 - **Dynamic INT8 quantization of the SPLADE ONNX encoder** — literature reports
   **1.5–3× CPU speedup** (one example 24.8 ms→6.1 ms) with negligible Recall@10
   loss; best on x86-64 with VNNI. We run `models/splade_onnx_fp16` on CPU
-  in-process, so this is a direct candidate.
+  in-process (served default `models/splade_onnx_fused` since 2026-07-09 D2),
+  so this is a direct candidate.
   ([ONNX Runtime quantization](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html),
   [Sentence-Transformers efficiency](https://sbert.net/docs/sparse_encoder/usage/efficiency.html))
 - **Caveat:** the doc vectors were built from the **fp16** encoder; re-quantizing
   the *query* encoder to int8 risks an encoder-asymmetry quality hit. Validate
   overlap@10 parity before/after — the symmetry guarantee in `seismic_backend.py`
   (raw-float query vs raw-float doc) is load-bearing for G2 attribution.
+
+> **D1 MEASURED — dynamic int8 KILLED (2026-07-09, container).** The
+> asymmetry caveat above was decisive.
+> (`scripts/seismic_testbed/d1_int8_query_encoder.py`;
+> `data/eval_results/d1_int8_query_encoder_20260709.json` run 1 /
+> `…_20260709_0034.json` run 2.) Discovery en route: `models/splade_onnx`
+> and `models/splade_onnx_fp16` are **byte-identical fp32 models** (md5
+> `2c54704e…`) — the "_fp16" name is a misnomer; serving encode is fp32
+> everywhere today. Two arms, dynamic int8 per-channel
+> (`AutoQuantizationConfig.avx2`, host has no VNNI), gated on the SERVED
+> federated merged top-k vs fp32 qvecs, n=100, dv shards, served defaults:
+> - **`int8_all`** (every MatMul): encode p50 1.45–1.59× faster, but
+>   **merged overlap@10 0.791** (min 0.30), top-64 qvec Jaccard 0.69 —
+>   catastrophic vs the ≥0.99 bar.
+> - **`int8_nohead`** (MLM vocab-projection head `/cls/predictions/*`
+>   kept fp32): **overlap@10 0.798** — no rescue; the damage is in the
+>   quantized transformer body, not the head.
+> - **Sequential serving method covered:** `SequentialSeismicBackend`
+>   (mechanisms A+B, real `release_pages`) returned merged top-50
+>   **bit-identical to parallel on 100/100 queries** for BOTH fp32 and
+>   int8 qvecs — the gate verdict transfers to both serving classes.
+> - **Verdict: KEEP_FP32**; the quantized model dirs were deleted (the
+>   script regenerates them). Encoder-side revival levers, all
+>   unmeasured / design only: **static (calibrated) int8** on real query
+>   activations; **ORT graph-optimization fusion** (lossless, no
+>   asymmetry risk — the only arm that can't hurt quality); a
+>   **distilled/smaller query encoder** re-gated the same way.
+>   *(Fusion measured same day — D2 below: PROMOTED.)*
+
+> **D2 — ORT graph-fusion + session-option matrix; exact-GELU fusion
+> PROMOTED (2026-07-09, container).** Full runtime-option matrix vs the
+> production baseline (ORT_ENABLE_ALL, default threads, spinning on), one
+> arm session co-resident at a time, interleaved per query, n=100
+> (`scripts/seismic_testbed/d2_ort_fusion_matrix.py` + `d2b_fused_exact_gate.py`;
+> `data/eval_results/d2_ort_fusion_matrix_20260709_0103.json`,
+> `d2b_fused_exact_gate_20260709_0117.json`, `d2_served_e2e_ab_20260709_0203.json`):
+> - **`fused` (offline bert fusion, exact GELU) — PROMOTED to served
+>   default** `models/splade_onnx_fused` (same fp32 weights): encode
+>   **1.11× p50**, merged **overlap@10 0.999 / @50 1.0**, sequential ≡
+>   parallel bit-identical 100/100. Paired served e2e (same-process A/B,
+>   encode + traverse): **total −5.6 ms p50** (encode leg −3.6 ms is the
+>   defensible part; the traverse share of the delta may include
+>   fixed-order warm bias). Regenerate the dir with the D2 script;
+>   `SFU_SPLADE_MODEL_PATH` overrides (`models/splade_onnx` = unfused
+>   fallback).
+> - **`fused_gelu` (FastGelu approx): passed the bar with ZERO margin —
+>   NOT promoted.** 1.14× but overlap@10 mean exactly 0.990 (min 0.90),
+>   0/100 qvecs exact; ~0.5 ms extra win doesn't justify grazing the
+>   quality floor. Dir deleted.
+> - **Thread pinning REFUTED:** intra_op 8/4/2/1 → 0.86×/0.80×/0.64×/0.40×
+>   (the default 16-core config wins at batch-1); **spinning-off REFUTED:**
+>   0.65× single-stream. All qvec-exact 100/100 (thread count doesn't
+>   change numerics here) but strictly slower.
+> - Not tested, by design: graph_opt_level < ALL (baseline already ALL),
+>   `optimized_model_filepath` (init-time, not per-query), fp16/bf16 CPU
+>   (no native fp16 on avx2), batching/IOBinding (serving is batch-1).
+> - Methodology note (binding for future encoder work): absolute
+>   latencies on this container drift run-to-run (a single-arm e2e re-run
+>   moved the traverse leg +7 ms with no encoder involvement —
+>   `d2_served_e2e_20260709_0140.json`, superseded); **only same-process
+>   interleaved A/Bs are promotable evidence.**
 
 ---
 

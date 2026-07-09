@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/g8f_shardmerge_profile_kprime.py",
+    "backend": "ParallelSeismicBackend(load_mode=mmap), instrumented replica of search_encoded (same pure parts)",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_dotvbyte.json",
+    "n_queries": 100,
+    "top_k": 50,
+    "heap_factor": 0.8,
+    "arms": {
+      "k200": 200,
+      "k100": 100
+    },
+    "warm_passes_recorded": 3,
+    "environment": "devcontainer (16 cores, drvfs); warm-only",
+    "bars": "overlap@10 mean (k100 merged vs k200 merged) >=0.99 -> flip served default to max(top_k*2, 100)",
+    "wall_seconds": 1038.2
+  },
+  "profile": {
+    "k200": {
+      "traverse_ms_p50": 38.26,
+      "fanout_ms_p50": 38.03,
+      "max_shard_ms_p50": 10.12,
+      "mean_shard_ms_p50": 5.35,
+      "sched_overhead_ms_p50": 27.67,
+      "merge_ms_p50": 0.26,
+      "per_shard_ms_p50": [
+        4.72,
+        4.54,
+        4.57,
+        4.75,
+        8.84,
+        4.72,
+        5.53,
+        4.61
+      ],
+      "n_rows": 300
+    },
+    "k100": {
+      "traverse_ms_p50": 26.01,
+      "fanout_ms_p50": 25.86,
+      "max_shard_ms_p50": 6.26,
+      "mean_shard_ms_p50": 3.43,
+      "sched_overhead_ms_p50": 19.59,
+      "merge_ms_p50": 0.13,
+      "per_shard_ms_p50": [
+        3.01,
+        2.97,
+        3.14,
+        3.06,
+        5.81,
+        2.96,
+        2.95,
+        3.03
+      ],
+      "n_rows": 300
+    }
+  },
+  "kprime_gate": {
+    "overlap": {
+      "overlap@10_mean": 0.999,
+      "overlap@10_min": 0.9,
+      "overlap@50_mean": 0.9944,
+      "n_queries": 100
+    },
+    "traverse_speedup_p50_k200_over_k100": 1.471,
+    "flip_verdict": "FLIP"
+  }
+}

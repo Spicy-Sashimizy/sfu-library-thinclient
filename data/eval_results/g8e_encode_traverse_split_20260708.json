@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/g8e_encode_traverse_split.py",
+    "backend": "ParallelSeismicBackend(load_mode=mmap) via search_with_timing",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_dotvbyte.json",
+    "n_queries": 40,
+    "top_k": 50,
+    "passes": 4,
+    "environment": "devcontainer (16 cores, drvfs) \u2014 split is the deliverable, absolute ms are container-grade",
+    "cold_note": "pass 0 is as-found page-cache state, not a drop_caches cold",
+    "wall_seconds": 412.4
+  },
+  "rss_before": {
+    "vmrss_gb": 0.032,
+    "rssanon_gb": 0.019,
+    "rssfile_gb": 0.013,
+    "vmswap_gb": 0.0
+  },
+  "rss_after_load": {
+    "vmrss_gb": 26.553,
+    "rssanon_gb": 1.312,
+    "rssfile_gb": 25.241,
+    "vmswap_gb": 0.0
+  },
+  "per_pass": [
+    {
+      "encode_ms": {
+        "p50": 35.46,
+        "p95": 54.15
+      },
+      "traverse_ms": {
+        "p50": 5278.87,
+        "p95": 23083.95
+      },
+      "total_ms": {
+        "p50": 5315.12,
+        "p95": 23117.76
+      },
+      "encode_share_of_total_p50": 0.007,
+      "n": 40
+    },
+    {
+      "encode_ms": {
+        "p50": 22.08,
+        "p95": 41.41
+      },
+      "traverse_ms": {
+        "p50": 48.39,
+        "p95": 69.45
+      },
+      "total_ms": {
+        "p50": 73.03,
+        "p95": 113.57
+      },
+      "encode_share_of_total_p50": 0.302,
+      "n": 40
+    },
+    {
+      "encode_ms": {
+        "p50": 19.97,
+        "p95": 39.01
+      },
+      "traverse_ms": {
+        "p50": 42.25,
+        "p95": 58.02
+      },
+      "total_ms": {
+        "p50": 64.19,
+        "p95": 88.48
+      },
+      "encode_share_of_total_p50": 0.311,
+      "n": 40
+    },
+    {
+      "encode_ms": {
+        "p50": 19.19,
+        "p95": 29.43
+      },
+      "traverse_ms": {
+        "p50": 43.69,
+        "p95": 55.99
+      },
+      "total_ms": {
+        "p50": 63.93,
+        "p95": 79.34
+      },
+      "encode_share_of_total_p50": 0.3,
+      "n": 40
+    }
+  ],
+  "warm_summary": {
+    "encode_ms_p50": 19.97,
+    "traverse_ms_p50": 43.69,
+    "total_ms_p50": 64.19,
+    "encode_share": 0.311
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/m7_pack_membership_sim.py",
+    "n_queries": 100,
+    "k_prime": 200,
+    "lanes": 8,
+    "shards": [
+      "global_shard1of8.mmap",
+      "global_shard2of8.mmap"
+    ],
+    "candidate_proxy": "engine returned top-k' per query (06 convention); traversal-scored non-returned candidates not captured",
+    "bars": "all-miss-pack rate >=0.5 GO / <0.3 KILL / between -> bitmap-gather variant only (08 \u00a7M7)",
+    "wall_seconds": 11.8
+  },
+  "shards": {
+    "global_shard1of8.mmap": {
+      "scored_query_doc_pairs": 20000,
+      "total_full_packs": 240820,
+      "all_miss_pack_rate": 0.1972,
+      "hits_per_pack_hist": {
+        "0": 47480,
+        "1": 60680,
+        "2": 55100,
+        "3": 38800,
+        "4": 23044,
+        "5": 10865,
+        "6": 3809,
+        "7": 927,
+        "8": 115
+      },
+      "tail_lane_fraction": 0.0351,
+      "tail_zero_rate": 0.916,
+      "per_lane_zero_rate_all_slots": 0.7646,
+      "skippable_slot_fraction": 0.1902
+    },
+    "global_shard2of8.mmap": {
+      "scored_query_doc_pairs": 20000,
+      "total_full_packs": 241252,
+      "all_miss_pack_rate": 0.1902,
+      "hits_per_pack_hist": {
+        "0": 45875,
+        "1": 63069,
+        "2": 55232,
+        "3": 39661,
+        "4": 22964,
+        "5": 10265,
+        "6": 3348,
+        "7": 771,
+        "8": 67
+      },
+      "tail_lane_fraction": 0.035,
+      "tail_zero_rate": 0.8706,
+      "per_lane_zero_rate_all_slots": 0.7646,
+      "skippable_slot_fraction": 0.1835
+    }
+  },
+  "combined_all_miss_pack_rate": 0.1937,
+  "verdict": {
+    "m7_stage0": "KILL"
+  }
+}

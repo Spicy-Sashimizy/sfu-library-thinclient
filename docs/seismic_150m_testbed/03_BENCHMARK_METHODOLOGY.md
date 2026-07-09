@@ -26,7 +26,9 @@ approximation/pruning, not a different encoder.
   short — this is what broke BMP's pruning and is the honest stress for G4.
 - **Encoder:** `lib.opensearch_retriever.encode_splade` + `models/splade_onnx_fp16`
   (identical to serving). Boot-time warm-up query so cold encoder load (6.1 s) never
-  contaminates latency samples.
+  contaminates latency samples. *(2026-07-09 D2: the served default is now the
+  bert-fused export `models/splade_onnx_fused` — same fp32 weights, overlap@10
+  0.999; doc 08 §D.)*
 - **Serving constants (identical-compute guarantee):** `QUANT_SCALE=70`, α=0.8, β=1.0,
   k-overfetch as in the live retriever. SEISMIC params (λ truncation, n-postings,
   block size, query cut) are tuned to **match Qdrant recall@k first**, then latency is

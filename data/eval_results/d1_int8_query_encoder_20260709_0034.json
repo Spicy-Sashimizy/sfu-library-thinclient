@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "date": "2026-07-09",
+    "script": "scripts/seismic_testbed/d1_int8_query_encoder.py",
+    "quantization": "dynamic int8 per-channel, AutoQuantizationConfig.avx2 (host has no VNNI); int8_nohead excludes the MLM head (['/cls/predictions/transform/dense/MatMul', '/cls/predictions/decoder/MatMul'])",
+    "source_model": "models/splade_onnx_fp16 (fp32 weights; byte-identical to models/splade_onnx, md5 2c54704e3cb76cb7122587be6b82cfc0)",
+    "backend": "ParallelSeismicBackend + SequentialSeismicBackend (load_mode=mmap), dv manifest, served defaults (k'=100, heap_factor=0.8)",
+    "n_queries": 100,
+    "top_k": 50,
+    "warm_passes_recorded": 3,
+    "seq_budget_s": 600.0,
+    "environment": "devcontainer (16 cores, avx2, drvfs); warm-only",
+    "bars": "overlap@10 mean >= 0.99 AND encode speedup_p50 > 1.0 AND sequential identity 0 mismatches -> flip served encoder default",
+    "wall_seconds": 876.2
+  },
+  "quantize": {
+    "int8_all": {
+      "quantized": "skipped (exists)"
+    },
+    "int8_nohead": {
+      "quantized": "built",
+      "int8_mb": 206.4,
+      "quantize_seconds": 13.5
+    }
+  },
+  "encode_latency": {
+    "fp32": {
+      "p50": 54.02,
+      "p95": 104.05
+    },
+    "int8_all": {
+      "p50": 37.23,
+      "p95": 70.77,
+      "speedup_p50": 1.45
+    },
+    "int8_nohead": {
+      "p50": 40.54,
+      "p95": 71.58,
+      "speedup_p50": 1.33
+    }
+  },
+  "gates": {
+    "int8_all": {
+      "overlap@10_mean": 0.791,
+      "overlap@10_min": 0.3,
+      "overlap@50_mean": 0.8092,
+      "qvec_top64_jaccard_mean": 0.6902,
+      "qvec_weight_mae_shared_terms": 0.11359,
+      "n_queries": 100
+    },
+    "int8_nohead": {
+      "overlap@10_mean": 0.798,
+      "overlap@10_min": 0.3,
+      "overlap@50_mean": 0.813,
+      "qvec_top64_jaccard_mean": 0.6994,
+      "qvec_weight_mae_shared_terms": 0.11194,
+      "n_queries": 100
+    }
+  },
+  "sequential_identity": {
+    "fp32": {
+      "n_done": 100,
+      "mismatches": 0,
+      "wall_s": 71.3,
+      "verdict": "IDENTICAL"
+    },
+    "int8_nohead": {
+      "n_done": 100,
+      "mismatches": 0,
+      "wall_s": 45.9,
+      "verdict": "IDENTICAL"
+    }
+  },
+  "candidate": "int8_nohead",
+  "flip_verdict": "KEEP_FP32"
+}
