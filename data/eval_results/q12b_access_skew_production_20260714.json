@@ -1,0 +1,54 @@
+{
+  "probe": "q12b_access_skew_production",
+  "date": "2026-07-14",
+  "preregistration": "docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md \u00a7Q12b",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "forward_format_version": 2,
+  "production_shape": {
+    "source": "data/sfu_eval_queries.json",
+    "n_real_queries": 120,
+    "n_subjects": 49,
+    "n_draws": 400,
+    "zipf_s": 1.0,
+    "seed": 20260714,
+    "repeat_emphasis": "Zipf-weighted subjects + within-subject-with-replacement",
+    "rationale": "Q12's diverse set is diversity-maximized (suppresses the subject-skew real library traffic has); this emulates it. A skew finding on Q12 is conservative vs this probe."
+  },
+  "served_shape": {
+    "top_k": 50,
+    "k_prime": 100,
+    "heap_factor": 0.8,
+    "query_cut": "all-terms"
+  },
+  "n_queries_primary": 400,
+  "pages_per_query_mean": 42711.8875,
+  "pages_per_query_p50": 40487.0,
+  "total_touches": 17084755,
+  "distinct_pages_touched": 1855728,
+  "forward_total_pages": 7528445,
+  "touched_frac_of_forward": 0.246496,
+  "repeat_pages_ge2": 1642922,
+  "repeat_page_frac": 0.8853,
+  "repeat_touch_frac": 0.9875,
+  "top1pct_touch_share": 0.0931,
+  "top10pct_touch_share": 0.4108,
+  "gini_touched_pages": 0.5496,
+  "hotset_50_pages": 265954,
+  "hotset_50_gb": 1.0893,
+  "hotset_80_pages": 748319,
+  "hotset_80_gb": 3.0651,
+  "hotset_90_pages": 1086133,
+  "hotset_90_gb": 4.4488,
+  "decision_bars": {
+    "live_if": "hotset_80_gb <= 4 AND repeat_touch_frac >= 0.25",
+    "close_if": "hotset_80_gb > 8 OR repeat_touch_frac < 0.10"
+  },
+  "verdict": "GO",
+  "vs_q12_diverse": {
+    "q12_repeat_touch_frac": 0.852,
+    "q12_hotset_80_gb": 4.2,
+    "q12_top10pct_share": 0.342,
+    "q12_gini": 0.442
+  },
+  "elapsed_s": 350.8
+}

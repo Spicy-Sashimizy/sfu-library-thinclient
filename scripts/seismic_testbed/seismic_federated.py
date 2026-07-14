@@ -70,6 +70,7 @@ from lib.thinclient.sharded_seismic_backend import (  # noqa: E402,F401
     ShardedSeismicBackend,
     ParallelSeismicBackend,
     SequentialSeismicBackend,
+    HybridSeismicBackend,
     _EncoderShim,
     _load_manifest,
 )
@@ -93,12 +94,15 @@ def main():
                     help="shard load path: 'stock' (Path-A owned anon, default) or "
                          "'mmap' (Path-C, needs converted X.mmap/ dirs). "
                          "Env SFU_SEISMIC_LOAD_MODE overrides the default.")
-    ap.add_argument("--federation", choices=("parallel", "sequential"), default=None,
+    ap.add_argument("--federation", choices=("parallel", "sequential", "hybrid"),
+                    default=None,
                     help="serving method over the K shards: 'parallel' (default — "
-                         "ThreadPoolExecutor fan-out, latency ~= max shard) or "
+                         "ThreadPoolExecutor fan-out, latency ~= max shard), "
                          "'sequential' (one shard at a time, latency ~= sum of "
                          "shards, bounded resident set; bit-identical results; "
-                         "docs/seismic_sequential_serving/). "
+                         "docs/seismic_sequential_serving/), or 'hybrid' "
+                         "(Q7 2026-07-10 — sequential while cold, flips to "
+                         "parallel on a state signal once warm; bit-identical). "
                          "Env SFU_SEISMIC_FEDERATION overrides the default.")
     args = ap.parse_args()
 
@@ -113,9 +117,14 @@ def main():
     assert index_paths, f"no shard indexes from --manifest {args.manifest}"
     log.info("federated: %d shards (load_mode=%s, federation=%s)",
              len(index_paths), load_mode, federation)
-    # Pick the concrete serving class directly (two distinct methods; the env
+    # Pick the concrete serving class directly (three distinct methods; the env
     # default 'parallel' is the historical server-side fan-out).
-    cls = SequentialSeismicBackend if federation == "sequential" else ParallelSeismicBackend
+    if federation == "sequential":
+        cls = SequentialSeismicBackend
+    elif federation == "hybrid":
+        cls = HybridSeismicBackend
+    else:
+        cls = ParallelSeismicBackend
     sb = cls(index_paths, splade_model_path=args.splade_model, load_mode=load_mode)
     t0 = time.perf_counter()
     res = sb.search(args.query, args.top_k, query_cut=args.query_cut,

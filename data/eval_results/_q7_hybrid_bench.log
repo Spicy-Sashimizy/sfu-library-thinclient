@@ -1,0 +1,47 @@
+01:45:52 INFO Rule Zero: 24 served *.mmap shard dirs present
+01:45:52 INFO === T1 parity: hybrid == parallel == sequential, bit-identical ===
+01:45:53 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+01:45:54 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+01:45:54 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+01:45:54 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+01:45:54 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+01:45:54 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+01:45:54 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+01:45:55 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+01:45:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+01:45:55 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+01:45:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+01:45:55 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+01:47:07 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+01:47:11 INFO SPLADE ONNX model loaded (CPU)
+01:47:16 INFO hybrid(adaptive): cold geomean 51.4 ms × 0.25 = flip_threshold 12.8 ms (flip after 2 consec warm)
+01:47:17 INFO hybrid(count-backstop): FLIP seq→par at query 3 (>= 3)
+01:47:33 INFO T1: 20/20 queries bit-identical across par/seq/hybrid
+01:47:34 INFO [rep 1 sequential] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+01:47:34 INFO [rep 1 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation sequential --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260710_014733_rep1.json
+01:51:35 INFO [rep 1 sequential] bench done in 241.6s
+01:51:36 INFO [rep 1 parallel] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+01:51:36 INFO [rep 1 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation parallel --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260710_015135_rep1.json
+01:54:46 INFO [rep 1 parallel] bench done in 189.9s
+01:54:46 INFO [rep 1 hybrid] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+01:54:46 INFO [rep 1 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation hybrid --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260710_015446_rep1.json
+01:57:50 INFO [rep 1 hybrid] bench done in 184.1s
+01:57:51 INFO [rep 2 sequential] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+01:57:51 INFO [rep 2 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation sequential --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260710_015750_rep2.json
+02:01:19 INFO [rep 2 sequential] bench done in 208.6s
+02:01:20 INFO [rep 2 parallel] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+02:01:20 INFO [rep 2 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation parallel --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260710_020119_rep2.json
+02:04:24 INFO [rep 2 parallel] bench done in 184.0s
+02:04:24 INFO [rep 2 hybrid] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+02:04:24 INFO [rep 2 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation hybrid --queries 40 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260710_020424_rep2.json
+02:07:51 INFO [rep 2 hybrid] bench done in 206.5s
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/q7_hybrid_federation_bench.py", line 371, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/q7_hybrid_federation_bench.py", line 342, in main
+    "manifest": str(Path(manifest).relative_to(REPO))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/pathlib.py", line 731, in relative_to
+    raise ValueError("{!r} is not in the subpath of {!r}"
+ValueError: 'data/eval_results/seismic_c25_shards_150m_mmap_e5.json' is not in the subpath of '/workspaces/sfu-library-thinclient' OR one path is relative and the other is absolute.

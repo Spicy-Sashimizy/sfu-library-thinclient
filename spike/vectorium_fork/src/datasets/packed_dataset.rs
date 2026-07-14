@@ -491,6 +491,63 @@ where
     }
 }
 
+impl PackedSparseDataset<crate::DotVByteFixedU8Encoder> {
+    /// E8 dv-v2 construction: per-doc linear u8 value scale.
+    ///
+    /// Unlike the v1 `From` impl above (which routes values through the global
+    /// `ScalarSparseQuantizer` FixedU8Q 1/64), this feeds the ORIGINAL values
+    /// to `push_encoded_per_doc`, which computes the per-doc `f16 vmax` and
+    /// re-quantizes to u8-linear. Same component-permutation training as v1.
+    pub fn from_per_doc_scale<EIn, S>(
+        dataset: crate::datasets::sparse_dataset::SparseDatasetGeneric<EIn, S>,
+    ) -> Self
+    where
+        EIn: crate::SparseVectorEncoder<OutputComponentType = u16>,
+        EIn::OutputValueType: crate::ValueType + crate::Float,
+        for<'a> EIn::EncodedVector<'a>: crate::VectorView,
+        S: crate::core::storage::SparseStorage<EIn>,
+    {
+        use crate::SparseVectorEncoder;
+        use num_traits::ToPrimitive as _;
+
+        let dim = dataset.output_dim();
+        let mut dotvbyte_encoder = crate::DotVByteFixedU8Encoder::new(dim, dim);
+        dotvbyte_encoder.set_per_doc_scale(true);
+
+        // Same permutation-training sample policy as the v1 From impl.
+        const SAMPLE_RATE: usize = 20;
+        let sample_size = if dataset.len() / SAMPLE_RATE < 50_000 {
+            dataset.len()
+        } else {
+            dataset.len() / SAMPLE_RATE
+        };
+
+        dotvbyte_encoder.train(dataset.iter().take(sample_size));
+
+        let mut offsets = Vec::with_capacity(dataset.len() + 1);
+        offsets.push(0);
+        let mut data = Vec::new();
+
+        let mut values_f32: Vec<f32> = Vec::new();
+        for v in dataset.iter() {
+            values_f32.clear();
+            values_f32.extend(v.values().iter().map(|val| {
+                val.to_f32()
+                    .expect("Failed to convert original value to f32")
+            }));
+            dotvbyte_encoder.push_encoded_per_doc(v.components(), &values_f32, &mut data);
+            offsets.push(data.len());
+        }
+
+        PackedSparseDatasetGeneric {
+            offsets: offsets.into_boxed_slice(),
+            data: data.into_boxed_slice(),
+            encoder: dotvbyte_encoder,
+            nnz: dataset.nnz(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -546,6 +603,68 @@ mod tests {
 
         assert_eq!(d0, expected0);
         assert_eq!(d1, expected1);
+    }
+
+    /// E8 dv-v2: dataset-level construction with the per-doc scale — scores
+    /// must match the per-doc dequant model `u8/255 · f16(vmax_doc)`, incl.
+    /// values far above the v1 FixedU8Q ceiling (255/64 ≈ 3.98).
+    #[test]
+    fn per_doc_scale_conversion_and_dot_product() {
+        use crate::DatasetGrowable;
+        use crate::QueryEvaluator as _;
+        use crate::VectorEncoder as _;
+        use crate::core::vector::SparseVectorView;
+        use crate::distances::Distance as _;
+        use crate::{DotProduct, DotVByteFixedU8Encoder, PlainSparseDataset,
+            PlainSparseDatasetGrowable};
+
+        let dim = 505;
+
+        let mut growable: PlainSparseDatasetGrowable<u16, f32, DotProduct> =
+            PlainSparseDatasetGrowable::new(
+                crate::PlainSparseQuantizer::<u16, f32, DotProduct>::new(dim, dim),
+            );
+
+        // v0 max 9.0 — unrepresentable in v1 FixedU8Q (saturates at ~3.98).
+        let v0_components = vec![1_u16, 10, 100];
+        let v0_values = vec![1.5_f32, 9.0, 2.5];
+        growable.push(SparseVectorView::new(&v0_components, &v0_values));
+
+        let v1_components = vec![2_u16, 11];
+        let v1_values = vec![0.5_f32, 1.0];
+        growable.push(SparseVectorView::new(&v1_components, &v1_values));
+
+        let frozen: PlainSparseDataset<u16, f32, DotProduct> = growable.into();
+        let dataset: PackedSparseDataset<DotVByteFixedU8Encoder> =
+            PackedSparseDataset::from_per_doc_scale(frozen);
+        assert!(dataset.encoder().per_doc_scale());
+
+        let query = SparseVectorView::new(&[1_u16, 10, 11][..], &[2.0_f32, 3.0, 4.0][..]);
+        let evaluator = dataset.encoder().query_evaluator(query);
+
+        let d0 = evaluator.compute_distance(dataset.get(0)).distance();
+        let d1 = evaluator.compute_distance(dataset.get(1)).distance();
+
+        // Per-doc dequant model: vmax = f16(max), v' = round(v/vmax·255)/255·vmax.
+        let perdoc = |v: f32, vmax: f32| -> f32 {
+            let vmax = half::f16::from_f32(vmax).to_f32();
+            (v / vmax * 255.0).round().clamp(0.0, 255.0) / 255.0 * vmax
+        };
+        let expected0 = perdoc(1.5, 9.0) * 2.0 + perdoc(9.0, 9.0) * 3.0;
+        let expected1 = perdoc(1.0, 1.0) * 4.0;
+
+        assert!(
+            (d0 - expected0).abs() <= 1e-5 * expected0.abs(),
+            "d0 {} != expected {}",
+            d0,
+            expected0
+        );
+        assert!(
+            (d1 - expected1).abs() <= 1e-5 * expected1.abs(),
+            "d1 {} != expected {}",
+            d1,
+            expected1
+        );
     }
 
     #[test]

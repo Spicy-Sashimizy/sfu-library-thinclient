@@ -1,0 +1,44 @@
+{
+  "probe": "f6_prefault_hotset_bench",
+  "date": "2026-07-14",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "gate": "SFU_SEISMIC_PREFLOOR_HOTSET=1 (prefault hot extents at load, reclaimable \u2014 Q9-style WILLNEED|SEQUENTIAL + page stride)",
+  "n_queries": 100,
+  "reps": 2,
+  "passes": 3,
+  "cells": [
+    {
+      "cold_p50": 489.80686900176806,
+      "warm_p50": 53.582309003104456,
+      "cold_p95": 1884.0926060001948,
+      "warm_p95": 74.42750500194961,
+      "vmswap": 0.0,
+      "file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_052417_rep1.json"
+    },
+    {
+      "cold_p50": 373.20771800295915,
+      "warm_p50": 54.62173600244569,
+      "cold_p95": 1464.0156090026721,
+      "warm_p95": 74.39613300084602,
+      "vmswap": 0.0,
+      "file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_052840_rep2.json"
+    }
+  ],
+  "aggregate": {
+    "cold_p50_median": 431.5072935023636,
+    "cold_p95_median": 1674.0541075014335,
+    "warm_p50_median": 54.10202250277507,
+    "warm_p95_median": 74.41181900139782
+  },
+  "baseline_e8v2_q7": {
+    "hybrid_cold_p50_median_ms": 840.93,
+    "hybrid_cold_p95_ms_lo": 4600.0,
+    "hybrid_cold_p95_ms_hi": 4900.0,
+    "hybrid_warm_p50_median_ms": 117.61,
+    "hybrid_warm_p95_ms_lo": 177.0,
+    "hybrid_warm_p95_ms_hi": 182.0,
+    "source": "_e8s2_q7_federated_v2_20260713.json"
+  },
+  "cold_p95_delta_ms": -2925.9458924985665,
+  "caveat": "Container cold regime (drvfs/9p fault) \u2014 NOT the 32 GB-host warm=cold re-fault regime. fadvise-DONTNEED per cold cell evicts the prefaulted hotset, so the cold-CELL delta may be small; the real win is the FIRST cold query of a fresh process (process-cold warmup, no eviction) \u2014 recorded as targeted."
+}

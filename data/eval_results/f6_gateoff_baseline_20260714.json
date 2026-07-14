@@ -1,0 +1,25 @@
+{
+  "purpose": "F6 paired gate-OFF baseline (same day, same .so)",
+  "date": "2026-07-14",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "queries": 100,
+  "passes": 3,
+  "cells": [
+    {
+      "cell_file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_053435_rep1.json",
+      "cold_p50": 665.6810720014619,
+      "cold_p95": 4656.478626005992,
+      "warm_p50": 53.775225998833776,
+      "warm_p95": 74.49253400409361,
+      "empty_results": 0
+    },
+    {
+      "cell_file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_053845_rep2.json",
+      "cold_p50": 676.2982340005692,
+      "cold_p95": 4685.988837998593,
+      "warm_p50": 51.87508000381058,
+      "warm_p95": 73.09620599698974,
+      "empty_results": 0
+    }
+  ]
+}

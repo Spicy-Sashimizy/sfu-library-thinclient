@@ -1,0 +1,35 @@
+19:32:12 INFO R2 cell cap=24g (cgroup memory.max=25769803776): min 3 / max 12 passes, near-zero 2500, plateau <10% x2
+19:32:13 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+19:32:14 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+19:32:14 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+19:32:14 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+19:32:14 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+19:32:14 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+19:32:14 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+19:32:15 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+19:32:15 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+19:32:15 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+19:32:15 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+19:32:15 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+19:32:15 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+19:32:16 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+19:32:16 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+19:32:16 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+19:33:26 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+19:33:30 INFO SPLADE ONNX model loaded (CPU)
+19:33:44 INFO prefault_hotset: global_shard0of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (844 extents)
+19:33:56 INFO prefault_hotset: global_shard1of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (742 extents)
+19:34:08 INFO prefault_hotset: global_shard2of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (810 extents)
+19:34:20 INFO prefault_hotset: global_shard3of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (791 extents)
+19:34:32 INFO prefault_hotset: global_shard4of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (749 extents)
+19:34:44 INFO prefault_hotset: global_shard5of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (809 extents)
+19:34:56 INFO prefault_hotset: global_shard6of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (818 extents)
+19:35:09 INFO prefault_hotset: global_shard7of8.dotvbyte.e5.v2.mmap prefaulted 0.20 GB (804 extents)
+19:35:09 INFO prefault_hotset: touched 1.60 GB total across 8 shards in 98.5s
+19:35:09 INFO loaded in 175.3s  vm={'vmrss_kb': 15460804, 'rssanon_kb': 1137072, 'rssfile_kb': 14323732, 'vmswap_kb': 0}
+19:35:12 INFO hybrid(adaptive): cold geomean 1518.5 ms × 0.25 = flip_threshold 379.6 ms (flip after 2 consec warm)
+19:35:13 INFO hybrid(count-backstop): FLIP seq→par at query 3 (>= 3)
+19:35:35 INFO pass 1: p50 587 ms majflt 58544 (0.455 ms/flt) pgscan 0 ws_refault 0 wall 27s
+19:35:36 INFO pass 2: p50 18 ms majflt 0 (0.000 ms/flt) pgscan 0 ws_refault 0 wall 1s
+19:35:37 INFO pass 3: p50 18 ms majflt 0 (0.000 ms/flt) pgscan 0 ws_refault 0 wall 1s
+19:35:37 INFO wrote data/eval_results/r2_cap24g_20260714.json  converged=True(near_zero) in 3 passes  final p50 18 ms

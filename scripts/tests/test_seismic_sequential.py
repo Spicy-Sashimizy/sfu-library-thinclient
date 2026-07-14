@@ -211,6 +211,95 @@ def test_sequential_identical_to_parallel_multi_shard(synth_shard, tmp_path):
         "multi-shard sequential scores must match parallel within 1e-6")
 
 
+# ── T1 (hybrid): the cold-start flip CANNOT change results ──────────────────
+
+def test_hybrid_identical_to_parallel_and_sequential(synth_shard):
+    """Q7 keystone (2026-07-10): `HybridSeismicBackend` returns bit-identical
+    top-k to BOTH `ParallelSeismicBackend` and `SequentialSeismicBackend`.
+
+    The hybrid flips seq→par on a state signal mid-stream; the load-bearing
+    claim is that the flip CANNOT change results — the shared pure `_merge_topk`
+    is order-independent, and both fan-outs feed it identical per-shard results
+    (same encoded qvec → same dot-product space). So a query served on the flip
+    boundary still returns the bit-identical top-k. This test forces BOTH arms
+    of the hybrid (sequential via DISABLE, parallel via force-flip) and asserts
+    each matches the standalone methods."""
+    stock = synth_shard
+    import os as _os
+    # Snapshot env so the test can't leak HYBRID_* knobs to later tests.
+    _saved = {k: _os.environ.pop(k, None) for k in list(_os.environ)
+              if k.startswith("SFU_SEISMIC_HYBRID_")}
+    try:
+        from lib.thinclient.sharded_seismic_backend import (
+            ParallelSeismicBackend, SequentialSeismicBackend, HybridSeismicBackend)
+
+        paths = [str(stock), str(stock)]   # K=2 (matches the multi-shard T1)
+        par = ParallelSeismicBackend(paths, load_mode="mmap")
+        seq = SequentialSeismicBackend(paths, load_mode="mmap")
+
+        q = {"receptor": 1.0, "kinase": 1.0, "signal": 0.5}
+        par_res = par.search_encoded(q, top_k=50, k_prime=200)
+        seq_res = seq.search_encoded(q, top_k=50, k_prime=200)
+        assert par_res and seq_res
+
+        # Hybrid arm 1: adaptive flip ON. With a 200-doc synthetic shard there's
+        # no real cold/warm regime (everything is resident), so the count
+        # backstop (N=3) fires the flip after 3 queries. Run 4 queries so the
+        # flip definitely happens mid-stream, then assert parity on each.
+        _os.environ.pop("SFU_SEISMIC_HYBRID_DISABLE", None)
+        hyb_adaptive = HybridSeismicBackend(paths, load_mode="mmap")
+        assert hyb_adaptive.federation == "hybrid"
+        qs = [{"receptor": 1.0, "kinase": 1.0, "signal": 0.5},
+              {"receptor": 1.0, "kinase": 1.0},
+              {"receptor": 1.0, "kinase": 1.0, "protein": 0.5},
+              {"receptor": 1.0, "kinase": 1.0, "signal": 0.5}]
+        for i, qi in enumerate(qs):
+            h_res = hyb_adaptive.search_encoded(qi, top_k=50, k_prime=200)
+            p_res = par.search_encoded(qi, top_k=50, k_prime=200)
+            s_res = seq.search_encoded(qi, top_k=50, k_prime=200)
+            assert [o for o, _ in h_res] == [o for o, _ in p_res] == [o for o, _ in s_res], (
+                f"hybrid(adaptive, q{i}) must match par+seq order exactly "
+                f"(flip at query 3 must not change results)")
+            assert all(abs(h - p) < 1e-6 for (_, h), (_, p) in zip(h_res, p_res)), (
+                f"hybrid(adaptive, q{i}) scores diverged from parallel")
+        # Confirm a flip actually happened at some point (else the test didn't
+        # exercise the flip boundary). After 4 queries the count backstop (N=3)
+        # guarantees it.
+        assert hyb_adaptive._flipped, (
+            "hybrid never flipped seq→par — the flip boundary wasn't exercised; "
+            "bump the query count or lower SFU_SEISMIC_HYBRID_FLIP_N")
+
+        # Hybrid arm 2: DISABLED (force_parallel from query 1) = pure parallel.
+        _os.environ["SFU_SEISMIC_HYBRID_DISABLE"] = "1"
+        hyb_par = HybridSeismicBackend(paths, load_mode="mmap")
+        assert hyb_par._flipped is True and hyb_par._force_parallel
+        hq = hyb_par.search_encoded(q, top_k=50, k_prime=200)
+        assert [o for o, _ in hq] == [o for o, _ in par_res], (
+            "hybrid(DISABLED=force_parallel) must match parallel exactly")
+    finally:
+        for k, v in _saved.items():
+            if v is not None:
+                _os.environ[k] = v
+
+
+def test_hybrid_invalid_signal_rejected():
+    """`SFU_SEISMIC_HYBRID_SIGNAL=bogus` raises ValueError at construction —
+    so a typo can't silently fall through to an unintended flip policy."""
+    import os as _os
+    from lib.thinclient.sharded_seismic_backend import HybridSeismicBackend
+    _stub_seismic()
+    old = _os.environ.get("SFU_SEISMIC_HYBRID_SIGNAL")
+    try:
+        _os.environ["SFU_SEISMIC_HYBRID_SIGNAL"] = "bogus"
+        with pytest.raises(ValueError, match=r"HYBRID_SIGNAL"):
+            HybridSeismicBackend([], load_mode="stock")
+    finally:
+        if old is None:
+            _os.environ.pop("SFU_SEISMIC_HYBRID_SIGNAL", None)
+        else:
+            _os.environ["SFU_SEISMIC_HYBRID_SIGNAL"] = old
+
+
 # ── Cascade guard — distinct classes, no shared mutable instance state ───────
 
 def test_distinct_classes_share_no_mutable_state(synth_shard):

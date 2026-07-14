@@ -59,7 +59,370 @@ traverses; 40×3 would take hours for no extra information).
 | **M6 VNNI/UDOT pre-gates** (2026-07-05) | `vpdpbusd`/`UDOT` i32 accumulation removes the i16 saturation that capped M2 at 6-bit → 7-bit query clears the 0.99 quality bar at n=100 (pre-gate model exists; 0.995 at n=40) | (1) cpuid inventory across dev/host/DO CPUs (`lscpu \| grep vnni`, ARM `asimddp`); (2) `m2_pregate_query_integer_dot.py` at 7-bit, n=100; gated behind M2b's verdict — see `math_optimization/08` §M6 | PRE-REGISTERED, not run |
 | **M8 survivors-per-block instrument** (2026-07-05) | surviving posting blocks contribute ≥4 candidates on average → batched (register-blocked) scoring has material batch width | 20-line counter in the traverse path (or offline from posting-block stats); if typical batch <2, M8 dies on paper — `math_optimization/08` §M8 | PRE-REGISTERED, not run |
 | **E7 readahead on ext4** | gate-c's 0.560 is partly drvfs; on a native ext4 host the fault profile may differ | would need shards copied to ext4 — **violates Rule Zero on this host** (no space guarantee); only for a future machine with a second SSD | PARKED |
-| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 vs f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** vs FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. Next: Stage 1 (v2 encoder/loader in `spike/vectorium_fork`, shards 1–2 only) |
+| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 vs f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** vs FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. **Stage-1 GO 2026-07-10** — v2 codec/converter/reader shipped (format version 2, per-doc f16 vmax record head); all 4 pre-registered bars PASS on both shards: overlap@10 **0.997/0.993** (= the Stage-0 proxy exactly), size **+0.67%** (the *est.* −6% did NOT materialize — the u8 re-distribution compresses the same, the f16 heads add ~+0.7%), warm p50 **0.985×/1.039×**, T1 bit-identity 0/0. `scripts/seismic_testbed/e8_dvv2_gates.py`, `data/eval_results/e8_dvv2_stage1_shard{1,2}_20260710.json`. Next: Stage 2 (host-tier full 8-shard re-conversion + E5-perm fold + G8d re-run; only that serves v2) |
+
+### Q12 access-skew / hot-set telemetry probe (2026-07-13, disk_streaming_research candidate #1)
+
+**PRE-REGISTERED before run (this commit); container-side, read-only, no serving
+change.** Parent: `docs/disk_streaming_research/01_CROSS_PROJECT_RESEARCH.md`
+candidate #1 (the colibrì `eusage`/pin premise — "a small hot set exists" —
+transferred to SPLADE query traffic). Method: for n=120 topic-independent
+queries (1 paraphrase per `original_query` from `diverse_queries.json`, served
+shape k′=100/hf=0.8, E5 dv manifest), collect each query's `search_visited`
+forward-range starts per shard (word offsets ×8 = bytes → 4 KiB page ids;
+dv records avg ~165 B ≪ page, so start-page ≈ touched page), histogram page
+touches across queries. Secondary stat: within-topic overlap on a 20-topic ×
+3-paraphrase subset (repeat-traffic upper bound).
+
+- **Prediction (*est.*, write-before-run):** touched-page distribution is
+  Zipf-ish — top 10% of touched pages carry ≥50% of touches; cross-topic
+  repeat fraction (pages touched by ≥2 of 120 queries, weighted by touches)
+  ≥25%; hot-set-80 (pages covering 80% of touches) ≤ ~4 GB across 8 shards
+  (vs ~25 GB dv forward total).
+- **Decision rule:** hot-set-80 ≤ 4 GB AND repeat ≥25% → disk_streaming
+  candidates #2/#3 (software LRU/pin, PILOT-analog prefetch) stay live —
+  register their full experiments here before building. hot-set-80 > 8 GB OR
+  repeat <10% → the colibrì premise does NOT transfer to this workload; close
+  #2/#3, remediation stays Tier-2 #5 (no-swap host / mlock). Between → gray
+  zone; re-run with a production-shaped query log before deciding.
+- **Caveat (recorded before run):** 120 judged-eval queries are broader-topic
+  than production library traffic (real users repeat subjects far more), so a
+  skew finding here is *conservative* — a uniform finding here is decisive for
+  closure, a skewed finding still needs the within-topic stat for sizing.
+
+Script: `scripts/seismic_testbed/q12_access_skew_probe.py`; results →
+`data/eval_results/q12_access_skew_probe_<date>.json`.
+
+**MEASURED 2026-07-13 — GRAY ZONE (live-leaning)**
+(`q12_access_skew_probe_20260713.json`, n=120+60, 400 s): repeat_touch_frac
+**0.852** (≥0.25 ✅, far exceeded), hot-set-80 **4.20 GB** (bar ≤4 GB missed by
+5%; close-bar >8 GB nowhere near), top-10% share **0.342** (prediction ≥0.50
+MISSED — skew real but moderate, Gini 0.442), hot-set-50 **1.59 GB**, distinct
+touched 27.2% of the 30.5 GB dv forward, within-topic paraphrase warm-hit
+**0.621**. Per the pre-registered rule: candidates #2/#3 neither closed nor
+green-lit — **next gate = re-run on a production-shaped query log** (recorded
+caveat cuts favorably: eval set is diversity-maximized, production repeats
+subjects more). Full read: `disk_streaming_research/02_…` §5.
+
+### Q12b access-skew / hot-set probe — PRODUCTION-SHAPED query log (2026-07-14)
+
+**PRE-REGISTERED before run (this row); the gating Phase 0b cell of the
+disk-streaming research program (drive prompt Phase 0b).** Parent:
+`docs/disk_streaming_research/03_MIN_RAM_DESIGN_MAP.md` (build gate G-a) +
+the Q12 GRAY-zone caveat (eval set is diversity-maximized → production
+repeats subjects more → a skew finding here is conservative). Method:
+re-run the Q12 telemetry against (1) the served **E8 v2 manifest**
+(`seismic_c25_shards_150m_mmap_e5_v2.json`, flipped 2026-07-14 — the v2
+reconversion invalidated any Q12 sidecar, hence the rerun) and (2) a
+**production-shaped** query log replacing Q12's 120-diverse set.
+
+- **Production shape:** real SFU library traffic repeats *subjects*
+  Zipf-ishly (a few hot subjects dominate; the same query recurs within a
+  subject). The probe synthesizes this from `data/sfu_eval_queries.json`
+  (120 real queries, 49 subjects) — sample N queries with a Zipf-weighted
+  subject distribution (s=1.0 exponent) + within-subject repeat (each
+  sampled subject contributes its own queries multiple times), emulating
+  the documented production property (Q12 §caveat: "real users repeat
+  subjects far more"). N=400 (≥3× Q12's 120 for tighter bars). Same
+  served shape (top_k=50→k'=100, hf=0.8, query_cut=all-terms); same
+  `search_visited` instrument; same page-touch histogram + coverage curve.
+- **Prediction — write-before-run:** production skew ≥ the diverse set's
+  (repeat_touch_frac already 0.852 on the diverse set, so the bar
+  *should* lift further); hot-set-80 **≤ 4 GB** (the bar Q12 missed by
+  0.2 GB — production repeat concentrates touches onto fewer pages, so the
+  same 80% of touches should fit in less RAM, not more). If production
+  skew moves the *opposite* way (hot-set-80 grows), the colibrì premise
+  weakens.
+- **Decision rule (unchanged from Q12):** hot-set-80 ≤ 4 GB AND repeat ≥25%
+  → **GO** (disk-streaming Phase 1+ live). hot-set-80 > 8 GB OR repeat <10%
+  → **hard NO-GO** (stop after Phase 1+2, park F3, write up why). Between
+  → **GRAY** (proceed per the drive prompt: GO or GRAY-live-leaning →
+  proceed; the program continues to Phase 3+).
+- **Result records HERE (MEASURED row replaces this prediction) + doc 03 §5.**
+
+**MEASURED 2026-07-14 — GO** (`q12b_access_skew_production_20260714.json`,
+n=400 draws, 351 s, E8 v2 shards): repeat_touch_frac **0.9875** (≥0.25 ✅ —
+Q12's 0.852 elevated by production repeat), hot-set-80 **3.07 GB** (bar ≤4 GB
+**PASS** — Q12's 4.20 GB miss inverted: production repeat concentrates touches
+onto fewer pages, exactly as the Q12 caveat predicted), hot-set-50 1.09 GB,
+top-10% share 0.411 (Q12 0.342), Gini 0.550 (Q12 0.442), distinct touched
+24.6% of the 30.5 GB v2 forward. Verdict **GO** under the pre-registered rule
+(unchanged from Q12): the colibrì hot-set premise transfers to production-
+shaped SPLADE traffic → F1/F2/F3 (disk-streaming Phase 1/2/3) green-lit.
+Production shape = Zipf-weighted 49 subjects (top: Health Sciences 92/400) +
+within-subject-with-replacement (75 queries drawn ≥2×, max repeat 23) over
+`data/sfu_eval_queries.json`. Full read: `disk_streaming_research/03_…` §5.
+
+Script: `scripts/seismic_testbed/q12b_access_skew_production.py`; results →
+`data/eval_results/q12b_access_skew_production_<date>.json`.
+
+### F4 floor-mlock (2026-07-14, disk-streaming Phase 2)
+
+**PRE-REGISTERED before build/run.** Extends `prefault_floor` (Q9,
+`SFU_SEISMIC_PREFLOOR_AT_LOAD`, E7 Fix #4) with an optional `mlock_floor` flag
+that locks the SAME floor slabs it prefaults (posting_lists + doc-mapping
+strings/offsets + optionally forward_offsets, ~1.5 GB structural floor).
+Residency-only: `mlock` makes the floor un-evictable but does not touch the
+scoring path → T1 bit-identical by construction.
+
+- **Prediction — write-before-run:** floor pages show **zero** re-faults
+  across a memory-pressure pass on the capped host (kswapd cannot steal them);
+  warm p50 with floor-lock ON ≤ **1.05×** the pin-OFF warm p50 (mlock adds no
+  per-query work, only a one-time load cost); T1 identical (0 mismatches).
+- **Decision rule:** all three (zero floor re-faults under pressure AND warm
+  ≤1.05× AND T1 0/0) = PASS → floor-pin is durable, promote to the localized +
+  32 GB deploy combos. Any fault under pressure OR warm >1.10× = the mlock
+  cost isn't free → keep it opt-in only.
+- Kill-switch: `SFU_SEISMIC_MLOCK_FLOOR=1` (=0 → today's behavior, byte-identical).
+
+### F3 mlock_ranges pin tier (2026-07-14, disk-streaming Phase 3)
+
+**PRE-REGISTERED before build/run.** New pyo3 hook
+`MmapSeismicIndex.mlock_ranges(extents)` pins page extents in the
+`forward_data.bin` slab, budget-capped: pin ≤
+min(`SFU_SEISMIC_PIN_BUDGET_GB`, `MemAvailable` − ~1.5 GB floor − headroom),
+largest-coverage (touch-count) extents first. A/B vs pin-off on the 32 GB
+host regime (the 15.8 s warm≈cold cell, measured 2026-07-01). The doc-02 §6
+*est.* uplift to beat is ~1.5–3× p50 — treat as *est.*, NOT a bar; the bars
+below are the actual pre-registration.
+
+- **Dials:** `SFU_SEISMIC_PIN_BUDGET_GB` ∈ {0 (off, kill-switch), 1.6 (hot-50),
+  4.2 (hot-80)} — the F1 sidecar budgets (doc 03 §3).
+- **Prediction — write-before-run:**
+  - 1.6 GB pin → covers ~50% of touches (Q12 curve) → warm p50 **~1.3–2×**
+    pin-off on the capped 32 GB host (*est.*, doc 03 §3);
+  - 4.2 GB pin → ~80% of touches → warm p50 **~1.5–3×** (*est.*, doc 02 §6);
+  - 1.6 GB on a 6 GB cap → still fits (floor 1.5 + pin 1.6 + anon 1.1 + enc 0.7
+    ≈ 4.9 GB locked; ~1 shard transient on top → ≤6 GB).
+- **Decision rule (the no-OOM guarantee is the bar):**
+  - **PASS** if EVERY dial cell shows VmSwap ≈ 0 AND no OOM-killer events
+    (dmesg) AND T1 bit-identical (0/100 mismatches with pin-on). Latency
+    uplift is *reported*, not gated (the program's goal is min-RAM with no
+    OOM + no quality break; latency is the secondary win).
+  - **NO-GO** if any dial OOMs or swaps (the budget check failed) → revert,
+    F3 not viable at that dial; record the dial that OOM'd.
+- **Result records HERE + doc 03 §5 status (DESIGN ONLY → MEASURED).**
+
+Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
+`sharded_seismic_backend.py` loads the F2 sidecar at construction + the budget.
+
+### F3/F4/F5 BUILD STATE + Phase 5 (2026-07-14)
+
+**All three hooks BUILT + mechanism-verified; latency A/B HOST-GATED.**
+
+- **F4 `mlock_floor`** (spike fork 6d21c5b, .so rebuilt sudo-native): hook works
+  (`mlock_floor(True)` returned 1.67 GB on shard 0). **DESIGN ISSUE FOUND:**
+  `mlock_floor` locks the FULL `_postings_mmap` slab (posting_lists.bin,
+  1.16 GB/shard) × 8 = **~13.4 GB floor pin total**, NOT the doc-03 "~1.5 GB".
+  The doc-03 "~1.5 GB structural floor" is PER SHARD (posting_lists 1.16 +
+  doc-mapping 0.35); the Q9 "~5,000 pages = 20 MB constant floor" is the true
+  small floor, NOT what `mlock_floor` locks (it locks the whole slab, like
+  `prefault_floor`). For min-RAM, `mlock_floor` needs rescoping to the ~20 MB
+  true structural floor; **default-off (kill-switch `SFU_SEISMIC_MLOCK_FLOOR=0`)
+  is correct** until then. F4 EFFICACY UNMEASURED (and over-scoped).
+- **F3 `mlock_ranges`**: hook works; the manual 8-shard pin path (load via
+  `_load_one_shard` + `mlock_ranges` per shard, 0.2 GB/shard = 1.6 GB budget)
+  pinned **0.782 GB across all 8 shards** cleanly (mlock returns 0 past the
+  sudo memlock ceiling at ~shard 4, no crash — the no-op fallback). The
+  `load_hotset_and_pin` budget check (min(dial, MemAvailable − 1.5 − 1.0))
+  works. F3 EFFICACY (latency) HOST-GATED: the 15.8 s warm≈cold regime is a
+  32 GB HOST phenomenon (62 GB index > 32 GB RAM); this dev container has 54 GB
+  MemAvailable → warm p50 is already RAM-speed → pin-tier latency uplift is
+  NOT measurable here. Latency A/B requires the operator's constrained-host run.
+- **F5 `release_pages_except`**: hook built; NOT exercised (only relevant in
+  the sequential-cold arm under memory pressure — host-gated). EFFICACY
+  UNMEASURED.
+- **Phase 5 T1 (correctness re-gate with pinning ON) — 20/20 BIT-IDENTICAL
+  2026-07-14** (`_t1_pin_off.json` / `_t1_pin_on.json`):
+  `ParallelSeismicBackend` (2 shards, E8 v2) with `SFU_SEISMIC_PIN_BUDGET_GB=1.6`
+  (0.4 GB pinned) produces bit-identical top-50 oaid-order on 20/20 diverse
+  queries vs pin-OFF. The pin tier is residency-only (`_merge_topk`/scoring/
+  decode untouched) → T1 by construction; asserted empirically. Run
+  out-of-process (1 backend, 2 subprocesses) because 3 backends × 2 shards
+  exceeds the dev container's ~50 GB VmSize ceiling.
+- **Dev-container VmSize ceiling (~50 GB, WSL2)**: 8-shard mmap = 44 GB +
+  SPLADE ONNX = 6 GB; the full `from_manifest` pin path (ONNX eager + 8 shards
+  + mlock + sidecar manifest read) MemoryErrors reading the 22 MB shard
+  manifest. HOST-GATED: the production host (58 GB, Docker-exec root) and the
+  32 GB constrained host don't hit this (different memory accounting). The
+  no-OOM + T1 bar IS verifiable container-side (mechanism + T1 above); the
+  latency + pressure A/B needs the constrained-host operator run.
+
+### F6 cold-start prefault-hotset-at-load (2026-07-14, disk-streaming Phase 6)
+
+> **CORRECTION 2026-07-14**: the result originally recorded here ("cold p95
+> 30 ms median, ~150×", commit 0b4e9c3) was **INVALID**. Every one of the 300
+> bench queries had silently failed — the F6 gate skipped the eager SPLADE
+> load (encoder ImportError per query), and MADV_SEQUENTIAL over ~33k
+> extents/shard saturated vm.max_map_count (262,144 measured), killing the
+> parallel arm ("can't start new thread") — and the harness scored each
+> failure as a ~0 ms no-op. Five defects fixed in commit 2203d9b; the numbers
+> below are the corrected re-measurement.
+
+**MEASURED 2026-07-14 (corrected)** (`f6_prefault_hotset_20260714.json` vs
+`f6_gateoff_baseline_20260714.json`; paired same-.so A/B, q7 hybrid
+fadvise-DONTNEED protocol, 100 q × 3 passes × 2 reps per arm, 0 failed
+queries): at load, prefault (NOT mlock) the F2 sidecar's hot extents into
+the page cache via the `prefault_ranges` .so hook (gate
+`SFU_SEISMIC_PREFLOOR_HOTSET=1`, extents gap-coalesced to ≤2048/shard).
+Gate OFF: cold p50 666-676 ms, cold p95 **4656-4686 ms**. Gate ON: cold p50
+373-490 ms, cold p95 **1464-1884 ms (median 1674)**. → **~2.8× cold-p95,
+~1.5× cold-p50, warm unchanged** (52-55 ms both arms). VmSwap 0.
+Attribution (corrected 2026-07-14 audit): warm improving 117→54 ms vs the
+2026-07-13 baseline is an operating-conditions confound (CPU contention),
+not a module win — encode (pure ONNX) also halved 30.4→16.7 ms, the 01:00
+old-.so rebench under co-load still showed warm 115-126 ms, and the .so
+rebuild used no target-cpu flags. Quiet-host warm ≈54 ms; co-loaded ≈120 ms.
+Not prefault either way (warm identical in both arms). The gate-OFF cold
+p95 matches the 2026-07-13 baseline (4576-4896 ms) — cold p95 is disk-bound
+and immune to the confound — so the cold-p95 gain is genuinely the
+prefault's. Result parity ON vs OFF:
+**10/10 identical** (top-10 ids + scores,
+`scripts/seismic_testbed/seismic_result_parity.py`).
+
+**Caveat (recorded honestly):** the win is the **process-cold warmup** — the
+first queries of a fresh process after prefault, with no intervening eviction.
+Under sustained memory pressure (the 32 GB-host warm=cold re-fault regime) the
+prefaulted pages get evicted and need F3 mlock to stay resident. Prefault is
+the cold-start lever; mlock is the durability lever. The constrained-host run
+would measure both together (F3+F6).
+
+### R1 RAM-ladder stress sweep (2026-07-14, E7b method on the served stack)
+
+**MEASURED 2026-07-14** (`r1_cap{48,32,24,16,12,8,6}g_20260714.json`, driver
+`scripts/seismic_testbed/r1_ram_ladder.py`): descending external caps via
+sibling containers (`docker run --memory=X --memory-swap=X`, swap forbidden),
+8-shard E8 v2 hybrid, prefault ON, 40 pre-encoded queries (E7b pattern — no
+ORT in-cap) × 3 passes. All cells swap 0, 0 empty results. Latencies are
+TRAVERSAL-ONLY (encode excluded by design).
+
+| cap | cold pass p50/p95 | steady p50 (pass 3) | steady majflt/pass | regime |
+|---|---|---|---|---|
+| 48G | 576 / 1227 ms | **18 ms** | 0 | fits |
+| 32G | 605 / 1275 ms | **18 ms** | 0 | fits |
+| 24G | 584 / 1279 ms | **19 ms** | 0 | fits |
+| 16G | 942 / 2176 ms | 135 ms | 15k | marginal (WS ≈ cap) |
+| 12G | 1855 / 4589 ms | 22 ms | 2.4k | boundary w/ hysteresis (converges pass 3) |
+| 8G | 3392 / 7211 ms | **2135 ms** | 261k | sustained thrash (warm≈cold) |
+| 6G | 4802 / 10949 ms | **4924 ms** | 550k | sustained thrash, ~5 s/query |
+
+> **Convergence caveat (2026-07-14):** the 16G pass-3 value (135 ms) is NOT
+> a steady state — that cell was still converging (majflt 104k→56k→15k), and
+> the 12G-beats-16G pass-3 inversion is a fixed-window transient artifact
+> (capacity-scaled convergence time × pressure-scaled aging), not Belady's
+> anomaly. Full write-up + literature:
+> `docs/session_2026-07-14_f6_corrections_r1_ladder/04_CONVERGENCE_ARTIFACT.md`.
+
+Findings: (1) this workload's working set = **~14.3 GB file-backed + 1.1 GB
+anon ≈ 15.5 GB** — NOT the 44 GB index; above it the ladder is flat. (2) The
+thrash floor starts between 12G (recovers by pass 3) and 8G (never recovers);
+at ≤8G every pass re-faults the full touch set — the 32 GB-host warm≈cold
+disease reproduced in a controlled cell. (3) Prefault-at-load does NOT help
+under sustained pressure (as pre-registered: the kernel evicts the hot set
+mid-pass).
+
+**F3 pin-ON arm (2026-07-14, `r1_cap{8,6}g_pin16_20260714.json`) — the
+pre-registered pin hypothesis is REFUTED in the self-thrash regime.**
+Predicted (*est.*, doc 03 §3): pin 1.6 GB hot-50 → ~60% of touches become RAM
+hits → 1.5–3× p50. Measured (pin engaged correctly: 1.64 GB locked, 8 shards,
+coalesced extents, no VMA issues):
+
+| cap | steady p50 OFF | steady p50 PIN-1.6 | majflt/pass OFF → ON |
+|---|---|---|---|
+| 8G | 2135 ms | 2229–2461 ms | 261k → 264k (neutral/slightly worse) |
+| 6G | 4924 ms | **6631–6791 ms (~35% WORSE)** | 550k → ~590k |
+
+Why the hypothesis failed: (a) touch coverage ≠ fault mass — the most-touched
+pages are exactly the ones the kernel's active list already keeps under
+churn, so the pin insured the wrong pages; (b) the locked 1.64 GB came out of
+the same budget the un-pinned remainder streams through (at 6G: usable cache
+~4.9 → ~3.3 GB → bigger per-pass deficit). Doc 02 §3.2's own "cannot beat
+capacity math" bound applied. Only benefit observed: a modest cold-pass
+prefault effect at 8G (pass 1 3.09 s vs 3.39 s). Remaining untested pin
+value: protection against EXTERNAL cache competitors (not self-thrash) — a
+different regime, pre-registered here as an open question, plus the
+F4-rescoped ~20 MB floor pin.
+
+**F5 release-except cell (2026-07-14, `r1_cap16g_f5rel_20260714.json`) —
+NULL RESULT as built, with a diagnosed scope bug.** Pass-for-pass identical
+to the plain 16G cell (966/460/125 ms vs 942/463/135 ms; majflt 104k/56k/15k
+both). Tell: post-release RssFile UNCHANGED (14.32 GB) despite "released
+16.45 GB" — the hook only covers the **forward_data slab**, whose pages were
+mostly non-resident at that moment anyway; the actual load residue lives in
+the structural slabs (posting lists, doc mapping, token maps) which
+`release_pages_except` does not touch. The pre-sorted-cache hypothesis
+(doc `session_2026-07-14.../04_CONVERGENCE_ARTIFACT.md` §5.3) is therefore
+UNTESTED, not refuted — a meaningful test needs whole-shard
+fadvise-DONTNEED-except-hot or extending the hook beyond the forward slab.
+
+**Quality under squeeze: 40/40 bit-identical (ids + scores) vs the uncapped
+reference in ALL THREE stressed cells** (8G-pin, 6G-pin, 16G-F5;
+`r1_results_*.json` vs `r1_results_uncapped_ref.json`) — pressure is
+latency-only, empirically confirmed at up to ~590k faults/pass.
+
+### R2 fine convergence ladder (pre-registered AND MEASURED 2026-07-14)
+
+**MEASURED 2026-07-14** — 14/14 cells clean (swap 0, real cold fills, no
+F6-class failures); full table + per-cell verification in
+`data/eval_results/_r2_ladder_summary.md`, cells `r2_cap*_20260714.json`.
+Headline: **converged steady state is a flat 17.9–18.9 ms at every cap
+≥ 11 GB and sustained thrash at every cap ≤ 10 GB (10g ~1.4 s, 9g ~1.8 s,
+6g ~5.8 s) — the cliff between 10 and 11 GB is the empirical repeat-set
+size.** Verdicts on the four pre-registered expectations: (1) cliff —
+CONFIRMED; (2) passes-to-converge rising with cap — NOT CONFIRMED at pass
+granularity (flat 4–5, ±1 rep-to-rep), but the pass-3 fixed-window inversion
+REPRODUCED (12g p50 21 ms vs 16g 124 ms; R1 read 22 vs 135) with a refined
+mechanism — the inversion is carried by residual-fault distribution across
+queries, not by the smaller cap finishing the whole sort first; (3)
+pressure-scaled aging — CONFIRMED by direct cgroup observation (pass-1
+pgscan monotone 24g:0 → 17g:0.56M → 11g:3.5M → 6g:7.1M; ws_refault → 0 at
+convergence above the cliff; active_file ends 0.2 GB at 24g — no pressure,
+no promotion — vs 7.5–8.8 GB at 11g); (4) replicate spread — CONFIRMED
+small (converged p50 18.1–18.9 ms across all drained cells). Caveat: the
+near-zero stop rule (majflt ≤ 2,500) can leave 0.5–2k residual faults that
+inflate the final-pass p50 to 21–36 ms (14/16/17g rep-1 cells) — quote
+steady state only from a majflt≈0 pass. Original pre-registration follows.
+
+Purpose: turn the R1 convergence artifact
+(`docs/session_2026-07-14_f6_corrections_r1_ladder/04_CONVERGENCE_ARTIFACT.md`)
+into a graphable dataset and upgrade its mechanism from fault-count inference
+to direct kernel observation. Driver
+`scripts/seismic_testbed/r2_convergence_ladder.py`; host-side orchestrator
+`scripts/seismic_testbed/r2_host_orchestrator.sh` (sibling containers
+`docker run --memory=X --memory-swap=X`, shared WSL2 page cache dropped
+before every cell for cold-start purity); in-container GLM 5.2 drive session
+verifies + commits per rung (`data/eval_results/_r2_convergence_drive_prompt.md`).
+
+Design (differences from R1): **1 GB rungs 17→9 GB** (the marginal band
+around repeat set ~10–11 GB and working set ~15.5 GB — R1's coarse ladder
+had only 12/16 in-band), anchors 24 and 6 GB, replicates (`_rep2`) at
+16/13/11. **Convergence-terminated, not fixed-window**: min 3 / max 12
+passes; converged when pass majflt ≤ 2,500 ("near_zero") or per-pass change
+< 10% twice in a row ("plateau"); `maxpass` = unconverged, its latency is
+NOT quotable as steady state. Per-pass cgroup-v2 `memory.stat` deltas
+(pgscan/pgsteal, workingset_refault_file, workingset_activate_file,
+active_file/inactive_file gauges) + global `/proc/vmstat` (noisy — shared
+WSL2 kernel). Same 40 pre-encoded queries / top-50 / prefault-ON as R1;
+latencies remain TRAVERSAL-ONLY.
+
+Pre-registered expectations (*est.* until measured):
+
+1. Converged p50 vs cap is a monotonic step; the cliff (jump from ~20 ms to
+   seconds) sits in [9, 12] GB, and its location is an empirical measurement
+   of the repeat set (current estimate ~10–11 GB).
+2. Passes-to-converge RISES with cap inside the marginal band (Che/Fagin
+   capacity-scaled convergence time — 04 doc §4; R1 gives two points:
+   12 GB ≤3 passes, 16 GB >3).
+3. Per-pass pgscan/pgsteal falls as cap rises (pressure-scaled aging, 04 doc
+   §2.2); workingset_refault_file → ~0 at convergence for caps above the
+   cliff, stays high below it.
+4. Replicate spread at 16/13/11 GB is small relative to the cap-to-cap
+   differences (else single-sample rungs are not graphable).
+
+Discard rules (any → cell INVALID, recorded not concluded): swap > 0; empty
+results (driver exit 3); pass-1 majflt < 50k at cap ≤ 17g (pre-cell
+drop_caches failed → residency contamination); converged p50 < 10 ms or
+majflt ≈ 0 at cap ≤ 12g (broken cell, the F6 lesson).
 
 ## Recording rules (same-commit doc rule applies)
 

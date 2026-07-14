@@ -1,0 +1,48 @@
+[02:28:13] production log: 400 draws (Zipf subjects + within-subject repeat)
+[02:28:16] loaded 8 shards (mmap, E8 v2)
+[02:29:50]   q  0/400: elapsed 94s
+[02:31:23]   q 25/400: elapsed 187s
+[02:31:40]   q 50/400: elapsed 204s
+[02:31:52]   q 75/400: elapsed 216s
+[02:31:59]   q100/400: elapsed 223s
+[02:32:06]   q125/400: elapsed 230s
+[02:32:11]   q150/400: elapsed 235s
+[02:32:15]   q175/400: elapsed 240s
+[02:32:20]   q200/400: elapsed 244s
+[02:32:23]   q225/400: elapsed 248s
+[02:32:26]   q250/400: elapsed 250s
+[02:32:29]   q275/400: elapsed 253s
+[02:32:31]   q300/400: elapsed 256s
+[02:32:34]   q325/400: elapsed 258s
+[02:32:36]   q350/400: elapsed 261s
+[02:32:40]   q375/400: elapsed 264s
+[02:32:41]   q399/400: elapsed 266s
+[02:32:42]   shard0 hot50_1.6gb: 0.2GB, 33434 extents, covers 61.1% of touches (48829 pages)
+[02:32:43]   shard0 hot80_4.2gb: 0.525GB, 66899 extents, covers 88.7% of touches (128174 pages)
+[02:32:43]   shard0 full_touched: 0.9471GB, 91198 extents, covers 100.0% of touches (231231 pages)
+[02:32:43]   shard1 hot50_1.6gb: 0.2GB, 33402 extents, covers 59.9% of touches (48829 pages)
+[02:32:44]   shard1 hot80_4.2gb: 0.525GB, 67892 extents, covers 88.0% of touches (128174 pages)
+[02:32:44]   shard1 full_touched: 0.9557GB, 92894 extents, covers 100.0% of touches (233317 pages)
+[02:32:45]   shard2 hot50_1.6gb: 0.2GB, 33765 extents, covers 61.0% of touches (48829 pages)
+[02:32:45]   shard2 hot80_4.2gb: 0.525GB, 67874 extents, covers 88.4% of touches (128174 pages)
+[02:32:46]   shard2 full_touched: 0.963GB, 93212 extents, covers 100.0% of touches (235106 pages)
+[02:32:46]   shard3 hot50_1.6gb: 0.2GB, 33911 extents, covers 58.7% of touches (48829 pages)
+[02:32:47]   shard3 hot80_4.2gb: 0.525GB, 68785 extents, covers 88.1% of touches (128174 pages)
+[02:32:47]   shard3 full_touched: 0.96GB, 92068 extents, covers 100.0% of touches (234365 pages)
+[02:32:47]   shard4 hot50_1.6gb: 0.2GB, 33677 extents, covers 60.3% of touches (48829 pages)
+[02:32:48]   shard4 hot80_4.2gb: 0.525GB, 66907 extents, covers 88.4% of touches (128174 pages)
+[02:32:48]   shard4 full_touched: 0.9573GB, 92242 extents, covers 100.0% of touches (233709 pages)
+[02:32:49]   shard5 hot50_1.6gb: 0.2GB, 33149 extents, covers 62.3% of touches (48829 pages)
+[02:32:49]   shard5 hot80_4.2gb: 0.525GB, 65558 extents, covers 89.3% of touches (128174 pages)
+[02:32:50]   shard5 full_touched: 0.9332GB, 92154 extents, covers 100.0% of touches (227842 pages)
+[02:32:50]   shard6 hot50_1.6gb: 0.2GB, 32926 extents, covers 60.3% of touches (48829 pages)
+[02:32:50]   shard6 hot80_4.2gb: 0.525GB, 66209 extents, covers 88.5% of touches (128174 pages)
+[02:32:51]   shard6 full_touched: 0.952GB, 92323 extents, covers 100.0% of touches (232413 pages)
+[02:32:51]   shard7 hot50_1.6gb: 0.2GB, 32980 extents, covers 62.0% of touches (48829 pages)
+[02:32:52]   shard7 hot80_4.2gb: 0.525GB, 65580 extents, covers 89.1% of touches (128174 pages)
+[02:32:52]   shard7 full_touched: 0.9328GB, 91555 extents, covers 100.0% of touches (227745 pages)
+[02:32:52] wrote inventory /workspaces/sfu-library-thinclient/data/eval_results/f1_hotset_sidecars_inventory_20260714.json
+[02:32:52] pooled coverage: hotset50 0.4386GB / hotset80 1.0235GB / hotset90 1.3729GB (575327 distinct pages, 17084755 touches)
+[02:32:52]   hot50_1.6gb: global 1.6GB pinned, covers 60.7% of pooled touches
+[02:32:52]   hot80_4.2gb: global 4.2GB pinned, covers 88.6% of pooled touches
+[02:32:52]   full_touched: global 7.6011GB pinned, covers 100.0% of pooled touches

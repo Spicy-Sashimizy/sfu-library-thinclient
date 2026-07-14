@@ -1,0 +1,42 @@
+{
+  "probe": "q12_access_skew",
+  "date": "2026-07-13",
+  "preregistration": "docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md \u00a7Q12",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5.json",
+  "served_shape": {
+    "top_k": 50,
+    "k_prime": 100,
+    "heap_factor": 0.8,
+    "query_cut": "all-terms"
+  },
+  "n_queries_primary": 120,
+  "pages_per_query_mean": 48049.78333333333,
+  "pages_per_query_p50": 45208.5,
+  "total_touches": 5765974,
+  "distinct_pages_touched": 2029227,
+  "forward_total_pages": 7455822,
+  "touched_frac_of_forward": 0.272167,
+  "repeat_pages_ge2": 1174487,
+  "repeat_page_frac": 0.5788,
+  "repeat_touch_frac": 0.8518,
+  "top1pct_touch_share": 0.0702,
+  "top10pct_touch_share": 0.3423,
+  "gini_touched_pages": 0.4421,
+  "hotset_50_pages": 388985,
+  "hotset_50_gb": 1.5933,
+  "hotset_80_pages": 1025260,
+  "hotset_80_gb": 4.1995,
+  "hotset_90_pages": 1452630,
+  "hotset_90_gb": 5.95,
+  "within_topic": {
+    "n_topics": 20,
+    "pairwise_jaccard_mean": 0.4372,
+    "pairwise_jaccard_p50": 0.4518,
+    "second_query_warm_hit_mean": 0.6206
+  },
+  "decision_bars": {
+    "live_if": "hotset_80_gb <= 4 AND repeat_touch_frac >= 0.25",
+    "close_if": "hotset_80_gb > 8 OR repeat_touch_frac < 0.10"
+  },
+  "elapsed_s": 400.2
+}

@@ -1,0 +1,4 @@
+[04:15:05] rep1: cold p50 27ms p95 32ms | warm p50 25ms p95 28ms
+[04:16:26] rep2: cold p50 25ms p95 28ms | warm p50 24ms p95 26ms
+[04:16:26] wrote /workspaces/sfu-library-thinclient/data/eval_results/f6_prefault_hotset_20260714.json
+[04:16:26] cold p95 median: 30 ms (baseline 4600-4900 ms)

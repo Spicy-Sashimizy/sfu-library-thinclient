@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "date_utc": "2026-07-10T03:08:19.440019",
+    "benchmark": "q3 m8 survivors-per-block instrument",
+    "queries": 100,
+    "k_prime": 100,
+    "shards": [
+      "shard1",
+      "shard2"
+    ]
+  },
+  "results": {
+    "shard1": {
+      "dv": {
+        "n_queries": 100,
+        "n_surviving_blocks_total": 60610,
+        "n_candidates_scored_total": 1425259,
+        "mean_surviving_blocks_per_query": 606.1,
+        "mean_candidates_per_query": 14252.6,
+        "median_candidates_per_block": 18.0,
+        "mean_candidates_per_block": 23.515,
+        "p25_candidates_per_block": 11,
+        "p75_candidates_per_block": 29,
+        "p95_candidates_per_block": 58,
+        "max_candidates_per_block": 1816,
+        "share_blocks_ge4_candidates": 0.9757,
+        "share_blocks_ge2_candidates": 0.9957,
+        "share_blocks_lt2_candidates": 0.0043,
+        "distribution_hist": {
+          "15": 2204,
+          "11": 2199,
+          "12": 2189,
+          "10": 2188,
+          "9": 2182,
+          "8": 2168,
+          "13": 2156,
+          "14": 2097,
+          "16": 2085,
+          "17": 2004
+        },
+        "parity_block_stats_equals_search": "100/100"
+      },
+      "f16": {
+        "n_queries": 100,
+        "n_surviving_blocks_total": 60585,
+        "n_candidates_scored_total": 1424724,
+        "mean_surviving_blocks_per_query": 605.9,
+        "mean_candidates_per_query": 14247.2,
+        "median_candidates_per_block": 18,
+        "mean_candidates_per_block": 23.516,
+        "p25_candidates_per_block": 11,
+        "p75_candidates_per_block": 29,
+        "p95_candidates_per_block": 58,
+        "max_candidates_per_block": 1816,
+        "share_blocks_ge4_candidates": 0.9757,
+        "share_blocks_ge2_candidates": 0.9957,
+        "share_blocks_lt2_candidates": 0.0043,
+        "distribution_hist": {
+          "15": 2205,
+          "11": 2204,
+          "10": 2184,
+          "9": 2183,
+          "12": 2182,
+          "8": 2164,
+          "13": 2157,
+          "14": 2098,
+          "16": 2087,
+          "17": 2003
+        },
+        "parity_block_stats_equals_search": "100/100"
+      }
+    },
+    "shard2": {
+      "dv": {
+        "n_queries": 100,
+        "n_surviving_blocks_total": 60671,
+        "n_candidates_scored_total": 1424051,
+        "mean_surviving_blocks_per_query": 606.7,
+        "mean_candidates_per_query": 14240.5,
+        "median_candidates_per_block": 18,
+        "mean_candidates_per_block": 23.472,
+        "p25_candidates_per_block": 11,
+        "p75_candidates_per_block": 30,
+        "p95_candidates_per_block": 59,
+        "max_candidates_per_block": 1935,
+        "share_blocks_ge4_candidates": 0.9766,
+        "share_blocks_ge2_candidates": 0.9956,
+        "share_blocks_lt2_candidates": 0.0044,
+        "distribution_hist": {
+          "9": 2308,
+          "11": 2295,
+          "12": 2240,
+          "10": 2225,
+          "13": 2215,
+          "8": 2201,
+          "15": 2086,
+          "14": 2078,
+          "7": 1980,
+          "16": 1933
+        },
+        "parity_block_stats_equals_search": "100/100"
+      },
+      "f16": {
+        "n_queries": 100,
+        "n_surviving_blocks_total": 60682,
+        "n_candidates_scored_total": 1424285,
+        "mean_surviving_blocks_per_query": 606.8,
+        "mean_candidates_per_query": 14242.9,
+        "median_candidates_per_block": 18.0,
+        "mean_candidates_per_block": 23.471,
+        "p25_candidates_per_block": 11,
+        "p75_candidates_per_block": 30,
+        "p95_candidates_per_block": 59,
+        "max_candidates_per_block": 1935,
+        "share_blocks_ge4_candidates": 0.9766,
+        "share_blocks_ge2_candidates": 0.9956,
+        "share_blocks_lt2_candidates": 0.0044,
+        "distribution_hist": {
+          "9": 2310,
+          "11": 2292,
+          "12": 2241,
+          "10": 2228,
+          "13": 2216,
+          "8": 2206,
+          "15": 2090,
+          "14": 2069,
+          "7": 1983,
+          "16": 1929
+        },
+        "parity_block_stats_equals_search": "100/100"
+      }
+    }
+  },
+  "verdict": {
+    "worst_median_candidates_per_block": 18.0,
+    "medians_dv_by_shard": [
+      18.0,
+      18
+    ],
+    "medians_f16_by_shard": [
+      18,
+      18.0
+    ],
+    "bar_ge4_go_lt2_kill": "GO",
+    "verdict": "GO_for_register_blocked_kernel",
+    "note": "Pre-registered bars (math_optimization/08 \u00a7M8): typical batch (median survivors/block) >=4 -> GO for the register-blocked kernel (bit-identical, latency-gated); <2 -> M8 dies on paper. Codec-independent (posting-block structure shared across dv/f16). Quality-free: search_block_stats results are bit-identical to search (observes only)."
+  }
+}

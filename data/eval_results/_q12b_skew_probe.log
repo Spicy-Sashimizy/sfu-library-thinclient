@@ -1,0 +1,48 @@
+[01:57:52] production log: 400 draws, 45 subjects, top subjects: [('Health Sciences', 92), ('Canadian Studies', 37), ('Indigenous Studies', 37), ('Interactive Arts & Technology (SIAT)', 23), ('Resource & Environmental Management', 19)]
+[01:57:52] query repeat: 75 queries drawn >=2x; max repeat 23
+[01:57:55] loaded 8 shards (mmap, E8 v2): ['global_shard0of8.dotvbyte.e5.v2.mmap', 'global_shard1of8.dotvbyte.e5.v2.mmap', 'global_shard2of8.dotvbyte.e5.v2.mmap', 'global_shard3of8.dotvbyte.e5.v2.mmap', 'global_shard4of8.dotvbyte.e5.v2.mmap', 'global_shard5of8.dotvbyte.e5.v2.mmap', 'global_shard6of8.dotvbyte.e5.v2.mmap', 'global_shard7of8.dotvbyte.e5.v2.mmap']
+[01:59:39]   q  0/400: 62661 pages touched, 29.6s (elapsed 103s)
+[02:01:45]   q 25/400: 30180 pages touched, 0.1s (elapsed 230s)
+[02:02:10]   q 50/400: 14446 pages touched, 0.1s (elapsed 255s)
+[02:02:28]   q 75/400: 29941 pages touched, 0.1s (elapsed 273s)
+[02:02:38]   q100/400: 25188 pages touched, 0.8s (elapsed 283s)
+[02:02:49]   q125/400: 35807 pages touched, 1.2s (elapsed 293s)
+[02:02:56]   q150/400: 78182 pages touched, 0.2s (elapsed 301s)
+[02:03:03]   q175/400: 44086 pages touched, 0.1s (elapsed 308s)
+[02:03:10]   q200/400: 14446 pages touched, 0.0s (elapsed 315s)
+[02:03:16]   q225/400: 91371 pages touched, 1.6s (elapsed 320s)
+[02:03:20]   q250/400: 28018 pages touched, 0.1s (elapsed 325s)
+[02:03:24]   q275/400: 40935 pages touched, 0.1s (elapsed 329s)
+[02:03:28]   q300/400: 15029 pages touched, 0.0s (elapsed 332s)
+[02:03:32]   q325/400: 50347 pages touched, 0.5s (elapsed 337s)
+[02:03:36]   q350/400: 52540 pages touched, 0.1s (elapsed 341s)
+[02:03:41]   q375/400: 28018 pages touched, 0.1s (elapsed 346s)
+[02:03:44]   q399/400: 69052 pages touched, 0.1s (elapsed 348s)
+[02:03:46] wrote /workspaces/sfu-library-thinclient/data/eval_results/q12b_access_skew_production_20260714.json
+[02:03:46]   probe: q12b_access_skew_production
+[02:03:46]   date: 2026-07-14
+[02:03:46]   preregistration: docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md §Q12b
+[02:03:46]   manifest: data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json
+[02:03:46]   forward_format_version: 2
+[02:03:46]   n_queries_primary: 400
+[02:03:46]   pages_per_query_mean: 42711.8875
+[02:03:46]   pages_per_query_p50: 40487.0
+[02:03:46]   total_touches: 17084755
+[02:03:46]   distinct_pages_touched: 1855728
+[02:03:46]   forward_total_pages: 7528445
+[02:03:46]   touched_frac_of_forward: 0.246496
+[02:03:46]   repeat_pages_ge2: 1642922
+[02:03:46]   repeat_page_frac: 0.8853
+[02:03:46]   repeat_touch_frac: 0.9875
+[02:03:46]   top1pct_touch_share: 0.0931
+[02:03:46]   top10pct_touch_share: 0.4108
+[02:03:46]   gini_touched_pages: 0.5496
+[02:03:46]   hotset_50_pages: 265954
+[02:03:46]   hotset_50_gb: 1.0893
+[02:03:46]   hotset_80_pages: 748319
+[02:03:46]   hotset_80_gb: 3.0651
+[02:03:46]   hotset_90_pages: 1086133
+[02:03:46]   hotset_90_gb: 4.4488
+[02:03:46]   verdict: GO
+[02:03:46]   elapsed_s: 350.8
+[02:03:46] VERDICT: GO

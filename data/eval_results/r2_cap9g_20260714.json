@@ -1,0 +1,438 @@
+{
+  "probe": "r2_convergence_ladder",
+  "date": "2026-07-14",
+  "cap": "9g",
+  "cgroup_memory_max": "9663676416",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "queries": 40,
+  "top_k": 50,
+  "load_s": 172.5,
+  "prefault_gate": "1",
+  "convergence": {
+    "converged": true,
+    "kind": "plateau",
+    "passes_to_converge": 8,
+    "rule": {
+      "min_passes": 3,
+      "max_passes": 12,
+      "near_zero_majflt": 2500,
+      "plateau_rel": 0.1
+    }
+  },
+  "converged_state": {
+    "p50_ms": 1763.79,
+    "p95_ms": 4792.72,
+    "majflt": 211763,
+    "ms_per_fault": 0.3826
+  },
+  "cg_load_delta": {
+    "pgfault": 927028,
+    "pgmajfault": 237363,
+    "pgscan": 1630989,
+    "pgsteal": 1566391,
+    "pgscan_kswapd": 0,
+    "pgscan_direct": 1630989,
+    "pgsteal_kswapd": 0,
+    "pgsteal_direct": 1566391,
+    "workingset_refault_file": 0,
+    "workingset_activate_file": 0,
+    "workingset_restore_file": 0,
+    "workingset_nodereclaim": 0
+  },
+  "cg_postload_gauges": {
+    "anon": 1136160768,
+    "file": 8416915456,
+    "file_mapped": 8326918144,
+    "active_file": 178855936,
+    "inactive_file": 8238059520,
+    "unevictable": 0
+  },
+  "per_pass": [
+    {
+      "pass": 1,
+      "p50_ms": 2763.94,
+      "p95_ms": 6651.79,
+      "mean_ms": 3379.8,
+      "max_ms": 9154.87,
+      "majflt": 369461,
+      "ms_per_fault": 0.3659,
+      "wall_s": 135.2,
+      "vm": {
+        "vmrss_kb": 7946408,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 6761988,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 577579,
+        "pgmajfault": 369461,
+        "pgscan": 4755226,
+        "pgsteal": 4284995,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 4755226,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 4284995,
+        "workingset_refault_file": 3419512,
+        "workingset_activate_file": 918854,
+        "workingset_restore_file": 0,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8326103040,
+        "file_mapped": 6914764800,
+        "active_file": 4286513152,
+        "inactive_file": 4039589888,
+        "unevictable": 0
+      },
+      "memory_current": 9663614976,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 369491,
+        "workingset_refault_file": 3420132,
+        "workingset_activate_file": 918780
+      }
+    },
+    {
+      "pass": 2,
+      "p50_ms": 1941.1,
+      "p95_ms": 4650.28,
+      "mean_ms": 2192.03,
+      "max_ms": 6120.42,
+      "majflt": 243225,
+      "ms_per_fault": 0.3605,
+      "wall_s": 87.7,
+      "vm": {
+        "vmrss_kb": 8477592,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7293172,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 277043,
+        "pgmajfault": 243225,
+        "pgscan": 2511607,
+        "pgsteal": 2144286,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 2511607,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 2144286,
+        "workingset_refault_file": 1024039,
+        "workingset_activate_file": 676079,
+        "workingset_restore_file": 0,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8327397376,
+        "file_mapped": 7458697216,
+        "active_file": 6394687488,
+        "inactive_file": 1932709888,
+        "unevictable": 0
+      },
+      "memory_current": 9663643648,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 243364,
+        "workingset_refault_file": 1024032,
+        "workingset_activate_file": 676137
+      }
+    },
+    {
+      "pass": 3,
+      "p50_ms": 1403.15,
+      "p95_ms": 3846.38,
+      "mean_ms": 1714.56,
+      "max_ms": 6041.06,
+      "majflt": 192052,
+      "ms_per_fault": 0.3571,
+      "wall_s": 68.6,
+      "vm": {
+        "vmrss_kb": 8506752,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7322332,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 221543,
+        "pgmajfault": 192052,
+        "pgscan": 1851987,
+        "pgsteal": 1837031,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 1851987,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 1837031,
+        "workingset_refault_file": 1741025,
+        "workingset_activate_file": 793453,
+        "workingset_restore_file": 183088,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8326725632,
+        "file_mapped": 7488569344,
+        "active_file": 7343202304,
+        "inactive_file": 983523328,
+        "unevictable": 0
+      },
+      "memory_current": 9663574016,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 192052,
+        "workingset_refault_file": 1740909,
+        "workingset_activate_file": 793296
+      }
+    },
+    {
+      "pass": 4,
+      "p50_ms": 2091.54,
+      "p95_ms": 4654.38,
+      "mean_ms": 2308.96,
+      "max_ms": 6923.06,
+      "majflt": 246735,
+      "ms_per_fault": 0.3743,
+      "wall_s": 92.4,
+      "vm": {
+        "vmrss_kb": 8411548,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7227128,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 293815,
+        "pgmajfault": 246736,
+        "pgscan": 2525768,
+        "pgsteal": 2477600,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 2525768,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 2477600,
+        "workingset_refault_file": 2299591,
+        "workingset_activate_file": 1376800,
+        "workingset_restore_file": 1156427,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8326549504,
+        "file_mapped": 7391039488,
+        "active_file": 7313735680,
+        "inactive_file": 1012813824,
+        "unevictable": 0
+      },
+      "memory_current": 9663672320,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 246783,
+        "workingset_refault_file": 2299990,
+        "workingset_activate_file": 1377167
+      }
+    },
+    {
+      "pass": 5,
+      "p50_ms": 1521.69,
+      "p95_ms": 3872.92,
+      "mean_ms": 1882.46,
+      "max_ms": 6866.64,
+      "majflt": 206711,
+      "ms_per_fault": 0.3643,
+      "wall_s": 75.3,
+      "vm": {
+        "vmrss_kb": 8971356,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7786936,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 241473,
+        "pgmajfault": 206711,
+        "pgscan": 1779319,
+        "pgsteal": 1728623,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 1779319,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 1728623,
+        "workingset_refault_file": 1641337,
+        "workingset_activate_file": 992833,
+        "workingset_restore_file": 889128,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8331128832,
+        "file_mapped": 7964282880,
+        "active_file": 6576373760,
+        "inactive_file": 1754755072,
+        "unevictable": 0
+      },
+      "memory_current": 9663639552,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 206768,
+        "workingset_refault_file": 1641313,
+        "workingset_activate_file": 992799
+      }
+    },
+    {
+      "pass": 6,
+      "p50_ms": 2011.18,
+      "p95_ms": 5089.92,
+      "mean_ms": 2239.13,
+      "max_ms": 6852.94,
+      "majflt": 236009,
+      "ms_per_fault": 0.3795,
+      "wall_s": 89.6,
+      "vm": {
+        "vmrss_kb": 8546608,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7362188,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 272148,
+        "pgmajfault": 236009,
+        "pgscan": 2395672,
+        "pgsteal": 2311958,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 2395672,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 2311958,
+        "workingset_refault_file": 1331449,
+        "workingset_activate_file": 1115291,
+        "workingset_restore_file": 752301,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8328409088,
+        "file_mapped": 7529340928,
+        "active_file": 7386144768,
+        "inactive_file": 942264320,
+        "unevictable": 0
+      },
+      "memory_current": 9663668224,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 236082,
+        "workingset_refault_file": 1331553,
+        "workingset_activate_file": 1115439
+      }
+    },
+    {
+      "pass": 7,
+      "p50_ms": 1573.19,
+      "p95_ms": 4245.6,
+      "mean_ms": 2029.18,
+      "max_ms": 6700.03,
+      "majflt": 214058,
+      "ms_per_fault": 0.3792,
+      "wall_s": 81.2,
+      "vm": {
+        "vmrss_kb": 8614664,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7430244,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 254004,
+        "pgmajfault": 214058,
+        "pgscan": 2074187,
+        "pgsteal": 2001507,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 2074187,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 2001507,
+        "workingset_refault_file": 1746385,
+        "workingset_activate_file": 1028530,
+        "workingset_restore_file": 924888,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8328273920,
+        "file_mapped": 7598981120,
+        "active_file": 7368261632,
+        "inactive_file": 960012288,
+        "unevictable": 0
+      },
+      "memory_current": 9663574016,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 214061,
+        "workingset_refault_file": 1746314,
+        "workingset_activate_file": 1028356
+      }
+    },
+    {
+      "pass": 8,
+      "p50_ms": 1763.79,
+      "p95_ms": 4792.72,
+      "mean_ms": 2025.66,
+      "max_ms": 6268.67,
+      "majflt": 211763,
+      "ms_per_fault": 0.3826,
+      "wall_s": 81.0,
+      "vm": {
+        "vmrss_kb": 8439196,
+        "rssanon_kb": 1184420,
+        "rssfile_kb": 7254776,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 252610,
+        "pgmajfault": 211764,
+        "pgscan": 2120957,
+        "pgsteal": 2023708,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 2120957,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 2023708,
+        "workingset_refault_file": 1981328,
+        "workingset_activate_file": 1095451,
+        "workingset_restore_file": 1044326,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1212948480,
+        "file": 8328019968,
+        "file_mapped": 7419289600,
+        "active_file": 7359541248,
+        "inactive_file": 968478720,
+        "unevictable": 0
+      },
+      "memory_current": 9663602688,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 211798,
+        "workingset_refault_file": 1981513,
+        "workingset_activate_file": 1095506
+      }
+    }
+  ],
+  "swap_confounded": false,
+  "vmswap_kb_max": 0
+}

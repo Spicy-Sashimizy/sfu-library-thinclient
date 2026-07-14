@@ -1,0 +1,99 @@
+{
+  "purpose": "E8 Stage 2 hybrid-arm re-bench (higher reps) to resolve the 2-rep cold miss",
+  "measured_utc": "2026-07-14 01:53",
+  "reps": 6,
+  "queries": 100,
+  "passes": 3,
+  "protocol": "q7 cell protocol reused (fadvise-DONTNEED, alternating v2/v1, paired)",
+  "per_rep": {
+    "v2": [
+      {
+        "rep": 1,
+        "cold_p50": 1172.1214499993948,
+        "warm_p50": 115.44924400004675,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 2,
+        "cold_p50": 1213.469812002586,
+        "warm_p50": 117.42494999998598,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 3,
+        "cold_p50": 1080.1577849997557,
+        "warm_p50": 116.38523199871997,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 4,
+        "cold_p50": 985.5169839975133,
+        "warm_p50": 118.0891750009323,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 5,
+        "cold_p50": 1006.4654890011298,
+        "warm_p50": 125.67501699959394,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 6,
+        "cold_p50": 441.66000699988217,
+        "warm_p50": 125.34877099824371,
+        "vmswap": 0.0
+      }
+    ],
+    "v1": [
+      {
+        "rep": 1,
+        "cold_p50": 1187.7646730026754,
+        "warm_p50": 123.57019199771457,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 2,
+        "cold_p50": 1105.2694530008011,
+        "warm_p50": 119.83701300050598,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 3,
+        "cold_p50": 997.5688060003449,
+        "warm_p50": 122.85825200160616,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 4,
+        "cold_p50": 982.3124649992678,
+        "warm_p50": 117.90439999822411,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 5,
+        "cold_p50": 1106.7555929985247,
+        "warm_p50": 138.52446600139956,
+        "vmswap": 0.0
+      },
+      {
+        "rep": 6,
+        "cold_p50": 978.9781020008377,
+        "warm_p50": 125.01618199894438,
+        "vmswap": 0.0
+      }
+    ]
+  },
+  "v2_cold_p50_median": 1043.3,
+  "v1_cold_p50_median": 1051.4,
+  "hybrid_cold_ratio_v2_over_v1": 0.9923,
+  "v2_warm_p50_median": 117.8,
+  "v1_warm_p50_median": 123.2,
+  "hybrid_warm_ratio_v2_over_v1": 0.9557,
+  "vmswap_ok": true,
+  "bars": {
+    "cold_p50": "<=1.10x",
+    "warm_p50": "<=1.05x"
+  },
+  "cold_bar_pass": true,
+  "warm_bar_pass": true
+}

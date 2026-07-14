@@ -56,6 +56,14 @@ shards resident at once → **~211 GB**. Every other leg is mmap/paged and serve
 > collection (205 GB on disk, ~1.4 GB resident at rest for 30M, RAM-bound at
 > 150M on a 24 GB host); see `docs/THIN_CLIENT_SWAP.md` off-BMP section + the
 > B1/B2 parity gate in `docs/bmp_decommission_plan/VALIDATION_REPORT.md`.
+>
+> **UPDATE (2026-07-14):** the SPLADE leg serves **SEISMIC** (not Qdrant — that
+> narrative above is historical), and as of the E8 dv-v2 flip (`fcfcfb2`) the
+> served shards are `global_shard{0..7}of8.dotvbyte.e5.v2.mmap` (~5.54 GB each,
+> ~44 GB total; **+0.67%** vs the v1 e5 dv shards). Both v2.e5 **and** v1.e5
+> (+ plain-dv) shard sets are retained on disk as the one-env rollback ladder,
+> so seismic index storage is currently ~2× the served set until an older set is
+> reclaimed. See `docs/THIN_CLIENT_SWAP.md` + `seismic_150m_testbed/12` §3 Q1.
 > Post-deletion `data/thinclient_index` = 230 GB (was 298 GB). The non-BMP legs
 > below (tantivy/meta.sqlite/dense) are unchanged.
 

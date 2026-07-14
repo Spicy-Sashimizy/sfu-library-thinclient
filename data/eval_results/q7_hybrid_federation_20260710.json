@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "date_utc": "2026-07-10T02:10:00",
+    "benchmark": "q7 hybrid federation",
+    "queries": 40,
+    "passes": 3,
+    "reps": 2,
+    "shard_dirs_inventoried": 24,
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5.json"
+  },
+  "bars": {
+    "hybrid_cold_p50_le_1.05x_seq_cold": 1.05,
+    "hybrid_warm_p50_le_1.05x_par_warm": 1.05,
+    "t1_parity_100pct": 100,
+    "protocol": "fadvise-DONTNEED per cell, paired ratios, VmSwap~0+warm<cold"
+  },
+  "t1_parity": {
+    "ran": true,
+    "passed": true,
+    "n_queries": 20,
+    "n_match": 20,
+    "mismatches": []
+  },
+  "cells": {
+    "sequential": [
+      {
+        "cold_p50_ms": 3090.6260719930287,
+        "warm_p50_ms": 328.8613169861492,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.099
+      },
+      {
+        "cold_p50_ms": 2243.2631989941,
+        "warm_p50_ms": 289.306241000304,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.0551
+      }
+    ],
+    "parallel": [
+      {
+        "cold_p50_ms": 2093.271748017287,
+        "warm_p50_ms": 56.19769997429103,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1442
+      },
+      {
+        "cold_p50_ms": 2113.9743399980944,
+        "warm_p50_ms": 66.12680599209853,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.118
+      }
+    ],
+    "hybrid": [
+      {
+        "cold_p50_ms": 2064.1170569870155,
+        "warm_p50_ms": 58.18749300669879,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1266
+      },
+      {
+        "cold_p50_ms": 2035.398278007051,
+        "warm_p50_ms": 56.23099999502301,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1437
+      }
+    ]
+  },
+  "paired_ratios": {
+    "hybrid_over_seq_cold": [
+      0.6679,
+      0.9073
+    ],
+    "hybrid_over_par_warm": [
+      1.0354,
+      0.8504
+    ]
+  },
+  "verdict": {
+    "cold_p50_ratio_hybrid_over_seq_median": 0.7876,
+    "warm_p50_ratio_hybrid_over_par_median": 0.9429,
+    "cold_bar_1.05x_seq": "PASS",
+    "warm_bar_1.05x_par": "PASS",
+    "t1_parity_100pct": "PASS",
+    "hybrid_cells_valid_novswap_warm_lt_cold": true,
+    "overall": "PASS",
+    "note": "Pre-registered bars (doc 12 S3 Q7): hybrid cold p50 <= 1.05x seq cold; hybrid warm p50 <= 1.05x par warm; T1 100/100. Container cold protocol (fadvise-DONTNEED per cell, paired ratios, VmSwap~0+warm<cold). SUBSTANTIVE FINDING: on this container run sequential is the SLOW cold arm (rep1 3091 / rep2 2243 ms) vs parallel (2093 / 2114); hybrid (~2064 / 2035) tracks PARALLEL cold, not sequential \u2014 the count-backstop N=3 flips hybrid to parallel before most of the cold pass runs, so hybrid captures the parallel (faster) cold regime here, NOT the sequential cold advantage the basis measured. Sequential KEEPS its RAM win (anon 1.05-1.10 GB vs parallel 1.12-1.14 vs dv 25 GB). The premise (seq wins cold) inverts on this host; hybrid passes the bars by never being worse than the better cold arm, but it is NOT a cold-latency win over parallel here. Bars pass on the pre-registered merits."
+  }
+}

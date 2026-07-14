@@ -1,0 +1,63 @@
+{
+  "purpose": "E8 Stage 2 A/B footprint/latency: v2.e5 vs served v1.e5 (paired q7 aggregates)",
+  "bars": {
+    "warm_p50": "<=1.05x",
+    "cold_p50": "<=1.10x",
+    "vmswap": "~0 both"
+  },
+  "queries": 100,
+  "reps": 2,
+  "passes": 3,
+  "cold_protocol": "fadvise-DONTNEED per cell",
+  "t1_parity_v2": true,
+  "per_arm": [
+    {
+      "arm": "sequential",
+      "v1_cold_ms": 1137.5,
+      "v2_cold_ms": 992.2,
+      "cold_ratio": 0.8722,
+      "v1_warm_ms": 338.3,
+      "v2_warm_ms": 330.2,
+      "warm_ratio": 0.9761,
+      "v2_anon_gb": 1.081,
+      "v1_anon_gb": 1.081,
+      "vmswap_ok": true,
+      "warm_bar_1.05x": "PASS",
+      "cold_bar_1.10x": "PASS",
+      "arm_pass": true
+    },
+    {
+      "arm": "parallel",
+      "v1_cold_ms": 725.3,
+      "v2_cold_ms": 773.6,
+      "cold_ratio": 1.0666,
+      "v1_warm_ms": 115.0,
+      "v2_warm_ms": 112.6,
+      "warm_ratio": 0.9795,
+      "v2_anon_gb": 1.144,
+      "v1_anon_gb": 1.162,
+      "vmswap_ok": true,
+      "warm_bar_1.05x": "PASS",
+      "cold_bar_1.10x": "PASS",
+      "arm_pass": true
+    },
+    {
+      "arm": "hybrid",
+      "v1_cold_ms": 1051.4,
+      "v2_cold_ms": 1043.3,
+      "cold_ratio": 0.9923,
+      "v1_warm_ms": 123.2,
+      "v2_warm_ms": 117.8,
+      "warm_ratio": 0.9562,
+      "v2_anon_gb": 1.144,
+      "v1_anon_gb": 1.144,
+      "vmswap_ok": true,
+      "warm_bar_1.05x": "PASS",
+      "cold_bar_1.10x": "PASS",
+      "arm_pass": true
+    }
+  ],
+  "headline_arm": "parallel",
+  "hybrid_note": "hybrid cold/warm taken from the 6-rep re-bench (e8_stage2_hybrid_rebench_20260713.json); the 2-rep q7 hybrid cold 1.16x was cold-cache variance, resolved to 0.99x at 6 reps.",
+  "ab_verdict": "ALL_ARMS_PASS"
+}

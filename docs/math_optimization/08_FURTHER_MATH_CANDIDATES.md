@@ -265,10 +265,25 @@ block contributes 1–2 candidates, there is nothing to batch and M8 dies on
 paper; blocks are 64-doc clusters, so `*est.*` batch of 4–16 is usually
 available, UNMEASURED).
 
+**Pre-gate RESULT (2026-07-10): GO.** New pyo3
+`MmapSeismicIndex.search_block_stats` hook returns the per-surviving-block
+candidate count (quality-free — results bit-identical to `search`, 100/100
+parity). Shards 1–2, dv + f16, n=100, k'=100, query_cut=all
+(`data/eval_results/q3_m8_survivors_per_block_20260710.json`): **median
+candidates/block = 18** (both shards, both codecs — codec-independent as
+predicted, the posting-block structure is shared); mean 23.5, p25 11, p75
+29; **97.6% of surviving blocks carry ≥4 candidates** (only 0.4% <2).
+worst_median 18 ≫ the 4 bar → **M8 GO for the register-blocked kernel**
+(the `*est.*` "batch 4–16 usually available" caveat is confirmed with
+margin — the typical batch is 18, well above 16). The kernel build is the
+next step (bit-identical by construction; latency-gated). The `.so` was
+rebuilt (native); the 12/12 sequential parity suite re-passes.
+
 **ISA risk: low** (pure `std::simd` restructuring). **Value `*est.*`:**
 medium; precedents (SimSIMD batch APIs, Elastic simdvec bulk scoring) put
 2–4× kernel-level for gather-latency-bound loops, Amdahl-capped here as
 always by the decode third.
+
 
 ---
 

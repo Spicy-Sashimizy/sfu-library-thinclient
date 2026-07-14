@@ -1,0 +1,22 @@
+02:14:36 INFO [rep 1 OFF] fadvise-DONTNEED 44.06 GB
+02:14:36 INFO [rep 1 OFF] running prefault=OFF
+02:18:04 INFO [rep 1 OFF] done in 208.8s
+02:18:05 INFO [rep 1 ON] fadvise-DONTNEED 44.06 GB
+02:18:05 INFO [rep 1 ON] running prefault=ON
+02:23:26 INFO [rep 1 ON] done in 320.9s
+02:23:26 INFO [rep 2 OFF] fadvise-DONTNEED 44.06 GB
+02:23:26 INFO [rep 2 OFF] running prefault=OFF
+02:26:56 INFO [rep 2 OFF] done in 209.5s
+02:26:56 INFO [rep 2 ON] fadvise-DONTNEED 44.06 GB
+02:26:56 INFO [rep 2 ON] running prefault=ON
+02:32:29 INFO [rep 2 ON] done in 332.5s
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/q9_floor_prefault_bench.py", line 277, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/q9_floor_prefault_bench.py", line 254, in main
+    "manifest": str(Path(manifest).relative_to(REPO))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/pathlib.py", line 731, in relative_to
+    raise ValueError("{!r} is not in the subpath of {!r}"
+ValueError: 'data/eval_results/seismic_c25_shards_150m_mmap_e5.json' is not in the subpath of '/workspaces/sfu-library-thinclient' OR one path is relative and the other is absolute.

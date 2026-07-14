@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "purpose": "E8 Stage-1 gates \u2014 dv-v2 per-doc value scale, doc 12 \u00a73 Q1",
+    "measured_utc": "2026-07-10 06:54",
+    "f16_dir": "data/seismic_150m/index/plan01/global_shard1of8.mmap",
+    "dv1_dir": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap",
+    "v2_dir": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.v2.mmap",
+    "n_queries": 100,
+    "k_prime": 200,
+    "heap_factor": 0.8,
+    "prefloor": 2,
+    "reps": 3,
+    "rss": {
+      "vmrss_gb": 17.401,
+      "rssanon_gb": 1.12,
+      "rssfile_gb": 16.281,
+      "vmswap_gb": 0.0
+    }
+  },
+  "cells": {
+    "dv1": [
+      {
+        "label": "dv1_rep0",
+        "cold_traverse_ms_p50": 92.79,
+        "warm_traverse_ms_p50": 7.707,
+        "warm_traverse_ms_mean": 8.16,
+        "majflt_cold_pass": 71024,
+        "prefloor_bytes": 33471420,
+        "fadvise_bytes": 5509092566
+      },
+      {
+        "label": "dv1_rep1",
+        "cold_traverse_ms_p50": 100.21,
+        "warm_traverse_ms_p50": 7.921,
+        "warm_traverse_ms_mean": 8.33,
+        "majflt_cold_pass": 71024,
+        "prefloor_bytes": 33471420,
+        "fadvise_bytes": 5509092566
+      },
+      {
+        "label": "dv1_rep2",
+        "cold_traverse_ms_p50": 92.09,
+        "warm_traverse_ms_p50": 8.044,
+        "warm_traverse_ms_mean": 8.314,
+        "majflt_cold_pass": 71024,
+        "prefloor_bytes": 33471420,
+        "fadvise_bytes": 5509092566
+      }
+    ],
+    "v2": [
+      {
+        "label": "v2_rep0",
+        "cold_traverse_ms_p50": 93.86,
+        "warm_traverse_ms_p50": 7.746,
+        "warm_traverse_ms_mean": 8.12,
+        "majflt_cold_pass": 71675,
+        "prefloor_bytes": 33479540,
+        "fadvise_bytes": 5546149421
+      },
+      {
+        "label": "v2_rep1",
+        "cold_traverse_ms_p50": 94.88,
+        "warm_traverse_ms_p50": 7.799,
+        "warm_traverse_ms_mean": 8.231,
+        "majflt_cold_pass": 71675,
+        "prefloor_bytes": 33479540,
+        "fadvise_bytes": 5546149421
+      },
+      {
+        "label": "v2_rep2",
+        "cold_traverse_ms_p50": 100.42,
+        "warm_traverse_ms_p50": 8.261,
+        "warm_traverse_ms_mean": 8.595,
+        "majflt_cold_pass": 71675,
+        "prefloor_bytes": 33479540,
+        "fadvise_bytes": 5546149421
+      }
+    ]
+  },
+  "ratios": {
+    "warm_p50": 0.9846,
+    "cold_p50": 1.0225,
+    "majflt_cold": 1.0092
+  },
+  "gates": {
+    "a_quality": {
+      "overlap@10_v2_vs_f16": 0.997,
+      "overlap@10_v2_min": 0.9,
+      "overlap@10_dv1_vs_f16": 0.985,
+      "bar": ">= 0.99",
+      "pass": true
+    },
+    "b_size": {
+      "dv1_bytes": 5509092566,
+      "v2_bytes": 5546149421,
+      "delta_pct": 0.673,
+      "bar": "abs <= 2%",
+      "pass": true
+    },
+    "c_latency": {
+      "warm_p50_ratio": 0.9846,
+      "bar": "<= 1.05",
+      "pass": true
+    },
+    "d_t1": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "bar": "hard == 0 and swaps == 0",
+      "pass": true
+    }
+  },
+  "verdict": "E8_STAGE1_ALL_GATES_PASS"
+}

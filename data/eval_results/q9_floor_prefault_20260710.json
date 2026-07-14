@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "date_utc": "2026-07-10T02:38:19.907017",
+    "benchmark": "q9 startup floor prefault",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5.json",
+    "queries": 40,
+    "passes": 3,
+    "reps": 2
+  },
+  "bars": {
+    "cold_p50_ON_at_least_1.15x_faster": 1.15,
+    "load_time_increase_le_5s": 5.0,
+    "warm_p50_ratio_ON_over_OFF_le_1.05": 1.05,
+    "zero_anon_growth": "touch not copy",
+    "protocol": "fadvise-DONTNEED per cell, paired ratios, VmSwap~0 + warm<cold"
+  },
+  "cells": {
+    "OFF": [
+      {
+        "_cell_file": null,
+        "cold_p50_ms": 1976.1633760062978,
+        "warm_p50_ms": 59.69777898280881,
+        "load_seconds": 2.95,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1091,
+        "wall_secs": null
+      },
+      {
+        "_cell_file": null,
+        "cold_p50_ms": 2037.004668993177,
+        "warm_p50_ms": 65.31124998582527,
+        "load_seconds": 3.13,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1355,
+        "wall_secs": null
+      }
+    ],
+    "ON": [
+      {
+        "_cell_file": null,
+        "cold_p50_ms": 2026.2115559889935,
+        "warm_p50_ms": 59.6320650074631,
+        "load_seconds": 107.22,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.2058,
+        "wall_secs": null
+      },
+      {
+        "_cell_file": null,
+        "cold_p50_ms": 1605.230519984616,
+        "warm_p50_ms": 78.03076101117767,
+        "load_seconds": 103.7,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.162,
+        "wall_secs": null
+      }
+    ]
+  },
+  "paired_ratios": {
+    "cold_speedup_OFF_over_ON": [
+      0.9753,
+      1.269
+    ],
+    "warm_ratio_ON_over_OFF": [
+      0.9989,
+      1.1948
+    ],
+    "load_delta_ON_minus_OFF_s": [
+      104.27,
+      100.57
+    ]
+  },
+  "verdict": {
+    "cold_speedup_OFF_over_ON_median": 1.12215,
+    "warm_p50_ratio_ON_over_OFF_median": 1.09685,
+    "load_time_delta_ON_minus_OFF_s_median": 102.41999999999999,
+    "anon_floor_growth_GB": 0.06159999999999988,
+    "bar_cold_1.15x_faster": "FAIL",
+    "bar_load_le_5s": "FAIL",
+    "bar_warm_le_1.05x": "FAIL",
+    "bar_zero_anon_growth": "FAIL",
+    "cells_valid_novswap_warm_lt_cold": true,
+    "overall": "FAIL",
+    "note": "Pre-registered bars (doc 12 \u00a73 Q9): cold >= 1.15x faster with prefault ON; load +<=5s; warm ratio <=1.05; zero anon growth. ONCE-AT-LOAD, distinct from refuted per-query WILLNEED (doc 10 Fix #3)."
+  }
+}

@@ -493,15 +493,17 @@ def main():
                          "Latency is reported split cold-vs-warm when passes>1.")
     ap.add_argument("--top-k", type=int, default=TOP_K)
     ap.add_argument("--splade-model", default="models/splade_onnx_fp16")
-    ap.add_argument("--federation", choices=["parallel", "sequential"],
+    ap.add_argument("--federation", choices=["parallel", "sequential", "hybrid"],
                     default="parallel",
                     help="SEISMIC serving method over the 8 mmap shards: "
                          "'parallel' (default — ThreadPoolExecutor fan-out, "
-                         "latency ~= max shard, resident ~= all shards) or "
+                         "latency ~= max shard, resident ~= all shards), "
                          "'sequential' (one shard at a time, latency ~= sum "
                          "of shards, bounded resident ~= 1 shard — fits a "
                          "RAM-constrained host WITHOUT swapping; "
-                         "docs/seismic_sequential_serving/). Bit-identical results.")
+                         "docs/seismic_sequential_serving/), or 'hybrid' "
+                         "(Q7 2026-07-10 — sequential while cold, flips to "
+                         "parallel on a state signal once warm; bit-identical).")
     args = ap.parse_args()
 
     # Determine result file path
@@ -547,7 +549,8 @@ def main():
     # SFU_SEISMIC_LOAD_MODE (default mmap = the served 150M path); it can be
     # set to 'stock' to run a Path-A control on a testbed index (no .mmap/ dir).
     from seismic_federated import (
-        ParallelSeismicBackend, SequentialSeismicBackend, _load_manifest)
+        ParallelSeismicBackend, SequentialSeismicBackend,
+        HybridSeismicBackend, _load_manifest)
     # Pass load_mode so mmap mode reads the C2.5 manifest's `mmap_dir` (the
     # persistent converted path) rather than the G7 `index_path` (volatile /tmp).
     index_paths = _load_manifest(args.shard_manifest, load_mode=load_mode)
@@ -572,8 +575,12 @@ def main():
              gb(seismic_ram_baseline["vmrss_kb"]))
 
     t0 = time.perf_counter()
-    cls = (SequentialSeismicBackend if federation == "sequential"
-           else ParallelSeismicBackend)
+    if federation == "sequential":
+        cls = SequentialSeismicBackend
+    elif federation == "hybrid":
+        cls = HybridSeismicBackend
+    else:
+        cls = ParallelSeismicBackend
     sb = cls(index_paths, load_mode=load_mode)
     load_secs = time.perf_counter() - t0
 
@@ -646,6 +653,7 @@ def main():
     seismic_traverse_by_pass = []
 
     log.info("running %d queries x %d pass(es)...", len(queries), args.passes)
+    seismic_empty_results = 0  # failed/empty queries — see all-failed guard below
     for p in range(args.passes):
         warm = "WARM" if p >= 1 else "COLD"
         s_pass, q_pass, se_pass, st_pass = [], [], [], []
@@ -656,6 +664,8 @@ def main():
             s_pass.append((time.perf_counter() - t0) * 1000)
             se_pass.append(encode_ms)
             st_pass.append(traverse_ms)
+            if not res:
+                seismic_empty_results += 1
 
             if qdrant_available:
                 t0 = time.perf_counter()
@@ -672,6 +682,27 @@ def main():
                  p + 1, args.passes, warm, statistics.median(s_pass),
                  med_enc, med_trv,
                  statistics.median(q_pass) if q_pass else -1)
+
+    # ALL-FAILED GUARD (2026-07-14): query_seismic_timed swallows per-query
+    # exceptions into ([], 0.0, 0.0) so one bad query can't kill a long bench —
+    # but a broken serving path then scores every query as a ~0 ms no-op and the
+    # cell looks PHENOMENAL (the invalid F6 "cold p95 30 ms" cells: 300/300
+    # queries raised ImportError, all recorded 0.0). A latency cell where every
+    # query failed is not a measurement; refuse to write one.
+    total_q = len(queries) * args.passes
+    if total_q > 0 and seismic_empty_results > total_q * 0.2:
+        log.error("%d/%d SEISMIC queries returned empty/failed — the serving "
+                  "path is broken (a top-50 over 150M docs is never legitimately "
+                  "empty); refusing to write a latency result. Check the "
+                  "'SEISMIC query failed:' warnings above for the cause. "
+                  "(Guard added 2026-07-14: the invalid F6 cells scored 298-300 "
+                  "no-op queries as cold p95 ~30 ms.)",
+                  seismic_empty_results, total_q)
+        sys.exit(3)
+    if seismic_empty_results:
+        log.warning("%d/%d SEISMIC queries returned empty/failed — latency "
+                    "percentiles include no-op samples", seismic_empty_results,
+                    total_q)
 
     # Flat lists across all passes (RAM-peak sampling is pass-agnostic).
     seismic_latencies = [x for pl in seismic_lat_by_pass for x in pl]
@@ -862,6 +893,10 @@ def main():
             "heap_factor": os.environ.get("SFU_SEISMIC_HEAP_FACTOR", "0.8"),
             "k_prime": os.environ.get("SFU_SEISMIC_K_PRIME"),
             "ram": seismic_ram_summary,
+            # Failed/empty queries across all passes (0 on a healthy run). The
+            # all-failed case exits(3) before writing; a nonzero value here
+            # means the percentiles include no-op samples — treat with care.
+            "empty_results": seismic_empty_results,
             "latency_ms": seismic_stats,
             "latency_by_pass_ms": [[round(x, 1) for x in pl] for pl in seismic_lat_by_pass],
             # item-#3 encode/traverse attribution. encode_ms = SPLADE ONNX query

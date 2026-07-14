@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "date": "2026-07-10",
+    "script": "scripts/seismic_testbed/q11_c1c2_stage0.py",
+    "doc": "docs/seismic_150m_testbed/14_ENCODER_UPGRADE_PATH.md",
+    "bars": "PASS iff merged AND shard1 AND shard2 overlap@10 >= 0.99 (n=100); 0.97-0.99 merged -> ESCALATE_C3; <0.97 -> WEAK (pre-registered doc 14 \u00a74)",
+    "reference": "served fused encoder qvecs (D2-promoted)",
+    "table": {
+      "rows": 30522,
+      "top_e": 256,
+      "build_seconds": 78.2,
+      "cache": "_q11_expansion_table_fused.npz"
+    },
+    "c2_deviation": "self-weight from the C1 row (model-derived static scalar), NOT corpus IDF \u2014 no cheap df source per SPLADE-vocab term; recorded in doc 14",
+    "encode_ms_p50_reference": 28.71,
+    "n_queries": 100,
+    "top_k": 50,
+    "backend": "SequentialSeismicBackend (T1: bit-identical to parallel), e5 manifest",
+    "wall_seconds": 394.1
+  },
+  "arms": {
+    "c1_max": {
+      "lookup_ms_p50": 0.195,
+      "merged": {
+        "overlap@10_mean": 0.533,
+        "overlap@10_min": 0.1,
+        "overlap@50_mean": 0.5042
+      },
+      "shard1": {
+        "overlap@10_mean": 0.464,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4902
+      },
+      "shard2": {
+        "overlap@10_mean": 0.497,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4762
+      },
+      "verdict": "WEAK"
+    },
+    "c1_sum": {
+      "lookup_ms_p50": 0.117,
+      "merged": {
+        "overlap@10_mean": 0.331,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.3374
+      },
+      "shard1": {
+        "overlap@10_mean": 0.325,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.335
+      },
+      "shard2": {
+        "overlap@10_mean": 0.332,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.3388
+      },
+      "verdict": "WEAK"
+    },
+    "c2_selfweight": {
+      "lookup_ms_p50": 0.039,
+      "merged": {
+        "overlap@10_mean": 0.357,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.3466
+      },
+      "shard1": {
+        "overlap@10_mean": 0.308,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.3222
+      },
+      "shard2": {
+        "overlap@10_mean": 0.34,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.3104
+      },
+      "verdict": "WEAK"
+    }
+  }
+}

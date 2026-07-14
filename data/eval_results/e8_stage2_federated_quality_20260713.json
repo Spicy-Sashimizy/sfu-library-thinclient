@@ -1,0 +1,68 @@
+{
+  "purpose": "E8 Stage 2 federated quality gate a (corpus-mean overlap@10 vs f16)",
+  "measured_utc": "2026-07-13 21:52",
+  "per_shard": [
+    {
+      "shard": 0,
+      "v2": 0.995,
+      "dv1": 0.991,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard0_20260710.json"
+    },
+    {
+      "shard": 1,
+      "v2": 0.997,
+      "dv1": 0.985,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard1_20260713.json"
+    },
+    {
+      "shard": 2,
+      "v2": 0.993,
+      "dv1": 0.984,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard2_20260713.json"
+    },
+    {
+      "shard": 3,
+      "v2": 0.997,
+      "dv1": 0.993,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard3_20260713.json"
+    },
+    {
+      "shard": 4,
+      "v2": 0.996,
+      "dv1": 0.992,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard4_20260713.json"
+    },
+    {
+      "shard": 5,
+      "v2": 0.996,
+      "dv1": 0.997,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard5_20260713.json"
+    },
+    {
+      "shard": 6,
+      "v2": 0.996,
+      "dv1": 0.994,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard6_20260713.json"
+    },
+    {
+      "shard": 7,
+      "v2": 0.994,
+      "dv1": 0.992,
+      "v2_min": 0.9,
+      "file": "data/eval_results/e8_stage2_shard7_20260713.json"
+    }
+  ],
+  "corpus_mean_overlap_v2": 0.9955,
+  "corpus_min_overlap_v2": 0.993,
+  "corpus_mean_overlap_dv1_baseline": 0.991,
+  "improvement_vs_dv1": 0.0045,
+  "bar": "corpus-mean >= 0.995 AND no shard < 0.99",
+  "gate_a_federated_pass": true
+}

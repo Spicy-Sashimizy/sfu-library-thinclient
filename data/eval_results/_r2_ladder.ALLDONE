@@ -1,0 +1,16 @@
+ALLDONE 2026-07-14T20:04:27Z
+rungs: 17 16 15 14 13 12 11 10 9 24 6 rep2:16 rep2:13 rep2:11
+_r2_cap10g.status: DONE 2026-07-14T19:17:23Z data/eval_results/r2_cap10g_20260714.json
+_r2_cap11g.status: DONE 2026-07-14T19:07:49Z data/eval_results/r2_cap11g_20260714.json
+_r2_cap11g_rep2.status: DONE 2026-07-14T20:04:27Z data/eval_results/r2_cap11g_rep2_20260714.json
+_r2_cap12g.status: DONE 2026-07-14T19:01:31Z data/eval_results/r2_cap12g_20260714.json
+_r2_cap13g.status: DONE 2026-07-14T18:55:19Z data/eval_results/r2_cap13g_20260714.json
+_r2_cap13g_rep2.status: DONE 2026-07-14T19:57:59Z data/eval_results/r2_cap13g_rep2_20260714.json
+_r2_cap14g.status: DONE 2026-07-14T18:49:19Z data/eval_results/r2_cap14g_20260714.json
+_r2_cap15g.status: DONE 2026-07-14T18:44:36Z data/eval_results/r2_cap15g_20260714.json
+_r2_cap16g.status: DONE 2026-07-14T18:40:08Z data/eval_results/r2_cap16g_20260714.json
+_r2_cap16g_rep2.status: DONE 2026-07-14T19:52:54Z data/eval_results/r2_cap16g_rep2_20260714.json
+_r2_cap17g.status: DONE 2026-07-14T18:35:54Z data/eval_results/r2_cap17g_20260714.json
+_r2_cap24g.status: DONE 2026-07-14T19:35:40Z data/eval_results/r2_cap24g_20260714.json
+_r2_cap6g.status: DONE 2026-07-14T19:48:51Z data/eval_results/r2_cap6g_20260714.json
+_r2_cap9g.status: DONE 2026-07-14T19:32:11Z data/eval_results/r2_cap9g_20260714.json

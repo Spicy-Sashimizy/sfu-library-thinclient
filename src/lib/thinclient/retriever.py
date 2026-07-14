@@ -608,24 +608,36 @@ class ThinClientRetriever:
             repo_root = Path(__file__).resolve().parents[3]
             if (not manifest
                     and self.root == repo_root / "data" / "thinclient_index"):
-                # Promotion default (2026-07-09): the E5 forward-reordered
-                # 8-shard dotvbyte manifest — quality-identical to the plain
-                # dv manifest (all 8 shards bit-identical parity; served
-                # federated top-10 exact; doc 13) but with block_walk_canonical
-                # forward locality: cold majflt ~0.53–0.54×, cold p50
-                # ~1.46–1.51× faster (shards 1,2 gated 2026-07-09), warm
-                # neutral-to-faster. Falls back to the plain dv manifest
-                # (2026-07-06 promotion) if the E5 manifest is absent.
+                # Promotion default (2026-07-14 flip, E8 Stage-2 lands): the E8
+                # dv-v2 (per-doc value scale) 8-shard manifest over the E5
+                # block_walk_canonical layout — quality-IMPROVED vs the E5 dv-v1
+                # promotion (per-shard overlap@10 vs f16 0.993–0.997; corpus mean
+                # ~0.9955 vs e5/dv1 ~0.9906; +0.67% size, warm p50 ≤1.05×, T1 0/0
+                # all 8 shards; Q7 federated 2-rep PASS 2026-07-13, manifest
+                # `seismic_c25_shards_150m_mmap_e5_v2.json`; forward_format_version
+                # = 2 (dotvbyte_fixedu8_v2)). The E8 flip was operator-signed-off
+                # (2026-07-14). Falls back down the ladder: E5 dv-v1
+                # (2026-07-09 promotion, block_walk_canonical
+                # locality, quality-identical to dv1) → plain dv (2026-07-06
+                # promotion) — each only when the newer manifest is absent, so a
+                # one-env rollback (`SFU_SEISMIC_SHARD_MANIFEST=<older>`) still
+                # reaches every prior served shard set.
                 # Gated on the REAL serving root so synthetic/test index_roots
                 # never silently pick up the 150M corpus; only used when the
                 # file exists so single-index testbeds (SFU_SEISMIC_INDEX) keep
                 # working without it. A *set* env var always wins (one-env
-                # rollback to the dv manifest) and a missing set path fails
+                # rollback to any prior manifest) and a missing set path fails
                 # loudly downstream.
                 eval_dir = repo_root / "data" / "eval_results"
+                e5_v2_manifest = eval_dir / "seismic_c25_shards_150m_mmap_e5_v2.json"
                 e5_manifest = eval_dir / "seismic_c25_shards_150m_mmap_e5.json"
                 dv_manifest = eval_dir / "seismic_c25_shards_150m_mmap_dotvbyte.json"
-                default_manifest = e5_manifest if e5_manifest.exists() else dv_manifest
+                if e5_v2_manifest.exists():
+                    default_manifest = e5_v2_manifest
+                elif e5_manifest.exists():
+                    default_manifest = e5_manifest
+                else:
+                    default_manifest = dv_manifest
                 if default_manifest.exists():
                     manifest = str(default_manifest)
             if manifest:

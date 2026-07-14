@@ -40,6 +40,18 @@ pub struct DotVByteFixedU8Encoder {
     component_mapping: Option<Box<[u16]>>, // Optional component remapping that improves compression. mapping[i] = new_index_of_component_i
     #[serde(default)]
     inverse_component_mapping: Option<Box<[u16]>>, // inverse_mapping[new] = old
+    /// E8 dv-v2: per-doc linear u8 value scale. `false` = v1 global FixedU8Q
+    /// (1/64); `true` = v2 records carrying a per-doc `f16 vmax` at the record
+    /// head, `v' = u8/255 · vmax`. The record envelopes differ — a v1 encoder
+    /// must never parse a v2 record or vice versa.
+    ///
+    /// `serde(skip)`, NOT `serde(default)`: `forward_encoder.bin` is bincode
+    /// with fixed-int encoding (non-self-describing) — a new serialized field
+    /// would change the byte layout and break every existing v1 encoder file.
+    /// The manifest's `forward_format_version` is the load-bearing version
+    /// tag; the mmap reader calls `set_per_doc_scale` right after decoding.
+    #[serde(skip)]
+    per_doc_scale: bool,
 }
 
 impl sealed::Sealed for DotVByteFixedU8Encoder {}
@@ -112,13 +124,21 @@ impl SparseDataEncoder for DotVByteFixedU8Encoder {
         &self,
         encoded: Self::EncodedVector<'a>,
     ) -> SparseVectorOwned<Self::InputComponentType, f32> {
-        let dotvbyte_view = unsafe { DotVbyteFixedu8::from_unchecked_slice(encoded.data()) };
-
         let mut components: Vec<u16> = Vec::new();
         let mut values: Vec<f32> = Vec::new();
-        for (component, value) in dotvbyte_view.iter() {
-            components.push(component);
-            values.push(value.to_f32().expect("Failed to convert value to f32"));
+        if self.per_doc_scale {
+            // E8 dv-v2: per-doc linear scale, `v' = u8/255 · vmax`.
+            let dotvbyte_view = unsafe { DotVbyteFixedu8::from_unchecked_slice_v2(encoded.data()) };
+            for (component, value) in dotvbyte_view.iter_f32_v2() {
+                components.push(component);
+                values.push(value);
+            }
+        } else {
+            let dotvbyte_view = unsafe { DotVbyteFixedu8::from_unchecked_slice(encoded.data()) };
+            for (component, value) in dotvbyte_view.iter() {
+                components.push(component);
+                values.push(value.to_f32().expect("Failed to convert value to f32"));
+            }
         }
 
         // Components are stored in mapped space if a mapping is present.
@@ -152,6 +172,12 @@ impl PackedSparseVectorEncoder for DotVByteFixedU8Encoder {
     ) where
         OutputContainer: Extend<Self::PackedDataType>,
     {
+        assert!(
+            !self.per_doc_scale,
+            "push_encoded is the v1 (FixedU8Q 1/64) path — its input values are \
+             already globally quantized. A per-doc-scale (v2) encoder needs the \
+             ORIGINAL f32 values; use push_encoded_per_doc instead."
+        );
         let mut encoded_u8 = Vec::new();
 
         let mut q_values: Vec<_> = input.values().iter().map(|v| v.to_bits()).collect();
@@ -190,6 +216,81 @@ impl PackedSparseVectorEncoder for DotVByteFixedU8Encoder {
 }
 
 impl DotVByteFixedU8Encoder {
+    /// E8 dv-v2 encode path: per-doc linear u8 scale from ORIGINAL f32 values.
+    ///
+    /// Matches the Stage-0 proxy (`e8_stage0_perdoc_scale`) exactly:
+    /// `vmax = f16(max(values))` (f16-rounded FIRST), then
+    /// `u8 = clip(round(v / f32(vmax) · 255), 0, 255)`; dequant
+    /// `v' = u8/255 · f32(vmax)`. The record head carries `vmax` (see
+    /// [`DotVbyteFixedu8::push_vector_v2`]).
+    ///
+    /// All-zero/empty docs store `vmax = 1.0` and all-zero values (dequants
+    /// to 0 — no special case at read time).
+    pub fn push_encoded_per_doc<OutputContainer>(
+        &self,
+        components: &[u16],
+        original_values: &[f32],
+        output: &mut OutputContainer,
+    ) where
+        OutputContainer: Extend<u64>,
+    {
+        assert!(
+            self.per_doc_scale,
+            "push_encoded_per_doc is the v2 path; this encoder is v1 (per_doc_scale = false)"
+        );
+        assert_eq!(components.len(), original_values.len());
+
+        let vmax_f32 = original_values.iter().fold(0.0f32, |a, &b| a.max(b));
+        let vmax = if vmax_f32 > 0.0 {
+            // Saturate at f16::MAX: from_f32 overflows to +inf above ~65520,
+            // and the decode would then compute 0·inf = NaN, silently
+            // poisoning every score against this doc. Unreachable via the
+            // f16-dir converter (source values ≤ f16::MAX by construction) —
+            // this guards the public encode API for Stage-2+ callers.
+            half::f16::from_f32(vmax_f32.min(half::f16::MAX.to_f32()))
+        } else {
+            half::f16::ONE
+        };
+        let vmax_f32 = vmax.to_f32();
+
+        let mut q_values: Vec<u8> = original_values
+            .iter()
+            .map(|&v| ((v / vmax_f32 * 255.0).round()).clamp(0.0, 255.0) as u8)
+            .collect();
+
+        // Component remapping + sort, mirroring push_encoded (v1).
+        let mut q_components = if let Some(component_mapping) = self.component_mapping() {
+            components
+                .iter()
+                .map(|&c| component_mapping[c as usize])
+                .collect::<Vec<u16>>()
+        } else {
+            components.to_vec()
+        };
+
+        if self.component_mapping().is_some() {
+            let permutation = rusty_perm::PermD::from_sort(q_components.as_slice());
+            permutation.apply(q_values.as_mut_slice()).unwrap();
+            permutation.apply(q_components.as_mut_slice()).unwrap();
+        }
+
+        let mut encoded_u8 = Vec::new();
+        DotVbyteFixedu8::push_vector_v2(&mut encoded_u8, &mut q_components, &mut q_values, vmax);
+
+        assert!(
+            encoded_u8.len() % std::mem::size_of::<u64>() == 0,
+            "encoded_u8 length ({}) is not a multiple of 8",
+            encoded_u8.len()
+        );
+
+        let data = encoded_u8
+            .chunks_exact(8)
+            .map(|chunk| u64::from_le_bytes(chunk.try_into().unwrap()));
+        output.extend(data);
+    }
+}
+
+impl DotVByteFixedU8Encoder {
     #[inline]
     pub fn new(input_dim: usize, output_dim: usize) -> Self {
         assert_eq!(
@@ -200,7 +301,20 @@ impl DotVByteFixedU8Encoder {
             dim: input_dim,
             component_mapping: None,
             inverse_component_mapping: None,
+            per_doc_scale: false,
         }
+    }
+
+    #[inline]
+    pub fn per_doc_scale(&self) -> bool {
+        self.per_doc_scale
+    }
+
+    /// Flip the value-scale mode (E8 dv-v2). Used by the v2 dataset
+    /// constructor and by the mmap reader when `forward_format_version == 2`.
+    #[inline]
+    pub fn set_per_doc_scale(&mut self, per_doc_scale: bool) {
+        self.per_doc_scale = per_doc_scale;
     }
 
     pub fn train<'a, V>(
@@ -298,6 +412,169 @@ mod tests {
             vector_eval.compute_distance(PackedVectorView::new(&data)),
             DotProduct::from(5.0)
         );
+    }
+
+    /// E8 dv-v2: encode originals with a per-doc scale, decode, and check the
+    /// error is within the per-doc quantization step (vmax/255 covers both the
+    /// u8 rounding half-step and the f16 rounding of vmax).
+    #[test]
+    fn dotvbyte_v2_roundtrip_within_perdoc_step() {
+        let mut encoder = DotVByteFixedU8Encoder::new(64, 64);
+        encoder.set_per_doc_scale(true);
+
+        // Mix of magnitudes incl. values far above the v1 FixedU8Q ceiling
+        // (255/64 ≈ 3.98) — exactly what the per-doc scale is for.
+        let components: Vec<u16> = vec![0, 3, 7, 20, 21, 40, 63];
+        let originals: Vec<f32> = vec![0.01, 0.5, 1.0, 2.5, 3.5, 7.25, 11.0];
+
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded_per_doc(&components, &originals, &mut buffer);
+        assert!(!buffer.is_empty());
+
+        let decoded = encoder.decode_vector(PackedVectorView::new(&buffer));
+        assert_eq!(decoded.components(), components.as_slice());
+
+        let vmax = half::f16::from_f32(11.0).to_f32();
+        let step = vmax / 255.0;
+        for (orig, dec) in originals.iter().zip(decoded.values().iter()) {
+            assert!(
+                (orig - dec).abs() <= step,
+                "v2 roundtrip error {} > per-doc step {} (orig {}, dec {})",
+                (orig - dec).abs(),
+                step,
+                orig,
+                dec
+            );
+        }
+    }
+
+    /// E8 dv-v2: the SIMD dot kernel must match a scalar reference dot over
+    /// the dequantized values, on a vector long enough to exercise the packed
+    /// SIMD path, the remainder path, and two-byte dgap codes.
+    #[test]
+    fn dotvbyte_v2_dot_matches_scalar_reference() {
+        let dim = 2048usize;
+        let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+        encoder.set_per_doc_scale(true);
+
+        // 19 components → 2 SIMD packs of 8 + 3 remaining; the 300-gap forces
+        // a two-byte dgap code through the bitvec path.
+        let components: Vec<u16> = vec![
+            1, 2, 5, 9, 14, 20, 27, 35, 44, 54, 65, 77, 90, 104, 119, 419, 435, 452, 470,
+        ];
+        let originals: Vec<f32> = (0..components.len())
+            .map(|i| 0.05 + 0.37 * (i as f32))
+            .collect();
+
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded_per_doc(&components, &originals, &mut buffer);
+
+        let query_components: Vec<u16> = (0..dim as u16).step_by(3).collect();
+        let query_values: Vec<f32> = query_components
+            .iter()
+            .map(|&c| 0.1 + (c as f32) * 0.001)
+            .collect();
+        let query = SparseVectorView::new(&query_components, &query_values);
+
+        // Scalar reference over the DEQUANTIZED doc values.
+        let decoded = encoder.decode_vector(PackedVectorView::new(&buffer));
+        let mut dense_query = vec![0.0f32; dim];
+        for (&c, &v) in query_components.iter().zip(query_values.iter()) {
+            dense_query[c as usize] = v;
+        }
+        let reference: f32 = decoded
+            .components()
+            .iter()
+            .zip(decoded.values().iter())
+            .map(|(&c, &v)| dense_query[c as usize] * v)
+            .sum();
+
+        let evaluator = encoder.query_evaluator(query);
+        let got: f32 = evaluator
+            .compute_distance(PackedVectorView::new(&buffer))
+            .0;
+        assert!(
+            (got - reference).abs() <= 1e-4 * reference.abs().max(1.0),
+            "v2 SIMD dot {} != scalar reference {}",
+            got,
+            reference
+        );
+    }
+
+    /// E8 dv-v2: all-zero docs store vmax=1.0 and decode to exact zeros.
+    #[test]
+    fn dotvbyte_v2_zero_vector_roundtrip() {
+        let mut encoder = DotVByteFixedU8Encoder::new(8, 8);
+        encoder.set_per_doc_scale(true);
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded_per_doc(&[1u16, 4], &[0.0f32, 0.0], &mut buffer);
+        let decoded = encoder.decode_vector(PackedVectorView::new(&buffer));
+        assert_eq!(decoded.components(), &[1u16, 4]);
+        assert!(decoded.values().iter().all(|&v| v == 0.0));
+    }
+
+    /// E8 dv-v2 × M2: the int6 integer dot with the split scale
+    /// (q_max/63 per query × vmax/255 per candidate) must approximate the v2
+    /// f32 dot within the 6-bit query quantization error.
+    #[test]
+    fn dotvbyte_v2_int6_matches_f32_dot() {
+        let dim = 64usize;
+        let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+        encoder.set_per_doc_scale(true);
+
+        let components: Vec<u16> = vec![0, 5, 9, 13, 22, 30, 41, 50, 60];
+        let originals: Vec<f32> = vec![0.2, 1.1, 5.0, 2.2, 0.7, 3.3, 8.0, 4.4, 6.6];
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded_per_doc(&components, &originals, &mut buffer);
+
+        let query_components: Vec<u16> = vec![0, 9, 22, 41, 60];
+        let query_values: Vec<f32> = vec![0.9, 0.5, 1.3, 0.2, 0.8];
+
+        let f32_eval = DotVByteFixedU8QueryEvaluator::with_int6_query(
+            SparseVectorView::new(&query_components, &query_values),
+            &encoder,
+            false,
+        );
+        let int6_eval = DotVByteFixedU8QueryEvaluator::with_int6_query(
+            SparseVectorView::new(&query_components, &query_values),
+            &encoder,
+            true,
+        );
+
+        let f32_score: f32 = f32_eval
+            .compute_distance(PackedVectorView::new(&buffer))
+            .0;
+        let int6_score: f32 = int6_eval
+            .compute_distance(PackedVectorView::new(&buffer))
+            .0;
+
+        // 6-bit query quantization: relative error bounded by ~1/63 per term.
+        assert!(
+            (f32_score - int6_score).abs() <= f32_score.abs() * 0.05,
+            "v2 int6 score {} too far from f32 score {}",
+            int6_score,
+            f32_score
+        );
+    }
+
+    /// v1 regression guard: a v1 encoder must refuse the v2 encode path and a
+    /// v2 encoder must refuse the v1 path — the record envelopes differ.
+    #[test]
+    #[should_panic(expected = "push_encoded_per_doc is the v2 path")]
+    fn dotvbyte_v1_encoder_refuses_v2_push() {
+        let encoder = DotVByteFixedU8Encoder::new(4, 4);
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded_per_doc(&[0u16], &[1.0f32], &mut buffer);
+    }
+
+    #[test]
+    #[should_panic(expected = "push_encoded is the v1")]
+    fn dotvbyte_v2_encoder_refuses_v1_push() {
+        let mut encoder = DotVByteFixedU8Encoder::new(4, 4);
+        encoder.set_per_doc_scale(true);
+        let values = [fixed(1.0)];
+        let mut buffer: Vec<u64> = Vec::new();
+        encoder.push_encoded(SparseVectorView::new(&[0_u16], &values), &mut buffer);
     }
 
     #[test]
@@ -585,9 +862,13 @@ pub struct DotVByteFixedU8QueryEvaluator<'e> {
     /// M2 integer path: dense query quantized to 6-bit (`Some` = integer dot
     /// active; `None` = the default f32 path). Built by [`Self::with_int6_query`].
     dense_query_int6: Option<Vec<u8>>,
-    /// M2 integer path: `s_q · s_d = (q_max / 63) · (1 / 64)` — rescales the
-    /// integer dot to the f32 score domain once per candidate.
+    /// M2 integer path: rescales the integer dot to the f32 score domain once
+    /// per candidate. v1: the full `s_q · s_d = (q_max / 63) · (1 / 64)`.
+    /// v2 (per-doc scale): only the query part `q_max / 63` — the per-doc
+    /// `vmax / 255` is applied in `compute_distance` from the record head.
     int6_scale: f32,
+    /// E8 dv-v2: copied from the encoder; selects the v2 record parse + dequant.
+    per_doc_scale: bool,
     _phantom: PhantomData<&'e ()>,
 }
 
@@ -660,12 +941,21 @@ impl<'e> DotVByteFixedU8QueryEvaluator<'e> {
                         .clamp(0.0, INT6_QMAX) as u8
                 })
                 .collect();
-            let doc_scale = 1.0 / (1u32 << crate::FixedU8Q::FRAC_NBITS) as f64;
-            let int6_scale = (q_max / INT6_QMAX * doc_scale) as f32;
+            // v1: fold the global doc scale (1/64) into the per-query factor.
+            // v2 (per-doc scale): the doc scale is per-candidate (vmax/255,
+            // read from the record head in compute_distance) — keep only the
+            // query part here.
+            let int6_scale = if quantizer.per_doc_scale() {
+                (q_max / INT6_QMAX) as f32
+            } else {
+                let doc_scale = 1.0 / (1u32 << crate::FixedU8Q::FRAC_NBITS) as f64;
+                (q_max / INT6_QMAX * doc_scale) as f32
+            };
             return Self {
                 dense_query: Vec::new(),
                 dense_query_int6: Some(dense_query_int6),
                 int6_scale,
+                per_doc_scale: quantizer.per_doc_scale(),
                 _phantom: PhantomData,
             };
         }
@@ -674,6 +964,7 @@ impl<'e> DotVByteFixedU8QueryEvaluator<'e> {
             dense_query: vec,
             dense_query_int6: None,
             int6_scale: 0.0,
+            per_doc_scale: quantizer.per_doc_scale(),
             _phantom: PhantomData,
         }
     }
@@ -684,6 +975,18 @@ impl<'e, 'v> QueryEvaluator<PackedVectorView<'v, u64>> for DotVByteFixedU8QueryE
 
     #[inline]
     fn compute_distance(&self, vector: PackedVectorView<'v, u64>) -> DotProduct {
+        if self.per_doc_scale {
+            // E8 dv-v2: per-doc linear scale, vmax at the record head.
+            let dotvbyte_view = unsafe { DotVbyteFixedu8::from_unchecked_slice_v2(vector.data()) };
+            return match &self.dense_query_int6 {
+                Some(query_int6) => DotProduct::from(
+                    dotvbyte_view.dot_product_int6(query_int6) as f32
+                        * self.int6_scale
+                        * (dotvbyte_view.vmax / 255.0),
+                ),
+                None => DotProduct::from(dotvbyte_view.dot_product_v2(&self.dense_query)),
+            };
+        }
         let dotvbyte_view = unsafe { DotVbyteFixedu8::from_unchecked_slice(vector.data()) };
         match &self.dense_query_int6 {
             // M2 integer path (opt-in): integer dot, rescaled once per candidate.
@@ -705,6 +1008,10 @@ struct DotVbyteFixedu8<'a> {
     values_remaining: &'a [u8],
     idx_lens: &'a [u8],
     bytes: &'a [u8],
+    /// E8 dv-v2 per-doc dequant scale numerator (`v' = u8/255 · vmax`). Only
+    /// parsed by [`Self::from_unchecked_slice_v2`]; the v1 parse leaves 0.0
+    /// and no v1 kernel reads it.
+    vmax: f32,
 }
 
 impl<'a> DotVbyteFixedu8<'a> {
@@ -715,6 +1022,28 @@ impl<'a> DotVbyteFixedu8<'a> {
     }
 
     unsafe fn from_unchecked_slice(slice: &'a [u64]) -> Self {
+        unsafe { Self::from_unchecked_slice_inner(slice, std::mem::size_of::<u16>(), 0.0) }
+    }
+
+    /// E8 dv-v2 record parse: `[u16 len][u16 vmax_f16_bits][…v1 layout]`.
+    /// The per-doc `vmax` sits right after the length; every subsequent
+    /// section shifts by one u16 (alignment unchanged — the head stays
+    /// u16-aligned and the tail Simd values are located from the slice end).
+    unsafe fn from_unchecked_slice_v2(slice: &'a [u64]) -> Self {
+        unsafe {
+            let bytes = try_cast_slice::<u64, u8>(slice).unwrap_unchecked();
+            let vmax_bits =
+                u16::from_ne_bytes([*bytes.get_unchecked(2), *bytes.get_unchecked(3)]);
+            let vmax = half::f16::from_bits(vmax_bits).to_f32();
+            Self::from_unchecked_slice_inner(slice, 2 * std::mem::size_of::<u16>(), vmax)
+        }
+    }
+
+    unsafe fn from_unchecked_slice_inner(
+        slice: &'a [u64],
+        header_bytes: usize,
+        vmax: f32,
+    ) -> Self {
         unsafe {
             let slice = try_cast_slice::<u64, u8>(slice).unwrap_unchecked();
 
@@ -724,7 +1053,7 @@ impl<'a> DotVbyteFixedu8<'a> {
             let n_packs = original_length as usize / N;
             let n_remaining = original_length as usize % N;
 
-            let bytes_remaining_start = std::mem::size_of::<u16>();
+            let bytes_remaining_start = header_bytes;
 
             // These `next_multiple_of` are no-ops, I just want to express the importance of alignment.
             let bytes_remaining_start = bytes_remaining_start.next_multiple_of(align_of::<u16>());
@@ -765,11 +1094,34 @@ impl<'a> DotVbyteFixedu8<'a> {
                 values_remaining,
                 idx_lens,
                 bytes,
+                vmax,
             }
         }
     }
 
     pub fn push_vector(vec: &mut Vec<u8>, converted_components: &mut [u16], values: &mut [u8]) {
+        Self::push_vector_inner(vec, converted_components, values, None)
+    }
+
+    /// E8 dv-v2 record writer: identical layout to v1 with the per-doc
+    /// `f16 vmax` inserted right after the length u16 (see
+    /// [`Self::from_unchecked_slice_v2`]). `values` must already be per-doc
+    /// linear u8 (`round(v / vmax · 255)`).
+    pub fn push_vector_v2(
+        vec: &mut Vec<u8>,
+        converted_components: &mut [u16],
+        values: &mut [u8],
+        vmax: half::f16,
+    ) {
+        Self::push_vector_inner(vec, converted_components, values, Some(vmax.to_bits()))
+    }
+
+    fn push_vector_inner(
+        vec: &mut Vec<u8>,
+        converted_components: &mut [u16],
+        values: &mut [u8],
+        vmax_bits: Option<u16>,
+    ) {
         assert!(
             converted_components.len() < u16::MAX as usize,
             "DotVByteFixedU8Encoder only supports vectors shorter than 65535."
@@ -817,6 +1169,12 @@ impl<'a> DotVbyteFixedu8<'a> {
         let original_length = converted_components.len() as u16;
         unsafe {
             vec.extend_from_slice(&original_length.to_ne_bytes());
+
+            // E8 dv-v2: the per-doc vmax rides in the record head, right after
+            // the length (the dot kernels have no doc id to index a sidecar).
+            if let Some(vmax_bits) = vmax_bits {
+                vec.extend_from_slice(&vmax_bits.to_ne_bytes());
+            }
 
             vec.resize(vec.len().next_multiple_of(size_of::<u16>()), 0);
             vec.extend_from_slice(try_cast_slice(components_remaining).unwrap_unchecked());
@@ -889,6 +1247,34 @@ impl<'a> DotVbyteFixedu8<'a> {
         }
     }
 
+    /// E8 dv-v2 decode: values are per-doc linear u8 → `v' = u8/255 · vmax`.
+    /// Requires a view built by [`Self::from_unchecked_slice_v2`].
+    pub fn iter_f32_v2(self) -> impl Iterator<Item = (u16, f32)> {
+        let bytes_remaining = self.bytes_remaining;
+        let values_remaining = self.values_remaining;
+        let scale = self.vmax / 255.0;
+        gen move {
+            let mut last_component = 0;
+            for (c, v) in self.iter_raw() {
+                let c_prefixed = simd_prefix_sum(c);
+                let c_prefixed_previous = c_prefixed + Simd::splat(last_component);
+                last_component = *c_prefixed_previous.to_array().last().unwrap();
+
+                for (c, v) in c_prefixed_previous
+                    .to_array()
+                    .into_iter()
+                    .zip(v.to_array().into_iter().map(move |v| v as f32 * scale))
+                {
+                    yield (c, v);
+                }
+            }
+            for (c, v) in bytes_remaining.iter().zip(values_remaining.iter()) {
+                last_component += c;
+                yield (last_component, *v as f32 * scale);
+            }
+        }
+    }
+
     pub(crate) fn dot_product(&self, mut query: &[f32]) -> f32 {
         let mut result = Simd::<f32, 8>::splat(0.0);
         // This ugly clone is optimized away
@@ -928,6 +1314,49 @@ impl<'a> DotVbyteFixedu8<'a> {
             .fold(0f32, |acc, x| acc.algebraic_add(x));
 
         simd_result.algebraic_add(remaining_result)
+    }
+
+    /// E8 dv-v2 f32 dot: same SIMD walk as [`Self::dot_product`], but the doc
+    /// values are per-doc linear u8 — the constant per-doc scale `vmax/255`
+    /// is factored out of the loop and applied once to the final sum:
+    /// `score = (Σ u8[c] · q[c]) · vmax / 255`.
+    pub(crate) fn dot_product_v2(&self, mut query: &[f32]) -> f32 {
+        let mut result = Simd::<f32, 8>::splat(0.0);
+        // This ugly clone is optimized away (same as dot_product).
+        for (components, values) in self.clone().iter_raw() {
+            let components = simd_prefix_sum(components);
+            let values: Simd<f32, N> = values.cast();
+            let query_values = unsafe {
+                Simd::gather_select_unchecked(
+                    query,
+                    Mask::splat(true),
+                    components.cast(),
+                    Simd::splat(0.0),
+                )
+            };
+
+            result = values.mul_add(query_values, result);
+            let last_component = *components.to_array().last().unwrap();
+            // New starting point for the gather
+            query = unsafe { query.split_at_unchecked(last_component as usize).1 };
+        }
+        let simd_result = result.reduce_sum();
+
+        let remaining_result = self
+            .bytes_remaining
+            .iter()
+            .zip(self.values_remaining.iter())
+            .scan(0, move |acc, (&c, &v)| {
+                *acc += c;
+                Some(unsafe {
+                    query
+                        .get_unchecked(*acc as usize)
+                        .algebraic_mul(v as f32)
+                })
+            })
+            .fold(0f32, |acc, x| acc.algebraic_add(x));
+
+        simd_result.algebraic_add(remaining_result) * (self.vmax / 255.0)
     }
 
     /// M2 integer-domain dot: `Σ q_u6[c] · d_u8[c]` over the packed doc terms,

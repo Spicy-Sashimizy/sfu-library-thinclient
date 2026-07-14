@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "date_utc": "2026-07-10T03:20:04.459981",
+    "benchmark": "q4 m2b 7-bit/i32 integer-dot pre-gate",
+    "queries": 100,
+    "k_prime": 100,
+    "shards": [
+      "shard1",
+      "shard2"
+    ],
+    "gate_bar_overlap10": 0.99
+  },
+  "results": {
+    "shard1": {
+      "n_queries": 100,
+      "k_prime": 100,
+      "modes": {
+        "query_int6": {
+          "query_bits": 6,
+          "query_int_range": "[0, 63]",
+          "accumulation": "i32 (Python arbitrary-precision int(sum) = never saturates)",
+          "overlap@10_mean": 0.983,
+          "overlap@10_min": 0.9,
+          "overlap@50_mean": 0.9906,
+          "gate_pass_0.99": false
+        },
+        "query_int7_i32": {
+          "query_bits": 7,
+          "query_int_range": "[0, 127]",
+          "accumulation": "i32 (Python arbitrary-precision int(sum) = never saturates)",
+          "overlap@10_mean": 0.987,
+          "overlap@10_min": 0.9,
+          "overlap@50_mean": 0.9932,
+          "gate_pass_0.99": false
+        }
+      }
+    },
+    "shard2": {
+      "n_queries": 100,
+      "k_prime": 100,
+      "modes": {
+        "query_int6": {
+          "query_bits": 6,
+          "query_int_range": "[0, 63]",
+          "accumulation": "i32 (Python arbitrary-precision int(sum) = never saturates)",
+          "overlap@10_mean": 0.979,
+          "overlap@10_min": 0.8,
+          "overlap@50_mean": 0.9912,
+          "gate_pass_0.99": false
+        },
+        "query_int7_i32": {
+          "query_bits": 7,
+          "query_int_range": "[0, 127]",
+          "accumulation": "i32 (Python arbitrary-precision int(sum) = never saturates)",
+          "overlap@10_mean": 0.983,
+          "overlap@10_min": 0.8,
+          "overlap@50_mean": 0.9926,
+          "gate_pass_0.99": false
+        }
+      }
+    }
+  },
+  "verdict": {
+    "bar_overlap10_ge_0.99_both_shards": 0.99,
+    "shard1_query_int7_i32_pass": false,
+    "shard2_query_int7_i32_pass": false,
+    "overall": "FAIL_record_and_stop_kills_Q5",
+    "q5_killed_on_fail": true,
+    "note": "Pre-registered bars (doc 12 \u00a73 Q4): 7-bit/i32 integer dot overlap@10 >= 0.99 on BOTH shards at n=100 -> build the kernel variant behind SFU_SEISMIC_M2_INT6; else STOP (the FAIL also kills Q5/M6's quality leg \u2014 same arithmetic width). Served k'=100 (G8f default; the old M2 run used 200). i32 accumulation modeled by Python arbitrary-precision int(sum) = never saturates (255*127=32385, *nnz << 2^31) \u2014 the faithful i32 model, NOT vpmaddubsw i16 (saturates >6-bit)."
+  }
+}

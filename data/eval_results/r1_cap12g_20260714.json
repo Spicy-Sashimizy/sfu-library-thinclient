@@ -1,0 +1,65 @@
+{
+  "probe": "r1_ram_ladder",
+  "date": "2026-07-14",
+  "cap": "12g",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "queries": 40,
+  "passes": 3,
+  "top_k": 50,
+  "load_s": 176.3,
+  "prefault_gate": "1",
+  "per_pass": [
+    {
+      "pass": 1,
+      "p50_ms": 1854.94,
+      "p95_ms": 4589.45,
+      "mean_ms": 2271.22,
+      "max_ms": 6960.29,
+      "majflt": 243515,
+      "wall_s": 90.8,
+      "vm": {
+        "vmrss_kb": 10447508,
+        "rssanon_kb": 1195680,
+        "rssfile_kb": 9251828,
+        "vmswap_kb": 0
+      }
+    },
+    {
+      "pass": 2,
+      "p50_ms": 1380.92,
+      "p95_ms": 4063.25,
+      "mean_ms": 1629.33,
+      "max_ms": 5525.29,
+      "majflt": 187254,
+      "wall_s": 65.2,
+      "vm": {
+        "vmrss_kb": 12013948,
+        "rssanon_kb": 1195680,
+        "rssfile_kb": 10818268,
+        "vmswap_kb": 0
+      }
+    },
+    {
+      "pass": 3,
+      "p50_ms": 21.55,
+      "p95_ms": 116.69,
+      "mean_ms": 41.86,
+      "max_ms": 347.09,
+      "majflt": 2429,
+      "wall_s": 1.7,
+      "vm": {
+        "vmrss_kb": 12122708,
+        "rssanon_kb": 1195680,
+        "rssfile_kb": 10927028,
+        "vmswap_kb": 0
+      }
+    }
+  ],
+  "steady": {
+    "p50_ms": 701.24,
+    "p95_ms": 4063.25,
+    "majflt_per_pass": 94842.0
+  },
+  "swap_confounded": false,
+  "vmswap_kb_max": 0
+}

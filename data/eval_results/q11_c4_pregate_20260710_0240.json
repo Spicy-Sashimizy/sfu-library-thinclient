@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "date": "2026-07-10",
+    "script": "scripts/seismic_testbed/q11_c4_pregate.py",
+    "doc": "docs/seismic_150m_testbed/14_ENCODER_UPGRADE_PATH.md",
+    "decision_rule": "k<=4 untrained >=0.95 -> C4 STRONG GO; low untrained does NOT kill C4 (KALE); L12 = harness control (~0.999 vs fused)",
+    "reference": "served fused encoder qvecs",
+    "encode_ms_p50_reference": 23.75,
+    "n_queries": 100,
+    "top_k": 50,
+    "backend": "SequentialSeismicBackend, e5 manifest",
+    "wall_seconds": 495.0
+  },
+  "arms": {
+    "L4": {
+      "encode_ms_p50": 46.34,
+      "speedup_vs_ref": 0.51,
+      "merged": {
+        "overlap@10_mean": 0.464,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.434
+      },
+      "shard1": {
+        "overlap@10_mean": 0.406,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4116
+      },
+      "shard2": {
+        "overlap@10_mean": 0.407,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4032
+      }
+    },
+    "L8": {
+      "encode_ms_p50": 62.47,
+      "speedup_vs_ref": 0.38,
+      "merged": {
+        "overlap@10_mean": 0.506,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4954
+      },
+      "shard1": {
+        "overlap@10_mean": 0.448,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.4716
+      },
+      "shard2": {
+        "overlap@10_mean": 0.461,
+        "overlap@10_min": 0.0,
+        "overlap@50_mean": 0.462
+      }
+    },
+    "L12": {
+      "encode_ms_p50": 33.18,
+      "speedup_vs_ref": 0.72,
+      "merged": {
+        "overlap@10_mean": 0.999,
+        "overlap@10_min": 0.9,
+        "overlap@50_mean": 1.0
+      },
+      "shard1": {
+        "overlap@10_mean": 1.0,
+        "overlap@10_min": 1.0,
+        "overlap@50_mean": 1.0
+      },
+      "shard2": {
+        "overlap@10_mean": 1.0,
+        "overlap@10_min": 1.0,
+        "overlap@50_mean": 1.0
+      }
+    }
+  }
+}

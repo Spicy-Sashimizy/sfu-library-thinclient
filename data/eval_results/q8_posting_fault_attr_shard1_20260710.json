@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "date_utc": "2026-07-10T02:45:15.232336",
+    "benchmark": "q8 stage0a posting-side cold-fault attribution",
+    "shard": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap",
+    "queries": 40,
+    "k_prime": 100
+  },
+  "majflt_cold_pass_process_total": 24964,
+  "mincore_delta_total_pages": 469804,
+  "crosscheck_ratio_mincore_over_majflt": 18.819,
+  "by_class": {
+    "posting": 31854,
+    "forward": 415675,
+    "doc_mapping": 22275,
+    "meta": 0,
+    "other": 0
+  },
+  "share_of_total": {
+    "posting": 0.0678,
+    "forward": 0.8848,
+    "doc_mapping": 0.0474,
+    "meta": 0.0,
+    "other": 0.0
+  },
+  "per_file": {
+    "config.json": {
+      "class": "meta",
+      "size_bytes": 312,
+      "resident_before": 0,
+      "resident_after": 0,
+      "faulted_pages_delta": 0
+    },
+    "document_mapping_offsets.bin": {
+      "class": "doc_mapping",
+      "size_bytes": 150497944,
+      "resident_before": 0,
+      "resident_after": 10503,
+      "faulted_pages_delta": 10503
+    },
+    "document_mapping_strings.bin": {
+      "class": "doc_mapping",
+      "size_bytes": 206891778,
+      "resident_before": 0,
+      "resident_after": 11772,
+      "faulted_pages_delta": 11772
+    },
+    "forward_data.bin": {
+      "class": "forward",
+      "size_bytes": 3818669984,
+      "resident_before": 0,
+      "resident_after": 396357,
+      "faulted_pages_delta": 396357
+    },
+    "forward_encoder.bin": {
+      "class": "posting",
+      "size_bytes": 114926,
+      "resident_before": 0,
+      "resident_after": 0,
+      "faulted_pages_delta": 0
+    },
+    "forward_offsets.bin": {
+      "class": "forward",
+      "size_bytes": 150497944,
+      "resident_before": 0,
+      "resident_after": 19318,
+      "faulted_pages_delta": 19318
+    },
+    "manifest.json": {
+      "class": "meta",
+      "size_bytes": 21895877,
+      "resident_before": 0,
+      "resident_after": 0,
+      "faulted_pages_delta": 0
+    },
+    "posting_lists.bin": {
+      "class": "posting",
+      "size_bytes": 1159877512,
+      "resident_before": 0,
+      "resident_after": 31854,
+      "faulted_pages_delta": 31854
+    },
+    "token_to_id_map.bin": {
+      "class": "other",
+      "size_bytes": 646336,
+      "resident_before": 0,
+      "resident_after": 0,
+      "faulted_pages_delta": 0
+    }
+  },
+  "latency": {
+    "cold_p50_ms": 174.44,
+    "warm_p50_ms": 1.9,
+    "vmswap_kb": 0
+  },
+  "verdict": {
+    "posting_share_of_total": 0.1152,
+    "forward_share_of_total": 0.8848,
+    "posting_share_of_residual": 0.0712,
+    "bar_0.25residual": "KILL_on_paper",
+    "cell_valid_novswap_warm_lt_cold": true,
+    "bars": {
+      "posting_share_residual_ge_0.25": 0.25,
+      "cell_valid": "VmSwap~0 AND warm<cold"
+    }
+  }
+}

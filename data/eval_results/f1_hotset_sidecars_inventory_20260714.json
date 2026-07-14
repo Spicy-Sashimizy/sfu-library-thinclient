@@ -1,0 +1,308 @@
+{
+  "probe": "f1_hotset_generator",
+  "date": "2026-07-14",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "forward_format_version": 2,
+  "n_queries": 400,
+  "budgets": [
+    "hot50_1.6gb",
+    "hot80_4.2gb",
+    "full_touched"
+  ],
+  "pooled_coverage_curve": {
+    "hotset_50_pages": 107080,
+    "hotset_50_gb": 0.4386,
+    "hotset_80_pages": 249886,
+    "hotset_80_gb": 1.0235,
+    "hotset_90_pages": 335170,
+    "hotset_90_gb": 1.3729
+  },
+  "pooled_total_touches": 17084755,
+  "pooled_distinct_pages": 575327,
+  "global_by_budget": {
+    "hot50_1.6gb": {
+      "pinned_gb_global": 1.6,
+      "n_extents_global": 267244,
+      "n_pages_global": 390632,
+      "coverage_touches_global_frac": 0.6069
+    },
+    "hot80_4.2gb": {
+      "pinned_gb_global": 4.2,
+      "n_extents_global": 535704,
+      "n_pages_global": 1025392,
+      "coverage_touches_global_frac": 0.8858
+    },
+    "full_touched": {
+      "pinned_gb_global": 7.6011,
+      "n_extents_global": 737646,
+      "n_pages_global": 1855728,
+      "coverage_touches_global_frac": 1.0
+    }
+  },
+  "shards": [
+    {
+      "shard": 0,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33434,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6106,
+      "coverage_touched_pages_frac": 0.2112,
+      "_shard_total_touches": 2163210,
+      "file": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 0,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 66899,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8869,
+      "coverage_touched_pages_frac": 0.5543,
+      "_shard_total_touches": 2163210,
+      "file": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 0,
+      "budget": "full_touched",
+      "pinned_gb": 0.9471,
+      "n_extents": 91198,
+      "n_pages": 231231,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2163210,
+      "file": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 1,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33402,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.5991,
+      "coverage_touched_pages_frac": 0.2093,
+      "_shard_total_touches": 2109923,
+      "file": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 1,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 67892,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8804,
+      "coverage_touched_pages_frac": 0.5494,
+      "_shard_total_touches": 2109923,
+      "file": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 1,
+      "budget": "full_touched",
+      "pinned_gb": 0.9557,
+      "n_extents": 92894,
+      "n_pages": 233317,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2109923,
+      "file": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 2,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33765,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6101,
+      "coverage_touched_pages_frac": 0.2077,
+      "_shard_total_touches": 2220150,
+      "file": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 2,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 67874,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8841,
+      "coverage_touched_pages_frac": 0.5452,
+      "_shard_total_touches": 2220150,
+      "file": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 2,
+      "budget": "full_touched",
+      "pinned_gb": 0.963,
+      "n_extents": 93212,
+      "n_pages": 235106,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2220150,
+      "file": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 3,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33911,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.5872,
+      "coverage_touched_pages_frac": 0.2083,
+      "_shard_total_touches": 2161269,
+      "file": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 3,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 68785,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8815,
+      "coverage_touched_pages_frac": 0.5469,
+      "_shard_total_touches": 2161269,
+      "file": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 3,
+      "budget": "full_touched",
+      "pinned_gb": 0.96,
+      "n_extents": 92068,
+      "n_pages": 234365,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2161269,
+      "file": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 4,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33677,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6027,
+      "coverage_touched_pages_frac": 0.2089,
+      "_shard_total_touches": 2140761,
+      "file": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 4,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 66907,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8844,
+      "coverage_touched_pages_frac": 0.5484,
+      "_shard_total_touches": 2140761,
+      "file": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 4,
+      "budget": "full_touched",
+      "pinned_gb": 0.9573,
+      "n_extents": 92242,
+      "n_pages": 233709,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2140761,
+      "file": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 5,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 33149,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6226,
+      "coverage_touched_pages_frac": 0.2143,
+      "_shard_total_touches": 2087796,
+      "file": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 5,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 65558,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8927,
+      "coverage_touched_pages_frac": 0.5626,
+      "_shard_total_touches": 2087796,
+      "file": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 5,
+      "budget": "full_touched",
+      "pinned_gb": 0.9332,
+      "n_extents": 92154,
+      "n_pages": 227842,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2087796,
+      "file": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 6,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 32926,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6034,
+      "coverage_touched_pages_frac": 0.2101,
+      "_shard_total_touches": 2113777,
+      "file": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 6,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 66209,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8851,
+      "coverage_touched_pages_frac": 0.5515,
+      "_shard_total_touches": 2113777,
+      "file": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 6,
+      "budget": "full_touched",
+      "pinned_gb": 0.952,
+      "n_extents": 92323,
+      "n_pages": 232413,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2113777,
+      "file": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    },
+    {
+      "shard": 7,
+      "budget": "hot50_1.6gb",
+      "pinned_gb": 0.2,
+      "n_extents": 32980,
+      "n_pages": 48829,
+      "coverage_touches_frac": 0.6197,
+      "coverage_touched_pages_frac": 0.2144,
+      "_shard_total_touches": 2087869,
+      "file": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json"
+    },
+    {
+      "shard": 7,
+      "budget": "hot80_4.2gb",
+      "pinned_gb": 0.525,
+      "n_extents": 65580,
+      "n_pages": 128174,
+      "coverage_touches_frac": 0.8914,
+      "coverage_touched_pages_frac": 0.5628,
+      "_shard_total_touches": 2087869,
+      "file": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json"
+    },
+    {
+      "shard": 7,
+      "budget": "full_touched",
+      "pinned_gb": 0.9328,
+      "n_extents": 91555,
+      "n_pages": 227745,
+      "coverage_touches_frac": 1.0,
+      "coverage_touched_pages_frac": 1.0,
+      "_shard_total_touches": 2087869,
+      "file": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json"
+    }
+  ]
+}

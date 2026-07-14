@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "date": "2026-07-10",
+    "script": "scripts/seismic_testbed/q11_c5_static_int8.py",
+    "doc": "docs/seismic_150m_testbed/14_ENCODER_UPGRADE_PATH.md",
+    "bars": "PASS iff merged AND shard1 AND shard2 overlap@10 >= 0.99 (n=100); else KILL \u2014 closes the cheap tier of Q11",
+    "calibration": "120 sfu_eval_queries (distinct from the diverse_queries eval set)",
+    "quant": "QDQ, per-channel, int8 weights+activations",
+    "quant_seconds": 48.3,
+    "reference": "served fused encoder qvecs",
+    "encode_ms_p50_reference": 40.36,
+    "timing_caveat": "encode timings contended (Q7-Q9 session benches running on this container)",
+    "n_queries": 100,
+    "top_k": 50,
+    "backend": "SequentialSeismicBackend, e5 manifest",
+    "wall_seconds": 405.1
+  },
+  "arm": {
+    "encode_ms_p50": 228.05,
+    "speedup_vs_ref": 0.18,
+    "merged": {
+      "overlap@10_mean": 0.006,
+      "overlap@10_min": 0.0,
+      "overlap@50_mean": 0.0072
+    },
+    "shard1": {
+      "overlap@10_mean": 0.007,
+      "overlap@10_min": 0.0,
+      "overlap@50_mean": 0.012
+    },
+    "shard2": {
+      "overlap@10_mean": 0.005,
+      "overlap@10_min": 0.0,
+      "overlap@50_mean": 0.013
+    },
+    "verdict": "KILL"
+  }
+}
