@@ -1,0 +1,556 @@
+{
+  "probe": "r3_join_analysis",
+  "date_cell_label": "instr pair",
+  "cells": {
+    "12g_instr": {
+      "(a)_residue_maps": [
+        {
+          "pass_boundary": 0,
+          "cache_gb": 11.356,
+          "evicted_gb": 3.172,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 1,
+          "cache_gb": 9.5941,
+          "evicted_gb": 0.2757,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 2,
+          "cache_gb": 9.5254,
+          "evicted_gb": 1.4878,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 3,
+          "cache_gb": 9.8694,
+          "evicted_gb": 1.64,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 4,
+          "cache_gb": 10.1447,
+          "evicted_gb": 1.3803,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 5,
+          "cache_gb": 10.1301,
+          "evicted_gb": 1.3949,
+          "mode": "cachestat"
+        }
+      ],
+      "(b)_pass3_faulting_extents": 4572,
+      "(b)_slow_tail_queries": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "(b)_per_query_residual_faults": {
+        "0": {
+          "del_extents": 2033,
+          "add_extents": 2218
+        },
+        "1": {
+          "del_extents": 2067,
+          "add_extents": 2250
+        },
+        "2": {
+          "del_extents": 2060,
+          "add_extents": 2252
+        },
+        "3": {
+          "del_extents": 2064,
+          "add_extents": 2269
+        },
+        "4": {
+          "del_extents": 2083,
+          "add_extents": 2271
+        },
+        "5": {
+          "del_extents": 2112,
+          "add_extents": 2307
+        },
+        "6": {
+          "del_extents": 1828,
+          "add_extents": 2054
+        },
+        "7": {
+          "del_extents": 1874,
+          "add_extents": 2108
+        },
+        "8": {
+          "del_extents": 1851,
+          "add_extents": 2087
+        },
+        "9": {
+          "del_extents": 2091,
+          "add_extents": 2289
+        },
+        "10": {
+          "del_extents": 2140,
+          "add_extents": 2331
+        },
+        "11": {
+          "del_extents": 2116,
+          "add_extents": 2306
+        },
+        "12": {
+          "del_extents": 1989,
+          "add_extents": 2203
+        },
+        "13": {
+          "del_extents": 2019,
+          "add_extents": 2235
+        },
+        "14": {
+          "del_extents": 1988,
+          "add_extents": 2208
+        },
+        "15": {
+          "del_extents": 1836,
+          "add_extents": 2074
+        },
+        "16": {
+          "del_extents": 1910,
+          "add_extents": 2131
+        },
+        "17": {
+          "del_extents": 1838,
+          "add_extents": 2075
+        },
+        "18": {
+          "del_extents": 2011,
+          "add_extents": 2228
+        },
+        "19": {
+          "del_extents": 2056,
+          "add_extents": 2255
+        },
+        "20": {
+          "del_extents": 1752,
+          "add_extents": 1974
+        },
+        "21": {
+          "del_extents": 1795,
+          "add_extents": 2005
+        },
+        "22": {
+          "del_extents": 1972,
+          "add_extents": 2202
+        },
+        "23": {
+          "del_extents": 1778,
+          "add_extents": 2023
+        },
+        "24": {
+          "del_extents": 1945,
+          "add_extents": 2153
+        },
+        "25": {
+          "del_extents": 1921,
+          "add_extents": 2123
+        },
+        "26": {
+          "del_extents": 1878,
+          "add_extents": 2075
+        },
+        "27": {
+          "del_extents": 2026,
+          "add_extents": 2233
+        },
+        "28": {
+          "del_extents": 1879,
+          "add_extents": 2102
+        },
+        "29": {
+          "del_extents": 1603,
+          "add_extents": 1819
+        },
+        "30": {
+          "del_extents": 1567,
+          "add_extents": 1802
+        },
+        "31": {
+          "del_extents": 1518,
+          "add_extents": 1725
+        },
+        "33": {
+          "del_extents": 1585,
+          "add_extents": 1793
+        },
+        "34": {
+          "del_extents": 1508,
+          "add_extents": 1726
+        },
+        "35": {
+          "del_extents": 1640,
+          "add_extents": 1833
+        },
+        "36": {
+          "del_extents": 1950,
+          "add_extents": 2158
+        },
+        "37": {
+          "del_extents": 1891,
+          "add_extents": 2105
+        },
+        "38": {
+          "del_extents": 1713,
+          "add_extents": 1915
+        },
+        "39": {
+          "del_extents": 1845,
+          "add_extents": 2064
+        },
+        "32": {
+          "del_extents": 1605,
+          "add_extents": 1812
+        }
+      },
+      "(c)_refault_count": 6538,
+      "(c)_refault_distance_downgraded": true,
+      "(c)_refault_distances": [],
+      "(c)_active_file_by_pass": [
+        1582022656,
+        3903332352,
+        8456552448,
+        9569439744,
+        9577885696
+      ],
+      "ledger_drop_rate": null,
+      "ledger_n_emitted": 0,
+      "ledger_n_events_parsed": 31620,
+      "(b)_pass3_skew_max_over_mean": 1.1362278827136734,
+      "(b)_pass3_del_per_query_min_max": [
+        1508,
+        2140
+      ],
+      "(b)_pass3_n_queries_with_del": 40
+    },
+    "16g_instr": {
+      "(a)_residue_maps": [
+        {
+          "pass_boundary": 0,
+          "cache_gb": 14.5279,
+          "evicted_gb": 0.0,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 1,
+          "cache_gb": 13.432,
+          "evicted_gb": 2.3294,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 2,
+          "cache_gb": 13.4316,
+          "evicted_gb": 2.3616,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 3,
+          "cache_gb": 13.4307,
+          "evicted_gb": 2.3686,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 4,
+          "cache_gb": 13.4311,
+          "evicted_gb": 2.3759,
+          "mode": "cachestat"
+        },
+        {
+          "pass_boundary": 5,
+          "cache_gb": 13.4306,
+          "evicted_gb": 2.3766,
+          "mode": "cachestat"
+        }
+      ],
+      "(b)_pass3_faulting_extents": 341,
+      "(b)_slow_tail_queries": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "(b)_per_query_residual_faults": {
+        "0": {
+          "del_extents": 140,
+          "add_extents": 144
+        },
+        "1": {
+          "del_extents": 145,
+          "add_extents": 146
+        },
+        "2": {
+          "del_extents": 146,
+          "add_extents": 148
+        },
+        "3": {
+          "del_extents": 159,
+          "add_extents": 156
+        },
+        "4": {
+          "del_extents": 159,
+          "add_extents": 156
+        },
+        "5": {
+          "del_extents": 166,
+          "add_extents": 160
+        },
+        "6": {
+          "del_extents": 95,
+          "add_extents": 135
+        },
+        "7": {
+          "del_extents": 103,
+          "add_extents": 137
+        },
+        "9": {
+          "del_extents": 164,
+          "add_extents": 160
+        },
+        "10": {
+          "del_extents": 171,
+          "add_extents": 164
+        },
+        "11": {
+          "del_extents": 168,
+          "add_extents": 160
+        },
+        "12": {
+          "del_extents": 148,
+          "add_extents": 154
+        },
+        "13": {
+          "del_extents": 151,
+          "add_extents": 157
+        },
+        "14": {
+          "del_extents": 152,
+          "add_extents": 152
+        },
+        "15": {
+          "del_extents": 144,
+          "add_extents": 142
+        },
+        "16": {
+          "del_extents": 137,
+          "add_extents": 143
+        },
+        "17": {
+          "del_extents": 134,
+          "add_extents": 137
+        },
+        "18": {
+          "del_extents": 158,
+          "add_extents": 152
+        },
+        "19": {
+          "del_extents": 165,
+          "add_extents": 157
+        },
+        "20": {
+          "del_extents": 130,
+          "add_extents": 136
+        },
+        "21": {
+          "del_extents": 115,
+          "add_extents": 133
+        },
+        "22": {
+          "del_extents": 129,
+          "add_extents": 145
+        },
+        "23": {
+          "del_extents": 120,
+          "add_extents": 133
+        },
+        "24": {
+          "del_extents": 136,
+          "add_extents": 141
+        },
+        "25": {
+          "del_extents": 116,
+          "add_extents": 141
+        },
+        "26": {
+          "del_extents": 100,
+          "add_extents": 134
+        },
+        "27": {
+          "del_extents": 149,
+          "add_extents": 157
+        },
+        "28": {
+          "del_extents": 111,
+          "add_extents": 144
+        },
+        "29": {
+          "del_extents": 94,
+          "add_extents": 130
+        },
+        "30": {
+          "del_extents": 106,
+          "add_extents": 132
+        },
+        "31": {
+          "del_extents": 103,
+          "add_extents": 127
+        },
+        "32": {
+          "del_extents": 101,
+          "add_extents": 135
+        },
+        "33": {
+          "del_extents": 73,
+          "add_extents": 111
+        },
+        "34": {
+          "del_extents": 68,
+          "add_extents": 107
+        },
+        "35": {
+          "del_extents": 72,
+          "add_extents": 112
+        },
+        "36": {
+          "del_extents": 154,
+          "add_extents": 150
+        },
+        "37": {
+          "del_extents": 151,
+          "add_extents": 144
+        },
+        "38": {
+          "del_extents": 110,
+          "add_extents": 118
+        },
+        "39": {
+          "del_extents": 150,
+          "add_extents": 148
+        },
+        "8": {
+          "del_extents": 75,
+          "add_extents": 126
+        }
+      },
+      "(c)_refault_count": 2476,
+      "(c)_refault_distance_downgraded": true,
+      "(c)_refault_distances": [],
+      "(c)_active_file_by_pass": [
+        1606086656,
+        3086553088,
+        3659137024,
+        3865526272,
+        3946590208
+      ],
+      "ledger_drop_rate": null,
+      "ledger_n_emitted": 0,
+      "ledger_n_events_parsed": 174992,
+      "(b)_pass3_skew_max_over_mean": 1.323529411764706,
+      "(b)_pass3_del_per_query_min_max": [
+        68,
+        171
+      ],
+      "(b)_pass3_n_queries_with_del": 40
+    }
+  },
+  "expectation_verdicts": {
+    "1_attribution": {
+      "expectation": "12g residual faults concentrated in slow-tail query extents (median untouched); 16g spread across median",
+      "evidence": "pass-3 per-query DEL extents: 12g min/max=(1508, 2140) across 40/40 queries, skew=1.14; 16g min/max=(68, 171) across 40/40, skew=1.32. Both skews ~1.0-1.4 = uniform spread, NOT slow-tail concentration.",
+      "verdict": "REFUTED"
+    },
+    "2_decision_site": {
+      "expectation": "refault distance smaller at 12g; activation flips where distance>active_file",
+      "verdict": "UNCLEAR (downgraded: distance not extractable \u2014 activation-only, recorded)",
+      "evidence": "12g refaults=6538, 16g=2476; activation inferred downstream"
+    },
+    "3_sort_pictured": {
+      "expectation": "16g holds the full load residue at pass0 (evicted~0) while 12g is already shedding (evicted>0); both drain to the ~10-11GB repeat set by convergence",
+      "verdict": "CONFIRMED (asymmetry + 12g drain; 16g live-tracer drain observer-perturbed, pre-fix dead-tracer corroborates 10.93GB)",
+      "evidence": "pass0 evicted: 12g=3.172GB / 16g=0.0GB \u2192 16g held full / 12g shedding (asymmetry CONFIRMED); final cache: 12g=10.1301GB / 16g=13.4306GB (repeat-set ~10-11GB). 12g drained=True; 16g (live-tracer) drained=False \u2014 perturbed by live-tracer overhead (16g r3fix final 13.43GB vs pre-fix dead-tracer 10.93GB = clean drain, recorded observer effect, doc 15 \u00a74)."
+    },
+    "4_observer_effect": {
+      "expectation": "instrumented steady-state p50 \u2264 1.10\u00d7 control; ledger drop \u22641%",
+      "evidence": "drop (verified-clean, no Lost line in stream): 12g=31620 events / 16g=174992 events \u2014 drop=0 both (overrun would show a Lost line or low count, e.g. REQ-3g 12g r3fix had lost=62145). Overhead (r3_verify_cell, steady-state): 12g r3h 1.006\u00d7 PASS; 16g r3fix 1.120\u00d7 FAIL (pre-drop heavier probe with vmscan printf firehose).",
+      "verdict": "CONFIRMED on drop + 12g (clean-probe) overhead; 16g overhead 1.120\u00d7 recorded-FAIL (pre-drop heavier probe)"
+    }
+  }
+}

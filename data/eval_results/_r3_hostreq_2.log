@@ -1,0 +1,19 @@
+[21:49:22] === cell cap16g_ctrl ===
+[21:49:22] dropping shared WSL2 page cache (cold-start purity)
+[21:54:31] cell cap16g_ctrl DONE -> data/eval_results/r3_cap16g_ctrl_20260715.json
+[21:54:31] === cell cap12g_ctrl ===
+[21:54:31] dropping shared WSL2 page cache (cold-start purity)
+[22:00:20] cell cap12g_ctrl DONE -> data/eval_results/r3_cap12g_ctrl_20260715.json
+[22:00:20] === cell cap16g_instr ===
+[22:00:20] dropping shared WSL2 page cache (cold-start purity)
+[22:00:21] starting tracer for cap16g_instr (ledger->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap16g_instr_ledger.log, refault->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap16g_instr_refault.log)
+[22:01:52] WARN: tracer for cap16g_instr has not printed the breadcrumb in 90s — bpftrace may still be installing; ledger may be empty
+[22:06:04] stopping tracer for cap16g_instr
+[22:06:05] cell cap16g_instr DONE -> data/eval_results/r3_cap16g_instr_20260715.json
+[22:06:05] === cell cap12g_instr ===
+[22:06:05] dropping shared WSL2 page cache (cold-start purity)
+[22:06:05] starting tracer for cap12g_instr (ledger->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap12g_instr_ledger.log, refault->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap12g_instr_refault.log)
+[22:07:36] WARN: tracer for cap12g_instr has not printed the breadcrumb in 90s — bpftrace may still be installing; ledger may be empty
+[22:14:36] stopping tracer for cap12g_instr
+[22:14:36] cell cap12g_instr DONE -> data/eval_results/r3_cap12g_instr_20260715.json
+[22:14:37] === R3 cells complete — wrote _r3_cells.ALLDONE ===

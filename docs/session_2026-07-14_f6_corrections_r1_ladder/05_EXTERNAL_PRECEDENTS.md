@@ -60,3 +60,55 @@ mixing times (https://arxiv.org/pdf/2308.02875), kernel reclaim internals
 (https://lwn.net/Articles/851184/), sequential flooding
 (https://tinkeringwithdata.wordpress.com/2019/04/14/understanding-sequential-flooding/,
 https://cs186berkeley.net/notes/note5/).
+
+## R3 addendum — post-measurement prior-art sweep (2026-07-16)
+
+Web cross-reference done after the R3 kernel-ledger results landed, to
+pressure-test the "composite apparently not documented" claim above. Verdict:
+the claim SURVIVES but must be narrowed in one place.
+
+**Newly found — and it WEAKENS one novelty claim.** *When is the Cache Warm?
+Manufacturing a Rule of Thumb* (Zhang, Yang, Blasiak, McCall, Vigfusson,
+HotCloud '20, https://www.usenix.org/conference/hotcloud20/presentation/zhang-lei)
+defines warmup-time(s, ε) explicitly as a function of cache size s, fits
+rule-of-thumb formulas on CDN/memcached traces, and shows caches warm up
+faster than they fill. Size-scaled warmup is therefore EMPIRICALLY mapped,
+not just theory (it joins the WiOpt-2022/Che-Fagin line above). Our
+fixed-window inversion is a direct COROLLARY of their curves (larger s ⇒
+longer warmup ⇒ at fixed t a smaller cache can be ahead) — but they do not
+state, measure, or name the inversion; their metric is hit ratio in
+distributed key-value/CDN caches, not OS page-cache query latency. Related:
+Bonfire (FAST '13,
+https://www.usenix.org/system/files/conference/fast13/fast13-final118_0.pdf)
+documents that larger storage caches take proportionally long to warm.
+
+**Confirmed still-unmapped after searching (the R3-specific pieces):**
+
+1. **The inversion as an observed, quantified phenomenon** — no source found
+   reporting a smaller RAM cap beating a larger one on the same workload at
+   a fixed wall-clock/pass window in latency terms (our 12 GB 20 ms vs
+   16 GB 129 ms at pass 3, thrice-replicated).
+2. **The per-page × per-query attribution join** — eBPF request tracing
+   exists for DBMSs (Domaschka et al., ICPE '23 companion,
+   https://dl.acm.org/doi/10.1145/3578245.3584313), per-request I/O layer
+   slicing exists (ReLayTracer, https://arxiv.org/pdf/1906.07124), page-fault
+   tracing per process is a practitioner staple
+   (https://taras.glek.net/posts/ebpf-mmap-page-fault-tracing/), and
+   filemap-tracepoint/cachestat observability is well documented
+   (https://biriukov.dev/docs/page-cache/9-advanced-page-cache-observability-and-troubleshooting-tools/,
+   LWN on cachestat(2): https://lwn.net/Articles/917096/). But no found work
+   JOINS a kernel eviction/refault ledger to per-query page/extent touch
+   sets to attribute a warmup transient — the thing R3 built, and the join
+   that refuted our own expectation #1.
+3. **Per-event field observation of the activation decision** — refault
+   distance/activation is thoroughly documented as kernel DESIGN
+   (https://lwn.net/Articles/495423/, mm/workingset.c), and eBPF page-cache
+   *policy* work exists (cache_ext,
+   https://www.asafcidon.com/uploads/5/9/7/0/59701649/cache_ext.pdf), but no
+   found study instruments workingset_refault per-event in the field and
+   validates against the cgroup counters (our ×512 check, 1.003–1.018).
+
+Consequence for the writeup: cite HotCloud '20 + Bonfire wherever the
+04-doc/§7 text implies size-scaled warmup itself is novel — it is not; the
+novelty is the latency-visible inversion at the OS page cache, its per-page
+attribution, and the refutation of per-query fault concentration.

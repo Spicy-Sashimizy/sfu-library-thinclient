@@ -1,0 +1,18 @@
+stdin:80:1-25: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_add_to_page_cache' does not contain a field named 'ino'
+/@shard_inodes[args->ino]/
+~~~~~~~~~~~~~~~~~~~~~~~~
+stdin:84:48-57: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_add_to_page_cache' does not contain a field named 'ino'
+  printf("%llu\tADD\t%llu\t%llu\t%d\n", nsecs, args->ino, args->index, @shard_inodes[args->ino]);
+                                               ~~~~~~~~~
+stdin:84:72-95: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_add_to_page_cache' does not contain a field named 'ino'
+  printf("%llu\tADD\t%llu\t%llu\t%d\n", nsecs, args->ino, args->index, @shard_inodes[args->ino]);
+                                                                       ~~~~~~~~~~~~~~~~~~~~~~~
+stdin:98:1-25: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_delete_from_page_cache' does not contain a field named 'ino'
+/@shard_inodes[args->ino]/
+~~~~~~~~~~~~~~~~~~~~~~~~
+stdin:101:45-54: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_delete_from_page_cache' does not contain a field named 'ino'
+  printf("%llu\tDEL\t%llu\t0\t%d\n", nsecs, args->ino, @shard_inodes[args->ino]);
+                                            ~~~~~~~~~
+stdin:101:56-79: ERROR: Struct/union of type 'struct _tracepoint_filemap_mm_filemap_delete_from_page_cache' does not contain a field named 'ino'
+  printf("%llu\tDEL\t%llu\t0\t%d\n", nsecs, args->ino, @shard_inodes[args->ino]);
+                                                       ~~~~~~~~~~~~~~~~~~~~~~~

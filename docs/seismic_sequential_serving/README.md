@@ -1,7 +1,8 @@
 # SEISMIC Sequential Serving — one index, a second serving method
 
-**Created 2026-06-30.** Status: **IMPLEMENTED (mechanisms A + B) — two distinct
-classes, EFFICACY UNMEASURED**. The two methods are separate classes —
+**Created 2026-06-30, efficacy measured 2026-07-16.** Status: **IMPLEMENTED
+(mechanisms A + B) + EFFICACY MEASURED (deployprep WI-1, 2026-07-16 — see
+`04_BENCHMARKING.md` "MEASURED 2026-07-16")**. The two methods are separate classes —
 `ParallelSeismicBackend` (server-side) and `SequentialSeismicBackend` (localized,
 RAM-efficient) — sharing pure module-level helpers, with no inheritance coupling
 of per-query behavior and no shared mutable instance state (lowest cascade risk;
@@ -11,8 +12,12 @@ on a synthetic shard. Mechanism (A) serial loop + mechanism (B) `MADV_DONTNEED`
 `release_pages` (after each shard's search → hard ~1-shard resident guarantee) are
 **both shipped** for the sequential class only (parallel never calls (B); the `.so`
 rebuild is additive). Mechanism (C) `mlock`/`MADV_RANDOM` remains a **design-only
-future hook**. Latency on the real 150M box is **unmeasured** — run
-`04_BENCHMARKING.md`. Owner: TBD.
+future hook**. **150M latency/RSS/parity MEASURED 2026-07-16 (deployprep WI-1)** on
+the 64 GB container, swap-free: warm p50 5.29× parallel (248 vs 47 ms), peak
+RssFile 0.023× (0.27 vs 11.74 GB), T1 bit-identical 0/2000 — sequential's value is
+the RAM floor, not warm speed; see `04_BENCHMARKING.md` "MEASURED 2026-07-16".
+The 31.6 GB swap-storm GO/KILL fork (H1) needs the constrained host — open
+host-queue item. Owner: TBD.
 
 ## The one-sentence idea
 

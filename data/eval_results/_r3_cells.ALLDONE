@@ -1,0 +1,9 @@
+ALLDONE 2026-07-16T06:53:20Z
+cells: 12:instr
+_r3_cap12g_ctrl.status: DONE 2026-07-16T05:00:20Z data/eval_results/r3_cap12g_ctrl_20260715.json
+_r3_cap12g_instr.status: DONE 2026-07-16T05:14:36Z data/eval_results/r3_cap12g_instr_20260715.json
+_r3_cap12g_instr_r3fix.status: DONE 2026-07-16T06:30:35Z data/eval_results/r3_cap12g_instr_r3fix_20260715.json
+_r3_cap12g_instr_r3h.status: DONE 2026-07-16T06:53:20Z data/eval_results/r3_cap12g_instr_r3h_20260715.json
+_r3_cap16g_ctrl.status: DONE 2026-07-16T04:54:31Z data/eval_results/r3_cap16g_ctrl_20260715.json
+_r3_cap16g_instr.status: DONE 2026-07-16T05:06:05Z data/eval_results/r3_cap16g_instr_20260715.json
+_r3_cap16g_instr_r3fix.status: DONE 2026-07-16T06:24:18Z data/eval_results/r3_cap16g_instr_r3fix_20260715.json

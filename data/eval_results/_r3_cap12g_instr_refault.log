@@ -1,0 +1,3 @@
+stdin:87:12-33: ERROR: The arg0 builtin can only be used with 'kprobes', 'uprobes' and 'usdt' probes
+  $folio = (struct folio *)arg0;
+           ~~~~~~~~~~~~~~~~~~~~~

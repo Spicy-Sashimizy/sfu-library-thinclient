@@ -1,0 +1,15 @@
+=== R3 capability probe G-R3-0  (host c963918722c3, 2026-07-16T04:32:21Z) ===
+kernel: 6.18.33.1-microsoft-standard-WSL2
+CHECK kernel_version: PASS (6.18.33.1-microsoft-standard-WSL2 ≥ 6.5 — cachestat available)
+CHECK btf_vmlinux: PASS (present, 6679703 bytes)
+CHECK tracepoint_filemap:mm_filemap_delete_from_page_cache: PASS (present)
+CHECK tracepoint_filemap:mm_filemap_add_to_page_cache: PASS (present)
+CHECK tracepoint_vmscan:mm_vmscan_lru_shrink_inactive: PASS (present)
+CHECK tracepoint_vmscan:mm_vmscan_memcg_reclaim_begin: PASS (present)
+installing bpftrace + python3 via apt-get (throwaway container only)...
+CHECK bpftrace_fires: PASS (got 166 map-print line(s) from sched_switch in 5 s)
+CHECK cachestat: PASS (rc=0 cache=0 dirty=0 evicted=0 recently_evicted=0)
+
+=== G-R3-0 SUMMARY  pass=7 fail=0 hard_fail=0 cachestat_fail=0 ===
+VERDICT: GO — all capability checks pass; proceed to Phase C cells
+EXIT_CODE=0

@@ -226,3 +226,95 @@ convergence-terminated (min 3 / max 12 passes), per-pass cgroup-v2
    steady-state p50 may only be quoted from a majflt≈0 pass. Replicates are
    cheap insurance: one host-noise event (13g rep1 mid-run fault bounce on
    the shared WSL2 page cache) was caught and arbitrated by its replicate.
+
+## §8 Per-page attribution (R3, measured 2026-07-16)
+
+R3 (`docs/seismic_150m_testbed/15_R3_KERNEL_LEDGER_SPIKE.md`; pre-registration +
+measured bars in `11_EXPERIMENT_BACKLOG.md` §R3) took the §2/§7.2 mechanism
+statement — "the inversion is carried by *where* the residual faults land
+across queries, not by the smaller cap having finished the sort" — and asked
+the kernel to show its work per page: which shard extents were evicted when,
+which came back, at what refault count, and which of the 40 queries touch
+exactly those extents. A bpftrace eviction/refault ledger
+(`mm_filemap_{add,delete}_from_page_cache`, 1/512 extent-downsampled, filtered
+in-probe to the 8 shard-file inodes) + a `workingset_refault` kprobe + between-pass
+`cachestat()` (syscall 451) residency maps, joined on `(ino, pgoff→extent)` and
+pass-boundary CLOCK_MONOTONIC windows against a per-query extent-touch map from
+the `search_visited` pyo3 surface. Cells: the 12/16 GB inversion pair, each with
+an uninstrumented control (latency quoted only from controls). G-R3-0 capability
+gate PASS 7/7 on the WSL2 6.18.33 kernel.
+
+What the ledger adds to §2/§4/§7:
+
+1. **The §7.2 refinement is directly observed, and its "where the faults land"
+   half is REFUTED.** §7.2 inferred "12 GB's residue misses the median query;
+   16 GB's is spread, lifting p50" from per-pass aggregates. The per-page join
+   shows the opposite: residual faults are **uniformly spread** across all 40
+   queries in BOTH caps (pass-3 per-query DEL-extent skew max/mean 1.14 at 12g,
+   1.32 at 16g — both ~1.0, no slow tail). The structural reason: the repeat
+   set's extents are shared across all queries (19.6% of the 10,471 extents
+   touch all 40 queries; only 1.8% touch one) — so residual faults *cannot*
+   concentrate in a per-query slow tail. The inversion is carried SOLELY by the
+   §7.2 *first* half — convergence-trajectory position at the fixed window
+   (12g's pass-3 is mid-sort at majflt~140k while 16g's is near-converged at
+   ~15k) — NOT by per-query fault distribution. This sharpens §2.3 ("only
+   time-to-converge differs"): the per-query-distribution qualifier drops; the
+   fixed-window-truncation-of-the-transient is the whole story.
+
+2. **The §2.2 pressure-scaled-aging picture, at page granularity — CONFIRMED.**
+   §2.2 (and §7.3) inferred the "16 GB not yet sorting / 12 GB sorting"
+   asymmetry from cgroup `pgscan`. The between-pass cachestat maps picture it
+   directly: at pass-0 (post-load) 16 GB holds the full ~14.3 GB working set
+   (evicted **0.0 GB** — kernel not yet sorting) while 12 GB is already shedding
+   (evicted **3.17 GB** — sort in flight). Both drain toward the ~10–11 GB
+   repeat set (12g → 10.13 GB) by convergence — the §2.1 estimate, now an
+   extent-residency map not a single number. (Caveat honestly recorded: 16g's
+   *live-tracer* drain stops at 13.43 GB — the bpftrace probes + cachestat
+   snapshots added pressure that perturbed 16g's reclaim timing, the very
+   observer effect §4/'doc 15 §4' warn about; the pre-fix dead-tracer 16g cell
+   corroborates the 10.93 GB drain in the un-perturbed regime. This is WHY
+   latency is only quoted from controls.)
+
+3. **§4's Che/Fagin link, watched per pass — half-CONFIRMED, half-UNCLEAR.** The
+   §4 capacity-scaled characteristic-time prediction (bigger cache ⇒ longer
+   convergence ⇒ fixed-window catches it mid-transient) is corroborated by the
+   per-pass refault COUNT (the `workingset_refault` kprobe's ×512-scaled count
+   matches the kernel's own `workingset_refault_file` cgroup counter within
+   **1.8%** at 12g / **0.3%** at 16g — a 1/512 sample reconstructing the
+   kernel's own event count within ~1%). But the per-event refault DISTANCE
+   (the local in `mm/workingset.c::workingset_refault()` that encodes the
+   LRU slot, where §4's "distance exceeds active_file ⇒ activation flips"
+   decision lives) is NOT extractable under the WSL2 kernel's BTF → emitted -1,
+   the §R3-documented downgrade (activation inferred downstream). So §4's link
+   is watched at per-pass count granularity, not per-event distance — the
+   distance-vs-active_file decision site remains inferred, not directly
+   observed. (Activating the BTF function-local extraction would require either
+   a kernel with the local exposed or a manual shadow-entry decoder — out of
+   scope here, recorded as the open next step.)
+
+4. **§5.1 / §7.4 methodology, hardened.** The observer-effect bar (instrumented
+   steady-state p50 ≤ 1.10× control) is measured: the clean-probe 12g cell reads
+   **1.006×** (within bar); the 16g cell reads 1.120× steady-state / 1.072× at
+   the symmetric pass-3 transient. The lesson reaffirmed: the overhead must be
+   compared at each cell's *most-converged* pass (the steady-state regime it
+   actually reached), NOT a fixed pass-index — the two cells converge in
+   different pass counts (12g took 5 vs ctrl's 4, tracing-pressure-delayed), so
+   a fixed index is apples-to-oranges (12g pass-3 = mid-sort 824 ms vs ctrl
+   near-converged 20 ms ⇒ a bogus 40× ratio). And the refault-ratio verifier
+   heuristic, written pre-sampling, compared the 1/512-sampled probe against
+   `majflt` (~7× too few) — flagging a designed property as a defect; corrected
+   to reference the kernel's own `workingset_refault_file` (1–2%), a recursion
+   of the §4b "fault count is a state metric; pick the right denominator"
+   lesson at the probe layer.
+
+The headline upgrade: §7.2's "where the faults land across queries" inference
+is REFUTED by direct per-page observation (faults land uniformly; the repeat
+set is shared) — the inversion's *entire* per-query story is the fixed-window
+truncation of the convergence transient, nothing more. The §2.2/§7.3
+pressure-scaled-aging picture and the §4 characteristic-time prediction are
+CONFIRMED at page granularity (the count half) or corroborated (the distance
+half stays inferred). Result files: `data/eval_results/r3_cap{12,16}g_instr_*.json`
++ `_r3_cap*_instr_*_ledger.log` / `_refault.log` + `_r3_cachestat_cap*_instr_*_pass*.json`
++ `_r3_query_extent_map.json` + `_r3_inode_map.json`; join +
+verdicts in `data/eval_results/_r3_join_analysis.json` and
+`data/eval_results/_r3_ledger_summary.md`.

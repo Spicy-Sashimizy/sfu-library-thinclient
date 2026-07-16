@@ -84,6 +84,33 @@ def _record_leg(leg: str, ms: float, error: bool = False) -> None:
         if error:
             m["errors"] += 1
 
+
+def snapshot_leg_metrics() -> dict:
+    """A point-in-time copy of the cumulative per-leg metrics
+    ({leg: {count, errors, total_ms}}). The serve query-log (lib.serve_query_log)
+    snapshots before+after a served query and diffs total_ms/count to attribute
+    end-to-end latency to the BM25F / SPLADE / dense legs individually — the
+    per-leg shape the disk-streaming skew analysis needs (which leg's results
+    dominate the hot set). Process-global; thread-safe."""
+    with _metrics_lock:
+        return {leg: dict(m) for leg, m in _leg_metrics.items()}
+
+
+def leg_metrics_delta(before: dict) -> dict:
+    """Diff of cumulative leg total_ms since a `before` snapshot → the per-leg
+    ms a single query cost. Returns {leg: ms} for legs that advanced (others
+    omitted). The serve-query-log path uses this to emit per-leg latencies
+    without the retriever plumbing a callback through every leg."""
+    after = snapshot_leg_metrics()
+    out = {}
+    for leg, m in after.items():
+        b = before.get(leg, {"count": 0, "total_ms": 0.0})
+        d_ms = m["total_ms"] - b["total_ms"]
+        if d_ms > 0:
+            out[leg] = round(d_ms, 2)
+    return out
+
+
 # BMP is a load-into-memory engine (no mmap mode in 0.2.6): `bmp.Searcher`
 # deserializes each *.bmp shard into ANONYMOUS RAM at a measured ~3.07x its
 # on-disk size (probe 2026-06-17, 569 MB shard -> 1747 MB steady-state RSS;
@@ -289,6 +316,29 @@ class ThinClientRetriever:
     def live_sections(self) -> list[str]:
         self._load()
         return sorted(self._sections)
+
+    # ── serve query-log surface (lib.serve_query_log) ──────────────────────────
+    # Thin accessors the tools-layer search handler calls to attribute a served
+    # query's latency to its legs + record the federation mode. The leg metrics
+    # are otherwise in-memory only (reset on restart); these expose a diff window
+    # so the serve log gets per-leg ms WITHOUT a callback plumbed through every
+    # leg's call path (the least-invasive hook). All three are O(1) + thread-safe.
+
+    def _leg_snapshot_for_log(self) -> dict:
+        from lib.thinclient.retriever import snapshot_leg_metrics
+        return snapshot_leg_metrics()
+
+    def _leg_delta_for_log(self, before: dict) -> dict:
+        from lib.thinclient.retriever import leg_metrics_delta
+        return leg_metrics_delta(before)
+
+    def _seismic_federation_mode(self) -> str:
+        """The SFU_SEISMIC_FEDERATION in effect when the seismic backend served
+        (parallel|sequential|hybrid), else '' when a non-seismic backend (qdrant)
+        or the seismic leg isn't on the served path."""
+        if self._splade_backend != "seismic":
+            return ""
+        return os.environ.get("SFU_SEISMIC_FEDERATION", "parallel").lower()
 
     def cold_section_hint(self, query: str,
                           filters: dict | None = None) -> str | None:

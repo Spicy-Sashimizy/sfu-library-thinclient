@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "date_utc": "2026-07-16T23:03:19Z",
+    "port": 8162,
+    "queries": 20,
+    "top_k": 10
+  },
+  "baseline": [
+    {
+      "concurrency": 1,
+      "total_requests": 40,
+      "completed": 40,
+      "errors": 0,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 4414.7,
+        "p95": 16237.3,
+        "mean": 5589.8,
+        "min": 481.6,
+        "max": 18642.9
+      },
+      "wall_ms": 223602.0,
+      "throughput_qps": 0.2
+    },
+    {
+      "concurrency": 4,
+      "total_requests": 40,
+      "completed": 40,
+      "errors": 0,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 3643.1,
+        "p95": 4792.4,
+        "mean": 3059.9,
+        "min": 451.9,
+        "max": 5113.1
+      },
+      "wall_ms": 32148.0,
+      "throughput_qps": 1.2
+    },
+    {
+      "concurrency": 8,
+      "total_requests": 40,
+      "completed": 40,
+      "errors": 0,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 4357.3,
+        "p95": 5128.8,
+        "mean": 3513.9,
+        "min": 508.5,
+        "max": 5184.7
+      },
+      "wall_ms": 19415.0,
+      "throughput_qps": 2.1
+    },
+    {
+      "concurrency": 16,
+      "total_requests": 40,
+      "completed": 40,
+      "errors": 0,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 5866.0,
+        "p95": 7821.5,
+        "mean": 4920.0,
+        "min": 715.6,
+        "max": 8075.5
+      },
+      "wall_ms": 14305.0,
+      "throughput_qps": 2.8
+    }
+  ],
+  "induced_failure": null
+}

@@ -1,0 +1,9 @@
+[22:43:06] === cell cap16g_instr_r3fix ===
+[22:43:06] dropping shared WSL2 page cache (cold-start purity)
+[22:43:06] starting tracer for cap16g_instr_r3fix (ledger->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap16g_instr_r3fix_ledger.log, refault->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap16g_instr_r3fix_refault.log)
+scripts/seismic_testbed/r3_host_orchestrator.sh: line 94: r: command not found
+scripts/seismic_testbed/r3_host_orchestrator.sh: line 94: d: command not found
+[22:45:38] WARN: tracer for cap16g_instr_r3fix has not printed the breadcrumb in 150s — bpftrace may still be installing; ledger may be empty
+[22:48:14] stopping tracer for cap16g_instr_r3fix
+[22:48:14] cell cap16g_instr FAIL rc=137 (124=timeout, 3=empty-results) — continuing
+[22:48:15] === R3 cells complete — wrote _r3_cells.ALLDONE ===

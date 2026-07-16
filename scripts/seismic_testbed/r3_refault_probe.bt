@@ -1,0 +1,76 @@
+// R3 instrument 3 (2026-07-16; doc 15 §1): the workingset_refault probe.
+//
+// watches the 04-doc §4 link being decided per-event: residue placement vs
+// active-list size, via the refault distance + the activation decision
+// computed inline in mm/workingset.c::workingset_refault().
+//
+// Target: kprobe on workingset_refault. Signature (mm/workingset.c, kernel 6.x):
+//   void workingset_refault(struct folio *folio, void *shadow)
+// `folio` -> the faulting page's container; its ->mapping.host gives the
+// inode + ->index gives the page offset. `shadow` encodes the refault
+// distance (the LRU slot the page held when evicted); extracting it requires
+// resolving the shadow's packed encoding, which is struct-layout-dependent.
+//
+// Emit format (TSV, joined with the ledger on (ino, pgoff→extent)):
+//   <ns> REFAULT <ino> <pgoff> <refault_distance> <activated>
+//
+// DOWNGRADE CONTRACT (doc 15 §1 + backlog §R3 discard rule): the refault
+// distance cannot be extracted under this kernel's BTF (the shadow encoding
+// or the internal `refault_distance` local is opaque). This probe MUST
+// downgrade to (ns, ino, pgoff, activated) and the join records the
+// downgrade explicitly — NOT silently substituted. The `refault_distance`
+// column emits -1 == "distance unavailable". Activation is inferred
+// downstream (a refault event IS an inactive→evaluation event; the TRUE
+// activation is deduced by whether an ADD follows for the same (ino,pgoff)
+// within the reclaim batch — the join does this, see r3_join_analysis).
+//
+// PROBE TYPE (fixed 2026-07-16 from the live REQ-3e host preflight): this was
+// fentry:workingset_refault (the bpftrace docs' canonical BTF-function-entry
+// type). But bookworm's bpftrace build (0.17.x) does NOT support fentry/kfunc
+// attach — it core-dumps "Invalid probe type made it to attachpoint parser".
+// The ORIGINAL design was kfunc with `(struct folio *)arg0`; the REQ-2 monitor
+// error "arg0 builtin only for kprobes" was because the probe wasn't a kprobe
+// then. The fallback (documented here from the start) is kprobe + arg0:
+//   - arg0 IS legal on kprobes → `$folio = (struct folio *)arg0`
+//   - BTF struct field walks from the cast pointer work IF struct folio is in
+//     /sys/kernel/btf/vmlinux (G-R3-0 check 2 confirmed it present): the cast
+//     `((struct folio *)arg0)->mapping.host.i_ino` resolves via BTF offsets.
+//   - refault_distance = NOT readable (local var) → -1 (the documented downgrade)
+//
+// The shard inode set is a BODY fragment (_r3_inode_body.bt). The orchestrator
+// (r3_splice_probes.py) line-anchors it into THIS probe's single BEGIN at the
+// /*INODE_BODY*/ placeholder (exactly ONE BEGIN — bpftrace rejects more; the
+// REQ-3 monitor found this). @shard_inodes[ino] filters to shard slabs only.
+
+BEGIN
+{
+  /*INODE_BODY*/
+  // breadcrumb: mirrors the ledger. If shard_inodes_loaded=0 the map did not
+  // load or the host kernel's inodes differ from the dev-container stat() inos
+  // — kill the cell before it burns ~1h producing no events.
+  printf("REFAULT_START ts=%llu shard_inodes_loaded=%llu\n", nsecs, @shard_inodes_count);
+}
+
+// ── kprobe on workingset_refault — arg0 = struct folio * — SAMPLED 1/ext ───
+// arg0 is the first function argument (the folio). Cast to struct folio* and
+// walk the BTF fields: mapping -> host -> i_ino (inode), index (pgoff). The
+// filter @shard_inodes[$ino] keeps only shard-slab refaults. SAMPLED 1-per-
+// extent (pgoff % 512 == 0) — the REQ-3f live run lost 45% of refaults
+// (103k lost vs 126k captured) to the same perf-ring overrun as the ledger;
+// 512× volume reduction → drop → ~0%, extent-aligned to the query-extent map.
+kprobe:workingset_refault
+{
+  $folio = (struct folio *)arg0;
+  $ino = $folio->mapping->host->i_ino;
+  $pgoff = $folio->index;
+  if (@shard_inodes[$ino] && $pgoff % 512 == 0) {
+    @refault_n++;
+    // -1 = refault_distance unavailable under this kernel's BTF (recorded downgrade)
+    printf("%llu\tREFAULT\t%llu\t%llu\t-1\t0\n", nsecs, $ino, $pgoff);
+  }
+}
+
+END
+{
+  printf("REFAULT_END ts=%llu refault_n=%llu\n", nsecs, @refault_n);
+}

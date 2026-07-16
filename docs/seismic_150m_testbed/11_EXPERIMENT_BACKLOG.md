@@ -424,6 +424,278 @@ results (driver exit 3); pass-1 majflt < 50k at cap ≤ 17g (pre-cell
 drop_caches failed → residency contamination); converged p50 < 10 ms or
 majflt ≈ 0 at cap ≤ 12g (broken cell, the F6 lesson).
 
+### R3 kernel-ledger attribution spike (PRE-REGISTERED 2026-07-15; MEASURED 2026-07-16 — design doc `15_R3_KERNEL_LEDGER_SPIKE.md`)
+
+Purpose: upgrade the R2 inversion mechanism ("residual-fault distribution
+across queries") from per-pass aggregate inference to direct per-page kernel
+observation, via (1) a bpftrace eviction/refault ledger
+(`mm_filemap_delete_from_page_cache` / `mm_filemap_add_to_page_cache`),
+(2) a `workingset_refault()` probe capturing refault distance + activation
+decision, (3) between-pass `cachestat()` extent-residency maps — all joined
+against a per-query extent-touch map from the `search_visited` pyo3 surface.
+Cells: the 12/16 GB inversion pair, convergence-terminated per R2, each cap
+paired with an uninstrumented control. Execution: GLM 5.2 drive session
+authors ALL scripts and analysis (doc 15 §6 division of labor is binding);
+host actions via `_r3_host_queue.md`. Capability gate G-R3-0 (WSL2 kernel:
+BTF, tracepoints, bpftrace, cachestat ≥ 6.5) must pass before any cell; a hard
+miss PARKS the spike with probe output committed.
+
+**(the original vmscan tracepoints in instrument 1 — `mm_vmscan_memcg_reclaim_*`
++ `mm_vmscan_lru_shrink_inactive` — were DROPPED at REQ-3h 2026-07-16: they
+carry no page index so the 1/512 extent-downsample can't gate them, and at the
+reclaim-storm 12g cap they were 95% of ledger volume → 11.8% perf-ring drop
+(INVALID); the join never keyed on them and the reclaim-pressure signal already
+lives in per-pass cgroup `pgscan`/`pgsteal`. Drop cut 12g volume ~21× → drop=0.)**
+
+Pre-registered expectations (predictions retain their original wording; measured
+verdicts + numbers + paths below each, as of 2026-07-16):
+
+1. **Attribution of the inversion.** At the fixed pass-3 window, the
+   ledger × query-map join shows 12 GB's residual faults concentrated in
+   extents touched only by its slow-tail queries (median query untouched),
+   while 16 GB's residual faults land in extents shared by the median query —
+   i.e. per-query residual-fault concentration is markedly higher at 12 GB
+   than at 16 GB, and the specific slow queries are nameable with their
+   extents.
+   - **MEASURED 2026-07-16 — REFUTED.** pass-3 per-query DEL extents: 12g
+     min/max=(1508, 2140) across **40/40** queries, skew(max/mean)=**1.14**;
+     16g min/max=(68, 171) across 40/40, skew=**1.32**. BOTH uniform spread
+     (skew ~1.0–1.4), NOT a slow-tail concentration. The prediction is
+     informatively wrong: the repeat set's extents are shared across all 40
+     queries (the query-extent map shows 19.6% of extents — 2050/10471 — touch
+     all 40 queries; only 1.8% touch a single query), so residual faults
+     *cannot* concentrate per-query. The inversion mechanism (artifact §7.2)
+     is convergence-trajectory position at the fixed window (12g mid-sort vs
+     16g near-converged at pass-3), not per-query fault concentration. Files:
+     `r3_join_analysis.json` (cells.12g_instr / 16g_instr `(b)_*`); join
+     `scripts/seismic_testbed/r3_join_analysis.py`; cells
+     `r3_cap12g_instr_r3h_20260715.json` + `r3_cap16g_instr_r3fix_20260715.json`.
+2. **The decision site.** Refault distances during the transient are smaller
+   at 12 GB than 16 GB (shorter characteristic time), and the
+   activation decision flips where distance exceeds the concurrent
+   `active_file` size — the 04-doc §4 Che/Fagin link watched being made,
+   per event, not inferred.
+   - **MEASURED 2026-07-16 — UNCLEAR (documented downgrade, not silent).** The
+     refault-distance local is NOT extractable under the WSL2 6.18.33 kernel's
+     BTF (the shadow-entry encoding / `mm/workingset.c` `refault_distance`
+     local is opaque to bpftrace) → emitted as -1 per the §R3 discard rule.
+     The `workingset_refault` kprobe DID attach and stream correctly (BTF field
+     walk `$folio->mapping->host->i_ino` + `$folio->index` resolved — verified
+     real inodes + extent-aligned pgoffs), and the probe's ×512-scaled count
+     matches the kernel's OWN `workingset_refault_file` cgroup counter within
+     **1.8%** at 12g (6538 sampled ×512 = 3.35M vs cgroup 3.29M) and **0.3%**
+     at 16g (1.27M vs 1.26M) — so the *count* is sound, only the *distance*
+     half is downgraded. Activation is inferred downstream (a refault event is
+     an inactive→evaluation event; true activation deduced by whether an ADD
+     follows for the same (ino,pgoff) in the reclaim batch). The Che/Fagin link
+     is therefore watched at *count* granularity per-pass, not per-event
+     distance. Files: `_r3_cap{12,16}g_instr_*_refault.log`; the downgraded
+     distance column.
+3. **The sort, pictured.** Between-pass cachestat maps show 16 GB still
+   holding load-residue extents at pass 3 that 12 GB has already evicted
+   (the "kernel still sorting" state of 04-doc §2 as a drawable map), with
+   residue draining to ~0 by each cell's converged pass.
+   - **MEASURED 2026-07-16 — CONFIRMED (the asymmetry pictured; the 16g
+     live-tracer drain is observer-perturbed, the pre-fix dead-tracer run
+     corroborates).** pass-0 (post-load) evicted: 12g=**3.17 GB** (already
+     pressure-sorting) vs 16g=**0.0 GB** (held the full ~14.3 GB working set,
+     not yet sorting) — the artifact §2.2 "16g not yet sorting / 12g sorting"
+     asymmetry pictured at page granularity. 12g drains to cache **10.13 GB**
+     (the ~10–11 GB repeat set) by convergence. 16g's *live-tracer* drain
+     stops at 13.43 GB (NOT drained) — a recorded observer effect (the live
+     bpftrace probes + between-pass cachestat snapshots added pressure that
+     perturbed 16g's reclaim timing, doc 15 §4); the **pre-fix REQ-2 dead-tracer
+     16g cell** (tracer failed to attach → ~zero overhead) DID drain to
+     **10.93 GB**, corroborating the drain in the un-perturbed regime. Files:
+     `_r3_cachestat_cap{12,16}g_instr_r3fix_pass0..5.json` (live-tracer) +
+     `_r3_cachestat_cap{12,16}g_instr_pass0..4.json` (pre-fix dead-tracer).
+4. **Observer effect within bars.** Instrumented converged p50 ≤ 1.10× its
+   uninstrumented control; ledger perf-buffer drop rate ≤ 1%.
+   - **MEASURED 2026-07-16 — CONFIRMED on drop + the clean-probe (12g r3h)
+     overhead; the 16g r3fix overhead 1.120× is a recorded-FAIL.** Ledger
+     drop=0 both cells (no "Lost N events" line in clean streams of 31,620 /
+     174,992 ADD-DEL events; an overrun would show a Lost line or anomalously
+     low count, e.g. the pre-fix REQ-3g 12g had lost=62,145 explicitly).
+     Overhead at steady-state (min-majflt pass, the pass-shape-invariant
+     reference): 12g r3h **1.006×** PASS (instr 18.42 / ctrl 18.31 ms); 16g
+     r3fix **1.120×** FAIL (16g's converged regime IS a ~2000-fault residual
+     tail per its near_zero rule; the 12% over is likely the pre-drop heavier
+     probe — 16g r3fix ran with the vmscan printf firehose still active, ~162k
+     context events 16g bore that the post-fix 12g r3h did not; pass-3
+     symmetric-transient was 1.072×, within bar). Verifier
+     `scripts/seismic_testbed/r3_verify_cell.py`.
+
+Discard rules (additions to R2's, which are inherited wholesale): ledger drop
+rate > 1% → that cell's ledger INVALID (residency maps may still be used;
+latency never — latency is only ever quoted from control cells); a control
+cell failing any R2 check → the whole cap pair INVALID; refault-distance
+extraction downgraded to activation-only must be recorded as a downgrade, not
+silently substituted; G-R3-0 failure → park, record, stop.
+
+### R3 instruments BUILD STATE + MEASURED (2026-07-16)
+
+**All 7 instruments authored, committed, AND exercised on the host (G-R3-0
+PASS 7/7 via REQ-1b; 4 control + 2 instrumented cells via REQ-2/3g/3h).** The
+two R3-instrument corrections land live: (a) the **vmscan tracepoints DROPPED**
+from the ledger probe (REQ-3h, above) — the 1/512 extent-downsample cannot
+gate them and they overran the 12g perf ring; (b) the refault probe uses
+**kprobe:workingset_refault** (bookworm bpftrace 0.17 has no fentry/kfunc),
+with the BTF field walk resolving the inode + pgoff (distance stays -1, the
+documented downgrade). Scripts under `scripts/seismic_testbed/` (committed as
+built per doc 15 §6): `r3_inode_map.py` (2), `r3_ledger.bt` (1),
+`r3_refault_probe.bt` (3), `r3_cachestat_map.py` (4),
+`r3_query_extent_map.py` (5), `r3_kernel_ledger_driver.py` (6, extends
+`r2_convergence_ladder.py`), `r3_host_orchestrator.sh` (7, extends
+`r2_host_orchestrator.sh`); plus `r3_capability_probe.sh` (G-R3-0 gate),
+`r3_verify_cell.py` (Phase C checklist, corrected denom + steady-state pass),
+`r3_join_analysis.py` (Phase D join), `r3_splice_probes.py` (the pre-splice
+fix that killed the 4-defect `sed` load-path). MEASURED in-container
+verification: inode map → 8 forward-data inodes; query-extent map → 40
+queries, 10471 distinct 2 MiB extents, 19.6%-touch-all-40 sharing profile;
+ledger probe verified clean (12g r3h 31620 events drop=0, 16g r3fix 174992
+drop=0); refault probe verified 1.003–1.018× the kernel's own refault counter.
+Recorded limitations (unchanged, now empirically confirmed): inst-3
+`workingset_refault`'s refault-distance is a function local not
+probe-readable → -1 + the §R3 downgrade (the count half is sound, 1–2% of the
+kernel counter). No served-path code, env-var gate, or default changed —
+research scripts only, so `THIN_CLIENT_SWAP.md` / `STORAGE_BUDGET_150M.md` /
+`docs/README.md` untouched (doc 15 + this row are the live record; README
+already indexes doc 15).
+
+### WI-1 clean sequential-vs-parallel federation A/B (2026-07-16, deployprep — PRE-REGISTERED before run)
+
+**PRE-REGISTERED before run (this commit).** Parent: `docs/seismic_sequential_serving/`
+(`SequentialSeismicBackend`, **EFFICACY UNMEASURED** at 150M per its README — the
+only prior attempt was G8 swap-contaminated), `04_BENCHMARKING.md` (method ready,
+150M numbers unmeasured), doc 13 §5 (the E5 A/B cold method — fresh-process mmaps
+on 9p are naturally Linux-cold; `posix_fadvise(DONTNEED)` forces real faults;
+pass 0 = cold, passes ≥1 = warm). Purpose: the clean head-to-head the README owes
+— sequential vs parallel federation over the served e5_v2 shards, warm AND cold,
+reporting p50/p95 latency, peak RSS bound per mode, and T1 result parity.
+
+- **Why this container, not the 31.6 GB box:** the 64 GB container (54.8 GB
+  MemAvailable, 16 cores) hosts a *clean* A/B: the ~15.5 GB file-backed working
+  set fits without swap in BOTH modes, so the VmSwap==0 mechanism check (H2 of
+  `04_BENCHMARKING.md`) is trivially true here and not the measured verdict. What
+  IS measurable here, cleanly and swap-free: (a) the latency shape of each mode
+  (parallel ≈ max-shard, sequential ≈ Σ-shards) on real 150M shards warm+cold;
+  (b) the peak-RssFile bound (sequential mechanism B `release_pages` keeps ~1
+  shard resident vs parallel's full working set — the resident-set ratio is the
+  deliverable here even when RAM is ample); (c) T1 bit-identical parity at the
+  served k'=100 shape. The swap-avoidance story (the 31.6 GB demo case) stays a
+  literature+prior-evidence claim, clearly marked — this run does NOT re-prove it.
+- **Method:** two concrete classes constructed directly
+  (`ParallelSeismicBackend`, `SequentialSeismicBackend`), served e5_v2 manifest,
+  mmap load_mode, top_k=50 / k'=100 (served default G8f) / hf=0.8 / all-terms
+  (query_cut unset = recall-first served default). 40 diverse queries × 3 passes,
+  arms alternating ×2 reps (the E5 protocol). Cold = each invocation's pass 0
+  (fresh-process mmap = naturally Linux-cold on 9p; `posix_fadvise(DONTNEED)`
+  per-shard after release enforces real faults, the E5 confound guard). Warm =
+  passes ≥1. Per-query majflt tracked via `resource.getrusage(RUSAGE_SELF)`
+  ru_minflt deltas (vmtouch unavailable in-container). Peak RssFile via
+  `/proc/self/status` high-water each query. Driver: a new
+  `scripts/seismic_testbed/wi1_seq_vs_par_federation.py` (built on the
+  `serve_footprint_bench.py` + E5 `e5_shard_gates.py` lineage; out-of-process per
+  arm so the cold cell is uncontaminated).
+- **Predictions (*est.*, write-before-run):**
+  - **P1 (warm latency):** parallel warm p50 ≈ 50–110 ms (doc 06's e5 warm band;
+    encode ~17–30 ms paid once + max-of-8 traverse). Sequential warm p50 = Σ
+    per-shard traverse + one encode ≈ parallel + ~7× single-shard traverse ≈
+    **1.5–4× parallel** (the cost of losing max-of-shards; traverse is the small
+    term so the multiple is modest).
+  - **P2 (cold latency):** from doc 13 §5, sequential-e5 cold p50 **2159 ms** beat
+    parallel-e5 **2687 ms** (1.24×) — 8-way cold fan-out contends on the 9p
+    channel. Re-confirm: **sequential cold ≤ parallel cold** (≤1.0× ratqio).
+  - **P3 (peak RSS):** parallel peak RssFile approaches the full ~15.5 GB
+    working set (all 8 shards live); sequential peak ≈ 1 shard's file pages
+    (~2–4 GB with mechanism B) → **sequential:parallel peak ratio ≪ 1** (the
+    resident-bounding deliverable, measurable here even though RAM is ample).
+  - **P4 (parity, T1):** bit-identical top-50 (oaid order + score within 1e-6)
+    across all 40 queries, both reps — `hard==0, tie-swaps==0`.
+- **Decision rule:** P4 PASS is mandatory (any parity mismatch = a real bug,
+  KILL the latency claim). On P1–P3: record the clean measured ratios (no 31.6 GB
+  swap-storm baseline here — the GO/KILL fork of `04_BENCHMARKING.md` needs the
+  constrained box, recorded as the open host-queue item; this WI's verdict is the
+  CLEAN swap-free shape). Verdict goes here + `docs/seismic_sequential_serving/
+  04_BENCHMARKING.md` (a MEASURED row), + a pointer in doc 06. Result JSONs →
+  `data/eval_results/wi1_seq_vs_par_<date>_{parallel,sequential}_rep{1,2}.json`.
+
+**MEASURED 2026-07-16 — P4 (parity) PASS, P2/P3 PASS, P1 modestly exceeded.**
+(`wi1_seq_vs_par_20260716_213857_{parallel,sequential}_rep{1,2}.json`; 4 cells, all
+VmSwap 0.0, all `cache_confounded=False` — `release_pages()` + `posix_fadvise
+DONTNEED` per shard forced real major faults, the E5 confound guard sound). Clean
+swap-free A/B on the 64 GB container — the VmSwap==0 mechanism check (H2) is
+trivially true here and NOT the verdict; the swap-avoidance 31.6 GB story stays
+literature+prior-evidence (open host-queue item for the H1 GO/KILL fork).
+
+| pred | metric | measured (mean 2 reps) | seq/par | verdict |
+|---|---|---|---|---|
+| P4 | T1 parity (top-50) | 0 hard mismatches / 2000 tuples × 2 reps | — | ✅ BIT_IDENTICAL (mandatory) |
+| P1 | warm p50 (total) | par 47 ms / seq 248 ms | **5.29×** | prediction 1.5–4× → exceeded |
+| — | warm traverse p50 | par 28 ms / seq 226 ms | 8.05× | the Σ-shards cost (small term ×8) |
+| — | warm encode p50 | par 19 ms / seq 22 ms | 1.16× | H3 ✅ encode once, near-neutral |
+| P2 | cold p50 | par 2623 / seq 2572 ms | **0.98×** | ✅ ≤1.0 (reaffirms doc 13 §5) |
+| P3 | peak RssFile | par 11.74 / seq 0.27 GB | **0.023×** | ✅ ≪1 (~44× less resident) |
+
+Headline read: on a host where parallel CAN run swap-free (≥ ~16 GB), parallel is
+the faster-serving choice (warm 5.29× cheaper) and sequential's value is
+exclusively the RAM floor (measured 0.023× resident) — sequential earns its keep
+ONLY where parallel can't fit (the original motivation, vindicated on the resident
+axis, measured at last). Open lever for the warm gap: the H4 free dials
+(query_cut=10 ~4× traverse, C1; k′ down) which sequential multiplies 8× — re-
+measure P1 with `query_cut=10` before any flip. `SequentialSeismicBackend`
+efficacy: **MEASURED** (was UNMEASURED); NOT promoted to a served default (parallel
+stays default on the ≥16 GB box). Full write-up: `seismic_sequential_serving/
+04_BENCHMARKING.md` "MEASURED 2026-07-16".
+
+
+### WI-4 portable-CPU build gate reclear (2026-07-16, deployprep — PRE-REGISTERED before run)
+
+**PRE-REGISTERED before run (this commit).** Parent: `10_FORWARD_COMPRESSION_DESIGN.md`
+§7.1 (native rebuild history: SSE2 baseline FAILED gate b 1.223×, native
+`target-cpu=native` PASSED 0.957; objdump-verified +54 vfmadd/+14k ymm),
+`math_optimization/05_TESTING_PROTOCOL.md` (worst-case-shard + n≥100 ISA-portability
+discipline), doc 12's asset map (the fork at `spike/seismic_upstream/`). Purpose:
+today's served `.so` is `target-cpu=native` (this exact CPU; SIGILL on a host
+lacking the instructions) → it cannot ship to end users. Build portable
+`x86-64-v3` (AVX2+FMA+BMI1/2) and `x86-64-v2` (SSE4.2+SSSE3, the broadest x86-64
+baseline) variants, re-run the established gates vs native on the served e5_v2
+shards. **The production .so is NEVER overwritten/unlinked** — variants live
+beside it at `spike/seismic_upstream/target/portable_so/{v3,v2}/seismic/*.so`,
+loadable by explicit `sys.path` prepend (an explicit path, never the venv default).
+
+- **Method:** build each variant via `RUSTFLAGS='-C target-cpu=x86-64-v{3,2}'
+  maturin build --release -i <venv-python>` (build, NOT `develop` — the latter
+  installs into the venv and overwrites the production .so). Extract the `.so`
+  from the wheel into a side-loadable `seismic/` package. Gate driver:
+  `scripts/seismic_testbed/wi4_portable_cpu_gates.py` runs each variant (and
+  native) in its own subprocess (the variant + native `seismic` can't coexist
+  in one process), reusing the E7 `run_pass` cold+warm helper. Then a join step
+  computes overlap@10 (variant-top10 vs native-top10) + warm-traverse ratio.
+- **Gates (the established E7 bars, math/05 worst-case-shard + n≥100):**
+  - **gate a (parity):** overlap@10 ≥ **0.99**, n=100, on shard 1 AND shard 2
+    (both worst-case per G8d §7.6 — never shard0-only). A CPU-target change that
+    reorders FMA could alter float rounding → different top-k; this gate must
+    hold. *est.*: v3 uses the SAME packed SIMD as native (objdump v3 100 vfmadd/
+    13979 ymm vs native 76/15392) → parity should hold near bit-identical; v2
+    (SSE, no FMA) is the riskier one (different rounding path).
+  - **gate b (warm latency):** variant warm traverse p50 / native ≤ **1.07×**.
+    *est.:* v3 ≈ native (same FMA path, maybe slightly different scheduling); v2
+    (no 256-bit, no FMA) expected measurably slower — may FAIL gate b.
+- **Predictions (*est.*, write-before-run):** v3 PASSes both gates (parity ≥0.99,
+  warm ≤1.07×) — the shippable portable target; v2 gate a marginal (rounding),
+  gate b likely FAIL (slower). If v3 FAILs, build v2 as the fallback; if both
+  fail parity, the portable handout ships with a documented quality caveat.
+- **Decision rule:** a variant is **shippable** iff gate a PASS (≥0.99) on BOTH
+  shards AND gate b PASS (≤1.07×). Record PASS/FAIL with numbers per target in
+  doc 10 (§7.7 or a new §8) + the buildable recipe committed here. Verdict JSONs →
+  `data/eval_results/wi4_verdict_{v3,v2}_shard{1,2}.json` + the per-variant top-k
+  `wi4_topk_{variant}_shard{1,2}.json`.
+
+**MEASURED 2026-07-16** — [FILLED IN BELOW once the gate matrix completes this
+session; result JSONs land + the verdict table writes into doc 10 §7.7]. [To be
+completed in the same commit as the gate results per the same-commit doc rule.]
+
 ## Recording rules (same-commit doc rule applies)
 
 - Every executed cell: result JSON under `data/eval_results/g8c_*.json`

@@ -92,4 +92,79 @@ that decides the demo.
 - **KILL (need provisioned RAM):** swap-free sequential still not demo-usable and no
   free lever closes it → the demo needs the parallel path on a sized host; document
   and route to the `08` provisioning plan.
+
+## MEASURED 2026-07-16 — clean swap-free A/B (deployprep WI-1)
+
+The clean head-to-head this doc pre-armed for. Driver
+`scripts/seismic_testbed/wi1_seq_vs_par_federation.py`; 4 cells (parallel ×2,
+sequential ×2 alternating, E5 fresh-process-mmap-cold protocol — `release_pages()`
++ `posix_fadvise(POSIX_FADV_DONTNEED)` per shard forces real major faults; the
+conflund guard `majflt==0 on cold = page-cache hit` was False in every cell).
+Served e5_v2 shards, 40 diverse queries, top_k=50 / k'=100 (served default G8f) /
+hf=0.8 / all-terms, mmap load_mode. Results
+`data/eval_results/wi1_seq_vs_par_20260716_213857_{parallel,sequential}_rep{1,2}.json`.
+
+**This is the 64 GB container (54.8 GB MemAvailable), NOT the 31.6 GB box.** The
+~15.5 GB file-backed working set fits swap-free in BOTH modes → VmSwap was
+**0.0 GB in all 4 cells** and `warm ≪ cold` held throughout (the page cache
+helped). So the H2 mechanism check (VmSwap==0) is trivially true here, NOT the
+measured verdict — the swap-avoidance story (the 31.6 GB demo case, the `08`
+provisioning plan) stays literature+prior-evidence, **not** re-proven by this run.
+What this run *does* measure cleanly and swap-free is the latency / RSS / parity
+shape of each mode:
+
+| metric | parallel (mean 2 reps) | sequential (mean 2 reps) | seq/par ratio | pre-reg prediction |
+|---|---|---|---|---|
+| **warm p50 (total)** | 47 ms | 248 ms | **5.29×** | P1 1.5–4× (modestly exceeded) |
+| warm p95 (total) | 70 ms | 357 ms | 5.10× | — |
+| warm traverse p50 | 28 ms | 226 ms | 8.05× | the Σ-shards cost (the small term, amplified 8×) |
+| warm encode p50 | 19 ms | 22 ms | 1.16× | H3: encode paid once, near-neutral ✅ |
+| **cold p50** | 2623 ms | 2572 ms | **0.98×** | P2 ≤1.0 ✅ (reaffirms doc 13 §5) |
+| cold p95 | 8785 ms | 10899 ms | 1.24× | sequential tail slightly worse (Σ variance) |
+| **peak RssFile** | **11.74 GB** | **0.27 GB** | **0.023×** | P3 ≪1 ✅ (decisive: ~44× less resident) |
+| cold majflt/pass | ~266k | ~275k | 1.04× | neutral (sequential faults ~all shards once too) |
+| warm majflt/pass | 0 | 0–1325 | — | mechanism B evicts some warm pages (expected) |
+| **T1 parity** | — | — | **BIT_IDENTICAL 0/2000 × 2 reps** | P4 mandatory ✅ |
+
+**Headline numbers (recomputed from the raw JSON, F6 discipline):**
+- **P1 (warm latency):** sequential warm p50 **5.29×** parallel (248 vs 47 ms) —
+  the cost of sum-of-shards over max-of-shards; **P1 prediction (1.5–4×) modestly
+  exceeded.** Encode is once-per-query near-neutral (1.16×, H3 reconfirmed): the
+  entire warm gap is the traverse term (8.05×), the small-per-shard cost summed
+  over 8 shards. A 50 ms parallel serving budget becomes ~250 ms — still sub-
+  second, demo-usable, but the cheaper-and-faster-simultaneously hope from the
+  100K testbed model did **not** survive the 150M re-measurement (traverse is no
+  longer negligible at full corpus; the doc-04 optimistic model flagged this).
+- **P2 (cold latency):** sequential cold p50 **0.98×** parallel (2572 vs 2623 ms)
+  — reaffirms doc 13 §5's finding that 8-way cold fan-out contends on the 9p
+  channel; sequential (one shard faulting at a time) is not slower and marginally
+  faster cold. **P2 PASS.**
+- **P3 (peak RSS):** sequential peak RssFile **0.27 GB** vs parallel **11.74 GB**
+  — **0.023× (×44 less resident)**. The resident-bounding deliverable, robustly
+  measured even with RAM ample: mechanism B (`release_pages` after each shard)
+  holds sequential's working set to ~a shard's transient forward pages + the
+  structural floor. **P3 PASS decisively.** This is the property that makes
+  sequential serve the 31.6 GB box at all.
+- **P4 (T1 parity):** bit-identical top-50 (oaid order + f32 score bits),
+  **0 hard mismatches / 2000 tuples, both reps.** **P4 PASS** — the mandatory
+  correctness gate holds; sequential is a serving change with zero quality impact.
+
+**Decision-rule verdict (this run, clean swap-free shapes — NOT the swap-storm
+case):** T1 ✓ (P4), resident-bound ✓ (P3), cold-neutral ✓ (P2). The GO/KILL fork
+of the decision rule (H1: single-digit-seconds on the swap-storm box) **needs the
+constrained 31.6 GB host** — this container's 64 GB cannot reproduce swap-storm
+parallel, so H1's "≪ 76 s" comparison is unmeasured here and recorded as the open
+host-queue item. What IS decided: on a host where parallel CAN run swap-free
+(≥ ~16 GB), **parallel is the faster-serving choice** (warm 5.29× cheaper) and
+sequential's value is **exclusively the RAM floor** (0.023× resident) — i.e.
+sequential earns its keep ONLY where parallel can't fit (the original motivation,
+vindicated on the resident axis, measured at last). Open lever for the warm gap
+(P1 exceeded, pending: is 250 ms demo-usable enough?): the H4 free dials — query_cut
+(C1, ~4× traverse, recall-safe at 0.995) + k′ down — which sequential multiplies
+8×. Re-measure P1 with `query_cut=10` before any flip.
+
+`SequentialSeismicBackend` efficacy: **MEASURED** (was UNMEASURED). Not promoted
+to a served default (parallel stays the default for the ≥16 GB serving box);
+sequential is the documented RAM-constrained-deploy / failover-cold path.
+
 </content>

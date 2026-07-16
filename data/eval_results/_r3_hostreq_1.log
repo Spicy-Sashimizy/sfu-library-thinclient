@@ -1,0 +1,31 @@
+=== R3 capability probe G-R3-0  (host 2cc18d7908ab, 2026-07-16T02:33:08Z) ===
+kernel: 6.18.33.1-microsoft-standard-WSL2
+CHECK kernel_version: PASS (6.18.33.1-microsoft-standard-WSL2 ≥ 6.5 — cachestat available)
+CHECK btf_vmlinux: PASS (present, 6679703 bytes)
+CHECK tracepoint_filemap:mm_filemap_delete_from_page_cache: FAIL (MISSING — PARKS the spike)
+CHECK tracepoint_filemap:mm_filemap_add_to_page_cache: FAIL (MISSING — PARKS the spike)
+CHECK tracepoint_vmscan:mm_vmscan_lru_shrink_inactive: FAIL (MISSING — PARKS the spike)
+CHECK tracepoint_vmscan:mm_vmscan_memcg_reclaim_begin: FAIL (MISSING — PARKS the spike)
+installing bpftrace via apt-get (throwaway container only)...
+CHECK bpftrace_fires: PASS (got 164 map-print line(s) from sched_switch in 5 s)
+CHECK cachestat: PASS (rc=0 cache=0 dirty=0 evicted=0 recently_evicted=0)
+
+=== G-R3-0 SUMMARY  pass=3 fail=4 hard_fail=4 cachestat_fail=0 ===
+VERDICT: PARK — BTF/tracepoints/bpftrace hard-miss; §R3 says commit probe log + skip to session-end
+EXIT_CODE=10
+
+=== HOST MONITOR ADDENDUM 2026-07-16T02:38Z (F6 verification of the PARK verdict) ===
+VERDICT INVALID — script defect, not a kernel gap. Evidence: a direct privileged
+check shows ALL FOUR tracepoints present on kernel 6.18.33.1-microsoft-standard-WSL2:
+  /sys/kernel/tracing/events/filemap/mm_filemap_add_to_page_cache      PRESENT
+  /sys/kernel/tracing/events/filemap/mm_filemap_delete_from_page_cache PRESENT
+  /sys/kernel/tracing/events/vmscan/mm_vmscan_lru_shrink_inactive      PRESENT
+  /sys/kernel/tracing/events/vmscan/mm_vmscan_memcg_reclaim_begin      PRESENT
+Defect: need_tp() tests "$TP_BASE/$1" with $1 like "filemap:mm_filemap_..." —
+a literal-colon path. tracefs layout is events/<subsystem>/<event> (slash).
+Fix the colon→slash conversion in r3_capability_probe.sh and resubmit as REQ-1b;
+expected result is then VERDICT GO (kernel_version, btf, bpftrace, cachestat all
+PASSED on the real kernel). Note for your run: the monitor's wrapper pre-mounted
+tracefs/debugfs and apt-installed python3 into the throwaway (bookworm-slim has
+no python3 — without it your cachestat check would spuriously downgrade to
+mincore). Consider folding both into the script or the REQ-1b launch note.

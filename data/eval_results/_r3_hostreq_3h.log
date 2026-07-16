@@ -1,0 +1,7 @@
+[23:46:52] === cell cap12g_instr_r3h ===
+[23:46:52] dropping shared WSL2 page cache (cold-start purity)
+[23:46:53] starting tracer for cap12g_instr_r3h (ledger->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap12g_instr_r3h_ledger.log, refault->C:/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_r3_cap12g_instr_r3h_refault.log)
+[23:47:03] tracer r3tracer_cap12g_instr_r3h attached OK (shard_inodes_loaded=8)
+[23:53:19] stopping tracer for cap12g_instr_r3h
+[23:53:20] cell cap12g_instr DONE -> data/eval_results/r3_cap12g_instr_r3h_20260715.json
+[23:53:20] === R3 cells complete — wrote _r3_cells.ALLDONE ===
