@@ -1,0 +1,53 @@
+2026-06-20 22:56:49,094 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2026-06-20 22:58:31,292 INFO loaded bert-base-uncased vocab (30522 tokens)
+2026-06-20 22:58:31,301 INFO HTTP Request: GET http://localhost:6333/collections/splade_150m "HTTP/1.1 200 OK"
+2026-06-20 22:58:31,304 INFO collection splade_150m: points=150413098 status=red
+2026-06-20 22:58:31,311 INFO qdrant RSS at rest: 3377 MB
+2026-06-20 22:58:31,580 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-06-20 22:58:35,979 INFO SPLADE ONNX model loaded (CPU)
+2026-06-20 22:58:41,571 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:45,012 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:48,670 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:52,958 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:54,824 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:56,214 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:58:59,678 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:00,729 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:01,129 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:02,128 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:02,834 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:03,569 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:05,234 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:06,359 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:06,608 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:08,032 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:10,088 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:11,224 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:11,839 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:12,193 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:14,055 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:14,769 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:15,054 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:15,562 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:16,909 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:17,621 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:18,370 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:18,884 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:19,095 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:19,288 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:25,906 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:27,379 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:28,220 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:28,907 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:29,477 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:29,876 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:32,960 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:33,721 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:35,244 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:37,666 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+2026-06-20 22:59:37,675 INFO ============================================================
+2026-06-20 22:59:37,676 INFO QDRANT on_disk SPARSE SPIKE — 40 queries
+2026-06-20 22:59:37,677 INFO latency ms: p50=1004.8 p95=5535.9 max=6595.5 mean=1497.9
+2026-06-20 22:59:37,677 INFO qdrant resident RSS during query load: 16388 MB
+2026-06-20 22:59:37,678 INFO collection points=150413098
+2026-06-20 22:59:37,678 INFO ============================================================

@@ -1,0 +1,17 @@
+09:12:52 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+09:12:57 INFO SPLADE ONNX model loaded (CPU)
+[e5-gates] 100 queries encoded; layout dotvbyte_fixedu8, order block_walk_canonical
+[e5-gates] parity: hard_mismatches=0 tie_swaps=0
+[e5-gates] base rep0: cold p50 80.83 ms, warm p50 2.318 ms, majflt 71024
+[e5-gates] e5 rep0: cold p50 59.32 ms, warm p50 2.166 ms, majflt 37760
+[e5-gates] e5 rep1: cold p50 59.86 ms, warm p50 2.207 ms, majflt 37760
+[e5-gates] base rep1: cold p50 93.94 ms, warm p50 2.427 ms, majflt 71024
+[e5-gates] base rep2: cold p50 86.7 ms, warm p50 2.471 ms, majflt 71024
+[e5-gates] e5 rep2: cold p50 57.83 ms, warm p50 2.171 ms, majflt 37760
+{
+  "verdict": "E5_ALL_GATES_PASS",
+  "majflt_cold": 0.5317,
+  "cold_p50": 0.6842,
+  "warm_p50": 0.8945
+}
+result -> /workspaces/sfu-library-thinclient/data/eval_results/e5_shard_gates_20260709_0917.json

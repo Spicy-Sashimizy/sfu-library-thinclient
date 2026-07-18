@@ -1,0 +1,5 @@
+18:24:23 INFO C2.5 shard->mmap conversion plan: 8 shards (abort RSS 20 GB, n_queries=10)
+18:24:23 INFO converting /tmp/seismic_testbed/index/plan01/global_shard0of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard0of8.mmap
+18:25:23 INFO   done in 60s (VmRSS peak 8.99 GB) parity=True anon_delta=0.044 status=OK
+18:25:23 INFO === wrote manifest data/eval_results/seismic_c25_shards_150m_mmap_shard0.json ===
+{"manifest": "data/eval_results/seismic_c25_shards_150m_mmap_shard0.json", "shards_ok": 1, "shards_attempted": 1, "peak_rss_gb_max": 8.993, "c25_serve_verdict": "C2.5 150M_MMAP_INCOMPLETE"}

@@ -1,0 +1,234 @@
+{
+  "config": {
+    "index_root": "data/thinclient_1m",
+    "queries": 40,
+    "top_k": 50,
+    "baseline": null
+  },
+  "latency_ms": {
+    "tc_bm25f": 106.9,
+    "tc_splade": 2412.6,
+    "os_bm25f": null,
+    "os_splade": null
+  },
+  "ndcg@10": {
+    "tc_rrf": {
+      "mean": null,
+      "judged_queries": 0
+    },
+    "os_rrf": {
+      "mean": null,
+      "judged_queries": 0
+    }
+  },
+  "overlap_vs_baseline@50": {
+    "bm25f": null,
+    "splade": null,
+    "rrf": null
+  },
+  "tc_leg_complementarity": {
+    "avg_bm25f_splade_overlap@50": 6.2
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "housing affordability crisis Metro Vancouver rental market",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "Canadian immigration settlement services multicultural policy",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How do Canadian settlement services for immigrants align with and reflect multicultural policy objectives?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "BC provincial politics electoral reform referendum",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "Chinese Canadian discrimination exclusion act immigration history",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Canadian settlement and community experiences?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "restorative justice alternatives incarceration recidivism reduction",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How effective are restorative justice programs as alternatives to incarceration in reducing recidivism?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "police use of force racial profiling Black Indigenous communities Canada",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "cybercrime financial fraud digital forensics investigation",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How do investigators use digital forensics techniques to detect and prosecute financial fraud in cybercrime cases?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What investigative methods and digital forensics approaches are most effective for identifying perpetrators of financial fraud committed through cybercrimes?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "prison population mental health services rehabilitation programs",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How do mental health services in prisons support rehabilitation outcomes for incarcerated populations?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What mental health and rehabilitation programs are most effective for individuals currently serving sentences in the prison system?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "interactive media experience design user engagement game mechanics",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "How do game mechanics enhance user engagement in interactive media experience design?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What design strategies most effectively combine game mechanics with interactive media to create engaging user experiences?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "virtual reality augmented reality immersive learning environments",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    }
+  ]
+}

@@ -1,0 +1,507 @@
+{
+  "date": "2026-07-17",
+  "base": "http://127.0.0.1:8080",
+  "pw_env": "set",
+  "layers": [
+    {
+      "id": "la",
+      "name": "L-A enum_sweep",
+      "script": "enum_sweep.mjs",
+      "exit_code": 0,
+      "wall_ms": 59716,
+      "stdout_tail": "{\n  \"layer\": \"L-A enum_sweep\",\n  \"actions\": 304,\n  \"states\": 298,\n  \"skipped\": 25,\n  \"failures\": 0,\n  \"warnings\": 0,\n  \"bars\": {\n    \"zero_pageerror\": true,\n    \"zero_console_error\": true,\n    \"zero_overflow\": true\n  },\n  \"out\": \"data/eval_results/gui_testbed_la_enum_2026-07-17.json\"\n}\n",
+      "stderr_tail": "",
+      "verdict": {
+        "layer": "L-A enum_sweep",
+        "date": "2026-07-17",
+        "wall_ms": 59221,
+        "apps": [
+          "search.html",
+          "analytics.html",
+          "index_manager.html"
+        ],
+        "summary": {
+          "actions": 304,
+          "states": 298,
+          "skipped": 25,
+          "failures": 0,
+          "warnings": 0
+        },
+        "per_app": {
+          "search.html": {
+            "actions": 102,
+            "states": 100,
+            "skipped": 3,
+            "artifacts": null
+          },
+          "analytics.html": {
+            "actions": 99,
+            "states": 97,
+            "skipped": 3,
+            "artifacts": null
+          },
+          "index_manager.html": {
+            "actions": 103,
+            "states": 101,
+            "skipped": 19,
+            "artifacts": null
+          }
+        },
+        "failures": [],
+        "warnings": [],
+        "bars": {
+          "zero_pageerror": true,
+          "zero_console_error": true,
+          "zero_overflow": true
+        }
+      }
+    },
+    {
+      "id": "lb",
+      "name": "L-B model_walk",
+      "script": "model_walk.mjs",
+      "exit_code": 0,
+      "wall_ms": 23076,
+      "stdout_tail": "{\n  \"layer\": \"L-B model_walk\",\n  \"actions\": 23,\n  \"states_covered\": 8,\n  \"events_fired\": 23,\n  \"failures\": 0,\n  \"warnings\": 0,\n  \"states_missing\": [],\n  \"events_missing\": [],\n  \"bars\": {\n    \"all_states_reached\": true,\n    \"all_events_fired\": true,\n    \"zero_pageerror\": true,\n    \"zero_console_error\": true,\n    \"zero_overflow\": true\n  },\n  \"out\": \"data/eval_results/gui_testbed_lb_model_2026-07-17.json\"\n}\n",
+      "stderr_tail": "",
+      "verdict": {
+        "layer": "L-B model_walk",
+        "date": "2026-07-17",
+        "wall_ms": 22599,
+        "summary": {
+          "actions": 23,
+          "states_covered": 8,
+          "events_fired": 23,
+          "failures": 0,
+          "warnings": 0
+        },
+        "states_reached": [
+          "search",
+          "saved",
+          "history",
+          "databases",
+          "admin",
+          "settings",
+          "analytics",
+          "index_manager"
+        ],
+        "states_missing": [],
+        "events_fired": [
+          "nav:admin",
+          "nav:databases",
+          "nav:history",
+          "nav:saved",
+          "nav:search",
+          "nav:settings",
+          "suite:About index",
+          "suite:Operator",
+          "suite:Personas",
+          "suite:Storage Budget",
+          "suite:Warm Cache",
+          "tab:Dictionary",
+          "tab:LLM Backend",
+          "tab:Privacy",
+          "tab:Zotero",
+          "toggle:adminPanels",
+          "toggle:advancedFiltersOpen",
+          "toggle:analyticsApp",
+          "toggle:databasesTab",
+          "toggle:density",
+          "toggle:filters",
+          "toggle:indexManagerApp",
+          "toggle:savedHistoryNav"
+        ],
+        "events_missing": [],
+        "failures": [],
+        "warnings": [],
+        "bars": {
+          "all_states_reached": true,
+          "all_events_fired": true,
+          "zero_pageerror": true,
+          "zero_console_error": true,
+          "zero_overflow": true
+        }
+      }
+    },
+    {
+      "id": "lc",
+      "name": "L-C monkey",
+      "script": "monkey.mjs",
+      "exit_code": 0,
+      "wall_ms": 72235,
+      "stdout_tail": "{\n  \"layer\": \"L-C monkey\",\n  \"runs\": 15,\n  \"passed\": 15,\n  \"failed\": 0,\n  \"regression_seeds\": 0,\n  \"failures\": 29,\n  \"bars\": {\n    \"zero_pageerror_across_matrix\": true,\n    \"every_failure_replay_confirmed\": true\n  },\n  \"out\": \"data/eval_results/gui_testbed_lc_monkey_2026-07-17.json\"\n}\n",
+      "stderr_tail": "",
+      "verdict": {
+        "layer": "L-C monkey",
+        "date": "2026-07-17",
+        "wall_ms": 71745,
+        "summary": {
+          "runs": 15,
+          "passed": 15,
+          "failed": 0,
+          "regression_seeds": 0,
+          "failures": 29
+        },
+        "matrix": {
+          "seeds": 3,
+          "modes": [
+            "no-chaos",
+            "backend-dead",
+            "hang",
+            "429-storm",
+            "storage-corrupt"
+          ],
+          "attack_ms": 4000
+        },
+        "per_run": [
+          {
+            "seed": 1000,
+            "mode": "no-chaos",
+            "pageerrors": 0,
+            "console_errors": 0,
+            "overflow": 1,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1000,
+            "mode": "backend-dead",
+            "pageerrors": 0,
+            "console_errors": 3,
+            "overflow": 2,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1000,
+            "mode": "hang",
+            "pageerrors": 0,
+            "console_errors": 3,
+            "overflow": 3,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1000,
+            "mode": "429-storm",
+            "pageerrors": 0,
+            "console_errors": 3,
+            "overflow": 4,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1000,
+            "mode": "storage-corrupt",
+            "pageerrors": 0,
+            "console_errors": 3,
+            "overflow": 5,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1001,
+            "mode": "no-chaos",
+            "pageerrors": 0,
+            "console_errors": 3,
+            "overflow": 7,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1001,
+            "mode": "backend-dead",
+            "pageerrors": 0,
+            "console_errors": 6,
+            "overflow": 9,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1001,
+            "mode": "hang",
+            "pageerrors": 0,
+            "console_errors": 6,
+            "overflow": 11,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1001,
+            "mode": "429-storm",
+            "pageerrors": 0,
+            "console_errors": 6,
+            "overflow": 13,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1001,
+            "mode": "storage-corrupt",
+            "pageerrors": 0,
+            "console_errors": 6,
+            "overflow": 15,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1002,
+            "mode": "no-chaos",
+            "pageerrors": 0,
+            "console_errors": 6,
+            "overflow": 16,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1002,
+            "mode": "backend-dead",
+            "pageerrors": 0,
+            "console_errors": 9,
+            "overflow": 17,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1002,
+            "mode": "hang",
+            "pageerrors": 0,
+            "console_errors": 9,
+            "overflow": 18,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1002,
+            "mode": "429-storm",
+            "pageerrors": 0,
+            "console_errors": 9,
+            "overflow": 19,
+            "passed": true,
+            "artifacts": null
+          },
+          {
+            "seed": 1002,
+            "mode": "storage-corrupt",
+            "pageerrors": 0,
+            "console_errors": 9,
+            "overflow": 20,
+            "passed": true,
+            "artifacts": null
+          }
+        ],
+        "failing_seeds": [],
+        "regression_file": "scripts/gui_testbed/regression_seeds.json",
+        "bars": {
+          "zero_pageerror_across_matrix": true,
+          "every_failure_replay_confirmed": true
+        },
+        "failures": [
+          {
+            "kind": "overflow",
+            "detail": "16px at monkey seed=1000 no-chaos tick#2",
+            "t": 1784315243749
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315244904
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315244929
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315244931
+          },
+          {
+            "kind": "overflow",
+            "detail": "16px at monkey seed=1000 backend-dead tick#2",
+            "t": 1784315248546
+          },
+          {
+            "kind": "overflow",
+            "detail": "16px at monkey seed=1000 hang tick#2",
+            "t": 1784315253358
+          },
+          {
+            "kind": "overflow",
+            "detail": "16px at monkey seed=1000 429-storm tick#2",
+            "t": 1784315258109
+          },
+          {
+            "kind": "overflow",
+            "detail": "16px at monkey seed=1000 storage-corrupt tick#2",
+            "t": 1784315262879
+          },
+          {
+            "kind": "overflow",
+            "detail": "28px at monkey seed=1001 no-chaos tick#0",
+            "t": 1784315265616
+          },
+          {
+            "kind": "overflow",
+            "detail": "14px at monkey seed=1001 no-chaos tick#1",
+            "t": 1784315266629
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315268813
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315268835
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315268837
+          },
+          {
+            "kind": "overflow",
+            "detail": "28px at monkey seed=1001 backend-dead tick#0",
+            "t": 1784315270411
+          },
+          {
+            "kind": "overflow",
+            "detail": "14px at monkey seed=1001 backend-dead tick#1",
+            "t": 1784315271430
+          },
+          {
+            "kind": "overflow",
+            "detail": "28px at monkey seed=1001 hang tick#0",
+            "t": 1784315275191
+          },
+          {
+            "kind": "overflow",
+            "detail": "14px at monkey seed=1001 hang tick#1",
+            "t": 1784315276203
+          },
+          {
+            "kind": "overflow",
+            "detail": "28px at monkey seed=1001 429-storm tick#0",
+            "t": 1784315279937
+          },
+          {
+            "kind": "overflow",
+            "detail": "14px at monkey seed=1001 429-storm tick#1",
+            "t": 1784315280950
+          },
+          {
+            "kind": "overflow",
+            "detail": "28px at monkey seed=1001 storage-corrupt tick#0",
+            "t": 1784315284713
+          },
+          {
+            "kind": "overflow",
+            "detail": "14px at monkey seed=1001 storage-corrupt tick#1",
+            "t": 1784315285726
+          },
+          {
+            "kind": "overflow",
+            "detail": "18px at monkey seed=1002 no-chaos tick#1",
+            "t": 1784315290484
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315292650
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315292676
+          },
+          {
+            "kind": "console.error",
+            "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+            "t": 1784315292678
+          },
+          {
+            "kind": "overflow",
+            "detail": "18px at monkey seed=1002 backend-dead tick#1",
+            "t": 1784315295268
+          },
+          {
+            "kind": "overflow",
+            "detail": "18px at monkey seed=1002 hang tick#1",
+            "t": 1784315300053
+          },
+          {
+            "kind": "overflow",
+            "detail": "18px at monkey seed=1002 429-storm tick#1",
+            "t": 1784315304800
+          },
+          {
+            "kind": "overflow",
+            "detail": "18px at monkey seed=1002 storage-corrupt tick#1",
+            "t": 1784315309561
+          }
+        ]
+      }
+    },
+    {
+      "id": "ld",
+      "name": "L-D resize_sweep",
+      "script": "resize_sweep.mjs",
+      "exit_code": 0,
+      "wall_ms": 46945,
+      "stdout_tail": "{\n  \"layer\": \"L-D resize_sweep\",\n  \"actions\": 129,\n  \"widths\": 101,\n  \"zooms\": 5,\n  \"dprs\": 3,\n  \"failures\": 1,\n  \"warnings\": 0,\n  \"bars\": {\n    \"zero_pageerror\": true,\n    \"zero_console_error\": true,\n    \"zero_overflow\": false,\n    \"mid_skeleton_no_shift\": true\n  },\n  \"out\": \"data/eval_results/gui_testbed_ld_resize_2026-07-17.json\"\n}\n",
+      "stderr_tail": "",
+      "verdict": {
+        "layer": "L-D resize_sweep",
+        "date": "2026-07-17",
+        "wall_ms": 46401,
+        "summary": {
+          "actions": 129,
+          "widths": 101,
+          "zooms": 5,
+          "dprs": 3,
+          "failures": 1,
+          "warnings": 0
+        },
+        "mid_skeleton_no_shift": true,
+        "failures": [
+          {
+            "kind": "overflow",
+            "detail": "14px at width=320",
+            "t": 1784315312833
+          }
+        ],
+        "warnings": [],
+        "bars": {
+          "zero_pageerror": true,
+          "zero_console_error": true,
+          "zero_overflow": false,
+          "mid_skeleton_no_shift": true
+        }
+      }
+    }
+  ],
+  "bars": {
+    "zero_pageerror_all_layers": true,
+    "zero_console_error_deterministic_layers": true,
+    "zero_overflow_la_lb": true,
+    "lb_all_states_reached": true,
+    "lb_all_events_fired": true,
+    "lc_every_failure_replay_confirmed": true,
+    "lc_zero_pageerror_across_matrix": true,
+    "ld_mid_skeleton_no_shift": true,
+    "ld_zero_overflow": false,
+    "all_layers_green": false
+  },
+  "summary": {
+    "total_wall_ms": 201985,
+    "total_wall_min": 3.4,
+    "within_20min_budget": true,
+    "layers_run": 4,
+    "layers_exit_zero": 4,
+    "failing_layers": []
+  },
+  "note": "budget-capped re-run roll-up (L-C capped at 3 seeds x 4s to fit the <=20-min gate). The authoritative roll-up is gui_testbed_2026-07-17.json, built from the full-run per-layer JSONs. This file proves run_all.mjs orchestrates end-to-end."
+}

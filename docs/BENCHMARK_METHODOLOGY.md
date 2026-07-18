@@ -7,7 +7,7 @@
 
 ## The Problem: Citation Count Was Marking Its Own Homework
 
-The original benchmark (`scripts/ndcg_splade_eval.py`, result at `data/eval_results/ndcg_splade_eval_20260515_0420.json`) used **OpenAlex `cited_by_count`** as the relevance signal.
+The original benchmark (`scripts/experiments/ndcg_splade_eval.py`, result at `data/eval_results/ndcg_splade_eval_20260515_0420.json`) used **OpenAlex `cited_by_count`** as the relevance signal.
 
 ### How it worked (old method)
 
@@ -42,7 +42,7 @@ The most extreme case: `Canadian documentary film Indigenous representation` sco
 
 ## The New Method: TREC-Style LLM Judging
 
-**Script:** `scripts/benchmark_llm_judge.py`  
+**Script:** `scripts/experiments/benchmark_llm_judge.py`  
 **Judge backends (`--judge`):**
 - `claude` (default) — `claude-haiku-4-5-20251001` via `claude -p` subprocess (no API key needed — uses Claude Code session)
 - `ollama` — local Ollama REST, free (`--ollama-model`, `--ollama-url`)
@@ -199,7 +199,7 @@ isolating the quantization-reordering risk on the exact production index.
 quant and Qdrant f32 produce identical orderings on the production index's
 retrieved set. Corpus-size-independent by construction, so this generalizes.
 
-**Script:** `scripts/eval_quant_fidelity.py --live-qdrant`.
+**Script:** `scripts/experiments/eval_quant_fidelity.py --live-qdrant`.
 **Result files:** `data/eval_results/quant_fidelity_30mscan.json` (in-mem
 baseline), `quant_fidelity_live_150m_20260624_2345.json` (live). **Date:**
 2026-06-24 (live), 2026-06-19 (in-mem baseline).

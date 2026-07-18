@@ -1,0 +1,1 @@
+staging_serve: FATAL index load failed: ThinClientRetriever.__init__() got an unexpected keyword argument 'thinclient_index_root'

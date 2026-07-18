@@ -18,14 +18,15 @@ MCP_HTTP_PORT=8080 ../.venv/bin/python3 -m uvicorn sfu_library_mcp_http:app --ho
 
 | Path | What |
 |---|---|
-| `suite.html` | shell; keeps one iframe per app **alive** and toggles them (no reload/flash on switch); shows a loader until an app mounts |
+| `suite.html` | shell; keeps one iframe per app **alive** and toggles them (no reload/flash on switch); shows a loader until an app mounts; **refuses to mount iframes for apps toggled off** in Settings → Interface (shows a notice instead) and tears them down when toggled off mid-session |
 | `search.html` / `analytics.html` / `index_manager.html` | thin HTML shells that load the **precompiled** `*.js` |
-| `src/*.jsx` | **editable source** for each app (search.jsx bundles tweaks-panel) |
+| `src/*.jsx` | **editable source** for each app (search.jsx bundles tweaks-panel + `_sidebar.jsx` is prepended into every app by the build) |
 | `search.js` / `analytics.js` / `index_manager.js` | **auto-generated** by the build — do not edit |
 | `tweaks-panel.jsx` | design-time tweak panel (bundled into `src/search.jsx`) |
-| `lib/api.js` | `window.SFUApi` — live backend calls with mock fallback |
+| `lib/api.js` | `window.SFUApi` — live backend calls with mock fallback; surfaces HTTP 429 as `{source:"retry", retryAfter}` and passes through `degraded`/`degraded_shards` |
 | `lib/mock.js` | `window.SFUMock` — sample/fallback data |
 | `lib/ui.js` | `window.SFUUI` — the demo-data corner pill |
+| `lib/interface_prefs.js` | `window.SFUUI` bare-bones Interface prefs (§2): localStorage-persisted toggles for which nav items/apps are shown; broadcasts `suiteInterfacePrefs` so the shell unmounts toggled-off apps |
 | `lib/base.css` | shared UX/accessibility baseline (reduced-motion, focus rings, responsive) |
 | `vendor/` | React 18.3.1 + ReactDOM (served) + Babel-standalone (build-time only) |
 
@@ -36,6 +37,33 @@ on error/timeout, tagging the result `source: "live" | "mock"`. Whenever mock
 data is shown — backend down **or** a live call returned nothing — `SFUUI`
 renders a **demo-data banner** at the top of the app so it's never mistaken for
 live results. The Search app's AI-status pill also reflects backend reachability.
+
+## Search progress + bare-bones default (WI-15)
+
+Honest, threshold-staged search-progress indication + a progressive-disclosure
+default screen, per `docs/infrastructure/GUI_BAREBONES_PROGRESS_SPEC.md`:
+
+- **<300 ms** → nothing (a flashing indicator is worse than none).
+- **300 ms–10 s** → skeleton result cards (`SkeletonResultCard`, `data-skeleton-card`)
+  matching the live `ResultCard` box geometry exactly (zero layout shift) + an
+  elapsed counter. Shimmer is opacity-only and pinned to ~0 ms under
+  `prefers-reduced-motion` by `lib/base.css` rule 1.
+- **>10 s AND `/health` says `warm=false`** → honest "index warming" message
+  (keep skeletons). The `warm` flag is read forward-only (`/health` may omit it).
+- **HTTP 429** → determinate "retrying in Ns" countdown from the `Retry-After`
+  header, then one auto-retry of the same query.
+- **`degraded`/`degraded_shards` on the response** → results render + a one-line
+  degraded notice.
+
+The default screen is Tier-0 minimal (search box, results, one status line); the
+year/type/access/sort filters are a collapsed "Filters" expander (Tier-1) and the
+rest are Settings → **Interface** toggles (Tier-2, localStorage). The demo-data
+banner, degraded notices, and backend pill are an **integrity floor** — never
+toggleable, never hidden. Verified headless by `scripts/verify_web_jsdom.mjs`
+(offline+online mount, 429/degraded/warm plumbing, prefs persistence, integrity
+floor) and `scripts/verify_web_progress.mjs` (skeleton ≥300ms / absent <300ms,
+no layout shift, 429 countdown, degraded notice, toggle persistence across
+reload); the browser-level sweep is `scripts/e2e_sweep.mjs` PASS 6.
 
 ## Backend endpoints used
 

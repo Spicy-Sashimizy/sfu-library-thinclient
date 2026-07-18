@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """SEISMIC retrieval quality, judged by NeuralWatt (Kimi).
 
-Wires the neuralwatt judge (from scripts/benchmark_llm_judge.py) onto the SEISMIC
+Wires the neuralwatt judge (from scripts/experiments/benchmark_llm_judge.py) onto the SEISMIC
 150M mmap serving path instead of the deprecated OpenSearch SPLADE path:
 
   query --> ParallelSeismicBackend.search() -> [(openalex_id, score)]   (the

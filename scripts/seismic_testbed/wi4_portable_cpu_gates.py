@@ -176,7 +176,7 @@ def main():
                                     "bar": "<= 1.07", "pass": warm_ratio <= 1.07},
             "variant_cell": v["cell"], "native_cell": n["cell"],
         }
-        vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','').name)}.json"
+        vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','')).name}.json"
         vf.write_text(json.dumps(verdict, indent=2))
         print(json.dumps(verdict, indent=2))
         print(f"\nverdict written to {vf}")

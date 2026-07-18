@@ -1,0 +1,47 @@
+wrote broken fixture manifest data/eval_results/_fixtures/wi13_broken_manifest_20260717_045419.json (shard0 → /workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi13_truncated_shard0_20260717_045419.mmap)
+============================================================
+ WI-13 update_demo.sh — staging proofs (port 8197, 04:54:20Z)
+   success arm: flip base → staged copy (manifest_flip_only class)
+   broken  arm: flip base → corrupt shard0 fixture (auto-rollback)
+============================================================
+
+=== ARM 1: success (expect commit, no rollback) ===
+  [setup] started — arm=success base=seismic_c25_shards_150m_mmap_e5_v2.json new=wi13_staged_new_manifest_20260717_045419.json expect_rollback=0
+  [baseline_watchdog_launched] running — wd_pid=810932 manifest=seismic_c25_shards_150m_mmap_e5_v2.json
+  [baseline_warm] ok — wait_warm ok; pre-gate smoke=pass (search=6 ok/0 fail, seismic_loaded=True)
+  [checksum_verify] ok — new_manifest_sha256=7b4aab7cc0c6a84d (stage-beside: the old manifest is untouched; flip is env-only)
+  [flip_started] running — stopped baseline serve; relaunching watchdog with SFU_SEISMIC_SHARD_MANIFEST=wi13_staged_new_manifest_20260717_045419.json
+  [new_watchdog_launched] running — wd_pid=821388 (wait-warm ON, cold_grace=600s)
+  [new_gate] ok — post-flip wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True) (downtime=226585ms = the warm-restart + re-warm window)
+  [commit] ok — gate PASS on new version — update committed, NO rollback
+SUCCESS arm: PASS (committed, no rollback)
+fadvise-DONTNEED applied to 96 shard files (cool between arms)
+
+=== ARM 2: broken (expect gate FAIL + auto-rollback to serving) ===
+  [setup] started — arm=broken base=seismic_c25_shards_150m_mmap_e5_v2.json new=wi13_broken_manifest_20260717_045419.json expect_rollback=1
+  [baseline_watchdog_launched] running — wd_pid=830165 manifest=seismic_c25_shards_150m_mmap_e5_v2.json
+  [baseline_warm] ok — wait_warm ok; pre-gate smoke=pass (search=6 ok/0 fail, seismic_loaded=True)
+  [checksum_verify] ok — new_manifest_sha256=5f380541b2251ea1 (stage-beside: the old manifest is untouched; flip is env-only)
+  [flip_started] running — stopped baseline serve; relaunching watchdog with SFU_SEISMIC_SHARD_MANIFEST=wi13_broken_manifest_20260717_045419.json
+  [new_watchdog_launched] running — wd_pid=833400 (wait-warm ON, cold_grace=600s)
+  [new_gate] ok — post-flip wait_warm=ok smoke=fail (seismic_loaded=False — SEISMIC silently fell back to BM25F; the new shard set did NOT load) (downtime=186913ms = the warm-restart + re-warm window)
+  [new_smoke] FAILED — post-flip /health warm but smoke FAILED (seismic_loaded=False — SEISMIC silently fell back to BM25F; the new shard set did NOT load) — triggering auto-rollback
+  [rollback_started] running — AUTO-ROLLBACK: stopping new-version serve, flipping back to seismic_c25_shards_150m_mmap_e5_v2.json (old manifest+shards still present — stage-beside discipline)
+  [rollback_gate] ok — post-rollback wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True)
+  [rollback_committed] ok — serve re-serving on the PRIOR version (baseline restored) — rollback SUCCESSFUL, demo ends SERVING
+BROKEN arm: PASS (auto-rolled back to serving)
+
+=== WI-13 summary (05:14:49Z) ===
+  success (data/eval_results/wi13_update_success_20260717_045419.json):
+    overall=PASS rolled_back=False downtime_ms=226585
+    [checksum_verify] ok — new_manifest_sha256=7b4aab7cc0c6a84d (stage-beside: the old manifest is untouched; flip is
+    [new_gate] ok — post-flip wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True) (downtime=2265
+    [commit] ok — gate PASS on new version — update committed, NO rollback
+  broken (data/eval_results/wi13_update_broken_20260717_045419.json):
+    overall=PASS_ROLLED_BACK rolled_back=True downtime_ms=186913
+    [checksum_verify] ok — new_manifest_sha256=5f380541b2251ea1 (stage-beside: the old manifest is untouched; flip is
+    [new_gate] ok — post-flip wait_warm=ok smoke=fail (seismic_loaded=False — SEISMIC silently fell back to BM
+    [new_smoke] FAILED — post-flip /health warm but smoke FAILED (seismic_loaded=False — SEISMIC silently fell back
+    [rollback_gate] ok — post-rollback wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True)
+    [rollback_committed] ok — serve re-serving on the PRIOR version (baseline restored) — rollback SUCCESSFUL, demo ends
+DONE.

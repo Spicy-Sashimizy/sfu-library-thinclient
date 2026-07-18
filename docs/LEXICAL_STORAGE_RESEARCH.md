@@ -312,7 +312,7 @@ Per the UTF-8 encoding ([Wikipedia/UTF-8](https://en.wikipedia.org/wiki/UTF-8)):
 - Author-claimed, credible, unreproduced: brotli dictionary composition + "wins with zeroed dictionary" (brotli author, HN); Qwen chars/token rules of thumb and "higher compression in most languages."
 - Identified literature gaps (we would generate first public numbers): mixed-vs-per-language zstd dictionary dilution; Brotli per-language built-in-dict penalty table.
 
-## 8. MEASURED on this corpus (scripts/eval_text_compression.py, 2026-06-11)
+## 8. MEASURED on this corpus (scripts/experiments/eval_text_compression.py, 2026-06-11)
 
 20,000 real abstracts (24 MB, avg 1,203 B/doc), random-access drill = 100
 random fetches (the rerank budget is 300 ms). Full JSON:
@@ -345,7 +345,7 @@ per-(section×language) trained dictionaries; consider clustered 32 KB blocks
 (+6% ratio at +7 ms/100 docs) if B/doc matters more than point-lookup
 simplicity. SLM decode: cold-tier/archival only, exactly as §2 concluded.
 
-## 9. ALL-LEVERS measured matrix (scripts/eval_storage_levers.py, 2026-06-11)
+## 9. ALL-LEVERS measured matrix (scripts/experiments/eval_storage_levers.py, 2026-06-11)
 
 BMP on 100k real docs w/ production SPLADE vectors; recall@50 vs EXACT
 quantized dot-product ground truth at the production alpha=0.8:

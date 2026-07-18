@@ -1,0 +1,10 @@
+[q6] visited cache hit: visited_global_shard1of8_n100_k200.json (100 queries)
+{
+  "shard": "global_shard1of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard1of8.block_walk_canonical.perm.bin",
+  "n_docs": 18812242,
+  "crosscheck_page_ratio": 0.3764,
+  "wall_seconds": 64.5,
+  "verdict": "OK"
+}

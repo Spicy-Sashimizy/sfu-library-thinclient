@@ -1,0 +1,86 @@
+01:04:21 INFO cached Qdrant top10 for 34 paraphrases (keyed by query text) from data/eval_results/seismic_parity_persona_2m.json
+01:04:21 INFO lever=centroid_fraction (4 configs), 34 queries, judge has 4034 (qk,did) pairs; heap_factor=0.8 query_cut=None
+01:04:21 INFO ==== CONFIG P0_cf0.1 ==== anchor — reproduce 0.479 centroid_fraction=0.1 (= DEFAULTS; harness-faithful check)
+01:04:21 INFO   params: {'n_postings': 3500, 'centroid_fraction': 0.1, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 87 secs
+Distributing and pruning postings: 62 secs
+Number of posting lists: 27896
+Avg posting list length: 1231.03
+Building summaries: 25 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_P0_cf0.1.index.seismic
+01:07:25 INFO   build 176.1s + save 8.0s -> 1.694 GB | peak RSS 2.829 GB
+01:08:43 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+01:08:49 INFO SPLADE ONNX model loaded (CPU)
+01:08:49 INFO     [8/34] overlap mean=0.475
+01:08:50 INFO     [16/34] overlap mean=0.469
+01:08:50 INFO     [24/34] overlap mean=0.521
+01:08:50 INFO     [32/34] overlap mean=0.491
+01:08:50 INFO     [34/34] overlap mean=0.479
+01:08:50 INFO   P0_cf0.1 result: overlap@10=0.479 (bar 0.95) 
+01:08:50 INFO ==== CONFIG C1_cf0.05 ==== halve clustering density: centroid_fraction 0.1→0.05 (fewer/coarser blocks → bigger blocks, more per-block approx)
+01:08:51 INFO   params: {'n_postings': 3500, 'centroid_fraction': 0.05, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.05, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 84 secs
+Distributing and pruning postings: 57 secs
+Number of posting lists: 27896
+Avg posting list length: 1231.03
+Building summaries: 20 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_C1_cf0.05.index.seismic
+01:11:37 INFO   build 163.2s + save 2.9s -> 1.581 GB | peak RSS 4.983 GB
+01:11:37 INFO     [8/34] overlap mean=0.475
+01:11:37 INFO     [16/34] overlap mean=0.469
+01:11:37 INFO     [24/34] overlap mean=0.521
+01:11:38 INFO     [32/34] overlap mean=0.491
+01:11:38 INFO     [34/34] overlap mean=0.479
+01:11:38 INFO   C1_cf0.05 result: overlap@10=0.479 (bar 0.95) 
+01:11:38 INFO ==== CONFIG C2_cf0.2 ==== double clustering density: centroid_fraction 0.1→0.2 (more/finer blocks → smaller blocks, tighter summaries)
+01:11:38 INFO   params: {'n_postings': 3500, 'centroid_fraction': 0.2, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.2, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 83 secs
+Distributing and pruning postings: 52 secs
+Number of posting lists: 27896
+Avg posting list length: 1231.03
+Building summaries: 35 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_C2_cf0.2.index.seismic
+01:14:33 INFO   build 171.5s + save 3.2s -> 1.801 GB | peak RSS 4.983 GB
+01:14:33 INFO     [8/34] overlap mean=0.475
+01:14:33 INFO     [16/34] overlap mean=0.469
+01:14:33 INFO     [24/34] overlap mean=0.521
+01:14:34 INFO     [32/34] overlap mean=0.491
+01:14:34 INFO     [34/34] overlap mean=0.479
+01:14:34 INFO   C2_cf0.2 result: overlap@10=0.479 (bar 0.95) 
+01:14:34 INFO ==== CONFIG C3_cf0.4 ==== ceiling: 4× denser clustering centroid_fraction→0.4 (RSS rises; bounds the reachable ceiling on this axis)
+01:14:34 INFO   params: {'n_postings': 3500, 'centroid_fraction': 0.4, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.4, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 84 secs
+Distributing and pruning postings: 52 secs
+Number of posting lists: 27896
+Avg posting list length: 1231.03
+Building summaries: 65 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_C3_cf0.4.index.seismic
+01:18:00 INFO   build 202.4s + save 3.3s -> 1.820 GB | peak RSS 5.070 GB
+01:18:00 INFO     [8/34] overlap mean=0.475
+01:18:00 INFO     [16/34] overlap mean=0.469
+01:18:00 INFO     [24/34] overlap mean=0.521
+01:18:00 INFO     [32/34] overlap mean=0.494
+01:18:01 INFO     [34/34] overlap mean=0.482
+01:18:01 INFO   C3_cf0.4 result: overlap@10=0.482 (bar 0.95) 
+01:18:01 INFO wrote data/eval_results/seismic_g2_centroid_fraction_sweep.json
+{"g2_verdict": "G2 TUNABLE via centroid_fraction \u2014 overlap rose (P0 0.479\u2192C1 0.479\u2192C2 0.479\u2192C3 0.482, not invariant to clustering) but C3 < 0.95: extrapolate centroid_fraction further (finer clustering, more RSS). Reopens the quality path \u2014 follow-up bisect required.", "overlaps": {"P0_cf0.1": 0.4794, "C1_cf0.05": 0.4794, "C2_cf0.2": 0.4794, "C3_cf0.4": 0.4824}, "result_file": "data/eval_results/seismic_g2_centroid_fraction_sweep.json"}

@@ -1,0 +1,273 @@
+=== 22:31:33 cell dv rep1 -> data/eval_results/e5_fullcorpus_cold_container_dv_rep1.json
+evicted 144 files, 82.1 GiB advised DONTNEED
+MemAvailable:   30262132 kB
+Cached:          2205676 kB
+SwapFree:       16157620 kB
+22:31:34 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+22:31:34 INFO Result file: data/eval_results/e5_fullcorpus_cold_container_dv_rep1.json
+22:31:34 INFO Log file: data/eval_results/e5_fullcorpus_cold_container_dv_rep1.log
+22:31:34 INFO G8 matrix cell: load_mode=mmap  mem_compression regime=disk_swap (/proc/swaps (partition-backed swap → disk re-fault))
+22:31:34 INFO loaded 40 unique queries
+22:31:35 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=parallel)...
+22:31:35 INFO SEISMIC baseline: RssAnon=0.0176 Pss_Anon=0.0176 VmRSS=0.0301 GB
+22:31:35 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.mmap
+22:31:36 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:31:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap
+22:31:36 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:31:36 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.mmap
+22:31:37 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:31:37 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.mmap
+22:31:37 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:31:37 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.mmap
+22:31:37 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:31:37 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.mmap
+22:31:38 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:31:38 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.mmap
+22:31:38 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:31:38 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.mmap
+22:31:39 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:31:39 INFO SEISMIC post-load (3.5s): RssAnon=0.2111 Pss_Anon=0.2111 VmRSS=0.2246 GB
+22:31:39 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+22:31:39 INFO warmup SEISMIC...
+22:33:02 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+22:33:08 INFO SPLADE ONNX model loaded (CPU)
+22:34:09 INFO SEISMIC post-warmup: RssAnon=1.0732 Pss_Anon=1.0732 VmRSS=6.279 GB
+22:34:09 INFO running 40 queries x 3 pass(es)...
+22:38:58 INFO pass 1/3 (COLD): SEISMIC p50=4960.1 ms [encode 53.7 / traverse 4907.3]  Qdrant p50=-1.0 ms
+22:39:02 INFO pass 2/3 (WARM): SEISMIC p50=110.0 ms [encode 35.9 / traverse 71.9]  Qdrant p50=-1.0 ms
+22:39:06 INFO pass 3/3 (WARM): SEISMIC p50=87.8 ms [encode 32.8 / traverse 53.2]  Qdrant p50=-1.0 ms
+22:39:06 INFO SEISMIC post-queries: RssAnon=1.1215 Pss_Anon=1.1215 VmRSS=25.1812 GB
+22:39:06 INFO result written to data/eval_results/e5_fullcorpus_cold_container_dv_rep1.json
+22:39:06 INFO 
+=== RESULTS ===
+22:39:06 INFO SEISMIC:
+22:39:06 INFO   Anon floor: 1.1215 GB
+22:39:06 INFO   Pss_Anon: 1.1215 GB
+22:39:06 INFO   VmRSS peak: 25.1812 GB
+22:39:06 INFO   Anon bytes/doc: 8.006192971306263
+22:39:06 INFO   Latency p50/p95/mean: 112.56966598739382 / 12642.718401999446 / 2472.51 ms
+22:39:06 INFO   encode (SPLADE ONNX) p50/mean: 39.3861459888285 / 43.22 ms
+22:39:06 INFO   traverse (8-shard fan-out) p50/mean: 74.60724499833304 / 2429.23 ms
+22:39:06 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+22:39:06 WARNING QDRANT: NOT AVAILABLE
+22:39:06 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).
+22:39:06 INFO log written to data/eval_results/e5_fullcorpus_cold_container_dv_rep1.log
+=== 22:39:13 cell e5 rep1 -> data/eval_results/e5_fullcorpus_cold_container_e5_rep1.json
+evicted 144 files, 82.1 GiB advised DONTNEED
+MemAvailable:   30718124 kB
+Cached:          1777528 kB
+SwapFree:       16153024 kB
+22:39:14 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+22:39:14 INFO Result file: data/eval_results/e5_fullcorpus_cold_container_e5_rep1.json
+22:39:14 INFO Log file: data/eval_results/e5_fullcorpus_cold_container_e5_rep1.log
+22:39:14 INFO G8 matrix cell: load_mode=mmap  mem_compression regime=disk_swap (/proc/swaps (partition-backed swap → disk re-fault))
+22:39:14 INFO loaded 40 unique queries
+22:39:15 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=parallel)...
+22:39:15 INFO SEISMIC baseline: RssAnon=0.0176 Pss_Anon=0.0176 VmRSS=0.0301 GB
+22:39:15 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+22:39:16 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:39:16 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+22:39:17 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:39:17 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+22:39:17 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:39:17 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap
+22:39:18 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:39:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap
+22:39:18 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:39:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap
+22:39:19 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:39:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap
+22:39:19 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:39:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap
+22:39:20 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:39:20 INFO SEISMIC post-load (4.8s): RssAnon=0.2111 Pss_Anon=0.2111 VmRSS=0.2246 GB
+22:39:20 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+22:39:20 INFO warmup SEISMIC...
+22:40:52 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+22:40:57 INFO SPLADE ONNX model loaded (CPU)
+22:41:27 INFO SEISMIC post-warmup: RssAnon=1.1305 Pss_Anon=1.1305 VmRSS=3.1695 GB
+22:41:27 INFO running 40 queries x 3 pass(es)...
+22:44:03 INFO pass 1/3 (COLD): SEISMIC p50=2686.7 ms [encode 51.5 / traverse 2640.3]  Qdrant p50=-1.0 ms
+22:44:06 INFO pass 2/3 (WARM): SEISMIC p50=85.1 ms [encode 33.3 / traverse 49.8]  Qdrant p50=-1.0 ms
+22:44:10 INFO pass 3/3 (WARM): SEISMIC p50=80.0 ms [encode 32.9 / traverse 44.5]  Qdrant p50=-1.0 ms
+22:44:10 INFO SEISMIC post-queries: RssAnon=1.1706 Pss_Anon=1.1706 VmRSS=13.4771 GB
+22:44:10 INFO result written to data/eval_results/e5_fullcorpus_cold_container_e5_rep1.json
+22:44:10 INFO 
+=== RESULTS ===
+22:44:10 INFO SEISMIC:
+22:44:10 INFO   Anon floor: 1.1706 GB
+22:44:10 INFO   Pss_Anon: 1.1706 GB
+22:44:10 INFO   VmRSS peak: 13.4771 GB
+22:44:10 INFO   Anon bytes/doc: 8.356691808847657
+22:44:10 INFO   Latency p50/p95/mean: 94.86798699072096 / 7251.585967998835 / 1359.68 ms
+22:44:10 INFO   encode (SPLADE ONNX) p50/mean: 35.27874698920641 / 40.47 ms
+22:44:10 INFO   traverse (8-shard fan-out) p50/mean: 57.42787499912083 / 1319.16 ms
+22:44:10 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+22:44:10 WARNING QDRANT: NOT AVAILABLE
+22:44:10 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).
+22:44:10 INFO log written to data/eval_results/e5_fullcorpus_cold_container_e5_rep1.log
+=== 22:44:14 cell dv rep2 -> data/eval_results/e5_fullcorpus_cold_container_dv_rep2.json
+evicted 144 files, 82.1 GiB advised DONTNEED
+MemAvailable:   30484700 kB
+Cached:          1800520 kB
+SwapFree:       16153044 kB
+22:44:15 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+22:44:15 INFO Result file: data/eval_results/e5_fullcorpus_cold_container_dv_rep2.json
+22:44:15 INFO Log file: data/eval_results/e5_fullcorpus_cold_container_dv_rep2.log
+22:44:15 INFO G8 matrix cell: load_mode=mmap  mem_compression regime=disk_swap (/proc/swaps (partition-backed swap → disk re-fault))
+22:44:15 INFO loaded 40 unique queries
+22:44:16 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=parallel)...
+22:44:16 INFO SEISMIC baseline: RssAnon=0.0176 Pss_Anon=0.0176 VmRSS=0.0302 GB
+22:44:16 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.mmap
+22:44:17 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:44:17 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap
+22:44:17 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:44:17 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.mmap
+22:44:18 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:44:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.mmap
+22:44:18 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:44:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.mmap
+22:44:19 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:44:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.mmap
+22:44:19 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:44:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.mmap
+22:44:20 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:44:20 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.mmap
+22:44:20 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:44:20 INFO SEISMIC post-load (4.1s): RssAnon=0.2111 Pss_Anon=0.2111 VmRSS=0.2247 GB
+22:44:20 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+22:44:20 INFO warmup SEISMIC...
+22:45:45 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+22:45:49 INFO SPLADE ONNX model loaded (CPU)
+22:47:03 INFO SEISMIC post-warmup: RssAnon=1.1171 Pss_Anon=1.1171 VmRSS=6.3225 GB
+22:47:03 INFO running 40 queries x 3 pass(es)...
+22:51:49 INFO pass 1/3 (COLD): SEISMIC p50=4837.6 ms [encode 52.3 / traverse 4784.7]  Qdrant p50=-1.0 ms
+22:51:53 INFO pass 2/3 (WARM): SEISMIC p50=93.8 ms [encode 34.3 / traverse 59.2]  Qdrant p50=-1.0 ms
+22:51:57 INFO pass 3/3 (WARM): SEISMIC p50=91.1 ms [encode 33.8 / traverse 53.8]  Qdrant p50=-1.0 ms
+22:51:57 INFO SEISMIC post-queries: RssAnon=1.1529 Pss_Anon=1.1529 VmRSS=25.2111 GB
+22:51:57 INFO result written to data/eval_results/e5_fullcorpus_cold_container_dv_rep2.json
+22:51:57 INFO 
+=== RESULTS ===
+22:51:57 INFO SEISMIC:
+22:51:57 INFO   Anon floor: 1.1529 GB
+22:51:57 INFO   Pss_Anon: 1.1529 GB
+22:51:57 INFO   VmRSS peak: 25.2111 GB
+22:51:57 INFO   Anon bytes/doc: 8.230364087042473
+22:51:57 INFO   Latency p50/p95/mean: 103.3985020039836 / 12632.709147990681 / 2443.96 ms
+22:51:57 INFO   encode (SPLADE ONNX) p50/mean: 36.96207900065929 / 41.88 ms
+22:51:57 INFO   traverse (8-shard fan-out) p50/mean: 69.94518499413971 / 2402.03 ms
+22:51:57 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+22:51:57 WARNING QDRANT: NOT AVAILABLE
+22:51:57 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).
+22:51:57 INFO log written to data/eval_results/e5_fullcorpus_cold_container_dv_rep2.log
+=== 22:52:04 cell e5 rep2 -> data/eval_results/e5_fullcorpus_cold_container_e5_rep2.json
+evicted 144 files, 82.1 GiB advised DONTNEED
+MemAvailable:   30727736 kB
+Cached:          1653564 kB
+SwapFree:       16145160 kB
+22:52:05 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+22:52:05 INFO Result file: data/eval_results/e5_fullcorpus_cold_container_e5_rep2.json
+22:52:05 INFO Log file: data/eval_results/e5_fullcorpus_cold_container_e5_rep2.log
+22:52:05 INFO G8 matrix cell: load_mode=mmap  mem_compression regime=disk_swap (/proc/swaps (partition-backed swap → disk re-fault))
+22:52:05 INFO loaded 40 unique queries
+22:52:06 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=parallel)...
+22:52:06 INFO SEISMIC baseline: RssAnon=0.0176 Pss_Anon=0.0176 VmRSS=0.0302 GB
+22:52:06 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+22:52:06 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:52:06 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+22:52:07 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:52:07 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+22:52:07 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:52:07 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap
+22:52:08 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:52:08 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap
+22:52:08 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:52:08 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap
+22:52:09 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:52:09 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap
+22:52:09 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:52:09 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap
+22:52:10 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:52:10 INFO SEISMIC post-load (4.3s): RssAnon=0.2111 Pss_Anon=0.2111 VmRSS=0.2247 GB
+22:52:10 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+22:52:10 INFO warmup SEISMIC...
+22:53:42 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+22:53:47 INFO SPLADE ONNX model loaded (CPU)
+22:54:15 INFO SEISMIC post-warmup: RssAnon=1.1123 Pss_Anon=1.1123 VmRSS=3.1524 GB
+22:54:15 INFO running 40 queries x 3 pass(es)...
+22:56:53 INFO pass 1/3 (COLD): SEISMIC p50=2890.6 ms [encode 55.4 / traverse 2844.4]  Qdrant p50=-1.0 ms
+22:56:58 INFO pass 2/3 (WARM): SEISMIC p50=101.2 ms [encode 45.1 / traverse 55.4]  Qdrant p50=-1.0 ms
+22:57:01 INFO pass 3/3 (WARM): SEISMIC p50=84.9 ms [encode 39.2 / traverse 46.9]  Qdrant p50=-1.0 ms
+22:57:02 INFO SEISMIC post-queries: RssAnon=1.1529 Pss_Anon=1.1529 VmRSS=13.4596 GB
+22:57:02 INFO result written to data/eval_results/e5_fullcorpus_cold_container_e5_rep2.json
+22:57:02 INFO 
+=== RESULTS ===
+22:57:02 INFO SEISMIC:
+22:57:02 INFO   Anon floor: 1.1529 GB
+22:57:02 INFO   Pss_Anon: 1.1529 GB
+22:57:02 INFO   VmRSS peak: 13.4596 GB
+22:57:02 INFO   Anon bytes/doc: 8.230200697016427
+22:57:02 INFO   Latency p50/p95/mean: 107.49326400400605 / 7308.74310299987 / 1387.26 ms
+22:57:02 INFO   encode (SPLADE ONNX) p50/mean: 45.299596997210756 / 47.31 ms
+22:57:02 INFO   traverse (8-shard fan-out) p50/mean: 68.39931699505541 / 1339.9 ms
+22:57:02 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+22:57:02 WARNING QDRANT: NOT AVAILABLE
+22:57:02 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).
+22:57:02 INFO log written to data/eval_results/e5_fullcorpus_cold_container_e5_rep2.log
+=== 22:57:06 cell e5 sequential -> data/eval_results/e5_fullcorpus_cold_container_e5_sequential.json
+evicted 144 files, 82.1 GiB advised DONTNEED
+22:57:07 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+22:57:07 INFO Result file: data/eval_results/e5_fullcorpus_cold_container_e5_sequential.json
+22:57:07 INFO Log file: data/eval_results/e5_fullcorpus_cold_container_e5_sequential.log
+22:57:07 INFO G8 matrix cell: load_mode=mmap  mem_compression regime=disk_swap (/proc/swaps (partition-backed swap → disk re-fault))
+22:57:07 INFO loaded 40 unique queries
+22:57:08 INFO loading 8 SEISMIC shards (load_mode=mmap, federation=sequential)...
+22:57:08 INFO SEISMIC baseline: RssAnon=0.0176 Pss_Anon=0.0176 VmRSS=0.0303 GB
+22:57:08 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+22:57:08 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+22:57:08 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+22:57:09 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+22:57:09 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+22:57:09 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+22:57:09 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap
+22:57:09 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+22:57:09 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap
+22:57:10 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+22:57:10 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap
+22:57:10 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+22:57:10 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap
+22:57:11 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+22:57:11 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap
+22:57:11 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+22:57:11 INFO SEISMIC post-load (3.7s): RssAnon=0.211 Pss_Anon=0.211 VmRSS=0.2247 GB
+22:57:11 ERROR QDRANT SERVER NOT FOUND — cannot measure server RAM. Make sure Qdrant is running on http://localhost:6333
+22:57:11 INFO warmup SEISMIC...
+22:58:39 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+22:58:43 INFO SPLADE ONNX model loaded (CPU)
+22:59:02 INFO SEISMIC post-warmup: RssAnon=1.0803 Pss_Anon=1.0803 VmRSS=1.3379 GB
+22:59:02 INFO running 40 queries x 3 pass(es)...
+23:01:02 INFO pass 1/3 (COLD): SEISMIC p50=2159.1 ms [encode 45.2 / traverse 2117.5]  Qdrant p50=-1.0 ms
+23:01:17 INFO pass 2/3 (WARM): SEISMIC p50=366.9 ms [encode 31.3 / traverse 332.4]  Qdrant p50=-1.0 ms
+23:01:31 INFO pass 3/3 (WARM): SEISMIC p50=371.5 ms [encode 32.1 / traverse 328.4]  Qdrant p50=-1.0 ms
+23:01:31 INFO SEISMIC post-queries: RssAnon=1.0808 Pss_Anon=1.0808 VmRSS=1.3384 GB
+23:01:31 INFO result written to data/eval_results/e5_fullcorpus_cold_container_e5_sequential.json
+23:01:31 INFO 
+=== RESULTS ===
+23:01:31 INFO SEISMIC:
+23:01:31 INFO   Anon floor: 1.0808 GB
+23:01:31 INFO   Pss_Anon: 1.0808 GB
+23:01:31 INFO   VmRSS peak: 1.3384 GB
+23:01:31 INFO   Anon bytes/doc: 7.715385956613964
+23:01:31 INFO   Latency p50/p95/mean: 400.79391399922315 / 5493.107116999454 / 1241.54 ms
+23:01:31 INFO   encode (SPLADE ONNX) p50/mean: 35.064198993495665 / 38.29 ms
+23:01:31 INFO   traverse (8-shard fan-out) p50/mean: 367.06535100529436 / 1203.2 ms
+23:01:31 INFO   (encode+traverse end-to-end == latency_ms above; item-#3 attribution)
+23:01:31 WARNING QDRANT: NOT AVAILABLE
+23:01:31 INFO 
+VERDICT: QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).
+23:01:31 INFO log written to data/eval_results/e5_fullcorpus_cold_container_e5_sequential.log
+=== 23:01:34 ALL CELLS DONE

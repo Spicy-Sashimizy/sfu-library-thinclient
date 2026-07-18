@@ -1,0 +1,42 @@
+{
+  "plan": "C2.5 step E \u2014 150M shard -> mmap layout conversion (turnkey driver)",
+  "built_utc": "2026-06-28",
+  "source_g7_manifest": "data/eval_results/seismic_plan01_shards_150m.json",
+  "n_shards": 8,
+  "abort_rss_gb": 20.0,
+  "n_queries_per_shard": 10,
+  "layout_note": "C2 flat doc-mapping (strings+offsets); the c1a bin must be built against the current (C2) writer \u2014 stale C1a writer produces document_mapping.bin, which the C2 reader loads as doc_mapping=None -> search falls back to numeric ids.",
+  "shards": [
+    {
+      "index_path": "/tmp/seismic_testbed/index/plan01/global_shard0of8.index.seismic",
+      "mmap_dir": "/tmp/seismic_testbed/index/plan01/global_shard0of8.mmap",
+      "convert_seconds": 60.0,
+      "peak_rss_gb_observed": 8.993,
+      "rc": 0,
+      "aborted_rss_budget": false,
+      "parity_ok": true,
+      "parity_failures": [],
+      "floor_anon_delta_gb": 0.044,
+      "floor_file_resident_gb": 8.062,
+      "latency_ok": true,
+      "mmap_p50_ms": 0.127195,
+      "path_a_p50_ms": 0.12721600000000002,
+      "n_docs": 18799322,
+      "on_disk_gb": 8.278003614,
+      "status": "OK",
+      "mmap_dir_size_gb": 8.278,
+      "shard": 0,
+      "source_docs": 18799322,
+      "source_nnz": 1647141424
+    }
+  ],
+  "totals": {
+    "shards_ok": 1,
+    "shards_attempted": 1,
+    "peak_rss_gb_max": 8.993,
+    "mmap_dir_gb_total": 8.278,
+    "floor_anon_delta_gb_max": 0.044,
+    "all_parity_ok": true
+  },
+  "c25_serve_verdict": "C2.5 150M_MMAP_INCOMPLETE"
+}

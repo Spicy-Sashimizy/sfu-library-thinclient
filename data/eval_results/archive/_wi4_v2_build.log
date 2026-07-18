@@ -1,0 +1,2 @@
+💥 maturin failed
+  Caused by: Can't find /workspaces/sfu-library-thinclient/Cargo.toml (in /workspaces/sfu-library-thinclient)

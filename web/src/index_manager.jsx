@@ -60,6 +60,54 @@ const StatCard = ({ label, value, sub, icon, color = "var(--c-teal)" }) => (
   </div>
 );
 
+// deployprep WI-17d (2026-07-18): live result-cache state in the Index Manager
+// (hit ratio + resident count + primer state, from /health result_cache). The
+// Warm Cache tab is the operator panel, so this fetches LIVE data (not demo).
+// Polls every 10s while mounted; degrades to "—" when the backend is reachable
+// but has no result_cache field (a pre-WI-17 or cache-disabled serve).
+const ResultCacheCard = () => {
+  const [rc, setRc] = React.useState(null);
+  const [src, setSrc] = React.useState("loading");
+  React.useEffect(() => {
+    let alive = true;
+    const tick = () => {
+      if (!window.SFUApi) return;
+      window.SFUApi.health().then((r) => {
+        if (!alive) return;
+        setSrc(r.source);
+        setRc((r.data && r.data.result_cache) || null);
+      }).catch(() => { if (alive) { setSrc("mock"); setRc(null); } });
+    };
+    tick();
+    const h = setInterval(tick, 10000);
+    return () => { alive = false; clearInterval(h); };
+  }, []);
+  const live = src === "live";
+  const enabled = rc && rc.enabled;
+  const ratio = rc && typeof rc.hit_ratio === "number" ? `${Math.round(rc.hit_ratio * 100)}%` : "—";
+  const resident = rc && typeof rc.resident === "number" ? String(rc.resident) : "—";
+  const tone = !live ? "muted" : (enabled ? "ok" : "warn");
+  const label = !live ? "Result cache · demo" : (enabled ? "Result cache · live" : "Result cache · OFF");
+  return (
+    <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-light)", borderRadius: 8, padding: "12px 14px", gridColumn: "span 2" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label} <Badge tone={tone}>{!live ? "demo" : (enabled ? "on" : "SFU_RESULT_CACHE=0")}</Badge></span>
+        <Icon name="zap" size={14} style={{ color: "var(--c-amber)" }} />
+      </div>
+      <div style={{ display: "flex", gap: 18, alignItems: "baseline" }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: "var(--text)", fontVariantNumeric: "tabular-nums", lineHeight: 1.2 }}>{ratio}</div>
+          <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 3 }}>hit ratio (hits / hits+miss)</div>
+        </div>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: "var(--text)", fontVariantNumeric: "tabular-nums", lineHeight: 1.2 }}>{resident}</div>
+          <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 3 }}>resident entries (cap 256)</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Panel = ({ title, action, children, style = {}, pad = "14px 16px" }) => (
   <section style={{ background: "var(--bg-panel)", border: "1px solid var(--border-light)", borderRadius: 8, padding: pad, boxShadow: "var(--shadow-sm)", ...style }}>
     {(title || action) && (
@@ -356,6 +404,11 @@ const WarmCacheScreen = () => {
           <StatCard label="Hit rate · dense leg" value="61%" sub="last 100 queries" icon="zap" color="var(--c-amber)" />
           <StatCard label="Encode rate" value="87 docs/s" sub="CPU · batch 32" icon="activity" color="var(--c-green)" />
           <StatCard label="p95 search_rrf" value="+0 ms" sub="cache on vs off" icon="check" color="var(--c-green)" />
+        </div>
+
+        {/* WI-17d: live result-cache state (hit ratio + resident) from /health. */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 14 }}>
+          <ResultCacheCard />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 14, marginBottom: 14 }}>

@@ -1,0 +1,70 @@
+==== shard 3 mode=full start 2026-07-13T20:27:58Z ====
+[convert 2026-07-13T20:27:58Z] data/seismic_150m/index/plan01/global_shard3of8.mmap -> data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap
+convert_f16_to_dotvbyte: data/seismic_150m/index/plan01/global_shard3of8.mmap -> data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap (sanity 2000 docs, page_align false, value_scale PerDocLinear)
+{
+  "component_mapping_trained": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap",
+  "encode_seconds": 134.035682077,
+  "forward_bytes": {
+    "dotvbyte": 4003959680,
+    "f16": 6741052288,
+    "ratio": 1.6835964462059718
+  },
+  "forward_format_version": 2,
+  "n_docs": 18801448,
+  "nnz": 1647660174,
+  "packs_rewritten": 40372536,
+  "page_align": {
+    "enabled": false,
+    "growth_pct": 0.0,
+    "pad_words": 0
+  },
+  "postings_rewrite_seconds": 26.618061833,
+  "sanity_docs_checked": 2001,
+  "sanity_max_value_absdiff": 0.006184935569763184,
+  "src": "data/seismic_150m/index/plan01/global_shard3of8.mmap",
+  "total_seconds": 185.235870835,
+  "value_scale": "per_doc_linear"
+}
+[reorder 2026-07-13T20:31:04Z] data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap -> data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap -> data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap",
+  "forward_payload_bytes_moved": 3853548088,
+  "forward_seconds": 50.275723076,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18801448,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40372536,
+  "postings_rewrite_seconds": 27.021617269,
+  "src": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.v2.mmap",
+  "total_seconds": 83.968582926,
+  "verify_docs_checked": 2001
+}
+[gate 2026-07-13T20:32:29Z] v2-dir=data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+20:34:11 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+20:34:16 INFO SPLADE ONNX model loaded (CPU)
+[e8-gates] 100 queries encoded; twins loaded (18801448 docs)
+[e8-gates] overlap@10 vs f16: v2 0.9970 (min 0.90), dv1 0.9930 (min 0.90)
+[e8-gates] T1 seq-vs-warm: hard=0 swaps=0
+[e8-gates] dv1 rep0: cold p50 80.25 ms, warm p50 7.669 ms, majflt 71042
+[e8-gates] v2 rep0: cold p50 55.22 ms, warm p50 7.547 ms, majflt 38455
+[e8-gates] v2 rep1: cold p50 65.41 ms, warm p50 7.781 ms, majflt 43671
+[e8-gates] dv1 rep1: cold p50 78.87 ms, warm p50 8.212 ms, majflt 71042
+[e8-gates] dv1 rep2: cold p50 78.9 ms, warm p50 7.767 ms, majflt 71042
+[e8-gates] v2 rep2: cold p50 54.77 ms, warm p50 7.519 ms, majflt 38455
+{
+  "verdict": "E8_STAGE1_ALL_GATES_PASS",
+  "gates": {
+    "a_quality": true,
+    "b_size": true,
+    "c_latency": true,
+    "d_t1": true
+  },
+  "warm_p50": 0.9717,
+  "cold_p50": 0.6999,
+  "majflt_cold": 0.5413
+}
+result -> data/eval_results/e8_stage2_shard3_20260713.json
+==== shard 3 DONE 2026-07-13T20:40:27Z result=data/eval_results/e8_stage2_shard3_20260713.json ====

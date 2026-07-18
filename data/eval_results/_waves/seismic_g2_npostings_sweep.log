@@ -1,0 +1,66 @@
+07:08:06 INFO cached Qdrant top10 for 34 paraphrases (keyed by query text) from data/eval_results/seismic_parity_persona_2m.json
+07:08:06 INFO lever=n_postings (3 configs), 34 queries, judge has 4034 (qk,did) pairs; heap_factor=0.8 query_cut=None
+07:08:06 INFO ==== CONFIG P0_np3500 ==== anchor — reproduce 0.479 n_postings=3500 (= max_fraction-sweep P0; harness-faithful check)
+07:08:06 INFO   params: {'n_postings': 3500, 'centroid_fraction': 0.1, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 120 secs
+Distributing and pruning postings: 80 secs
+Number of posting lists: 27896
+Avg posting list length: 1231.03
+Building summaries: 29 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_P0_np3500.index.seismic
+07:12:09 INFO   build 230.1s + save 12.4s -> 1.694 GB | peak RSS 2.827 GB
+07:13:55 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+07:14:01 INFO SPLADE ONNX model loaded (CPU)
+07:14:02 INFO     [8/34] overlap mean=0.475
+07:14:02 INFO     [16/34] overlap mean=0.469
+07:14:02 INFO     [24/34] overlap mean=0.521
+07:14:03 INFO     [32/34] overlap mean=0.491
+07:14:03 INFO     [34/34] overlap mean=0.479
+07:14:03 INFO   P0_np3500 result: overlap@10=0.479 (bar 0.95) 
+07:14:03 INFO ==== CONFIG N1_np7000 ==== 2× global budget: n_postings 3500→7000 (~2× less global pruning, rest at default)
+07:14:03 INFO   params: {'n_postings': 7000, 'centroid_fraction': 0.1, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 7000, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 94 secs
+Distributing and pruning postings: 81 secs
+Number of posting lists: 27896
+Avg posting list length: 2072.40
+Building summaries: 53 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_N1_np7000.index.seismic
+07:18:00 INFO   build 229.9s + save 7.1s -> 2.347 GB | peak RSS 6.281 GB
+07:18:01 INFO     [8/34] overlap mean=0.475
+07:18:02 INFO     [16/34] overlap mean=0.469
+07:18:02 INFO     [24/34] overlap mean=0.521
+07:18:03 INFO     [32/34] overlap mean=0.491
+07:18:03 INFO     [34/34] overlap mean=0.479
+07:18:03 INFO   N1_np7000 result: overlap@10=0.479 (bar 0.95) 
+07:18:04 INFO ==== CONFIG N3_np14000 ==== ceiling: n_postings 14000 → global budget ~390M > ~256M total postings = effectively UNPRUNED index (per-list cap 14000*1.5=21,000 > any list)
+07:18:04 INFO   params: {'n_postings': 14000, 'centroid_fraction': 0.1, 'min_cluster_size': 2, 'summary_energy': 0.4, 'max_fraction': 1.5, 'doc_cut': 15}
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 14000, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 2000000
+Elapsed time to read the collection: 93 secs
+Distributing and pruning postings: 78 secs
+Number of posting lists: 27896
+Avg posting list length: 2808.34
+Building summaries: 91 secs
+Saving ... /tmp/seismic_testbed/index/med_bio_2m_N3_np14000.index.seismic
+07:22:33 INFO   build 263.4s + save 5.6s -> 2.908 GB | peak RSS 7.346 GB
+07:22:33 INFO     [8/34] overlap mean=0.475
+07:22:34 INFO     [16/34] overlap mean=0.469
+07:22:34 INFO     [24/34] overlap mean=0.521
+07:22:35 INFO     [32/34] overlap mean=0.491
+07:22:35 INFO     [34/34] overlap mean=0.479
+07:22:35 INFO   N3_np14000 result: overlap@10=0.479 (bar 0.95) 
+07:22:35 INFO wrote data/eval_results/seismic_g2_npostings_sweep.json
+{"g2_verdict": "G2 CEILING (server-side pruning is NOT the gap) \u2014 n_postings raised the global budget to the UNPRUNED ceiling (14000 \u2192 ~390M > ~256M total postings) yet every per-query top-10 is BIT-IDENTICAL to P0 (P0 0.479 / N1 0.479 / N3 0.479). 0.479 is the query-time approximation floor (summary-skip + in-block coordinate traversal); no index knob reclaims it.", "overlaps": {"P0_np3500": 0.4794, "N1_np7000": 0.4794, "N3_np14000": 0.4794}, "result_file": "data/eval_results/seismic_g2_npostings_sweep.json"}

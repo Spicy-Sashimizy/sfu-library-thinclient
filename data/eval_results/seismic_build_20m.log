@@ -1,0 +1,18 @@
+02:06:52 INFO build: jsonl=/tmp/seismic_testbed/jsonl/med_bio_20m.jsonl variant=auto threads=8 | RAM base: available=14.37 rssanon=0.008 GB
+02:06:52 INFO params: n_postings=3500 centroid_fraction=0.1 summary_energy=0.4 max_fraction=1.5 doc_cut=15 (MS MARCO best_configs; recall-matched in G2)
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 20000000
+Elapsed time to read the collection: 857 secs
+Distributing and pruning postings: 135 secs
+Number of posting lists: 28485
+Avg posting list length: 1344.12
+Building summaries: 28 secs
+02:23:53 INFO BUILD 1021.8s len=20000000 dim=28485 nnz=1534643337 avg_nnz/doc=76.7 | peak RSS=9.535 GB
+02:23:53 INFO space usage: Forward=6,298,573,412 PostingLists=1,008,519,493 (packed=306,753,248 offsets=25,225,760 summaries=676,540,485) Knn=0 Total=7,307,092,905 bytes
+Saving ... /tmp/seismic_testbed/index/med_bio_20m.index.seismic
+02:24:09 INFO SAVED 15.6s -> /tmp/seismic_testbed/index/med_bio_20m.index.seismic (7.703 GB)
+02:24:09 INFO wrote data/eval_results/seismic_build_scale_20m.json
+{"index_path": "/tmp/seismic_testbed/index/med_bio_20m", "docs": 20000000, "on_disk_gb": 7.7031, "g1": "PASS \u2014 index built from stored sparse_field, no OOM"}

@@ -1,0 +1,28 @@
+# deployprep WI-17b — demo seed queries for the result-cache pre-seed primer.
+#
+# The pre-seed primer runs strictly AFTER the startup warmup battery completes,
+# sequentially (concurrency 1) — never a parallel burst on the single-GPU
+# cross-encoder (contract term 6). It primes the read-through result cache so
+# the live-review demo's own queries are cache-resident before the first human
+# keystroke. Idempotent: re-running primes misses only (a resident query is a
+# no-op get-then-bump-hit).
+#
+# This file is the OWNER-EXTENSIBLE half of the seed list. The primer ALSO
+# reads the 4 landing-page example queries directly from their SOURCE
+# (web/src/search.jsx, the file scripts/build_web.mjs compiles into
+# web/search.js) so the planted seeds track the live landing screen even when
+# someone edits the examples in JSX — if the compiled artifact drifts from the
+# source, the source is authoritative (read the JSX, not search.js).
+#
+# FORMAT: one query per line; blank lines and lines starting with '#' are
+# skipped. Add owner review queries below — one per line — and they'll be
+# primed on the next serve start (or via scripts/prime_result_cache.py without
+# a restart).
+#
+# Owner-added review queries:
+indigenous knowledge systems in climate adaptation
+recent ML papers for drug discovery
+CRISPR gene editing in salmon, open access
+climate change BC fisheries 2020–2025
+machine learning for molecular property prediction
+public health epidemiology intervention strategies

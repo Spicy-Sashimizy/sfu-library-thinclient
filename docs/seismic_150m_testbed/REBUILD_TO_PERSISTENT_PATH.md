@@ -54,8 +54,10 @@ rebuilt federation overlap@10 reproduces ≈ 0.9967 (sharded-vs-single gate).
   *stored* 2026-06-29 `seismic_top10`; a fresh retrieval-drift check needs the
   shards — but the stored IDs are authoritative for the prior build, so the
   G6 PASS verdict stands regardless).
-- `SequentialSeismicBackend` efficacy measurement (Tier 1 #3, UNMEASURED):
-  `serve_footprint_bench.py --federation {parallel,sequential}` RAM/swap/latency.
+- `SequentialSeismicBackend` efficacy measurement (Tier 1 #3, **MEASURED
+  2026-07-16 deployprep WI-1**): clean swap-free A/B — warm p50 5.29× parallel,
+  peak RssFile 0.023×, T1 bit-identical 0/2000; sequential's value is the RAM
+  floor. `04_BENCHMARKING.md` "MEASURED 2026-07-16" + doc 06 decision log.
 
 ## Result (2026-06-30/07-01 rebuild — COMPLETE & VERIFIED)
 All three stages ran clean, serially, on the 32 GB host:

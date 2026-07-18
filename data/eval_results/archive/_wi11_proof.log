@@ -1,0 +1,24 @@
+=== WI-11 overload-shed proof (03:06:31Z) port 8183 ===
+watchdog pid 605831 (log data/eval_results/_wi11_watchdog.log)
+serve WARM after 327s (03:12:28Z)
+--- /health (gate config) ---
+    "status": "ok",
+    "warm": true,
+    "warmup": {
+        "warm": "warm",
+    "overload": {
+        "inflight": 0,
+        "max_inflight": 16,
+=== phase 1: pre-overload baseline c=4 ===
+  c=4: p50=4186.3 p95=6257.5 ok=40/40 status={200: 40}
+=== phase 2: OVERLOAD c=128 (4× the c=32 knee) ===
+  c=128: p50=10440.3 p95=11916.6 ok=21 sheds(429)=175 collapse=4/200 status={429: 175, 0: 4, 200: 21} qps=16.2
+=== phase 3: post-overload recovery c=4 ===
+  c=4: p50=4380.9 p95=5358.3 ok=40/40 status={200: 40}
+
+=== WI-11 VERDICT: PASS ===
+  bars: {'a_accepted_p95_bounded': True, 'b_sheds_clean_429s_collapse_minority': True, 'c_recovery_to_baseline': True}
+  pre p50=4186.3 over p95=11916.6 (a bounded) post p50=4380.9 (c recovery)
+  overload: ok=21 sheds(429)=175 collapse=4
+result: data/eval_results/wi11_overload_20260717_030631.json
+DONE.

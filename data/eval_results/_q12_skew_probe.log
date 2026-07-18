@@ -1,0 +1,43 @@
+[08:33:51] 120 primary topic queries, 60 paraphrase queries (20 topics x3)
+[08:33:55] loaded 8 shards (mmap, E5 dv)
+[08:36:08]   q  0/120: 43987 pages touched, 21.8s (elapsed 132s)
+[08:37:28]   q 10/120: 32391 pages touched, 4.8s (elapsed 213s)
+[08:38:16]   q 20/120: 48574 pages touched, 1.8s (elapsed 261s)
+[08:38:41]   q 30/120: 43753 pages touched, 1.7s (elapsed 286s)
+[08:39:01]   q 40/120: 50591 pages touched, 1.5s (elapsed 306s)
+[08:39:17]   q 50/120: 62345 pages touched, 1.6s (elapsed 322s)
+[08:39:30]   q 60/120: 40945 pages touched, 0.6s (elapsed 334s)
+[08:39:40]   q 70/120: 46695 pages touched, 1.0s (elapsed 345s)
+[08:39:50]   q 80/120: 45527 pages touched, 0.7s (elapsed 354s)
+[08:39:57]   q 90/120: 23528 pages touched, 0.5s (elapsed 362s)
+[08:40:05]   q100/120: 35711 pages touched, 0.8s (elapsed 370s)
+[08:40:12]   q110/120: 68111 pages touched, 0.5s (elapsed 377s)
+[08:40:17]   q119/120: 54773 pages touched, 0.3s (elapsed 382s)
+[08:40:21] secondary: within-topic paraphrase overlap (20 topics x 3)
+[08:40:36] wrote /workspaces/sfu-library-thinclient/data/eval_results/q12_access_skew_probe_20260713.json
+[08:40:36]   probe: q12_access_skew
+[08:40:36]   date: 2026-07-13
+[08:40:36]   preregistration: docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md §Q12
+[08:40:36]   manifest: data/eval_results/seismic_c25_shards_150m_mmap_e5.json
+[08:40:36]   served_shape: {'top_k': 50, 'k_prime': 100, 'heap_factor': 0.8, 'query_cut': 'all-terms'}
+[08:40:36]   n_queries_primary: 120
+[08:40:36]   pages_per_query_mean: 48049.78333333333
+[08:40:36]   pages_per_query_p50: 45208.5
+[08:40:36]   total_touches: 5765974
+[08:40:36]   distinct_pages_touched: 2029227
+[08:40:36]   forward_total_pages: 7455822
+[08:40:36]   touched_frac_of_forward: 0.272167
+[08:40:36]   repeat_pages_ge2: 1174487
+[08:40:36]   repeat_page_frac: 0.5788
+[08:40:36]   repeat_touch_frac: 0.8518
+[08:40:36]   top1pct_touch_share: 0.0702
+[08:40:36]   top10pct_touch_share: 0.3423
+[08:40:36]   gini_touched_pages: 0.4421
+[08:40:36]   hotset_50_pages: 388985
+[08:40:36]   hotset_50_gb: 1.5933
+[08:40:36]   hotset_80_pages: 1025260
+[08:40:36]   hotset_80_gb: 4.1995
+[08:40:36]   hotset_90_pages: 1452630
+[08:40:36]   hotset_90_gb: 5.95
+[08:40:36]   within_topic: {'n_topics': 20, 'pairwise_jaccard_mean': 0.4372, 'pairwise_jaccard_p50': 0.4518, 'second_query_warm_hit_mean': 0.6206}
+[08:40:36]   elapsed_s: 400.2

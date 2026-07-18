@@ -1,0 +1,24 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Everything's pushed (nothing in `@{u}..HEAD`). The remaining modified/untracked files are runtime-state logs (`_deployprep_watchdog.log`, `_deployprep_watchdog_report.json` got rewritten by the last WI-7 run, and `_deployprep2_drive.log`/`_deployprep_drive.log` are drive logs) — not my deliverables, and per CLAUDE.md I must NOT blanket-stage these. All my deliverables are committed + pushed.
+
+**deployprep wave 2 is complete.** Here's the summary:
+
+## Wave-2 deliverables — all DONE, measured, F6-verified, committed
+
+**WI-6 — startup-warmup hook + recovery-to-first-good-QUERY**
+- Hook (env-gated, default OFF — no served-default flip): F6 hotset prefault + a 24-query warmup set through `search_rrf`; `/health` reports `warm` state; watchdog's `WAIT_WARM` waits for warm, not just up.
+- **Honest 9p verdict:** the hook is correct (recovery-to-first-good-QUERY flipped from `null` BEFORE to **323 998 ms (~5.4 min) AFTER**; 73 client OKs vs 0; watchdog warm-recovery 319 215 ms). But the bar (≤~5 s post-kill) is NOT met on 9p — re-warm = the 9p cold-fault floor. Met on native-ext4 + with an mlock'd hot set (the owner-gated gap). BEFORE reproduced WI-3 exactly (1147 errors, 0 OK, 2724 ms health-recovery).
+- Fixed 3 bugs found via smoke tests: the `eval "true " ...` launch swallow, whitespace-fragile health greps, and a too-short cold grace.
+
+**WI-7 — warm-state concurrent capacity**
+- 0% errors at concurrency 1/4/8/16/32 (200/200), throughput monotone 0.4→2.9 qps (concurrency story holds).
+- Warm p50 3.3–10.3 s on 9p — NOT the sub-100 ms bar, because the 20-query diverse working set (~15 GB) isn't fully resident (majflt Δ rises 4608→23908 with concurrency): **working-set-bound, not compute-bound**. Met on a native host with RAM ≥ ~16 GB.
+- Added a pointer banner to `DO_SIZING.md` (served stack is now SEISMIC, not the Qdrant-era figures the doc sized).
+
+**WI-8 — portable-stack dependency manifest**
+- `docs/infrastructure/PORTABLE_STACK_MANIFEST.md` + `data/eval_results/portable_stack_manifest.json`.
+- **210 imports loaded, 24 versioned**; **qdrant_client verified NOT imported on the seismic path** (the qdrant-free claim holds — fixed a self-fulfilling probe bug).
+- Artifact inventory measured: seismic 66.24 GB, thinclient_index 114.80 GB, v3 .so 2.70 MB, bundle 185.259 GB (150M as-is) + subset-tier `*est.*` projection formula.
+- v3 .so loadable by explicit path. Delta list (6 items incl. the monitor-flagged CPU-only runtime wheels) with owning docs.
+
+All monitor hygiene asks (invalid file marked `.INVALID`, exact filenames cited, CPU-wheels delta added) resolved + the host queue is clean. Three memory notes + README/backlog index rows updated.

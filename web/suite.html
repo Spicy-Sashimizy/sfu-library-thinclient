@@ -36,8 +36,24 @@
     <div class="badge"><div class="spin"></div></div>
     <div class="lbl">Loading…</div>
   </div>
+  <!-- Placeholder shown when a nav targets an app toggled OFF in
+       Settings → Interface (spec §2: the suite shell must NOT mount iframes for
+       toggled-off apps). Kept empty + hidden until needed by showDisabled(). -->
+  <div id="suite-disabled" hidden style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px;text-align:center;background:oklch(97.5% 0.006 80);font-family:'DM Sans',system-ui,sans-serif">
+    <div style="width:40px;height:40px;border-radius:9px;background:oklch(88% 0.010 250);display:flex;align-items:center;justify-content:center;color:oklch(55% 0.010 250)">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M7 10h6M10 7v6"/></svg>
+    </div>
+    <div id="suite-disabled-lbl" style="font-size:14px;font-weight:500;color:oklch(38% 0.014 250)"></div>
+    <div style="font-size:12.5px;color:oklch(55% 0.010 250);max-width:360px;line-height:1.5">This app is turned off. Enable it in Settings → Interface to show it here.</div>
+  </div>
 </main>
 
+<!-- interface_prefs.js (loaded before the suite script) — the same module every
+     app uses, so the suite shell and the iframes share ONE prefs store and ONE
+     default set. The shell reads it to gate which app iframes are allowed to
+     mount (hidden apps stay unmounted), and listens for suiteInterfacePrefs
+     broadcasts so a toggle change inside an iframe propagates immediately. -->
+<script src="lib/interface_prefs.js"></script>
 <script>
 (function () {
   var container = document.querySelector("main.suite-frame");
@@ -54,6 +70,22 @@
   var current = null;     // visible app id
   var pendingScreen = null;
 
+  // §2 bare-bones Interface prefs (shared with every app via lib/interface_prefs.js).
+  // The search sub-screens live inside the Search app and are gated by the
+  // Search app itself; at the SHELL level only the two suite apps (analytics =
+  // "About index", index = "Index Manager") are toggle-gated, because mounting
+  // their iframes has a real cost (fetch + srcdoc + compile). When toggled OFF,
+  // the shell refuses to mount them and shows a notice instead — that's the
+  // spec's "don't load iframes for toggled-off apps" reliability win.
+  function prefs() {
+    return (window.SFUUI && window.SFUUI.readInterfacePrefs) ? window.SFUUI.readInterfacePrefs() : {};
+  }
+  function appAllowed(pageId) {
+    if (pageId === "analytics") return !!prefs().analyticsApp;
+    if (pageId === "index") return !!prefs().indexManagerApp;
+    return true; // search (and its sub-screens) always allowed
+  }
+
   function pageIdFor(nav) {
     if (PAGES[nav]) return nav;
     if (SEARCH_SCREENS.indexOf(nav) !== -1) return "search";
@@ -63,6 +95,28 @@
   function showLoader(on, label) {
     if (label) loaderLbl.textContent = label;
     loader.classList.toggle("hidden", !on);
+  }
+
+  var disabledEl = document.getElementById("suite-disabled");
+  var disabledLbl = document.getElementById("suite-disabled-lbl");
+  // Shown instead of mounting a toggled-off app's iframe.
+  function showDisabled(on, pageId) {
+    if (on && pageId) disabledLbl.textContent = (LABELS[pageId] || pageId) + " is turned off";
+    disabledEl.hidden = !on;
+  }
+
+  // Unmount a toggled-OFF app's iframe entirely (remove from DOM + drop refs).
+  // Called when prefs change so an already-mounted app becomes disallowed — the
+  // iframe is torn down, not just hidden, so it can't keep running in the
+  // background. The Search iframe is never torn down (it owns the settings that
+  // could re-enable apps, and is the Tier-0 default).
+  function destroyFrame(pageId) {
+    var f = frames[pageId];
+    if (!f) return;
+    try { f.remove(); } catch (e) {}
+    delete frames[pageId];
+    delete ready[pageId];
+    if (current === pageId) current = null;
   }
 
   // Create + load an app's iframe once. Subsequent calls reuse it.
@@ -129,6 +183,17 @@
 
   function mount(pageId, screen) {
     pendingScreen = screen || null;
+    // §2: a toggled-OFF app never gets an iframe. Show the disabled notice
+    // instead and bail before ensureFrame() can fetch + mount it.
+    if (!appAllowed(pageId)) {
+      show(false);
+      showLoader(false);
+      showDisabled(true, pageId);
+      current = null;
+      localStorage.setItem("suite-page", "search");
+      return;
+    }
+    showDisabled(false);
     ensureFrame(pageId);
     show(pageId);
     current = pageId;
@@ -150,6 +215,17 @@
       var screen = (SEARCH_SCREENS.indexOf(d.suiteNav) !== -1) ? d.suiteNav
                  : (typeof d.screen === "string" ? d.screen : null);
       mount(pageId, screen);
+      return;
+    }
+    // §2 live propagation: an app's Interface toggles changed (writes broadcast
+    // via lib/interface_prefs.js → window.parent.postMessage). Tear down any
+    // now-disallowed app's iframe so hidden apps stay unmounted, and if the
+    // currently-visible app was just turned off, drop back to Search.
+    if (d.suiteInterfacePrefs) {
+      ["analytics", "index"].forEach(function (pid) {
+        if (!appAllowed(pid)) destroyFrame(pid);
+      });
+      if (current && !appAllowed(current)) mount("search", null);
     }
   });
 

@@ -1,0 +1,51 @@
+02:53:26 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+02:53:30 INFO SPLADE ONNX model loaded (CPU)
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.embeddings.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.0.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.0.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.1.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.1.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.2.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.2.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.3.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.3.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.4.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.4.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.5.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.5.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.6.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.6.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.7.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.7.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.8.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.8.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.9.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.9.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.10.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.10.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.11.attention.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'bert.encoder.layer.11.output.LayerNorm.weight' with rank 1
+02:54:14 WARNING Axis 1 is out-of-range for weight 'cls.predictions.transform.LayerNorm.weight' with rank 1
+02:54:51 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+02:54:52 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+02:54:52 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+02:54:52 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+02:54:52 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+02:54:52 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+02:54:52 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap
+02:54:53 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+02:54:53 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap
+02:54:53 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+02:54:53 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap
+02:54:53 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+02:54:53 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap
+02:54:54 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+02:54:54 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap
+02:54:54 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+02:54:54 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+02:54:55 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+02:54:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+02:54:55 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+static int8 quantized in 48.3s (calib n=120)
+c5_static_int8: merged@10=0.006 s1=0.007 s2=0.005 encode 228.05ms (0.18x) -> KILL
+result -> /workspaces/sfu-library-thinclient/data/eval_results/q11_c5_static_int8_20260710_0252.json

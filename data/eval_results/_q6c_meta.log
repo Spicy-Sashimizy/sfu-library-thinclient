@@ -1,0 +1,36 @@
+[q6] visited cache hit: visited_global_shard1of8_n100_k200.json (100 queries)
+[q6c] global_shard1of8: doc-mapping scan ...
+[q6c] global_shard1of8: meta.sqlite join (18,812,242 ids) ...
+[q6c]   scanned 20M rows, matched 2.5M
+[q6c]   scanned 40M rows, matched 5.0M
+[q6c]   scanned 60M rows, matched 7.5M
+[q6c]   scanned 80M rows, matched 10.0M
+[q6c]   scanned 100M rows, matched 12.5M
+[q6c]   scanned 120M rows, matched 15.0M
+[q6c]   scanned 140M rows, matched 17.5M
+[q6c] global_shard1of8: join done in 1233s ({'distinct_sections': 10, 'rows_missing_from_meta': 0, 'table_rows_scanned': 150413098})
+[q6c] global_shard1of8: home-component scan ...
+[q6c] global_shard1of8 meta_section_year        ratio 0.999 (64k 0.988)
+[q6c] global_shard1of8 meta_section_year_home   ratio 0.768 (64k 0.725)
+[q6] visited cache hit: visited_global_shard2of8_n100_k200.json (100 queries)
+[q6c] global_shard2of8: doc-mapping scan ...
+[q6c] global_shard2of8: meta.sqlite join (18,797,227 ids) ...
+[q6c]   scanned 20M rows, matched 2.5M
+[q6c]   scanned 40M rows, matched 5.0M
+[q6c]   scanned 60M rows, matched 7.5M
+[q6c]   scanned 80M rows, matched 10.0M
+[q6c]   scanned 100M rows, matched 12.5M
+[q6c]   scanned 120M rows, matched 15.0M
+[q6c]   scanned 140M rows, matched 17.5M
+[q6c] global_shard2of8: join done in 1321s ({'distinct_sections': 10, 'rows_missing_from_meta': 0, 'table_rows_scanned': 150413098})
+[q6c] global_shard2of8: home-component scan ...
+[q6c] global_shard2of8 meta_section_year        ratio 0.999 (64k 0.986)
+[q6c] global_shard2of8 meta_section_year_home   ratio 0.767 (64k 0.725)
+{
+  "worst_shard_page_ratio": {
+    "meta_section_year": 0.9988,
+    "meta_section_year_home": 0.7675
+  },
+  "note": "compare against q6b_order_sweep block_walk cells"
+}
+result -> /workspaces/sfu-library-thinclient/data/eval_results/q6c_meta_order_sim_20260709.json

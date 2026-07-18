@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T01:25:45Z",
+    "port": 8181,
+    "queries": 20,
+    "top_k": 10
+  },
+  "baseline": [
+    {
+      "concurrency": 16,
+      "total_requests": 40,
+      "completed": 40,
+      "errors": 0,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 6110.9,
+        "p95": 8309.0,
+        "mean": 5095.7,
+        "min": 742.9,
+        "max": 8312.0
+      },
+      "wall_ms": 14790.0,
+      "throughput_qps": 2.7
+    }
+  ],
+  "induced_failure": null
+}

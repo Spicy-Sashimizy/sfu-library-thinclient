@@ -1,0 +1,2 @@
+log=data/eval_results/_waves/g6_fullcorpus_70q_20260629_222138.log
+python_pgid=3193950

@@ -22,7 +22,7 @@ Memory-bounded: streams each zst slice with an 8 MiB read buffer (the
 full slice in RAM — the 31.6 GB host has ~7 GB free and a 2.86 GB compressed
 slice decompresses far past that.
 
-Isolation (mirror `spike/mmap_bmp/build_persona_bmp.py`): writes to an
+Isolation (mirror `spike/archive/mmap_bmp/build_persona_bmp.py`): writes to an
 EXTERNAL ext4 dir, NOT the serving `data/` path; never deletes spool slices.
 
 Run from repo root (project venv — has zstandard + orjson):

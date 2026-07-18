@@ -1,0 +1,58 @@
+{
+  "layer": "L-B model_walk",
+  "date": "2026-07-17",
+  "wall_ms": 22464,
+  "summary": {
+    "actions": 23,
+    "states_covered": 8,
+    "events_fired": 23,
+    "failures": 0,
+    "warnings": 0
+  },
+  "states_reached": [
+    "search",
+    "saved",
+    "history",
+    "databases",
+    "admin",
+    "settings",
+    "analytics",
+    "index_manager"
+  ],
+  "states_missing": [],
+  "events_fired": [
+    "nav:admin",
+    "nav:databases",
+    "nav:history",
+    "nav:saved",
+    "nav:search",
+    "nav:settings",
+    "suite:About index",
+    "suite:Operator",
+    "suite:Personas",
+    "suite:Storage Budget",
+    "suite:Warm Cache",
+    "tab:Dictionary",
+    "tab:LLM Backend",
+    "tab:Privacy",
+    "tab:Zotero",
+    "toggle:adminPanels",
+    "toggle:advancedFiltersOpen",
+    "toggle:analyticsApp",
+    "toggle:databasesTab",
+    "toggle:density",
+    "toggle:filters",
+    "toggle:indexManagerApp",
+    "toggle:savedHistoryNav"
+  ],
+  "events_missing": [],
+  "failures": [],
+  "warnings": [],
+  "bars": {
+    "all_states_reached": true,
+    "all_events_fired": true,
+    "zero_pageerror": true,
+    "zero_console_error": true,
+    "zero_overflow": true
+  }
+}

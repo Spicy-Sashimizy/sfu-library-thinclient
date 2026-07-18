@@ -4,8 +4,8 @@
 **Context:** Thin-client / localized deployment requires shrinking the local search stack
 (`docs/LOCALIZED_DEPLOYMENT_PLAN.md`). Two measured evaluations + literature research:
 
-- `scripts/eval_lexical_lossless.py` → `data/eval_results/lexical_lossless_eval.json`
-- `scripts/eval_dense_compression.py` → `data/eval_results/dense_compression_eval.json`
+- `scripts/experiments/eval_lexical_lossless.py` → `data/eval_results/lexical_lossless_eval.json`
+- `scripts/experiments/eval_dense_compression.py` → `data/eval_results/dense_compression_eval.json`
 
 ---
 

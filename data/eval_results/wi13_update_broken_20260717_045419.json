@@ -1,0 +1,29 @@
+{
+  "arm": "broken", "start_utc": "2026-07-17T05:02:49Z", "port": 8197,
+  "base_manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json", "smoke_queries": 6,
+  "events": [
+    {"t":"2026-07-17T05:02:49Z","ms":1784264569454,"stage":"setup","status":"started","detail":"arm=broken base=seismic_c25_shards_150m_mmap_e5_v2.json new=wi13_broken_manifest_20260717_045419.json expect_rollback=1"}
+    ,
+    {"t":"2026-07-17T05:02:49Z","ms":1784264569552,"stage":"baseline_watchdog_launched","status":"running","detail":"wd_pid=830165 manifest=seismic_c25_shards_150m_mmap_e5_v2.json"}
+    ,
+    {"t":"2026-07-17T05:07:13Z","ms":1784264833535,"stage":"baseline_warm","status":"ok","detail":"wait_warm ok; pre-gate smoke=pass (search=6 ok/0 fail, seismic_loaded=True)"}
+    ,
+    {"t":"2026-07-17T05:07:13Z","ms":1784264833631,"stage":"checksum_verify","status":"ok","detail":"new_manifest_sha256=5f380541b2251ea1 (stage-beside: the old manifest is untouched; flip is env-only)"}
+    ,
+    {"t":"2026-07-17T05:07:15Z","ms":1784264835761,"stage":"flip_started","status":"running","detail":"stopped baseline serve; relaunching watchdog with SFU_SEISMIC_SHARD_MANIFEST=wi13_broken_manifest_20260717_045419.json"}
+    ,
+    {"t":"2026-07-17T05:07:15Z","ms":1784264835868,"stage":"new_watchdog_launched","status":"running","detail":"wd_pid=833400 (wait-warm ON, cold_grace=600s)"}
+    ,
+    {"t":"2026-07-17T05:10:29Z","ms":1784265029603,"stage":"new_gate","status":"ok","detail":"post-flip wait_warm=ok smoke=fail (seismic_loaded=False \u2014 SEISMIC silently fell back to BM25F; the new shard set did NOT load) (downtime=186913ms = the warm-restart + re-warm window)"}
+    ,
+    {"t":"2026-07-17T05:10:29Z","ms":1784265029692,"stage":"new_smoke","status":"FAILED","detail":"post-flip /health warm but smoke FAILED (seismic_loaded=False \u2014 SEISMIC silently fell back to BM25F; the new shard set did NOT load) \u2014 triggering auto-rollback"}
+    ,
+    {"t":"2026-07-17T05:10:29Z","ms":1784265029781,"stage":"rollback_started","status":"running","detail":"AUTO-ROLLBACK: stopping new-version serve, flipping back to seismic_c25_shards_150m_mmap_e5_v2.json (old manifest+shards still present \u2014 stage-beside discipline)"}
+    ,
+    {"t":"2026-07-17T05:14:47Z","ms":1784265287463,"stage":"rollback_gate","status":"ok","detail":"post-rollback wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True)"}
+    ,
+    {"t":"2026-07-17T05:14:47Z","ms":1784265287552,"stage":"rollback_committed","status":"ok","detail":"serve re-serving on the PRIOR version (baseline restored) \u2014 rollback SUCCESSFUL, demo ends SERVING"}
+  ],
+  "overall": "PASS_ROLLED_BACK", "downtime_ms": 186913, "rolled_back": true,
+  "end_utc": "2026-07-17T05:14:49Z"
+}

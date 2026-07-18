@@ -34,7 +34,7 @@ R3-v2 re-laid the forward region as `#[repr(C)]` POD (`FlatPair{doc_off:u8,score
 alloc), scored with `flat_block_score` (a faithful twin of `block_score`, so the
 stock path stays byte-identical). **G1 held 50/50 @1M + 40/40 @persona.**
 Result: `data/eval_results/p2_zerodecode_med_bio_4shard.json`. Patch:
-`spike/mmap_bmp/R3v2_delta.patch`.
+`spike/archive/mmap_bmp/R3v2_delta.patch`.
 
 **Net (revised post-measurement 2026-06-26):** the format-wall was real and the
 forward-side cure works — *mmap cures the forward RAM floor* and *mmap-BMP can serve
@@ -51,7 +51,7 @@ makes scoring-most-blocks cheap enough, and the inverted-side floor only becomes
 A latency PASS on a 4-shard subset is **necessary, not sufficient.** The three
 OPEN rows (4, 5, 6) are now **MEASURED (2026-06-26)**, not flagged — see the
 `data/eval_results/p3a_*` / `p3b_*` results and the eval scripts under
-`spike/mmap_bmp/measure_p3{a,b}_*.py`. **Result: rows 4 and 6 FAIL the 150M
+`spike/archive/mmap_bmp/measure_p3{a,b}_*.py`. **Result: rows 4 and 6 FAIL the 150M
 target the build exists for. The table does not go all-green; the build does
 not beat FOSS at scale.**
 
@@ -60,9 +60,9 @@ not beat FOSS at scale.**
 | 1 | Forward index can be served zero-decode at ~stock speed | ✅ proven | 25.63 ms warm p50, 4-shard med_bio |
 | 2 | Top-k stays byte-identical (quality preserved) | ✅ proven | G1 50/50 @1M + 40/40 @persona |
 | 3 | Cold ≈ warm (mmap locality holds) | ✅ proven | G3b cold/warm 1.49 (≤3×) |
-| 4 | **Anon floor is actually cured at scale** | ❌ **FAIL at scale (measured)** | R3 cured only the *forward* side; the *inverted* side (`documents`, `range_maxes`, `kth_scores`) is `.to_vec()`'d. **Measured 2026-06-26**: ~334 B/doc, gc-persistent (resident anon, not page cache). Projects to ~7.8 GB at 16-shard persona (matches the recorded 8.26 GB ref) and **~50 GB at 150M — ~7.6× WORSE than Qdrant's 6.55 GB floor this engine was built to cure.** The forward-only cure is half-built; P3a (offset-index `documents` + mmap `range_maxes`/`kth_scores`) is mandatory. Eval: `data/eval_results/p3a_inverted_floor.json`, script `spike/mmap_bmp/measure_p3a_inverted_floor.py`. |
+| 4 | **Anon floor is actually cured at scale** | ❌ **FAIL at scale (measured)** | R3 cured only the *forward* side; the *inverted* side (`documents`, `range_maxes`, `kth_scores`) is `.to_vec()`'d. **Measured 2026-06-26**: ~334 B/doc, gc-persistent (resident anon, not page cache). Projects to ~7.8 GB at 16-shard persona (matches the recorded 8.26 GB ref) and **~50 GB at 150M — ~7.6× WORSE than Qdrant's 6.55 GB floor this engine was built to cure.** The forward-only cure is half-built; P3a (offset-index `documents` + mmap `range_maxes`/`kth_scores`) is mandatory. Eval: `data/eval_results/p3a_inverted_floor.json`, script `spike/archive/mmap_bmp/measure_p3a_inverted_floor.py`. |
 | 5 | **Engine-level latency at full scale** | ⚠️ persona-scale PASS, 150M moot (measured) | Per-shard warm p50 ceiling **40 ms ≤ qdrant 66 ms** — the *format* is fast enough at persona. But 25.63 ms was a *serial PyO3 loop* over **4 v2 shards only** (12 of 16 persona shards are v1 and were never transcoded). At 150M the outcome is dominated by row 6 regardless of thread count: a linear block-count means even `max(shard)` parallelism scores ~const-fraction of a much larger shard. Eval: `data/eval_results/p3b_pruning_persona.json`. |
-| 6 | **Pruning stays sub-linear at 150M** | ❌ **FAIL — linear in corpus (measured)** | **Measured 2026-06-26**: `blocks_scored/num_blocks` worst-query ratio is **stable ~0.95–0.96 across a 2.15× corpus jump** (928K→2.0M docs). `num_blocks = docs/256` is linear in corpus, so a constant ratio ⇒ `blocks_scored` is linear in corpus too. BMP's WAND pruning prunes almost nothing on 64-term SPLADE queries (5/10 queries score ≥80% of all blocks; worst **95%**). The 25.63 ms win exists *because* zero-decode made scoring-everything cheap, **not** because the algorithm is selective. At 150M (~75×) that's ~557K block-scores/query vs 7.4K — the wall re-establishes. Eval: `data/eval_results/p3b_pruning_persona.json`, script `spike/mmap_bmp/measure_p3b_pruning.py`. |
+| 6 | **Pruning stays sub-linear at 150M** | ❌ **FAIL — linear in corpus (measured)** | **Measured 2026-06-26**: `blocks_scored/num_blocks` worst-query ratio is **stable ~0.95–0.96 across a 2.15× corpus jump** (928K→2.0M docs). `num_blocks = docs/256` is linear in corpus, so a constant ratio ⇒ `blocks_scored` is linear in corpus too. BMP's WAND pruning prunes almost nothing on 64-term SPLADE queries (5/10 queries score ≥80% of all blocks; worst **95%**). The 25.63 ms win exists *because* zero-decode made scoring-everything cheap, **not** because the algorithm is selective. At 150M (~75×) that's ~557K block-scores/query vs 7.4K — the wall re-establishes. Eval: `data/eval_results/p3b_pruning_persona.json`, script `spike/archive/mmap_bmp/measure_p3b_pruning.py`. |
 
 **Plain reading (updated):** the format-wall was real (row 1 ✅) and the cure
 works on the forward side — but the two questions the plan said must be answered
@@ -228,7 +228,7 @@ the MVP (P3) is a drop-in, not a rewrite.
   change; the fusion/rerank path (RRF k=60 + cross-encoder) is untouched.
 - **Build path:** corpus → stored SPLADE `sparse_field` (no re-encode) → BMP b256
   clustered builder (`builder.py`, already have it) → R3-v2 `.bmflat` transcode
-  (`spike/mmap_bmp/` flat writer). Per-section, so it slots into the existing hot/cold
+  (`spike/archive/mmap_bmp/` flat writer). Per-section, so it slots into the existing hot/cold
   persona packaging with no new build stage.
 - **Quality invariant:** quantization (×70 8-bit), alpha/beta (0.8/1.0), top-64 query
   terms, RRF k=60 all stay identical — which is why G4 is an end-to-end RRF check and
@@ -292,5 +292,5 @@ filling the gap §3 flags rather than racing it with bespoke code.
 *Provenance: this plan supersedes the forward-looking parts of `02`. Findings on
 branch `spike/mmap-bmp` (fast-forwarded from the zero-decode tiebreaker, commit
 0734404). Results: `data/eval_results/p2_zerodecode_med_bio_4shard.json`,
-`p2_zerodecode_G1_1m.json`. Repro: `spike/mmap_bmp/R3v2_delta.patch` +
-`spike/mmap_bmp/compare_zerodecode_persona.py`.*
+`p2_zerodecode_G1_1m.json`. Repro: `spike/archive/mmap_bmp/R3v2_delta.patch` +
+`spike/archive/mmap_bmp/compare_zerodecode_persona.py`.*

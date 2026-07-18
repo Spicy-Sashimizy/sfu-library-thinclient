@@ -1,0 +1,44 @@
+{
+  "layer": "L-A enum_sweep",
+  "date": "2026-07-17",
+  "wall_ms": 59570,
+  "apps": [
+    "search.html",
+    "analytics.html",
+    "index_manager.html"
+  ],
+  "summary": {
+    "actions": 304,
+    "states": 298,
+    "skipped": 25,
+    "failures": 0,
+    "warnings": 0
+  },
+  "per_app": {
+    "search.html": {
+      "actions": 102,
+      "states": 100,
+      "skipped": 3,
+      "artifacts": null
+    },
+    "analytics.html": {
+      "actions": 99,
+      "states": 97,
+      "skipped": 3,
+      "artifacts": null
+    },
+    "index_manager.html": {
+      "actions": 103,
+      "states": 101,
+      "skipped": 19,
+      "artifacts": null
+    }
+  },
+  "failures": [],
+  "warnings": [],
+  "bars": {
+    "zero_pageerror": true,
+    "zero_console_error": true,
+    "zero_overflow": true
+  }
+}

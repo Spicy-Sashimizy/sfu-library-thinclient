@@ -1,0 +1,25 @@
+04:54:37 INFO partitioned med_bio_929000.jsonl -> 2 shards in 19.9s (per-shard: [464494, 464506], balance max/min=1.000)
+04:54:37 INFO   building shard0of2.jsonl -> /tmp/seismic_testbed/index/shards929k/med_bio_shard0_929k
+04:55:35 INFO   built in 57.4s
+04:55:35 INFO   building shard1of2.jsonl -> /tmp/seismic_testbed/index/shards929k/med_bio_shard1_929k
+04:56:30 INFO   built in 55.0s
+04:56:30 INFO loading single control index: /tmp/seismic_testbed/index/med_bio_929k.index.seismic
+04:56:30 INFO seismic: loading index /tmp/seismic_testbed/index/med_bio_929k.index.seismic
+04:56:32 INFO seismic: loaded len=929000 dim=27463 nnz=70927965 (string dtype U30)
+04:56:32 INFO loading federated treatment (2 shards)
+04:56:32 INFO federated: loading shard /tmp/seismic_testbed/index/shards929k/med_bio_shard0_929k.index.seismic
+04:56:38 INFO   loaded len=464494 dim=26830 nnz=35466541
+04:56:38 INFO federated: loading shard /tmp/seismic_testbed/index/shards929k/med_bio_shard1_929k.index.seismic
+04:56:44 INFO   loaded len=464506 dim=26886 nnz=35461424
+04:56:44 INFO 60 queries; overlap@10 target ≥0.98 (STOP if <0.95)
+04:58:46 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+04:58:55 INFO SPLADE ONNX model loaded (CPU)
+04:58:56 INFO [10/60] mean overlap@10 (nonempty)=0.990, nonempty=10/10
+04:58:57 INFO [20/60] mean overlap@10 (nonempty)=0.995, nonempty=20/20
+04:58:58 INFO [30/60] mean overlap@10 (nonempty)=0.997, nonempty=30/30
+04:58:59 INFO [40/60] mean overlap@10 (nonempty)=0.995, nonempty=40/40
+04:59:01 INFO [50/60] mean overlap@10 (nonempty)=0.996, nonempty=50/50
+04:59:02 INFO [60/60] mean overlap@10 (nonempty)=0.997, nonempty=60/60
+04:59:02 INFO overlap@10: mean_all=0.997 (n=60), mean_nonempty=0.997 (n=60) | verdict=FEDERATION_RESULT_SAFE
+04:59:02 INFO wrote data/eval_results/seismic_federation_overlap_929k.json
+{"verdict": "FEDERATION_RESULT_SAFE", "overlap@10_mean_nonempty": 0.9967, "n_nonempty": 60, "bar": "\u22650.98 / <0.95", "result_file": "data/eval_results/seismic_federation_overlap_929k.json"}

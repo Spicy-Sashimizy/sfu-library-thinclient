@@ -1,0 +1,32 @@
+04:19:44 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+04:19:48 INFO SPLADE ONNX model loaded (CPU)
+[q6] captured + cached: visited_global_shard1of8_n100_k200.json
+[q6] global_shard1of8: walking posting packs for block_walk ...
+[q6] global_shard1of8 f16       identity             ratio 1.000 (64k 1.000)
+[q6] global_shard1of8 f16       random               ratio 1.016 (64k 1.175)
+[q6] global_shard1of8 f16       block_walk           ratio 0.376 (64k 0.352)
+[q6] global_shard1of8 f16       block_walk_testhalf  ratio 0.377 (64k 0.355)
+[q6] global_shard1of8 f16       coaccess_sig         ratio 0.348 (64k 0.313)
+[q6] global_shard1of8 f16       coaccess_walk        ratio 0.457 (64k 0.331)
+[q6] global_shard1of8 dotvbyte  identity             ratio 1.000 (64k 1.000)
+[q6] global_shard1of8 dotvbyte  random               ratio 1.013 (64k 1.155)
+[q6] global_shard1of8 dotvbyte  block_walk           ratio 0.382 (64k 0.348)
+[q6] global_shard1of8 dotvbyte  block_walk_testhalf  ratio 0.383 (64k 0.351)
+[q6] global_shard1of8 dotvbyte  coaccess_sig         ratio 0.358 (64k 0.308)
+[q6] global_shard1of8 dotvbyte  coaccess_walk        ratio 0.474 (64k 0.328)
+[q6] captured + cached: visited_global_shard2of8_n100_k200.json
+[q6] global_shard2of8: walking posting packs for block_walk ...
+[q6] global_shard2of8 f16       identity             ratio 1.000 (64k 1.000)
+[q6] global_shard2of8 f16       random               ratio 1.015 (64k 1.175)
+[q6] global_shard2of8 f16       block_walk           ratio 0.393 (64k 0.372)
+[q6] global_shard2of8 f16       block_walk_testhalf  ratio 0.394 (64k 0.376)
+[q6] global_shard2of8 f16       coaccess_sig         ratio 0.345 (64k 0.306)
+[q6] global_shard2of8 f16       coaccess_walk        ratio 0.454 (64k 0.325)
+[q6] global_shard2of8 dotvbyte  identity             ratio 1.000 (64k 1.000)
+[q6] global_shard2of8 dotvbyte  random               ratio 1.013 (64k 1.155)
+[q6] global_shard2of8 dotvbyte  block_walk           ratio 0.400 (64k 0.368)
+[q6] global_shard2of8 dotvbyte  block_walk_testhalf  ratio 0.401 (64k 0.371)
+[q6] global_shard2of8 dotvbyte  coaccess_sig         ratio 0.354 (64k 0.302)
+[q6] global_shard2of8 dotvbyte  coaccess_walk        ratio 0.471 (64k 0.322)
+{"buildable_cell_worst_shard_page_ratio_f16": 0.3927, "q6_e5": "GO"}
+result -> /workspaces/sfu-library-thinclient/data/eval_results/q6_e5_coaccess_sim_20260709.json

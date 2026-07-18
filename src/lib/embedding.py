@@ -18,18 +18,41 @@ _model = None
 _model_name = None
 
 
+def _resolve_target(model_path: str | None) -> str:
+    """Resolve the model target, surviving stale absolute paths.
+
+    A configured absolute path that doesn't exist (e.g. an env var baked from
+    another machine/container — the /workspaces/sfu-library-mcp-training case,
+    2026-07-18) falls back to the repo-local copy of the same-named model under
+    models/ when present, so a portable deploy (DO droplet) keeps serving the
+    fine-tuned model instead of silently degrading the embed leg.
+    """
+    target = model_path or _DEFAULT_MODEL
+    p = Path(target)
+    if target.startswith("/") and not p.exists():
+        local = Path(__file__).resolve().parents[2] / "models" / p.name
+        if local.is_dir():
+            logger.warning(
+                "Embedding model path %s not found; using repo-local %s",
+                target, local)
+            return str(local)
+    return target
+
+
 def _load_model(model_path: str | None = None):
     """Load a sentence-transformer model, caching it as a module-level singleton."""
     global _model, _model_name
 
-    target = model_path or _DEFAULT_MODEL
+    target = _resolve_target(model_path)
     if _model is not None and _model_name == target:
         return _model
 
     try:
-        from sentence_transformers import SentenceTransformer
+        from lib.hf_load_lock import HF_LOAD_LOCK
         logger.info("Loading embedding model: %s", target)
-        _model = SentenceTransformer(target)
+        with HF_LOAD_LOCK:
+            from sentence_transformers import SentenceTransformer
+            _model = SentenceTransformer(target)
         _model_name = target
         logger.info("Embedding model loaded (%s)", target)
         return _model

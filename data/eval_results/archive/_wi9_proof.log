@@ -1,0 +1,31 @@
+WI-9 fault-injection proof: building retriever (cold seismic load on first splade)...
+  warmup batch (4 queries, 112.7s to build)...
+  warm p50=13051.3ms degraded=['dense'] results=4/4
+
+=== FAULT splade_hung: SPLADE leg hung (sleep>>timeout) ===
+  DURING: degraded=['splade'] results=4/4 p50=30001.9ms p95=30002.9ms err5xx=0
+  AFTER:  degraded=[] results=4/4 → recovered=True
+
+=== FAULT splade_error: SPLADE leg throws ===
+  DURING: degraded=['splade'] results=4/4 p50=3211.8ms p95=3369.8ms err5xx=0
+  AFTER:  degraded=[] results=4/4 → recovered=True
+
+=== FAULT dense_error: dense leg throws ===
+  DURING: degraded=['dense'] results=4/4 p50=3654.9ms p95=3777.4ms err5xx=0
+  AFTER:  degraded=[] results=4/4 → recovered=True
+
+=== FAULT bm25f_error: BM25F leg throws (today: 5xx; WI-9: degrade) ===
+  DURING: degraded=['bm25f'] results=4/4 p50=114.5ms p95=119.0ms err5xx=0
+  AFTER:  degraded=[] results=4/4 → recovered=True
+
+=== FAULT encoder_down: encoder down (graceful mirror — breaker must NOT trip) ===
+  DURING: degraded=[] results=4/4 p50=3203.7ms p95=3585.2ms err5xx=0
+  AFTER:  degraded=[] results=4/4 → recovered=True
+
+=== WI-9 VERDICT: PASS ===
+  splade_hung: {'a_no_5xx_storm': True, 'b_results_returned': True, 'c_degraded_names_leg': True, 'c_expected': 'splade in degraded', 'd_breaker_recovers': True}
+  splade_error: {'a_no_5xx_storm': True, 'b_results_returned': True, 'c_degraded_names_leg': True, 'c_expected': 'splade in degraded', 'd_breaker_recovers': True}
+  dense_error: {'a_no_5xx_storm': True, 'b_results_returned': True, 'c_degraded_names_leg': True, 'c_expected': 'dense in degraded', 'd_breaker_recovers': True}
+  bm25f_error: {'a_no_5xx_storm': True, 'b_results_returned': True, 'c_degraded_names_leg': True, 'c_expected': 'bm25f in degraded', 'd_breaker_recovers': True}
+  encoder_down: {'a_no_5xx_storm': True, 'b_results_returned': True, 'c_degraded_names_leg': True, 'c_expected': 'no splade degrade (graceful mirror)', 'd_breaker_recovers': True}
+result: /workspaces/sfu-library-thinclient/data/eval_results/wi9_fault_injection_20260717_022742.json

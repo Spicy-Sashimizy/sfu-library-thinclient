@@ -1,0 +1,113 @@
+=== WI-1 A/B orchestrator start wi1_seq_vs_par_20260716_213857 (UTC 21:38:57Z) ===
+--- rep 1 PARALLEL (fresh process) 21:38:57Z ---
+21:38:58 INFO encoding 40 queries (model=models/splade_onnx_fused)...
+21:40:13 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+21:40:17 INFO SPLADE ONNX model loaded (CPU)
+21:40:18 INFO === ARM: parallel (rep 1) — constructing ParallelSeismicBackend over 8 shards ===
+21:40:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+21:40:18 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:40:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+21:40:18 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:40:18 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+21:40:19 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:40:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+21:40:19 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:40:19 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+21:40:20 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:40:20 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+21:40:20 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:40:20 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+21:40:20 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:40:20 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+21:40:21 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:40:21 INFO loaded in 2.9s; RssFile 0.27→0.27 GB (RssAnon 1.15)
+21:42:21 INFO result written to data/eval_results/wi1_seq_vs_par_20260716_213857_parallel_rep1.json
+21:42:21 INFO === parallel rep 1 SUMMARY ===
+21:42:21 INFO   COLD p50/p95: 2625.98 / 8950.22 ms (encode 33.67 / traverse 2587.18) majflt=253901
+21:42:21 INFO   WARM p50/p95: 51.17 / 78.17 ms (encode 21.34 / traverse 29.16) majflt=0
+21:42:21 INFO   peak RssFile 11.74 GB; VmSwap after-cold 0.0 GB; confounded=False
+--- rep 1 SEQUENTIAL (parity vs rep1 parallel) 21:42:24Z ---
+21:42:25 INFO encoding 40 queries (model=models/splade_onnx_fused)...
+21:43:43 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+21:43:47 INFO SPLADE ONNX model loaded (CPU)
+21:43:48 INFO === ARM: sequential (rep 1) — constructing SequentialSeismicBackend over 8 shards ===
+21:43:48 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+21:43:49 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:43:49 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+21:43:49 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:43:49 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+21:43:50 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:43:50 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+21:43:50 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:43:50 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+21:43:50 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:43:50 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+21:43:51 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:43:51 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+21:43:51 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:43:51 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+21:43:52 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:43:52 INFO loaded in 3.2s; RssFile 0.27→0.27 GB (RssAnon 1.15)
+21:46:26 INFO result written to data/eval_results/wi1_seq_vs_par_20260716_213857_sequential_rep1.json
+21:46:26 INFO === sequential rep 1 SUMMARY ===
+21:46:26 INFO   COLD p50/p95: 2625.33 / 12558.14 ms (encode 35.65 / traverse 2566.24) majflt=296176
+21:46:26 INFO   WARM p50/p95: 243.22 / 374.19 ms (encode 20.88 / traverse 223.35) majflt=1325
+21:46:26 INFO   peak RssFile 0.27 GB; VmSwap after-cold 0.0 GB; confounded=False
+21:46:26 INFO   T1 parity: BIT_IDENTICAL (0 hard mismatches / 2000 tuples)
+--- rep 2 PARALLEL (fresh process) 21:46:29Z ---
+21:46:30 INFO encoding 40 queries (model=models/splade_onnx_fused)...
+21:47:50 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+21:47:54 INFO SPLADE ONNX model loaded (CPU)
+21:47:55 INFO === ARM: parallel (rep 2) — constructing ParallelSeismicBackend over 8 shards ===
+21:47:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+21:47:55 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:47:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+21:47:55 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:47:55 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+21:47:56 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:47:56 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+21:47:56 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:47:56 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+21:47:56 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:47:56 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+21:47:57 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:47:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+21:47:57 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:47:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+21:47:57 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:47:57 INFO loaded in 2.7s; RssFile 0.27→0.27 GB (RssAnon 1.15)
+21:49:57 INFO result written to data/eval_results/wi1_seq_vs_par_20260716_213857_parallel_rep2.json
+21:49:57 INFO === parallel rep 2 SUMMARY ===
+21:49:57 INFO   COLD p50/p95: 2619.85 / 8620.35 ms (encode 33.75 / traverse 2581.19) majflt=277375
+21:49:57 INFO   WARM p50/p95: 43.26 / 62.62 ms (encode 16.87 / traverse 27.07) majflt=0
+21:49:57 INFO   peak RssFile 11.74 GB; VmSwap after-cold 0.0 GB; confounded=False
+--- rep 2 SEQUENTIAL (parity vs rep2 parallel) 21:50:00Z ---
+21:50:01 INFO encoding 40 queries (model=models/splade_onnx_fused)...
+21:51:19 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+21:51:23 INFO SPLADE ONNX model loaded (CPU)
+21:51:24 INFO === ARM: sequential (rep 2) — constructing SequentialSeismicBackend over 8 shards ===
+21:51:24 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+21:51:24 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:51:24 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+21:51:25 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:51:25 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+21:51:25 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:51:25 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+21:51:25 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:51:25 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+21:51:26 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:51:26 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+21:51:26 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:51:26 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+21:51:26 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:51:26 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+21:51:27 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:51:27 INFO loaded in 3.0s; RssFile 0.27→0.27 GB (RssAnon 1.15)
+21:53:45 INFO result written to data/eval_results/wi1_seq_vs_par_20260716_213857_sequential_rep2.json
+21:53:45 INFO === sequential rep 2 SUMMARY ===
+21:53:45 INFO   COLD p50/p95: 2518.18 / 9240.24 ms (encode 38.04 / traverse 2477.23) majflt=253901
+21:53:45 INFO   WARM p50/p95: 252.41 / 339.23 ms (encode 22.77 / traverse 228.33) majflt=0
+21:53:45 INFO   peak RssFile 0.27 GB; VmSwap after-cold 0.0 GB; confounded=False
+21:53:45 INFO   T1 parity: BIT_IDENTICAL (0 hard mismatches / 2000 tuples)
+=== WI-1 A/B orchestrator DONE 21:53:47Z ===
+results: wi1_seq_vs_par_20260716_213857_* under data/eval_results

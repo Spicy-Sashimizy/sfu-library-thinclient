@@ -1,0 +1,93 @@
+{
+  "probe": "wi14_portable_bundle_versions",
+  "generated_utc": "2026-07-17",
+  "bundle_dir": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717",
+  "channel": "stable",
+  "bundle_version": "1.0.0",
+  "artifacts": [
+    {
+      "group": "seismic_shards",
+      "shard": "shard0",
+      "mmap_dir": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard0",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "44009bf8afa4883b",
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard0/data.bin",
+          "sha256": "8f9872d805fc6884337f0146661193cc8266f079fb7f1d06214055bd00b2b4c6",
+          "bytes": 1024,
+          "group": "seismic_shard"
+        },
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard0/index.bin",
+          "sha256": "d9e024c93414ba727c616f29226c44fe4eb0d6e0dc716af369021421a2a313ba",
+          "bytes": 512,
+          "group": "seismic_shard"
+        },
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard0/manifest.json",
+          "sha256": "a7e0205dc7be535be06ed2879f853cbdbce4bb2da2a0a28428baa3d79d8d286a",
+          "bytes": 64,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": "shard1",
+      "mmap_dir": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "c5f340789817876b",
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/data.bin",
+          "sha256": "0d39a6f8e5aaedc4225cb402ebe69b0fc5fbac635be68b94617dfcbff7e67b2e",
+          "bytes": 1036,
+          "group": "seismic_shard"
+        },
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/index.bin",
+          "sha256": "f67330a6f2fe7b5aad39752ac3ec1ad8c828d9359a266072f85bb7bd5cd6e23c",
+          "bytes": 512,
+          "group": "seismic_shard"
+        },
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/manifest.json",
+          "sha256": "2ce39c69a5dc8df693d0874b6caf6ca37f8ec60f8fe694cf788abb485657ef62",
+          "bytes": 64,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/portable_so/seismic.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "af8c2009d43b2f47fb04fce96e7002a637629eb77405fc0a6ab385451665d7cc",
+      "bytes": 2048,
+      "group": "portable_so",
+      "version": "v3-portable-2026-07-16"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/models/splade_onnx_fused/config.json",
+      "sha256": "93b2d4cb0a8dde55f7300b6ee10fa31f21aa97e2343094cee58bd05b0be61001",
+      "bytes": 64,
+      "group": "splade_model",
+      "version": "onnx-fused-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/models/splade_onnx_fused/model.onnx",
+      "sha256": "ff252a1e5c8d7fa76f91222e39dc65a3c83a52229778f8c366c0517750bd2335",
+      "bytes": 4108,
+      "group": "splade_model",
+      "version": "onnx-fused-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/models/sfu-academic-embed-v5/model.safetensors",
+      "sha256": "7898c2085c9a0a25bcee1ee9e2bb2b1562e543201ef11bd3e4c38fb1dee52bd6",
+      "bytes": 4096,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    }
+  ],
+  "artifact_count": 6,
+  "total_bytes": 10316
+}

@@ -4,6 +4,20 @@ Derived from **measured** page-cache behaviour (NOT an estimate). Source numbers
 are in `docs/THIN_CLIENT_SWAP.md` (Off-BMP section, 2026-06-19/2021) and the
 ops table in `METRICS_CATALOG.md`. BMP-decommission plan Workstream C5.
 
+> **POINTER 2026-07-17 (deployprep WI-7):** the SPLADE serving leg has since
+> switched to **SEISMIC** (federated mmap, the 2026-07-06 promotion; Qdrant is
+> now an env-gated fallback). The Qdrant-era numbers below (p50 545–861 ms cold,
+> ~66 ms 30M-warm) **do not apply to the SEISMIC served path** — see
+> `docs/infrastructure/DEMO_DEPENDABILITY.md` §WI-7: the SEISMIC warm
+> diverse-query p50 on the dev container's 9p mount is 3.3–10.3 s (9p-fault-
+> bound, working set not fully resident), 0% errors at concurrency 1–32,
+> throughput 0.4→2.9 qps. The sizing model's *spirit* still holds (RAM must hold
+> the working set for warm p50), but the engine + the warm numbers are
+> SEISMIC's, not Qdrant's. A native-ext4 host with RAM ≥ the ~16 GB working set
+> delivers the SEISMIC warm p50 in the tens-of-ms range (WI-1 parallel warm p50
+> 47 ms). This doc is retained as the Qdrant-era sizing record; the SEISMIC
+> numbers are the current source of truth.
+
 ## The RAM model (measured)
 
 Qdrant `on_disk=true` sparse splits memory into two pools with different scaling:
@@ -78,7 +92,7 @@ RAM→latency relationship, *est.* for the tiers we did not directly measure:
   `SFU_SPLADE_QDRANT_COLLECTION=splade_par30`.
 - Same-host caveat (it bit the 23 GB dev box): if RAM is tight under query load, the
   OOM killer can SIGKILL Qdrant with no panic line — install
-  `scripts/qdrant-serve.supervisor.conf` (serve-only, `autorestart=true`) so a crash
+  `scripts/archive/qdrant-serve.supervisor.conf` (serve-only, `autorestart=true`) so a crash
   self-recovers, and give Qdrant a dedicated box (no contending anon pressure).
 
 ## What this rules out

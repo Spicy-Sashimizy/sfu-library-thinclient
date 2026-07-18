@@ -1,0 +1,20 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Both monitor-review fixes are done and the host queue is RESOLVED. The `deployprep` campaign is fully complete — all five work items delivered, docs synced, host-review fixes resolved, committed and pushed.
+
+Let me send a final notification since this was a long autonomous session that completed a substantial multi-item campaign.
+
+The campaign is complete. Here is the final summary of what was delivered this session:
+
+## `deployprep` campaign — complete (2026-07-16, all 5 work items DONE, ~3.5h of work, ~6h before hard stop)
+
+**WI-1 — clean sequential-vs-parallel federation A/B** (MEASURED, was UNMEASURED). 4-cell clean swap-free A/B on the 64 GB container, E5 fresh-process-cold protocol. **T1 parity BIT_IDENTICAL 0/2000** (mandatory gate ✓); warm p50 sequential/parallel **5.29×** (248 vs 47 ms — Σ-shards over max); cold p50 **0.98×** (reaffirms doc 13 §5: cold 9p favors sequential); **peak RssFile 0.023×** (0.27 vs 11.74 GB — the RAM-floor deliverable). Verdict: on a ≥16 GB host parallel is faster-serving; sequential's value is exclusively the RAM floor. The 31.6 GB swap-storm GO/KILL fork needs the constrained host (open host-queue item). Wrote into `04_BENCHMARKING.md`, doc 06, the backlog, + flipped the README UNMEASURED→MEASURED.
+
+**WI-2 — production query-log capture module** (`lib/serve_query_log.py`). Always-on in staging (one env on/off), privacy-sane (normalized text + sha1 hash, never raw PII), ~0-hot-path (async daemon thread + bounded queue, drops never stalls), size-capped rotation. Captures per-leg latencies + federation mode + result-set fingerprint — unblocks the disk_streaming LRU/pin gate. 13/13 tests + a replay script proving the format feeds Q12-style skew analysis. Wired into `/api/search`.
+
+**WI-3 — demo dependability harness** (STAGING ONLY). Health-check (all 3 legs + federation mode), watchdog (restarts a killed/wedged serve in **2.4s**), load-driver (1/4/8/16 concurrency, **0% errors across 160 requests**). Induced-failure arm surfaced the honest cold-restart caveat: health-recovery is fast but the first query after restart pays cold shard load (addressed by the existing `SFU_SEISMIC_PREFLOOR_AT_LOAD` warmup hook). New `docs/infrastructure/DEMO_DEPENDABILITY.md` + README row.
+
+**WI-4 — portable-CPU build + gate reclear.** Built `x86-64-v3` (AVX2+FMA) + `v2` (SSE4.2) variants WITHOUT touching the production .so (variants load by explicit path). 6-cell gate matrix, worst-case shards 1+2, n=100. **Parity BIT-IDENTICAL (1.0) for ALL variants** — the CPU-target change doesn't alter float results even for v2's no-FMA path. **v3 PASSES both gates** (warm 0.96× — the shippable portable target); **v2 FAILS gate b** (2.2×, no FMA — last-resort pre-Haswell fallback). Doc 10 §7.7 + the buildable recipe.
+
+**WI-5 — subset-corpus pilot** (stretch). Selection machinery + the honest finding: the citation floor axis is BLOCKED (`meta.sqlite` lacks `cited_by_count` — answers the plan's §8 #2), the year-axis full-corpus cut is 9p-blocked (a prefix sample measured + tagged biased), and the pilot build is blocked on the absent spool. All three blockers recorded honestly with the host-tier unblock sequence. New doc 16.
+
+**Discipline held throughout:** F6 (every headline number recomputed from raw result files), same-commit doc rule, pre-registration of SEISMIC experiments, explicit `git add` (never `.`), READ-ONLY on shards, no served-default flips (owner-gated), absolute dates. Host monitor reviewed WI-1..4 (commit 45e7b0b) — all claims reproduced; its two doc fixes are resolved. Host queue is clean (no PENDING). 13+7+14 tests pass (no regressions).

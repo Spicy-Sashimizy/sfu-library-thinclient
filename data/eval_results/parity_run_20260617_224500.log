@@ -1,0 +1,4 @@
+== OOM-safe parity run 20260617_2245 ==
+   queries=40 index=/workspaces/sfu-library-thinclient/data/thinclient_index baseline=http://host.docker.internal:9200
+>> [phase-A/tc] MemAvailable 16.0 GB
+scripts/run_parity_safe.sh: line 67:   335 Killed                  SFU_DENSE_WARMCACHE="${SFU_DENSE_WARMCACHE:-0}" "${PY}" "${EVAL}" record-tc --index-root "${INDEX_ROOT}" --queries "${QUERIES}" --mem-floor-gb "${MEM_FLOOR_GB}" --output "${TC_REC}"

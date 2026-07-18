@@ -1,0 +1,17 @@
+01:48:12 INFO spool->seismic: section=med_bio slices=8 limit=20000000 -> /tmp/seismic_testbed/jsonl/med_bio_20m.jsonl
+01:48:12 INFO   slice_000.jsonl.zst
+01:50:37 INFO     running docs=2928594
+01:50:37 INFO   slice_001.jsonl.zst
+01:53:02 INFO     running docs=5858499
+01:53:02 INFO   slice_002.jsonl.zst
+01:55:29 INFO     running docs=8787987
+01:55:29 INFO   slice_003.jsonl.zst
+01:58:03 INFO     running docs=11715188
+01:58:03 INFO   slice_004.jsonl.zst
+02:00:37 INFO     running docs=14645643
+02:00:37 INFO   slice_005.jsonl.zst
+02:03:10 INFO     running docs=17574180
+02:03:10 INFO   slice_006.jsonl.zst
+02:05:16 INFO wrote /tmp/seismic_testbed/jsonl/med_bio_20m.jsonl: 20000000 docs, 0 empty/skipped, avg_terms=76.7 max_terms=255 in 1024.6s (19520 docs/s)
+02:05:16 INFO on-disk 28.723 GB
+{"jsonl": "/tmp/seismic_testbed/jsonl/med_bio_20m.jsonl", "docs": 20000000, "size_gb": 28.723, "avg_terms": 76.73, "max_terms": 255}

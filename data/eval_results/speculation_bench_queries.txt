@@ -1,0 +1,105 @@
+# deployprep WI-18b — non-seeded query pool for the speculation three-arm
+# benchmark (arm C/D/E). These are realistic academic queries that are NOT in
+# demo_seed_queries.txt and NOT in the web/src/search.jsx landing examples, so
+# they are guaranteed cache-COLD on a freshly started+primed serve (the primer
+# only plants the 6 demo seeds). Each arm-C trial uses a DISTINCT query within
+# a serve lifetime (term trial hygiene), so the pool needs ≥ 80 entries.
+#
+# FORMAT: one query per line; blank lines + '#' comments skipped. ≥ 8 chars
+# after normalize (the speculation min-length gate) so each is eligible to
+# speculate. Drawn from distinct subjects so they fault different SEISMIC
+# regions (a subject-diverse bench, mirroring the warmup battery's design).
+#
+# (drawn from distinct serve-log query shapes + author-written academic
+# queries across CS, biomed, physics, social science, climate, and methods.)
+transformer architectures for long context language models
+graph neural networks for molecular property prediction
+reinforcement learning for robotic manipulation
+diffusion models for image generation
+federated learning privacy preservation
+adversarial robustness in deep neural networks
+causal inference from observational data
+large language model alignment techniques
+protein structure prediction with alphafold
+single cell rna sequencing analysis
+crispr cas9 off target effects
+drug repurposing for rare diseases
+tumor microenvironment immunotherapy
+mrna vaccine lipid nanoparticle delivery
+antibiotic resistance mechanisms in bacteria
+gut microbiome and metabolic disease
+stem cell differentiation pathways
+organoid models for drug screening
+blood brain barrier transport mechanisms
+cancer immunotherapy checkpoint inhibitors
+quantum error correction surface codes
+topological insulators spin transport
+superconducting qubits coherence times
+photonic crystals for optical computing
+machine learning interatomic potentials
+density functional theory for catalysis
+graphene electronic properties
+perovskite solar cell efficiency
+battery thermal runaway modeling
+hydrogen fuel cell catalysts
+carbon capture and sequestration
+wind turbine wake optimization
+grid scale energy storage
+permafrost thaw methane emissions
+ocean acidification coral reefs
+sea level rise coastal adaptation
+wildfire smoke atmospheric dynamics
+glacier mass balance remote sensing
+el nino southern oscillation prediction
+monsoon rainfall variability modeling
+urban heat island mitigation
+air pollution exposure epidemiology
+lead exposure cognitive development
+maternal health outcomes low income
+vaccine hesitancy social media
+opioid overdose harm reduction
+health equity social determinants
+mental health pandemic impact
+telemedicine rural access barriers
+electronic health record interoperability
+clinical trial recruitment diversity
+systematic review meta analysis methods
+reproducibility crisis in science
+open access citation advantage
+research data sharing practices
+peer review bias and fairness
+bibliometric indicators research evaluation
+science of science collaboration networks
+gender gap in academic publishing
+citation networks knowledge diffusion
+machine learning for systematic review
+natural language processing clinical notes
+speech recognition low resource languages
+computer vision medical imaging
+human robot interaction autism therapy
+accessible computing for visual impairment
+algorithmic fairness in hiring
+differential privacy synthetic data
+blockchain for supply chain transparency
+cryptographic protocols post quantum
+edge computing for iot latency
+distributed systems consensus algorithms
+microservices observability tracing
+database query optimization
+stream processing event time
+software supply chain security
+formal verification of compilers
+program synthesis from examples
+static analysis for vulnerability detection
+game engine physics simulation
+procedural content generation
+virtual reality motion sickness
+augmented reality surgical guidance
+human computer interaction gaze tracking
+usability evaluation older adults
+digital divide broadband access
+misinformation detection fact checking
+social media polarization mechanisms
+collective behavior crowd dynamics
+agent based models epidemiology
+transportation network optimization

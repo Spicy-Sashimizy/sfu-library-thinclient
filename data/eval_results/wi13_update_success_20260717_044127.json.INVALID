@@ -1,0 +1,15 @@
+{
+  "arm": "success", "start_utc": "2026-07-17T04:41:28Z", "port": 8197,
+  "base_manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json", "smoke_queries": 6,
+  "events": [
+    {"t":"2026-07-17T04:41:28Z","ms":1784263288244,"stage":"setup","status":"started","detail":"arm=success base=seismic_c25_shards_150m_mmap_e5_v2.json new=wi13_staged_new_manifest_20260717_044127.json expect_rollback=0"}
+    ,
+    {"t":"2026-07-17T04:41:28Z","ms":1784263288355,"stage":"baseline_watchdog_launched","status":"running","detail":"wd_pid=790571 manifest=seismic_c25_shards_150m_mmap_e5_v2.json"}
+    ,
+    {"t":"2026-07-17T04:45:33Z","ms":1784263533699,"stage":"baseline_warm","status":"ok","detail":"wait_warm ok; pre-gate smoke=pass (seismic_loaded=True)"}
+    ,
+    {"t":"2026-07-17T04:45:33Z","ms":1784263533780,"stage":"baseline_smoke","status":"FAILED","detail":"pre-update gate on base manifest did not pass; aborting (no flip attempted)"}
+  ],
+  "overall": "ABORTED", "downtime_ms": null, "rolled_back": false,
+  "end_utc": "2026-07-17T04:45:35Z"
+}

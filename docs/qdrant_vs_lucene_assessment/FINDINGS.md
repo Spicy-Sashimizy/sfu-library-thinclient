@@ -102,7 +102,7 @@ distinct OOMs — don't conflate them:
   count** — measured **6.55 GB RssAnon at rest** (≈43 B/point × 150.4M), climbing
   to ~17 GB under query load. Config **cannot** remove it; only fewer points /
   more RAM / sharding can. *(Source: `THIN_CLIENT_SWAP.md` lines 487–499.)*
-- **Mitigation:** `scripts/qdrant-serve.supervisor.conf` (serve-only,
+- **Mitigation:** `scripts/archive/qdrant-serve.supervisor.conf` (serve-only,
   `autorestart=true`) so a crash auto-recovers; `SFU_LOAD_MEM_FLOOR_GB` preflight
   guard; the upsert retry-with-backoff (`_upsert_wait_retry`, commit ceb363f) so
   a `red` stall self-heals instead of killing a worker.
@@ -251,7 +251,7 @@ The full runnable plan is in **`QDRANT_150M_BENCHMARK_PLAN.md`**. Headline:
 
 1. **Provision a 64 GB and a 128 GB box** (DO_SIZING.md tiers); snapshot-restore
    `splade_150m` (no re-ingest).
-2. **Latency vs RAM curve:** `scripts/spike_qdrant_sparse.py measure` (40 queries,
+2. **Latency vs RAM curve:** `scripts/archive/spike_qdrant_sparse.py measure` (40 queries,
    Qdrant-search-only) at 24 / 64 / 128 GB → show where p50 crosses back under
    ~100 ms as page-cache fraction of the 205 GB index rises.
 3. **Matched head-to-head vs OpenSearch** on the same box class:

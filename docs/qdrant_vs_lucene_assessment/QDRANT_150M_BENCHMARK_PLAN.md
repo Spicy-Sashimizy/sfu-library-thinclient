@@ -47,7 +47,7 @@ Plus two resilience items not yet measured at scale:
 ### Phase 1 — latency vs RAM curve (the headline)
 Run the existing harness unchanged at each host size:
 ```bash
-.venv/bin/python3 scripts/spike_qdrant_sparse.py measure \
+.venv/bin/python3 scripts/archive/spike_qdrant_sparse.py measure \
     --collection splade_150m --queries 40   # Qdrant-search-only, encode excluded
 ```
 - Record p50/p95/max at **24 GB (have it), 64 GB, 128 GB**.
@@ -110,10 +110,10 @@ SFU_SPLADE_BACKEND=qdrant .venv/bin/python3 scripts/eval_thinclient_parity.py \
   carries the correctly-sized-host numbers, not just the RAM-bound ones).
 
 ## Reuse — scripts that already exist
-- `scripts/spike_qdrant_sparse.py measure` — Qdrant-search-only latency.
+- `scripts/archive/spike_qdrant_sparse.py measure` — Qdrant-search-only latency.
 - `scripts/eval_thinclient_parity.py {record-tc,record-os,compare}` — RRF quality
   + per-leg overlap + latency.
-- `scripts/eval_quant_fidelity.py --live-qdrant` — parity re-check post-restore.
-- `scripts/qdrant-serve.supervisor.conf` — serve-only auto-restart on the target.
+- `scripts/experiments/eval_quant_fidelity.py --live-qdrant` — parity re-check post-restore.
+- `scripts/archive/qdrant-serve.supervisor.conf` — serve-only auto-restart on the target.
 - `scripts/build_presentation_metrics.py --rebuild` — fold results into the catalog.
 </content>

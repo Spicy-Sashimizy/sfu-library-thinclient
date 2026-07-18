@@ -1,0 +1,62 @@
+{
+  "probe": "wi14_apply_proof",
+  "generated_utc": "2026-07-17",
+  "bundle_v1": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v1_20260717",
+  "bundle_v2": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717",
+  "manifest_v1": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_manifest_v1_20260717.json",
+  "manifest_v2": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_manifest_v2_20260717.json",
+  "delta_plan": "/workspaces/sfu-library-thinclient/data/eval_results/wi14_apply_delta_20260717.json",
+  "fetch_count": 2,
+  "fetch_keys": [
+    "seismic_shards/shard1",
+    "splade_model/models/splade_onnx_fused/model.onnx"
+  ],
+  "expected_changed": [
+    [
+      "seismic_shards",
+      "shard1/data.bin"
+    ],
+    [
+      "splade_model",
+      "model.onnx"
+    ]
+  ],
+  "steps": [
+    {
+      "step": "apply_start",
+      "status": "running",
+      "detail": "v1\u2192v2: 2 changed artifacts (expected 2: shard1 data.bin + splade model.onnx)"
+    },
+    {
+      "step": "fetch_stage",
+      "status": "ok",
+      "detail": "2 files staged beside old (old untouched)"
+    },
+    {
+      "step": "verify_sha256",
+      "status": "ok",
+      "detail": "2 staged files match remote manifest sha256"
+    },
+    {
+      "step": "flip_manifest",
+      "status": "ok",
+      "detail": "bundle manifest flipped v1\u2192v2 (served=wi14_manifest_v2_20260717.json); old files retained"
+    },
+    {
+      "step": "rollback_reflip",
+      "status": "ok",
+      "detail": "re-flipped bundle manifest v2\u2192v1 (rollback)"
+    },
+    {
+      "step": "rollback_files_present",
+      "status": "ok",
+      "detail": "old shard0 dir present=True, old shard1/data.bin present=True, old splade weight present=True (keep-old-until-verify \u2192 no re-fetch)"
+    }
+  ],
+  "bars": {
+    "b_fetch_exact": true,
+    "c_applied_and_verified": true,
+    "d_rollback_old_files_present": true
+  },
+  "overall": "PASS"
+}

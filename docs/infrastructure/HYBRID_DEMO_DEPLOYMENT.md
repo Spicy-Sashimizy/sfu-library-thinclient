@@ -220,7 +220,7 @@ JSON is negligible.
 3. **Dense leg not built** (`dense_done:false`) → natural-language queries weaker
    (loses the measured +0.17 NDCG@10 NL win). Decide: build full-corpus dense vs accept.
 4. **CPU rerank throughput.** ✅ **int8 ONNX export DONE + MEASURED 2026-06-19**
-   (`scripts/export_ce_onnx_int8.py`, results
+   (`scripts/experiments/export_ce_onnx_int8.py`, results
    `data/eval_results/ce_onnx_int8_bench_20260619_0302.json`). On this 16-core AVX2
    host, `models/sfu-cross-encoder-v1` (6-layer BERT, 384-hid) dynamic-int8:
    **p50 latency 114.0 ms → 5.96 ms (19.1×), throughput 5.5 → 144 pairs/s, model
@@ -269,7 +269,7 @@ pre-measurement numbers `*est.*`.
 **MEASURED so far (interim work, 2026-06-19):**
 - **int8 ONNX cross-encoder** (rerank bottleneck, risk #4): p50 114.0→5.96 ms (19.1×),
   5.5→144 pairs/s, 90.9→23.2 MB, logit r=0.994, top-half ranking Jaccard 1.0.
-  Script `scripts/export_ce_onnx_int8.py`, results
+  Script `scripts/experiments/export_ce_onnx_int8.py`, results
   `data/eval_results/ce_onnx_int8_bench_20260619_0302.json`. Quality (NDCG) parity
   still UNMEASURED (separate LLM-judge eval).
 - **Broker schedule decision core** (`scripts/demo_broker/scheduler.py`): 13/13 unit

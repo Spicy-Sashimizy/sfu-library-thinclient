@@ -1,0 +1,19 @@
+=== SEISMIC vs Qdrant Serving Footprint Benchmark ===
+Date: 2026-07-10T02:23:21.839700
+Queries: 40
+Total docs: 150413098
+
+SEISMIC:
+  Load time: 107.2s
+  Anon floor: 1.2058 GB
+  Pss_Anon: 1.2058 GB
+  VmRSS peak: 24.0549 GB
+  Anon bytes/doc: 8.607631657184536
+  Latency p50: 67.03032102086581 ms
+  Latency p95: 5323.467581998557 ms
+  Latency mean: 967.57 ms
+
+QDRANT: NOT AVAILABLE
+
+VERDICT:
+QDRANT UNAVAILABLE — SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) — representative of a properly-provisioned host for this working set (load_mode=mmap).

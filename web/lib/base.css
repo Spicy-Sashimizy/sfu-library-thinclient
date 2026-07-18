@@ -39,6 +39,18 @@ img, video { max-width: 100%; height: auto; }
 html { scroll-behavior: smooth; }
 
 /* 7) Small-window safeguard: shrink the sidebar so content keeps room on
-      narrow laptops / split-screen. Full 256px returns at >=1100px. */
+      narrow laptops / split-screen. Full 256px returns at >=1100px. The search
+      input row's flex child now carries minWidth:0 (search.jsx) so it shrinks
+      with the viewport instead of forcing its natural placeholder width —
+      found by the GUI interaction testbed L-D resize sweep 2026-07-17 (WI-16d),
+      which surfed the width axis 320→1920 by 16 and caught a 242px main-overflow
+      at 320px that the ≥1280px e2e_sweep viewports never exercise. */
 @media (max-width: 1100px) { :root { --sidebar-width: 208px !important; } }
 @media (max-width: 920px)  { :root { --sidebar-width: 184px !important; } }
+/* 8) Landing-content lateral padding (--landing-pad): the search "Research
+      begins here" landing centres content in a 60px-padded column; at narrow
+      widths that padding eats the viewport, so trim it under 760px. Paired
+      with the minWidth:0 fix, this clears the residual narrow-viewport
+      main-overflow (search.jsx uses var(--landing-pad) on that container). */
+:root { --landing-pad: 60px; }
+@media (max-width: 760px) { :root { --landing-pad: 20px; } }

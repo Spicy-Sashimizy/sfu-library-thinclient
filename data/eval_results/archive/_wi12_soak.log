@@ -1,0 +1,16 @@
+=== WI-12 reliability soak (03:27:57Z) port 8185 — 30min @ 0.3qps ===
+watchdog pid 647156 (log data/eval_results/_wi12_watchdog.log)
+serve WARM after 354s (03:34:28Z)
+staging_serve pid: 647162
+soak driver pid 658244
+timeline written
+orchestrator exit=0
+soak driver: 540 requests in 1803s -> data/eval_results/_wi12_soak_requests_20260717_032757.jsonl
+soak wall: 1803s
+
+=== WI-12 SOAK VERDICT: FAIL ===
+  availability=82.2% bars={'a_availability_ge_95': False, 'b_every_fault_has_degradation_and_recovery_event': True, 'c_worst_phase_p95_le_5x_baseline': True}
+  p50/p95/p99=2633.5/3404.5/3543.5ms
+  json: data/eval_results/wi12_soak_20260717_032757.json
+  md:   data/eval_results/wi12_soak_20260717_032757.md
+DONE.

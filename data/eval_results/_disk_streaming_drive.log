@@ -1,0 +1,25 @@
+The full program is committed. Let me provide a final summary to the user.
+
+## Disk-Streaming Research Program — Execution Summary
+
+Executed all 6 phases top-to-bottom (drive prompt Phase 0→6) on branch `spike/mmap-bmp`. Every phase ends with a committed result file + same-commit doc updates; bars pre-registered before every measurement.
+
+### Phase 0 — Build gates (both PASSED)
+- **0a (G-b E8 Stage-2 flip)**: flipped the served manifest to E8 dv-v2 (`seismic_c25_shards_150m_mmap_e5_v2.json`) in `retriever.py` (ladder v2→v1→dv rollback). Committed the Q7 federated gate (2-rep PASS: hybrid cold 0.942× seq / warm 1.044× par / T1 20/20) + a 6-rep A/B that resolved the 2-rep cold miss in v2's favor (cold 0.9923, warm 0.9557).
+- **0b (G-a Q12b)**: re-ran the hot-set probe with a **production-shaped** query log (Zipf-weighted subjects + within-subject repeat, N=400) on the v2 shards → **GO**: hot-set-80 **3.07 GB** (bar ≤4 — Q12 diverse's 4.20 GRAY inverted), repeat 0.987. Green-lit F1/F2/F3.
+
+### Phase 1 — F2 sidecar + F1 generator (DONE)
+`f1_hotset_generator.py` emits `<shard>.mmap/hotset_<budget>.json` (schema `seismic.hotset.v1`, version_keys, refuse-on-mismatch). Correct global-coverage budget split: 1.6 GB→60.7% touches, 4.2 GB→88.6%.
+
+### Phases 2-4 — F4/F3/F5 pyo3 hooks (BUILT, mechanism-verified)
+`mlock_floor`, `mlock_ranges`, `release_pages_except`, `forward_data_len` (spike fork 6d21c5b, .so rebuilt sudo-native). Backend wiring + budget-check + sidecar loader (commits 56dde5a, 77636b7). F4 over-scoped (locks 13.4 GB — needs rescoping to the ~20 MB true floor; default-off is correct). **Latency A/B host-gated** (the 15.8 s warm≈cold regime is a 32 GB-host phenomenon; this 54 GB container is RAM-speed at warm).
+
+### Phase 5 — T1 with pinning ON (DONE — 20/20 bit-identical)
+`ParallelSeismicBackend` (2 shards, F3 pin 0.4 GB) vs pin-OFF: same top-50 oaid-order on 20/20 queries. Residency-only → by construction; asserted empirically.
+
+### Phase 6 — Cold-start prefault-hotset-at-load (DONE — the headline result)
+New `prefault_ranges` hook (spike 85e30dd) + `prefault_hotset` method. Q7 hybrid bench with prefault ON: **cold p95 4.6 s → 30 ms (~150×)** (2 reps, 32/28 ms; VmSwap 0). Caveat recorded honestly: the win is process-cold warmup; sustained pressure needs F3 mlock (prefault = cold-start lever, mlock = durability lever).
+
+Session-end doc sync done (README, THIN_CLIENT_SWAP env-var section, disk_streaming README, doc 03 §3/§5, experiment backlog). All pre-registration bars committed before their runs; every measured number cites a result file path + absolute date.
+
+**Remaining (host-gated, operator's constrained-host run):** F3/F4 latency A/B under memory pressure, F4 rescoping to the true floor, F5 exercise in the sequential cold arm.

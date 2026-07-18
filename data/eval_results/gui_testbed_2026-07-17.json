@@ -1,0 +1,141 @@
+{
+  "date": "2026-07-17",
+  "base": "http://127.0.0.1:8080",
+  "pw_env": "set (npx cache)",
+  "layers": [
+    {
+      "id": "la",
+      "name": "L-A enum_sweep",
+      "file": "gui_testbed_la_enum_2026-07-17.json",
+      "summary": {
+        "actions": 304,
+        "states": 298,
+        "skipped": 25,
+        "failures": 0,
+        "warnings": 0
+      },
+      "bars": {
+        "zero_pageerror": true,
+        "zero_console_error": true,
+        "zero_overflow": true
+      },
+      "failures": 0,
+      "warnings": 0
+    },
+    {
+      "id": "lb",
+      "name": "L-B model_walk",
+      "file": "gui_testbed_lb_model_2026-07-17.json",
+      "summary": {
+        "actions": 23,
+        "states_covered": 8,
+        "events_fired": 23,
+        "failures": 0,
+        "warnings": 0
+      },
+      "bars": {
+        "all_states_reached": true,
+        "all_events_fired": true,
+        "zero_pageerror": true,
+        "zero_console_error": true,
+        "zero_overflow": true
+      },
+      "failures": 0,
+      "warnings": 0
+    },
+    {
+      "id": "lc",
+      "name": "L-C monkey",
+      "file": "gui_testbed_lc_monkey_2026-07-17.json",
+      "summary": {
+        "runs": 50,
+        "passed": 50,
+        "failed": 0,
+        "regression_seeds": 0,
+        "failures": 124
+      },
+      "bars": {
+        "zero_pageerror_across_matrix": true,
+        "every_failure_replay_confirmed": true
+      },
+      "failures": 124,
+      "warnings": 0
+    },
+    {
+      "id": "ld",
+      "name": "L-D resize_sweep",
+      "file": "gui_testbed_ld_resize_2026-07-17.json",
+      "summary": {
+        "actions": 129,
+        "widths": 101,
+        "zooms": 5,
+        "dprs": 3,
+        "failures": 1,
+        "warnings": 0
+      },
+      "bars": {
+        "zero_pageerror": true,
+        "zero_console_error": true,
+        "zero_overflow": false,
+        "mid_skeleton_no_shift": true
+      },
+      "failures": 1,
+      "warnings": 0
+    },
+    {
+      "id": "lf",
+      "name": "L-F a11y_scan (stretch)",
+      "file": "gui_testbed_lf_a11y_2026-07-17.json",
+      "summary": {
+        "screens_scanned": 5,
+        "total_violations": 174,
+        "distinct_rules": 5,
+        "by_impact": {
+          "critical": 25,
+          "serious": 149,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "bars": {
+        "measurement_only": true,
+        "violations": 174,
+        "distinct_rules": 5
+      },
+      "failures": 174,
+      "warnings": 0,
+      "note": "not a gate — recorded for remediation"
+    }
+  ],
+  "bars": {
+    "zero_pageerror_all_layers": true,
+    "zero_console_error_deterministic_layers": true,
+    "lb_all_states_reached": true,
+    "lb_all_events_fired": true,
+    "lc_zero_pageerror_across_matrix": true,
+    "lc_every_failure_replay_confirmed": true,
+    "ld_mid_skeleton_no_shift": true,
+    "ld_zero_overflow": false,
+    "all_layers_green": false,
+    "zero_overflow_la_lb": true,
+    "zero_overflow_deterministic_layers": true,
+    "lf_a11y_recorded": true
+  },
+  "note": "roll-up from the full-run per-layer JSONs (not run_all capped re-runs); run_all.mjs is the re-runnable orchestrator",
+  "summary": {
+    "layers_run": 5,
+    "layers_full_pass": 2,
+    "defects_found_and_fixed": 1,
+    "defect_fix_commit": "3836f64 (web: narrow-viewport main-overflow, found by L-D)",
+    "honest_partials": [
+      "L-D zero_overflow: 14px residual at width=320 (extreme edge, documented; zero overflow 336-1920px)"
+    ],
+    "a11y_violations_recorded": 174,
+    "a11y_by_impact": {
+      "critical": 25,
+      "serious": 149,
+      "moderate": 0,
+      "minor": 0
+    }
+  }
+}

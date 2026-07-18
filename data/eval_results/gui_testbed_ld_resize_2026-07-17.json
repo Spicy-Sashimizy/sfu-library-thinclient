@@ -1,0 +1,28 @@
+{
+  "layer": "L-D resize_sweep",
+  "date": "2026-07-17",
+  "wall_ms": 48610,
+  "summary": {
+    "actions": 129,
+    "widths": 101,
+    "zooms": 5,
+    "dprs": 3,
+    "failures": 1,
+    "warnings": 0
+  },
+  "mid_skeleton_no_shift": true,
+  "failures": [
+    {
+      "kind": "overflow",
+      "detail": "14px at width=320",
+      "t": 1784314233307
+    }
+  ],
+  "warnings": [],
+  "bars": {
+    "zero_pageerror": true,
+    "zero_console_error": true,
+    "zero_overflow": false,
+    "mid_skeleton_no_shift": true
+  }
+}

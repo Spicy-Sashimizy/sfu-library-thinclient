@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T04:04:34Z",
+    "port": 8185,
+    "soak_min": 30,
+    "qps": 0.3,
+    "mechanisms": {
+      "warmup": true,
+      "leg_breaker": true,
+      "overload_gate": true,
+      "shard_fault_boundary": true
+    }
+  },
+  "availability": 0.8222,
+  "error_budget": {
+    "total": 540,
+    "accepted": 540,
+    "accepted_ok": 444,
+    "sheds": 0,
+    "fails": 96,
+    "fail_rate": 0.1778
+  },
+  "latency_ms": {
+    "p50": 2633.5,
+    "p95": 3404.5,
+    "p99": 3543.5
+  },
+  "timeline": [
+    {
+      "t": "03:40:28",
+      "phase": "phase1_baseline_end",
+      "health": {
+        "status": "ok",
+        "available": true,
+        "warm": true,
+        "warmup": {
+          "warm": "warm",
+          "started_at": 1784258878.0066335,
+          "finished_at": 1784259267.8812454,
+          "duration_ms": 389894.0,
+          "queries_run": 24,
+          "error": null
+        },
+        "degraded_legs": [],
+        "leg_breaker": {
+          "bm25f": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "splade": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "dense": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          }
+        },
+        "legs": {
+          "bm25f": {
+            "configured": true,
+            "ok": true
+          },
+          "splade": {
+            "configured": "seismic",
+            "federation": "parallel"
+          },
+          "dense": {
+            "configured": true,
+            "ok": true
+          }
+        },
+        "federation": "parallel",
+        "backend": "seismic",
+        "pid": 647162,
+        "overload": {
+          "inflight": 1,
+          "max_inflight": 32,
+          "accept_queue": 32,
+          "stats": {
+            "shed": 0,
+            "accepted": 107
+          }
+        }
+      }
+    },
+    {
+      "t": "03:40:28",
+      "phase": "phase2_inject_overload_burst",
+      "note": "4x knee workers @20s"
+    },
+    {
+      "t": "03:40:44",
+      "phase": "phase2_overload_end",
+      "health": {
+        "status": "ok",
+        "available": true,
+        "warm": true,
+        "warmup": {
+          "warm": "warm",
+          "started_at": 1784258878.0066335,
+          "finished_at": 1784259267.8812454,
+          "duration_ms": 389894.0,
+          "queries_run": 24,
+          "error": null
+        },
+        "degraded_legs": [],
+        "leg_breaker": {
+          "bm25f": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "splade": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "dense": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          }
+        },
+        "legs": {
+          "bm25f": {
+            "configured": true,
+            "ok": true
+          },
+          "splade": {
+            "configured": "seismic",
+            "federation": "parallel"
+          },
+          "dense": {
+            "configured": true,
+            "ok": true
+          }
+        },
+        "federation": "parallel",
+        "backend": "seismic",
+        "pid": 647162,
+        "overload": {
+          "inflight": 1,
+          "max_inflight": 32,
+          "accept_queue": 32,
+          "stats": {
+            "shed": 33,
+            "accepted": 143
+          }
+        }
+      }
+    },
+    {
+      "t": "03:40:44",
+      "phase": "phase3_inject_sigkill",
+      "serve_pid": 647162
+    },
+    {
+      "t": "03:45:57",
+      "phase": "phase3_health_up",
+      "recovery_ms_up": 312856.0
+    },
+    {
+      "t": "03:45:57",
+      "phase": "phase3_warm_recovered",
+      "recovery_ms_warm": 312856.0
+    },
+    {
+      "t": "03:45:57",
+      "phase": "phase3_end",
+      "recovered_up": true,
+      "recovered_warm": true
+    },
+    {
+      "t": "03:50:27",
+      "phase": "phase4_final",
+      "health": {
+        "status": "ok",
+        "available": true,
+        "warm": true,
+        "warmup": {
+          "warm": "warm",
+          "started_at": 1784259647.889497,
+          "finished_at": 1784259956.7661836,
+          "duration_ms": 308894.0,
+          "queries_run": 24,
+          "error": null
+        },
+        "degraded_legs": [],
+        "leg_breaker": {
+          "bm25f": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "splade": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          },
+          "dense": {
+            "consec_fails": 0,
+            "open": false,
+            "probe_pending": false,
+            "last_fail_reason": null
+          }
+        },
+        "legs": {
+          "bm25f": {
+            "configured": true,
+            "ok": true
+          },
+          "splade": {
+            "configured": "seismic",
+            "federation": "parallel"
+          },
+          "dense": {
+            "configured": true,
+            "ok": true
+          }
+        },
+        "federation": "parallel",
+        "backend": "seismic",
+        "pid": 676723,
+        "overload": {
+          "inflight": 0,
+          "max_inflight": 32,
+          "accept_queue": 32,
+          "stats": {
+            "shed": 0,
+            "accepted": 81
+          }
+        }
+      }
+    }
+  ],
+  "bars": {
+    "a_availability_ge_95": false,
+    "b_every_fault_has_degradation_and_recovery_event": true,
+    "c_worst_phase_p95_le_5x_baseline": true
+  },
+  "verdict": "FAIL"
+}

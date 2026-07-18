@@ -1,0 +1,32 @@
+[q6] visited cache hit: visited_global_shard1of8_n100_k200.json (100 queries)
+[q6b] global_shard1of8: per-list pack walk ...
+[q6b] global_shard1of8: home-component scan ...
+[q6b] global_shard1of8 block_walk_canonical   ratio 0.376 (64k 0.352)
+[q6b] global_shard1of8 block_walk_hotfirst    ratio 0.385 (64k 0.364)
+[q6b] global_shard1of8 block_walk_coldfirst   ratio 0.636 (64k 0.611)
+[q6b] global_shard1of8 home_component         ratio 0.744 (64k 0.639)  [append-friendly]
+[q6b] global_shard1of8 home_component_val     ratio 0.712 (64k 0.636)  [append-friendly]
+[q6b] global_shard1of8 coaccess_sig_ceiling   ratio 0.348 (64k 0.313)
+[q6] visited cache hit: visited_global_shard2of8_n100_k200.json (100 queries)
+[q6b] global_shard2of8: per-list pack walk ...
+[q6b] global_shard2of8: home-component scan ...
+[q6b] global_shard2of8 block_walk_canonical   ratio 0.393 (64k 0.372)
+[q6b] global_shard2of8 block_walk_hotfirst    ratio 0.395 (64k 0.373)
+[q6b] global_shard2of8 block_walk_coldfirst   ratio 0.637 (64k 0.614)
+[q6b] global_shard2of8 home_component         ratio 0.743 (64k 0.638)  [append-friendly]
+[q6b] global_shard2of8 home_component_val     ratio 0.712 (64k 0.634)  [append-friendly]
+[q6b] global_shard2of8 coaccess_sig_ceiling   ratio 0.345 (64k 0.306)
+{
+  "worst_shard_page_ratio": {
+    "block_walk_canonical": 0.3927,
+    "block_walk_hotfirst": 0.3945,
+    "block_walk_coldfirst": 0.6367,
+    "home_component": 0.7436,
+    "home_component_val": 0.7123
+  },
+  "best_global": "block_walk_canonical",
+  "best_append_friendly": "home_component_val",
+  "chosen_order": "block_walk_canonical",
+  "chosen_is_append_friendly": false
+}
+result -> /workspaces/sfu-library-thinclient/data/eval_results/q6b_order_sweep_20260709.json

@@ -1,0 +1,34 @@
+{
+  "variant": "v3",
+  "shard": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap",
+  "gate_a_parity": {
+    "overlap@10_mean": 1.0,
+    "overlap@10_min": 1.0,
+    "n_queries": 100,
+    "bar": ">= 0.99",
+    "pass": true
+  },
+  "gate_b_warm_latency": {
+    "variant_warm_p50_ms": 1.69,
+    "native_warm_p50_ms": 1.768,
+    "ratio": 0.9559,
+    "bar": "<= 1.07",
+    "pass": true
+  },
+  "variant_cell": {
+    "label": "v3",
+    "cold_traverse_ms_p50": 66.17,
+    "warm_traverse_ms_p50": 1.69,
+    "warm_traverse_ms_mean": 1.761,
+    "majflt_cold_pass": 36364,
+    "prefloor_bytes": 33522341
+  },
+  "native_cell": {
+    "label": "native",
+    "cold_traverse_ms_p50": 72.78,
+    "warm_traverse_ms_p50": 1.768,
+    "warm_traverse_ms_mean": 1.863,
+    "majflt_cold_pass": 36362,
+    "prefloor_bytes": 33522341
+  }
+}

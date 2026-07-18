@@ -1,0 +1,946 @@
+{
+  "probe": "wi14_portable_bundle_versions",
+  "generated_utc": "2026-07-17",
+  "bundle_dir": "/workspaces/sfu-library-thinclient",
+  "channel": "stable",
+  "bundle_version": "1.0.0",
+  "artifacts": [
+    {
+      "group": "seismic_shards",
+      "shard": 0,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "b4958588d004b360",
+      "on_disk_gb_reported": 8.277840964,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "d1eee3b1f2bd46efa697e9136641ea05f59c1e1610f3e0c2671de95517dd4e37",
+          "bytes": 21878891,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 1,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "c4dc0bb750d8fbea",
+      "on_disk_gb_reported": 8.284486237,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "fda6e7e351e751db0ddff9356c273744f2ee1ecf5a04818ed278797fa1f03278",
+          "bytes": 21895908,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 2,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "6f8a6d2f4933fd02",
+      "on_disk_gb_reported": 8.278153527,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "650cbe5989190eecdf964c8c714be494b7298f3db1820989d6057184a78d0b8c",
+          "bytes": 21887765,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 3,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "6750f04772abd03d",
+      "on_disk_gb_reported": 8.280038376,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "ede7ea0add261b88db26e8ecf23f18488a7752199677d23afcc5f3caabfd1bf4",
+          "bytes": 21877467,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 4,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "2b14bfa93e6ddc0d",
+      "on_disk_gb_reported": 8.282114006,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "03b5960ed5df68efa3a3e073ef275a6dd5aad865dbde77b143078a3b176ec849",
+          "bytes": 21883843,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 5,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "c622374516668bde",
+      "on_disk_gb_reported": 8.279086375,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "009d800dc5a411a3609dda066fde8e723f21003166379482c3c69b94c5ddccf7",
+          "bytes": 21891309,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 6,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "4e43d0161e0c971e",
+      "on_disk_gb_reported": 8.277828101,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "f7f03768ef27935cef2771896e77e7b5496080700cf790c0c182d33795218e5b",
+          "bytes": 21882375,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "group": "seismic_shards",
+      "shard": 7,
+      "mmap_dir": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap",
+      "version": "e8-dvv2-e5-reorder-2026-07-14",
+      "dir_version": "a0bc4f02e4874a9c",
+      "on_disk_gb_reported": 8.278343742,
+      "files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/manifest.json",
+          "sha256": "360d464079df383c83ec2818a3bf0451ee5fe7d9958c19835cf0610614458a25",
+          "bytes": 21886693,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/spike/seismic_upstream/target/portable_so/v3/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6c88c8c7862720b05b0e0eee6747b6483ec8e47b48f6e4a7c8d9e9d7a354d57c",
+      "bytes": 2700288,
+      "group": "portable_so",
+      "version": "v3-portable-2026-07-16"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/splade_onnx_fused/.export_complete",
+      "sha256": "09cf3d6b3e5349fbb4e91858532c3ef6ac423d26dd7be6132b72110f734e7081",
+      "bytes": 141,
+      "group": "splade_model",
+      "version": "onnx-fused-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/splade_onnx_fused/config.json",
+      "sha256": "073200117c73e91d0debe95a700328fcfa5d2a1caf0d0bbf74486fda3e15561c",
+      "bytes": 618,
+      "group": "splade_model",
+      "version": "onnx-fused-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/splade_onnx_fused/model.onnx",
+      "sha256": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+      "bytes": 531854623,
+      "group": "splade_model",
+      "version": "onnx-fused-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/model.safetensors",
+      "sha256": "b016c342b0a719c5f832c83f40ffbf3bcc49ad1900cd044b8144a3a358fd69a4",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/optimizer_state.pt",
+      "sha256": "7bf5a08682665d5f8ec889256a077a691f385f7704a9ce697baafb562ce75c54",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_0/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/model.safetensors",
+      "sha256": "25b5bfc35f07a219d175b9ae62404e4463ed24f68253eb0beefc350949dc9ca0",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/optimizer_state.pt",
+      "sha256": "8327df08a66748859ac644219ea8619ae7d4ad791a8bd34674329fcf0722dfa2",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_1/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/model.safetensors",
+      "sha256": "1e975de65ccdeaabf4dc571ead137cdbc3c96943082b0df5068dd1db37ab9c65",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/optimizer_state.pt",
+      "sha256": "c5c64acabfefbe484f7369c5a7f999d0ca2814bded257bbd4c53430119d46d26",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/epoch_2/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/model.safetensors",
+      "sha256": "1e975de65ccdeaabf4dc571ead137cdbc3c96943082b0df5068dd1db37ab9c65",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/optimizer_state.pt",
+      "sha256": "c5c64acabfefbe484f7369c5a7f999d0ca2814bded257bbd4c53430119d46d26",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/latest/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/model.safetensors",
+      "sha256": "f8b07a432228f2cccc30e8a8bf1d288277c2a237efbef6f7259cefb4bf240ce9",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/optimizer_state.pt",
+      "sha256": "aaf93b8fad48c8760d28472cabfc339de2718d224801226cf10c55a825543a46",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_100/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/model.safetensors",
+      "sha256": "ae448d68226decbd80b718cab6366642232bf994ea940718ab2c28246db4aae0",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/optimizer_state.pt",
+      "sha256": "3ad3c802808b804fa8e2f772f9214e75a6e900b610f6659c6cc54e81bc2ffc7c",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_200/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/model.safetensors",
+      "sha256": "9b3167e59d2eb0c9a95575db3b6ed9a62bc364bcbd7618252e12f3dc3f87bdda",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/optimizer_state.pt",
+      "sha256": "333467edc5db976488fe817a4a5b0247d692ff714c38ab4e4534673dc81ce535",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_300/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/1_Pooling/config.json",
+      "sha256": "1abc669193fef51cb822e0449ab0094bc3d2dec748248ab9be3337c05b63129a",
+      "bytes": 89,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/README.md",
+      "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+      "bytes": 94783,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/model.safetensors",
+      "sha256": "722b1fdfee7309ade0028b1c23bbedb33678abed79e37c78d5d14741a35831ac",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/optimizer_state.pt",
+      "sha256": "cac990a4af78d33d91fbbd78f9927ef1aaf5840f39192b14ed7bec67769491d4",
+      "bytes": 265866092,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/step_400/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/training_state.json",
+      "sha256": "3f287bffa5df39bf26d36f82e6e83d2d40a5ba8d72928d41d569143ef7946fc9",
+      "bytes": 1347,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/checkpoints/training_status.json",
+      "sha256": "7afefc3fdc6779fa95413f76a3e3e1bf238711c12201a7ab603340568112b5c4",
+      "bytes": 224,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/config.json",
+      "sha256": "98fad585a266cd31954a97923401d745e971044cceb8edafde041057526980a4",
+      "bytes": 655,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/config_sentence_transformers.json",
+      "sha256": "a2650d9d9950058a10ad132b5916e4bbae20c59d19f0a2d0173f7f22944857b9",
+      "bytes": 283,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/model.safetensors",
+      "sha256": "1e975de65ccdeaabf4dc571ead137cdbc3c96943082b0df5068dd1db37ab9c65",
+      "bytes": 133462128,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/modules.json",
+      "sha256": "fa7d796a215e1b2416773062891923b191fc5a4849bc44e322997433c90f459c",
+      "bytes": 429,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/sentence_bert_config.json",
+      "sha256": "3084164002c0bca01b0259c5327123803fce32e660a57feb93184ffead186fc8",
+      "bytes": 241,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/special_tokens_map.json",
+      "sha256": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+      "bytes": 695,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/tokenizer.json",
+      "sha256": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e",
+      "bytes": 711781,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/tokenizer_config.json",
+      "sha256": "f7cef69b56821ba975a920108f1bcc488e9287206a6c40d44dd7c3e8acc0d7e8",
+      "bytes": 1540,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5/vocab.txt",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+      "bytes": 231508,
+      "group": "dense_model",
+      "version": "v5-2026-06-19"
+    },
+    {
+      "group": "tantivy_bm25f",
+      "dir_version": "fd864c7ad61f75f9",
+      "file_count": 385,
+      "bytes": 114794691737,
+      "mode": "dir-version-pointer (no full-data sha256 \u2014 GB-scale)",
+      "version": "data-2026-06-25"
+    },
+    {
+      "group": "dense_usearch",
+      "dir_version": "e3b0c44298fc1c14",
+      "file_count": 6,
+      "bytes": 357796242,
+      "mode": "dir-version-pointer (no full-data sha256 \u2014 GB-scale)",
+      "version": "data-2026-06-25"
+    }
+  ],
+  "artifact_count": 123,
+  "total_bytes": 119024511144
+}

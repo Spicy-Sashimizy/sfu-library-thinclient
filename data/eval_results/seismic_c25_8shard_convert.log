@@ -1,0 +1,19 @@
+18:28:32 INFO C2.5 shard->mmap conversion plan: 8 shards (abort RSS 20 GB, n_queries=10)
+18:28:32 INFO converting /tmp/seismic_testbed/index/plan01/global_shard0of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard0of8.mmap
+18:29:34 INFO   done in 62s (VmRSS peak 9.47 GB) parity=True anon_delta=0.043 status=OK
+18:29:34 INFO converting /tmp/seismic_testbed/index/plan01/global_shard1of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard1of8.mmap
+18:30:24 INFO   done in 50s (VmRSS peak 9.83 GB) parity=True anon_delta=0.044 status=OK
+18:30:24 INFO converting /tmp/seismic_testbed/index/plan01/global_shard2of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard2of8.mmap
+18:31:12 INFO   done in 48s (VmRSS peak 9.88 GB) parity=True anon_delta=0.044 status=OK
+18:31:12 INFO converting /tmp/seismic_testbed/index/plan01/global_shard3of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard3of8.mmap
+18:32:16 INFO   done in 64s (VmRSS peak 8.78 GB) parity=True anon_delta=0.044 status=OK
+18:32:16 INFO converting /tmp/seismic_testbed/index/plan01/global_shard4of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard4of8.mmap
+18:33:04 INFO   done in 48s (VmRSS peak 9.81 GB) parity=True anon_delta=0.043 status=OK
+18:33:04 INFO converting /tmp/seismic_testbed/index/plan01/global_shard5of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard5of8.mmap
+18:33:54 INFO   done in 50s (VmRSS peak 9.86 GB) parity=True anon_delta=0.044 status=OK
+18:33:54 INFO converting /tmp/seismic_testbed/index/plan01/global_shard6of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard6of8.mmap
+18:34:46 INFO   done in 52s (VmRSS peak 9.86 GB) parity=True anon_delta=0.044 status=OK
+18:34:46 INFO converting /tmp/seismic_testbed/index/plan01/global_shard7of8.index.seismic -> /tmp/seismic_testbed/index/plan01/global_shard7of8.mmap
+18:35:38 INFO   done in 52s (VmRSS peak 8.93 GB) parity=True anon_delta=0.044 status=OK
+18:35:38 INFO === wrote manifest data/eval_results/seismic_c25_shards_150m_mmap.json ===
+{"manifest": "data/eval_results/seismic_c25_shards_150m_mmap.json", "shards_ok": 8, "shards_attempted": 8, "peak_rss_gb_max": 9.878, "c25_serve_verdict": "C2.5 150M_MMAP_READY"}

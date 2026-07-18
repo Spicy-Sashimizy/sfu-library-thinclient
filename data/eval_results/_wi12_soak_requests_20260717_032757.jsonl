@@ -1,0 +1,540 @@
+{"i": 0, "t": "03:34:28", "t_epoch": 0.0, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 520.0, "count": 10, "degraded": []}
+{"i": 1, "t": "03:34:35", "t_epoch": 6.8, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2834.4, "count": 10, "degraded": []}
+{"i": 2, "t": "03:34:38", "t_epoch": 10.0, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3108.5, "count": 10, "degraded": []}
+{"i": 3, "t": "03:34:41", "t_epoch": 13.4, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 519.2, "count": 10, "degraded": []}
+{"i": 4, "t": "03:34:45", "t_epoch": 16.7, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2995.0, "count": 10, "degraded": []}
+{"i": 5, "t": "03:34:48", "t_epoch": 20.0, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 2133.2, "count": 10, "degraded": []}
+{"i": 6, "t": "03:34:51", "t_epoch": 23.4, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2305.2, "count": 10, "degraded": []}
+{"i": 7, "t": "03:34:54", "t_epoch": 26.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3079.7, "count": 10, "degraded": []}
+{"i": 8, "t": "03:34:58", "t_epoch": 29.9, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3543.5, "count": 10, "degraded": []}
+{"i": 9, "t": "03:35:01", "t_epoch": 33.5, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 346.4, "count": 10, "degraded": []}
+{"i": 10, "t": "03:35:04", "t_epoch": 36.6, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3402.1, "count": 10, "degraded": []}
+{"i": 11, "t": "03:35:08", "t_epoch": 40.1, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3160.7, "count": 10, "degraded": []}
+{"i": 12, "t": "03:35:11", "t_epoch": 43.3, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 314.9, "count": 10, "degraded": []}
+{"i": 13, "t": "03:35:15", "t_epoch": 46.8, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2987.9, "count": 10, "degraded": []}
+{"i": 14, "t": "03:35:18", "t_epoch": 50.0, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2749.6, "count": 10, "degraded": []}
+{"i": 15, "t": "03:35:21", "t_epoch": 53.3, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 306.7, "count": 10, "degraded": []}
+{"i": 16, "t": "03:35:24", "t_epoch": 56.6, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2624.6, "count": 10, "degraded": []}
+{"i": 17, "t": "03:35:28", "t_epoch": 60.0, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3521.9, "count": 10, "degraded": []}
+{"i": 18, "t": "03:35:31", "t_epoch": 63.5, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 234.3, "count": 10, "degraded": []}
+{"i": 19, "t": "03:35:35", "t_epoch": 66.7, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2357.0, "count": 10, "degraded": []}
+{"i": 20, "t": "03:35:38", "t_epoch": 70.0, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 415.9, "count": 10, "degraded": []}
+{"i": 21, "t": "03:35:41", "t_epoch": 73.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2802.3, "count": 10, "degraded": []}
+{"i": 22, "t": "03:35:45", "t_epoch": 76.7, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2982.9, "count": 10, "degraded": []}
+{"i": 23, "t": "03:35:48", "t_epoch": 79.9, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 400.0, "count": 10, "degraded": []}
+{"i": 24, "t": "03:35:51", "t_epoch": 83.3, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2918.6, "count": 10, "degraded": []}
+{"i": 25, "t": "03:35:55", "t_epoch": 86.7, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1859.1, "count": 10, "degraded": []}
+{"i": 26, "t": "03:35:58", "t_epoch": 90.0, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2327.6, "count": 10, "degraded": []}
+{"i": 27, "t": "03:36:01", "t_epoch": 93.3, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2923.6, "count": 10, "degraded": []}
+{"i": 28, "t": "03:36:04", "t_epoch": 96.6, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3301.3, "count": 10, "degraded": []}
+{"i": 29, "t": "03:36:08", "t_epoch": 100.0, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 329.9, "count": 10, "degraded": []}
+{"i": 30, "t": "03:36:11", "t_epoch": 103.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3245.1, "count": 10, "degraded": []}
+{"i": 31, "t": "03:36:15", "t_epoch": 106.7, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2971.7, "count": 10, "degraded": []}
+{"i": 32, "t": "03:36:18", "t_epoch": 109.9, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 251.2, "count": 10, "degraded": []}
+{"i": 33, "t": "03:36:21", "t_epoch": 113.3, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2984.8, "count": 10, "degraded": []}
+{"i": 34, "t": "03:36:25", "t_epoch": 116.7, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2574.3, "count": 10, "degraded": []}
+{"i": 35, "t": "03:36:28", "t_epoch": 120.0, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 286.7, "count": 10, "degraded": []}
+{"i": 36, "t": "03:36:31", "t_epoch": 123.3, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2631.0, "count": 10, "degraded": []}
+{"i": 37, "t": "03:36:35", "t_epoch": 126.7, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3348.7, "count": 10, "degraded": []}
+{"i": 38, "t": "03:36:38", "t_epoch": 130.0, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 207.3, "count": 10, "degraded": []}
+{"i": 39, "t": "03:36:41", "t_epoch": 133.4, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2359.9, "count": 10, "degraded": []}
+{"i": 40, "t": "03:36:45", "t_epoch": 136.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 422.3, "count": 10, "degraded": []}
+{"i": 41, "t": "03:36:48", "t_epoch": 140.1, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2880.1, "count": 10, "degraded": []}
+{"i": 42, "t": "03:36:51", "t_epoch": 143.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2963.3, "count": 10, "degraded": []}
+{"i": 43, "t": "03:36:55", "t_epoch": 146.7, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 374.8, "count": 10, "degraded": []}
+{"i": 44, "t": "03:36:58", "t_epoch": 150.0, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3041.5, "count": 10, "degraded": []}
+{"i": 45, "t": "03:37:01", "t_epoch": 153.4, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1864.9, "count": 10, "degraded": []}
+{"i": 46, "t": "03:37:05", "t_epoch": 156.7, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2260.1, "count": 10, "degraded": []}
+{"i": 47, "t": "03:37:08", "t_epoch": 160.1, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3011.1, "count": 10, "degraded": []}
+{"i": 48, "t": "03:37:11", "t_epoch": 163.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3355.9, "count": 10, "degraded": []}
+{"i": 49, "t": "03:37:15", "t_epoch": 166.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 340.0, "count": 10, "degraded": []}
+{"i": 50, "t": "03:37:18", "t_epoch": 170.0, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3324.9, "count": 10, "degraded": []}
+{"i": 51, "t": "03:37:21", "t_epoch": 173.4, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2989.0, "count": 10, "degraded": []}
+{"i": 52, "t": "03:37:24", "t_epoch": 176.6, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 261.0, "count": 10, "degraded": []}
+{"i": 53, "t": "03:37:28", "t_epoch": 180.0, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3042.4, "count": 10, "degraded": []}
+{"i": 54, "t": "03:37:31", "t_epoch": 183.4, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2589.1, "count": 10, "degraded": []}
+{"i": 55, "t": "03:37:34", "t_epoch": 186.6, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 277.1, "count": 10, "degraded": []}
+{"i": 56, "t": "03:37:38", "t_epoch": 190.1, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2709.7, "count": 10, "degraded": []}
+{"i": 57, "t": "03:37:41", "t_epoch": 193.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3392.9, "count": 10, "degraded": []}
+{"i": 58, "t": "03:37:45", "t_epoch": 196.7, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 207.8, "count": 10, "degraded": []}
+{"i": 59, "t": "03:37:48", "t_epoch": 199.9, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2429.0, "count": 10, "degraded": []}
+{"i": 60, "t": "03:37:51", "t_epoch": 203.3, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 417.5, "count": 10, "degraded": []}
+{"i": 61, "t": "03:37:54", "t_epoch": 206.6, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2970.7, "count": 10, "degraded": []}
+{"i": 62, "t": "03:37:58", "t_epoch": 209.9, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3201.4, "count": 10, "degraded": []}
+{"i": 63, "t": "03:38:01", "t_epoch": 213.3, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 394.4, "count": 10, "degraded": []}
+{"i": 64, "t": "03:38:05", "t_epoch": 216.7, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3027.3, "count": 10, "degraded": []}
+{"i": 65, "t": "03:38:08", "t_epoch": 220.0, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1993.5, "count": 10, "degraded": []}
+{"i": 66, "t": "03:38:11", "t_epoch": 223.4, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2351.7, "count": 10, "degraded": []}
+{"i": 67, "t": "03:38:14", "t_epoch": 226.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2990.6, "count": 10, "degraded": []}
+{"i": 68, "t": "03:38:18", "t_epoch": 230.0, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3604.4, "count": 10, "degraded": []}
+{"i": 69, "t": "03:38:22", "t_epoch": 233.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 338.7, "count": 10, "degraded": []}
+{"i": 70, "t": "03:38:25", "t_epoch": 236.7, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3396.3, "count": 10, "degraded": []}
+{"i": 71, "t": "03:38:28", "t_epoch": 240.2, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3144.1, "count": 10, "degraded": []}
+{"i": 72, "t": "03:38:31", "t_epoch": 243.4, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 249.2, "count": 10, "degraded": []}
+{"i": 73, "t": "03:38:34", "t_epoch": 246.6, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2985.0, "count": 10, "degraded": []}
+{"i": 74, "t": "03:38:38", "t_epoch": 250.1, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2637.7, "count": 10, "degraded": []}
+{"i": 75, "t": "03:38:41", "t_epoch": 253.2, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 277.4, "count": 10, "degraded": []}
+{"i": 76, "t": "03:38:44", "t_epoch": 256.6, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2643.1, "count": 10, "degraded": []}
+{"i": 77, "t": "03:38:48", "t_epoch": 259.9, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3498.5, "count": 10, "degraded": []}
+{"i": 78, "t": "03:38:51", "t_epoch": 263.4, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 210.9, "count": 10, "degraded": []}
+{"i": 79, "t": "03:38:55", "t_epoch": 266.7, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2324.7, "count": 10, "degraded": []}
+{"i": 80, "t": "03:38:58", "t_epoch": 269.9, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 415.8, "count": 10, "degraded": []}
+{"i": 81, "t": "03:39:01", "t_epoch": 273.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2791.9, "count": 10, "degraded": []}
+{"i": 82, "t": "03:39:05", "t_epoch": 276.7, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3024.8, "count": 10, "degraded": []}
+{"i": 83, "t": "03:39:08", "t_epoch": 280.0, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 393.9, "count": 10, "degraded": []}
+{"i": 84, "t": "03:39:11", "t_epoch": 283.4, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2885.1, "count": 10, "degraded": []}
+{"i": 85, "t": "03:39:15", "t_epoch": 286.8, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1861.5, "count": 10, "degraded": []}
+{"i": 86, "t": "03:39:18", "t_epoch": 290.1, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2324.6, "count": 10, "degraded": []}
+{"i": 87, "t": "03:39:21", "t_epoch": 293.4, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2969.8, "count": 10, "degraded": []}
+{"i": 88, "t": "03:39:25", "t_epoch": 296.8, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3271.9, "count": 10, "degraded": []}
+{"i": 89, "t": "03:39:28", "t_epoch": 300.1, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 324.8, "count": 10, "degraded": []}
+{"i": 90, "t": "03:39:31", "t_epoch": 303.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3231.8, "count": 10, "degraded": []}
+{"i": 91, "t": "03:39:34", "t_epoch": 306.6, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2997.2, "count": 10, "degraded": []}
+{"i": 92, "t": "03:39:38", "t_epoch": 310.0, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 257.1, "count": 10, "degraded": []}
+{"i": 93, "t": "03:39:41", "t_epoch": 313.3, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2943.5, "count": 10, "degraded": []}
+{"i": 94, "t": "03:39:44", "t_epoch": 316.6, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2591.0, "count": 10, "degraded": []}
+{"i": 95, "t": "03:39:48", "t_epoch": 320.0, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 282.0, "count": 10, "degraded": []}
+{"i": 96, "t": "03:39:51", "t_epoch": 323.4, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2633.5, "count": 10, "degraded": []}
+{"i": 97, "t": "03:39:54", "t_epoch": 326.6, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3434.2, "count": 10, "degraded": []}
+{"i": 98, "t": "03:39:58", "t_epoch": 330.0, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 226.4, "count": 10, "degraded": []}
+{"i": 99, "t": "03:40:01", "t_epoch": 333.4, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2329.2, "count": 10, "degraded": []}
+{"i": 100, "t": "03:40:05", "t_epoch": 336.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 410.8, "count": 10, "degraded": []}
+{"i": 101, "t": "03:40:08", "t_epoch": 340.0, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2870.3, "count": 10, "degraded": []}
+{"i": 102, "t": "03:40:11", "t_epoch": 343.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3095.7, "count": 10, "degraded": []}
+{"i": 103, "t": "03:40:15", "t_epoch": 346.7, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 388.2, "count": 10, "degraded": []}
+{"i": 104, "t": "03:40:18", "t_epoch": 350.0, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3108.7, "count": 10, "degraded": []}
+{"i": 105, "t": "03:40:21", "t_epoch": 353.4, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1906.6, "count": 10, "degraded": []}
+{"i": 106, "t": "03:40:25", "t_epoch": 356.7, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2284.8, "count": 10, "degraded": []}
+{"i": 107, "t": "03:40:28", "t_epoch": 360.0, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 9121.3, "count": 10, "degraded": []}
+{"i": 108, "t": "03:40:37", "t_epoch": 369.1, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 4651.7, "count": 10, "degraded": []}
+{"i": 109, "t": "03:40:42", "t_epoch": 373.8, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 327.2, "count": 10, "degraded": []}
+{"i": 110, "t": "03:40:42", "t_epoch": 374.2, "q": "How does the land back movement relate t", "ok": false, "status": 0, "ms": 2900.4, "error": "RemoteDisconnected:Remote end closed connection without response"}
+{"i": 111, "t": "03:40:45", "t_epoch": 377.2, "q": "What role does the land back movement pl", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 112, "t": "03:40:45", "t_epoch": 377.2, "q": "housing affordability crisis Metro Vanco", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 113, "t": "03:40:48", "t_epoch": 380.0, "q": "What factors are contributing to the hou", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 114, "t": "03:40:51", "t_epoch": 383.3, "q": "How is the housing affordability crisis ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 115, "t": "03:40:55", "t_epoch": 386.7, "q": "Canadian immigration settlement services", "ok": false, "status": 0, "ms": 0.3, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 116, "t": "03:40:58", "t_epoch": 390.1, "q": "How do Canadian settlement services for ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 117, "t": "03:41:01", "t_epoch": 393.4, "q": "What is the relationship between Canada'", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 118, "t": "03:41:05", "t_epoch": 396.7, "q": "BC provincial politics electoral reform ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 119, "t": "03:41:08", "t_epoch": 400.0, "q": "What electoral reform referendums has Br", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 120, "t": "03:41:11", "t_epoch": 403.4, "q": "indigenous language revitalization First", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 121, "t": "03:41:15", "t_epoch": 406.8, "q": "What initiatives and programs exist to r", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 122, "t": "03:41:18", "t_epoch": 409.9, "q": "How are First Nations in British Columbi", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 123, "t": "03:41:21", "t_epoch": 413.3, "q": "residential school trauma intergeneratio", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 124, "t": "03:41:24", "t_epoch": 416.6, "q": "What are the intergenerational effects o", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 125, "t": "03:41:28", "t_epoch": 420.0, "q": "How does trauma from residential schools", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 126, "t": "03:41:31", "t_epoch": 423.3, "q": "Truth and Reconciliation Commission call", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 127, "t": "03:41:35", "t_epoch": 426.7, "q": "How have Canadian institutions and gover", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 128, "t": "03:41:38", "t_epoch": 430.0, "q": "What progress has Canada made in respond", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 129, "t": "03:41:41", "t_epoch": 433.3, "q": "land back movement Indigenous rights tre", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 130, "t": "03:41:44", "t_epoch": 436.6, "q": "How does the land back movement relate t", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 131, "t": "03:41:48", "t_epoch": 439.9, "q": "What role does the land back movement pl", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 132, "t": "03:41:51", "t_epoch": 443.3, "q": "housing affordability crisis Metro Vanco", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 133, "t": "03:41:55", "t_epoch": 446.7, "q": "What factors are contributing to the hou", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 134, "t": "03:41:58", "t_epoch": 450.1, "q": "How is the housing affordability crisis ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 135, "t": "03:42:01", "t_epoch": 453.3, "q": "Canadian immigration settlement services", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 136, "t": "03:42:04", "t_epoch": 456.6, "q": "How do Canadian settlement services for ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 137, "t": "03:42:08", "t_epoch": 459.9, "q": "What is the relationship between Canada'", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 138, "t": "03:42:11", "t_epoch": 463.3, "q": "BC provincial politics electoral reform ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 139, "t": "03:42:15", "t_epoch": 466.7, "q": "What electoral reform referendums has Br", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 140, "t": "03:42:18", "t_epoch": 470.0, "q": "indigenous language revitalization First", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 141, "t": "03:42:21", "t_epoch": 473.4, "q": "What initiatives and programs exist to r", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 142, "t": "03:42:25", "t_epoch": 476.7, "q": "How are First Nations in British Columbi", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 143, "t": "03:42:28", "t_epoch": 480.0, "q": "residential school trauma intergeneratio", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 144, "t": "03:42:31", "t_epoch": 483.3, "q": "What are the intergenerational effects o", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 145, "t": "03:42:34", "t_epoch": 486.6, "q": "How does trauma from residential schools", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 146, "t": "03:42:38", "t_epoch": 490.0, "q": "Truth and Reconciliation Commission call", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 147, "t": "03:42:41", "t_epoch": 493.4, "q": "How have Canadian institutions and gover", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 148, "t": "03:42:45", "t_epoch": 496.7, "q": "What progress has Canada made in respond", "ok": false, "status": 0, "ms": 0.3, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 149, "t": "03:42:48", "t_epoch": 500.0, "q": "land back movement Indigenous rights tre", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 150, "t": "03:42:51", "t_epoch": 503.4, "q": "How does the land back movement relate t", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 151, "t": "03:42:54", "t_epoch": 506.6, "q": "What role does the land back movement pl", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 152, "t": "03:42:58", "t_epoch": 510.1, "q": "housing affordability crisis Metro Vanco", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 153, "t": "03:43:01", "t_epoch": 513.3, "q": "What factors are contributing to the hou", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 154, "t": "03:43:04", "t_epoch": 516.6, "q": "How is the housing affordability crisis ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 155, "t": "03:43:08", "t_epoch": 520.1, "q": "Canadian immigration settlement services", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 156, "t": "03:43:11", "t_epoch": 523.3, "q": "How do Canadian settlement services for ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 157, "t": "03:43:15", "t_epoch": 526.7, "q": "What is the relationship between Canada'", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 158, "t": "03:43:18", "t_epoch": 530.1, "q": "BC provincial politics electoral reform ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 159, "t": "03:43:21", "t_epoch": 533.4, "q": "What electoral reform referendums has Br", "ok": false, "status": 0, "ms": 0.5, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 160, "t": "03:43:25", "t_epoch": 536.7, "q": "indigenous language revitalization First", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 161, "t": "03:43:28", "t_epoch": 539.9, "q": "What initiatives and programs exist to r", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 162, "t": "03:43:31", "t_epoch": 543.3, "q": "How are First Nations in British Columbi", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 163, "t": "03:43:35", "t_epoch": 546.7, "q": "residential school trauma intergeneratio", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 164, "t": "03:43:38", "t_epoch": 550.0, "q": "What are the intergenerational effects o", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 165, "t": "03:43:41", "t_epoch": 553.4, "q": "How does trauma from residential schools", "ok": false, "status": 0, "ms": 0.3, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 166, "t": "03:43:44", "t_epoch": 556.6, "q": "Truth and Reconciliation Commission call", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 167, "t": "03:43:48", "t_epoch": 560.0, "q": "How have Canadian institutions and gover", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 168, "t": "03:43:51", "t_epoch": 563.4, "q": "What progress has Canada made in respond", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 169, "t": "03:43:54", "t_epoch": 566.6, "q": "land back movement Indigenous rights tre", "ok": false, "status": 0, "ms": 0.3, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 170, "t": "03:43:58", "t_epoch": 570.0, "q": "How does the land back movement relate t", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 171, "t": "03:44:01", "t_epoch": 573.4, "q": "What role does the land back movement pl", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 172, "t": "03:44:04", "t_epoch": 576.6, "q": "housing affordability crisis Metro Vanco", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 173, "t": "03:44:08", "t_epoch": 580.0, "q": "What factors are contributing to the hou", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 174, "t": "03:44:11", "t_epoch": 583.4, "q": "How is the housing affordability crisis ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 175, "t": "03:44:14", "t_epoch": 586.6, "q": "Canadian immigration settlement services", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 176, "t": "03:44:18", "t_epoch": 590.0, "q": "How do Canadian settlement services for ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 177, "t": "03:44:21", "t_epoch": 593.4, "q": "What is the relationship between Canada'", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 178, "t": "03:44:25", "t_epoch": 596.7, "q": "BC provincial politics electoral reform ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 179, "t": "03:44:28", "t_epoch": 600.0, "q": "What electoral reform referendums has Br", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 180, "t": "03:44:31", "t_epoch": 603.3, "q": "indigenous language revitalization First", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 181, "t": "03:44:35", "t_epoch": 606.7, "q": "What initiatives and programs exist to r", "ok": false, "status": 0, "ms": 0.5, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 182, "t": "03:44:38", "t_epoch": 609.9, "q": "How are First Nations in British Columbi", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 183, "t": "03:44:41", "t_epoch": 613.4, "q": "residential school trauma intergeneratio", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 184, "t": "03:44:44", "t_epoch": 616.6, "q": "What are the intergenerational effects o", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 185, "t": "03:44:48", "t_epoch": 620.1, "q": "How does trauma from residential schools", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 186, "t": "03:44:51", "t_epoch": 623.4, "q": "Truth and Reconciliation Commission call", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 187, "t": "03:44:54", "t_epoch": 626.6, "q": "How have Canadian institutions and gover", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 188, "t": "03:44:58", "t_epoch": 630.0, "q": "What progress has Canada made in respond", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 189, "t": "03:45:01", "t_epoch": 633.3, "q": "land back movement Indigenous rights tre", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 190, "t": "03:45:05", "t_epoch": 636.7, "q": "How does the land back movement relate t", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 191, "t": "03:45:08", "t_epoch": 640.0, "q": "What role does the land back movement pl", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 192, "t": "03:45:11", "t_epoch": 643.3, "q": "housing affordability crisis Metro Vanco", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 193, "t": "03:45:14", "t_epoch": 646.6, "q": "What factors are contributing to the hou", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 194, "t": "03:45:18", "t_epoch": 650.0, "q": "How is the housing affordability crisis ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 195, "t": "03:45:21", "t_epoch": 653.3, "q": "Canadian immigration settlement services", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 196, "t": "03:45:24", "t_epoch": 656.6, "q": "How do Canadian settlement services for ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 197, "t": "03:45:28", "t_epoch": 660.0, "q": "What is the relationship between Canada'", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 198, "t": "03:45:31", "t_epoch": 663.3, "q": "BC provincial politics electoral reform ", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 199, "t": "03:45:34", "t_epoch": 666.6, "q": "What electoral reform referendums has Br", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 200, "t": "03:45:38", "t_epoch": 670.1, "q": "indigenous language revitalization First", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 201, "t": "03:45:41", "t_epoch": 673.3, "q": "What initiatives and programs exist to r", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 202, "t": "03:45:45", "t_epoch": 676.7, "q": "How are First Nations in British Columbi", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 203, "t": "03:45:48", "t_epoch": 680.0, "q": "residential school trauma intergeneratio", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 204, "t": "03:45:51", "t_epoch": 683.4, "q": "What are the intergenerational effects o", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 205, "t": "03:45:55", "t_epoch": 686.7, "q": "How does trauma from residential schools", "ok": false, "status": 0, "ms": 0.2, "error": "URLError:<urlopen error [Errno 111] Connection refused>"}
+{"i": 206, "t": "03:45:58", "t_epoch": 690.0, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2390.8, "count": 10, "degraded": []}
+{"i": 207, "t": "03:46:01", "t_epoch": 693.2, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3007.6, "count": 10, "degraded": []}
+{"i": 208, "t": "03:46:05", "t_epoch": 696.7, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3404.5, "count": 10, "degraded": []}
+{"i": 209, "t": "03:46:08", "t_epoch": 700.1, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 335.6, "count": 10, "degraded": []}
+{"i": 210, "t": "03:46:11", "t_epoch": 703.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3263.8, "count": 10, "degraded": []}
+{"i": 211, "t": "03:46:14", "t_epoch": 706.6, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3022.0, "count": 10, "degraded": []}
+{"i": 212, "t": "03:46:18", "t_epoch": 710.0, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 265.4, "count": 10, "degraded": []}
+{"i": 213, "t": "03:46:21", "t_epoch": 713.4, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3004.6, "count": 10, "degraded": []}
+{"i": 214, "t": "03:46:25", "t_epoch": 716.8, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2620.1, "count": 10, "degraded": []}
+{"i": 215, "t": "03:46:28", "t_epoch": 720.1, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 265.0, "count": 10, "degraded": []}
+{"i": 216, "t": "03:46:31", "t_epoch": 723.4, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2612.3, "count": 10, "degraded": []}
+{"i": 217, "t": "03:46:35", "t_epoch": 726.7, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3400.5, "count": 10, "degraded": []}
+{"i": 218, "t": "03:46:38", "t_epoch": 730.1, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 207.4, "count": 10, "degraded": []}
+{"i": 219, "t": "03:46:41", "t_epoch": 733.3, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2350.9, "count": 10, "degraded": []}
+{"i": 220, "t": "03:46:44", "t_epoch": 736.6, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 404.9, "count": 10, "degraded": []}
+{"i": 221, "t": "03:46:48", "t_epoch": 740.1, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 3027.5, "count": 10, "degraded": []}
+{"i": 222, "t": "03:46:51", "t_epoch": 743.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3021.0, "count": 10, "degraded": []}
+{"i": 223, "t": "03:46:54", "t_epoch": 746.6, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 389.8, "count": 10, "degraded": []}
+{"i": 224, "t": "03:46:58", "t_epoch": 749.9, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3081.9, "count": 10, "degraded": []}
+{"i": 225, "t": "03:47:01", "t_epoch": 753.3, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1959.1, "count": 10, "degraded": []}
+{"i": 226, "t": "03:47:05", "t_epoch": 756.8, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2286.5, "count": 10, "degraded": []}
+{"i": 227, "t": "03:47:08", "t_epoch": 760.1, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3031.4, "count": 10, "degraded": []}
+{"i": 228, "t": "03:47:11", "t_epoch": 763.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3279.1, "count": 10, "degraded": []}
+{"i": 229, "t": "03:47:14", "t_epoch": 766.6, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 323.1, "count": 10, "degraded": []}
+{"i": 230, "t": "03:47:18", "t_epoch": 770.1, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3321.8, "count": 10, "degraded": []}
+{"i": 231, "t": "03:47:21", "t_epoch": 773.5, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2974.1, "count": 10, "degraded": []}
+{"i": 232, "t": "03:47:25", "t_epoch": 776.7, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 252.8, "count": 10, "degraded": []}
+{"i": 233, "t": "03:47:28", "t_epoch": 780.1, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3005.5, "count": 10, "degraded": []}
+{"i": 234, "t": "03:47:31", "t_epoch": 783.4, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2607.9, "count": 10, "degraded": []}
+{"i": 235, "t": "03:47:35", "t_epoch": 786.7, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 272.2, "count": 10, "degraded": []}
+{"i": 236, "t": "03:47:38", "t_epoch": 790.1, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2691.8, "count": 10, "degraded": []}
+{"i": 237, "t": "03:47:41", "t_epoch": 793.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3455.0, "count": 10, "degraded": []}
+{"i": 238, "t": "03:47:45", "t_epoch": 796.8, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 211.5, "count": 10, "degraded": []}
+{"i": 239, "t": "03:47:48", "t_epoch": 800.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2414.8, "count": 10, "degraded": []}
+{"i": 240, "t": "03:47:51", "t_epoch": 803.4, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 430.7, "count": 10, "degraded": []}
+{"i": 241, "t": "03:47:54", "t_epoch": 806.6, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2813.1, "count": 10, "degraded": []}
+{"i": 242, "t": "03:47:58", "t_epoch": 810.0, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3030.2, "count": 10, "degraded": []}
+{"i": 243, "t": "03:48:01", "t_epoch": 813.2, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 383.5, "count": 10, "degraded": []}
+{"i": 244, "t": "03:48:04", "t_epoch": 816.6, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2899.9, "count": 10, "degraded": []}
+{"i": 245, "t": "03:48:08", "t_epoch": 820.0, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1842.3, "count": 10, "degraded": []}
+{"i": 246, "t": "03:48:11", "t_epoch": 823.4, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2282.0, "count": 10, "degraded": []}
+{"i": 247, "t": "03:48:14", "t_epoch": 826.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2937.6, "count": 10, "degraded": []}
+{"i": 248, "t": "03:48:18", "t_epoch": 830.0, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3454.4, "count": 10, "degraded": []}
+{"i": 249, "t": "03:48:21", "t_epoch": 833.4, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 328.1, "count": 10, "degraded": []}
+{"i": 250, "t": "03:48:24", "t_epoch": 836.6, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3232.4, "count": 10, "degraded": []}
+{"i": 251, "t": "03:48:28", "t_epoch": 840.0, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3135.6, "count": 10, "degraded": []}
+{"i": 252, "t": "03:48:31", "t_epoch": 843.2, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 261.3, "count": 10, "degraded": []}
+{"i": 253, "t": "03:48:34", "t_epoch": 846.6, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2939.7, "count": 10, "degraded": []}
+{"i": 254, "t": "03:48:38", "t_epoch": 850.1, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2643.0, "count": 10, "degraded": []}
+{"i": 255, "t": "03:48:41", "t_epoch": 853.4, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 297.6, "count": 10, "degraded": []}
+{"i": 256, "t": "03:48:45", "t_epoch": 856.7, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 3632.6, "count": 10, "degraded": []}
+{"i": 257, "t": "03:48:48", "t_epoch": 860.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3468.3, "count": 10, "degraded": []}
+{"i": 258, "t": "03:48:52", "t_epoch": 863.8, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 204.4, "count": 10, "degraded": []}
+{"i": 259, "t": "03:48:55", "t_epoch": 866.7, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2360.7, "count": 10, "degraded": []}
+{"i": 260, "t": "03:48:58", "t_epoch": 870.0, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 405.9, "count": 10, "degraded": []}
+{"i": 261, "t": "03:49:01", "t_epoch": 873.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2808.6, "count": 10, "degraded": []}
+{"i": 262, "t": "03:49:05", "t_epoch": 876.7, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3002.1, "count": 10, "degraded": []}
+{"i": 263, "t": "03:49:08", "t_epoch": 880.0, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 392.6, "count": 10, "degraded": []}
+{"i": 264, "t": "03:49:11", "t_epoch": 883.4, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2945.4, "count": 10, "degraded": []}
+{"i": 265, "t": "03:49:15", "t_epoch": 886.8, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1898.5, "count": 10, "degraded": []}
+{"i": 266, "t": "03:49:18", "t_epoch": 889.9, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2620.6, "count": 10, "degraded": []}
+{"i": 267, "t": "03:49:21", "t_epoch": 893.3, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3361.7, "count": 10, "degraded": []}
+{"i": 268, "t": "03:49:25", "t_epoch": 896.7, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3364.8, "count": 10, "degraded": []}
+{"i": 269, "t": "03:49:28", "t_epoch": 900.1, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 333.2, "count": 10, "degraded": []}
+{"i": 270, "t": "03:49:31", "t_epoch": 903.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3273.7, "count": 10, "degraded": []}
+{"i": 271, "t": "03:49:35", "t_epoch": 906.7, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2991.0, "count": 10, "degraded": []}
+{"i": 272, "t": "03:49:38", "t_epoch": 910.1, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 262.2, "count": 10, "degraded": []}
+{"i": 273, "t": "03:49:41", "t_epoch": 913.4, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2979.4, "count": 10, "degraded": []}
+{"i": 274, "t": "03:49:45", "t_epoch": 916.7, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2594.4, "count": 10, "degraded": []}
+{"i": 275, "t": "03:49:48", "t_epoch": 920.0, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 291.2, "count": 10, "degraded": []}
+{"i": 276, "t": "03:49:51", "t_epoch": 923.3, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2609.6, "count": 10, "degraded": []}
+{"i": 277, "t": "03:49:55", "t_epoch": 926.7, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3434.6, "count": 10, "degraded": []}
+{"i": 278, "t": "03:49:58", "t_epoch": 930.1, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 218.8, "count": 10, "degraded": []}
+{"i": 279, "t": "03:50:01", "t_epoch": 933.2, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2351.3, "count": 10, "degraded": []}
+{"i": 280, "t": "03:50:05", "t_epoch": 936.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 414.9, "count": 10, "degraded": []}
+{"i": 281, "t": "03:50:08", "t_epoch": 940.0, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2881.3, "count": 10, "degraded": []}
+{"i": 282, "t": "03:50:11", "t_epoch": 943.4, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2980.8, "count": 10, "degraded": []}
+{"i": 283, "t": "03:50:14", "t_epoch": 946.6, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 390.4, "count": 10, "degraded": []}
+{"i": 284, "t": "03:50:18", "t_epoch": 950.0, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3012.5, "count": 10, "degraded": []}
+{"i": 285, "t": "03:50:21", "t_epoch": 953.4, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1830.1, "count": 10, "degraded": []}
+{"i": 286, "t": "03:50:25", "t_epoch": 956.7, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2298.3, "count": 10, "degraded": []}
+{"i": 287, "t": "03:50:28", "t_epoch": 960.0, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3049.5, "count": 10, "degraded": []}
+{"i": 288, "t": "03:50:31", "t_epoch": 963.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3327.8, "count": 10, "degraded": []}
+{"i": 289, "t": "03:50:35", "t_epoch": 966.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 309.5, "count": 10, "degraded": []}
+{"i": 290, "t": "03:50:38", "t_epoch": 970.1, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3321.8, "count": 10, "degraded": []}
+{"i": 291, "t": "03:50:41", "t_epoch": 973.4, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3016.9, "count": 10, "degraded": []}
+{"i": 292, "t": "03:50:44", "t_epoch": 976.6, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 268.2, "count": 10, "degraded": []}
+{"i": 293, "t": "03:50:48", "t_epoch": 980.0, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3038.9, "count": 10, "degraded": []}
+{"i": 294, "t": "03:50:51", "t_epoch": 983.4, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2623.5, "count": 10, "degraded": []}
+{"i": 295, "t": "03:50:55", "t_epoch": 986.8, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 272.4, "count": 10, "degraded": []}
+{"i": 296, "t": "03:50:58", "t_epoch": 989.9, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2679.9, "count": 10, "degraded": []}
+{"i": 297, "t": "03:51:01", "t_epoch": 993.4, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3423.5, "count": 10, "degraded": []}
+{"i": 298, "t": "03:51:05", "t_epoch": 996.8, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 205.3, "count": 10, "degraded": []}
+{"i": 299, "t": "03:51:08", "t_epoch": 1000.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2386.2, "count": 10, "degraded": []}
+{"i": 300, "t": "03:51:11", "t_epoch": 1003.3, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 419.3, "count": 10, "degraded": []}
+{"i": 301, "t": "03:51:15", "t_epoch": 1006.7, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2775.3, "count": 10, "degraded": []}
+{"i": 302, "t": "03:51:18", "t_epoch": 1009.9, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3133.5, "count": 10, "degraded": []}
+{"i": 303, "t": "03:51:21", "t_epoch": 1013.3, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 391.7, "count": 10, "degraded": []}
+{"i": 304, "t": "03:51:24", "t_epoch": 1016.6, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2987.3, "count": 10, "degraded": []}
+{"i": 305, "t": "03:51:28", "t_epoch": 1019.9, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1874.2, "count": 10, "degraded": []}
+{"i": 306, "t": "03:51:31", "t_epoch": 1023.3, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2284.4, "count": 10, "degraded": []}
+{"i": 307, "t": "03:51:34", "t_epoch": 1026.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2932.2, "count": 10, "degraded": []}
+{"i": 308, "t": "03:51:38", "t_epoch": 1030.0, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3486.5, "count": 10, "degraded": []}
+{"i": 309, "t": "03:51:41", "t_epoch": 1033.5, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 349.6, "count": 10, "degraded": []}
+{"i": 310, "t": "03:51:45", "t_epoch": 1036.7, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3252.9, "count": 10, "degraded": []}
+{"i": 311, "t": "03:51:48", "t_epoch": 1039.9, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3016.9, "count": 10, "degraded": []}
+{"i": 312, "t": "03:51:51", "t_epoch": 1043.4, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 254.6, "count": 10, "degraded": []}
+{"i": 313, "t": "03:51:55", "t_epoch": 1046.7, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2914.8, "count": 10, "degraded": []}
+{"i": 314, "t": "03:51:58", "t_epoch": 1049.9, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2667.9, "count": 10, "degraded": []}
+{"i": 315, "t": "03:52:01", "t_epoch": 1053.3, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 283.1, "count": 10, "degraded": []}
+{"i": 316, "t": "03:52:05", "t_epoch": 1056.7, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2646.6, "count": 10, "degraded": []}
+{"i": 317, "t": "03:52:08", "t_epoch": 1059.9, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3482.5, "count": 10, "degraded": []}
+{"i": 318, "t": "03:52:11", "t_epoch": 1063.4, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 220.1, "count": 10, "degraded": []}
+{"i": 319, "t": "03:52:15", "t_epoch": 1066.7, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2342.8, "count": 10, "degraded": []}
+{"i": 320, "t": "03:52:18", "t_epoch": 1070.0, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 407.6, "count": 10, "degraded": []}
+{"i": 321, "t": "03:52:21", "t_epoch": 1073.2, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2837.2, "count": 10, "degraded": []}
+{"i": 322, "t": "03:52:24", "t_epoch": 1076.6, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2952.7, "count": 10, "degraded": []}
+{"i": 323, "t": "03:52:28", "t_epoch": 1079.9, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 400.9, "count": 10, "degraded": []}
+{"i": 324, "t": "03:52:31", "t_epoch": 1083.4, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2928.7, "count": 10, "degraded": []}
+{"i": 325, "t": "03:52:34", "t_epoch": 1086.6, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1813.9, "count": 10, "degraded": []}
+{"i": 326, "t": "03:52:38", "t_epoch": 1089.9, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2335.9, "count": 10, "degraded": []}
+{"i": 327, "t": "03:52:41", "t_epoch": 1093.3, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2938.7, "count": 10, "degraded": []}
+{"i": 328, "t": "03:52:45", "t_epoch": 1096.7, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3313.3, "count": 10, "degraded": []}
+{"i": 329, "t": "03:52:48", "t_epoch": 1100.0, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 334.4, "count": 10, "degraded": []}
+{"i": 330, "t": "03:52:51", "t_epoch": 1103.4, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3191.0, "count": 10, "degraded": []}
+{"i": 331, "t": "03:52:54", "t_epoch": 1106.6, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2977.7, "count": 10, "degraded": []}
+{"i": 332, "t": "03:52:58", "t_epoch": 1110.0, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 266.6, "count": 10, "degraded": []}
+{"i": 333, "t": "03:53:01", "t_epoch": 1113.4, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2944.7, "count": 10, "degraded": []}
+{"i": 334, "t": "03:53:05", "t_epoch": 1116.7, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2565.7, "count": 10, "degraded": []}
+{"i": 335, "t": "03:53:08", "t_epoch": 1119.9, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 281.4, "count": 10, "degraded": []}
+{"i": 336, "t": "03:53:11", "t_epoch": 1123.3, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2682.8, "count": 10, "degraded": []}
+{"i": 337, "t": "03:53:15", "t_epoch": 1126.7, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3378.4, "count": 10, "degraded": []}
+{"i": 338, "t": "03:53:18", "t_epoch": 1130.2, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 214.9, "count": 10, "degraded": []}
+{"i": 339, "t": "03:53:21", "t_epoch": 1133.4, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2331.6, "count": 10, "degraded": []}
+{"i": 340, "t": "03:53:25", "t_epoch": 1136.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 410.2, "count": 10, "degraded": []}
+{"i": 341, "t": "03:53:28", "t_epoch": 1139.9, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2891.0, "count": 10, "degraded": []}
+{"i": 342, "t": "03:53:31", "t_epoch": 1143.4, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2952.8, "count": 10, "degraded": []}
+{"i": 343, "t": "03:53:34", "t_epoch": 1146.6, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 378.6, "count": 10, "degraded": []}
+{"i": 344, "t": "03:53:38", "t_epoch": 1149.9, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3000.5, "count": 10, "degraded": []}
+{"i": 345, "t": "03:53:41", "t_epoch": 1153.4, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1854.3, "count": 10, "degraded": []}
+{"i": 346, "t": "03:53:45", "t_epoch": 1156.7, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2238.6, "count": 10, "degraded": []}
+{"i": 347, "t": "03:53:48", "t_epoch": 1160.1, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2962.3, "count": 10, "degraded": []}
+{"i": 348, "t": "03:53:51", "t_epoch": 1163.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3351.8, "count": 10, "degraded": []}
+{"i": 349, "t": "03:53:55", "t_epoch": 1166.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 326.1, "count": 10, "degraded": []}
+{"i": 350, "t": "03:53:58", "t_epoch": 1170.1, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3308.4, "count": 10, "degraded": []}
+{"i": 351, "t": "03:54:01", "t_epoch": 1173.4, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2963.4, "count": 10, "degraded": []}
+{"i": 352, "t": "03:54:05", "t_epoch": 1176.7, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 253.2, "count": 10, "degraded": []}
+{"i": 353, "t": "03:54:08", "t_epoch": 1180.0, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3046.0, "count": 10, "degraded": []}
+{"i": 354, "t": "03:54:11", "t_epoch": 1183.3, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2606.9, "count": 10, "degraded": []}
+{"i": 355, "t": "03:54:15", "t_epoch": 1186.6, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 281.0, "count": 10, "degraded": []}
+{"i": 356, "t": "03:54:18", "t_epoch": 1190.0, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2688.0, "count": 10, "degraded": []}
+{"i": 357, "t": "03:54:21", "t_epoch": 1193.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3410.2, "count": 10, "degraded": []}
+{"i": 358, "t": "03:54:25", "t_epoch": 1196.7, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 202.9, "count": 10, "degraded": []}
+{"i": 359, "t": "03:54:28", "t_epoch": 1200.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2436.9, "count": 10, "degraded": []}
+{"i": 360, "t": "03:54:31", "t_epoch": 1203.3, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 408.6, "count": 10, "degraded": []}
+{"i": 361, "t": "03:54:35", "t_epoch": 1206.7, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2751.2, "count": 10, "degraded": []}
+{"i": 362, "t": "03:54:38", "t_epoch": 1210.0, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3056.0, "count": 10, "degraded": []}
+{"i": 363, "t": "03:54:41", "t_epoch": 1213.4, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 378.5, "count": 10, "degraded": []}
+{"i": 364, "t": "03:54:44", "t_epoch": 1216.6, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2916.2, "count": 10, "degraded": []}
+{"i": 365, "t": "03:54:48", "t_epoch": 1219.9, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1857.4, "count": 10, "degraded": []}
+{"i": 366, "t": "03:54:51", "t_epoch": 1223.3, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2245.0, "count": 10, "degraded": []}
+{"i": 367, "t": "03:54:54", "t_epoch": 1226.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2920.0, "count": 10, "degraded": []}
+{"i": 368, "t": "03:54:58", "t_epoch": 1230.0, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3466.1, "count": 10, "degraded": []}
+{"i": 369, "t": "03:55:01", "t_epoch": 1233.5, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 324.0, "count": 10, "degraded": []}
+{"i": 370, "t": "03:55:05", "t_epoch": 1236.8, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3425.7, "count": 10, "degraded": []}
+{"i": 371, "t": "03:55:08", "t_epoch": 1240.2, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3076.2, "count": 10, "degraded": []}
+{"i": 372, "t": "03:55:11", "t_epoch": 1243.3, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 258.1, "count": 10, "degraded": []}
+{"i": 373, "t": "03:55:14", "t_epoch": 1246.6, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2973.0, "count": 10, "degraded": []}
+{"i": 374, "t": "03:55:18", "t_epoch": 1249.9, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2654.1, "count": 10, "degraded": []}
+{"i": 375, "t": "03:55:21", "t_epoch": 1253.2, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 280.5, "count": 10, "degraded": []}
+{"i": 376, "t": "03:55:25", "t_epoch": 1256.7, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2644.5, "count": 10, "degraded": []}
+{"i": 377, "t": "03:55:28", "t_epoch": 1260.0, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3457.3, "count": 10, "degraded": []}
+{"i": 378, "t": "03:55:31", "t_epoch": 1263.4, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 217.5, "count": 10, "degraded": []}
+{"i": 379, "t": "03:55:34", "t_epoch": 1266.6, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2321.4, "count": 10, "degraded": []}
+{"i": 380, "t": "03:55:38", "t_epoch": 1269.9, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 422.6, "count": 10, "degraded": []}
+{"i": 381, "t": "03:55:41", "t_epoch": 1273.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2802.8, "count": 10, "degraded": []}
+{"i": 382, "t": "03:55:45", "t_epoch": 1276.7, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2954.2, "count": 10, "degraded": []}
+{"i": 383, "t": "03:55:48", "t_epoch": 1279.9, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 386.5, "count": 10, "degraded": []}
+{"i": 384, "t": "03:55:51", "t_epoch": 1283.3, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2930.1, "count": 10, "degraded": []}
+{"i": 385, "t": "03:55:55", "t_epoch": 1286.8, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1831.0, "count": 10, "degraded": []}
+{"i": 386, "t": "03:55:58", "t_epoch": 1290.1, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2317.6, "count": 10, "degraded": []}
+{"i": 387, "t": "03:56:01", "t_epoch": 1293.4, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2915.9, "count": 10, "degraded": []}
+{"i": 388, "t": "03:56:04", "t_epoch": 1296.6, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3311.7, "count": 10, "degraded": []}
+{"i": 389, "t": "03:56:08", "t_epoch": 1299.9, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 324.5, "count": 10, "degraded": []}
+{"i": 390, "t": "03:56:11", "t_epoch": 1303.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3220.3, "count": 10, "degraded": []}
+{"i": 391, "t": "03:56:14", "t_epoch": 1306.6, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2981.1, "count": 10, "degraded": []}
+{"i": 392, "t": "03:56:18", "t_epoch": 1310.0, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 249.3, "count": 10, "degraded": []}
+{"i": 393, "t": "03:56:21", "t_epoch": 1313.3, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2989.6, "count": 10, "degraded": []}
+{"i": 394, "t": "03:56:24", "t_epoch": 1316.6, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2611.6, "count": 10, "degraded": []}
+{"i": 395, "t": "03:56:28", "t_epoch": 1320.0, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 269.4, "count": 10, "degraded": []}
+{"i": 396, "t": "03:56:31", "t_epoch": 1323.4, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2654.1, "count": 10, "degraded": []}
+{"i": 397, "t": "03:56:34", "t_epoch": 1326.6, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3366.7, "count": 10, "degraded": []}
+{"i": 398, "t": "03:56:38", "t_epoch": 1330.0, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 213.7, "count": 10, "degraded": []}
+{"i": 399, "t": "03:56:41", "t_epoch": 1333.3, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2337.2, "count": 10, "degraded": []}
+{"i": 400, "t": "03:56:45", "t_epoch": 1336.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 413.7, "count": 10, "degraded": []}
+{"i": 401, "t": "03:56:48", "t_epoch": 1340.0, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2953.2, "count": 10, "degraded": []}
+{"i": 402, "t": "03:56:51", "t_epoch": 1343.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3177.0, "count": 10, "degraded": []}
+{"i": 403, "t": "03:56:55", "t_epoch": 1346.7, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 398.3, "count": 10, "degraded": []}
+{"i": 404, "t": "03:56:58", "t_epoch": 1350.0, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3035.4, "count": 10, "degraded": []}
+{"i": 405, "t": "03:57:01", "t_epoch": 1353.3, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1867.0, "count": 10, "degraded": []}
+{"i": 406, "t": "03:57:04", "t_epoch": 1356.6, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2259.8, "count": 10, "degraded": []}
+{"i": 407, "t": "03:57:08", "t_epoch": 1360.1, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3069.9, "count": 10, "degraded": []}
+{"i": 408, "t": "03:57:11", "t_epoch": 1363.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3363.6, "count": 10, "degraded": []}
+{"i": 409, "t": "03:57:15", "t_epoch": 1366.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 332.1, "count": 10, "degraded": []}
+{"i": 410, "t": "03:57:18", "t_epoch": 1369.9, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3296.0, "count": 10, "degraded": []}
+{"i": 411, "t": "03:57:21", "t_epoch": 1373.3, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2987.8, "count": 10, "degraded": []}
+{"i": 412, "t": "03:57:25", "t_epoch": 1376.7, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 267.2, "count": 10, "degraded": []}
+{"i": 413, "t": "03:57:28", "t_epoch": 1380.0, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3003.4, "count": 10, "degraded": []}
+{"i": 414, "t": "03:57:31", "t_epoch": 1383.2, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2598.2, "count": 10, "degraded": []}
+{"i": 415, "t": "03:57:34", "t_epoch": 1386.6, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 287.1, "count": 10, "degraded": []}
+{"i": 416, "t": "03:57:38", "t_epoch": 1390.0, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2723.2, "count": 10, "degraded": []}
+{"i": 417, "t": "03:57:41", "t_epoch": 1393.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3374.1, "count": 10, "degraded": []}
+{"i": 418, "t": "03:57:45", "t_epoch": 1396.7, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 200.8, "count": 10, "degraded": []}
+{"i": 419, "t": "03:57:48", "t_epoch": 1400.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2411.3, "count": 10, "degraded": []}
+{"i": 420, "t": "03:57:51", "t_epoch": 1403.3, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 418.3, "count": 10, "degraded": []}
+{"i": 421, "t": "03:57:55", "t_epoch": 1406.7, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2774.3, "count": 10, "degraded": []}
+{"i": 422, "t": "03:57:58", "t_epoch": 1409.9, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3065.0, "count": 10, "degraded": []}
+{"i": 423, "t": "03:58:01", "t_epoch": 1413.4, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 389.9, "count": 10, "degraded": []}
+{"i": 424, "t": "03:58:05", "t_epoch": 1416.7, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2893.2, "count": 10, "degraded": []}
+{"i": 425, "t": "03:58:08", "t_epoch": 1420.0, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1830.3, "count": 10, "degraded": []}
+{"i": 426, "t": "03:58:11", "t_epoch": 1423.3, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2246.3, "count": 10, "degraded": []}
+{"i": 427, "t": "03:58:15", "t_epoch": 1426.7, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2917.8, "count": 10, "degraded": []}
+{"i": 428, "t": "03:58:18", "t_epoch": 1430.0, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3358.1, "count": 10, "degraded": []}
+{"i": 429, "t": "03:58:21", "t_epoch": 1433.3, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 333.6, "count": 10, "degraded": []}
+{"i": 430, "t": "03:58:25", "t_epoch": 1436.7, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3172.8, "count": 10, "degraded": []}
+{"i": 431, "t": "03:58:28", "t_epoch": 1440.0, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3021.6, "count": 10, "degraded": []}
+{"i": 432, "t": "03:58:31", "t_epoch": 1443.3, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 265.8, "count": 10, "degraded": []}
+{"i": 433, "t": "03:58:35", "t_epoch": 1446.7, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2966.4, "count": 10, "degraded": []}
+{"i": 434, "t": "03:58:38", "t_epoch": 1450.0, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2668.7, "count": 10, "degraded": []}
+{"i": 435, "t": "03:58:41", "t_epoch": 1453.3, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 294.6, "count": 10, "degraded": []}
+{"i": 436, "t": "03:58:44", "t_epoch": 1456.6, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2608.4, "count": 10, "degraded": []}
+{"i": 437, "t": "03:58:48", "t_epoch": 1460.0, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3494.9, "count": 10, "degraded": []}
+{"i": 438, "t": "03:58:51", "t_epoch": 1463.5, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 200.8, "count": 10, "degraded": []}
+{"i": 439, "t": "03:58:54", "t_epoch": 1466.6, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2327.0, "count": 10, "degraded": []}
+{"i": 440, "t": "03:58:58", "t_epoch": 1469.9, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 400.0, "count": 10, "degraded": []}
+{"i": 441, "t": "03:59:01", "t_epoch": 1473.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2774.0, "count": 10, "degraded": []}
+{"i": 442, "t": "03:59:05", "t_epoch": 1476.8, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2944.5, "count": 10, "degraded": []}
+{"i": 443, "t": "03:59:08", "t_epoch": 1480.1, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 387.9, "count": 10, "degraded": []}
+{"i": 444, "t": "03:59:11", "t_epoch": 1483.4, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2915.7, "count": 10, "degraded": []}
+{"i": 445, "t": "03:59:15", "t_epoch": 1486.7, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1859.1, "count": 10, "degraded": []}
+{"i": 446, "t": "03:59:18", "t_epoch": 1490.0, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2317.1, "count": 10, "degraded": []}
+{"i": 447, "t": "03:59:21", "t_epoch": 1493.4, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2949.4, "count": 10, "degraded": []}
+{"i": 448, "t": "03:59:24", "t_epoch": 1496.6, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3294.6, "count": 10, "degraded": []}
+{"i": 449, "t": "03:59:28", "t_epoch": 1500.0, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 319.7, "count": 10, "degraded": []}
+{"i": 450, "t": "03:59:31", "t_epoch": 1503.4, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3219.3, "count": 10, "degraded": []}
+{"i": 451, "t": "03:59:35", "t_epoch": 1506.7, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2965.8, "count": 10, "degraded": []}
+{"i": 452, "t": "03:59:38", "t_epoch": 1510.1, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 256.9, "count": 10, "degraded": []}
+{"i": 453, "t": "03:59:41", "t_epoch": 1513.4, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2910.2, "count": 10, "degraded": []}
+{"i": 454, "t": "03:59:45", "t_epoch": 1516.7, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2602.6, "count": 10, "degraded": []}
+{"i": 455, "t": "03:59:48", "t_epoch": 1520.1, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 272.7, "count": 10, "degraded": []}
+{"i": 456, "t": "03:59:51", "t_epoch": 1523.3, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2668.4, "count": 10, "degraded": []}
+{"i": 457, "t": "03:59:55", "t_epoch": 1526.7, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3370.4, "count": 10, "degraded": []}
+{"i": 458, "t": "03:59:58", "t_epoch": 1530.1, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 206.4, "count": 10, "degraded": []}
+{"i": 459, "t": "04:00:01", "t_epoch": 1533.2, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2406.1, "count": 10, "degraded": []}
+{"i": 460, "t": "04:00:05", "t_epoch": 1536.7, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 428.8, "count": 10, "degraded": []}
+{"i": 461, "t": "04:00:08", "t_epoch": 1540.1, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2877.2, "count": 10, "degraded": []}
+{"i": 462, "t": "04:00:11", "t_epoch": 1543.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 2971.5, "count": 10, "degraded": []}
+{"i": 463, "t": "04:00:14", "t_epoch": 1546.6, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 412.2, "count": 10, "degraded": []}
+{"i": 464, "t": "04:00:18", "t_epoch": 1549.9, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3024.8, "count": 10, "degraded": []}
+{"i": 465, "t": "04:00:21", "t_epoch": 1553.3, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1833.2, "count": 10, "degraded": []}
+{"i": 466, "t": "04:00:24", "t_epoch": 1556.6, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2229.3, "count": 10, "degraded": []}
+{"i": 467, "t": "04:00:28", "t_epoch": 1559.9, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3057.5, "count": 10, "degraded": []}
+{"i": 468, "t": "04:00:31", "t_epoch": 1563.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3291.0, "count": 10, "degraded": []}
+{"i": 469, "t": "04:00:35", "t_epoch": 1566.7, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 328.3, "count": 10, "degraded": []}
+{"i": 470, "t": "04:00:38", "t_epoch": 1569.9, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3284.1, "count": 10, "degraded": []}
+{"i": 471, "t": "04:00:41", "t_epoch": 1573.4, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3001.4, "count": 10, "degraded": []}
+{"i": 472, "t": "04:00:45", "t_epoch": 1576.7, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 248.8, "count": 10, "degraded": []}
+{"i": 473, "t": "04:00:48", "t_epoch": 1580.0, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2994.7, "count": 10, "degraded": []}
+{"i": 474, "t": "04:00:51", "t_epoch": 1583.4, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2588.8, "count": 10, "degraded": []}
+{"i": 475, "t": "04:00:55", "t_epoch": 1586.7, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 284.9, "count": 10, "degraded": []}
+{"i": 476, "t": "04:00:58", "t_epoch": 1590.1, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2732.0, "count": 10, "degraded": []}
+{"i": 477, "t": "04:01:01", "t_epoch": 1593.3, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3358.6, "count": 10, "degraded": []}
+{"i": 478, "t": "04:01:05", "t_epoch": 1596.7, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 205.2, "count": 10, "degraded": []}
+{"i": 479, "t": "04:01:08", "t_epoch": 1600.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2377.3, "count": 10, "degraded": []}
+{"i": 480, "t": "04:01:11", "t_epoch": 1603.3, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 413.0, "count": 10, "degraded": []}
+{"i": 481, "t": "04:01:15", "t_epoch": 1606.8, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2739.7, "count": 10, "degraded": []}
+{"i": 482, "t": "04:01:18", "t_epoch": 1610.0, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3052.0, "count": 10, "degraded": []}
+{"i": 483, "t": "04:01:21", "t_epoch": 1613.3, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 403.7, "count": 10, "degraded": []}
+{"i": 484, "t": "04:01:24", "t_epoch": 1616.6, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2927.8, "count": 10, "degraded": []}
+{"i": 485, "t": "04:01:28", "t_epoch": 1620.1, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1907.6, "count": 10, "degraded": []}
+{"i": 486, "t": "04:01:31", "t_epoch": 1623.4, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2262.1, "count": 10, "degraded": []}
+{"i": 487, "t": "04:01:34", "t_epoch": 1626.6, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2896.1, "count": 10, "degraded": []}
+{"i": 488, "t": "04:01:38", "t_epoch": 1630.1, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3400.1, "count": 10, "degraded": []}
+{"i": 489, "t": "04:01:41", "t_epoch": 1633.6, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 326.1, "count": 10, "degraded": []}
+{"i": 490, "t": "04:01:44", "t_epoch": 1636.6, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3234.9, "count": 10, "degraded": []}
+{"i": 491, "t": "04:01:48", "t_epoch": 1640.0, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 3059.1, "count": 10, "degraded": []}
+{"i": 492, "t": "04:01:51", "t_epoch": 1643.4, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 255.8, "count": 10, "degraded": []}
+{"i": 493, "t": "04:01:54", "t_epoch": 1646.6, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2935.3, "count": 10, "degraded": []}
+{"i": 494, "t": "04:01:58", "t_epoch": 1650.1, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2650.4, "count": 10, "degraded": []}
+{"i": 495, "t": "04:02:01", "t_epoch": 1653.4, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 287.3, "count": 10, "degraded": []}
+{"i": 496, "t": "04:02:05", "t_epoch": 1656.8, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2583.3, "count": 10, "degraded": []}
+{"i": 497, "t": "04:02:08", "t_epoch": 1660.0, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3506.5, "count": 10, "degraded": []}
+{"i": 498, "t": "04:02:11", "t_epoch": 1663.5, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 208.1, "count": 10, "degraded": []}
+{"i": 499, "t": "04:02:15", "t_epoch": 1666.7, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2390.1, "count": 10, "degraded": []}
+{"i": 500, "t": "04:02:18", "t_epoch": 1670.0, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 425.3, "count": 10, "degraded": []}
+{"i": 501, "t": "04:02:21", "t_epoch": 1673.3, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2859.9, "count": 10, "degraded": []}
+{"i": 502, "t": "04:02:25", "t_epoch": 1676.7, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3038.6, "count": 10, "degraded": []}
+{"i": 503, "t": "04:02:28", "t_epoch": 1680.0, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 405.5, "count": 10, "degraded": []}
+{"i": 504, "t": "04:02:31", "t_epoch": 1683.3, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 3022.0, "count": 10, "degraded": []}
+{"i": 505, "t": "04:02:35", "t_epoch": 1686.7, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1875.0, "count": 10, "degraded": []}
+{"i": 506, "t": "04:02:38", "t_epoch": 1690.1, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2366.7, "count": 10, "degraded": []}
+{"i": 507, "t": "04:02:41", "t_epoch": 1693.4, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 2947.1, "count": 10, "degraded": []}
+{"i": 508, "t": "04:02:45", "t_epoch": 1696.7, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3349.4, "count": 10, "degraded": []}
+{"i": 509, "t": "04:02:48", "t_epoch": 1700.1, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 336.8, "count": 10, "degraded": []}
+{"i": 510, "t": "04:02:51", "t_epoch": 1703.3, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3248.7, "count": 10, "degraded": []}
+{"i": 511, "t": "04:02:55", "t_epoch": 1706.7, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2982.2, "count": 10, "degraded": []}
+{"i": 512, "t": "04:02:58", "t_epoch": 1710.0, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 251.0, "count": 10, "degraded": []}
+{"i": 513, "t": "04:03:01", "t_epoch": 1713.4, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 2956.1, "count": 10, "degraded": []}
+{"i": 514, "t": "04:03:05", "t_epoch": 1716.7, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2575.3, "count": 10, "degraded": []}
+{"i": 515, "t": "04:03:08", "t_epoch": 1720.1, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 286.6, "count": 10, "degraded": []}
+{"i": 516, "t": "04:03:11", "t_epoch": 1723.3, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2601.3, "count": 10, "degraded": []}
+{"i": 517, "t": "04:03:14", "t_epoch": 1726.6, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3391.7, "count": 10, "degraded": []}
+{"i": 518, "t": "04:03:18", "t_epoch": 1730.0, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 199.6, "count": 10, "degraded": []}
+{"i": 519, "t": "04:03:21", "t_epoch": 1733.3, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2359.7, "count": 10, "degraded": []}
+{"i": 520, "t": "04:03:24", "t_epoch": 1736.6, "q": "indigenous language revitalization First", "ok": true, "status": 200, "ms": 423.1, "count": 10, "degraded": []}
+{"i": 521, "t": "04:03:28", "t_epoch": 1740.0, "q": "What initiatives and programs exist to r", "ok": true, "status": 200, "ms": 2857.4, "count": 10, "degraded": []}
+{"i": 522, "t": "04:03:31", "t_epoch": 1743.3, "q": "How are First Nations in British Columbi", "ok": true, "status": 200, "ms": 3014.5, "count": 10, "degraded": []}
+{"i": 523, "t": "04:03:35", "t_epoch": 1746.7, "q": "residential school trauma intergeneratio", "ok": true, "status": 200, "ms": 389.1, "count": 10, "degraded": []}
+{"i": 524, "t": "04:03:38", "t_epoch": 1750.1, "q": "What are the intergenerational effects o", "ok": true, "status": 200, "ms": 2971.4, "count": 10, "degraded": []}
+{"i": 525, "t": "04:03:41", "t_epoch": 1753.4, "q": "How does trauma from residential schools", "ok": true, "status": 200, "ms": 1846.2, "count": 10, "degraded": []}
+{"i": 526, "t": "04:03:45", "t_epoch": 1756.7, "q": "Truth and Reconciliation Commission call", "ok": true, "status": 200, "ms": 2245.6, "count": 10, "degraded": []}
+{"i": 527, "t": "04:03:48", "t_epoch": 1759.9, "q": "How have Canadian institutions and gover", "ok": true, "status": 200, "ms": 3012.6, "count": 10, "degraded": []}
+{"i": 528, "t": "04:03:51", "t_epoch": 1763.3, "q": "What progress has Canada made in respond", "ok": true, "status": 200, "ms": 3322.9, "count": 10, "degraded": []}
+{"i": 529, "t": "04:03:54", "t_epoch": 1766.6, "q": "land back movement Indigenous rights tre", "ok": true, "status": 200, "ms": 333.8, "count": 10, "degraded": []}
+{"i": 530, "t": "04:03:58", "t_epoch": 1770.0, "q": "How does the land back movement relate t", "ok": true, "status": 200, "ms": 3310.4, "count": 10, "degraded": []}
+{"i": 531, "t": "04:04:01", "t_epoch": 1773.3, "q": "What role does the land back movement pl", "ok": true, "status": 200, "ms": 2978.4, "count": 10, "degraded": []}
+{"i": 532, "t": "04:04:05", "t_epoch": 1776.7, "q": "housing affordability crisis Metro Vanco", "ok": true, "status": 200, "ms": 258.6, "count": 10, "degraded": []}
+{"i": 533, "t": "04:04:08", "t_epoch": 1780.1, "q": "What factors are contributing to the hou", "ok": true, "status": 200, "ms": 3026.8, "count": 10, "degraded": []}
+{"i": 534, "t": "04:04:11", "t_epoch": 1783.4, "q": "How is the housing affordability crisis ", "ok": true, "status": 200, "ms": 2599.3, "count": 10, "degraded": []}
+{"i": 535, "t": "04:04:15", "t_epoch": 1786.7, "q": "Canadian immigration settlement services", "ok": true, "status": 200, "ms": 284.4, "count": 10, "degraded": []}
+{"i": 536, "t": "04:04:18", "t_epoch": 1790.1, "q": "How do Canadian settlement services for ", "ok": true, "status": 200, "ms": 2688.1, "count": 10, "degraded": []}
+{"i": 537, "t": "04:04:21", "t_epoch": 1793.2, "q": "What is the relationship between Canada'", "ok": true, "status": 200, "ms": 3432.2, "count": 10, "degraded": []}
+{"i": 538, "t": "04:04:25", "t_epoch": 1796.7, "q": "BC provincial politics electoral reform ", "ok": true, "status": 200, "ms": 198.7, "count": 10, "degraded": []}
+{"i": 539, "t": "04:04:28", "t_epoch": 1800.0, "q": "What electoral reform referendums has Br", "ok": true, "status": 200, "ms": 2439.7, "count": 10, "degraded": []}

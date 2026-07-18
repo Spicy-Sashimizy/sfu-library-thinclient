@@ -88,6 +88,29 @@ per-shard work multiply across all 8:
   gate bounds how low it can go safely (measured: k′=100 @ top_k=50 is merged-
   overlap-safe at 0.999, `g8f_shardmerge_profile_kprime_20260708.json`).
 
+## Shard-failure isolation (WI-10, 2026-07-17 — env-gated OFF by default)
+
+A property of the federation, not a happy-path accident: any ONE of the 8
+shards down (missing/truncated/unreadable file, search exception, hang/timeout)
+→ the OTHER 7 keep serving. Per-shard LOAD AND SEARCH fault boundaries in BOTH
+`ParallelSeismicBackend` + `SequentialSeismicBackend` (the cascade design —
+`_fan_out` is the only per-method behavior, the guard wraps it identically).
+
+- Gate: `SFU_SEISMIC_SHARD_FAULT_BOUNDARY=1` (default **OFF** = byte-identical
+  federation, T1 unaffected: a non-faulted shard set has zero behavioral change;
+  ON with no fault → the guard passes every result through unchanged).
+- A failed-to-load shard → `None` placeholder + marked down; a thrown/timed-out
+  search (`SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S`, default 30) → `[]` for that shard
+  + recorded fault; the reprobe cooldown (`SFU_SEISMIC_SHARD_REPROBE_S`, default
+  10) re-admits on a successful probe. The federation merges surviving shards'
+  results with `degraded_shards:[…]`; `fault_status()` surfaces it to `/health`.
+- Hash sharding ⇒ a lost shard costs a BOUNDED ~1/8 of recall with no score-
+  comparability issue (each shard is a disjoint doc-id hash partition, scored in
+  one shared SPLADE vocab space — doc 09: calibration unnecessary by
+  construction). **MEASURED 2026-07-17**: recall retention@10 = **0.850** across
+  every fault class (in the pre-registered [0.80, 0.95] band) →
+  `docs/infrastructure/DEMO_DEPENDABILITY.md` §WI-10.
+
 ## Code touch-points (IMPLEMENTED — two distinct classes, 2026-06-30)
 
 **Shape (Option 3 — lowest cascade risk):** two DISTINCT serving classes —

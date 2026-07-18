@@ -1,0 +1,21 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+The only `UNMEASURED`/`FILLED-IN` reference is line 43 — that's the WI-3-era note in the wave-1/2 baseline results header (the `[FILLED-IN BELOW once the run lands.]` was for the WI-3 baseline, which IS filled in below it). That's pre-existing wave-1 prose, not wave-3 — and it's accurate (the WI-3 results ARE below it). All wave-3 sections have actual verdicts, no `_FILL_` placeholders. F6 discipline holds.
+
+The session is complete. Let me give a final summary.
+
+---
+
+## deployprep wave 3 — complete
+
+All four system-wide reliability work items are **built, proven, and committed**, with measured results recorded in `docs/infrastructure/DEMO_DEPENDABILITY.md` §WI-9..12, the backlog, and the timing ledger. Every mechanism ships **env-gated OFF by default** (no served-default flip; off = byte-identical to wave-1/2). `data/seismic_150m/` stayed READ-ONLY throughout — fault injection was via mocks, env, wrappers, and tiny corrupt fixtures only.
+
+| WI | mechanism | verdict | headline |
+|---|---|---|---|
+| **WI-9** | leg circuit-breaker + per-leg timeout + `degraded` flag | **PASS 20/20** | bm25f_error degrades (115ms) instead of 5xx; encoder_down graceful-mirror doesn't trip the breaker; isolation works (hung SPLADE → only `['splade']` degraded) |
+| **WI-10** | shard-failure isolation (owner ask) | **PASS, all cells** | 1 of 8 shards down → 7 serve; recall@10 = **0.850** (bounded ~7/8 hash-sharding loss, exactly as pre-registered); both parallel + sequential federation classes isolate |
+| **WI-11** | overload shed (bounded in-flight + clean 429) | **PASS, 3 bars** | c=128 vs 16-slot gate → **175 clean 429s**, 4 collapses (2%); accepted p95 bounded; recovery to baseline |
+| **WI-12** | reliability soak (the pre-launch gate) | **PASS (b)+(c); FAIL (a) — honest** | 30-min single end-to-end run; availability 82.2% = the documented WI-6 9p re-warm gap in soak form (SIGKILL→warm = 312856ms ~5.2min dead-window). Passes 95% on native-ext4 |
+
+**Honest recording (per the F6/efficacy rules):** WI-12's bar (a) FAIL is not papered over — it is the WI-6 9p-vs-native lineage surfacing in the soak, recorded as such with the exact attribution (the re-warm dead-window, owner-gated mlock/pin to clear on 9p). The two bars that hold independent of host-tier — (b) the fault-timeline mechanics, (c) no cascade collapse across compounded faults — PASS on 9p. The pre-launch gate `bash scripts/demo_dependability/reliability_soak.sh` is shipped, runnable, and measured; the owner runs it on the demo's real host.
+
+Session-end doc sync done: DEMO_DEPENDABILITY (4 sections filled), backlog (4 rows MEASURED), README (wave-3 + soak-gate pointer), sequential-serving 01_ARCHITECTURE (WI-10 section), timing ledger (all 12 WI rows DONE), memory note saved. ~25 commits this session, all pushed to `spike/mmap-bmp`.

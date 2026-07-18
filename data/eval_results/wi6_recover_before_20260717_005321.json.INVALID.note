@@ -1,0 +1,6 @@
+INVALID — pre-eval-fix run (the wi6_warmup_recover.sh `eval "true "...` bug
+swallowed the watchdog launch → the serve never came up under supervision;
+this file's 6502 dead-window errors are the load driver firing at a serve that
+was never properly warm-managed. The valid BEFORE run is
+wi6_recover_before_20260717_005541.json (1147 errors, the doc's number).
+Marked .INVALID per the non-clobbering discipline (monitor ask 2026-07-17 01:50Z).

@@ -1,0 +1,4 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+The monitor already exited on its own (the `tail -F` hit the `DONE.` marker line and the grep matched, so it ended). No action needed.
+
+Everything from wave 4 is complete and pushed. The summary I gave above stands — WI-13 and WI-14 are both DONE with measured proofs, all docs/ledger/memory synced, and the queue is clean. Nothing left to do this session.

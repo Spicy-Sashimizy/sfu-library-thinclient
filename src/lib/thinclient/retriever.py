@@ -55,6 +55,143 @@ def _mem_available_gb() -> float | None:
     return None
 
 
+# Passthrough/network filesystems where mmap page cache does NOT stay resident,
+# so parallel federation's "never release pages" advantage is moot (the pages
+# get dropped between queries anyway). There, SequentialSeismicBackend's lower
+# RAM floor (releases each shard's slabs after searching it) is the better
+# default. On a native local disk (ext4/xfs on a DO droplet) pages DO stay
+# resident, so parallel keeps the working set warm (WI-1 warm p50 ~47 ms) and
+# sequential would sabotage that by releasing — hence parallel there.
+# NOTE: federation mode is roughly latency-NEUTRAL for a genuinely cold fault
+# (measured 2026-07-18, page cache dropped: parallel p50 9134 ms vs sequential
+# 8747 ms); the real cold-latency lever is the filesystem itself (see
+# _stage_shards_local), not this choice.
+_SLOW_FEDERATION_FSTYPES = {"9p", "virtiofs", "nfs", "nfs4", "cifs", "smb3", "fuse.sshfs"}
+
+
+def _fstype_for_path(path: str) -> str | None:
+    """Best-effort filesystem type under `path` via the longest matching mount
+    in /proc/mounts (Linux only; None elsewhere or on error)."""
+    try:
+        target = os.path.realpath(path)
+        best_mp, best_type = "", None
+        with open("/proc/mounts") as fh:
+            for line in fh:
+                parts = line.split()
+                if len(parts) < 3:
+                    continue
+                mp, fstype = parts[1], parts[2]
+                if (target == mp or target.startswith(mp.rstrip("/") + "/")) \
+                        and len(mp) > len(best_mp):
+                    best_mp, best_type = mp, fstype
+        return best_type
+    except OSError:
+        return None
+
+
+def _dir_size(path: Path) -> int:
+    total = 0
+    for dp, _, fns in os.walk(path):
+        for fn in fns:
+            try:
+                total += os.path.getsize(os.path.join(dp, fn))
+            except OSError:
+                pass
+    return total
+
+
+def _marker_bytes(dst: Path) -> int:
+    """Size of the `.staged_ok` marker (excluded when comparing a staged dir's
+    size to its marker-less source)."""
+    try:
+        return (dst / ".staged_ok").stat().st_size
+    except OSError:
+        return 0
+
+
+def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
+    """Copy a manifest's shard mmap dirs to a fast local `stage_dir` and return a
+    new manifest path (written under stage_dir) whose `mmap_dir` fields point at
+    the staged copies. Idempotent: a shard already present with a matching byte
+    size is not re-copied.
+
+    Why: SEISMIC serves by mmap'ing the forward index; on a 9p/virtiofs/NFS mount
+    each random page fault costs ~0.5 ms (measured 9p 2026-07-18: ~1830 faults/s),
+    so a query that faults ~15 k pages takes ~8 s and page cache does not hold.
+    On a native local FS the same faults run ~160–240× faster (~300 k/s) AND stay
+    resident — the WI-1 warm p50 ~47 ms path. This is the portable fix: point
+    SFU_SEISMIC_STAGE_DIR at native block storage. A DO droplet with the index
+    already on its local disk needs no staging (this is a no-op there); it exists
+    for hosts where the index arrives on a slow/passthrough mount.
+    """
+    import shutil
+    repo_root = Path(__file__).resolve().parents[3]
+    src_p = Path(manifest_path)
+    if not src_p.is_absolute() and not src_p.exists():
+        src_p = repo_root / manifest_path
+    data = json.load(open(src_p))
+    shards = data.get("shards") if isinstance(data, dict) else None
+    if not shards:
+        return manifest_path  # unknown shape — serve as-is
+    stage = Path(stage_dir)
+    stage.mkdir(parents=True, exist_ok=True)
+    for s in shards:
+        rel = s.get("mmap_dir")
+        if not rel:
+            continue
+        src = Path(rel)
+        if not src.is_absolute():
+            src = repo_root / rel
+        dst = stage / src.name
+        # Cheap idempotency: a `.staged_ok` marker records the source byte size
+        # from the completed copy. Skip when it matches — avoids re-walking the
+        # 42 GB source tree over a slow mount on every boot (that walk alone can
+        # take minutes on 9p). Only compute the source size when the marker is
+        # missing/mismatched (i.e. a genuine (re)stage is needed).
+        marker = dst / ".staged_ok"
+        want = None
+        if marker.is_file():
+            try:
+                want = int(marker.read_text().strip())
+            except (OSError, ValueError):
+                want = None
+        src_sz = _dir_size(src)
+        # Adopt an existing correct copy that lacks a marker (e.g. staged by
+        # scripts/stage_seismic_local.sh, which uses cp): size-match, then write
+        # the marker so future boots skip the source walk.
+        if dst.is_dir() and want is None and _dir_size(dst) - _marker_bytes(dst) == src_sz:
+            marker.write_text(str(src_sz)); want = src_sz
+        if dst.is_dir() and want == src_sz:
+            logger.info("SEISMIC stage: %s already staged (%.1f GB), skipping",
+                        dst.name, src_sz / 1e9)
+        else:
+            t0 = time.perf_counter()
+            logger.info("SEISMIC stage: copying %s -> %s", src.name, stage)
+            if dst.is_dir():
+                shutil.rmtree(dst)  # partial/stale copy — start clean
+            shutil.copytree(src, dst)
+            marker.write_text(str(src_sz))
+            logger.info("SEISMIC stage: %s copied (%.1f GB) in %.0fs",
+                        dst.name, src_sz / 1e9, time.perf_counter() - t0)
+        s["mmap_dir"] = str(dst)  # absolute staged path
+    staged_manifest = stage / "staged_manifest.json"
+    with open(staged_manifest, "w") as fh:
+        json.dump(data, fh)
+    return str(staged_manifest)
+
+
+def _auto_federation_mode(sample_path: str) -> str:
+    """Federation default when SFU_SEISMIC_FEDERATION is unset: 'sequential' when
+    the shards sit on a slow passthrough FS (see _SLOW_FEDERATION_FSTYPES),
+    'parallel' on a native local disk. Portability guard — the serving default is
+    correct on both the 9p dev container and a native-ext4 droplet without any
+    per-host env tuning. An explicit env var always overrides this."""
+    fstype = _fstype_for_path(sample_path)
+    if fstype and fstype.lower() in _SLOW_FEDERATION_FSTYPES:
+        return "sequential"
+    return "parallel"
+
+
 def _guard_load_mem(next_shard_bytes: int, floor_gb: float, ctx: str) -> None:
     """Abort the load CLEANLY if pulling the next BMP shard would drive
     MemAvailable below `floor_gb`. BMP loads resident (~3.07x on disk), so a big
@@ -332,13 +469,35 @@ class ThinClientRetriever:
         from lib.thinclient.retriever import leg_metrics_delta
         return leg_metrics_delta(before)
 
+    @staticmethod
+    def _first_manifest_mmap_dir(manifest_path: str) -> str:
+        """The first shard's `mmap_dir` (repo-relative) from a shard manifest —
+        a representative path for FS-type detection. '' if unreadable."""
+        try:
+            with open(manifest_path) as fh:
+                shards = json.load(fh).get("shards", [])
+            return shards[0].get("mmap_dir", "") if shards else ""
+        except (OSError, ValueError, KeyError, IndexError):
+            return ""
+
     def _seismic_federation_mode(self) -> str:
         """The SFU_SEISMIC_FEDERATION in effect when the seismic backend served
         (parallel|sequential|hybrid), else '' when a non-seismic backend (qdrant)
-        or the seismic leg isn't on the served path."""
+        or the seismic leg isn't on the served path. Reflects the FS-aware
+        auto-default (2026-07-18) when the env var is unset."""
         if self._splade_backend != "seismic":
             return ""
-        return os.environ.get("SFU_SEISMIC_FEDERATION", "parallel").lower()
+        env = os.environ.get("SFU_SEISMIC_FEDERATION")
+        if env:
+            return env.lower()
+        # Report the mode the backend actually selected (constructed lazily).
+        if self._seismic is not None:
+            cls = type(self._seismic).__name__
+            if "Sequential" in cls:
+                return "sequential"
+            if "Parallel" in cls:
+                return "parallel"
+        return "auto"
 
     def cold_section_hint(self, query: str,
                           filters: dict | None = None) -> str | None:
@@ -572,7 +731,7 @@ class ThinClientRetriever:
 
     def _bert_vocab_map(self) -> dict:
         """bert-base-uncased token->id map — the SAME bijection the Qdrant ingest
-        used to place doc sparse vectors (scripts/spike_qdrant_sparse._vocab)."""
+        used to place doc sparse vectors (scripts/archive/spike_qdrant_sparse._vocab)."""
         if self._bert_vocab is None:
             from transformers import AutoTokenizer
             self._bert_vocab = AutoTokenizer.from_pretrained("bert-base-uncased").get_vocab()
@@ -691,12 +850,37 @@ class ThinClientRetriever:
                 if default_manifest.exists():
                     manifest = str(default_manifest)
             if manifest:
+                # Portability/perf: stage shards onto a fast local FS when
+                # SFU_SEISMIC_STAGE_DIR is set (serving off a 9p/NFS mount is
+                # ~160–240× slower per mmap fault and page cache doesn't hold —
+                # measured 2026-07-18). No-op on a droplet whose index is already
+                # on local disk. Best-effort: a staging failure logs and serves
+                # from the original manifest rather than taking the serve down.
+                stage_dir = os.environ.get("SFU_SEISMIC_STAGE_DIR")
+                if stage_dir:
+                    try:
+                        manifest = _stage_shards_local(manifest, stage_dir)
+                    except Exception:
+                        logger.exception(
+                            "SEISMIC stage to %s failed; serving from original "
+                            "manifest (slow if on 9p/NFS)", stage_dir)
                 load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")
                 # Pick the concrete serving class directly (two distinct methods,
                 # no shared mutable instance state — see sharded_seismic_backend.py).
                 # Default 'parallel' = the historical server-side fan-out; the env
                 # name/default are unchanged so served-path callers don't cascade.
-                federation = os.environ.get("SFU_SEISMIC_FEDERATION", "parallel")
+                # Default is FS-aware (portability guard, 2026-07-18): sequential
+                # on a slow passthrough FS (9p/virtiofs/nfs — parallel faults
+                # contend on one host channel there, ~13× slower cold), parallel
+                # on native local disk (droplet ext4). Env always overrides.
+                federation = os.environ.get("SFU_SEISMIC_FEDERATION")
+                if not federation:
+                    sample = repo_root / self._first_manifest_mmap_dir(manifest)
+                    federation = _auto_federation_mode(str(sample))
+                    logger.info("SEISMIC federation auto-selected '%s' (%s on %s)",
+                                federation, _fstype_for_path(str(sample)) or "unknown-fs",
+                                sample)
+                federation = federation.lower()
                 if federation == "sequential":
                     from lib.thinclient.sharded_seismic_backend import SequentialSeismicBackend
                     self._seismic = SequentialSeismicBackend.from_manifest(

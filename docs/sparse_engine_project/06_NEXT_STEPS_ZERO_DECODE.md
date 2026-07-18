@@ -47,7 +47,7 @@ invasive for the spike." That is **half right and half misleading**:
   Stock BMP is *fast* (4.7 ms, matching the [BMP paper](https://arxiv.org/abs/2405.01117)).
   R3 traded the resident decoded forward array (= the anon floor it cured) for a
   **per-query decode** (`FlatIndex::get_block` "decodes one block transiently",
-  `spike/mmap_bmp/FORK_BMP.md:75`). The 10–150× is that decode — an artifact of
+  `spike/archive/mmap_bmp/FORK_BMP.md:75`). The 10–150× is that decode — an artifact of
   choosing a *compact* layout that must be decoded, **not tested against a
   zero-decode layout**.
 
@@ -97,7 +97,7 @@ low-tens of ms) **while anon stays ~0**, because the bytes are page-cache-reside
 and read in place.
 
 ### The change (on the existing R3 fork)
-Base: `spike/mmap_bmp/R3_fork.patch` (applies clean to a fresh upstream
+Base: `spike/archive/mmap_bmp/R3_fork.patch` (applies clean to a fresh upstream
 `pisa-engine/BMP` clone). Build into a throwaway venv, **never** project `.venv`
 (`FORK_BMP.md` isolation rules).
 
@@ -121,9 +121,9 @@ stock; spending that headroom on a directly-readable layout is the trade.
 ### Run (reuse the P2 harness unchanged)
 ```bash
 BMP_LOAD=flat MMAP_BMP_SITE=<fork-venv>/lib/python3.11/site-packages \
-  <fork-venv>/bin/python3 spike/mmap_bmp/measure_p2_cold.py \
-    --flat 'spike/mmap_bmp/persona_med_bio/splade_00[0-3].bmflat' \
-    --baseline spike/mmap_bmp/out --qdrant-p50 66 \
+  <fork-venv>/bin/python3 spike/archive/mmap_bmp/measure_p2_cold.py \
+    --flat 'spike/archive/mmap_bmp/persona_med_bio/splade_00[0-3].bmflat' \
+    --baseline spike/archive/mmap_bmp/out --qdrant-p50 66 \
     --result-file data/eval_results/p2_zerodecode_med_bio_4shard.json
 ```
 Use the **4-shard subset** (≈2.4 GB flat, ≈2 GB anon) — same as the clean P2 run —
@@ -181,14 +181,14 @@ makes §4's follow-ons non-optional before any re-open commits.
 3. **Re-enter the gate ladder at P3/G4** (end-to-end RRF NDCG@10 ±0.005) before
    any spin-off — the original kill criteria still apply.
 
-Eval: `spike/mmap_bmp/measure_p2_cold.py` (harness edited to record #blocks-scored;
+Eval: `spike/archive/mmap_bmp/measure_p2_cold.py` (harness edited to record #blocks-scored;
 same `posix_fadvise` weak-cold mode as the 696 ms run, since `sudo drop_caches` is
 unavailable in this container — apples-to-apples). Result file:
 `data/eval_results/p2_zerodecode_med_bio_4shard.json`. G1 evidence:
-`data/eval_results/p2_zerodecode_G1_1m.json` + `spike/mmap_bmp/compare_zerodecode_persona.py`.
+`data/eval_results/p2_zerodecode_G1_1m.json` + `spike/archive/mmap_bmp/compare_zerodecode_persona.py`.
 
 **Reproducibility:** the zero-decode build is `upstream pisa-engine/BMP @ c0a17ffc`
-+ `spike/mmap_bmp/R3_fork.patch` (R3-v1, the G2 cure) + `spike/mmap_bmp/R3v2_delta.patch`
++ `spike/archive/mmap_bmp/R3_fork.patch` (R3-v1, the G2 cure) + `spike/archive/mmap_bmp/R3v2_delta.patch`
 (the zero-decode forward-region rewrite: `FlatPair`/`TermEntry` POD + `get_block_views`
 `cast_slice` reader + `flat_block_score` + `blocks_scored` counter). The delta applies
 clean on a fresh R3-v1 clone (verified). Build: `maturin build --release` from `python/`

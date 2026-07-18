@@ -6,14 +6,19 @@
 prefetch need a production query log to size the hot set; see Q12/Q12b which
 synthesize a production-like log because none existed).
 
-WHAT IS LOGGED (privacy-sane — never raw identifying user data):
+WHAT IS LOGGED (privacy-sane — never the true raw query text):
   - ts              UTC ISO8601 timestamp (second precision)
-  - query_norm      lowercased, whitespace-collapsed, punctuation-trimmed text
-                    (the skew/repeat analysis key; the raw query is NOT stored
-                    unless SFU_SERVE_QUERY_LOG_RAW=1 — default off, PII-safe)
-  - query_hash      sha1(query_norm)[:16] — the stable, linkable id for replay
-                    + dedup even when raw text isn't stored (the join key for
-                    cross-pass repeat-traffic analysis)
+  - query_norm      EMPTY by default (""). Only populated when
+                    SFU_SERVE_QUERY_LOG_RAW=1 (opt-in, default off), AND even
+                    then it is the NORMALIZED text (lowercased, whitespace-
+                    collapsed, outer-punctuation-trimmed, truncated to 200
+                    chars) — NEVER the true raw query. The normalization is the
+                    privacy boundary: "Machine Learning!" → "machine, learning".
+                    Default "" keeps the log PII-free (only the hash below).
+  - query_hash      sha1(query_norm)[:16] — ALWAYS logged. The stable, linkable
+                    id for replay + dedup + the skew key, computed from the
+                    normalized text. This is the join key for cross-pass
+                    repeat-traffic analysis when raw text isn't stored.
   - k               the served top_k
   - mode            'federated'|'thinclient'|'openalex' (the dispatch path)
   - backend         the SPLADE leg backend in effect (seismic|qdrant|…) or ''
@@ -30,6 +35,19 @@ WHAT IS LOGGED (privacy-sane — never raw identifying user data):
   - filters         boolean presence of year/type/OA filters (shape only, not values)
   - session         a short random id per server process (group-by for within-
                     session repeat Traffic; not a user id)
+  - cache_hit       (WI-17) True when this query was served from the read-
+                    through result cache (no retrieval work done); False when it
+                    ran the full retrieval path; absent/None when the result
+                    cache is disabled. Lets the cache efficacy + the ratio of
+                    repeat-to-fresh traffic be measured from the existing log.
+  - speculative     (WI-18) True when this execution was a searchbar keystroke
+                    speculation (the result-cache priming the speculation path
+                    fires), NOT a real Enter-submit. Absent/None for ordinary
+                    traffic so analytics + the cache_hit field stay
+                    uncontaminated (a speculation that lands a cache HIT is
+                    cache_hit=true AND speculative=true; a fresh store is
+                    cache_hit=false + speculative=true). Lets the speculation
+                    hit-rate / waste / interference be measured from the log.
 
 LATENCY: ≈0 on the hot path. The search path hands the logger a dict of already-
 measured leg latencies (the retriever already calls `_record_leg`; this just
@@ -49,7 +67,9 @@ ENV:
   SFU_SERVE_QUERY_LOG=0       .disable in one env (the kill switch)
   SFU_SERVE_QUERY_LOG_PATH  path (default data/eval_results/serve_query_log.jsonl)
   SFU_SERVE_QUERY_LOG_MAX_BYTES  per-file cap (default 64 MiB)
-  SFU_SERVE_QUERY_LOG_RAW   =1 store raw query text too (default OFF; PII)
+  SFU_SERVE_QUERY_LOG_RAW   =1 store the NORMALIZED query text (truncated 200,
+                              lowercased/whitespace-collapsed — never the true
+                              raw query; default OFF for PII minimality)
   SFU_SERVE_QUERY_LOG_BUFFER  queue depth before drop (default 8192)
 
 Goes into the owning doc per the same-commit doc rule: `docs/THIN_CLIENT_SWAP.md`
@@ -161,11 +181,20 @@ class QueryLogger:
     def log(self, *, query: str, k: int, mode: str, backend: str = "",
              federation: str = "", leg_ms: dict | None = None,
              n_results: int = 0, result_oaids: list | None = None,
-             filtered: bool = False) -> None:
+             filtered: bool = False, cache_hit: bool | None = None,
+             speculative: bool | None = None) -> None:
         """Non-blocking. Builds the entry (sha1 of norm query + result oaid list)
         on the CALLING thread (µs for the sizes here), then put_nowait to the
         writer queue. On backpressure (queue full) the entry is dropped and
-        counted — a query is NEVER delayed by logging."""
+        counted — a query is NEVER delayed by logging.
+
+        ``speculative`` (WI-18): True when this execution was a searchbar
+        keystroke speculation (not a real Enter-submit). Default None (absent
+        in the JSON) so non-speculative traffic is unchanged — keeps the wave-7
+        ``cache_hit`` field uncontaminated (a speculation that's a cache HIT is
+        still cache_hit=true AND speculative=true; a fresh store is
+        cache_hit=false + speculative=true). The caller (or the serve-side
+        contextvar patch) sets it."""
         if not self.enabled:
             return
         qnorm = _normalize_query(query)
@@ -185,6 +214,11 @@ class QueryLogger:
             "result_fp": rfp,
             "filtered": bool(filtered),
             "session": self._session,
+            # WI-17: None (absent) when the result cache is off; True/False when on.
+            "cache_hit": cache_hit,
+            # WI-18: True when this was a searchbar speculation (term 5). None
+            # (absent) for ordinary traffic so analytics stays uncontaminated.
+            "speculative": speculative,
         }
         try:
             self._q.put_nowait(entry)
@@ -298,14 +332,21 @@ def _int_env(name: str, default: int) -> int:
 def log_serve_query(*, query: str, k: int, mode: str, backend: str = "",
                     federation: str = "", leg_ms: dict | None = None,
                     n_results: int = 0, result_oaids: list | None = None,
-                    filtered: bool = False) -> None:
+                    filtered: bool = False, cache_hit: bool | None = None,
+                    speculative: bool | None = None) -> None:
     """Process-wide entry point. The served path calls this once per query with
     the leg latencies it already measured + the result oaid order; this sinks
-    them to the JSONL. Returns immediately (non-blocking); no-op when disabled."""
+    them to the JSONL. Returns immediately (non-blocking); no-op when disabled.
+    ``cache_hit`` (WI-17) flows through verbatim; pass None when the result
+    cache is off so the field is absent (not False) for pre-WI-17 parity.
+    ``speculative`` (WI-18) likewise — pass True for a searchbar speculation
+    execution so it's marked in the log; pass None (default) for ordinary
+    traffic so the field is absent."""
     QueryLogger.get().log(query=query, k=k, mode=mode, backend=backend,
                           federation=federation, leg_ms=leg_ms,
                           n_results=n_results, result_oaids=result_oaids,
-                          filtered=filtered)
+                          filtered=filtered, cache_hit=cache_hit,
+                          speculative=speculative)
 
 
 import atexit

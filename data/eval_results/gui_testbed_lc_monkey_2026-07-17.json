@@ -1,0 +1,1303 @@
+{
+  "layer": "L-C monkey",
+  "date": "2026-07-17",
+  "wall_ms": 313263,
+  "summary": {
+    "runs": 50,
+    "passed": 50,
+    "failed": 0,
+    "regression_seeds": 0,
+    "failures": 124
+  },
+  "matrix": {
+    "seeds": 10,
+    "modes": [
+      "no-chaos",
+      "backend-dead",
+      "hang",
+      "429-storm",
+      "storage-corrupt"
+    ],
+    "attack_ms": 5000
+  },
+  "per_run": [
+    {
+      "seed": 1000,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 0,
+      "overflow": 1,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1000.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1000.trace.zip",
+        "failures": 1
+      }
+    },
+    {
+      "seed": 1000,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 3,
+      "overflow": 2,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1000.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1000.trace.zip",
+        "failures": 5
+      }
+    },
+    {
+      "seed": 1000,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 3,
+      "overflow": 3,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1000.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1000.trace.zip",
+        "failures": 6
+      }
+    },
+    {
+      "seed": 1000,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 3,
+      "overflow": 4,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1000.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1000.trace.zip",
+        "failures": 7
+      }
+    },
+    {
+      "seed": 1000,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 3,
+      "overflow": 5,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1000.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1000.trace.zip",
+        "failures": 8
+      }
+    },
+    {
+      "seed": 1001,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 3,
+      "overflow": 8,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1001.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1001.trace.zip",
+        "failures": 11
+      }
+    },
+    {
+      "seed": 1001,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 6,
+      "overflow": 11,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1001.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1001.trace.zip",
+        "failures": 17
+      }
+    },
+    {
+      "seed": 1001,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 6,
+      "overflow": 14,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1001.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1001.trace.zip",
+        "failures": 20
+      }
+    },
+    {
+      "seed": 1001,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 6,
+      "overflow": 17,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1001.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1001.trace.zip",
+        "failures": 23
+      }
+    },
+    {
+      "seed": 1001,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 6,
+      "overflow": 20,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1001.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1001.trace.zip",
+        "failures": 26
+      }
+    },
+    {
+      "seed": 1002,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 6,
+      "overflow": 21,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1002.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1002.trace.zip",
+        "failures": 27
+      }
+    },
+    {
+      "seed": 1002,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 9,
+      "overflow": 22,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1002.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1002.trace.zip",
+        "failures": 31
+      }
+    },
+    {
+      "seed": 1002,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 9,
+      "overflow": 23,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1002.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1002.trace.zip",
+        "failures": 32
+      }
+    },
+    {
+      "seed": 1002,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 9,
+      "overflow": 24,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1002.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1002.trace.zip",
+        "failures": 33
+      }
+    },
+    {
+      "seed": 1002,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 9,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1002.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1002.trace.zip",
+        "failures": 34
+      }
+    },
+    {
+      "seed": 1003,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 9,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1003.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1003.trace.zip",
+        "failures": 34
+      }
+    },
+    {
+      "seed": 1003,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 12,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1003.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1003.trace.zip",
+        "failures": 37
+      }
+    },
+    {
+      "seed": 1003,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 12,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1003.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1003.trace.zip",
+        "failures": 37
+      }
+    },
+    {
+      "seed": 1003,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 12,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1003.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1003.trace.zip",
+        "failures": 37
+      }
+    },
+    {
+      "seed": 1003,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 12,
+      "overflow": 25,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1003.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1003.trace.zip",
+        "failures": 37
+      }
+    },
+    {
+      "seed": 1004,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 12,
+      "overflow": 27,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1004.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1004.trace.zip",
+        "failures": 39
+      }
+    },
+    {
+      "seed": 1004,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 15,
+      "overflow": 29,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1004.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1004.trace.zip",
+        "failures": 44
+      }
+    },
+    {
+      "seed": 1004,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 15,
+      "overflow": 31,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1004.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1004.trace.zip",
+        "failures": 46
+      }
+    },
+    {
+      "seed": 1004,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 15,
+      "overflow": 33,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1004.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1004.trace.zip",
+        "failures": 48
+      }
+    },
+    {
+      "seed": 1004,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 15,
+      "overflow": 35,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1004.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1004.trace.zip",
+        "failures": 50
+      }
+    },
+    {
+      "seed": 1005,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 15,
+      "overflow": 37,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1005.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1005.trace.zip",
+        "failures": 52
+      }
+    },
+    {
+      "seed": 1005,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 18,
+      "overflow": 39,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1005.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1005.trace.zip",
+        "failures": 57
+      }
+    },
+    {
+      "seed": 1005,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 18,
+      "overflow": 41,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1005.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1005.trace.zip",
+        "failures": 59
+      }
+    },
+    {
+      "seed": 1005,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 18,
+      "overflow": 43,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1005.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1005.trace.zip",
+        "failures": 61
+      }
+    },
+    {
+      "seed": 1005,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 18,
+      "overflow": 45,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1005.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1005.trace.zip",
+        "failures": 63
+      }
+    },
+    {
+      "seed": 1006,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 18,
+      "overflow": 48,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1006.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1006.trace.zip",
+        "failures": 66
+      }
+    },
+    {
+      "seed": 1006,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 21,
+      "overflow": 51,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1006.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1006.trace.zip",
+        "failures": 72
+      }
+    },
+    {
+      "seed": 1006,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 21,
+      "overflow": 54,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1006.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1006.trace.zip",
+        "failures": 75
+      }
+    },
+    {
+      "seed": 1006,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 21,
+      "overflow": 57,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1006.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1006.trace.zip",
+        "failures": 78
+      }
+    },
+    {
+      "seed": 1006,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 21,
+      "overflow": 60,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1006.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1006.trace.zip",
+        "failures": 81
+      }
+    },
+    {
+      "seed": 1007,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 21,
+      "overflow": 64,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1007.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1007.trace.zip",
+        "failures": 85
+      }
+    },
+    {
+      "seed": 1007,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 26,
+      "overflow": 68,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1007.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1007.trace.zip",
+        "failures": 94
+      }
+    },
+    {
+      "seed": 1007,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 26,
+      "overflow": 72,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1007.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1007.trace.zip",
+        "failures": 98
+      }
+    },
+    {
+      "seed": 1007,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 28,
+      "overflow": 76,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1007.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1007.trace.zip",
+        "failures": 104
+      }
+    },
+    {
+      "seed": 1007,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 28,
+      "overflow": 80,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1007.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1007.trace.zip",
+        "failures": 108
+      }
+    },
+    {
+      "seed": 1008,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 28,
+      "overflow": 82,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1008.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1008.trace.zip",
+        "failures": 110
+      }
+    },
+    {
+      "seed": 1008,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 31,
+      "overflow": 84,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1008.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1008.trace.zip",
+        "failures": 115
+      }
+    },
+    {
+      "seed": 1008,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 31,
+      "overflow": 86,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1008.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1008.trace.zip",
+        "failures": 117
+      }
+    },
+    {
+      "seed": 1008,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 31,
+      "overflow": 88,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1008.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1008.trace.zip",
+        "failures": 119
+      }
+    },
+    {
+      "seed": 1008,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 31,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1008.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1008.trace.zip",
+        "failures": 121
+      }
+    },
+    {
+      "seed": 1009,
+      "mode": "no-chaos",
+      "pageerrors": 0,
+      "console_errors": 31,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1009.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_no-chaos_seed1009.trace.zip",
+        "failures": 121
+      }
+    },
+    {
+      "seed": 1009,
+      "mode": "backend-dead",
+      "pageerrors": 0,
+      "console_errors": 34,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1009.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_backend-dead_seed1009.trace.zip",
+        "failures": 124
+      }
+    },
+    {
+      "seed": 1009,
+      "mode": "hang",
+      "pageerrors": 0,
+      "console_errors": 34,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1009.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_hang_seed1009.trace.zip",
+        "failures": 124
+      }
+    },
+    {
+      "seed": 1009,
+      "mode": "429-storm",
+      "pageerrors": 0,
+      "console_errors": 34,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1009.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_429-storm_seed1009.trace.zip",
+        "failures": 124
+      }
+    },
+    {
+      "seed": 1009,
+      "mode": "storage-corrupt",
+      "pageerrors": 0,
+      "console_errors": 34,
+      "overflow": 90,
+      "passed": true,
+      "artifacts": {
+        "screenshot": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1009.png",
+        "trace": "data/eval_results/gui_testbed_artifacts/2026-07-17/monkey_storage-corrupt_seed1009.trace.zip",
+        "failures": 124
+      }
+    }
+  ],
+  "failing_seeds": [],
+  "regression_file": "scripts/gui_testbed/regression_seeds.json",
+  "bars": {
+    "zero_pageerror_across_matrix": true,
+    "every_failure_replay_confirmed": true
+  },
+  "failures": [
+    {
+      "kind": "overflow",
+      "detail": "16px at monkey seed=1000 no-chaos tick#2",
+      "t": 1784314224854
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314227487
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314227510
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1000 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314227511
+    },
+    {
+      "kind": "overflow",
+      "detail": "16px at monkey seed=1000 backend-dead tick#2",
+      "t": 1784314231137
+    },
+    {
+      "kind": "overflow",
+      "detail": "16px at monkey seed=1000 hang tick#2",
+      "t": 1784314237383
+    },
+    {
+      "kind": "overflow",
+      "detail": "16px at monkey seed=1000 429-storm tick#2",
+      "t": 1784314243532
+    },
+    {
+      "kind": "overflow",
+      "detail": "16px at monkey seed=1000 storage-corrupt tick#2",
+      "t": 1784314249720
+    },
+    {
+      "kind": "overflow",
+      "detail": "28px at monkey seed=1001 no-chaos tick#0",
+      "t": 1784314253839
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1001 no-chaos tick#1",
+      "t": 1784314254853
+    },
+    {
+      "kind": "overflow",
+      "detail": "12px at monkey seed=1001 no-chaos tick#4",
+      "t": 1784314257889
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314258623
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314258629
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1001 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314258630
+    },
+    {
+      "kind": "overflow",
+      "detail": "28px at monkey seed=1001 backend-dead tick#0",
+      "t": 1784314260224
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1001 backend-dead tick#1",
+      "t": 1784314261247
+    },
+    {
+      "kind": "overflow",
+      "detail": "12px at monkey seed=1001 backend-dead tick#4",
+      "t": 1784314264299
+    },
+    {
+      "kind": "overflow",
+      "detail": "28px at monkey seed=1001 hang tick#0",
+      "t": 1784314266545
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1001 hang tick#1",
+      "t": 1784314267558
+    },
+    {
+      "kind": "overflow",
+      "detail": "12px at monkey seed=1001 hang tick#4",
+      "t": 1784314270597
+    },
+    {
+      "kind": "overflow",
+      "detail": "28px at monkey seed=1001 429-storm tick#0",
+      "t": 1784314272874
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1001 429-storm tick#1",
+      "t": 1784314273888
+    },
+    {
+      "kind": "overflow",
+      "detail": "12px at monkey seed=1001 429-storm tick#4",
+      "t": 1784314276929
+    },
+    {
+      "kind": "overflow",
+      "detail": "28px at monkey seed=1001 storage-corrupt tick#0",
+      "t": 1784314279207
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1001 storage-corrupt tick#1",
+      "t": 1784314280228
+    },
+    {
+      "kind": "overflow",
+      "detail": "12px at monkey seed=1001 storage-corrupt tick#4",
+      "t": 1784314283278
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1002 no-chaos tick#1",
+      "t": 1784314286574
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314290560
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314290586
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1002 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314290587
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1002 backend-dead tick#1",
+      "t": 1784314293178
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1002 hang tick#1",
+      "t": 1784314299640
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1002 429-storm tick#1",
+      "t": 1784314306110
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1002 storage-corrupt tick#1",
+      "t": 1784314312599
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1003 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314322573
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1003 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314322599
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1003 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314322600
+    },
+    {
+      "kind": "overflow",
+      "detail": "11px at monkey seed=1004 no-chaos tick#0",
+      "t": 1784314348647
+    },
+    {
+      "kind": "overflow",
+      "detail": "29px at monkey seed=1004 no-chaos tick#4",
+      "t": 1784314352695
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1004 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314353361
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1004 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314353386
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1004 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314353388
+    },
+    {
+      "kind": "overflow",
+      "detail": "11px at monkey seed=1004 backend-dead tick#0",
+      "t": 1784314354963
+    },
+    {
+      "kind": "overflow",
+      "detail": "29px at monkey seed=1004 backend-dead tick#4",
+      "t": 1784314359032
+    },
+    {
+      "kind": "overflow",
+      "detail": "11px at monkey seed=1004 hang tick#0",
+      "t": 1784314361344
+    },
+    {
+      "kind": "overflow",
+      "detail": "29px at monkey seed=1004 hang tick#4",
+      "t": 1784314365403
+    },
+    {
+      "kind": "overflow",
+      "detail": "11px at monkey seed=1004 429-storm tick#0",
+      "t": 1784314367612
+    },
+    {
+      "kind": "overflow",
+      "detail": "29px at monkey seed=1004 429-storm tick#4",
+      "t": 1784314371661
+    },
+    {
+      "kind": "overflow",
+      "detail": "11px at monkey seed=1004 storage-corrupt tick#0",
+      "t": 1784314373911
+    },
+    {
+      "kind": "overflow",
+      "detail": "29px at monkey seed=1004 storage-corrupt tick#4",
+      "t": 1784314377963
+    },
+    {
+      "kind": "overflow",
+      "detail": "13px at monkey seed=1005 no-chaos tick#2",
+      "t": 1784314382287
+    },
+    {
+      "kind": "overflow",
+      "detail": "17px at monkey seed=1005 no-chaos tick#3",
+      "t": 1784314383298
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1005 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314384770
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1005 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314384775
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1005 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314384777
+    },
+    {
+      "kind": "overflow",
+      "detail": "13px at monkey seed=1005 backend-dead tick#2",
+      "t": 1784314388404
+    },
+    {
+      "kind": "overflow",
+      "detail": "17px at monkey seed=1005 backend-dead tick#3",
+      "t": 1784314389420
+    },
+    {
+      "kind": "overflow",
+      "detail": "13px at monkey seed=1005 hang tick#2",
+      "t": 1784314394511
+    },
+    {
+      "kind": "overflow",
+      "detail": "17px at monkey seed=1005 hang tick#3",
+      "t": 1784314395522
+    },
+    {
+      "kind": "overflow",
+      "detail": "13px at monkey seed=1005 429-storm tick#2",
+      "t": 1784314400582
+    },
+    {
+      "kind": "overflow",
+      "detail": "17px at monkey seed=1005 429-storm tick#3",
+      "t": 1784314401594
+    },
+    {
+      "kind": "overflow",
+      "detail": "13px at monkey seed=1005 storage-corrupt tick#2",
+      "t": 1784314406716
+    },
+    {
+      "kind": "overflow",
+      "detail": "17px at monkey seed=1005 storage-corrupt tick#3",
+      "t": 1784314407733
+    },
+    {
+      "kind": "overflow",
+      "detail": "19px at monkey seed=1006 no-chaos tick#1",
+      "t": 1784314411782
+    },
+    {
+      "kind": "overflow",
+      "detail": "32px at monkey seed=1006 no-chaos tick#3",
+      "t": 1784314413806
+    },
+    {
+      "kind": "overflow",
+      "detail": "9px at monkey seed=1006 no-chaos tick#4",
+      "t": 1784314414820
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1006 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314415396
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1006 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314415418
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1006 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314415422
+    },
+    {
+      "kind": "overflow",
+      "detail": "19px at monkey seed=1006 backend-dead tick#1",
+      "t": 1784314417997
+    },
+    {
+      "kind": "overflow",
+      "detail": "32px at monkey seed=1006 backend-dead tick#3",
+      "t": 1784314420038
+    },
+    {
+      "kind": "overflow",
+      "detail": "9px at monkey seed=1006 backend-dead tick#4",
+      "t": 1784314421057
+    },
+    {
+      "kind": "overflow",
+      "detail": "19px at monkey seed=1006 hang tick#1",
+      "t": 1784314424345
+    },
+    {
+      "kind": "overflow",
+      "detail": "32px at monkey seed=1006 hang tick#3",
+      "t": 1784314426372
+    },
+    {
+      "kind": "overflow",
+      "detail": "9px at monkey seed=1006 hang tick#4",
+      "t": 1784314427390
+    },
+    {
+      "kind": "overflow",
+      "detail": "19px at monkey seed=1006 429-storm tick#1",
+      "t": 1784314430660
+    },
+    {
+      "kind": "overflow",
+      "detail": "32px at monkey seed=1006 429-storm tick#3",
+      "t": 1784314432689
+    },
+    {
+      "kind": "overflow",
+      "detail": "9px at monkey seed=1006 429-storm tick#4",
+      "t": 1784314433707
+    },
+    {
+      "kind": "overflow",
+      "detail": "19px at monkey seed=1006 storage-corrupt tick#1",
+      "t": 1784314436889
+    },
+    {
+      "kind": "overflow",
+      "detail": "32px at monkey seed=1006 storage-corrupt tick#3",
+      "t": 1784314438917
+    },
+    {
+      "kind": "overflow",
+      "detail": "9px at monkey seed=1006 storage-corrupt tick#4",
+      "t": 1784314439932
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1007 no-chaos tick#0",
+      "t": 1784314442179
+    },
+    {
+      "kind": "overflow",
+      "detail": "38px at monkey seed=1007 no-chaos tick#2",
+      "t": 1784314444204
+    },
+    {
+      "kind": "overflow",
+      "detail": "21px at monkey seed=1007 no-chaos tick#3",
+      "t": 1784314445219
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1007 no-chaos tick#4",
+      "t": 1784314446233
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314446870
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314446894
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314446894
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1007 backend-dead tick#0",
+      "t": 1784314448451
+    },
+    {
+      "kind": "overflow",
+      "detail": "38px at monkey seed=1007 backend-dead tick#2",
+      "t": 1784314450486
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314450573
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314450573
+    },
+    {
+      "kind": "overflow",
+      "detail": "21px at monkey seed=1007 backend-dead tick#3",
+      "t": 1784314451510
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1007 backend-dead tick#4",
+      "t": 1784314452540
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1007 hang tick#0",
+      "t": 1784314455005
+    },
+    {
+      "kind": "overflow",
+      "detail": "38px at monkey seed=1007 hang tick#2",
+      "t": 1784314457031
+    },
+    {
+      "kind": "overflow",
+      "detail": "21px at monkey seed=1007 hang tick#3",
+      "t": 1784314458049
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1007 hang tick#4",
+      "t": 1784314459063
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1007 429-storm tick#0",
+      "t": 1784314461387
+    },
+    {
+      "kind": "overflow",
+      "detail": "38px at monkey seed=1007 429-storm tick#2",
+      "t": 1784314463411
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 429-storm :: Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+      "t": 1784314463507
+    },
+    {
+      "kind": "overflow",
+      "detail": "21px at monkey seed=1007 429-storm tick#3",
+      "t": 1784314464428
+    },
+    {
+      "kind": "overflow",
+      "detail": "6px at monkey seed=1007 429-storm tick#4",
+      "t": 1784314465439
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1007 429-storm :: Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+      "t": 1784314465619
+    },
+    {
+      "kind": "overflow",
+      "detail": "18px at monkey seed=1007 storage-corrupt tick#0",
+      "t": 1784314467780
+    },
+    {
+      "kind": "overflow",
+      "detail": "38px at monkey seed=1007 storage-corrupt tick#2",
+      "t": 1784314469806
+    },
+    {
+      "kind": "overflow",
+      "detail": "21px at monkey seed=1007 storage-corrupt tick#3",
+      "t": 1784314470825
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1007 storage-corrupt tick#4",
+      "t": 1784314471841
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1008 no-chaos tick#0",
+      "t": 1784314474038
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1008 no-chaos tick#4",
+      "t": 1784314478089
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1008 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314478537
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1008 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314478543
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1008 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314478544
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1008 backend-dead tick#0",
+      "t": 1784314480118
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1008 backend-dead tick#4",
+      "t": 1784314484191
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1008 hang tick#0",
+      "t": 1784314486247
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1008 hang tick#4",
+      "t": 1784314490301
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1008 429-storm tick#0",
+      "t": 1784314492396
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1008 429-storm tick#4",
+      "t": 1784314496448
+    },
+    {
+      "kind": "overflow",
+      "detail": "14px at monkey seed=1008 storage-corrupt tick#0",
+      "t": 1784314498472
+    },
+    {
+      "kind": "overflow",
+      "detail": "5px at monkey seed=1008 storage-corrupt tick#4",
+      "t": 1784314502525
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1009 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314509292
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1009 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314509315
+    },
+    {
+      "kind": "console.error",
+      "detail": "monkey seed=1009 backend-dead :: Failed to load resource: net::ERR_FAILED",
+      "t": 1784314509318
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3818669984,
+  "forward_seconds": 75.60630217799999,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18812242,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40390307,
+  "postings_rewrite_seconds": 42.112661343,
+  "src": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.mmap",
+  "total_seconds": 126.589330612,
+  "verify_docs_checked": 2001
+}

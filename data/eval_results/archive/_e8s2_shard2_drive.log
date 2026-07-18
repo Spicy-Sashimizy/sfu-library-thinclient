@@ -1,0 +1,45 @@
+==== shard 2 mode=reorderonly phase=build start 2026-07-13T20:57:29Z ====
+[reorder 2026-07-13T20:57:29Z] data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.v2.mmap -> data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.v2.mmap -> data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap",
+  "forward_payload_bytes_moved": 3851578696,
+  "forward_seconds": 99.277560149,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18797227,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40371520,
+  "postings_rewrite_seconds": 39.137264169,
+  "src": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.v2.mmap",
+  "total_seconds": 148.916312831,
+  "verify_docs_checked": 2001
+}
+==== shard 2 phase=build COMPLETE 2026-07-13T20:59:59Z ====
+==== shard 2 mode=full phase=gate start 2026-07-13T21:35:51Z ====
+[gate 2026-07-13T21:35:51Z] v2-dir=data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+21:37:04 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+21:37:08 INFO SPLADE ONNX model loaded (CPU)
+[e8-gates] 100 queries encoded; twins loaded (18797227 docs)
+[e8-gates] overlap@10 vs f16: v2 0.9930 (min 0.90), dv1 0.9840 (min 0.90)
+[e8-gates] T1 seq-vs-warm: hard=0 swaps=0
+[e8-gates] dv1 rep0: cold p50 84.27 ms, warm p50 7.778 ms, majflt 70977
+[e8-gates] v2 rep0: cold p50 58.8 ms, warm p50 7.739 ms, majflt 38588
+[e8-gates] v2 rep1: cold p50 60.01 ms, warm p50 7.459 ms, majflt 38588
+[e8-gates] dv1 rep1: cold p50 79.44 ms, warm p50 7.661 ms, majflt 70977
+[e8-gates] dv1 rep2: cold p50 81.44 ms, warm p50 8.121 ms, majflt 70977
+[e8-gates] v2 rep2: cold p50 58.73 ms, warm p50 7.65 ms, majflt 38588
+{
+  "verdict": "E8_STAGE1_ALL_GATES_PASS",
+  "gates": {
+    "a_quality": true,
+    "b_size": true,
+    "c_latency": true,
+    "d_t1": true
+  },
+  "warm_p50": 0.9835,
+  "cold_p50": 0.722,
+  "majflt_cold": 0.5437
+}
+result -> data/eval_results/e8_stage2_shard2_20260713.json
+==== shard 2 phase=gate COMPLETE 2026-07-13T21:43:53Z ====

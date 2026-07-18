@@ -1,0 +1,4 @@
+warm OK
+direct _run_leg splade: ok= True n= 5
+direct _run_leg bm25f: ok= True n= 5
+search_rrf_degraded: degraded= [] results= 5

@@ -288,7 +288,7 @@ User Query: "indigenous language preservation programs Canada"
 
 ### Phase 6: Evaluation & Documentation
 - [ ] Write SFU-specific evaluation query set (`data/sfu_eval_queries.json`)
-- [ ] Build evaluation script (`scripts/evaluate_sfu_queries.py`)
+- [ ] Build evaluation script (`scripts/experiments/evaluate_sfu_queries.py`)
 - [ ] Run full evaluation and record final metrics
 - [ ] Document results in this plan (update Benchmark Results section)
 - [ ] Write deployment guide for future model updates
@@ -550,7 +550,7 @@ tensorboard --logdir logs/sfu-embed-training --port 6006
 
 ```bash
 # Step 3: Benchmark the trained model against all baselines
-python scripts/benchmark_embeddings.py \
+python scripts/experiments/benchmark_embeddings.py \
   --custom-model models/sfu-academic-embed-v1 \
   --queries 50 --k 10
 ```
@@ -659,7 +659,7 @@ export SFU_FEATURE_LOCAL_EMBEDDING_ENABLED=true
 
 | Script | Purpose | Status |
 |--------|---------|--------|
-| `scripts/benchmark_embeddings.py` | Compare models on 50 queries, NDCG@10 | Done, tested |
+| `scripts/experiments/benchmark_embeddings.py` | Compare models on 50 queries, NDCG@10 | Done, tested |
 | `scripts/generate_training_data.py` | Generate triplets from OpenAlex + synthetic queries | Done, needs Solr integration |
 | `scripts/train_embedding_model.py` | Fine-tune MiniLM/BGE with sentence-transformers | Done, tested |
 | `scripts/quantize_model.py` | ONNX export + INT8 quantization | Done |
@@ -671,7 +671,7 @@ export SFU_FEATURE_LOCAL_EMBEDDING_ENABLED=true
 | Script | Purpose | Effort |
 |--------|---------|--------|
 | `scripts/generate_sfu_training_data.py` | Solr-aware training data generation (the 4 strategies above) | 1-2 days |
-| `scripts/evaluate_sfu_queries.py` | Benchmark with SFU-specific queries (not generic academic) | 1 day |
+| `scripts/experiments/evaluate_sfu_queries.py` | Benchmark with SFU-specific queries (not generic academic) | 1 day |
 
 ---
 

@@ -1,0 +1,13 @@
+rep 1 v2 hybrid: cold 1172.1214499993948 warm 115.44924400004675 vmswap 0.0
+rep 1 v1 hybrid: cold 1187.7646730026754 warm 123.57019199771457 vmswap 0.0
+rep 2 v2 hybrid: cold 1213.469812002586 warm 117.42494999998598 vmswap 0.0
+rep 2 v1 hybrid: cold 1105.2694530008011 warm 119.83701300050598 vmswap 0.0
+rep 3 v2 hybrid: cold 1080.1577849997557 warm 116.38523199871997 vmswap 0.0
+rep 3 v1 hybrid: cold 997.5688060003449 warm 122.85825200160616 vmswap 0.0
+rep 4 v2 hybrid: cold 985.5169839975133 warm 118.0891750009323 vmswap 0.0
+rep 4 v1 hybrid: cold 982.3124649992678 warm 117.90439999822411 vmswap 0.0
+rep 5 v2 hybrid: cold 1006.4654890011298 warm 125.67501699959394 vmswap 0.0
+rep 5 v1 hybrid: cold 1106.7555929985247 warm 138.52446600139956 vmswap 0.0
+rep 6 v2 hybrid: cold 441.66000699988217 warm 125.34877099824371 vmswap 0.0
+rep 6 v1 hybrid: cold 978.9781020008377 warm 125.01618199894438 vmswap 0.0
+HYBRID RE-BENCH (6 reps): cold ratio 0.9923 (bar<=1.10 PASS) | warm ratio 0.9557 (bar<=1.05 PASS) | swap_ok True

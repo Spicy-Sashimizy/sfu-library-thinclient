@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T01:23:05Z",
+    "port": 8181,
+    "levels": [
+      1,
+      4,
+      8,
+      16,
+      32
+    ],
+    "warm": true,
+    "warmup_hook": "SFU_DEMO_WARMUP=1 + SFU_SEISMIC_PREFLOOR_HOTSET=1"
+  },
+  "pre_sweep_majflt": 942333,
+  "levels": [
+    {
+      "concurrency": 1,
+      "majflt_before": 942333,
+      "majflt_after": 946941,
+      "cell": {
+        "concurrency": 1,
+        "total_requests": 40,
+        "completed": 40,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 3327.2,
+          "p95": 4058.0,
+          "mean": 2716.1,
+          "min": 483.2,
+          "max": 4058.9
+        },
+        "wall_ms": 108651.0,
+        "throughput_qps": 0.4
+      }
+    },
+    {
+      "concurrency": 4,
+      "majflt_before": 946941,
+      "majflt_after": 954262,
+      "cell": {
+        "concurrency": 4,
+        "total_requests": 40,
+        "completed": 40,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 3767.4,
+          "p95": 4566.4,
+          "mean": 3044.1,
+          "min": 491.9,
+          "max": 4596.5
+        },
+        "wall_ms": 32023.0,
+        "throughput_qps": 1.2
+      }
+    },
+    {
+      "concurrency": 8,
+      "majflt_before": 954262,
+      "majflt_after": 962434,
+      "cell": {
+        "concurrency": 8,
+        "total_requests": 40,
+        "completed": 40,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 4303.6,
+          "p95": 5361.5,
+          "mean": 3536.8,
+          "min": 531.1,
+          "max": 5402.8
+        },
+        "wall_ms": 19091.0,
+        "throughput_qps": 2.1
+      }
+    },
+    {
+      "concurrency": 16,
+      "majflt_before": 962434,
+      "majflt_after": 978986,
+      "cell": {
+        "concurrency": 16,
+        "total_requests": 40,
+        "completed": 40,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 6110.9,
+          "p95": 8309.0,
+          "mean": 5095.7,
+          "min": 742.9,
+          "max": 8312.0
+        },
+        "wall_ms": 14790.0,
+        "throughput_qps": 2.7
+      }
+    },
+    {
+      "concurrency": 32,
+      "majflt_before": 978986,
+      "majflt_after": 1002894,
+      "cell": {
+        "concurrency": 32,
+        "total_requests": 40,
+        "completed": 40,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 10344.3,
+          "p95": 13562.0,
+          "mean": 8747.7,
+          "min": 1093.1,
+          "max": 13602.7
+        },
+        "wall_ms": 13617.0,
+        "throughput_qps": 2.9
+      }
+    }
+  ],
+  "post_sweep_majflt": 1002894
+}

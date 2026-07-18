@@ -41,15 +41,15 @@ MCP server (src/sfu_library_mcp_server.py / _http.py, venv .venv/)
      │   │   ├─ HTTP :6333 ← .tools/qdrant/qdrant binary
      │   │   ├─ storage: data/qdrant_spike/storage/ (202 GB,
      │   │   │   collection splade_150m — "the SPLADE db")
-     │   │   ├─ ingest: scripts/spike_qdrant_sparse.py +
-     │   │   │   scripts/bmp_ingest_watchdog.sh (auto-restarts
+     │   │   ├─ ingest: scripts/archive/spike_qdrant_sparse.py +
+     │   │   │   scripts/archive/bmp_ingest_watchdog.sh (auto-restarts
      │   │   │   qdrant — MUST be disabled before the move)
      │   │   └─ reconnect: SFU_SPLADE_QDRANT_URL=<archive:6343>  [CUT-BACK]
      │   └─ bmp (forensics)                                    [CUT→ARCHIVE]
      │       ├─ 150M .bmp artifacts: DELETED 2026-06-25
      │       ├─ 1M testbed: data/thinclient_1m/sections/*.bmp (2.3 GB)
      │       ├─ POC: data/thin_client_poc/ (~1 GB)
-     │       └─ research spike: spike/mmap_bmp/ (9.8 GB)
+     │       └─ research spike: spike/archive/mmap_bmp/ (9.8 GB)
      ├─ SPLADE query encoder ── models/splade_onnx[_fp16] (15 GB)
      │   — SHARED by ALL THREE sparse backends; the archive
      │   container needs its own COPY (not a move)          [KEEP + COPY]

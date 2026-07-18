@@ -1,0 +1,453 @@
+{
+  "layer": "L-F a11y_scan (stretch)",
+  "date": "2026-07-17",
+  "wall_ms": 4319,
+  "tool": "axe-core 4.10.1 (vendored, sha256 3815dfdf753d9fea828f4988f4c2e4895c82d670b369b0e79a8a63caebf5819e)",
+  "summary": {
+    "screens_scanned": 5,
+    "total_violations": 174,
+    "distinct_rules": 5,
+    "by_impact": {
+      "critical": 25,
+      "serious": 149,
+      "moderate": 0,
+      "minor": 0
+    }
+  },
+  "violations_by_rule": {
+    "button-name": 11,
+    "color-contrast": 149,
+    "label": 2,
+    "aria-allowed-attr": 6,
+    "aria-required-attr": 6
+  },
+  "per_screen": [
+    {
+      "label": "search.html:landing",
+      "passes": 17,
+      "incomplete": 0,
+      "inapplicable": 44,
+      "violations": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "count": 1,
+          "help": "Buttons must have discernible text",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > button",
+              "html": "<button style=\"width: 16px; height: 16px; border-radius: 50%; background: oklch(0.36 0.014 250); border: 1px solid oklch",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "count": 15,
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "tags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)",
+              "html": "<div style=\"color: oklch(0.55 0.01 250); font-size: 11px; line-height: 1.2;\">Academic Search</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #6d72"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.5 0.01 2",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(4)",
+              "html": "<span style=\"margin-left: auto; font-size: 9.5px; color: oklch(0.5 0.01 250);\">9 events</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            },
+            {
+              "target": "div:nth-child(2) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "search.html:settings",
+      "passes": 12,
+      "incomplete": 0,
+      "inapplicable": 49,
+      "violations": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "count": 1,
+          "help": "Buttons must have discernible text",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > button",
+              "html": "<button style=\"width: 16px; height: 16px; border-radius: 50%; background: oklch(0.36 0.014 250); border: 1px solid oklch",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "count": 21,
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "tags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodes": [
+            {
+              "target": "aside > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)",
+              "html": "<div style=\"color: oklch(0.55 0.01 250); font-size: 11px; line-height: 1.2;\">Academic Search</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #6d72"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.5 0.01 2",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(4)",
+              "html": "<span style=\"margin-left: auto; font-size: 9.5px; color: oklch(0.5 0.01 250);\">9 events</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            },
+            {
+              "target": "div:nth-child(2) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            }
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "count": 2,
+          "help": "Form elements must have labels",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "input[value=\"http://localhost:11434/v1\"]",
+              "html": "<input value=\"http://localhost:11434/v1\" style=\"width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-",
+              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not h"
+            },
+            {
+              "target": "input[value=\"qwen3:1.7b\"]",
+              "html": "<input value=\"qwen3:1.7b\" style=\"flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; f",
+              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not h"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "search.html:interface",
+      "passes": 16,
+      "incomplete": 0,
+      "inapplicable": 43,
+      "violations": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": "critical",
+          "count": 6,
+          "help": "Elements must only use supported ARIA attributes",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-pressed=\"false\""
+            },
+            {
+              "target": "div:nth-child(3) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-pressed=\"false\""
+            },
+            {
+              "target": "div:nth-child(4) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-pressed=\"false\""
+            },
+            {
+              "target": "div:nth-child(5) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-pressed=\"false\""
+            },
+            {
+              "target": "div:nth-child(6) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix all of the following:\n  ARIA attribute is not allowed: aria-pressed=\"false\""
+            }
+          ]
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": "critical",
+          "count": 6,
+          "help": "Required ARIA attributes must be provided",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-checked"
+            },
+            {
+              "target": "div:nth-child(3) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-checked"
+            },
+            {
+              "target": "div:nth-child(4) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-checked"
+            },
+            {
+              "target": "div:nth-child(5) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-checked"
+            },
+            {
+              "target": "div:nth-child(6) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-checked"
+            }
+          ]
+        },
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "count": 7,
+          "help": "Buttons must have discernible text",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > button",
+              "html": "<button style=\"width: 16px; height: 16px; border-radius: 50%; background: oklch(0.36 0.014 250); border: 1px solid oklch",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            },
+            {
+              "target": "div:nth-child(2) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            },
+            {
+              "target": "div:nth-child(3) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            },
+            {
+              "target": "div:nth-child(4) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            },
+            {
+              "target": "div:nth-child(5) > button[role=\"switch\"]",
+              "html": "<button aria-pressed=\"false\" role=\"switch\" style=\"width: 38px; height: 22px; border-radius: 11px; background: var(--bord",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "count": 20,
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "tags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)",
+              "html": "<div style=\"color: oklch(0.55 0.01 250); font-size: 11px; line-height: 1.2;\">Academic Search</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #6d72"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.5 0.01 2",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(4)",
+              "html": "<span style=\"margin-left: auto; font-size: 9.5px; color: oklch(0.5 0.01 250);\">9 events</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            },
+            {
+              "target": "div:nth-child(2) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "analytics.html:landing",
+      "passes": 11,
+      "incomplete": 1,
+      "inapplicable": 50,
+      "violations": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "count": 1,
+          "help": "Buttons must have discernible text",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > button",
+              "html": "<button style=\"width: 16px; height: 16px; border-radius: 50%; background: oklch(0.36 0.014 250); border: 1px solid oklch",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "count": 37,
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "tags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)",
+              "html": "<div style=\"color: oklch(0.55 0.01 250); font-size: 11px; line-height: 1.2;\">Academic Search</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #6d72"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.5 0.01 2",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(4)",
+              "html": "<span style=\"margin-left: auto; font-size: 9.5px; color: oklch(0.5 0.01 250);\">9 events</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(2) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "index_manager.html:landing",
+      "passes": 11,
+      "incomplete": 0,
+      "inapplicable": 50,
+      "violations": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "count": 1,
+          "help": "Buttons must have discernible text",
+          "tags": [
+            "wcag2a",
+            "wcag412"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > button",
+              "html": "<button style=\"width: 16px; height: 16px; border-radius: 50%; background: oklch(0.36 0.014 250); border: 1px solid oklch",
+              "failureSummary": "Fix any of the following:\n  Element does not have inner text that is visible to screen readers\n  ari"
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "count": 56,
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "tags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodes": [
+            {
+              "target": "div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)",
+              "html": "<div style=\"color: oklch(0.55 0.01 250); font-size: 11px; line-height: 1.2;\">Academic Search</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #6d72"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.5 0.01 2",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(2) > div:nth-child(1) > span:nth-child(4)",
+              "html": "<span style=\"margin-left: auto; font-size: 9.5px; color: oklch(0.5 0.01 250);\">9 events</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #5f64"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            },
+            {
+              "target": "div:nth-child(3) > div:nth-child(2) > span:nth-child(1)",
+              "html": "<span style=\"font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 9.5px; color: oklch(0.52 0.01 ",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.4 (foreground color: #65696"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "note": "measurement only — NOT a gate layer; the plan §2 invariant oracle is the gate. Fix nothing outside web/ defect rules (drive-prompt WI-16f). Violations recorded for future remediation."
+}

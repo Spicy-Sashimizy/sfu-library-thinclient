@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T03:04:45Z",
+    "port": 8183,
+    "gate": {
+      "max_inflight": 16,
+      "accept_queue": 16,
+      "on": true
+    }
+  },
+  "pre_overload": {
+    "concurrency": 4,
+    "total_requests": 40,
+    "ok": 40,
+    "sheds": 0,
+    "collapse": 0,
+    "status_hist": {
+      "200": 40
+    },
+    "latency_ms": {
+      "p50": 4249.5,
+      "p95": 5544.6
+    },
+    "wall_ms": 35233.0,
+    "throughput_qps": 1.1
+  },
+  "overload": {
+    "concurrency": 128,
+    "total_requests": 200,
+    "ok": 200,
+    "sheds": 0,
+    "collapse": 0,
+    "status_hist": {
+      "429": 178,
+      "200": 22
+    },
+    "latency_ms": {
+      "p50": 220.2,
+      "p95": 9012.5
+    },
+    "wall_ms": 12091.0,
+    "throughput_qps": 16.5
+  },
+  "post_overload": {
+    "concurrency": 4,
+    "total_requests": 40,
+    "ok": 40,
+    "sheds": 0,
+    "collapse": 0,
+    "status_hist": {
+      "200": 40
+    },
+    "latency_ms": {
+      "p50": 4533.7,
+      "p95": 5578.0
+    },
+    "wall_ms": 36714.0,
+    "throughput_qps": 1.1
+  },
+  "pre_p50": 4249.5,
+  "over_p95": 9012.5,
+  "post_p50": 4533.7,
+  "bars": {
+    "a_accepted_p95_bounded": true,
+    "b_sheds_clean_429s_collapse_minority": false,
+    "c_recovery_to_baseline": true
+  },
+  "verdict": "FAIL"
+}

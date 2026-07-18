@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "date_utc": "2026-07-14T00:41:43.777133",
+    "benchmark": "q7 hybrid federation (cold-start -> sequential-cold/parallel-warm)",
+    "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5.json",
+    "queries": 100,
+    "passes": 3,
+    "reps": 2,
+    "shard_dirs_inventoried": 32
+  },
+  "bars": {
+    "hybrid_cold_p50_le_1.05x_seq_cold": 1.05,
+    "hybrid_warm_p50_le_1.05x_par_warm": 1.05,
+    "t1_parity_100pct": 100,
+    "protocol": "fadvise-DONTNEED per cell, paired ratios only, VmSwap~0 + warm<cold"
+  },
+  "t1_parity": {
+    "ran": false,
+    "passed": false,
+    "n_queries": 0,
+    "detail": null
+  },
+  "cells": {
+    "sequential": [
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_sequential_20260714_001051_rep1.json",
+        "cold_p50_ms": 1341.2517729993851,
+        "warm_p50_ms": 337.5035299995943,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.0815,
+        "evicted_gb": 44.056,
+        "wall_secs": 446.3
+      },
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_sequential_20260714_002705_rep2.json",
+        "cold_p50_ms": 933.8360349993309,
+        "warm_p50_ms": 339.08358000007865,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.0721,
+        "evicted_gb": 44.056,
+        "wall_secs": 337.0
+      }
+    ],
+    "parallel": [
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_parallel_20260714_001818_rep1.json",
+        "cold_p50_ms": 708.2021320002241,
+        "warm_p50_ms": 114.71032199915498,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1388,
+        "evicted_gb": 44.056,
+        "wall_secs": 263.2
+      },
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_parallel_20260714_003243_rep2.json",
+        "cold_p50_ms": 742.3604160012474,
+        "warm_p50_ms": 115.22208500173292,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1619,
+        "evicted_gb": 44.056,
+        "wall_secs": 264.6
+      }
+    ],
+    "hybrid": [
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_002242_rep1.json",
+        "cold_p50_ms": 717.5116009984777,
+        "warm_p50_ms": 121.63784299991676,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1443,
+        "evicted_gb": 44.056,
+        "wall_secs": 262.7
+      },
+      {
+        "_cell_file": "data/eval_results/q7_hybrid_cell_hybrid_20260714_003708_rep2.json",
+        "cold_p50_ms": 727.043398997921,
+        "warm_p50_ms": 116.38527700051782,
+        "vmswap_gb": 0.0,
+        "anon_floor_gb": 1.1179,
+        "evicted_gb": 44.056,
+        "wall_secs": 275.3
+      }
+    ]
+  },
+  "aggregate": {
+    "sequential": {
+      "cold_p50_ms_by_rep": [
+        1341.2517729993851,
+        933.8360349993309
+      ],
+      "warm_p50_ms_by_rep": [
+        337.5035299995943,
+        339.08358000007865
+      ],
+      "vmswap_gb_by_rep": [
+        0.0,
+        0.0
+      ],
+      "anon_floor_gb_by_rep": [
+        1.0815,
+        1.0721
+      ],
+      "cold_p50_ms_median": 1137.543903999358,
+      "warm_p50_ms_median": 338.2935549998365,
+      "vmswap_gb_max": null
+    },
+    "parallel": {
+      "cold_p50_ms_by_rep": [
+        708.2021320002241,
+        742.3604160012474
+      ],
+      "warm_p50_ms_by_rep": [
+        114.71032199915498,
+        115.22208500173292
+      ],
+      "vmswap_gb_by_rep": [
+        0.0,
+        0.0
+      ],
+      "anon_floor_gb_by_rep": [
+        1.1388,
+        1.1619
+      ],
+      "cold_p50_ms_median": 725.2812740007357,
+      "warm_p50_ms_median": 114.96620350044395,
+      "vmswap_gb_max": null
+    },
+    "hybrid": {
+      "cold_p50_ms_by_rep": [
+        717.5116009984777,
+        727.043398997921
+      ],
+      "warm_p50_ms_by_rep": [
+        121.63784299991676,
+        116.38527700051782
+      ],
+      "vmswap_gb_by_rep": [
+        0.0,
+        0.0
+      ],
+      "anon_floor_gb_by_rep": [
+        1.1443,
+        1.1179
+      ],
+      "cold_p50_ms_median": 722.2774999981993,
+      "warm_p50_ms_median": 119.01156000021729,
+      "vmswap_gb_max": null
+    }
+  },
+  "paired_ratios": {
+    "hybrid_over_seq_cold": [
+      0.535,
+      0.7786
+    ],
+    "hybrid_over_par_warm": [
+      1.0604,
+      1.0101
+    ]
+  },
+  "verdict": {
+    "cold_p50_ratio_hybrid_over_seq_median": 0.6568,
+    "warm_p50_ratio_hybrid_over_par_median": 1.03525,
+    "cold_bar_1.05x_seq": "PASS",
+    "warm_bar_1.05x_par": "PASS",
+    "t1_parity_100pct": "FAIL",
+    "hybrid_cells_valid_novswap_warm_lt_cold": true,
+    "overall": "FAIL",
+    "note": "Pre-registered bars (doc 12 \u00a73 Q7): hybrid cold p50 <= 1.05x seq cold; hybrid warm p50 <= 1.05x par warm; T1 100/100 bit-identical. Container cold protocol: fadvise-DONTNEED per cell, paired ratios only, VmSwap~0 + warm<cold validity."
+  }
+}

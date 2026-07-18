@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "benchmark": "SEISMIC vs Qdrant serving footprint",
+    "date_utc": "20260628_204104",
+    "num_docs": 150413098,
+    "top_k": 50,
+    "num_queries": 3,
+    "query_encoding": "SPLADE (top-64 terms) + BERT-base-uncased vocab",
+    "splade_model": "models/splade_onnx_fp16",
+    "seismic_load_mode": "mmap",
+    "seismic_shards": 8
+  },
+  "seismic": {
+    "engine": "ShardedSeismicBackend (mmap, federated 8 shards)",
+    "anon_floor_gb": 1.2142,
+    "vmrss_peak_gb": 5.6996,
+    "anon_bytes_per_doc": 8.07,
+    "load_seconds": 0.57,
+    "latency_ms": {
+      "p50": 30710.446,
+      "p95": 49193.197,
+      "mean": 35897.438
+    }
+  },
+  "qdrant": {
+    "engine": "QdrantClient (separate server, splade_150m collection)",
+    "anon_floor_gb": 2.6511,
+    "vmrss_peak_gb": 5.9421,
+    "anon_bytes_per_doc": 17.63,
+    "latency_ms": {
+      "p50": 9378.6,
+      "p95": 10044.734,
+      "mean": 9203.378
+    }
+  },
+  "verdict": "SEISMIC wins on anon floor by 1.437 GB (1.214 vs 2.651 GB); Qdrant faster on latency (35897.44ms vs 9203.38ms p50 30710.45ms vs 9378.60ms)",
+  "per_query_results": [
+    {
+      "query_idx": 0,
+      "query_text": "indigenous language revitalization First Nations British Columbia",
+      "seismic_latency_ms": 49193.197,
+      "qdrant_latency_ms": 8186.8,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 1,
+      "query_text": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+      "seismic_latency_ms": 30710.446,
+      "qdrant_latency_ms": 9378.6,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    },
+    {
+      "query_idx": 3,
+      "query_text": "residential school trauma intergenerational effects Indigenous communities",
+      "seismic_latency_ms": 27788.672,
+      "qdrant_latency_ms": 10044.734,
+      "seismic_result_count": 50,
+      "qdrant_result_count": 50
+    }
+  ]
+}

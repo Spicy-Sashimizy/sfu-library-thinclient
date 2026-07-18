@@ -8,7 +8,7 @@
 | Stored SPLADE vectors | `data/thinclient_index/spool_backup` (123 GB, sparse_field) | feed SEISMIC with NO re-encode |
 | Persona shards (med_bio) | built in the prior spike (`data/thinclient_*`) | P1–P3 persona scale |
 | Live Qdrant baseline | `splade_150m`, `splade_par30` collections | G2/G3/G8 head-to-head |
-| Parity + measure harness | `scripts/eval_thinclient_parity.py`, `benchmark_llm_judge.py`, `spike/mmap_bmp/measure_p2_cold.py`, `measure_p3b_pruning.py` | G2/G4/G5/G6 (reuse/adapt) |
+| Parity + measure harness | `scripts/eval_thinclient_parity.py`, `benchmark_llm_judge.py`, `spike/archive/mmap_bmp/measure_p2_cold.py`, `measure_p3b_pruning.py` | G2/G4/G5/G6 (reuse/adapt) |
 | Query encoder | `lib.opensearch_retriever.encode_splade` + `models/splade_onnx_fp16` | qvecs |
 | Serving constants | `QUANT_SCALE=70`, α=0.8, β=1.0 | identical-compute guarantee |
 | RAM probes | RssAnon/`smaps_rollup` pattern + Qdrant `/metrics` jemalloc (added in `measure_qdrant_floor.py`) | G3/G8 |

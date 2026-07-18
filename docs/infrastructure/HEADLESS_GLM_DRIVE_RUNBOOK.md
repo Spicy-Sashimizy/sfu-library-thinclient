@@ -51,8 +51,12 @@ in-container command in `sh -c '<cmd>'`. Once the launcher exists,
 **relaunches are host-session-safe** (no flag in the command):
 `docker exec -d -u vscode <app> sh -c 'sh /home/vscode/launch_<campaign>.sh'`.
 
-Verify startup: `pgrep -af "claude -p"` in the container + the drive log file
-exists **owned by vscode** (a root-owned log blocks the next relaunch).
+Verify startup: `ps -eo args | grep '^claude -p '` in the container + the drive
+log file exists **owned by vscode** (a root-owned log blocks the next relaunch).
+**Do NOT use `pgrep -f 'claude -p'`** (it self-matches monitor scripts that
+quote that string) **or `pgrep -x claude`** (it matches the host Claude session
+itself); the anchored `ps -eo args | grep '^claude -p '` is the working check
+(correction from the deployprep 2026-07-17 three-party run).
 
 ## 4. GLM behavioral facts (design the campaign around these)
 
@@ -63,16 +67,39 @@ exists **owned by vscode** (a root-owned log blocks the next relaunch).
    monitor relaunches the session at every gate; each fresh run must be told
    (in the drive prompt) to resume from committed state + queue verdicts,
    never redo work. R3 took 5 launches; resume worked every time.
-2. **Flex-tier hangs are real.** Twice the model call never returned:
-   process alive but transcript (newest
-   `/home/vscode/.claude/projects/-workspaces-sfu-library-thinclient/*.jsonl`)
-   frozen at a `tool_result` for 50+ min. Detection: transcript mtime stale
-   \>30 min while work is pending. Remedy: `kill <pid>` + relaunch — free,
-   because all state is committed or on the shared mount.
+2. **Flex-tier hangs are real — but NOT a constant.** Twice the model call never
+   returned (R3): process alive but transcript (newest
+   `/home/vscode/.claude-official/projects/-workspaces-sfu-library-thinclient/*.jsonl`
+   — note the `.claude-official` path, NOT `.claude/projects/...`) frozen at a
+   `tool_result` for 50+ min. Detection: transcript mtime stale >30 min while
+   work is pending. Remedy: `kill <pid>` + relaunch — free, because all state
+   is committed or on the shared mount. **However the deployprep campaign
+   (2026-07-16/17, ~7.5 h, 12 items) saw ZERO flex hangs** — GLM 5.2 flex
+   averaged ~35 min/item (range 4–65 min) with no stuck calls. Design for the
+   §4.2 hang rate but don't assume it: a hang-less run is normal, and the
+   transcript-mtime check is a safety net, not a constant load.
+   - **`find -newermt` caveat (this container):** `find` here is `bfs`, which
+     REJECTS relative dates like `-newermt '-50 minutes'`. Compute the cutoff
+     first: `cutoff=$(date -d '50 minutes ago' +%s); find ... -newermt
+     "@$cutoff"` (or stat the transcript's mtime directly).
+   - **Transcript path is `.claude-official/projects/...`** on this container
+     (the `.claude` tree in §4.2's original wording is stale) — hang detection
+     must watch there, or it monitors the wrong directory and never fires.
 3. **Plain `-p` buffers stdout** — the drive log is empty until exit. Monitor
    via the transcript jsonl, status files, and git log instead.
 4. **Its self-verification tests reconstructions, not artifacts.** See §6 —
    this is the single most important operational lesson.
+
+### 4.1 In-container three-party variant (deployprep 2026-07-17)
+
+The host monitor session can run INSIDE the app container (no `docker exec`
+needed) when a docker-free, in-container three-party variant is set up: the
+launcher is created by `sed`-copy from a prior campaign's launcher (the
+`/home/vscode/launch_<campaign>.sh` of §3 with the campaign name + prompt
+paths swapped). All guidance here applies the same way — only the launch
+boundary changes (a local `sh` vs a `docker exec -d`). The §5 host-queue
+protocol + §6 monitor duties are unchanged; the liveness check above is the
+working one for both variants.
 
 ## 5. The host-queue protocol (copy the R3 format)
 

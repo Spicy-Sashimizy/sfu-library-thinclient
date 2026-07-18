@@ -1,0 +1,81 @@
+=== q7 v2.e5 FULL start 2026-07-13T23:41:46Z ===
+23:41:46 INFO Rule Zero: 32 served *.mmap shard dirs present
+23:41:46 INFO === T1 parity: hybrid == parallel == sequential, bit-identical ===
+23:41:47 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+23:41:47 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+23:41:47 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+23:41:47 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+23:41:47 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+23:41:48 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+23:41:48 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+23:41:48 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+23:41:48 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+23:41:48 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+23:41:48 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+23:41:49 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+23:42:59 INFO Loading SPLADE ONNX model from models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+23:43:03 INFO SPLADE ONNX model loaded (CPU)
+23:43:08 INFO hybrid(adaptive): cold geomean 61.6 ms × 0.25 = flip_threshold 15.4 ms (flip after 2 consec warm)
+23:43:09 INFO hybrid(count-backstop): FLIP seq→par at query 3 (>= 3)
+23:43:25 INFO T1: 20/20 queries bit-identical across par/seq/hybrid
+23:43:26 INFO [rep 1 sequential] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+23:43:26 INFO [rep 1 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation sequential --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260713_234325_rep1.json
+23:48:30 INFO [rep 1 sequential] bench done in 304.4s
+23:48:31 INFO [rep 1 parallel] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+23:48:31 INFO [rep 1 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation parallel --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260713_234830_rep1.json
+23:52:35 INFO [rep 1 parallel] bench done in 244.9s
+23:52:36 INFO [rep 1 hybrid] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+23:52:36 INFO [rep 1 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation hybrid --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260713_235235_rep1.json
+23:56:43 INFO [rep 1 hybrid] bench done in 246.8s
+23:56:43 INFO [rep 2 sequential] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+23:56:43 INFO [rep 2 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation sequential --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260713_235643_rep2.json
+00:02:21 INFO [rep 2 sequential] bench done in 337.7s
+00:02:22 INFO [rep 2 parallel] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+00:02:22 INFO [rep 2 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation parallel --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260714_000221_rep2.json
+00:06:26 INFO [rep 2 parallel] bench done in 244.4s
+00:06:27 INFO [rep 2 hybrid] fadvise-DONTNEED evicted 44.35 GB across shard dirs
+00:06:27 INFO [rep 2 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation hybrid --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260714_000626_rep2.json
+00:10:49 INFO [rep 2 hybrid] bench done in 262.0s
+00:10:49 INFO result written to /workspaces/sfu-library-thinclient/data/eval_results/_e8s2_q7_federated_v2_20260713.json
+00:10:49 INFO VERDICT: {
+  "cold_p50_ratio_hybrid_over_seq_median": 0.8468,
+  "warm_p50_ratio_hybrid_over_par_median": 1.0443500000000001,
+  "cold_bar_1.05x_seq": "PASS",
+  "warm_bar_1.05x_par": "PASS",
+  "t1_parity_100pct": "PASS",
+  "hybrid_cells_valid_novswap_warm_lt_cold": true,
+  "overall": "PASS",
+  "note": "Pre-registered bars (doc 12 \u00a73 Q7): hybrid cold p50 <= 1.05x seq cold; hybrid warm p50 <= 1.05x par warm; T1 100/100 bit-identical. Container cold protocol: fadvise-DONTNEED per cell, paired ratios only, VmSwap~0 + warm<cold validity."
+}
+=== q7 v1.e5 baseline (skip-t1) start 2026-07-14T00:10:50Z ===
+00:10:51 INFO Rule Zero: 32 served *.mmap shard dirs present
+00:10:52 INFO [rep 1 sequential] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:10:52 INFO [rep 1 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation sequential --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260714_001051_rep1.json
+00:18:18 INFO [rep 1 sequential] bench done in 446.3s
+00:18:19 INFO [rep 1 parallel] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:18:19 INFO [rep 1 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation parallel --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260714_001818_rep1.json
+00:22:42 INFO [rep 1 parallel] bench done in 263.2s
+00:22:42 INFO [rep 1 hybrid] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:22:42 INFO [rep 1 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation hybrid --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260714_002242_rep1.json
+00:27:05 INFO [rep 1 hybrid] bench done in 262.7s
+00:27:05 INFO [rep 2 sequential] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:27:05 INFO [rep 2 sequential] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation sequential --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_sequential_20260714_002705_rep2.json
+00:32:43 INFO [rep 2 sequential] bench done in 337.0s
+00:32:43 INFO [rep 2 parallel] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:32:43 INFO [rep 2 parallel] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation parallel --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_parallel_20260714_003243_rep2.json
+00:37:08 INFO [rep 2 parallel] bench done in 264.6s
+00:37:08 INFO [rep 2 hybrid] fadvise-DONTNEED evicted 44.06 GB across shard dirs
+00:37:08 INFO [rep 2 hybrid] running: /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5.json --federation hybrid --queries 100 --passes 3 --result-file /workspaces/sfu-library-thinclient/data/eval_results/q7_hybrid_cell_hybrid_20260714_003708_rep2.json
+00:41:43 INFO [rep 2 hybrid] bench done in 275.3s
+00:41:43 INFO result written to /workspaces/sfu-library-thinclient/data/eval_results/_e8s2_q7_federated_v1_20260713.json
+00:41:43 INFO VERDICT: {
+  "cold_p50_ratio_hybrid_over_seq_median": 0.6568,
+  "warm_p50_ratio_hybrid_over_par_median": 1.03525,
+  "cold_bar_1.05x_seq": "PASS",
+  "warm_bar_1.05x_par": "PASS",
+  "t1_parity_100pct": "FAIL",
+  "hybrid_cells_valid_novswap_warm_lt_cold": true,
+  "overall": "FAIL",
+  "note": "Pre-registered bars (doc 12 \u00a73 Q7): hybrid cold p50 <= 1.05x seq cold; hybrid warm p50 <= 1.05x par warm; T1 100/100 bit-identical. Container cold protocol: fadvise-DONTNEED per cell, paired ratios only, VmSwap~0 + warm<cold validity."
+}
+=== CAMPAIGN DONE 2026-07-14T00:41:43Z ===

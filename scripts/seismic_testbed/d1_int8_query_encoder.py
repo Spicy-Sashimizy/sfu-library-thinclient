@@ -4,7 +4,7 @@
 G8g (2026-07-08) left encode (~19.5 ms of the 53.8 ms served warm p50) as the
 largest single addressable component. Doc 08 §D's candidate is dynamic INT8
 quantization of the query-side SPLADE ONNX encoder (house precedent:
-`scripts/export_ce_onnx_int8.py`, the cross-encoder int8 export; this host is
+`scripts/experiments/export_ce_onnx_int8.py`, the cross-encoder int8 export; this host is
 AVX2-only — no VNNI — so expect the moderate end of the literature's 1.5–3×).
 
 Discovered en route (recorded): `models/splade_onnx` and

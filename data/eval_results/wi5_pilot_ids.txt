@@ -1,0 +1,7 @@
+# WI-5 pilot selection placeholder (2026-07-16)
+# target: ~1000000 ids with year >= 2024
+# NOT ENUMERATED in-container: the qualifying-id scan is 9p-D-blocked
+# (no year index; COUNT/WHERE/probe all ~22 min infeasible).
+# METHOD (host-tier run): SELECT id FROM docs WHERE year >= ? 
+# ORDER BY year DESC LIMIT 1000000 on a native-ext4 host (~seconds).
+# The pilot BUILD is additionally blocked on the absent spool.

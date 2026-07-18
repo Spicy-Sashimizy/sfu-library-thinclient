@@ -1,0 +1,82 @@
+{
+  "benchmark": "llm_judged_ndcg",
+  "judge": "ollama/qwen3:1.7b",
+  "relevance_scale": {
+    "3": "perfectly relevant (directly about the query)",
+    "2": "highly relevant (strongly related)",
+    "1": "marginally relevant (tangential)",
+    "0": "not relevant (unrelated)"
+  },
+  "timestamp": "2026-05-17T07:03:25",
+  "k": 10,
+  "top_n": 10,
+  "num_queries": 2,
+  "workers": 4,
+  "summary": {
+    "bm25": {
+      "mean_ndcg": 0.8226,
+      "median_ndcg": 0.8226,
+      "std_ndcg": 0.0839,
+      "mean_mrr": 1.0,
+      "mean_p_at_k": 0.35,
+      "label": "BM25F (local)"
+    },
+    "splade": {
+      "mean_ndcg": 0.9871,
+      "median_ndcg": 0.9871,
+      "std_ndcg": 0.0081,
+      "mean_mrr": 1.0,
+      "mean_p_at_k": 0.8,
+      "label": "SPLADE (local)"
+    },
+    "rrf": {
+      "mean_ndcg": 0.8841,
+      "median_ndcg": 0.8841,
+      "std_ndcg": 0.0833,
+      "mean_mrr": 1.0,
+      "mean_p_at_k": 0.75,
+      "label": "BM25F+SPLADE RRF (local)"
+    }
+  },
+  "subject_breakdown": {
+    "bm25": {
+      "Indigenous Studies": 0.8226
+    },
+    "splade": {
+      "Indigenous Studies": 0.9871
+    },
+    "rrf": {
+      "Indigenous Studies": 0.8841
+    }
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "subject": "Indigenous Studies",
+      "pool_size": 20,
+      "bm25_ndcg": 0.7388,
+      "bm25_mrr": 1.0,
+      "bm25_p_at_k": 0.2,
+      "splade_ndcg": 0.9952,
+      "splade_mrr": 1.0,
+      "splade_p_at_k": 0.8,
+      "rrf_ndcg": 0.8009,
+      "rrf_mrr": 1.0,
+      "rrf_p_at_k": 0.6
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "subject": "Indigenous Studies",
+      "pool_size": 18,
+      "bm25_ndcg": 0.9065,
+      "bm25_mrr": 1.0,
+      "bm25_p_at_k": 0.5,
+      "splade_ndcg": 0.979,
+      "splade_mrr": 1.0,
+      "splade_p_at_k": 0.8,
+      "rrf_ndcg": 0.9674,
+      "rrf_mrr": 1.0,
+      "rrf_p_at_k": 0.9
+    }
+  ]
+}

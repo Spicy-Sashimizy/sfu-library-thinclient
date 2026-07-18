@@ -1,0 +1,132 @@
+21:35:39 INFO === SEISMIC vs Qdrant Serving Footprint Benchmark ===
+21:35:39 INFO Result file: data/eval_results/seismic_vs_qdrant_serve_bench_warm_20260628_213539.json
+21:35:39 INFO Log file: data/eval_results/seismic_vs_qdrant_serve_bench_warm_20260628_213539.log
+21:35:39 INFO loaded 20 unique queries
+21:35:39 INFO loading 8 SEISMIC shards (mmap)...
+21:35:40 INFO SEISMIC baseline: RssAnon=0.0167 Pss_Anon=0.0167 VmRSS=0.0283 GB
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard0of8.mmap
+21:35:40 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard1of8.mmap
+21:35:40 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard2of8.mmap
+21:35:40 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard3of8.mmap
+21:35:40 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard4of8.mmap
+21:35:40 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard5of8.mmap
+21:35:40 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard6of8.mmap
+21:35:40 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:35:40 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard7of8.mmap
+21:35:40 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:35:40 INFO SEISMIC post-load (0.5s): RssAnon=0.1415 Pss_Anon=0.1415 VmRSS=0.1549 GB
+21:35:40 INFO found Qdrant server PID 112
+21:35:41 INFO Qdrant baseline (idle): RssAnon=3.3496 Pss_Anon=3.3496 VmRSS=5.0182 GB
+21:35:41 INFO warmup SEISMIC...
+21:36:55 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+21:36:59 INFO SPLADE ONNX model loaded (CPU)
+21:37:28 INFO SEISMIC post-warmup: RssAnon=1.0447 Pss_Anon=1.0447 VmRSS=7.4662 GB
+21:37:28 INFO running 20 queries x 2 pass(es)...
+21:38:03 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:38:07 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:38:37 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:38:43 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:39:14 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:39:20 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:39:49 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:39:56 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:40:26 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:40:34 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:41:05 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:41:12 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:41:43 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:41:51 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:42:21 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:42:29 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:43:00 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:43:08 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:43:38 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:43:44 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:44:14 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:44:22 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:44:53 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:45:01 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:45:31 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:45:35 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:46:06 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:46:11 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:46:42 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:46:46 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:47:17 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:47:22 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:47:53 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:48:04 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:48:36 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:48:45 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:49:17 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:49:20 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:49:52 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:49:58 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:49:58 INFO pass 1/2 (COLD): SEISMIC p50=30177.9 ms  Qdrant p50=7232.5 ms
+21:50:30 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:50:34 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:51:06 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:51:12 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:51:44 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:51:50 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:52:21 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:52:27 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:53:00 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:53:08 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:53:40 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:53:48 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:54:19 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:54:28 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:54:59 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:55:08 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:55:39 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:55:47 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:56:19 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:56:24 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:56:56 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:57:04 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:57:36 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:57:44 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:58:15 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:58:19 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:58:51 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:58:56 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+21:59:28 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+21:59:33 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:00:03 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+22:00:08 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:00:40 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+22:00:50 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:01:22 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+22:01:31 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:02:03 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+22:02:07 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:02:38 INFO HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+22:02:44 INFO HTTP Request: POST http://localhost:6333/collections/splade_150m/points/query "HTTP/1.1 200 OK"
+22:02:44 INFO pass 2/2 (WARM): SEISMIC p50=31246.2 ms  Qdrant p50=6701.7 ms
+22:02:45 INFO SEISMIC post-queries: RssAnon=1.0991 Pss_Anon=1.0991 VmRSS=8.4264 GB
+22:02:45 INFO Qdrant post-queries: RssAnon=3.3478 Pss_Anon=3.3478 VmRSS=5.5686 GB
+22:02:45 INFO result written to data/eval_results/seismic_vs_qdrant_serve_bench_warm_20260628_213539.json
+22:02:45 INFO 
+=== RESULTS ===
+22:02:45 INFO SEISMIC:
+22:02:45 INFO   Anon floor: 1.0991 GB
+22:02:45 INFO   Pss_Anon: 1.0991 GB
+22:02:45 INFO   VmRSS peak: 8.4264 GB
+22:02:45 INFO   Anon bytes/doc: 7.845716734057296
+22:02:45 INFO   Latency p50/p95/mean: 30791.242773004342 / 31739.22811601369 / 30609.67 ms
+22:02:45 INFO QDRANT (PID 112):
+22:02:45 INFO   Anon floor: 3.3478 GB
+22:02:45 INFO   Pss_Anon: 3.3478 GB
+22:02:45 INFO   VmRSS peak: 5.5686 GB
+22:02:45 INFO   Anon bytes/doc: 23.898868488168496
+22:02:45 INFO   Latency p50/p95/mean: 6900.030980003066 / 10827.264541003387 / 7292.48 ms
+22:02:45 INFO 
+VERDICT: RAM: SEISMIC anon floor 1.099 GB vs Qdrant 3.348 GB (delta -2.249 GB; note SEISMIC's in-process figure bundles the SPLADE encoder while Qdrant's is the server process only, so the index-only SEISMIC win is larger). Latency WARM p50/p95 (steady-state, cache resident): SEISMIC 31253.452504999586/32248.268602008466 ms vs Qdrant 6808.455701000639/10827.264541003387 ms. COLD p50 (first-fault): SEISMIC 30238.543336992734 ms vs Qdrant 7564.957857000991 ms. Passes=2. WARM is the serving number; COLD is mmap first-touch + cold OS page cache, not steady-state serving cost.
+22:02:45 INFO log written to data/eval_results/seismic_vs_qdrant_serve_bench_warm_20260628_213539.log

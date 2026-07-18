@@ -2,8 +2,8 @@
 
 **Date:** 2026-06-11 · **Updated:** 2026-06-16 (§1 now carries the AS-BUILT 150M
 footprint; the completed build supersedes the earlier `meta.sqlite` estimate) ·
-**Status:** all numbers below are MEASURED unless marked *est.* · Sources: `scripts/eval_storage_levers.py` →
-`data/eval_results/storage_levers_eval.json`, `scripts/eval_text_compression.py`
+**Status:** all numbers below are MEASURED unless marked *est.* · Sources: `scripts/experiments/eval_storage_levers.py` →
+`data/eval_results/storage_levers_eval.json`, `scripts/experiments/eval_text_compression.py`
 → `data/eval_results/text_compression_eval.json`, component sizes from the 1M
 validation build (`data/thinclient_1m`), full method detail in
 `LEXICAL_STORAGE_RESEARCH.md` §8–9.
@@ -167,6 +167,6 @@ all-live / ~10 GB persona steady.
 ## 5. Reproduce
 
 ```bash
-.venv/bin/python3 scripts/eval_storage_levers.py        # BMP matrix + meta + pack + mainline-sim
-.venv/bin/python3 scripts/eval_text_compression.py      # sidecar variants + languages [--slm]
+.venv/bin/python3 scripts/experiments/eval_storage_levers.py        # BMP matrix + meta + pack + mainline-sim
+.venv/bin/python3 scripts/experiments/eval_text_compression.py      # sidecar variants + languages [--slm]
 ```

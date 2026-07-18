@@ -1,0 +1,4 @@
+avail= True sections= ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent']
+bm25f OK 5
+splade OK 5
+dense OK 5

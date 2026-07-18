@@ -1,6 +1,6 @@
 """Hot/cold section vocabulary + classifier.
 
-Ported from scripts/eval_sectioned_index.py (the measured 1M-doc eval). The live
+Ported from scripts/experiments/eval_sectioned_index.py (the measured 1M-doc eval). The live
 corpus has no concepts metadata, so sections are derived from title+abstract
 text. Assignment is PRIORITY-ORDERED DISJOINT: a doc lands in the first section
 whose vocabulary matches it; `other` catches everything unmatched — mirroring

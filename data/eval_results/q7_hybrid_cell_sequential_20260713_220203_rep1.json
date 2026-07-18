@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "date_utc": "2026-07-13T22:04:18.457908",
+    "benchmark": "SEISMIC vs Qdrant serving footprint at 150M docs",
+    "total_docs": 150413098,
+    "queries": 10,
+    "top_k": 50,
+    "query_encoding": "encode_splade + top-64 terms",
+    "seismic_load_mode": "mmap",
+    "seismic_federation": "sequential",
+    "qdrant_available": false,
+    "g8_matrix_cell": {
+      "load_mode": "mmap",
+      "memcompression_regime": "disk_swap",
+      "regime_compressed_in_ram": false,
+      "regime_sources": [
+        "/proc/swaps (partition-backed swap \u2192 disk re-fault)"
+      ],
+      "zram_devs": [],
+      "zswap_enabled": null
+    }
+  },
+  "seismic": {
+    "engine": "seismic-pyseismic + SequentialSeismicBackend (8 shards, mmap, sequential)",
+    "load_seconds": 2.72,
+    "load_mode": "mmap",
+    "federation": "sequential",
+    "query_cut": null,
+    "heap_factor": "0.8",
+    "k_prime": null,
+    "ram": {
+      "anon_floor_gb": 1.0067,
+      "rss_anon_gb": 1.0067,
+      "vmswap_gb": 0.0,
+      "anon_delta_gb": 0.9891,
+      "pss_anon_gb": 1.0067,
+      "vmrss_peak_gb": 1.2684,
+      "vmrss_peak_bytes": 1361928192,
+      "anon_bytes_per_doc": 7.186274588932408,
+      "baseline_anon_gb": 0.0176
+    },
+    "latency_ms": {
+      "p50_ms": 2832.431204000386,
+      "p95_ms": 8158.961237999392,
+      "mean_ms": 2425.83,
+      "min_ms": 284.8406580005758,
+      "max_ms": 8158.961237999392,
+      "n": 20,
+      "cold": {
+        "p50_ms": 4014.6991969995725,
+        "p95_ms": 8158.961237999392,
+        "mean_ms": 4514.18,
+        "min_ms": 2832.431204000386,
+        "max_ms": 8158.961237999392,
+        "n": 10
+      },
+      "warm": {
+        "p50_ms": 326.7762119994586,
+        "p95_ms": 385.6789649998973,
+        "mean_ms": 337.47,
+        "min_ms": 284.8406580005758,
+        "max_ms": 385.6789649998973,
+        "n": 10
+      },
+      "n_passes": 2
+    },
+    "latency_by_pass_ms": [
+      [
+        6640.4,
+        4694.3,
+        2872.1,
+        8159.0,
+        2832.4,
+        4014.7,
+        6885.4,
+        3149.4,
+        2854.2,
+        3039.9
+      ],
+      [
+        321.8,
+        326.8,
+        324.0,
+        385.7,
+        374.8,
+        375.8,
+        318.0,
+        310.0,
+        284.8,
+        353.1
+      ]
+    ],
+    "encode_ms": {
+      "p50_ms": 27.0663199999035,
+      "p95_ms": 49.49270100041758,
+      "mean_ms": 26.71,
+      "min_ms": 15.988842999831832,
+      "max_ms": 49.49270100041758,
+      "n": 20,
+      "cold": {
+        "p50_ms": 31.917270999656466,
+        "p95_ms": 42.1063249996223,
+        "mean_ms": 31.58,
+        "min_ms": 24.797192000733048,
+        "max_ms": 42.1063249996223,
+        "n": 10
+      },
+      "warm": {
+        "p50_ms": 18.443983999532065,
+        "p95_ms": 49.49270100041758,
+        "mean_ms": 21.84,
+        "min_ms": 15.988842999831832,
+        "max_ms": 49.49270100041758,
+        "n": 10
+      },
+      "n_passes": 2
+    },
+    "traverse_ms": {
+      "p50_ms": 2803.600589999405,
+      "p95_ms": 8132.610435999595,
+      "mean_ms": 2399.07,
+      "min_ms": 264.7465560003184,
+      "max_ms": 8132.610435999595,
+      "n": 20,
+      "cold": {
+        "p50_ms": 3982.6136880001286,
+        "p95_ms": 8132.610435999595,
+        "mean_ms": 4482.55,
+        "min_ms": 2803.600589999405,
+        "max_ms": 8132.610435999595,
+        "n": 10
+      },
+      "warm": {
+        "p50_ms": 308.19287600024836,
+        "p95_ms": 369.33528400004434,
+        "mean_ms": 315.6,
+        "min_ms": 264.7465560003184,
+        "max_ms": 369.33528400004434,
+        "n": 10
+      },
+      "n_passes": 2
+    },
+    "encode_by_pass_ms": [
+      [
+        42.1,
+        31.9,
+        35.9,
+        26.3,
+        28.8,
+        32.0,
+        31.8,
+        34.6,
+        24.8,
+        27.6
+      ],
+      [
+        27.1,
+        18.5,
+        18.0,
+        16.3,
+        49.5,
+        18.4,
+        16.1,
+        18.4,
+        20.1,
+        16.0
+      ]
+    ],
+    "traverse_by_pass_ms": [
+      [
+        6598.3,
+        4662.3,
+        2836.2,
+        8132.6,
+        2803.6,
+        3982.6,
+        6853.6,
+        3114.7,
+        2829.4,
+        3012.2
+      ],
+      [
+        294.7,
+        308.2,
+        306.0,
+        369.3,
+        325.2,
+        357.4,
+        301.8,
+        291.5,
+        264.7,
+        337.1
+      ]
+    ]
+  },
+  "qdrant": {
+    "engine": "Qdrant sparse_150m collection (on_disk)",
+    "server_pid": null,
+    "available": false,
+    "ram": null,
+    "latency_ms": null,
+    "latency_by_pass_ms": [
+      [],
+      []
+    ]
+  },
+  "verdict": "QDRANT UNAVAILABLE \u2014 SEISMIC benchmarked, Qdrant side BLOCKED. Latency measured with VmSwap~0 (regime=disk_swap) and warm < cold (page-cache hit) \u2014 representative of a properly-provisioned host for this working set (load_mode=mmap)."
+}

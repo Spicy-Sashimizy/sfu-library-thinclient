@@ -5,17 +5,17 @@
 >   in `src/lib/thinclient/retriever.py`; BMP kept as env-gated fallback. Same-commit
 >   doc: `docs/THIN_CLIENT_SWAP.md` engine table + off-BMP section corrected.
 > - **A2 DONE 2026-06-24** — `_upsert_wait_retry` added to
->   `scripts/spike_qdrant_sparse.py` (`wait=True` upserts now retry-with-backoff
+>   `scripts/archive/spike_qdrant_sparse.py` (`wait=True` upserts now retry-with-backoff
 >   so a `status=red` optimizer stall self-heals instead of killing the worker).
 >   Watchdog kept as backstop. Efficacy recorded in `docs/THIN_CLIENT_SWAP.md`
 >   (IMPLEMENTED, UNMEASURED at ingest scale — 150M ingest already complete).
 > - **A4 DONE 2026-06-24** — build-phase supervisor confs archived:
 >   `scripts/archive/migration-150m.supervisor.conf` and
 >   `scripts/archive/qdrant-offbmp.supervisor.conf` (both with SUPERSEDED banners).
->   `scripts/qdrant-serve.supervisor.conf` is confirmed the ONLY steady-state
+>   `scripts/archive/qdrant-serve.supervisor.conf` is confirmed the ONLY steady-state
 >   Qdrant unit and is installed live (`qdrant-spike` RUNNING under supervisord,
 >   `autorestart=true`). Doc refs in `docs/THIN_CLIENT_SWAP.md` repointed.
-> - **B1-code + live DONE 2026-06-24** — `scripts/eval_quant_fidelity.py` extended
+> - **B1-code + live DONE 2026-06-24** — `scripts/experiments/eval_quant_fidelity.py` extended
 >   with `--live-qdrant` mode: true head-to-head on the live `splade_150m` index's
 >   own retrieved set — Qdrant returns live top-cand hits with stored f32 vectors
 >   (`with_vectors=True`), scored BOTH as raw f32 and BMP ×70 8-bit over the SAME
@@ -106,11 +106,11 @@ matters for droplet cost.
 |---|---|
 | BMP↔Qdrant toggle | `SFU_SPLADE_BACKEND` in `src/lib/thinclient/retriever.py` (`_splade_leg_qdrant` vs `_splade_leg`) |
 | OOM-safe 150M parity on small RAM | `scripts/eval_parity_section_waves.py`, `scripts/run_parity_safe.sh`, `scripts/eval_thinclient_parity.py` (`compare` mode) |
-| BMP-vs-Qdrant fidelity | `scripts/eval_quant_fidelity.py` (overlap@10/@50, Kendall-τ, NDCG delta) |
-| Quality metrics (training-comparable) | `scripts/benchmark_llm_judge.py` + `data/eval_results/llm_judge_cache.json` + `data/eval_results/diverse_queries.json` (Claude Haiku judge, NDCG@10/MRR@10/P@10) |
-| Qdrant latency/RAM | `scripts/spike_qdrant_sparse.py` (`measure` subcommand) |
-| Storage budget | `scripts/eval_storage_levers.py` |
-| Steady-state serving | `scripts/qdrant-serve.supervisor.conf` |
+| BMP-vs-Qdrant fidelity | `scripts/experiments/eval_quant_fidelity.py` (overlap@10/@50, Kendall-τ, NDCG delta) |
+| Quality metrics (training-comparable) | `scripts/experiments/benchmark_llm_judge.py` + `data/eval_results/llm_judge_cache.json` + `data/eval_results/diverse_queries.json` (Claude Haiku judge, NDCG@10/MRR@10/P@10) |
+| Qdrant latency/RAM | `scripts/archive/spike_qdrant_sparse.py` (`measure` subcommand) |
+| Storage budget | `scripts/experiments/eval_storage_levers.py` |
+| Steady-state serving | `scripts/archive/qdrant-serve.supervisor.conf` |
 
 **Metric definitions to keep identical to training** (so charts are comparable):
 NDCG@10 with gain `2^grade−1` and full-judged-pool IDCG; MRR@10 / P@10 with relevant
@@ -127,8 +127,8 @@ TREC-pooled. Reuse the existing `llm_judge_cache.json` so no re-judging cost is 
    CLAUDE.md same-commit doc rule, and `grep -rn 'SFU_SPLADE_BACKEND' docs/ src/ scripts/`
    to fix any doc stating the old default.
 2. **Qdrant ingest robustness (proper fix, not just the watchdog).** Add
-   retry-with-backoff around `wait=True` upserts in `scripts/spike_qdrant_sparse.py`
-   so a `status=red` optimizer stall self-heals; keep `scripts/bmp_ingest_watchdog.sh`
+   retry-with-backoff around `wait=True` upserts in `scripts/archive/spike_qdrant_sparse.py`
+   so a `status=red` optimizer stall self-heals; keep `scripts/archive/bmp_ingest_watchdog.sh`
    as the operational backstop. Record efficacy (CLAUDE.md new-module rule).
 3. **Ingest work rebalancing** (optional, only if a re-ingest is needed): replace the
    static `slices[w::W]` split with line-count balancing or a work-steal queue.
@@ -273,8 +273,8 @@ Only after the go/no-go report passes:
 
 ## Files to create / modify
 
-**Modify:** `src/lib/thinclient/retriever.py` (default flip), `scripts/spike_qdrant_sparse.py`
-(retry/backoff), `scripts/eval_quant_fidelity.py` (read live Qdrant collection),
+**Modify:** `src/lib/thinclient/retriever.py` (default flip), `scripts/archive/spike_qdrant_sparse.py`
+(retry/backoff), `scripts/experiments/eval_quant_fidelity.py` (read live Qdrant collection),
 `docs/THIN_CLIENT_SWAP.md`, `docs/README.md`, `docs/STORAGE_BUDGET_150M.md`.
 
 **Create:** `scripts/build_presentation_metrics.py`;

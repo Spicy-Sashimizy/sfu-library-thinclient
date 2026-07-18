@@ -38,7 +38,7 @@ All k values produced identical RRF NDCG = 0.9514 — rank ordering was fully st
 ### Q1.2 — BM25F Field Weighting
 **Status:** DONE (2026-05-16)  
 **Expected gain:** +0.01–0.02 on BM25 leg of RRF  
-**File:** `src/lib/opensearch_retriever.py:120-121`, `scripts/benchmark_llm_judge.py:224`
+**File:** `src/lib/opensearch_retriever.py:120-121`, `scripts/experiments/benchmark_llm_judge.py:224`
 
 Switched from `best_fields` (takes max field score) to `most_fields` + `tie_breaker=0.5` (sums field contributions). Better for queries where relevant terms split across title and abstract (Film, Archaeology). Both production retriever and benchmark updated together.
 
@@ -59,7 +59,7 @@ Switched from `best_fields` (takes max field score) to `most_fields` + `tie_brea
 ### Q1.3 — SPLADE Term Expansion Tuning
 **Status:** DONE (2026-05-16) — includes benchmark/production DSL alignment  
 **Expected gain:** +0.01–0.03 NDCG on weak subjects  
-**File:** `src/lib/opensearch_retriever.py:128-142`, `scripts/benchmark_llm_judge.py:243`
+**File:** `src/lib/opensearch_retriever.py:128-142`, `scripts/experiments/benchmark_llm_judge.py:243`
 
 Increased SPLADE vocabulary 48→64 terms, raised `scaling_factor` 1→4 (SPLADE paper recommendation). **Also fixed a benchmark/production divergence:** production was using `rank_features.linear` (no log scaling) while the benchmark used `bool.should + rank_feature.log.scaling_factor`. Both now use the same DSL — future benchmark numbers directly reflect production behavior.
 
@@ -147,7 +147,7 @@ Recommended: `naver/splade-cocondenser-ensembledistil` (2022 TREC winner, 2-4 pt
 
 **Steps:**
 1. Download new model: `python -c "from transformers import AutoTokenizer, AutoModelForMaskedLM; AutoTokenizer.from_pretrained('naver/splade-cocondenser-ensembledistil'); AutoModelForMaskedLM.from_pretrained('naver/splade-cocondenser-ensembledistil')"`
-2. Update `SPLADE_MODEL` constant in `scripts/splade_indexer.py` and `scripts/benchmark_llm_judge.py`
+2. Update `SPLADE_MODEL` constant in `scripts/splade_indexer.py` and `scripts/experiments/benchmark_llm_judge.py`
 3. Clear the OpenSearch `sparse_field.*` fields (requires re-index)
 4. Run SPLADE indexer: `python scripts/splade_indexer.py` (~11 min at TRT speed)
 5. Run 20-query holdout benchmark to quantify delta before full rollout

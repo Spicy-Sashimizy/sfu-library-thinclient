@@ -13,10 +13,10 @@
 | Test `.bmp` shards | `data/thinclient_1m/sections/*/splade_000.bmp` (≤114 MB) | P1 correctness |
 | Bigger build input | `data/thinclient_index/spool_backup` (123 GB, 5 sections) | P2 persona-sized `.bmp` |
 | Live Qdrant baseline | `splade_150m`, `splade_par30` | P2/P4 head-to-head |
-| Measure + parity harness | `scripts/spike_qdrant_sparse.py`, `eval_thinclient_parity.py`, `eval_quant_fidelity.py` | G3/G4/G5 |
+| Measure + parity harness | `scripts/archive/spike_qdrant_sparse.py`, `eval_thinclient_parity.py`, `eval_quant_fidelity.py` | G3/G4/G5 |
 | Query encoder | `lib.opensearch_retriever.encode_splade` + `models/splade_onnx_fp16` | qvecs |
 | Serving constants | QUANT_SCALE=70, α=0.8, β=1.0, k-overfetch | identical-compute guarantee |
-| Spike scaffold | `spike/mmap_bmp/` | P0–P2 |
+| Spike scaffold | `spike/archive/mmap_bmp/` | P0–P2 |
 
 ## Need to create
 | Item | Phase | Notes |

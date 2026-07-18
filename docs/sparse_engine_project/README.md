@@ -52,7 +52,7 @@ OpenSearch) at 150M **without** Qdrant's RAM wall or a JVM.
 
 ## Current state
 - **P0 Baseline — DONE (2026-06-25).** Complete 5-shard stock-BMP baseline +
-  saved query vectors at `spike/mmap_bmp/out/{baseline,qvecs}.json` (1M-section
+  saved query vectors at `spike/archive/mmap_bmp/out/{baseline,qvecs}.json` (1M-section
   shards, 10 SPLADE queries, k=50). Had been incomplete (1/5 shards) before the
   re-baseline; `compare_fork.py` was patched to skip shards absent from the
   baseline instead of fabricating G1 mismatches.
@@ -60,7 +60,7 @@ OpenSearch) at 150M **without** Qdrant's RAM wall or a JVM.
   (`/tmp/bmp-fork-work`, gitignored). P1-cheap-probe (mmap+deserialize) confirmed
   R2 (didn't cure the floor); then committed to the **R3 flat-layout rewrite** —
   new `src/index/flat.rs` (flat serializer + mmap lazy reader) + `src/flat_search.rs`
-  (reuses `block_score` unchanged). Fork patch: `spike/mmap_bmp/R3_fork.patch`
+  (reuses `block_score` unchanged). Fork patch: `spike/archive/mmap_bmp/R3_fork.patch`
   (applies clean to upstream). **G1 PASS (50/50 byte-identical); G2 PASS
   (RssAnon 0.535 GB across all 5 shards, flat in corpus — the floor is cured);
   G3 latency 67 ms vs stock 4.7 ms (R1 decode cost surfacing — a SIGNAL gate at
@@ -68,8 +68,8 @@ OpenSearch) at 150M **without** Qdrant's RAM wall or a JVM.
   `03_GO_NO_GO_GATES.md` decision log.
 - **P2 (cold-p95) — DONE (2026-06-26): GATE RED (G3a FAIL).** Built a persona-sized
   `med_bio` (23.4M docs → 16 shards → 17.8 GB `.bmp` → 9.0 GB `.bmflat`) from
-  `spool_backup` (`spike/mmap_bmp/build_persona_bmp.py`), transcoded via the R3 fork,
-  measured via `spike/mmap_bmp/measure_p2_cold.py`. **G3b PASS** (cold/warm = 1.04 — the
+  `spool_backup` (`spike/archive/mmap_bmp/build_persona_bmp.py`), transcoded via the R3 fork,
+  measured via `spike/archive/mmap_bmp/measure_p2_cold.py`. **G3b PASS** (cold/warm = 1.04 — the
   cold-fault bet was *won*; cost is decode, not page faults) but **G3a FAIL** (warm p50
   696 ms vs qdrant section-scale 66 ms, ~10× — decode-bound, scales worse-than-linear:
   1M shard 67 ms → ~625k-doc persona shard ~174 ms). Per the kill criteria a HARD-gate
@@ -86,7 +86,7 @@ OpenSearch) at 150M **without** Qdrant's RAM wall or a JVM.
 - **P2 zero-decode re-test — DONE (2026-06-26): FORMAT-WALL, the kill was premature.**
   On the R3 fork, re-laid-out the forward region as `#[repr(C)]` POD (`FlatPair` +
   `TermEntry`) read via `bytemuck::cast_slice` (zero decode, zero alloc) and scored with
-  a faithful `flat_block_score` twin of `block_score` (`spike/mmap_bmp/R3v2_delta.patch`).
+  a faithful `flat_block_score` twin of `block_score` (`spike/archive/mmap_bmp/R3v2_delta.patch`).
   Same 4-shard med_bio subset, same `posix_fadvise` cold mode as the 696 ms run.
   **G3a flips: warm p50 696 ms → 25.63 ms (≤ qdrant 66 ms); G1 byte-identical (50/50 @1M +
   40/40 @persona); anon 1.976 GB/4 shards; cold/warm 1.49 (G3b still won).** The wall was

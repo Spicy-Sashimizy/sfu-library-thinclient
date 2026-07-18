@@ -1,0 +1,8 @@
+watchdog: launching staging_serve on port 8180 (log /workspaces/sfu-library-thinclient/data/eval_results/_deployprep_watchdog.log)
+watchdog: health not-up yet (cold grace, 480s left) (2ms probe-fail: URLError: <urlopen error [Errno 111] Connection refused>)
+watchdog: health not-up yet (cold grace, 412s left) (0ms probe-fail: URLError: <urlopen error [Errno 111] Connection refused>)
+watchdog: process DIED (rc=-9) at 00:56:50 — restarting
+watchdog: recovery OK in 2724 ms
+watchdog: stopping (SIGTERM/KeyboardInterrupt) — tearing down serve
+
+watchdog report: {'port': 8180, 'restarts': [{'cause': 'process_death', 'rc': -9, 'recovery_ms': 2724.0, 'healthy_after_restart': True}], 'started': '2026-07-17T00:55:41Z', 'restart_count': 1, 'stopped': '2026-07-17T00:57:54Z'}

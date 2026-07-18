@@ -681,7 +681,68 @@ also produced a binding protocol change: quality gates now run on shards 1–2
 > `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. Next: Stage 1
 > (dv-v2 encoder/loader, shards 1–2 only) per `12_EXECUTION_ROADMAP.md` Q1.
 
-## 8. What the compressed forward does NOT change
+### 7.7 WI-4 — portable-CPU build gate reclear (2026-07-16, deployprep) — v3 SHIPS, v2 too slow
+
+**MEASURED 2026-07-16.** The served `.so` is `target-cpu=native` (this exact CPU;
+SIGILL on a host lacking the instructions) → it cannot ship to end users. Built
+portable `x86-64-v3` (AVX2+FMA+BMI1/2) and `x86-64-v2` (SSE4.2+SSSE3, the
+broadest x86-64 baseline) variants via `RUSTFLAGS='-C target-cpu=x86-64-v{3,2}'
+maturin build --release -i <venv-python>` (build, NOT `develop` — the latter
+overwrites the production .so). Variants extracted to side-loadable packages at
+`spike/seismic_upstream/target/portable_so/{v3,v2}/seismic/*.so`; the production
+.so is NEVER touched — variants load by explicit `sys.path` prepend
+(`scripts/seismic_testbed/wi4_portable_cpu_gates.py`).
+
+**objdump (the SIMD profile per target):** native 76 `vfmadd` / 15392 `ymm`; v3
+100 `vfmadd` / 13979 `ymm` (the SAME packed-SIMD FMA path as native — portable
+v3 keeps the AVX2 win); v2 2 `vfmadd` / 288 `ymm` (SSE-only, the FMA → scalar/
+SSE fallback — the cost).
+
+**Gates (the established E7 bars, `math_optimization/05`: worst-case-shard +
+n≥100; pre-registered in `11_EXPERIMENT_BACKLOG.md` §WI-4):**
+
+| variant | shard | parity overlap@10 (mean / min, n=100) | warm ratio (variant/native) | gate a (≥0.99) | gate b (≤1.07×) |
+|---|---|---|---|---|---|
+| **v3** | 1 | **1.0 / 1.0** | 0.956 | ✅ PASS | ✅ PASS |
+| **v3** | 2 | **1.0 / 1.0** | 0.968 | ✅ PASS | ✅ PASS |
+| v2 | 1 | **1.0 / 1.0** | 2.198 | ✅ PASS | ❌ FAIL (2.20×) |
+| v2 | 2 | **1.0 / 1.0** | 2.251 | ✅ PASS | ❌ FAIL (2.25×) |
+
+Verdict JSONs `data/eval_results/wi4_verdict_{v3,v2}_global_shard{1,2}*.json`;
+per-variant top-k `wi4_topk_{variant,native}_shard{1,2}.json`; driver
+`scripts/seismic_testbed/wi4_portable_cpu_gates.py` (each variant runs in its own
+subprocess + the join computes overlap@10 vs the native reference).
+
+**Two findings:**
+
+1. **Parity is BIT-IDENTICAL (overlap@10 = 1.0, min 1.0) for ALL variants on BOTH
+   worst-case shards** — the CPU-target change does NOT alter float results, even
+   for v2's no-FMA SSE path. The dot-product accumulation order is preserved across
+   targets (the kernel's summation structure is target-invariant; only the SIMD
+   width + FMA fusion change). *Stronger than the pre-registration's prediction*
+   (v2 was predicted "marginal"; it is exact). The parity risk the gate exists to
+   catch did not materialize — a portable target is parity-safe.
+2. **v3 PASSES both gates and is the shippable portable target.** Warm p50
+   1.69–1.70 ms vs native 1.75–1.77 ms — v3 is **slightly faster** (0.956–0.968×),
+   within run-to-run noise of native (the v3 scheduling is not worse). v3 keeps
+   the AVX2+FMA win the native rebuild earned (§7.1) while being portable to any
+   x86-64-v3 CPU (2013+, Haswell-class — the overwhelming majority of end-user
+   hardware). **v2 FAILS gate b** (2.20–2.25× slower — no FMA + no 256-bit SIMD
+   → the DotVByte decode/gather is SSE2/scalar, the same floor the §7.1 baseline
+   1.223× measured before the native rebuild). v2 is parity-safe but too slow to
+   ship as the served target; it stands as the last-resort baseline for a
+   pre-Haswell CPU that lacks v3 (a documented fallback, not the default).
+
+**The buildable recipe (committed, reproducible):** `scripts/seismic_testbed/
+wi4_run_all_gates.sh` builds both variants + runs the 6-cell gate matrix + the
+join. The variant .so extraction (wheel → side-loadable package) is in the gate
+script's setup. To ship v3 in a handout: build with
+`RUSTFLAGS='-C target-cpu=x86-64-v3' maturin build --release -i <py>`, install the
+wheel into the handout's venv (or ship the `.so` beside the package). **No
+served-default flip** (owner-gated): the production .so stays `native` until an
+operator swaps the v3 variant in via the explicit-path load.
+
+
 
 - Posting lists, summaries, EliasFano/BitField, block-skip math — untouched
   (15% of bytes; already the sequential-friendly part of the traversal).

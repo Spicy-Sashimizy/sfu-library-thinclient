@@ -1,0 +1,95 @@
+{
+  "probe": "wi14_delta_plan",
+  "generated_utc": "2026-07-17",
+  "local_bundle_version": "1.0.0",
+  "remote_bundle_version": "1.0.0",
+  "remote_channel": "stable",
+  "fetch": [
+    {
+      "key": "seismic_shards/shard1",
+      "reason": "changed",
+      "artifact": {
+        "group": "seismic_shards",
+        "shard": "shard1",
+        "mmap_dir": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1",
+        "version": "e8-dvv2-e5-reorder-2026-07-14",
+        "dir_version": "c5f340789817876b",
+        "files": [
+          {
+            "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/data.bin",
+            "sha256": "0d39a6f8e5aaedc4225cb402ebe69b0fc5fbac635be68b94617dfcbff7e67b2e",
+            "bytes": 1036,
+            "group": "seismic_shard"
+          },
+          {
+            "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/index.bin",
+            "sha256": "f67330a6f2fe7b5aad39752ac3ec1ad8c828d9359a266072f85bb7bd5cd6e23c",
+            "bytes": 512,
+            "group": "seismic_shard"
+          },
+          {
+            "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/manifest.json",
+            "sha256": "2ce39c69a5dc8df693d0874b6caf6ca37f8ec60f8fe694cf788abb485657ef62",
+            "bytes": 64,
+            "group": "seismic_shard"
+          }
+        ]
+      },
+      "bytes": 1036,
+      "changed_files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/seismic_shards/shard1/data.bin",
+          "sha256": "0d39a6f8e5aaedc4225cb402ebe69b0fc5fbac635be68b94617dfcbff7e67b2e",
+          "bytes": 1036,
+          "group": "seismic_shard"
+        }
+      ]
+    },
+    {
+      "key": "splade_model/models/splade_onnx_fused/model.onnx",
+      "reason": "changed",
+      "artifact": {
+        "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/models/splade_onnx_fused/model.onnx",
+        "sha256": "ff252a1e5c8d7fa76f91222e39dc65a3c83a52229778f8c366c0517750bd2335",
+        "bytes": 4108,
+        "group": "splade_model",
+        "version": "onnx-fused-2026-06-19"
+      },
+      "bytes": 4108,
+      "changed_files": [
+        {
+          "path": "/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi14_bundle_v2_20260717/models/splade_onnx_fused/model.onnx",
+          "sha256": "ff252a1e5c8d7fa76f91222e39dc65a3c83a52229778f8c366c0517750bd2335",
+          "bytes": 4108,
+          "group": "splade_model",
+          "version": "onnx-fused-2026-06-19"
+        }
+      ]
+    }
+  ],
+  "total_download_bytes": 5144,
+  "total_download_gb_est": 0.0,
+  "unchanged_count": 4,
+  "unchanged": [
+    "seismic_shards/shard0",
+    "portable_so/portable_so/seismic.cpython-311-x86_64-linux-gnu.so",
+    "splade_model/models/splade_onnx_fused/config.json",
+    "dense_model/models/sfu-academic-embed-v5/model.safetensors"
+  ],
+  "new_artifacts_count": 0,
+  "apply_order": [
+    "1. fetch changed/new artifacts BESIDE old (never in-place)",
+    "2. verify each fetched file sha256 vs the remote manifest entry",
+    "3. FLIP the bundle manifest LAST (the atomic pointer swap)",
+    "4. keep old files until post-flip verify succeeds (rollback-safe)",
+    "5. (post-healthy-run) delete superseded old files (GC-eligible)"
+  ],
+  "rollback": "re-flip the bundle manifest to the PRE-update manifest; the old artifact files were kept (step 4) so no re-fetch needed \u2014 crash-safe: a crash mid-apply leaves the old manifest pointing at old files (the flip is the only atomic step, and it's last).",
+  "delta_class_expectation": {
+    "so_rebuild": "~2.7 MB (1 file, the .so)",
+    "encoder_distill": "~1 GB (models only \u2014 the weight files)",
+    "e8_dvv2_reconversion": "~26 GB (all 8 shards' mmap_dirs)",
+    "manifest_flip_only": "~7.5 KB (the pointer; shards resident \u2192 0 data)",
+    "incremental_data_lsm": "DESIGN ONLY \u2014 semantic_docid_ingest LSM track (new docs without a full re-shard); not built this wave"
+  }
+}

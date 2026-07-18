@@ -1,0 +1,17 @@
+2026-06-18 00:29:34,956 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-06-18 00:29:40,015 INFO SPLADE ONNX model loaded (CPU)
+2026-06-18 00:31:10,234 INFO [os] 10/40 queries (MemAvailable 16.4 GB)
+2026-06-18 00:32:42,365 INFO [os] 20/40 queries (MemAvailable 18.0 GB)
+2026-06-18 00:34:16,638 INFO [os] 30/40 queries (MemAvailable 18.1 GB)
+2026-06-18 00:35:39,888 INFO [os] 40/40 queries (MemAvailable 19.1 GB)
+2026-06-18 00:35:39,896 INFO [os] wrote 40 records -> data/eval_results/parity_record_os_20260618_0028.json
+2026-06-18 00:35:49,536 INFO wrote data/eval_results/thinclient_parity_waves_150m.json
+
+========================================================================================
+THIN-CLIENT PARITY EVAL — 40 queries vs http://host.docker.internal:9200/openalex_works
+========================================================================================
+latency ms/query: {'tc_bm25f': 2904.2, 'tc_splade': 6779.1, 'os_bm25f': 6199.3, 'os_splade': 4802.6}
+NDCG@10: {'tc_rrf': {'mean': 0.5368, 'judged_queries': 39}, 'os_rrf': {'mean': 0.4487, 'judged_queries': 34}}
+overlap@50 vs baseline: {'bm25f': 0.532, 'splade': 0.3985, 'rrf': 0.476}
+tc leg overlap@50 (bm25f∩splade): 5.475
+========================================================================================

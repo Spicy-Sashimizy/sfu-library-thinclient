@@ -83,11 +83,123 @@ import json
 import logging
 import os
 import threading
+import time
 from pathlib import Path
 
 import numpy as np
 
 log = logging.getLogger("sharded_seismic_backend")
+
+# ── WI-10 (2026-07-17): shard-failure isolation gate envs ─────────────────────
+# All default OFF → the load loop + _fan_out are byte-identical to the pre-WI-10
+# behavior (a shard that fails to load raises RuntimeError; a search that throws
+# propagates). T1 bit-identity is unaffected by construction: a NON-faulted shard
+# set has zero behavioral change (the boundary only activates on a fault). The
+# fence around the load + search paths is what makes "one shard down, seven serve"
+# a property of the federation, not a happy-path accident.
+
+def _shard_fault_boundary_on() -> bool:
+    """ON → a shard that fails to load OR fails to search (throws / times out) is
+    marked failed + skipped instead of killing the whole federation. Owner ask
+    2026-07-17: any 1 of 8 shards down must leave the other 7 serving. Default
+    OFF = pre-WI-10 behavior (preserves the load-bearing T1 parity harnesses)."""
+    return os.environ.get("SFU_SEISMIC_SHARD_FAULT_BOUNDARY", "0") == "1"
+
+
+def _shard_search_timeout_s() -> float:
+    """Per-shard search timeout (seconds). A shard whose `.search` exceeds this is
+    treated as failed (the hung-shard case). Default 30s (generous — a 9p cold
+    shard can take seconds; the timeout is a safety net for a WEDGED shard, not a
+    slow-but-healthy one)."""
+    try:
+        return float(os.environ.get("SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S", "30"))
+    except ValueError:
+        return 30.0
+
+
+def _shard_reprobe_s() -> float:
+    """Cooldown before a failed shard is re-probed (re-admitted to the federation
+    on the next search). Mirrors the leg-breaker cooldown."""
+    try:
+        return float(os.environ.get("SFU_SEISMIC_SHARD_REPROBE_S", "10"))
+    except ValueError:
+        return 10.0
+
+
+class _ShardFaultTracker:
+    """Per-shard fault state shared by the LOAD boundary (marks a shard that fails
+    to load) and the SEARCH boundary (marks a shard that throws/times out during
+    `.search`). A failed shard returns `[]` for its search results and is omitted
+    from the federation's contribution; after the reprobe cooldown, one search is
+    allowed through as a probe (a success re-admits, a fail re-arms the cooldown).
+
+    The tracker holds NO scores and NO results — only fail counts + timestamps.
+    It never touches `_merge_topk` (the shared pure merge), so a faulted federation
+    still merges the SURVIVING shards' results by the same order-independent
+    merge. T1-unaffected: the merge is unchanged; only which per-shard results
+    feed it differs, and only under an explicit fault (OFF → no change at all).
+
+    Hash sharding makes a lost shard a BOUNDED ~1/8 recall loss with no score-
+    comparability issue (doc 09: calibration unnecessary by construction — each
+    shard is a disjoint doc-id hash partition, scored in one shared vocab space)."""
+
+    __slots__ = ("fails", "opened_at", "probe_pending", "last_reason", "_lock")
+
+    def __init__(self):
+        self.fails = 0
+        self.opened_at: float | None = None
+        self.probe_pending = False
+        self.last_reason: str | None = None
+        self._lock = threading.Lock()
+
+    def is_failed(self) -> bool:
+        """True if this shard should be SKIPPED this search (failed + still in the
+        reprobe cooldown, or a probe is already in flight). When the cooldown has
+        elapsed, sets probe_pending and returns False (HALF-OPEN: let this search
+        through as the probe)."""
+        with self._lock:
+            if self.opened_at is None:
+                return False
+            if self.probe_pending:
+                return True
+            if time.monotonic() - self.opened_at >= _shard_reprobe_s():
+                self.probe_pending = True
+                return False
+            return True
+
+    def on_success(self):
+        with self._lock:
+            self.fails = 0
+            self.opened_at = None
+            self.probe_pending = False
+            self.last_reason = None
+
+    def on_fail(self, reason: str):
+        with self._lock:
+            if self.probe_pending:
+                # the re-probe failed → re-arm the cooldown (stay failed)
+                self.opened_at = time.monotonic()
+                self.probe_pending = False
+                self.last_reason = reason
+                return
+            self.fails += 1
+            self.last_reason = reason
+            self.opened_at = time.monotonic()  # any fail opens the cooldown gate
+
+
+def _shard_name(idx, idx_path: str, position: int) -> str:
+    """A stable human name for a shard (its manifest path stem, or its position).
+    Used in `degraded_shards` so the response names WHICH shard is down."""
+    base = Path(idx_path).name
+    if base:
+        # `shard_N.mmap` / `shard_N.index.seismic` → `shard_N`
+        for suf in (".mmap", ".index.seismic"):
+            if base.endswith(suf):
+                base = base[: -len(suf)]
+                break
+        return base
+    return f"shard_{position}"
+
 
 # Manifests record shard paths relative to the repo root (e.g.
 # `data/seismic_150m/index/plan01/...`); the serving process's cwd is not
@@ -392,10 +504,37 @@ class _SeismicBackendBase:
         # re-deriving the path (and without poking attributes onto the pyo3
         # index object, which doesn't accept dynamic attrs).
         self._shard_mmap_dirs = []
-        for p in index_paths:
-            idx = _load_one_shard(self._seismic, p, self.load_mode)
-            self.shards.append(idx)
-            self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
+        # WI-10 (2026-07-17): per-shard fault trackers + the manifest paths (for
+        # naming degraded shards). When the fault boundary is OFF these are
+        # unused (the load loop raises on a bad shard before reaching them).
+        self._shard_faults: list[_ShardFaultTracker] = []
+        self._shard_names: list[str] = []
+        self._shard_paths = list(index_paths)
+        self._fault_boundary = _shard_fault_boundary_on()
+        for i, p in enumerate(index_paths):
+            if self._fault_boundary:
+                # LOAD BOUNDARY: a shard that fails to load is MARKED FAILED + a
+                # None placeholder takes its slot (a faulted shard's search is
+                # short-circuited to []). The federation still loads the other 7.
+                # This is the owner-ask property: one shard's bad file does NOT
+                # stop the other seven from serving.
+                tr = _ShardFaultTracker()
+                self._shard_faults.append(tr)
+                self._shard_names.append(_shard_name(None, p, i))
+                try:
+                    idx = _load_one_shard(self._seismic, p, self.load_mode)
+                    self.shards.append(idx)
+                except Exception as exc:
+                    tr.on_fail(f"load: {type(exc).__name__}: {str(exc)[:120]}")
+                    log.error("WI-10: shard %s FAILED to load (%s) — marking down, "
+                              "federation continues with the surviving shards",
+                              self._shard_names[-1], tr.last_reason)
+                    self.shards.append(None)  # placeholder; search short-circuits it
+                self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
+            else:
+                idx = _load_one_shard(self._seismic, p, self.load_mode)
+                self.shards.append(idx)
+                self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
 
         # Q9 (2026-07-10): optional STARTUP FLOOR PREFAULT. At load, a foreground
         # touch of each shard's small structural slabs (posting-lists + doc-mapping
@@ -758,7 +897,14 @@ class _SeismicBackendBase:
         `ThreadPoolExecutor` (latency ≈ max shard); `SequentialSeismicBackend`
         searches shards one at a time (latency ≈ Σ shards, bounded resident set).
         The downstream `_merge_topk` is SHARED and order-independent, so both
-        methods return the same global top-k (bit-identical, same `k'` over-fetch)."""
+        methods return the same global top-k (bit-identical, same `k'` over-fetch).
+
+        WI-10 (2026-07-17): when `SFU_SEISMIC_SHARD_FAULT_BOUNDARY=1`, each
+        `_search_one` runs under a per-shard timeout + the fault tracker: a shard
+        that throws or times out returns `[]` (no federation contribution) + is
+        marked failed for the reprobe cooldown. The OTHER shards still serve →
+        "one shard down, seven serve." When OFF (default) the path is unchanged
+        (byte-identical to pre-WI-10: a thrown search propagates as before)."""
         if not q:
             return []
         qcomp, qvals, qc, kp = _prepare_query(q, top_k, self._string_dtype,
@@ -768,8 +914,94 @@ class _SeismicBackendBase:
             return idx.search(query_id="q", query_components=qcomp, query_values=qvals,
                               k=kp, query_cut=qc, heap_factor=heap_factor)
 
-        per_shard = self._fan_out(_search_one)
-        return _merge_topk(per_shard, top_k)
+        if not self._fault_boundary:
+            per_shard = self._fan_out(_search_one)
+            return _merge_topk(per_shard, top_k)
+        # WI-10 guarded path: `_fan_out` iterates self.shards; a faulted shard's
+        # slot is None (failed at load) or will throw at search → the guard turns
+        # either into a [] result + a recorded fault, keeping the federation alive.
+        per_shard = self._fan_out(self._guarded_search_one(_search_one))
+        # tolerate the per-shard None placeholders from faulted-at-load shards
+        return _merge_topk([r if r is not None else [] for r in per_shard], top_k)
+
+    def _guarded_search_one(self, _search_one):
+        """Wrap `_search_one` so each shard's search is fault-bounded: a None
+        shard (failed at load) or a thrown/timed-out search → `[]` + a recorded
+        fault. Used ONLY when the fault boundary is ON (else `_search_one` runs
+        bare, byte-identical to pre-WI-10). Returns a closure `_search_one(idx)`
+        with the SAME signature so `_fan_out` (parallel OR sequential) is unchanged
+        — the fence is the same in BOTH methods (the cascade property)."""
+        timeout = _shard_search_timeout_s()
+
+        def _guarded(idx):
+            # the parallel _fan_out maps over self.shards; pair idx→tracker by
+            # position. (Both _fan_outs iterate self.shards in order, so the i-th
+            # call corresponds to the i-th tracker.)
+            pos = id(idx)
+            # find the tracker for this shard index (None shards: tracker failed
+            # at load → short-circuit). Linear scan is fine (≤8 shards/query).
+            tr = None
+            for i, s in enumerate(self.shards):
+                if i < len(self._shard_faults) and s is idx:
+                    tr = self._shard_faults[i]
+                    break
+            if idx is None or tr is None:
+                return []  # faulted at load — no contribution
+            if tr.is_failed():
+                return []  # still in reprobe cooldown — skip
+            # run the search; a throw OR a timeout → [] + recorded fault
+            try:
+                fut = self._probe_executor.submit(_search_one, idx)
+                res = fut.result(timeout=timeout)
+                tr.on_success()
+                return res
+            except cf.TimeoutError:
+                tr.on_fail("search_timeout")
+                log.warning("WI-10: shard search TIMEOUT (>%ss) → marked down",
+                            timeout)
+                return []
+            except Exception as exc:
+                tr.on_fail(f"search: {type(exc).__name__}: {str(exc)[:100]}")
+                log.warning("WI-10: shard search failed (%s) → marked down",
+                            tr.last_reason)
+                return []
+        return _guarded
+
+    def degraded_shards(self) -> list[str]:
+        """Names of shards currently marked failed (the steady-state degraded
+        set). Surfaced to `/health` + the WI-10 proof. Empty when the boundary is
+        OFF (no shards are ever marked)."""
+        if not self._fault_boundary:
+            return []
+        out = []
+        for name, tr in zip(self._shard_names, self._shard_faults):
+            if tr.is_failed():
+                out.append(name)
+        return sorted(out)
+
+    def fault_status(self) -> list[dict]:
+        """Per-shard fault state (for /health + the proof harness). Empty list
+        when the boundary is OFF."""
+        if not self._fault_boundary:
+            return []
+        out = []
+        for i, (name, tr) in enumerate(zip(self._shard_names, self._shard_faults)):
+            with tr._lock:
+                out.append({"shard": name, "position": i,
+                            "loaded": self.shards[i] is not None,
+                            "failed": tr.opened_at is not None,
+                            "fails": tr.fails,
+                            "last_reason": tr.last_reason})
+        return out
+
+    @property
+    def _probe_executor(self):
+        """A small persistent executor for the guarded search's per-shard timeout
+        (created lazily, once; reused). Only used when the fault boundary is ON."""
+        if getattr(self, "_pe", None) is None:
+            self._pe = cf.ThreadPoolExecutor(max_workers=max(1, len(self.shards)),
+                                              thread_name_prefix="shard-fault-probe")
+        return self._pe
 
     def _fan_out(self, _search_one) -> list:
         """Run `_search_one` across all shards. Overridden by each concrete class

@@ -1,0 +1,40 @@
+WI-10 shard-isolation proof: building the 8-shard baseline (parallel)...
+  baseline loaded in 4s
+  baseline queries done: throws=0 p50=5583ms
+
+=== search_exception_parallel (parallel) — a shard's .search throws ===
+WI-10: shard search failed (search: RuntimeError: INJECTED shard0 search failure (WI-10)) → marked down
+  DURING: throws=0 degraded=['global_shard0of8.dotvbyte.e5.v2'] recall@10=0.850 p50=98ms (expect ~0.875)
+  AFTER:  degraded=[] → re-admitted=True
+
+=== search_hang_parallel (parallel) — a shard's .search hangs (>timeout) ===
+WI-10: shard search TIMEOUT (>3.0s) → marked down
+  DURING: throws=0 degraded=['global_shard0of8.dotvbyte.e5.v2'] recall@10=0.850 p50=117ms (expect ~0.875)
+  AFTER:  degraded=[] → re-admitted=True
+
+=== search_exception_sequential (sequential) — sequential class: a shard's .search throws ===
+WI-10: shard search failed (search: RuntimeError: INJECTED shard0 search failure (WI-10)) → marked down
+WI-10: shard search failed (search: RuntimeError: INJECTED shard0 search failure (WI-10)) → marked down
+  DURING: throws=0 degraded=['global_shard0of8.dotvbyte.e5.v2'] recall@10=0.850 p50=270ms (expect ~0.875)
+  AFTER:  degraded=[] → re-admitted=True
+
+=== load_absent_parallel (parallel) — a shard's mmap_dir is absent (won't load) ===
+WI-10: shard DOES_NOT_EXIST_WI10 FAILED to load (load: RuntimeError: load_mode=mmap but converted mmap dir not found: data/seismic_150m/DOES_NOT_EXIST_WI10.mmap.mmap
+  (stock shard data/sei) — marking down, federation continues with the surviving shards
+  loaded in 3s; fault_status: [{'shard': 'DOES_NOT_EXIST_WI10', 'position': 0, 'loaded': False, 'failed': True, 'fails': 1, 'last_reason': 'load: RuntimeError: load_mode=mmap but converted mmap dir not found: data/seismic_150m/DOES_NOT_EXIST_WI10.mmap.mmap\n  (stock shard data/sei'}, {'shard': 'global_shard1of8.dotvbyte.e5.v2', 'position': 1, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard2of8.dotvbyte.e5.v2', 'position': 2, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard3of8.dotvbyte.e5.v2', 'position': 3, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard4of8.dotvbyte.e5.v2', 'position': 4, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard5of8.dotvbyte.e5.v2', 'position': 5, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard6of8.dotvbyte.e5.v2', 'position': 6, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard7of8.dotvbyte.e5.v2', 'position': 7, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}]
+  DURING: loaded=7/8 throws=0 degraded=[] recall@10=0.850 p50=123ms
+  AFTER:  reload-with-good-manifest degraded=[] → re-admitted=True
+
+=== load_truncated_parallel (parallel) — a shard's mmap_dir is a corrupt fixture ===
+WI-10: shard wi10_truncated_shard FAILED to load (load: OSError: MmapSeismicIndexDotVByte::from_mmap("/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi10_truncated_shard) — marking down, federation continues with the surviving shards
+  loaded in 3s; fault_status: [{'shard': 'wi10_truncated_shard', 'position': 0, 'loaded': False, 'failed': True, 'fails': 1, 'last_reason': 'load: OSError: MmapSeismicIndexDotVByte::from_mmap("/workspaces/sfu-library-thinclient/data/eval_results/_fixtures/wi10_truncated_shard'}, {'shard': 'global_shard1of8.dotvbyte.e5.v2', 'position': 1, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard2of8.dotvbyte.e5.v2', 'position': 2, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard3of8.dotvbyte.e5.v2', 'position': 3, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard4of8.dotvbyte.e5.v2', 'position': 4, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard5of8.dotvbyte.e5.v2', 'position': 5, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard6of8.dotvbyte.e5.v2', 'position': 6, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}, {'shard': 'global_shard7of8.dotvbyte.e5.v2', 'position': 7, 'loaded': True, 'failed': False, 'fails': 0, 'last_reason': None}]
+  DURING: loaded=7/8 throws=0 degraded=[] recall@10=0.850 p50=120ms
+  AFTER:  reload-with-good-manifest degraded=[] → re-admitted=True
+
+=== WI-10 VERDICT: PASS ===
+  search_exception_parallel: {'a_other_seven_serve_no_throw': True, 'b_results_returned': True, 'c_shard_named_in_degraded': True, 'e_class_isolates': True, 'd_readmission': True}
+  search_hang_parallel: {'a_other_seven_serve_no_throw': True, 'b_results_returned': True, 'c_shard_named_in_degraded': True, 'e_class_isolates': True, 'd_readmission': True}
+  search_exception_sequential: {'a_other_seven_serve_no_throw': True, 'b_results_returned': True, 'c_shard_named_in_degraded': True, 'e_class_isolates': True, 'd_readmission': True}
+  load_absent_parallel: {'a_other_seven_load_and_serve': True, 'b_results_returned': True, 'c_shard_named_in_degraded': True, 'e_class_isolates': True, 'recall_bounded_7_8': True, 'd_readmission': True}
+  load_truncated_parallel: {'a_other_seven_load_and_serve': True, 'b_results_returned': True, 'c_shard_named_in_degraded': True, 'e_class_isolates': True, 'recall_bounded_7_8': True, 'd_readmission': True}
+result: /workspaces/sfu-library-thinclient/data/eval_results/wi10_shard_isolation_20260717_023630.json

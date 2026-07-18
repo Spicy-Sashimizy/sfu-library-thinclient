@@ -15,7 +15,7 @@ needs is already in this container (inventoried 2026-06-25):
 | Small test `.bmp` indexes | ✅ `data/thinclient_1m/sections/*/splade_000.bmp` (2.3 GB total) + `data/thinclient_test_resume/.../med_bio__recent/splade_00*.bmp` |
 | Data to rebuild a persona-sized `.bmp` | ✅ `data/thinclient_index/spool_backup` (123 GB, all 5 sections) |
 | Comparison baseline | ✅ live Qdrant `splade_150m` + `splade_par30` |
-| Measure harness, parity eval, ×70 quant params | ✅ `scripts/spike_qdrant_sparse.py`, `eval_thinclient_parity.py` |
+| Measure harness, parity eval, ×70 quant params | ✅ `scripts/archive/spike_qdrant_sparse.py`, `eval_thinclient_parity.py` |
 | Disk headroom | ✅ 811 GB free |
 
 The spike's entire value is **proximity to this exact data** (same SPLADE vectors,

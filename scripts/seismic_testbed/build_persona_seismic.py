@@ -22,7 +22,7 @@ verified smoke build (5k docs → 15,826 unique tokens) projects well under 65K
 for persona, but this is auto-detected from the built dim, not assumed.
 
 Isolation: writes to an external ext4 dir, NOT the serving `data/` path
-(mirrors `spike/mmap_bmp/build_persona_bmp.py`). Watch MemAvailable during
+(mirrors `spike/archive/mmap_bmp/build_persona_bmp.py`). Watch MemAvailable during
 build — the R-BUILD150M projection for the real 150M host starts from this
 persona peak.
 

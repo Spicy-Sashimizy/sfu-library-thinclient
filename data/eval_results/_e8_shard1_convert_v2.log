@@ -1,0 +1,26 @@
+convert_f16_to_dotvbyte: data/seismic_150m/index/plan01/global_shard1of8.mmap -> data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.v2.mmap (sanity 2000 docs, page_align false, value_scale PerDocLinear)
+{
+  "component_mapping_trained": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.v2.mmap",
+  "encode_seconds": 123.228256573,
+  "forward_bytes": {
+    "dotvbyte": 4006224752,
+    "f16": 6744676644,
+    "ratio": 1.6835492418723892
+  },
+  "forward_format_version": 2,
+  "n_docs": 18812242,
+  "nnz": 1648544675,
+  "packs_rewritten": 40390307,
+  "page_align": {
+    "enabled": false,
+    "growth_pct": 0.0,
+    "pad_words": 0
+  },
+  "postings_rewrite_seconds": 29.088214759,
+  "sanity_docs_checked": 2001,
+  "sanity_max_value_absdiff": 0.006132245063781738,
+  "src": "data/seismic_150m/index/plan01/global_shard1of8.mmap",
+  "total_seconds": 177.392826859,
+  "value_scale": "per_doc_linear"
+}

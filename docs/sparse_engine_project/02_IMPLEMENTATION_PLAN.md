@@ -14,7 +14,7 @@ Each phase has a **deliverable** and an **exit gate** (full pass/fail numbers in
 
 | Phase | Deliverable | Exit gate (summary) | Where | ~Effort |
 |---|---|---|---|---|
-| **P0 · Baseline** | stock-BMP top-k/RSS/latency recorded (`spike/mmap_bmp/record_baseline.py`) | baseline.json + qvecs.json produced | here, branch | ✅ done 2026-06-25, 5 shards |
+| **P0 · Baseline** | stock-BMP top-k/RSS/latency recorded (`spike/archive/mmap_bmp/record_baseline.py`) | baseline.json + qvecs.json produced | here, branch | ✅ done 2026-06-25, 5 shards |
 | **P1 · Fork builds & is correct** | BMP forked to `memmap2`; wheel in throwaway venv | **G1 correctness** byte-identical top-k vs P0 + **G2 RAM** RssAnon ~0 | here, branch | ✅ G1+G2 PASS 2026-06-25 (R3 flat rewrite); G3 signal degraded |
 | **P2 · Cold-p95 at scale** | persona-sized `.bmp` from `spool_backup`; cold/warm measured | **G3 latency** cold p95 ≤ ~2–3× warm AND warm p50 ≤ Qdrant on same data | here, branch | ✅ done 2026-06-26 — **RED** (G3b PASS, G3a FAIL) |
 | **— SPIN-OFF DECISION —** | go/no-go on building the engine | P1+P2 green → new repo/container; else **KILL** | — | — |
@@ -30,7 +30,7 @@ test `.bmp` shards, records top-k (ids+scores), RSS, latency, and persists the q
 vectors. This is the ground truth P1 diffs against.
 
 ### P1 — Fork builds & is correct
-Apply `spike/mmap_bmp/FORK_BMP.md` (swap `Vec` read → `Mmap`, zero-copy views).
+Apply `spike/archive/mmap_bmp/FORK_BMP.md` (swap `Vec` read → `Mmap`, zero-copy views).
 `compare_fork.py` replays P0's qvecs and checks G1 (identical top-k) + G2 (RssAnon
 ~0). **This is the make-or-break phase** — if results differ or RAM doesn't drop,
 the fork is wrong or the idea is dead.
@@ -43,8 +43,8 @@ the fork is wrong or the idea is dead.
 > *provisionally* (§4 follow-ons still gate). See `03_GO_NO_GO_GATES.md` decision log.
 
 Built a persona-sized `med_bio` (23.4M docs → 16 shards → 17.8 GB `.bmp` → 9.0 GB
-`.bmflat`) from `spool_backup` via `spike/mmap_bmp/build_persona_bmp.py`; transcoded
-via the R3 fork; measured cold/warm via `spike/mmap_bmp/measure_p2_cold.py`. Result:
+`.bmflat`) from `spool_backup` via `spike/archive/mmap_bmp/build_persona_bmp.py`; transcoded
+via the R3 fork; measured cold/warm via `spike/archive/mmap_bmp/measure_p2_cold.py`. Result:
 **G3b PASS** (cold/warm = 1.04 — the cold-fault bet was won; cost is decode, not faults),
 but **G3a FAIL** (warm p50 696 ms vs qdrant 66 ms, ~10× — decode-bound, scales worse
 than linear). Bonus: **G2 regresses at scale** (8.26 GB anon / 16 shards — R3 cured only

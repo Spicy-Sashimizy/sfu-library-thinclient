@@ -1,0 +1,65 @@
+2026-06-17 23:37:23,711 INFO planned 192 shards (68.6 GB disk, ~211 GB resident) into 27 waves at 8.0 GB resident-budget
+2026-06-17 23:37:23,712 INFO MemAvailable now: 17.7 GB
+2026-06-17 23:38:36,299 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-06-17 23:38:40,318 INFO SPLADE ONNX model loaded (CPU)
+2026-06-17 23:38:41,128 INFO prepped 40 query vectors -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/qvecs.json
+2026-06-17 23:38:45,583 INFO thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True
+2026-06-17 23:38:45,583 INFO bm25f pass over sections: ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent']
+2026-06-17 23:40:41,751 INFO bm25f recorded 40 queries -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/bm25f.json
+2026-06-17 23:40:42,422 INFO wave 1/27: 5 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:42:15,179 INFO wave (5 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_000.json
+2026-06-17 23:42:15,321 INFO wave 2/27: 5 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:43:55,556 INFO wave (5 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_001.json
+2026-06-17 23:43:55,701 INFO wave 3/27: 6 shards, 2.61 GB disk (~8.0 GB resident)
+2026-06-17 23:45:34,191 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_002.json
+2026-06-17 23:45:34,330 INFO wave 4/27: 5 shards, 2.61 GB disk (~8.0 GB resident)
+2026-06-17 23:47:14,416 INFO wave (5 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_003.json
+2026-06-17 23:47:14,559 INFO wave 5/27: 7 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:48:59,578 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_004.json
+2026-06-17 23:48:59,715 INFO wave 6/27: 8 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:50:38,660 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_005.json
+2026-06-17 23:50:38,796 INFO wave 7/27: 8 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:52:15,349 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_006.json
+2026-06-17 23:52:15,483 INFO wave 8/27: 10 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:53:51,196 INFO wave (10 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_007.json
+2026-06-17 23:53:51,326 INFO wave 9/27: 6 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:55:30,571 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_008.json
+2026-06-17 23:55:30,702 INFO wave 10/27: 7 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-17 23:57:09,289 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_009.json
+2026-06-17 23:57:09,426 INFO wave 11/27: 8 shards, 2.61 GB disk (~8.0 GB resident)
+2026-06-17 23:58:47,698 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_010.json
+2026-06-17 23:58:47,853 INFO wave 12/27: 8 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:00:26,048 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_011.json
+2026-06-18 00:00:26,176 INFO wave 13/27: 7 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:02:02,413 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_012.json
+2026-06-18 00:02:02,526 INFO wave 14/27: 6 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:03:38,361 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_013.json
+2026-06-18 00:03:38,516 INFO wave 15/27: 6 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:05:17,671 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_014.json
+2026-06-18 00:05:17,802 INFO wave 16/27: 6 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:06:57,262 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_015.json
+2026-06-18 00:06:57,381 INFO wave 17/27: 7 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:08:33,726 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_016.json
+2026-06-18 00:08:33,832 INFO wave 18/27: 8 shards, 2.61 GB disk (~8.0 GB resident)
+2026-06-18 00:10:11,547 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_017.json
+2026-06-18 00:10:11,658 INFO wave 19/27: 7 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:11:49,167 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_018.json
+2026-06-18 00:11:49,272 INFO wave 20/27: 8 shards, 2.59 GB disk (~8.0 GB resident)
+2026-06-18 00:13:25,157 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_019.json
+2026-06-18 00:13:25,262 INFO wave 21/27: 11 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:15:02,986 INFO wave (11 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_020.json
+2026-06-18 00:15:03,091 INFO wave 22/27: 8 shards, 2.60 GB disk (~8.0 GB resident)
+2026-06-18 00:16:37,688 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_021.json
+2026-06-18 00:16:37,786 INFO wave 23/27: 7 shards, 2.58 GB disk (~7.9 GB resident)
+2026-06-18 00:18:12,475 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_022.json
+2026-06-18 00:18:12,572 INFO wave 24/27: 7 shards, 2.51 GB disk (~7.7 GB resident)
+2026-06-18 00:19:44,709 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_023.json
+2026-06-18 00:19:44,803 INFO wave 25/27: 7 shards, 2.43 GB disk (~7.5 GB resident)
+2026-06-18 00:21:12,869 INFO wave (7 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_024.json
+2026-06-18 00:21:12,956 INFO wave 26/27: 8 shards, 2.49 GB disk (~7.7 GB resident)
+2026-06-18 00:22:44,270 INFO wave (8 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_025.json
+2026-06-18 00:22:44,360 INFO wave 27/27: 6 shards, 1.40 GB disk (~4.3 GB resident)
+2026-06-18 00:23:36,722 INFO wave (6 shards) recorded -> /workspaces/sfu-library-thinclient/data/eval_results/_waves/waves/wave_026.json
+2026-06-18 00:23:37,103 INFO merged record-tc -> data/eval_results/parity_record_tc_waves_150m.json (40 queries)
+2026-06-18 00:23:37,113 INFO DONE — record-tc written to data/eval_results/parity_record_tc_waves_150m.json
+2026-06-18 00:23:37,114 INFO next: eval_thinclient_parity.py compare --tc-record data/eval_results/parity_record_tc_waves_150m.json --os-record <os.json> --output <summary.json>

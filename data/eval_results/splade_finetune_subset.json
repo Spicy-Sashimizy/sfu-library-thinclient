@@ -1,0 +1,63 @@
+{
+  "comparison": "SPLADE retrieval over a subset index: base (naver/splade-cocondenser-ensembledistil) vs fine-tuned models/sfu-splade-v1, identical docs+distractors.",
+  "index": "openalex_works_splade_eval",
+  "scored": 360,
+  "skipped_no_gt": 0,
+  "ndcg_k": 10,
+  "query_terms": 64,
+  "scaling_factor": 4,
+  "summary": {
+    "base": {
+      "keyword": {
+        "n": 120,
+        "ndcg@10": 0.6738,
+        "mrr@10": 0.7431
+      },
+      "natural": {
+        "n": 240,
+        "ndcg@10": 0.6358,
+        "mrr@10": 0.7297
+      },
+      "overall": {
+        "n": 360,
+        "ndcg@10": 0.6485,
+        "mrr@10": 0.7342
+      }
+    },
+    "v1": {
+      "keyword": {
+        "n": 120,
+        "ndcg@10": 0.7673,
+        "mrr@10": 0.9049
+      },
+      "natural": {
+        "n": 240,
+        "ndcg@10": 0.6454,
+        "mrr@10": 0.8368
+      },
+      "overall": {
+        "n": 360,
+        "ndcg@10": 0.686,
+        "mrr@10": 0.8595
+      }
+    }
+  },
+  "delta_v1_minus_base": {
+    "keyword": {
+      "ndcg@10": 0.0935,
+      "mrr@10": 0.1618
+    },
+    "natural": {
+      "ndcg@10": 0.0096,
+      "mrr@10": 0.1071
+    },
+    "overall": {
+      "ndcg@10": 0.0375,
+      "mrr@10": 0.1253
+    }
+  },
+  "caveats": [
+    "Subset index has guaranteed judged-doc coverage + far fewer distractors than the full ~150M index, so ABSOLUTE NDCG is optimistic. The base-vs-v1 DELTA (identical docs/distractors; model is the only variable) is the robust signal.",
+    "Measures retrieval quality on the subset; full-corpus recall is confirmed by the in-place 150M re-encode + eval_pipeline.py (the ~40h production run)."
+  ]
+}

@@ -1,0 +1,51 @@
+20:27:09 INFO full-corpus G6: 8 shards from /workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap.json (load_mode mmap)
+20:27:10 INFO baseline VmRSS: 0.03 GB
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard0of8.mmap
+20:27:10 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard1of8.mmap
+20:27:10 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard2of8.mmap
+20:27:10 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard3of8.mmap
+20:27:10 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard4of8.mmap
+20:27:10 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard5of8.mmap
+20:27:10 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard6of8.mmap
+20:27:10 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+20:27:10 INFO federated: loading shard (mmap) /tmp/seismic_testbed/index/plan01/global_shard7of8.mmap
+20:27:10 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+20:27:10 INFO loaded 8 shards in 0.6s | VmRSS 0.15 GB | per-shard lens [18799322, 18812242, 18797227, 18801448, 18807611, 18801216, 18796836, 18797196]
+20:27:10 INFO total docs indexed: 150413098
+20:28:23 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+20:28:27 INFO SPLADE ONNX model loaded (CPU)
+20:29:29 INFO post-warmup VmRSS: 2.74 GB
+20:34:48 INFO [5/120] baseline-measurable=5 treatment-measurable=5 paired=5 (VmRSS 2.6 GB)
+20:40:08 INFO [10/120] baseline-measurable=10 treatment-measurable=10 paired=10 (VmRSS 2.3 GB)
+20:45:31 INFO [15/120] baseline-measurable=15 treatment-measurable=15 paired=15 (VmRSS 2.3 GB)
+20:50:35 INFO [20/120] baseline-measurable=20 treatment-measurable=20 paired=20 (VmRSS 2.3 GB)
+20:55:44 INFO [25/120] baseline-measurable=25 treatment-measurable=24 paired=24 (VmRSS 2.5 GB)
+21:00:45 INFO [30/120] baseline-measurable=30 treatment-measurable=29 paired=29 (VmRSS 2.0 GB)
+21:05:45 INFO [35/120] baseline-measurable=34 treatment-measurable=33 paired=33 (VmRSS 1.8 GB)
+21:11:00 INFO [40/120] baseline-measurable=39 treatment-measurable=38 paired=38 (VmRSS 2.9 GB)
+21:16:25 INFO [45/120] baseline-measurable=44 treatment-measurable=43 paired=43 (VmRSS 3.1 GB)
+21:21:48 INFO [50/120] baseline-measurable=49 treatment-measurable=48 paired=48 (VmRSS 2.3 GB)
+21:27:08 INFO [55/120] baseline-measurable=54 treatment-measurable=53 paired=53 (VmRSS 2.1 GB)
+21:32:25 INFO [60/120] baseline-measurable=56 treatment-measurable=55 paired=55 (VmRSS 2.9 GB)
+21:37:42 INFO [65/120] baseline-measurable=60 treatment-measurable=59 paired=59 (VmRSS 2.5 GB)
+21:43:06 INFO [70/120] baseline-measurable=65 treatment-measurable=64 paired=64 (VmRSS 2.8 GB)
+21:48:37 INFO [75/120] baseline-measurable=70 treatment-measurable=69 paired=69 (VmRSS 2.8 GB)
+21:53:58 INFO [80/120] baseline-measurable=75 treatment-measurable=74 paired=74 (VmRSS 2.2 GB)
+21:58:43 INFO [85/120] baseline-measurable=79 treatment-measurable=78 paired=78 (VmRSS 1.9 GB)
+22:03:56 INFO [90/120] baseline-measurable=84 treatment-measurable=83 paired=83 (VmRSS 3.1 GB)
+22:09:20 INFO [95/120] baseline-measurable=89 treatment-measurable=88 paired=88 (VmRSS 3.0 GB)
+22:14:47 INFO [100/120] baseline-measurable=93 treatment-measurable=92 paired=92 (VmRSS 2.7 GB)
+22:19:49 INFO [105/120] baseline-measurable=97 treatment-measurable=96 paired=96 (VmRSS 2.4 GB)
+22:25:14 INFO [110/120] baseline-measurable=101 treatment-measurable=100 paired=100 (VmRSS 2.4 GB)
+22:30:31 INFO [115/120] baseline-measurable=104 treatment-measurable=103 paired=103 (VmRSS 2.4 GB)
+22:36:03 INFO [120/120] baseline-measurable=109 treatment-measurable=108 paired=108 (VmRSS 3.1 GB)
+22:36:03 INFO baseline: 0.5088 | treatment: 0.505 | paired n=108 Δ=-0.0059 SEM=0.0049
+22:36:03 INFO G6 (full-corpus 150M): G6 INCONCLUSIVE (under-powered) — paired Δ=-0.0059 at n=108, but SEM(Δ)=0.0049 (95% CI ±0.0096) exceeds the ±0.005 bar, so the delta is noise not signal. Full-corpus SEISMIC-vs-Qdrant RRF parity is consistent with the baseline within noise.
+22:36:03 INFO wrote /workspaces/sfu-library-thinclient/data/eval_results/seismic_g6_rrf_fullcorpus_n120_20260629.json
+{"g6_verdict": "G6 INCONCLUSIVE (under-powered) \u2014 paired \u0394=-0.0059 at n=108, but SEM(\u0394)=0.0049 (95% CI \u00b10.0096) exceeds the \u00b10.005 bar, so the delta is noise not signal. Full-corpus SEISMIC-vs-Qdrant RRF parity is consistent with the baseline within noise.", "paired_n": 108, "paired_delta": -0.0059, "sem_delta": 0.0049, "baseline_mean": 0.5088, "treatment_mean": 0.505, "leg_overlap_mean": 0.9017, "total_docs": 150413098, "result_file": "/workspaces/sfu-library-thinclient/data/eval_results/seismic_g6_rrf_fullcorpus_n120_20260629.json"}

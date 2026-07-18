@@ -1,0 +1,23 @@
+{
+  "arm": "success", "start_utc": "2026-07-17T04:54:20Z", "port": 8197,
+  "base_manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json", "smoke_queries": 6,
+  "events": [
+    {"t":"2026-07-17T04:54:20Z","ms":1784264060566,"stage":"setup","status":"started","detail":"arm=success base=seismic_c25_shards_150m_mmap_e5_v2.json new=wi13_staged_new_manifest_20260717_045419.json expect_rollback=0"}
+    ,
+    {"t":"2026-07-17T04:54:20Z","ms":1784264060704,"stage":"baseline_watchdog_launched","status":"running","detail":"wd_pid=810932 manifest=seismic_c25_shards_150m_mmap_e5_v2.json"}
+    ,
+    {"t":"2026-07-17T04:58:26Z","ms":1784264306088,"stage":"baseline_warm","status":"ok","detail":"wait_warm ok; pre-gate smoke=pass (search=6 ok/0 fail, seismic_loaded=True)"}
+    ,
+    {"t":"2026-07-17T04:58:26Z","ms":1784264306184,"stage":"checksum_verify","status":"ok","detail":"new_manifest_sha256=7b4aab7cc0c6a84d (stage-beside: the old manifest is untouched; flip is env-only)"}
+    ,
+    {"t":"2026-07-17T04:58:28Z","ms":1784264308311,"stage":"flip_started","status":"running","detail":"stopped baseline serve; relaunching watchdog with SFU_SEISMIC_SHARD_MANIFEST=wi13_staged_new_manifest_20260717_045419.json"}
+    ,
+    {"t":"2026-07-17T04:58:28Z","ms":1784264308410,"stage":"new_watchdog_launched","status":"running","detail":"wd_pid=821388 (wait-warm ON, cold_grace=600s)"}
+    ,
+    {"t":"2026-07-17T05:02:46Z","ms":1784264566543,"stage":"new_gate","status":"ok","detail":"post-flip wait_warm=ok smoke=pass (search=6 ok/0 fail, seismic_loaded=True) (downtime=226585ms = the warm-restart + re-warm window)"}
+    ,
+    {"t":"2026-07-17T05:02:46Z","ms":1784264566640,"stage":"commit","status":"ok","detail":"gate PASS on new version \u2014 update committed, NO rollback"}
+  ],
+  "overall": "PASS", "downtime_ms": 226585, "rolled_back": false,
+  "end_utc": "2026-07-17T05:02:48Z"
+}

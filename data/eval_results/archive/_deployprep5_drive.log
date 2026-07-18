@@ -1,0 +1,28 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+06:54Z — finished well ahead of the 07:20Z hard stop / 07:40Z exit. The untracked files shown (`_probe_bmp.py`, `_smoke_serving.py`, `azure_indexer.sh`, `parallel_cpu_indexer.sh`) are pre-existing stragglers unrelated to WI-15 (wave 1-4 leftovers; not touched by me, correctly left unstaged per the no-`git add .` rule). The WI-15 files are all committed and the tree is clean for them.
+
+## Summary — deployprep WI-15 complete
+
+**Done, verified, committed (`3987a73`), documented (`e2bfa43`), pushed.** Both commits on `spike/mmap-bmp`.
+
+### What the WIP checkpoint left vs. what this session did
+The interrupted WIP commit (`05d2905`) had most of the implementation but left three key things **uncommitted**: `web/lib/interface_prefs.js`, `scripts/verify_web_jsdom.mjs`, `scripts/verify_web_progress.mjs` — and crucially it had **never been verified** ("NOT verified, NOT complete"). This session resumed from that diff rather than redoing it, then:
+
+1. **Ran the verification** the contract demands (Babel compile + jsdom mount + extended e2e sweep).
+2. **Found and fixed one real bug** the sweep caught: the landing screen early-returned before the progress render, so the **first/cold-start search showed no progress signal at all** (frozen landing hero for the whole search) — the exact case the spec calls out. One-line fix (`web/src/search.jsx:1468`).
+3. **Closed the one spec gap vs the WIP**: the suite shell didn't honor the "don't mount iframes for toggled-off apps" constraint. Added iframe-gating + teardown-on-toggle-off to `web/suite.html` (`appAllowed`/`mount`/`destroyFrame` + `suiteInterfacePrefs` listener).
+4. **Fixed a test-only fragility** in `verify_web_progress.mjs` (jsdom glues adjacent button labels into "SearchSavedHistory", so `\bSaved\b` never matched even when the nav item was correctly present — switched to querying the actual button).
+
+### Verification results (honest)
+- **Babel transform-compile:** all 3 apps OK (`scripts/build_web.mjs`).
+- **`scripts/verify_web_jsdom.mjs`: 14/14 PASS** — offline+online mount (zero runtime errors), simulated search, 429→`{source:"retry",retryAfter:3}`, degraded flag passthrough, `warm` honored/defaults-true, prefs persist across reload, integrity-floor keys absent.
+- **`scripts/verify_web_progress.mjs`: 18/18 PASS** — default-bare, filters collapsed by default, skeleton absent `<300ms` & present `≥300ms`, no layout shift skeleton→results, 429 countdown, degraded notice, toggle persists across reload, integrity floor.
+- **`scripts/e2e_sweep.mjs`:** PASS 6 added (browser-level, same checks). **Not run live** — Playwright needs Chromium, which isn't in this container; the jsdom sweeps cover the same contract and are the recorded evidence. The doc subsection says this plainly (no misleading "verified in browser").
+
+### Doc sync (same push as the work)
+- `docs/THIN_CLIENT_SWAP.md` → new dated **"Search-progress indication + bare-bones default — WI-15 (2026-07-17)"** subsection under §Web GUI, with the mechanism, the honest pass counts, the not-run-live caveat, and the bug-found-and-fixed note.
+- `data/eval_results/_deployprep_timing.md` → WI-15 ledger row marked **DONE, ~33m wall**.
+- `web/README.md` → added `lib/interface_prefs.js` row + a search-progress/bare-bones section pointing at the spec and the verify scripts (doc-freshness obligation).
+- `docs/README.md` already indexed the spec — no new doc to add.
+
+No serving-path/API changes, no docker, no `/tmp`, no DO spend, no served-default flips — the wave stayed inside `web/` + the e2e harness, as scoped.

@@ -1,0 +1,24 @@
+06:46:31 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+06:46:35 INFO SPLADE ONNX model loaded (CPU)
+[e8-gates] 100 queries encoded; twins loaded (18812242 docs)
+[e8-gates] overlap@10 vs f16: v2 0.9970 (min 0.90), dv1 0.9850 (min 0.90)
+[e8-gates] T1 seq-vs-warm: hard=0 swaps=0
+[e8-gates] dv1 rep0: cold p50 92.79 ms, warm p50 7.707 ms, majflt 71024
+[e8-gates] v2 rep0: cold p50 93.86 ms, warm p50 7.746 ms, majflt 71675
+[e8-gates] v2 rep1: cold p50 94.88 ms, warm p50 7.799 ms, majflt 71675
+[e8-gates] dv1 rep1: cold p50 100.21 ms, warm p50 7.921 ms, majflt 71024
+[e8-gates] dv1 rep2: cold p50 92.09 ms, warm p50 8.044 ms, majflt 71024
+[e8-gates] v2 rep2: cold p50 100.42 ms, warm p50 8.261 ms, majflt 71675
+{
+  "verdict": "E8_STAGE1_ALL_GATES_PASS",
+  "gates": {
+    "a_quality": true,
+    "b_size": true,
+    "c_latency": true,
+    "d_t1": true
+  },
+  "warm_p50": 0.9846,
+  "cold_p50": 1.0225,
+  "majflt_cold": 1.0092
+}
+result -> data/eval_results/e8_dvv2_stage1_shard1_20260710.json

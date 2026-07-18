@@ -1,0 +1,221 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T02:02:43Z",
+    "env": {
+      "SFU_DEMO_LEG_BREAKER": "1",
+      "SFU_DEMO_LEG_TIMEOUT_S": "30",
+      "SFU_DEMO_LEG_TIMEOUT_SPLADE_S": "30",
+      "SFU_DEMO_LEG_BREAKER_N": "2",
+      "SFU_DEMO_LEG_BREAKER_COOLDOWN_S": "1"
+    },
+    "method": "monkeypatch leg methods (Rule Zero: no real shard touched)"
+  },
+  "faults": [
+    {
+      "name": "splade_hung",
+      "method": "_splade_leg_seismic",
+      "desc": "SPLADE leg hung (sleep>>timeout)",
+      "during_fault": {
+        "n": 4,
+        "results_returned": 3,
+        "degraded": [
+          "bm25f",
+          "dense",
+          "splade"
+        ],
+        "p50_ms": 30000.6,
+        "p95_ms": 30001.0,
+        "err5xx": 0
+      },
+      "bars": {
+        "a_no_5xx_storm": true,
+        "b_results_returned": true,
+        "c_degraded_names_leg": true,
+        "c_expected": "splade in degraded",
+        "d_breaker_recovers": false
+      },
+      "after_clear": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [
+          "splade"
+        ],
+        "p50_ms": 2884.1,
+        "p95_ms": 3232.5,
+        "err5xx": 0
+      }
+    },
+    {
+      "name": "splade_error",
+      "method": "_splade_leg_seismic",
+      "desc": "SPLADE leg throws",
+      "during_fault": {
+        "n": 4,
+        "results_returned": 3,
+        "degraded": [
+          "bm25f",
+          "dense",
+          "splade"
+        ],
+        "p50_ms": 18572.3,
+        "p95_ms": 30001.1,
+        "err5xx": 0
+      },
+      "bars": {
+        "a_no_5xx_storm": true,
+        "b_results_returned": true,
+        "c_degraded_names_leg": true,
+        "c_expected": "splade in degraded",
+        "d_breaker_recovers": false
+      },
+      "after_clear": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [
+          "splade"
+        ],
+        "p50_ms": 2856.5,
+        "p95_ms": 3176.9,
+        "err5xx": 0
+      }
+    },
+    {
+      "name": "dense_error",
+      "method": "dense_search",
+      "desc": "dense leg throws",
+      "during_fault": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [
+          "dense"
+        ],
+        "p50_ms": 2959.6,
+        "p95_ms": 3166.5,
+        "err5xx": 0
+      },
+      "bars": {
+        "a_no_5xx_storm": true,
+        "b_results_returned": true,
+        "c_degraded_names_leg": true,
+        "c_expected": "dense in degraded",
+        "d_breaker_recovers": false
+      },
+      "after_clear": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [
+          "dense"
+        ],
+        "p50_ms": 2906.7,
+        "p95_ms": 3196.0,
+        "err5xx": 0
+      }
+    },
+    {
+      "name": "bm25f_error",
+      "method": "_bm25f_leg",
+      "desc": "BM25F leg throws (today: 5xx; WI-9: degrade)",
+      "during_fault": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [
+          "bm25f"
+        ],
+        "p50_ms": 85.5,
+        "p95_ms": 106.8,
+        "err5xx": 0
+      },
+      "bars": {
+        "a_no_5xx_storm": true,
+        "b_results_returned": true,
+        "c_degraded_names_leg": true,
+        "c_expected": "bm25f in degraded",
+        "d_breaker_recovers": true
+      },
+      "after_clear": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [],
+        "p50_ms": 3082.5,
+        "p95_ms": 3151.5,
+        "err5xx": 0
+      }
+    },
+    {
+      "name": "encoder_down",
+      "method": "_encode_splade_top",
+      "desc": "encoder down (graceful mirror \u2014 breaker must NOT trip)",
+      "during_fault": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [],
+        "p50_ms": 2881.8,
+        "p95_ms": 3244.7,
+        "err5xx": 0
+      },
+      "bars": {
+        "a_no_5xx_storm": true,
+        "b_results_returned": true,
+        "c_degraded_names_leg": true,
+        "c_expected": "no splade degrade (graceful mirror)",
+        "d_breaker_recovers": true
+      },
+      "after_clear": {
+        "n": 4,
+        "results_returned": 4,
+        "degraded": [],
+        "p50_ms": 3044.7,
+        "p95_ms": 3316.0,
+        "err5xx": 0
+      }
+    }
+  ],
+  "warm_baseline": {
+    "n": 4,
+    "results_returned": 4,
+    "degraded": [
+      "dense"
+    ],
+    "p50_ms": 24772.3,
+    "p95_ms": 30002.0,
+    "err5xx": 0
+  },
+  "verdict": "FAIL",
+  "verdict_bars": {
+    "splade_hung": {
+      "a_no_5xx_storm": true,
+      "b_results_returned": true,
+      "c_degraded_names_leg": true,
+      "c_expected": "splade in degraded",
+      "d_breaker_recovers": false
+    },
+    "splade_error": {
+      "a_no_5xx_storm": true,
+      "b_results_returned": true,
+      "c_degraded_names_leg": true,
+      "c_expected": "splade in degraded",
+      "d_breaker_recovers": false
+    },
+    "dense_error": {
+      "a_no_5xx_storm": true,
+      "b_results_returned": true,
+      "c_degraded_names_leg": true,
+      "c_expected": "dense in degraded",
+      "d_breaker_recovers": false
+    },
+    "bm25f_error": {
+      "a_no_5xx_storm": true,
+      "b_results_returned": true,
+      "c_degraded_names_leg": true,
+      "c_expected": "bm25f in degraded",
+      "d_breaker_recovers": true
+    },
+    "encoder_down": {
+      "a_no_5xx_storm": true,
+      "b_results_returned": true,
+      "c_degraded_names_leg": true,
+      "c_expected": "no splade degrade (graceful mirror)",
+      "d_breaker_recovers": true
+    }
+  }
+}

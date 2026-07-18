@@ -1,0 +1,65 @@
+21:02:26 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+21:02:30 INFO SPLADE ONNX model loaded (CPU)
+[e5-validate] global_shard0of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard1of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard2of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard3of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard4of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard5of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard6of8: hard=0 tie_swaps=0 OK
+[e5-validate] global_shard7of8: hard=0 tie_swaps=0 OK
+{
+  "verdict": "PARITY_OK \u2014 manifest written",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5.json",
+  "n_shards": 8,
+  "shards": {
+    "global_shard0of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard1of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard2of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard3of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard4of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard5of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard6of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    },
+    "global_shard7of8": {
+      "hard_mismatches": 0,
+      "tie_swaps": 0,
+      "n_queries": 25,
+      "ok": true
+    }
+  }
+}

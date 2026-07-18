@@ -1,0 +1,52 @@
+=== WI-4 native shard1 (n=100) 23:46:08Z → data/eval_results/wi4_topk_native_shard1.json ===
+=== variant native shard 1 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_native_shard1.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_native_shard1.json
+=== WI-4 v3 shard1 (n=100) 23:48:02Z → data/eval_results/wi4_topk_v3_shard1.json ===
+=== variant v3 shard 1 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v3_shard1.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v3_shard1.json
+=== WI-4 v2 shard1 (n=100) 23:49:57Z → data/eval_results/wi4_topk_v2_shard1.json ===
+=== variant v2 shard 1 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v2_shard1.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v2_shard1.json
+=== WI-4 native shard2 (n=100) 23:52:00Z → data/eval_results/wi4_topk_native_shard2.json ===
+=== variant native shard 2 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_native_shard2.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_native_shard2.json
+=== WI-4 v3 shard2 (n=100) 23:54:06Z → data/eval_results/wi4_topk_v3_shard2.json ===
+=== variant v3 shard 2 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v3_shard2.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v3_shard2.json
+=== WI-4 v2 shard2 (n=100) 23:56:15Z → data/eval_results/wi4_topk_v2_shard2.json ===
+=== variant v2 shard 2 (n=100 q) → /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v2_shard2.json ===
+wrote /workspaces/sfu-library-thinclient/data/eval_results/wi4_topk_v2_shard2.json
+=== computing verdicts (variant vs native, per shard) ===
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 200, in <module>
+    main()
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 179, in main
+    vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','').name)}.json"
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+---
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 200, in <module>
+    main()
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 179, in main
+    vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','').name)}.json"
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+---
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 200, in <module>
+    main()
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 179, in main
+    vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','').name)}.json"
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+---
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 200, in <module>
+    main()
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/wi4_portable_cpu_gates.py", line 179, in main
+    vf = outdir / f"wi4_verdict_{args.variant}_{Path(v.get('shard','').name)}.json"
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+---
+=== WI-4 gate orchestration DONE 23:58:23Z ===

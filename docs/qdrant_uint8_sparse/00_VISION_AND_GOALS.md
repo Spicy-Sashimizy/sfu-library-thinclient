@@ -19,7 +19,7 @@ in production. The cost matrix lists it as "move 1 (proposed)"
 
 **uint8 is confirmed UN-ACTIONED in this codebase:**
 
-- The only Qdrant sparse-collection build, `scripts/spike_qdrant_sparse.py:159`,
+- The only Qdrant sparse-collection build, `scripts/archive/spike_qdrant_sparse.py:159`,
   creates the collection with `models.SparseVectorParams(index=models.SparseIndexParams(on_disk=True))`
   and **no `datatype=` argument** → values default to **float32**.
 - No `Datatype.UINT8` / `datatype=` appears anywhere in `src/` or `scripts/` for the

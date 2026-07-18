@@ -4,7 +4,7 @@
 `docs/seismic_150m_testbed/02_GO_NO_GO_GATES.md` G3 = "measure resident RAM/doc
 for Path A, broken into forward-index vs inverted/block/summary side; if it
 confirms ~RAM-resident (≳ Qdrant's 43 B/pt → >6.55 GB @150M proj.), Path A is
-RAM-NO-GO." Mirrors the BMP probe (`spike/mmap_bmp/measure_p3a_inverted_floor.py`).
+RAM-NO-GO." Mirrors the BMP probe (`spike/archive/mmap_bmp/measure_p3a_inverted_floor.py`).
 
 Two lenses (per `03_BENCHMARK_METHODOLOGY.md` "RAM measurement is load-bearing"):
   1. OS view — RssAnon (`/proc/self/status`) + Pss_Anon (`smaps_rollup`):

@@ -1,0 +1,190 @@
+=== [19:11:08] shard 0: derive perm ===
+{
+  "shard": "global_shard0of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard0of8.block_walk_canonical.perm.bin",
+  "n_docs": 18799322,
+  "wall_seconds": 58.4,
+  "verdict": "OK"
+}
+=== [19:12:07] shard 0: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3816544896,
+  "forward_seconds": 65.923717053,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18799322,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40361159,
+  "postings_rewrite_seconds": 28.30281172,
+  "src": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.mmap",
+  "total_seconds": 101.71749081,
+  "verify_docs_checked": 2001
+}
+=== [19:13:50] shard 2: derive perm ===
+{
+  "shard": "global_shard2of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard2of8.block_walk_canonical.perm.bin",
+  "n_docs": 18797227,
+  "wall_seconds": 59.0,
+  "verdict": "OK"
+}
+=== [19:14:49] shard 2: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3814592944,
+  "forward_seconds": 64.413630027,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18797227,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40371520,
+  "postings_rewrite_seconds": 28.628893091,
+  "src": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.mmap",
+  "total_seconds": 100.550948204,
+  "verify_docs_checked": 2001
+}
+=== [19:16:31] shard 3: derive perm ===
+{
+  "shard": "global_shard3of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard3of8.block_walk_canonical.perm.bin",
+  "n_docs": 18801448,
+  "wall_seconds": 58.6,
+  "verdict": "OK"
+}
+=== [19:17:30] shard 3: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3816248304,
+  "forward_seconds": 62.39645226,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18801448,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40372536,
+  "postings_rewrite_seconds": 29.023795403,
+  "src": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.mmap",
+  "total_seconds": 98.825061771,
+  "verify_docs_checked": 2001
+}
+=== [19:19:09] shard 4: derive perm ===
+{
+  "shard": "global_shard4of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard4of8.block_walk_canonical.perm.bin",
+  "n_docs": 18807611,
+  "wall_seconds": 57.9,
+  "verdict": "OK"
+}
+=== [19:20:08] shard 4: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3821188312,
+  "forward_seconds": 64.954399608,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18807611,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40377542,
+  "postings_rewrite_seconds": 29.506360053,
+  "src": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.mmap",
+  "total_seconds": 101.993901517,
+  "verify_docs_checked": 2001
+}
+=== [19:21:51] shard 5: derive perm ===
+Traceback (most recent call last):
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/e5_derive_order.py", line 101, in <module>
+    main()
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/e5_derive_order.py", line 79, in main
+    perm, out = derive(args.shard, args.order)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/e5_derive_order.py", line 44, in derive
+    per_list = walk_pack_rows_per_list(f16_dir, offs64)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/sfu-library-thinclient/scripts/seismic_testbed/q6b_order_sweep.py", line 61, in walk_pack_rows_per_list
+    pl_u64 = pl.view(np.uint64)
+             ^^^^^^^^^^^^^^^^^^
+ValueError: When changing to a larger dtype, its size must be a divisor of the total size in bytes of the last axis of the array.
+=== [19:23:54] shard 5: derive perm ===
+{
+  "shard": "global_shard5of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard5of8.block_walk_canonical.perm.bin",
+  "n_docs": 18801216,
+  "wall_seconds": 57.2,
+  "verdict": "OK"
+}
+=== [19:24:52] shard 5: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3817952376,
+  "forward_seconds": 64.059322117,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18801216,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40379027,
+  "postings_rewrite_seconds": 31.03842829,
+  "src": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.mmap",
+  "total_seconds": 102.968331586,
+  "verify_docs_checked": 2001
+}
+=== [19:26:35] shard 6: derive perm ===
+{
+  "shard": "global_shard6of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard6of8.block_walk_canonical.perm.bin",
+  "n_docs": 18796836,
+  "wall_seconds": 58.0,
+  "verdict": "OK"
+}
+=== [19:27:35] shard 6: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3814921312,
+  "forward_seconds": 63.123549994,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18796836,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40371750,
+  "postings_rewrite_seconds": 29.26446635,
+  "src": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.mmap",
+  "total_seconds": 99.639361421,
+  "verify_docs_checked": 2001
+}
+=== [19:29:15] shard 7: derive perm ===
+{
+  "shard": "global_shard7of8",
+  "order": "block_walk_canonical",
+  "perm_file": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/e5_perms/global_shard7of8.block_walk_canonical.perm.bin",
+  "n_docs": 18797196,
+  "wall_seconds": 58.6,
+  "verdict": "OK"
+}
+=== [19:30:14] shard 7: convert ===
+reorder_mmap_shard: data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.mmap -> data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap (order block_walk_canonical, sanity 2000 docs)
+{
+  "doc_mapping_permuted": true,
+  "dst": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap",
+  "forward_payload_bytes_moved": 3818931888,
+  "forward_seconds": 63.386640532,
+  "layout": "dotvbyte_fixedu8",
+  "n_docs": 18797196,
+  "order_name": "block_walk_canonical",
+  "packs_rewritten": 40372772,
+  "postings_rewrite_seconds": 30.352758409,
+  "src": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.mmap",
+  "total_seconds": 101.419588147,
+  "verify_docs_checked": 2001
+}
+=== [19:31:56] shards 5-7 done ===

@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "date_utc": "2026-07-17T00:20:50Z",
+    "meta_path": "data/thinclient_index/meta.sqlite"
+  },
+  "citation_axis_status": {
+    "cited_by_count_in_meta_sqlite": false,
+    "docs_columns": [
+      "id",
+      "title",
+      "doi",
+      "year",
+      "type",
+      "is_oa",
+      "section"
+    ],
+    "verdict": "BLOCKED on citation floor axis \u2014 meta.sqlite lacks cited_by_count; the year axis is measurable here, the citation axis needs a host-side re-export with cited_by_count (the source-index _source has it; the spool didn't carry it). LOCALIZED_DEPLOYMENT_PLAN \u00a78 #2 answered: NOT indexed here.",
+    "available_cite_cache": "data/openalex_cite_cache.json (403 KB, eval-only \u2014 not a corpus-wide citation floor)"
+  },
+  "year_axis_cuts": {
+    "total_docs": 150413098,
+    "total_docs_source": "G6/G7 build figure (serve_footprint_bench TOTAL_DOCS)",
+    "section_scan_s": 0.0,
+    "prefix_sample": {
+      "n": 2000000,
+      "target": 2000000,
+      "method": "sequential prefix (SELECT year LIMIT N) \u2014 BIASED toward early-ingested sections",
+      "null_year_rows": 0,
+      "scan_s": 18.5
+    },
+    "sections": {
+      "cs_math__archive": null,
+      "cs_math__recent": null,
+      "med_bio__archive": null,
+      "med_bio__recent": null,
+      "other__archive": null,
+      "other__recent": null,
+      "phys_eng__archive": null,
+      "phys_eng__recent": null,
+      "social_sciences__archive": null,
+      "social_sciences__recent": null
+    },
+    "year_cuts": {
+      "2024": {
+        "year_floor": 2024,
+        "prefix_sample_count": 12493,
+        "prefix_sample_share": 0.0062,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2023": {
+        "year_floor": 2023,
+        "prefix_sample_count": 21073,
+        "prefix_sample_share": 0.0105,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2022": {
+        "year_floor": 2022,
+        "prefix_sample_count": 32672,
+        "prefix_sample_share": 0.0163,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2020": {
+        "year_floor": 2020,
+        "prefix_sample_count": 69930,
+        "prefix_sample_share": 0.035,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2018": {
+        "year_floor": 2018,
+        "prefix_sample_count": 118907,
+        "prefix_sample_share": 0.0595,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2015": {
+        "year_floor": 2015,
+        "prefix_sample_count": 1986985,
+        "prefix_sample_share": 0.9935,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      },
+      "2010": {
+        "year_floor": 2010,
+        "prefix_sample_count": 1986985,
+        "prefix_sample_share": 0.9935,
+        "prefix_biased_toward": "early-ingested sections (table is section-ordered, NOT year-sorted)",
+        "full_corpus_doc_count": "BLOCKED (9p full-scan, ~22 min)",
+        "est": false
+      }
+    },
+    "year_prefix_histogram_top12": {
+      "2030": 5,
+      "2026": 1054,
+      "2025": 4581,
+      "2024": 6853,
+      "2023": 8580,
+      "2022": 11599,
+      "2021": 16941,
+      "2020": 20317,
+      "2019": 20597,
+      "2018": 28380,
+      "2017": 36206,
+      "2016": 77207
+    },
+    "full_scan_blocker": "the docs table has NO index on year; COUNT(*)/GROUP BY/WHERE year>=?/OFFSET/random-pk-probe are all D-blocked on 9p p9_client_rpc (infeasible in-container). A native-ext4 host counts in ~seconds; the prefix sample here is the only in-container-measurable truth, tagged BIASED (illustrative, not representative)."
+  },
+  "pilot_selection": {
+    "year_floor": 2024,
+    "requested": 1000000,
+    "selected": 0,
+    "blocked": "9p \u2014 qualifying-id enumeration D-blocked in-container (no year index); host-tier run on native-ext4 (~seconds)",
+    "wrote": "data/eval_results/wi5_pilot_ids.txt (placeholder note, not an id list)"
+  },
+  "pilot_build_blocker": {
+    "spool_present": false,
+    "verdict": "BLOCKED \u2014 the pilot shard build (build_persona_seismic.py --jsonl) needs the pre-encoded sparse_field spool (data/thinclient_index/spool/*.jsonl.zst), which is absent. Root CLAUDE.md notes spool re-derivation; the host-tier re-export (build_thinclient_index.py EXPORT step) is the unblock, owner-gated (source OpenSearch index)."
+  }
+}
