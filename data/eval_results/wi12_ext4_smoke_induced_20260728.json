@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "date_utc": "2026-07-28T07:29:58Z",
+    "port": 8261,
+    "queries": 12,
+    "top_k": 50
+  },
+  "baseline": [],
+  "induced_failure": {
+    "concurrency": 8,
+    "duration_s": 120.0,
+    "kill_at_s": 4.0,
+    "killed_pid": 452708,
+    "killed": true,
+    "total_ok": 4,
+    "total_errors": 90774,
+    "dead_window_errors": 90774,
+    "first_client_recovery_ms_after_kill": null,
+    "latency_ms_ok": {
+      "p50": 2515.9,
+      "p95": 3765.5,
+      "n": 4
+    }
+  }
+}

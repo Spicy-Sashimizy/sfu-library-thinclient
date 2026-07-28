@@ -282,7 +282,7 @@ class Prediction:
         self.reason = reason
 
 
-def predict(typed: str) -> Prediction:
+def predict(typed: str, *, force_literal: bool = False) -> Prediction:
     """Decide what (if anything) to speculate for a partial-typed text.
 
     Predictor = deterministic. Normalize the typed text (wave-7 recipe), then:
@@ -308,7 +308,20 @@ def predict(typed: str) -> Prediction:
     so the demo's own queries are preferred. (A fuller recency/frequency
     model would track per-candidate hit counts; the deterministic pool order
     is the documented tiebreak — NO ML, NO training, per term 2.)
+
+    ``force_literal`` (request-level override, WI-19b): when True, skip the
+    predictor entirely and speculate the literal normalized typed text — the
+    novel-query scenario (HOST-NOTE-W8-1). Lets the bench measure predictor vs
+    literal legs in ONE serve lifetime (no ~5-min re-warm restart to flip
+    ``SFU_SPECULATE_LITERAL`` between legs on 9p). Default False = predictor
+    path (the env-gate ``SFU_SPECULATE_LITERAL`` still governs the no-match
+    fallback within the predictor path).
     """
+    if force_literal:
+        nq = result_cache._norm_query(typed)
+        if len(nq) < min_len():
+            return Prediction("", "none", "short-input")
+        return Prediction(nq, "literal", "literal-forced")
     nq = result_cache._norm_query(typed)
     if len(nq) < min_len():
         return Prediction("", "none", "short-input")
@@ -427,7 +440,8 @@ async def _speculate_search(pred: Prediction, *, limit: int) -> bool:
         _set_speculative(None)
 
 
-def schedule(*, typed: str, limit: int, warm: bool, degraded: bool, shed: bool) -> dict:
+def schedule(*, typed: str, limit: int, warm: bool, degraded: bool, shed: bool,
+            force_literal: bool = False) -> dict:
     """The entry point ``/api/speculate`` calls. Synchronous bookkeeping: run
     the guards + predictor, then fire-and-forget the single-slot speculative
     backend task on the serve's loop. Returns a small telemetry dict (the
@@ -436,12 +450,16 @@ def schedule(*, typed: str, limit: int, warm: bool, degraded: bool, shed: bool) 
 
     On a dropped-busy or guard-suppressed call, returns the reason + updated
     counters. Never raises (term 4).
+
+    ``force_literal`` (WI-19b): request-level override → speculate the literal
+    typed text instead of the predictor's predicted query (the novel-query
+    scenario). Default False.
     """
     ok, greason = _guards_ok(warm=warm, degraded=degraded, shed=shed)
     if not ok:
         _suppressed(greason)
         return {"status": "suppressed", "reason": greason, "counters": counters()}
-    pred = predict(typed)
+    pred = predict(typed, force_literal=force_literal)
     if pred.mode == "none":
         # short-input / ambiguous / no-match: record under the matching reason
         # so the bench can split suppression causes, but DON'T bump the

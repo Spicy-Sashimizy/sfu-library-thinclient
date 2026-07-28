@@ -107,6 +107,33 @@ class TestPredictor:
         # speculates the normalized literal typed text
         assert p.query == result_cache._norm_query("quantum entanglement theory")
 
+    def test_force_literal_overrides_predictor(self, monkeypatch):
+        """WI-19b: request-level force_literal skips the predictor entirely and
+        speculates the literal typed text — even when the predictor WOULD have
+        matched a pool candidate (predictor mode). Lets the bench measure the
+        novel-query (literal) leg without an env/restart flip between legs."""
+        self.config_pool(monkeypatch, ["machine learning for drug discovery"])
+        monkeypatch.setenv("SFU_SPECULATE_LITERAL", "0")  # env fallback OFF
+        speculation.reset_pool_for_test()
+        # predictor mode → would match the pool candidate
+        p_pred = speculation.predict("machine learning for")
+        assert p_pred.mode == "predicted"
+        # force_literal → speculates the literal text, NOT the prediction
+        p_lit = speculation.predict("machine learning for", force_literal=True)
+        assert p_lit.mode == "literal"
+        assert p_lit.reason == "literal-forced"
+        assert p_lit.query == result_cache._norm_query("machine learning for")
+
+    def test_force_literal_respects_min_len(self, monkeypatch):
+        """force_literal still honors the min-length guard (no point
+        speculating a too-short prefix under either mode)."""
+        self.config_pool(monkeypatch, ["machine learning for drug discovery"])
+        monkeypatch.setenv("SFU_SPECULATE_MIN_LEN", "8")
+        speculation.reset_pool_for_test()
+        p = speculation.predict("machi", force_literal=True)  # 5 chars
+        assert p.mode == "none"
+        assert p.reason == "short-input"
+
     def test_short_input_suppressed(self, monkeypatch):
         """Below min length (default ≥8 chars after normalize) → none."""
         self.config_pool(monkeypatch, ["machine learning for drug discovery"])

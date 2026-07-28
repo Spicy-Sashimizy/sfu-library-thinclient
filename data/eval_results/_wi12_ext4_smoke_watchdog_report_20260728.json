@@ -1,0 +1,14 @@
+{
+  "port": 8261,
+  "restarts": [
+    {
+      "cause": "process_death",
+      "rc": -9,
+      "recovery_ms": 159124.0,
+      "healthy_after_restart": true
+    }
+  ],
+  "started": "2026-07-28T07:25:06Z",
+  "restart_count": 1,
+  "stopped": "2026-07-28T07:42:08Z"
+}

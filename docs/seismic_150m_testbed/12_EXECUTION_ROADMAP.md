@@ -436,6 +436,14 @@ the environment for, follow its recipe, write the result file + doc rows per
   IS the measured value of "custom"). Results
   `data/eval_results/q11_{c1c2_stage0,c4_pregate,c5_static_int8}_20260710_*.json`;
   ledger doc 14 §6.
+- **STATUS 2026-07-28: C4 DISTILLATION MEASURED — KILL; ENCODER BOOK
+  CLOSED.** The §5.1 precheck-1 build ran in-container (4070 Ti SUPER):
+  round-1 qvec-MSE distill gate 0.643–0.690, pre-registered escalation
+  (margin-MSE on real shard doc vectors) **0.726–0.760** vs the 0.99 bar —
+  KILL (doc 11 §Q11-C4; doc 14 §6 first entry). All same-space candidates
+  are now measured dead; ~20 ms encode is the price of this doc space, and
+  only the doc 14 §5 re-encode branch (prechecks 2–3: shelf domain pilot +
+  fine-tune probe) remains. Served fused encoder STAYS; serving impact zero.
 
 ### Host-tier (needs the 58 GB host session; batch into the next one)
 

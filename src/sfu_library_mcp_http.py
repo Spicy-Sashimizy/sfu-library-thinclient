@@ -458,6 +458,11 @@ async def api_speculate(request: Request) -> JSONResponse:
         return JSONResponse({"error": "missing 'query'"}, status_code=400)
     typed = args["query"]
     limit = max(1, min(int(args.get("limit", 50)), 50))
+    # WI-19b: request-level force_literal override (the novel-query arm-C leg).
+    # Default False = predictor path. Lets the bench measure predictor vs
+    # literal in ONE serve lifetime (no ~5-min re-warm restart to flip the
+    # SFU_SPECULATE_LITERAL env between legs on 9p).
+    force_literal = bool(args.get("force_literal"))
     # Term-3 guards: read the live serve state the cache path itself uses.
     warm = _WARMUP_STATE["state"] != "warming"
     degraded = False
@@ -472,7 +477,8 @@ async def api_speculate(request: Request) -> JSONResponse:
     except Exception:
         degraded = False
     result = speculation.schedule(
-        typed=typed, limit=limit, warm=warm, degraded=degraded, shed=shed)
+        typed=typed, limit=limit, warm=warm, degraded=degraded, shed=shed,
+        force_literal=force_literal)
     return JSONResponse(result)
 
 

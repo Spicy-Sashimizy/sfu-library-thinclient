@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "date_utc": "2026-07-28",
+    "purpose": "WI-12 route B: measure warm-recovery after SIGKILL with the served SEISMIC shard set staged on container-local ext4-overlay instead of the 9p workspace mount, per docs/infrastructure/DEMO_DEPENDABILITY.md WI-6/WI-12.",
+    "mechanism": "SFU_SEISMIC_STAGE_DIR=/home/vscode/seismic_ext4 (the existing retriever._stage_shards_local() lever, NOT a hand-edited manifest) copies the 8 SEISMIC shard mmap_dirs referenced by the default manifest (data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json) to a local overlay/ext4 dir and rewrites mmap_dir to point there; a rewritten staged_manifest.json is written under the stage dir.",
+    "stage_dir": "/home/vscode/seismic_ext4",
+    "stage_dir_fstype": "overlay (confirmed via df -T and retriever._fstype_for_path -> 'overlay', NOT '9p')",
+    "source_fstype": "9p (confirmed via retriever._fstype_for_path on the original data/seismic_150m path)",
+    "federation_auto_selected": "parallel (confirms _auto_federation_mode no longer classifies the served shard path as a slow passthrough FS -- it would auto-select 'sequential' on 9p/virtiofs/nfs)",
+    "copy_verification": {
+      "shard_count": 8,
+      "total_bytes_dest": 44398525767,
+      "byte_sizes_source_vs_dest": "exact match, all 8 shards (du -sb)",
+      "checksum_spotcheck": "md5sum match on shard0 config.json, forward_encoder.bin, manifest.json (source vs staged copy)",
+      "file_list_spotcheck": "find -printf '%f %s' diff MATCH on shard0 and shard7 (full file list + per-file size)"
+    }
+  },
+  "reference_9p_baseline": {
+    "source": "docs/infrastructure/DEMO_DEPENDABILITY.md WI-6 + wi12_soak_20260717_032757.json",
+    "wi6_recovery_ms_warm_after_sigkill": 319215,
+    "wi12_soak_recovery_ms_warm_phase3": 312856,
+    "wi12_soak_availability": 0.8222,
+    "wi12_soak_params": {"port": 8185, "soak_min": 30, "qps": 0.3, "total_requests": 540}
+  },
+  "measured_ext4_smoke_induced_failure": {
+    "result_file": "data/eval_results/wi12_ext4_smoke_induced_20260728.json",
+    "watchdog_report_file": "data/eval_results/_wi12_ext4_smoke_watchdog_report_20260728.json",
+    "port": 8261,
+    "serve_pid_killed": 452708,
+    "kill_signal": "SIGKILL",
+    "watchdog_measured_recovery_ms_warm": 159124,
+    "healthy_after_restart": true,
+    "load_driver_window_120s_result": "first_client_recovery_ms_after_kill=null (the load_driver's 120s window closed before the actual ~159s recovery -- the watchdog's own wait-warm timer, which polls unboundedly, is the authoritative number: 159124 ms)",
+    "improvement_vs_9p": "319215ms -> 159124ms, a real ~2.0x reduction, but still far above the ~85s (85000ms) go/no-go gate this smoke test was run against"
+  },
+  "root_cause_diagnosis": {
+    "method": "direct in-process timing of ThinClientRetriever methods, isolating each leg/step, bypassing the HTTP harness",
+    "steps": [
+      {"step": "ThinClientRetriever() ctor", "seconds": 0.01},
+      {"step": "is_available() [BM25F tantivy sections x10 (era-split) + dense usearch open, all still on 9p -- NOT moved]", "seconds": 2.20},
+      {"step": "_seismic_backend() with SFU_SEISMIC_PREFLOOR_HOTSET=1 (hotset prefault ON, ext4-staged)", "seconds_run1": 82.73, "seconds_run2": 80.21, "note": "the dominant single cost; consistent across repeated fresh-process runs"},
+      {"step": "_seismic_backend() with SFU_SEISMIC_PREFLOOR_HOTSET unset (prefault OFF, lazy)", "seconds": 1.93, "note": "fast ctor when prefault is skipped -- but the cost does not disappear, it MOVES to the first search (see next row): total is conserved"},
+      {"step": "search_rrf() first call after prefault-OFF seismic ctor (remote_abstracts=True, default)", "seconds": 94.30, "note": "confirms the ~80-95s cost is intrinsic to first-touch of the 42GB SEISMIC data, independent of WHEN (ctor-time prefault vs lazy first-query) it is paid"},
+      {"step": "search_rrf() first call, prefault ON, remote_abstracts=False (isolates the OpenAlex network confound out)", "seconds": 18.16, "note": "residual first-query overhead once SEISMIC is already resident -- SPLADE ONNX encoder cold session + hydration, NOT disk/9p-vs-ext4 related"},
+      {"step": "search_rrf() SECOND call, different query, remote_abstracts=False", "seconds": 3.76, "note": "settles toward the expected warm-query range once encoders + shards are truly resident"}
+    ],
+    "conclusion": "The 9p-specific per-page-fault penalty IS fixed (federation auto-selects 'parallel', not 'sequential' -- the FS is no longer flagged slow; WI-1's ~160-240x-faster-fault claim for native ext4 vs 9p is about PER-FAULT latency, not raw throughput for a full first-touch of a 42GB dataset). But two other costs, exposed once the 9p penalty was removed, now dominate and were NOT visible before because 9p's ~313s dwarfed them:\n1. Raw first-touch cost for the 42GB SEISMIC shard set on THIS container's ext4-overlay is itself ~80-95s (confirmed via a plain `dd` sequential-read test showing effective throughput bounded well under what a genuinely warm page-cache read would give, plus `free -h` showing only ~1GB free / 50GB buff-cache -- the combined served working set (BM25F sections 42GB + SEISMIC 42GB + dense) is ~85GB+ against a 56GB-RAM container, so cache eviction under memory pressure forces real disk reads even on the 'fast' local overlay). This container's overlay is itself a WSL2-virtualized disk, not bare-metal cloud NVMe -- the plan's own caveat ('this is the storage shape the droplet deploy would use') applies: a real droplet's local NVMe would very likely clear the ~85s bar where this sandboxed overlay does not.\n2. A ~18s non-disk first-query overhead (SPLADE ONNX encoder cold session + hydration) plus OpenAlex remote-abstract-fetch 429 retries across the 24-query warmup replay (a secondary, unrelated-to-storage confound present in BOTH the 9p and ext4 runs since it's the same staging_serve.py code path -- does not invalidate the ext4-vs-9p comparison, but does inflate the absolute recovery number in both arms)."
+  },
+  "verdict": "STOP-GATE TRIPPED per the pre-registered smoke check: measured recovery (159124 ms) does not drop below the ~85000 ms (85s) go/no-go threshold, so the full 30-min/0.3qps soak was NOT run (soak-availability math: a 159s dead window in an 1800s soak is ~8.8% fail -> ~91.2% availability, still short of the >=95% bar (a), though closer than the 9p arm's 82.2%). Recorded as a MEASURED, real, ~2x improvement that does not clear the pre-registered bar in THIS container -- not papered as a pass."
+}

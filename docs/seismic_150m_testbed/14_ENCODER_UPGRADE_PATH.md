@@ -93,6 +93,10 @@ untouched); the worst possible outcome is a KILL verdict in a JSON. If even
 C4 cannot hold 0.99, **the encoder book closes**: ~20 ms is the price of
 this doc space until a corpus re-encode.
 
+> **2026-07-28: THIS CAME TO PASS — C4 distillation KILLED (worst-arm 0.726
+> after the escalation round; §6 first entry). The encoder book is CLOSED;
+> only the §5 re-encode branch remains.**
+
 ## 5. The re-encode branch — off-the-shelf vs training our own (hypothetical; costed, unscheduled)
 
 If a full corpus re-encode ever becomes acceptable (~150M docs of GPU
@@ -128,6 +132,19 @@ the calculus changes from "derive" to "choose/train the pair jointly":
 (Registered 2026-07-10, after the cheap tier measured out — §6. All three
 are GPU/training-tier, multi-day; none can run in the dev container alone.)
 
+> **CORRECTION 2026-07-28:** the "none can run in the dev container" clause is
+> stale — the current container has working CUDA access to the host's RTX
+> 4070 Ti SUPER (16 GB VRAM; verified `torch 2.6.0+cu124`
+> `cuda.is_available()=True` in the project venv). The C4 distillation build
+> (precheck 1) fits this GPU: 16 GB VRAM comfortably holds the 12-layer
+> teacher + 4-layer student at training batch sizes, so the training-tier
+> constraint no longer blocks it container-side. Prechecks 2–3 additionally
+> need a ~1M-doc re-encode + slice index build — still multi-day, but also
+> GPU-feasible here (*est.*, unmeasured). Wall-clock for one clean C4 pass on
+> this GPU: teacher qvec generation for a 1–5M-query distill set ≈ minutes-to-
+> tens-of-minutes batched; student training a few epochs ≈ hours; gate +
+> ONNX/D2 export ≈ hours (*all est.* until a run lands in §6).
+
 1. **C4 distillation build (decides the last same-space candidate):**
    truncate the served model to 4 layers, distill on real+pseudo queries
    (doc titles from meta.sqlite as pseudo-queries; teacher = the served
@@ -149,6 +166,30 @@ are GPU/training-tier, multi-day; none can run in the dev container alone.)
 
 ## 6. Results ledger (no numbers, not done)
 
+- **2026-07-28 C4 DISTILLATION BUILD — KILL; THE ENCODER BOOK CLOSES (§4).**
+  The §5.1 precheck-1 training-tier build, run in-container on the 4070 Ti
+  SUPER (per the §5.1 correction). Full pre-registration doc 11 §Q11-C4.
+  Teacher = torch reconstruction of the served encoder from the ONNX
+  initializers, parity max|Δ| 6.7e-5 / top-64 overlap 1.0 vs the ONNX
+  session (`q11_c4_teacher_parity_20260728_1905.json`). Distill set 480k
+  meta.sqlite titles + 97 real queries (gate/judge sets held out). Round 1
+  (qvec-MSE in serving space, 3 epochs): gate **merged 0.690 / shards
+  0.643–0.667** overlap@10 vs bar 0.99
+  (`q11_c4_distill_gate_20260728_2007.json`). Escalation round (single,
+  pre-registered; margin-MSE over 40k REAL shard-1/2 forward doc vectors +
+  6 more epochs): gate **merged 0.760 / shard1 0.726 / shard2 0.752**,
+  proxy and losses plateaued — an objective/capacity ceiling, not
+  undertraining (`q11_c4_distill_gate_20260728_2127.json`). Encode p50
+  17.65 vs fused 29.90 ms (1.69×, student unfused — moot at KILL). KALE's
+  92.5% retention did NOT transfer to a 0.99-overlap regime: distillation
+  recovered 0.46 → 0.76, nowhere near the bar. Scripts
+  `scripts/seismic_testbed/q11_c4_{teacher_from_onnx,build_distill_set,train_student,train_student_v2,gate_student}.py`.
+  **Method export:** the offline dev top-64 term-overlap proxy predicted
+  the federated backend gate ~1:1 in both rounds — future encoder
+  candidates can be triaged shard-free. Per §4: same-space candidates are
+  now all measured dead; **~20 ms encode is the price of this doc space
+  until a corpus re-encode (§5)**. Serving impact: zero (nothing shipped;
+  Rule Zero clean).
 - **2026-07-10 C1+C2 Stage-0 — KILL (zero-training lookups).** n=100,
   reference = served fused qvecs, SequentialSeismicBackend (T1
   bit-identical), merged + shards 1–2. Merged overlap@10: **C1-max 0.533**,

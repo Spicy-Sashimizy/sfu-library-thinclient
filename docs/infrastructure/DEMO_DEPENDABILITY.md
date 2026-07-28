@@ -518,6 +518,101 @@ fails on 9p + passes on native. The pre-launch gate is shipped + measured; the
 owner runs `bash scripts/demo_dependability/reliability_soak.sh` before any demo
 launch on the demo's REAL host.
 
+### WI-12 route B — ext4-overlay re-run attempt (2026-07-28, SMOKE-GATE STOPPED before the full soak)
+
+**Goal:** convert bar (a) from FAIL to PASS by moving the served SEISMIC shard
+set off the 9p workspace mount onto container-local ext4-overlay storage (the
+gap the WI-6/WI-12 9p rows already name: "on a native-ext4 host the dead-window
+collapses to seconds"). **Mechanism used:** the existing
+`retriever._stage_shards_local()` lever, `SFU_SEISMIC_STAGE_DIR=/home/vscode/seismic_ext4`
+— NOT a hand-edited manifest as originally sketched; the retriever already
+copies each manifest shard's `mmap_dir` to a local dir and rewrites a
+`staged_manifest.json` automatically (idempotent via a `.staged_ok` marker, and
+correctly adopts a copy pre-staged by `scripts/stage_seismic_local.sh` via
+byte-size match) — this turned out to be the better path than the plan's
+original hand-rolled-manifest sketch, so it's what's recorded here. All 8
+shards (42 GB total, `data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json`)
+copied + verified (byte-size match all 8 + md5 spot-check on shard0's
+`config.json`/`forward_encoder.bin`/`manifest.json` + full file-list diff on
+shard0 and shard7). Ran on an alternate port (8261, a fresh watchdog instance)
+— the container had **no pre-existing serve running** at session start (a
+finding in itself: `ss -tlnp` showed nothing on 8159/8185, no
+`staging_serve.py`/`watchdog.py` process, `data/watchdog_status.json` stale
+since 2026-05-13 — the wave-9 "serve restored OFF" exit state did not survive
+the container rebuild the git log documents. Nothing needed preserving; the
+alternate-port discipline was followed regardless).
+
+**Confirmed the storage-type fix took effect:** `retriever._fstype_for_path()`
+reports `overlay` for the staged copy vs `9p` for the original, and
+`_auto_federation_mode()` now auto-selects **`parallel`** (not `sequential` —
+its slow-FS branch) for the served shards, proving the system no longer
+classifies the served path as a slow passthrough mount.
+
+**Smoke induced-failure cell (WI-6-style, port 8261, SIGKILL serve pid, watched
+via the watchdog's own wait-warm timer):**
+
+| signal | 9p (WI-6, 2026-07-17) | ext4-overlay (2026-07-28) | file |
+|---|---|---|---|
+| watchdog warm-recovery (death→restart→warm=true) | 319 215 ms | **159 124 ms** | `data/eval_results/_wi12_ext4_smoke_watchdog_report_20260728.json` |
+| improvement | — | **~2.0× faster**, a real measured effect | — |
+| pre-registered smoke go/no-go bar | ≤ ~85 000 ms to proceed to the full soak | **159 124 ms — bar NOT met** | — |
+
+Per the pre-registered smoke gate ("if re-warm does not drop below ~85 s, STOP
+and report; do not run the soak"), **the full 30-min/0.3 qps soak was NOT run**
+— it would predictably still FAIL bar (a) (159 s dead window / 1800 s soak ≈
+8.8% fail ≈ 91.2% availability, short of the ≥95% bar, though closer than the
+9p arm's 82.2%). Running it would have cost ~30 min for an already-diagnosable
+non-pass.
+
+**Root-cause diagnosis** (direct in-process timing of `ThinClientRetriever`
+methods, bypassing the HTTP harness — full breakdown in
+`data/eval_results/wi12_ext4_diagnosis_20260728.json`):
+
+| step | seconds |
+|---|---|
+| ctor + `is_available()` (BM25F tantivy ×10 sections + dense — still on 9p, not moved) | 2.2 |
+| `_seismic_backend()`, hotset prefault ON, ext4-staged (2 fresh-process runs) | 82.7 / 80.2 |
+| `_seismic_backend()`, hotset prefault OFF (lazy) | 1.9 (cost moves, doesn't vanish — see next row) |
+| `search_rrf()` first call after prefault-OFF ctor | 94.3 |
+| `search_rrf()` first call, prefault ON, `remote_abstracts=False` (isolates the OpenAlex confound) | 18.2 |
+| `search_rrf()` second call, different query, `remote_abstracts=False` | 3.8 |
+
+**Read:** the 9p-specific *per-page-fault* penalty is genuinely fixed (WI-1's
+~160–240× claim is about per-fault latency, and federation auto-selection
+confirms the FS is no longer flagged slow) — but two costs that were previously
+dwarfed by the 313 s 9p floor are now the visible bottleneck: **(1)** the raw
+first-touch cost of 42 GB of SEISMIC data on *this container's* ext4-overlay is
+itself ~80–95 s, consistent with a plain `dd` sequential-read test and with
+`free -h` showing only ~1 GB free / 50 GB buff-cache — the combined served
+working set (BM25F sections 42 GB + SEISMIC 42 GB + dense) is ~85 GB+ against
+this container's 56 GB RAM, so cache eviction under memory pressure forces real
+disk reads even on "fast" local storage, and this container's overlay is itself
+a WSL2-virtualized disk, not bare-metal cloud NVMe (the plan's own caveat — "the
+storage shape the droplet deploy would use" — is exactly the gap: a real
+droplet's local NVMe would very likely clear the ~85 s bar where this sandboxed
+overlay does not); **(2)** a ~18 s non-disk first-query overhead (SPLADE ONNX
+encoder cold session + hydration) plus OpenAlex remote-abstract-fetch 429
+retries across the 24-query warmup replay — present in BOTH the 9p and ext4
+arms (same `staging_serve.py` code path), so it doesn't invalidate the
+ext4-vs-9p comparison but does inflate the absolute number in both.
+
+**WI-12 ROUTE-B VERDICT: MEASURED, NOT PASSED.** A real ~2× recovery-time
+improvement (319 215 ms → 159 124 ms) from moving the SEISMIC shard set to
+container-local ext4-overlay — confirming the storage-type hypothesis in
+direction — but bar (a) is **not** converted to PASS in this sandboxed
+container; the smoke gate correctly stopped the full soak rather than running
+it to a predictable non-pass. **Config caveat (binding):** the ext4-overlay
+copy at `/home/vscode/seismic_ext4/` (42 GB) is **ephemeral** — lost on
+container rebuild — this is a measurement configuration proving/refuting the
+ext4 hypothesis, not a standing serving path; a real droplet deploy with
+native local NVMe and RAM sized to the full working set (not this sandbox's
+56 GB against an ~85 GB+ working set) is the environment where bar (a) is
+expected to actually pass. Files: smoke result
+`data/eval_results/wi12_ext4_smoke_induced_20260728.json`; watchdog report
+`data/eval_results/_wi12_ext4_smoke_watchdog_report_20260728.json`; full
+diagnosis `data/eval_results/wi12_ext4_diagnosis_20260728.json`. Date
+2026-07-28.
+
 ## Wave 4 (2026-07-17) — update mechanisms for the demo + portable build
 
 Waves 1–3 proved the demo SURVIVES strangers' traffic once it's running. Wave 4
@@ -675,3 +770,82 @@ production (default OFF unless an explicit production profile opts in, mirroring
 the index is static between updates), `_MAX_SIZE` (256), `_MAX_MEM_MB` (64).
 Re-prime a running serve without restart:
 `scripts/prime_result_cache.py --port <port>` (refuses while warming).
+
+## Wave 8–9 (built 2026-07-18, finished 2026-07-28) — searchbar speculation: three-arm latency benchmark
+
+Wave 7 shipped the read-through result cache + pre-seed primer (hit p50 ~4 ms
+vs 0.2–3.0 s warm-retrieval floor) but explicitly DEFERRED keystroke
+speculation. Wave 8 builds a minimal searchbar-prediction prefetch (the
+feature) and runs a thorough three-arm benchmark (the product): **(A)
+regular/cold latency, (B) wave-7 pre-seed cache hit, (C) speculation-primed
+hit**, plus D/E/F/G controls. The benchmark is the deliverable; the feature
+exists to be measured.
+
+**What shipped (deployprep WI-18, 2026-07-18):** `src/lib/speculation.py` — a
+predictor (candidate pool = landing JSX examples + `demo_seed_queries.txt` +
+`speculation_bench_queries.txt` non-seeded pool + serve-log distinct queries;
+deterministic prefix/containment match + ordered tiebreak, **no ML**) that
+fire-and-forgets ONE speculative backend query through the SAME `read_through`
+cache path + key recipe a real `api_search` uses (term 1 — same cache, no
+second namespace). Single-slot (a newer speculation while busy is DROPPED, term
+4); guarded (never when warming/degraded/cache-off/shed/<min-length, term 3);
+speculative executions marked `speculative:true` in the serve query log (term
+5). Client `web/lib/api.js::createSpeculationController` debounces (≥400 ms idle
+AND ≥8 char) and cancels on submit (term 6). **Default OFF**
+(`SFU_SEARCH_SPECULATE` — owner flips the default, not the build).
+
+**The three demo-latency tiers (the typing-time-budget framing).** A search
+takes the user several seconds to TYPE. Any latency the serve can HIDE inside
+that typing time — whether by pre-seeding (wave 7) or by speculating the
+finished query while the user is still typing (wave 8) — is free to the user.
+The three tiers:
+
+| tier | mechanism | Enter→response | when it applies |
+|---|---|---|---|
+| Cold | full retrieval on Enter (cache OFF) | p50 3080.57 ms (arm A, n=20) | a novel query never seen before, first click |
+| Pre-seed (wave-7) | the demo's own queries primed in the cache at startup | p50 4.98 ms (arm B, n=20) — ~620× faster than cold | repeat clicks of the planted seed queries |
+| Speculation (wave-8) | the typed prefix predicts the full query, priming it while the user types | predictor (known/in-pool): p50 4.47 ms / 2493.41 ms / 2667.23 ms at slow/medium/fast (arm C, n=20/profile); hit-rate 1.00 / 0.20 / 0.15 | a known/in-pool query the user is typing toward |
+
+**Efficacy (WI-18b → finished in WI-19b 2026-07-28, `data/eval_results/speculation_ab_2026-07-28.json`, F6 — every headline recomputed from the raw per-trial samples in the JSON; the 2026-07-18 file holds arm A only and is historical after the container rebuild + serve restart):**
+
+| cell | measurement | result |
+|---|---|---|
+| A. cold floor (cache OFF) | n=20 distinct non-seeded queries, Enter→response | p50 3080.57 ms, p95 5708.69 ms |
+| B. pre-seed hit (cache ON + primer) | 6 seeds, n=20 repeat-visits | p50 4.98 ms (bar a PASS: ≤10 ms) |
+| C. speculation — predictor (known/in-pool) | n=20 per profile × 3, predictor mode | hit-rate 1.00 / 0.20 / 0.15 (slow/med/fast), enter p50 4.47 / 2493.41 / 2667.23 ms; n_valid=20/profile, 0 anomalies. Bar b FAIL at medium (0.20 < 0.80 threshold) — refuted pre-registered bar, recorded not renegotiated |
+| C. speculation — literal (novel query) | n=20 per profile × 3, literal mode | hit-rate 0.0 across all profiles (slow/med/fast), enter p50 1879.49 / 2038.04 / 2281.41 ms, spec_execs 1.8 / 0.8 / 0.75 per trial. n_valid=20/profile, 0 anomalies. Literal stores under the prefix key, which cannot match the full-query Enter key — structural miss (the implausibility check the W9-3 contamination tripped no longer trips) |
+| D. cache-ON control miss | cache ON, spec OFF, n=20 — isolates cache/spec overhead | p50 1978.76 ms, all 20 trials genuine misses (no single-digit-ms hits; W9-3 contamination fixed). D is 36% *faster* than A cold floor (warm-cache-miss benefits from index residency) — bar d (within-10% of A) FAILS its ≤10% framing but the miss path does not regress beyond the warm floor: D 1979 < A 3081 |
+| E. interference | real cold searches under a speculating typist, n=10 | p50 1324.69 ms < A 3080 ms (bar e PASS: within 15%). Measurement is latency-only (concurrent typist's speculation stores contaminate the hit-counter delta). E ran after D had warmed the index — the same warm-residency effect, non-blocking; flagged as unexplained-but-non-blocking in F6 |
+| F. waste | spec backend execs per completed search, per profile + adversarial | medium 1.1 spec_execs/search (bar e-waste PASS: ≤3); slow 1.7, fast 0.6; fired 2.0 / 1.1 / 0.7 per trial; single-slot guard dropped 137 busy attempts across the run (constrained, bounded) |
+| G. parity | spec-primed response == fresh cache-OFF run, ≥6 | 5/6 parity PASS (bar c-parity FAIL: <6). One trial ("digital divide broadband access") showed single-query byte divergence between the spec-primed hit and its cache-OFF baseline (baseline 2000.52 ms, notably faster than the other five) — REAL and UNEXPLAINED (possible retrieval nondeterminism under differing warm state; the OFF baselines were captured on a cache-OFF serve, so this is not a cache-hit artifact). Wave-7 OFF-vs-ON parity was 6/6. Per HOST-NOTE-W9-6 amendment B: no renegotiation, no invented explanation. |
+
+**Framing constraints (HOST-NOTE-W8-1, applied):** arm-C predictor mode measures
+the *known-query (in-pool)* scenario — "given the final query is a known/repeat
+query, does speculation land it resident before Enter at this typing speed" —
+NOT real-world prediction coverage. Literal mode is the novel-query scenario.
+No sentence implies ≥80% of live searches would be predicted.
+
+**Pre-registered bars (docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md, set
+before the first measured run):** see backlog §WI-18 rows (a)–(e), now MEASURED
+with PASS/FAIL per bar (recomputed from the raw 2026-07-28 JSON): (a) B preseed
+hit p50 ≤10 ms — **PASS** (4.98 ms); (b) C-medium predictor hit-rate ≥80% —
+**FAIL** (0.20); (b') C-medium hit latency ≤2× arm B — **FAIL** (2493 ms vs 4.98 ms);
+(c) G 6/6 OFF-vs-ON parity — **FAIL** (5/6); (d) D within 10% of arm A — **FAIL**
+(D 1979 ms is 36% faster than A 3081 ms, expected direction but fails the ≤10% framing; D-all-genuine-miss check PASS); (e) interference within 15% of A — **PASS** (1325 ms);
+(e') waste ≤3 spec execs/search at medium — **PASS** (1.1).
+
+**Owner recommendation (speculation ON or OFF for the live review): OFF.**
+Justified ONLY from the measured hit-rate, waste, and interference numbers
+(arm C/D/E/F): the predictor mode's value is confined to the known/in-pool
+slow-profile scenario (1.00 hit-rate, ~4.47 ms Enter), but at the
+demo-representative medium/fast profiles the predictor hit-rate collapses to
+0.20/0.15 (bar b FAIL) — the feature only pays when the user types slowly enough
+that the finished query is predictable from the prefix. Literal mode hits 0.0
+across all profiles (prefix-key store cannot match the full-query Enter key — a
+structural mismatch). Waste is bounded (1.1 execs/search at medium, single-slot
+guard dropped 137 busy attempts), so OFF is low-regret: the miss path (D 1979 ms,
+E 1325 ms) already beats the cold-OFF floor (A 3081 ms) via warm residency
+without speculation. The feature ships (built, wired, spec tests 24/24) with a
+measured headline that does not yet meet the pre-registered bar at demo
+profiles; defaulting OFF keeps the live review honest. Owner may flip ON to
+showcase the slow-profile predictor scenario deliberately.
