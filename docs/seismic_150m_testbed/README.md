@@ -79,3 +79,48 @@ This testbed is **scoped to the 150M-single-collection server problem only.** At
 persona scale Qdrant is GREEN and nothing here is needed — the prior STOP
 (`sparse_engine_project/`) stands for the product we ship. Do not let this re-open
 the bespoke-engine question for the laptop tier.
+
+## 17 — BM25-through-SEISMIC spike (MEASURED & NOT ADOPTED, 2026-08-01)
+
+`17_BM25_THROUGH_SEISMIC_SPIKE.md`. Can SEISMIC also serve the BM25 lexical leg,
+retiring tantivy? Quality says yes (overlap@10 0.9992 vs exact BM25F; LLM-judged
+−0.66% NDCG@10 vs tantivy), cost says no (22.4× tantivy on disk, and exact only
+because the pruning budget is 95× oversized on BM25's 710k-term vocabulary —
+force pruning to bind and overlap falls to 0.3942 at still 7.1× the size). The
+mirror question is a harder no: tantivy cannot serve SPLADE (overlap@10 0.485).
+Code `spike/bm25_seismic/`, results `data/eval_results/bm25_seismic_spike_*`.
+
+## 18 — Ordinal addressing design (MEASURED PRIMITIVES, NOT IMPLEMENTED, 2026-08-02)
+
+`18_ORDINAL_ADDRESSING_DESIGN.md`. The follow-on from 17 §10–§13. Finding: the
+thin client's storage cost is an **addressing** problem, not a storage-engine
+problem. A W-id (OpenAlex Work ID) is a *sparse* key — 150M docs over a 7.14e9
+range — so resolving one is inherently a search; doing it ~1000×/query is the
+~400 ms post-filter mask. C1/C3/C5 all swapped the *searcher* (tantivy fst,
+Lance BTREE) while keeping the *address*, and all lost. Assigning dense build-time
+**ordinals** makes the mask an array index (0.16–1.0 ms vs 38–400 ms at 150M) and
+lets ~1.95 GB stay resident where 24.9 GB cannot. Closes 17 §13's load-bearing
+gap: tantivy fast-field reads are 2.1–11× cheaper than the stored-id read
+production already pays. Cross-referenced to Lucene's docid↔UID split (mainstream
+practice; we collapsed identity and address) and to MPHF/Elias-Fano, which are
+better primitives than the sorted array measured here. Ends with staged next
+steps N1–N5. **N5, N3 and N4 EXECUTED 2026-08-02** (§9, §11): the flat block
+store was built and passed a byte-parity gate on 20,000 abstracts at 2.89×
+end-to-end (correcting §11's 3.4× projection); ordinal artifacts built at 97,063
+docs/s; and the `_post_filter` swap passed a 360-trial parity gate (ids, scores
+AND rank order) at **120–211×**, 214.1 → 1.013 ms at 1000 candidates, with **no
+rebuild of any engine**. §10 restages the design: a tantivy rebuild buys ~2% and
+would cost ~127M re-fetched OpenAlex abstracts, so it is deferred indefinitely.
+**N6 EXECUTED 2026-08-02 (§13) — the whole-query number: 3.20× at production's
+default `top_k=50` (344.6 → 107.6 ms) and 2.70× at `top_k=100`, parity PASS on
+216/216 pairs with 0 coverage misses in 57,600 ids.** `_post_filter` is **61.5%**
+of the query, which is why the stage win survived end-to-end. The `bm25f`
+negative control (it never post-filters) bounds noise at ~9%, so the k=10 row's
+1.13× is inside the band and is not claimed. **`_hydrate` extension REJECTED on
+measurement** — `hydrate_meta` is 17.5 ms / 4.1%, not worth a 150.4M-doc blob
+(the MPHF ~2% / C3-locator 1.3% trap again). **Residency is a precondition:**
+run from a 9p mount the ordinal arm measured 8× *slower* than SQLite. §12 built
+the full 150M space (98,867 docs/s, 1.96 GB vs meta.sqlite's 24.91 GB), the
+stale-ordinal guard, and the retriever gate `SFU_THINCLIENT_ORDINALS`
+(default off; nothing is enabled). Code `spike/meta_consolidation/`, results
+`data/eval_results/c6_*`, `n3_*`, `n4_*`, `n5_*`, `n6_*`.

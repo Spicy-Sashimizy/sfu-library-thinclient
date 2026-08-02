@@ -1,0 +1,4 @@
+# Spike artifacts: corpus text, BM25 vector jsonl, tantivy + SEISMIC indexes.
+# Multi-GB and fully reproducible from 01_/02_ — never stage these (root
+# CLAUDE.md: blanket staging has cost this repo ~47 GB of orphaned objects).
+work/

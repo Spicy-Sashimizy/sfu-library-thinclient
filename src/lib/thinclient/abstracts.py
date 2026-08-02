@@ -18,6 +18,19 @@ Format v3 (the measured 64.7 -> 52.9 GB config at 150M):
   - a doc fetch decompresses one 32 KB block (sub-ms) and slices.
 Readers transparently handle v1 (per-doc, single dict), v2 (per-doc, +ru
 dict column) and v3 stores.
+
+Format v3-flat (N5, measured 2026-08-02 — `docs/seismic_150m_testbed/
+18_ORDINAL_ADDRESSING_DESIGN.md` §9): identical blocks, identical dictionaries,
+identical locator table — only the compressed block *payloads* move out of the
+`blocks` table into a flat `blocks.bin` read by `pread`, indexed by three
+ordinal-style arrays. **2.82-2.89x faster `fetch()`** end-to-end at k=10-100
+with a 20,000-id byte-parity gate, and ~2.2 GB smaller. The codec is untouched
+deliberately: doc 17 §11 measured payload as 83% of the store, so changing it
+would cost more than the envelope saves. The locator deliberately stays in
+SQLite — §11 measured moving it to tantivy as a 27-54x regression on that stage.
+
+A store is served flat only when its `<name>.flat/` sidecar directory exists,
+so v3 stores keep working untouched and the two can coexist per section.
 """
 
 from __future__ import annotations
@@ -250,6 +263,55 @@ class AbstractStoreWriter:
         return self._n
 
 
+def build_flat_sidecar(src: Path, out: Path | None = None,
+                       log_every: int = 50_000) -> dict:
+    """Derive the N5 flat block store from a built v3 `abstracts.sqlite`.
+
+    Purely additive: the source is opened READ-ONLY and nothing about it
+    changes, so a section can be reverted by deleting the sidecar directory.
+    Blocks stream in `b` order, so this is sequential on both sides and never
+    holds the corpus in RAM (11.13 GB / 1,062,917 blocks in 878 s for
+    `social_sciences__recent`, measured 2026-08-02).
+    """
+    import numpy as np
+
+    src = Path(src)
+    out = Path(out) if out else src.with_suffix(src.suffix + ".flat")
+    out.mkdir(parents=True, exist_ok=True)
+    db = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+    try:
+        max_b = db.execute("SELECT max(b) FROM blocks").fetchone()[0]
+        if max_b is None:
+            raise ValueError(f"{src} has no blocks — not a v3 store")
+        n_slots = max_b + 1
+        # Block ids are sparse in production, so unused slots keep offset -1
+        # and the reader raises on them rather than preading a wrong range.
+        offsets = np.full(n_slots, -1, dtype=np.int64)
+        lengths = np.zeros(n_slots, dtype=np.int32)
+        dict_ids = np.zeros(n_slots, dtype=np.int8)
+
+        pos = n = 0
+        tmp = out / "blocks.bin.partial"
+        with open(tmp, "wb", buffering=1 << 22) as fout:
+            for b, d, z in db.execute("SELECT b, d, z FROM blocks ORDER BY b"):
+                fout.write(z)
+                offsets[b], lengths[b], dict_ids[b] = pos, len(z), d
+                pos += len(z)
+                n += 1
+                if log_every and n % log_every == 0:
+                    logger.info("flat sidecar %s: %d blocks, %.2f GB",
+                                src.name, n, pos / 1e9)
+        np.save(out / "block_offsets.npy", offsets)
+        np.save(out / "block_lengths.npy", lengths)
+        np.save(out / "block_dictids.npy", dict_ids)
+        # Rename last: the reader keys off blocks.bin existing, so a crashed
+        # build leaves a directory that is skipped rather than half-served.
+        tmp.rename(out / "blocks.bin")
+    finally:
+        db.close()
+    return {"blocks": n, "slots": n_slots, "bytes": pos, "path": str(out)}
+
+
 class AbstractStore:
     """Query-time reader for v1/v2/v3 stores (thread-safe)."""
 
@@ -259,7 +321,11 @@ class AbstractStore:
         self._lock = threading.Lock()
         tables = {r[0] for r in self._db.execute(
             "SELECT name FROM sqlite_master WHERE type='table'")}
-        self._v3 = "blocks" in tables
+        # `docs` (the block locator) is the v3 marker, NOT `blocks`. Once a
+        # flat sidecar exists an operator may drop the `blocks` table to
+        # reclaim its space — keying detection off `blocks` would then silently
+        # fall through to the v1/v2 path and query a non-existent `abs` table.
+        self._v3 = "docs" in tables or "blocks" in tables
         self._block_cache: OrderedDict[int, bytes] = OrderedDict()
 
         def _zdict(key: str):
@@ -287,14 +353,71 @@ class AbstractStore:
             cols = [r[1] for r in self._db.execute("PRAGMA table_info(abs)")]
             self._has_dict_col = "d" in cols   # v1: two columns, one dict
 
+        # v3-flat (N5): payloads in a flat file, everything else unchanged.
+        self._flat = None
+        flat_dir = self.path.with_suffix(self.path.suffix + ".flat")
+        if self._v3 and flat_dir.is_dir():
+            self._open_flat(flat_dir)
+
+    def _open_flat(self, flat_dir: Path) -> None:
+        """Attach the N5 flat block file. Only the payload source changes: the
+        dictionaries still come from the sqlite `meta` table and the locator
+        still comes from `docs`, so a flat store and its v3 parent return
+        byte-identical abstracts by construction."""
+        import os
+
+        import numpy as np
+
+        try:
+            off = np.load(flat_dir / "block_offsets.npy", mmap_mode="r")
+            ln = np.load(flat_dir / "block_lengths.npy", mmap_mode="r")
+            did = np.load(flat_dir / "block_dictids.npy", mmap_mode="r")
+            fd = os.open(str(flat_dir / "blocks.bin"), os.O_RDONLY)
+        except OSError as exc:
+            # A half-built sidecar must not take the section down: v3 still
+            # holds every payload, so falling back is lossless (unlike the
+            # ordinal guard, where falling back would mean wrong answers).
+            # UNLESS the blocks table was dropped to reclaim its space — then
+            # there is no fallback and a clear error beats an obscure sqlite
+            # one from three frames deeper.
+            has_blocks = self._db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='blocks'"
+            ).fetchone()
+            if not has_blocks:
+                raise RuntimeError(
+                    f"{self.path}: flat sidecar {flat_dir} is unusable ({exc}) "
+                    f"and the `blocks` table has been dropped — this store has "
+                    f"no payloads left. Restore the sidecar or rebuild.") from exc
+            logger.warning("abstracts: flat sidecar %s unusable (%s); "
+                           "serving the v3 blocks table", flat_dir, exc)
+            return
+        self._flat = {"off": off, "len": ln, "did": did, "fd": fd}
+        logger.info("abstracts: %s serving %d blocks from flat store",
+                    self.path.name, len(off))
+
+    def _block_flat(self, b: int) -> bytes:
+        import os
+
+        f = self._flat
+        offset = int(f["off"][b])
+        if offset < 0:
+            # Sparse block ids leave -1 holes; a hole here means the locator
+            # and the flat index disagree, which would otherwise pread garbage.
+            raise KeyError(f"block {b} absent from the flat store {self.path}")
+        z = os.pread(f["fd"], int(f["len"][b]), offset)
+        return self._dctxs.get(int(f["did"][b]), self._dctxs[0]).decompress(z)
+
     def _block(self, b: int) -> bytes:
         cached = self._block_cache.get(b)
         if cached is not None:
             self._block_cache.move_to_end(b)
             return cached
-        d, z = self._db.execute(
-            "SELECT d, z FROM blocks WHERE b=?", (b,)).fetchone()
-        payload = self._dctxs.get(d, self._dctxs[0]).decompress(z)
+        if self._flat is not None:
+            payload = self._block_flat(b)
+        else:
+            d, z = self._db.execute(
+                "SELECT d, z FROM blocks WHERE b=?", (b,)).fetchone()
+            payload = self._dctxs.get(d, self._dctxs[0]).decompress(z)
         self._block_cache[b] = payload
         if len(self._block_cache) > BLOCK_CACHE:
             self._block_cache.popitem(last=False)

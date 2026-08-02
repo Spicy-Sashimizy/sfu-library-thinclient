@@ -1,0 +1,22 @@
+{
+  "date_utc": "2026-08-02T06:37",
+  "what": "Lance vs SQLite on-disk size for identical metadata rows, REAL production titles",
+  "source": "data/thinclient_index/meta.sqlite (read-only), first 2,000,000 rows of docs",
+  "rows": 2000000,
+  "avg_title_chars": 88,
+  "lance_bytes": 196400000,
+  "sqlite_bytes": 339300000,
+  "sqlite_over_lance": 1.73,
+  "lance_build_s": 4,
+  "sqlite_build_s": 40,
+  "projection_150m": {
+    "sqlite_measured_gb": 24.9,
+    "lance_projected_gb": 14.4,
+    "saving_gb": 10.5,
+    "caveat": "linear extrapolation from 2M rows; not measured at 150M"
+  },
+  "supersedes": {
+    "synthetic_run_claimed": 3.23,
+    "why_wrong": "synthetic titles were formulaic and dictionary-compressed far better than real titles"
+  }
+}

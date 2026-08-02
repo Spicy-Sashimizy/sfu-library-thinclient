@@ -1,0 +1,422 @@
+{
+  "date_utc": "2026-08-02T05:11:02",
+  "corpus": "/workspaces/sfu-library-thinclient/spike/bm25_seismic/work/corpus.jsonl",
+  "seed": 17,
+  "fresh_ids_per_rep": true,
+  "sqlite_cache_mb": 64,
+  "sections": 10,
+  "filters": {
+    "selective": {
+      "year_range": [
+        2010,
+        2025
+      ],
+      "type": "article",
+      "is_oa": 1
+    },
+    "loose": {
+      "year_range": [
+        1990,
+        2025
+      ]
+    }
+  },
+  "results": {
+    "selective": {
+      "100": {
+        "parity": {
+          "sqlite_survivors": 6,
+          "selectivity": 0.06,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 19.367,
+            "mean_ms": 15.053,
+            "p95_ms": 21.718,
+            "min_ms": 1.356,
+            "max_ms": 21.718
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 8.544,
+            "mean_ms": 10.209,
+            "p95_ms": 21.624,
+            "min_ms": 5.576,
+            "max_ms": 21.624
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 6.12,
+            "mean_ms": 6.059,
+            "p95_ms": 6.276,
+            "min_ms": 5.664,
+            "max_ms": 6.276
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 5.537,
+            "mean_ms": 5.591,
+            "p95_ms": 5.847,
+            "min_ms": 5.355,
+            "max_ms": 5.847
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 0.44,
+          "tantivy_lookup_fastfield": 0.32,
+          "tantivy_pushdown": 0.29
+        }
+      },
+      "500": {
+        "parity": {
+          "sqlite_survivors": 26,
+          "selectivity": 0.052,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 40.786,
+            "mean_ms": 35.281,
+            "p95_ms": 66.083,
+            "min_ms": 2.204,
+            "max_ms": 66.083
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 15.777,
+            "mean_ms": 15.887,
+            "p95_ms": 17.811,
+            "min_ms": 14.928,
+            "max_ms": 17.811
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 15.636,
+            "mean_ms": 15.78,
+            "p95_ms": 16.692,
+            "min_ms": 15.017,
+            "max_ms": 16.692
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 13.477,
+            "mean_ms": 13.455,
+            "p95_ms": 14.97,
+            "min_ms": 12.452,
+            "max_ms": 14.97
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 0.39,
+          "tantivy_lookup_fastfield": 0.38,
+          "tantivy_pushdown": 0.33
+        }
+      },
+      "1000": {
+        "parity": {
+          "sqlite_survivors": 46,
+          "selectivity": 0.046,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 17.34,
+            "mean_ms": 17.37,
+            "p95_ms": 34.346,
+            "min_ms": 4.534,
+            "max_ms": 34.346
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 28.344,
+            "mean_ms": 29.881,
+            "p95_ms": 48.659,
+            "min_ms": 24.628,
+            "max_ms": 48.659
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 25.443,
+            "mean_ms": 25.979,
+            "p95_ms": 29.53,
+            "min_ms": 23.715,
+            "max_ms": 29.53
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 22.894,
+            "mean_ms": 23.38,
+            "p95_ms": 28.254,
+            "min_ms": 19.827,
+            "max_ms": 28.254
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 1.63,
+          "tantivy_lookup_fastfield": 1.47,
+          "tantivy_pushdown": 1.32
+        }
+      },
+      "2000": {
+        "parity": {
+          "sqlite_survivors": 94,
+          "selectivity": 0.047,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 10.268,
+            "mean_ms": 10.845,
+            "p95_ms": 13.785,
+            "min_ms": 8.78,
+            "max_ms": 13.785
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 42.531,
+            "mean_ms": 42.744,
+            "p95_ms": 46.703,
+            "min_ms": 41.144,
+            "max_ms": 46.703
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 41.963,
+            "mean_ms": 42.596,
+            "p95_ms": 51.896,
+            "min_ms": 40.187,
+            "max_ms": 51.896
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 32.339,
+            "mean_ms": 33.377,
+            "p95_ms": 39.881,
+            "min_ms": 30.831,
+            "max_ms": 39.881
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 4.14,
+          "tantivy_lookup_fastfield": 4.09,
+          "tantivy_pushdown": 3.15
+        }
+      }
+    },
+    "loose": {
+      "100": {
+        "parity": {
+          "sqlite_survivors": 100,
+          "selectivity": 1.0,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 1.488,
+            "mean_ms": 1.507,
+            "p95_ms": 1.769,
+            "min_ms": 1.367,
+            "max_ms": 1.769
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 6.302,
+            "mean_ms": 6.267,
+            "p95_ms": 6.724,
+            "min_ms": 5.731,
+            "max_ms": 6.724
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 6.219,
+            "mean_ms": 6.207,
+            "p95_ms": 6.6,
+            "min_ms": 5.884,
+            "max_ms": 6.6
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 6.024,
+            "mean_ms": 6.155,
+            "p95_ms": 6.753,
+            "min_ms": 5.73,
+            "max_ms": 6.753
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 4.24,
+          "tantivy_lookup_fastfield": 4.18,
+          "tantivy_pushdown": 4.05
+        }
+      },
+      "500": {
+        "parity": {
+          "sqlite_survivors": 500,
+          "selectivity": 1.0,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 2.509,
+            "mean_ms": 2.507,
+            "p95_ms": 2.876,
+            "min_ms": 2.212,
+            "max_ms": 2.876
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 15.36,
+            "mean_ms": 15.427,
+            "p95_ms": 16.728,
+            "min_ms": 14.739,
+            "max_ms": 16.728
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 15.625,
+            "mean_ms": 15.694,
+            "p95_ms": 17.189,
+            "min_ms": 15.03,
+            "max_ms": 17.189
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 15.493,
+            "mean_ms": 15.53,
+            "p95_ms": 16.117,
+            "min_ms": 14.998,
+            "max_ms": 16.117
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 6.12,
+          "tantivy_lookup_fastfield": 6.23,
+          "tantivy_pushdown": 6.17
+        }
+      },
+      "1000": {
+        "parity": {
+          "sqlite_survivors": 1000,
+          "selectivity": 1.0,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 4.702,
+            "mean_ms": 4.717,
+            "p95_ms": 5.095,
+            "min_ms": 4.398,
+            "max_ms": 5.095
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 24.886,
+            "mean_ms": 24.873,
+            "p95_ms": 26.177,
+            "min_ms": 23.985,
+            "max_ms": 26.177
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 25.291,
+            "mean_ms": 25.224,
+            "p95_ms": 26.629,
+            "min_ms": 24.055,
+            "max_ms": 26.629
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 25.232,
+            "mean_ms": 25.282,
+            "p95_ms": 27.009,
+            "min_ms": 24.008,
+            "max_ms": 27.009
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 5.29,
+          "tantivy_lookup_fastfield": 5.38,
+          "tantivy_pushdown": 5.37
+        }
+      },
+      "2000": {
+        "parity": {
+          "sqlite_survivors": 2000,
+          "selectivity": 1.0,
+          "lookup_matches": true,
+          "pushdown_matches": true,
+          "fastfield_matches": true
+        },
+        "arms": {
+          "sqlite_postfilter": {
+            "reps": 20,
+            "p50_ms": 9.337,
+            "mean_ms": 9.398,
+            "p95_ms": 10.076,
+            "min_ms": 8.988,
+            "max_ms": 10.076
+          },
+          "tantivy_lookup_stored": {
+            "reps": 20,
+            "p50_ms": 43.263,
+            "mean_ms": 48.362,
+            "p95_ms": 70.492,
+            "min_ms": 41.398,
+            "max_ms": 70.492
+          },
+          "tantivy_lookup_fastfield": {
+            "reps": 20,
+            "p50_ms": 43.578,
+            "mean_ms": 45.165,
+            "p95_ms": 55.383,
+            "min_ms": 40.896,
+            "max_ms": 55.383
+          },
+          "tantivy_pushdown": {
+            "reps": 20,
+            "p50_ms": 43.409,
+            "mean_ms": 43.769,
+            "p95_ms": 49.222,
+            "min_ms": 41.546,
+            "max_ms": 49.222
+          }
+        },
+        "vs_sqlite": {
+          "sqlite_postfilter": 1.0,
+          "tantivy_lookup_stored": 4.63,
+          "tantivy_lookup_fastfield": 4.67,
+          "tantivy_pushdown": 4.65
+        }
+      }
+    }
+  }
+}

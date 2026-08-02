@@ -1,0 +1,21 @@
+{
+  "date_utc": "2026-08-02T19:46:08",
+  "rows": 150413098,
+  "row_count_source": "--rows (count scan skipped)",
+  "assign_seconds": 1521.4,
+  "docs_per_s": 98867,
+  "write_seconds": 8.7,
+  "monotonic_ids": true,
+  "artifact_bytes": {
+    "dtype.npy": 150413226,
+    "is_oa.npy": 150413226,
+    "section.npy": 150413226,
+    "wids.npy": 1203304912,
+    "year.npy": 300826324
+  },
+  "artifact_total_bytes": 1955370914,
+  "filter_columns_bytes": 752066002,
+  "type_cardinality": 24,
+  "section_cardinality": 10,
+  "meta_sqlite_bytes": 24908001280
+}

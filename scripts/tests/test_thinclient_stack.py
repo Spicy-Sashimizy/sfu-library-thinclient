@@ -175,6 +175,88 @@ def test_abstracts_v3_roundtrip(tmp_path):
     assert n_dicts == 2   # latin + cyrillic; han below bar -> latin fallback
 
 
+def test_abstracts_flat_sidecar_is_byte_identical(tmp_path):
+    """N5 (doc 18 §9): moving block payloads to a flat file must change
+    latency and nothing else. The spike gated this on 20,000 production ids;
+    this is the unit-scale regression guard for the landed reader."""
+    p = tmp_path / "a.sqlite"
+    w = A.AbstractStoreWriter(p)
+    docs = {f"W{i}": EN + f"variant {i}" for i in range(2000)}
+    docs.update({f"WR{i}": RU + f"вариант {i}" for i in range(400)})
+    for k, v in docs.items():
+        w.add(k, v)
+    w.finish()
+
+    plain = A.AbstractStore(p)
+    assert plain._flat is None
+    before = plain.fetch(list(docs))
+
+    rep = A.build_flat_sidecar(p)
+    assert rep["blocks"] > 1
+    flat = A.AbstractStore(p)
+    assert flat._flat is not None          # sidecar picked up automatically
+    assert flat.fetch(list(docs)) == before == docs
+
+
+def test_abstracts_flat_survives_dropping_the_blocks_table(tmp_path):
+    """Reclaiming the payload space means dropping `blocks` from the sqlite.
+    v3 detection must not key off that table, or the store silently falls
+    through to the v1/v2 path and queries a non-existent `abs` table."""
+    p = tmp_path / "a.sqlite"
+    w = A.AbstractStoreWriter(p)
+    docs = {f"W{i}": EN + f"variant {i}" for i in range(800)}
+    for k, v in docs.items():
+        w.add(k, v)
+    w.finish()
+    A.build_flat_sidecar(p)
+
+    db = sqlite3.connect(p)
+    db.execute("DROP TABLE blocks")
+    db.commit()
+    db.execute("VACUUM")
+    db.close()
+
+    r = A.AbstractStore(p)
+    assert r._v3 and r._flat is not None
+    assert r.fetch(list(docs)) == docs
+
+
+def test_abstracts_no_payloads_left_raises_clearly(tmp_path):
+    """Sidecar gone AND blocks dropped = the payloads are genuinely gone.
+    That must say so, not fail three frames deeper in sqlite."""
+    p = tmp_path / "a.sqlite"
+    w = A.AbstractStoreWriter(p)
+    for i in range(400):
+        w.add(f"W{i}", EN + f"variant {i}")
+    w.finish()
+    A.build_flat_sidecar(p)
+    db = sqlite3.connect(p)
+    db.execute("DROP TABLE blocks")
+    db.commit()
+    db.close()
+    (p.with_suffix(p.suffix + ".flat") / "blocks.bin").unlink()
+
+    with pytest.raises(RuntimeError, match="no payloads left"):
+        A.AbstractStore(p)
+
+
+def test_abstracts_half_built_sidecar_falls_back(tmp_path):
+    """A crashed sidecar build must not take the section down — v3 still holds
+    every payload, so falling back is lossless."""
+    p = tmp_path / "a.sqlite"
+    w = A.AbstractStoreWriter(p)
+    docs = {f"W{i}": EN + f"variant {i}" for i in range(600)}
+    for k, v in docs.items():
+        w.add(k, v)
+    w.finish()
+    A.build_flat_sidecar(p)
+    (p.with_suffix(p.suffix + ".flat") / "blocks.bin").unlink()
+
+    r = A.AbstractStore(p)
+    assert r._flat is None
+    assert r.fetch(list(docs)) == docs
+
+
 def test_abstracts_v1_v2_read_compat(tmp_path):
     p1 = tmp_path / "v1.sqlite"
     db = sqlite3.connect(p1)

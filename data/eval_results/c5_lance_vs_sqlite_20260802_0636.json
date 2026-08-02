@@ -1,0 +1,51 @@
+{
+  "date_utc": "2026-08-02T06:36:10",
+  "rows": 20000000,
+  "note": "ratio is the claim; absolute ms optimistic vs 150M production",
+  "results": {
+    "100": {
+      "parity": {
+        "sqlite_rows": 100,
+        "lance_rows": 100,
+        "same_ids": true
+      },
+      "sqlite": {
+        "reps": 9,
+        "p50_ms": 39.25,
+        "mean_ms": 30.9,
+        "min_ms": 1.5,
+        "max_ms": 42.53
+      },
+      "lance": {
+        "reps": 9,
+        "p50_ms": 67.67,
+        "mean_ms": 65.08,
+        "min_ms": 42.22,
+        "max_ms": 79.99
+      },
+      "lance_over_sqlite": 1.72
+    },
+    "1000": {
+      "parity": {
+        "sqlite_rows": 1000,
+        "lance_rows": 1000,
+        "same_ids": true
+      },
+      "sqlite": {
+        "reps": 9,
+        "p50_ms": 222.74,
+        "mean_ms": 186.29,
+        "min_ms": 6.06,
+        "max_ms": 295.27
+      },
+      "lance": {
+        "reps": 9,
+        "p50_ms": 255.13,
+        "mean_ms": 255.07,
+        "min_ms": 200.39,
+        "max_ms": 302.12
+      },
+      "lance_over_sqlite": 1.15
+    }
+  }
+}

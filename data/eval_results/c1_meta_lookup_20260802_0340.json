@@ -1,0 +1,273 @@
+{
+  "date_utc": "2026-08-02T03:39:26",
+  "corpus": "/workspaces/sfu-library-thinclient/spike/bm25_seismic/work/corpus.jsonl",
+  "seed": 17,
+  "sections": 10,
+  "sqlite_cache_mb": 64,
+  "workloads": {
+    "100": {
+      "parity": {
+        "sqlite_rows": 100,
+        "tantivy_rows": 100,
+        "ids_requested": 100,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 1.564,
+          "mean_ms": 1.598,
+          "p95_ms": 1.861,
+          "min_ms": 1.35,
+          "max_ms": 1.866
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 1.379,
+          "mean_ms": 1.4,
+          "p95_ms": 1.572,
+          "min_ms": 1.278,
+          "max_ms": 1.717
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 5.631,
+          "mean_ms": 5.72,
+          "p95_ms": 6.13,
+          "min_ms": 5.483,
+          "max_ms": 6.666
+        },
+        "tantivy_over_sqlite": 3.6,
+        "cache_pragma_speedup": 0.88
+      },
+      "full_hydrate": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 1.435,
+          "mean_ms": 1.45,
+          "p95_ms": 1.571,
+          "min_ms": 1.365,
+          "max_ms": 1.63
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 1.409,
+          "mean_ms": 1.438,
+          "p95_ms": 1.568,
+          "min_ms": 1.342,
+          "max_ms": 1.815
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 5.95,
+          "mean_ms": 5.986,
+          "p95_ms": 6.663,
+          "min_ms": 5.629,
+          "max_ms": 6.775
+        },
+        "tantivy_over_sqlite": 4.15,
+        "cache_pragma_speedup": 0.98
+      }
+    },
+    "500": {
+      "parity": {
+        "sqlite_rows": 500,
+        "tantivy_rows": 500,
+        "ids_requested": 500,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 2.061,
+          "mean_ms": 2.065,
+          "p95_ms": 2.186,
+          "min_ms": 1.955,
+          "max_ms": 2.194
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 100.801,
+          "mean_ms": 101.059,
+          "p95_ms": 109.797,
+          "min_ms": 96.956,
+          "max_ms": 115.383
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 13.738,
+          "mean_ms": 13.889,
+          "p95_ms": 15.541,
+          "min_ms": 12.901,
+          "max_ms": 15.567
+        },
+        "tantivy_over_sqlite": 6.67,
+        "cache_pragma_speedup": 48.91
+      },
+      "full_hydrate": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 2.385,
+          "mean_ms": 2.371,
+          "p95_ms": 2.549,
+          "min_ms": 2.183,
+          "max_ms": 2.767
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 99.849,
+          "mean_ms": 100.15,
+          "p95_ms": 104.207,
+          "min_ms": 96.906,
+          "max_ms": 104.262
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 14.013,
+          "mean_ms": 13.961,
+          "p95_ms": 14.445,
+          "min_ms": 13.173,
+          "max_ms": 14.71
+        },
+        "tantivy_over_sqlite": 5.88,
+        "cache_pragma_speedup": 41.87
+      }
+    },
+    "1000": {
+      "parity": {
+        "sqlite_rows": 1000,
+        "tantivy_rows": 1000,
+        "ids_requested": 1000,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 4.152,
+          "mean_ms": 4.152,
+          "p95_ms": 4.424,
+          "min_ms": 3.963,
+          "max_ms": 4.432
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 200.573,
+          "mean_ms": 202.013,
+          "p95_ms": 207.981,
+          "min_ms": 189.348,
+          "max_ms": 241.263
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 21.524,
+          "mean_ms": 21.48,
+          "p95_ms": 22.374,
+          "min_ms": 20.505,
+          "max_ms": 23.175
+        },
+        "tantivy_over_sqlite": 5.18,
+        "cache_pragma_speedup": 48.31
+      },
+      "full_hydrate": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 4.654,
+          "mean_ms": 4.656,
+          "p95_ms": 4.904,
+          "min_ms": 4.491,
+          "max_ms": 5.026
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 206.268,
+          "mean_ms": 209.292,
+          "p95_ms": 238.485,
+          "min_ms": 196.72,
+          "max_ms": 256.998
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 23.066,
+          "mean_ms": 23.735,
+          "p95_ms": 27.525,
+          "min_ms": 21.495,
+          "max_ms": 33.643
+        },
+        "tantivy_over_sqlite": 4.96,
+        "cache_pragma_speedup": 44.32
+      }
+    },
+    "2000": {
+      "parity": {
+        "sqlite_rows": 2000,
+        "tantivy_rows": 2000,
+        "ids_requested": 2000,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 8.615,
+          "mean_ms": 8.673,
+          "p95_ms": 9.116,
+          "min_ms": 8.349,
+          "max_ms": 9.341
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 409.565,
+          "mean_ms": 413.523,
+          "p95_ms": 438.688,
+          "min_ms": 392.191,
+          "max_ms": 469.551
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 39.556,
+          "mean_ms": 41.055,
+          "p95_ms": 48.383,
+          "min_ms": 38.587,
+          "max_ms": 51.435
+        },
+        "tantivy_over_sqlite": 4.59,
+        "cache_pragma_speedup": 47.54
+      },
+      "full_hydrate": {
+        "sqlite_tuned": {
+          "reps": 30,
+          "p50_ms": 9.346,
+          "mean_ms": 9.373,
+          "p95_ms": 9.699,
+          "min_ms": 9.078,
+          "max_ms": 9.771
+        },
+        "sqlite_default_cache": {
+          "reps": 30,
+          "p50_ms": 404.847,
+          "mean_ms": 408.611,
+          "p95_ms": 443.585,
+          "min_ms": 398.558,
+          "max_ms": 444.913
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 40.661,
+          "mean_ms": 40.698,
+          "p95_ms": 41.743,
+          "min_ms": 39.721,
+          "max_ms": 41.793
+        },
+        "tantivy_over_sqlite": 4.35,
+        "cache_pragma_speedup": 43.32
+      }
+    }
+  }
+}

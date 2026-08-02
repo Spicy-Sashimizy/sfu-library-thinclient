@@ -1,0 +1,20 @@
+{
+  "date_utc": "2026-08-02T08:04:35",
+  "rows": 25000000,
+  "assign_seconds": 257.6,
+  "docs_per_s": 97063,
+  "write_seconds": 1.6,
+  "monotonic_ids": true,
+  "artifact_bytes": {
+    "dtype.npy": 25000128,
+    "is_oa.npy": 25000128,
+    "section.npy": 25000128,
+    "wids.npy": 200000128,
+    "year.npy": 50000128
+  },
+  "artifact_total_bytes": 325000640,
+  "filter_columns_bytes": 125000512,
+  "type_cardinality": 21,
+  "section_cardinality": 10,
+  "meta_sqlite_bytes": 24908001280
+}

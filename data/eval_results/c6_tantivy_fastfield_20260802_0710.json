@@ -1,0 +1,44 @@
+{
+  "date_utc": "2026-08-02T07:09:52",
+  "section": "social_sciences__recent",
+  "num_docs": 23398073,
+  "results": {
+    "10": {
+      "requested_k": 10,
+      "median_hits": 10,
+      "search_p50_ms": 281.621,
+      "stored_id_p50_ms": 5.6176,
+      "fast_field_p50_ms": 6.5381,
+      "stored_over_fast": 0.9,
+      "fast_field_us_per_doc": 653.81
+    },
+    "50": {
+      "requested_k": 50,
+      "median_hits": 50,
+      "search_p50_ms": 54.275,
+      "stored_id_p50_ms": 34.8708,
+      "fast_field_p50_ms": 16.2474,
+      "stored_over_fast": 2.1,
+      "fast_field_us_per_doc": 324.95
+    },
+    "100": {
+      "requested_k": 100,
+      "median_hits": 100,
+      "search_p50_ms": 47.336,
+      "stored_id_p50_ms": 23.7232,
+      "fast_field_p50_ms": 4.1181,
+      "stored_over_fast": 5.8,
+      "fast_field_us_per_doc": 41.18
+    },
+    "500": {
+      "requested_k": 500,
+      "median_hits": 500,
+      "search_p50_ms": 47.164,
+      "stored_id_p50_ms": 75.107,
+      "fast_field_p50_ms": 6.83,
+      "stored_over_fast": 11.0,
+      "fast_field_us_per_doc": 13.66
+    }
+  },
+  "method": "arms interleaved per rep, order randomised per rep"
+}

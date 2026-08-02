@@ -1,0 +1,21 @@
+INVALID — 2026-08-01. The tantivy arm is not the production lexical leg.
+
+spike/bm25_seismic/03_fidelity_gate.py::tantivy_search omitted the
+non-alphanumeric scrub that retriever._bm25f_leg applies before parse_query
+("".join(c if c.isalnum() or c.isspace() else " " for c in query)). Without it a
+hyphen makes tantivy build a PHRASE query, and title/abstract are indexed
+index_option="freq" (no positions), so parse_query raises
+"ValueError: The field 'title' does not have positions indexed".
+
+Effect: the tantivy arm returned ZERO results on 11 of the 120 SFU eval queries
+(post-acute, real-time, land-based, solvent-free, transit-oriented, off-target,
+low-income, COVID-19, self-determination, community-based, decolonizing
+land-based), which deflated every tantivy number and fabricated a ~9.6% quality
+deficit for tantivy that does not exist.
+
+The SEISMIC and exact_vec arms in these files are unaffected (they never touch
+tantivy's query parser), but the files are retired whole to avoid anyone reading
+a tantivy row out of them.
+
+Superseded by the re-run of the same scripts after the fix — see
+bm25_seismic_spike_{fidelity,quality}_idf_in_doc_* with a later timestamp.

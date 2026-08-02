@@ -1,0 +1,62 @@
+{
+  "date_utc": "2026-08-02T07:39:56",
+  "section": "social_sciences__recent",
+  "source_bytes": 13470433280,
+  "parity_gate": {
+    "ids_checked": 20000,
+    "production_returned": 20000,
+    "flat_returned": 20000,
+    "same_id_set": true,
+    "byte_identical": true,
+    "n_mismatched": 0,
+    "example": null,
+    "seconds": 46.1
+  },
+  "bench": {
+    "10": {
+      "production_sqlite": {
+        "reps": 9,
+        "p50_ms": 18.71,
+        "min_ms": 1.25,
+        "max_ms": 19.61
+      },
+      "flat_block_file": {
+        "reps": 9,
+        "p50_ms": 6.64,
+        "min_ms": 1.36,
+        "max_ms": 7.9
+      },
+      "speedup": 2.82
+    },
+    "50": {
+      "production_sqlite": {
+        "reps": 9,
+        "p50_ms": 80.06,
+        "min_ms": 78.71,
+        "max_ms": 84.41
+      },
+      "flat_block_file": {
+        "reps": 9,
+        "p50_ms": 27.91,
+        "min_ms": 14.56,
+        "max_ms": 29.83
+      },
+      "speedup": 2.87
+    },
+    "100": {
+      "production_sqlite": {
+        "reps": 9,
+        "p50_ms": 159.36,
+        "min_ms": 156.55,
+        "max_ms": 162.67
+      },
+      "flat_block_file": {
+        "reps": 9,
+        "p50_ms": 55.22,
+        "min_ms": 27.12,
+        "max_ms": 58.34
+      },
+      "speedup": 2.89
+    }
+  }
+}

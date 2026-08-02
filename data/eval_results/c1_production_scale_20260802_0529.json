@@ -1,0 +1,126 @@
+{
+  "date_utc": "2026-08-02T05:28:42",
+  "meta_sqlite_bytes": 24908001280,
+  "sections_opened": 10,
+  "pool_ids": 20000,
+  "seed": 17,
+  "results": {
+    "100": {
+      "disjoint_reps": true,
+      "sqlite": {
+        "cache_0mb": {
+          "reps": 7,
+          "p50_ms": 38.68,
+          "mean_ms": 28.06,
+          "min_ms": 0.64,
+          "max_ms": 39.59
+        },
+        "cache_64mb": {
+          "reps": 7,
+          "p50_ms": 39.03,
+          "mean_ms": 28.87,
+          "min_ms": 0.62,
+          "max_ms": 44.47
+        },
+        "cache_1024mb": {
+          "reps": 7,
+          "p50_ms": 38.76,
+          "mean_ms": 27.96,
+          "min_ms": 0.58,
+          "max_ms": 39.51
+        }
+      },
+      "tantivy_fanout": {
+        "reps": 7,
+        "p50_ms": 336.27,
+        "mean_ms": 357.56,
+        "min_ms": 18.2,
+        "max_ms": 839.63
+      },
+      "coverage": {
+        "requested": 100,
+        "sqlite_found": 100,
+        "tantivy_found": 100
+      },
+      "tantivy_over_best_sqlite": 8.69
+    },
+    "500": {
+      "disjoint_reps": true,
+      "sqlite": {
+        "cache_0mb": {
+          "reps": 7,
+          "p50_ms": 203.43,
+          "mean_ms": 205.44,
+          "min_ms": 200.73,
+          "max_ms": 218.71
+        },
+        "cache_64mb": {
+          "reps": 7,
+          "p50_ms": 188.38,
+          "mean_ms": 137.07,
+          "min_ms": 1.25,
+          "max_ms": 195.84
+        },
+        "cache_1024mb": {
+          "reps": 7,
+          "p50_ms": 188.59,
+          "mean_ms": 136.02,
+          "min_ms": 1.2,
+          "max_ms": 194.51
+        }
+      },
+      "tantivy_fanout": {
+        "reps": 7,
+        "p50_ms": 743.88,
+        "mean_ms": 579.97,
+        "min_ms": 53.65,
+        "max_ms": 868.08
+      },
+      "coverage": {
+        "requested": 500,
+        "sqlite_found": 500,
+        "tantivy_found": 500
+      },
+      "tantivy_over_best_sqlite": 3.95
+    },
+    "1000": {
+      "disjoint_reps": true,
+      "sqlite": {
+        "cache_0mb": {
+          "reps": 7,
+          "p50_ms": 400.83,
+          "mean_ms": 401.66,
+          "min_ms": 389.43,
+          "max_ms": 412.44
+        },
+        "cache_64mb": {
+          "reps": 7,
+          "p50_ms": 338.98,
+          "mean_ms": 258.42,
+          "min_ms": 2.69,
+          "max_ms": 391.67
+        },
+        "cache_1024mb": {
+          "reps": 7,
+          "p50_ms": 339.32,
+          "mean_ms": 256.29,
+          "min_ms": 2.64,
+          "max_ms": 397.57
+        }
+      },
+      "tantivy_fanout": {
+        "reps": 7,
+        "p50_ms": 897.67,
+        "mean_ms": 690.56,
+        "min_ms": 88.96,
+        "max_ms": 967.22
+      },
+      "coverage": {
+        "requested": 1000,
+        "sqlite_found": 1000,
+        "tantivy_found": 1000
+      },
+      "tantivy_over_best_sqlite": 2.65
+    }
+  }
+}

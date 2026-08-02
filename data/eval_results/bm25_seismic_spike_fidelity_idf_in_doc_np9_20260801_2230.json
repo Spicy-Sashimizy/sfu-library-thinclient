@@ -1,0 +1,2813 @@
+{
+  "meta": {
+    "date_utc": "2026-08-01T22:30:01",
+    "variant": "idf_in_doc",
+    "index_tag": "_np9",
+    "corpus_docs": 207973,
+    "corpus_source": "social_sciences__recent (spike subset, block-sequential)",
+    "n_queries": 120,
+    "top_k": 10,
+    "deep_k": 100,
+    "query_cut": 10,
+    "heap_factor": 0.8,
+    "seismic": {
+      "len": 207973,
+      "dim": 710047,
+      "nnz": 26127568,
+      "load_seconds": 14.1,
+      "load_rss_delta_gb": 0.86
+    },
+    "peak_rss_gb": 2.438,
+    "reference": "SPLADE through this engine measures overlap@10 = 0.479 vs exact (06_FINDINGS.md G2, 2026-06-27)"
+  },
+  "scores": {
+    "overlap@10_seismic_vs_exact": 0.3942,
+    "overlap@10_tantivy_vs_exact": 0.9908,
+    "overlap@10_seismic_vs_tantivy": 0.3967,
+    "recall_exact_top10_in_seismic_top100": 0.3942,
+    "ndcg@10_vs_exact_seismic": 0.8748,
+    "ndcg@10_vs_exact_tantivy": 0.9997,
+    "top1_match_seismic": 0.6,
+    "top1_match_tantivy": 0.975,
+    "empty_result_queries_seismic": 0
+  },
+  "latency_ms": {
+    "exact_vec": {
+      "p50": 0.83,
+      "p95": 1.71,
+      "mean": 0.96
+    },
+    "seismic": {
+      "p50": 0.24,
+      "p95": 0.31,
+      "mean": 0.26
+    },
+    "tantivy": {
+      "p50": 2.45,
+      "p95": 14.52,
+      "mean": 6.39
+    }
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.9,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.9
+      },
+      "recall_exact_top10_in_seismic_top100": 0.9,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9885742525919752,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8176767771985595,
+        "tantivy": 0.9993537020077208
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": false
+      }
+    },
+    {
+      "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8356327188997406,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.8,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.8,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9746549842675633,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "housing affordability crisis Metro Vancouver rental market",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9665499000528012,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Canadian immigration settlement services multicultural policy",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8398457001204441,
+        "tantivy": 0.9999943175125338
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "BC provincial politics electoral reform referendum",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 77,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9172273996140976,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Chinese Canadian discrimination exclusion act immigration history",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8857085959115811,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "restorative justice alternatives incarceration recidivism reduction",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9894552929518006,
+        "tantivy": 0.9999993464029248
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "police use of force racial profiling Black Indigenous communities Canada",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8726526972595627,
+        "tantivy": 0.9999959845461883
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "cybercrime financial fraud digital forensics investigation",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 77,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.9,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.9
+      },
+      "recall_exact_top10_in_seismic_top100": 0.9,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9887596570627895,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "prison population mental health services rehabilitation programs",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8148136052737857,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "interactive media experience design user engagement game mechanics",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8098822309511057,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "virtual reality augmented reality immersive learning environments",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 69,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8725753674060417,
+        "tantivy": 0.9999866482845088
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "computational art generative algorithms creative machine learning",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8926312675441065,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "human computer interaction accessibility inclusive design",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7414630463834035,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "biomedical physiology exercise rehabilitation muscle physiology",
+      "n_query_components": 5,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 65,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8470272051160289,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "kinesiology sport performance motor learning biomechanics",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 75,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8803341958603489,
+        "tantivy": 0.9999699463310737
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "cardiovascular disease exercise intervention prevention outcomes",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8518893757105004,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "ESG sustainable investing responsible finance portfolio performance",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8752584587836251,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Canadian banking regulation financial stability macroprudential policy",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9226137234512268,
+        "tantivy": 0.9999402618077132
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "venture capital startup ecosystem innovation funding",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8870973186547773,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "salmon aquaculture disease management Pacific Northwest fisheries",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9026318688641013,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "wildfire management prescribed burning Indigenous traditional ecological knowledge",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8263130671790088,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "old growth forest conservation biodiversity British Columbia",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9095955426738582,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Northern Gateway pipeline environmental assessment First Nations opposition",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9089754394367419,
+        "tantivy": 0.9998524529118155
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "opioid crisis fentanyl overdose harm reduction policy Canada",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9556031641841369,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Indigenous health disparities social determinants healthcare access",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8050058402693646,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "long COVID post-acute sequelae epidemiology treatment",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8732883965260694,
+        "tantivy": 0.9999687530056192
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "political risk country ratings international investment data",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8138159863001929,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "media framing political polarization social media misinformation",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9128050497722912,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "income inequality poverty measurement Gini coefficient Canada",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9808183464605734,
+        "tantivy": 0.9999171472080634
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "digital humanities text mining archival primary sources",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8764927287060843,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "feminist theory gender studies intersectionality labour",
+      "n_query_components": 6,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 78,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9396526686432611,
+        "tantivy": 0.9999993718944327
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "machine learning public health disease surveillance prediction",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.5163562174537593,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "deep learning convolutional neural networks image recognition benchmark",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.924466668425833,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "distributed systems Byzantine fault tolerance consensus algorithm",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7893015799065068,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "privacy preserving federated learning differential privacy data sharing",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8814730329806255,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "seismic engineering earthquake retrofitting structural resilience buildings",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9013372065209453,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "life cycle assessment carbon footprint sustainable manufacturing materials",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9326969006076988,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "robotic manipulation control algorithms real-time embedded systems",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8395053594034433,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "MEMS microelectromechanical sensor actuator fabrication biomedical device",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 83,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.9,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.9
+      },
+      "recall_exact_top10_in_seismic_top100": 0.9,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9992725343161287,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "formative assessment feedback learning outcomes student achievement",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 89,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9827558577156017,
+        "tantivy": 0.9999981492065891
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "decolonizing curriculum Indigenous education land-based pedagogy reconciliation",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9153695477334808,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "educational technology blended learning student engagement STEM",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9160997431418373,
+        "tantivy": 0.9999766742554642
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "cognitive behavioural therapy depression anxiety randomized controlled trial",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8320571741864734,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "attachment theory infant caregiving early childhood development",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 88,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9072707504254364,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "traumatic brain injury executive function cognitive rehabilitation neuropsychology",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7636707642704252,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "income stratification class reproduction social mobility intergenerational",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9334180248849169,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "systemic racism labour market discrimination racialized minorities Canada",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.870450121220125,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "bioethics organ allocation transplant consent scarce medical resources",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9495937922405107,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "climate justice intergenerational ethics obligations future generations",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9595088819656153,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "graph algorithms combinatorial optimization network flow complexity theory",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8493832309267109,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "differential equations mathematical epidemiology SIR compartmental model",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 86,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9300901340879966,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "quantum computing qubit decoherence error correction fault tolerant",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 1.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 1.0
+      },
+      "recall_exact_top10_in_seismic_top100": 1.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 1.0,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "dark matter direct detection underground laboratory particle physics",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9391910562353781,
+        "tantivy": 0.9999440401458015
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "green chemistry catalysis sustainable synthesis solvent-free organic",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9638367745802205,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "atmospheric chemistry particulate matter aerosol air quality urban",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.950646963326448,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "supply chain disruption resilience post-pandemic operations management",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 98,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8737755988584319,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "diversity equity inclusion organizational culture firm performance",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7695548478217211,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "precarious employment gig economy platform workers labour rights Canada",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8813540008512091,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "trade union organizing collective bargaining public sector British Columbia",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8525400458790094,
+        "tantivy": 0.9999660460411766
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "endangered language documentation revitalization BC First Nations linguistic",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8517058991184043,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "second language acquisition bilingual education French immersion Canada",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9678273953440679,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "postcolonial literature diaspora identity South Asian Canadian authors",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8450058526504682,
+        "tantivy": 0.9999994449774324
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "speculative fiction climate fiction dystopia contemporary novel ecocriticism",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9467483561828723,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Canadian documentary film Indigenous representation National Film Board NFB",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 92,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 0.8,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.958885844180584,
+        "tantivy": 0.9645637615808347
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": false
+      }
+    },
+    {
+      "query": "streaming platform recommendation algorithm content diversity audience",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8553344370356617,
+        "tantivy": 0.9999290124416222
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "urban heat island green infrastructure cooling adaptation city planning",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.5610486123574472,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "GIS remote sensing land use change deforestation spatial analysis",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7138649514462068,
+        "tantivy": 0.9999831131467891
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "dementia aging in place community home care support services",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.474402705362353,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "elder abuse neglect residential care policy prevention intervention",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 1.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 1.0
+      },
+      "recall_exact_top10_in_seismic_top100": 1.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 1.0,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "zooarchaeology faunal assemblage subsistence strategies Pacific Northwest Coast",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 97,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9800547116868693,
+        "tantivy": 0.9997065554982086
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "medical anthropology traditional healing Indigenous medicine health systems integration",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8180548954051046,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Northwest Coast archaeology maritime adaptation coastal village sites BC",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9038908875406836,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "lithic analysis stone tool technology reduction sequence prehistoric BC",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9785345298084359,
+        "tantivy": 0.9999955269581972
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Paris Agreement climate pledges NDC implementation effectiveness multilateral",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8146774592755004,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "transitional justice truth commission accountability human rights violations",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7826010854296604,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "extractivism Indigenous land rights resistance Amazon deforestation Brazil",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8653556346579951,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Central American migration displacement gang violence asylum United States",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.721383681831556,
+        "tantivy": 0.9999938376430068
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "transit-oriented development affordable housing zoning gentrification displacement",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 1.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 1.0
+      },
+      "recall_exact_top10_in_seismic_top100": 1.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 1.0,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "smart city surveillance public space data governance privacy rights",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8134929298230097,
+        "tantivy": 0.9999784067681441
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Aboriginal title Crown duty to consult section 35 Canadian Constitution",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9050437773340559,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "privacy law data protection algorithmic accountability digital rights Canada",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7884245881426996,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "CRISPR gene editing off-target effects therapeutic clinical applications",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.8,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.8,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9647171155977593,
+        "tantivy": 0.9998155759771701
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "protein structure prediction AlphaFold machine learning drug discovery",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 93,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8454410542571863,
+        "tantivy": 0.9999973600986535
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "music therapy neurological rehabilitation stroke dementia cognitive outcomes",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 0.9,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.955827785885725,
+        "tantivy": 0.9999353116261386
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "ethnomusicology Indigenous music ceremony oral tradition cultural preservation",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8537601386283639,
+        "tantivy": 0.999932754619413
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "BC carbon tax revenue recycling emissions reduction policy effectiveness",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9265522838792586,
+        "tantivy": 0.9999966035072715
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "guaranteed basic income pilot program poverty reduction social policy Canada",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9600732857828689,
+        "tantivy": 0.9999979175584536
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "pandemic preparedness One Health zoonotic disease surveillance early warning",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9541023960928791,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "antimicrobial resistance stewardship programs low-income countries global",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8505496072932744,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "offshore wind energy tidal current turbine resource assessment British Columbia",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9726301974026106,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "green hydrogen electrolysis storage infrastructure decarbonization fuel cell",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9106130272108476,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "authoritarian populism democratic backsliding electoral manipulation institutions",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 90,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9055668105867721,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Indigenous sovereignty self-determination governance First Nations Canada constitution",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8915106280379397,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "disinformation coordinated inauthentic behaviour platform governance content moderation",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8603107647274828,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "COVID-19 vaccine hesitancy health communication risk perception public trust",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9628012900748925,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "behavioural economics nudge theory choice architecture policy welfare",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.6,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.6
+      },
+      "recall_exact_top10_in_seismic_top100": 0.6,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.929692757551834,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "natural resource economy Dutch disease commodity prices fiscal policy BC",
+      "n_query_components": 10,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8833485744243162,
+        "tantivy": 0.9999679250591633
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": false
+      }
+    },
+    {
+      "query": "Cold War Canada NATO nuclear deterrence foreign policy diplomacy",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9852338161624224,
+        "tantivy": 0.9999997638533478
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Japanese Canadian internment wartime evacuation redress compensation 1942",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9578191704167369,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "reproductive rights abortion access policy provinces Canada legal",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.5916600408380931,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "mental health primary care integration collaborative care stepped model",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7598067935093002,
+        "tantivy": 0.9999912012987822
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "corporate tax avoidance profit shifting transfer pricing international regulation",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.8,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.8,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9458105754500655,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "ESG sustainability reporting corporate disclosure accountability audit",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7734898560923187,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Bayesian methods clinical trial design adaptive randomization inference",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9249297752171654,
+        "tantivy": 0.9999680651552114
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "longevity risk mortality modelling actuarial pension insurance annuity",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9745877486758746,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "contemporary Indigenous art land sovereignty installation decolonial gallery",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.7,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.7
+      },
+      "recall_exact_top10_in_seismic_top100": 0.7,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9718597204037259,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "digital art interactive installation immersive media generative algorithm",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8947054997781637,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "applied theatre community-based performance social change participatory",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.4,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.4
+      },
+      "recall_exact_top10_in_seismic_top100": 0.4,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8874595608967789,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Indigenous Canadian theatre playwrights performance First Nations Metis",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.5,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.5
+      },
+      "recall_exact_top10_in_seismic_top100": 0.5,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.9360525486976765,
+        "tantivy": 0.9999503591187126
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "open access scholarly publishing academic journals business models APC",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8669503025549335,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "Canadian book publishing diversity representation equity literature industry",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.3,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.3
+      },
+      "recall_exact_top10_in_seismic_top100": 0.3,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8683535645312768,
+        "tantivy": 0.9999832646417846
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "community energy planning local renewable transition decarbonization neighbourhood",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.0,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.0
+      },
+      "recall_exact_top10_in_seismic_top100": 0.0,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.8171735266117137,
+        "tantivy": 1.0
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "urban food security community garden land access food sovereignty",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7092543574420075,
+        "tantivy": 0.9999862477528799
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "management innovation entrepreneurship ecosystem startup incubator university",
+      "n_query_components": 7,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.7470292428186491,
+        "tantivy": 0.9999981813770156
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "forensic DNA evidence wrongful conviction innocence project criminal justice",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.8,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.8
+      },
+      "recall_exact_top10_in_seismic_top100": 0.8,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.98591547683439,
+        "tantivy": 0.9999701448998884
+      },
+      "top1_match": {
+        "seismic": true,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "aging sarcopenia muscle loss resistance exercise intervention older adults",
+      "n_query_components": 9,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 100,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.2,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.2
+      },
+      "recall_exact_top10_in_seismic_top100": 0.2,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.809103626907921,
+        "tantivy": 0.9999957995100778
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    },
+    {
+      "query": "knowledge management organizational learning communities of practice firm",
+      "n_query_components": 8,
+      "hits": {
+        "exact_vec": 100,
+        "seismic": 91,
+        "tantivy": 100
+      },
+      "overlap@10": {
+        "seismic_vs_exact": 0.1,
+        "tantivy_vs_exact": 1.0,
+        "seismic_vs_tantivy": 0.1
+      },
+      "recall_exact_top10_in_seismic_top100": 0.1,
+      "ndcg@10_vs_exact": {
+        "seismic": 0.39770822008455575,
+        "tantivy": 0.9999992157053058
+      },
+      "top1_match": {
+        "seismic": false,
+        "tantivy": true
+      }
+    }
+  ]
+}

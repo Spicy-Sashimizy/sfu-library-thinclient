@@ -1,0 +1,156 @@
+{
+  "date_utc": "2026-08-02T05:59:22",
+  "section": "social_sciences__recent",
+  "abstracts_bytes": 13470433280,
+  "pool_ids": 30000,
+  "seed": 17,
+  "results": {
+    "10": {
+      "sqlite_locator": {
+        "reps": 9,
+        "p50_ms": 1.33,
+        "mean_ms": 1.35,
+        "min_ms": 1.25,
+        "max_ms": 1.54
+      },
+      "sqlite_blocks": {
+        "reps": 9,
+        "p50_ms": 12.84,
+        "mean_ms": 12.95,
+        "min_ms": 12.45,
+        "max_ms": 13.6
+      },
+      "decompress": {
+        "reps": 9,
+        "p50_ms": 0.8,
+        "mean_ms": 0.79,
+        "min_ms": 0.62,
+        "max_ms": 0.95
+      },
+      "full_fetch": {
+        "reps": 9,
+        "p50_ms": 14.53,
+        "mean_ms": 14.66,
+        "min_ms": 14.34,
+        "max_ms": 15.12
+      },
+      "tantivy_locator": {
+        "reps": 9,
+        "p50_ms": 71.36,
+        "mean_ms": 67.51,
+        "min_ms": 0.65,
+        "max_ms": 119.15
+      },
+      "locator_share_of_full_pct": 9.2,
+      "tantivy_over_sqlite_locator": 53.65,
+      "distinct_blocks_touched": 10,
+      "flatfile_over_sqlite_blocks": 0.258
+    },
+    "50": {
+      "sqlite_locator": {
+        "reps": 9,
+        "p50_ms": 1.48,
+        "mean_ms": 1.51,
+        "min_ms": 1.42,
+        "max_ms": 1.63
+      },
+      "sqlite_blocks": {
+        "reps": 9,
+        "p50_ms": 64.52,
+        "mean_ms": 65.99,
+        "min_ms": 63.9,
+        "max_ms": 71.72
+      },
+      "decompress": {
+        "reps": 9,
+        "p50_ms": 2.42,
+        "mean_ms": 2.5,
+        "min_ms": 2.29,
+        "max_ms": 2.85
+      },
+      "full_fetch": {
+        "reps": 9,
+        "p50_ms": 69.45,
+        "mean_ms": 71.64,
+        "min_ms": 68.2,
+        "max_ms": 82.59
+      },
+      "tantivy_locator": {
+        "reps": 9,
+        "p50_ms": 64.93,
+        "mean_ms": 51.25,
+        "min_ms": 1.62,
+        "max_ms": 90.64
+      },
+      "locator_share_of_full_pct": 2.1,
+      "tantivy_over_sqlite_locator": 43.87,
+      "distinct_blocks_touched": 50,
+      "flatfile_over_sqlite_blocks": 0.26
+    },
+    "100": {
+      "sqlite_locator": {
+        "reps": 9,
+        "p50_ms": 1.75,
+        "mean_ms": 1.71,
+        "min_ms": 1.55,
+        "max_ms": 1.86
+      },
+      "sqlite_blocks": {
+        "reps": 9,
+        "p50_ms": 129.41,
+        "mean_ms": 131.34,
+        "min_ms": 127.73,
+        "max_ms": 138.57
+      },
+      "decompress": {
+        "reps": 9,
+        "p50_ms": 5.07,
+        "mean_ms": 5.13,
+        "min_ms": 4.64,
+        "max_ms": 5.86
+      },
+      "full_fetch": {
+        "reps": 9,
+        "p50_ms": 136.86,
+        "mean_ms": 136.82,
+        "min_ms": 135.42,
+        "max_ms": 138.3
+      },
+      "tantivy_locator": {
+        "reps": 9,
+        "p50_ms": 46.72,
+        "mean_ms": 38.84,
+        "min_ms": 2.85,
+        "max_ms": 58.18
+      },
+      "locator_share_of_full_pct": 1.3,
+      "tantivy_over_sqlite_locator": 26.7,
+      "distinct_blocks_touched": 100,
+      "flatfile_over_sqlite_blocks": 0.262
+    }
+  },
+  "flatfile_probe": {
+    "chunk_bytes": 10472,
+    "file_bytes": 13470433280,
+    "sizes": {
+      "10": {
+        "p50_ms": 3.31,
+        "per_block_ms": 0.331,
+        "min_ms": 3.05,
+        "max_ms": 3.62
+      },
+      "50": {
+        "p50_ms": 16.76,
+        "per_block_ms": 0.335,
+        "min_ms": 16.28,
+        "max_ms": 18.13
+      },
+      "100": {
+        "p50_ms": 33.94,
+        "per_block_ms": 0.339,
+        "min_ms": 33.03,
+        "max_ms": 34.52
+      }
+    }
+  }
+}

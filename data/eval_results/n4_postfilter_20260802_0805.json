@@ -1,0 +1,93 @@
+{
+  "date_utc": "2026-08-02T08:04:49",
+  "ordinal_docs_covered": 25000000,
+  "note": "candidate ids drawn from the ordinal-covered id range",
+  "filters": {
+    "year_only": {
+      "year_range": [
+        2010,
+        2025
+      ]
+    },
+    "year_type": {
+      "year_range": [
+        2010,
+        2025
+      ],
+      "type": "article"
+    },
+    "year_type_oa": {
+      "year_range": [
+        2010,
+        2025
+      ],
+      "type": "article",
+      "is_oa": 1
+    }
+  },
+  "gate": {
+    "year_only": {
+      "trials": 120,
+      "mismatches": 0,
+      "pass": true
+    },
+    "year_type": {
+      "trials": 120,
+      "mismatches": 0,
+      "pass": true
+    },
+    "year_type_oa": {
+      "trials": 120,
+      "mismatches": 0,
+      "pass": true
+    }
+  },
+  "bench": {
+    "100": {
+      "production_sqlite": {
+        "reps": 7,
+        "p50_ms": 21.432,
+        "min_ms": 0.784,
+        "max_ms": 22.2
+      },
+      "ordinal": {
+        "reps": 7,
+        "p50_ms": 0.179,
+        "min_ms": 0.093,
+        "max_ms": 0.249
+      },
+      "speedup": 119.7
+    },
+    "500": {
+      "production_sqlite": {
+        "reps": 7,
+        "p50_ms": 101.379,
+        "min_ms": 2.018,
+        "max_ms": 117.884
+      },
+      "ordinal": {
+        "reps": 7,
+        "p50_ms": 0.603,
+        "min_ms": 0.528,
+        "max_ms": 0.679
+      },
+      "speedup": 168.1
+    },
+    "1000": {
+      "production_sqlite": {
+        "reps": 7,
+        "p50_ms": 214.142,
+        "min_ms": 4.626,
+        "max_ms": 262.166
+      },
+      "ordinal": {
+        "reps": 7,
+        "p50_ms": 1.013,
+        "min_ms": 0.833,
+        "max_ms": 1.29
+      },
+      "speedup": 211.4
+    }
+  },
+  "gate_overall_pass": true
+}

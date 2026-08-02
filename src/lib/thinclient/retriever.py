@@ -336,6 +336,7 @@ class ThinClientRetriever:
         self._qdrant_client = None   # lazy, only when backend=qdrant
         self._bert_vocab = None      # token->id map shared with the ingest
         self._seismic = None         # lazy, only when backend=seismic (testbed/served-federated)
+        self._ordinals = None        # ordinal space, only when SFU_THINCLIENT_ORDINALS is set
 
     # ── lazy loading ────────────────────────────────────────────────────────
 
@@ -435,10 +436,20 @@ class ThinClientRetriever:
                 except Exception as exc:
                     logger.warning("dense warm cache unavailable: %s", exc)
                     self._dense_cache = None
+            # Ordinal addressing (SFU_THINCLIENT_ORDINALS, default OFF). Raises
+            # rather than falling back if it is configured and unusable: the
+            # arrays only address the index they were built from, and quietly
+            # serving SQLite after being told to serve ordinals would make a
+            # misconfiguration look like a performance regression. See
+            # lib/thinclient/ordinals.py and doc 18 §6 risk 1.
+            from lib.thinclient.ordinals import load_if_enabled
+            self._ordinals = load_if_enabled(self.root, self._manifest())
+
             self._loaded = True
-            logger.info("thinclient: loaded %d live sections %s, dense=%s",
-                        len(self._sections), sorted(self._sections),
-                        bool(self._dense))
+            logger.info("thinclient: loaded %d live sections %s, dense=%s, "
+                        "ordinals=%s", len(self._sections),
+                        sorted(self._sections), bool(self._dense),
+                        self._ordinals.space_id if self._ordinals else False)
 
     # ── public surface (OpenSearchRetriever-compatible) ─────────────────────
 
@@ -1027,6 +1038,33 @@ class ThinClientRetriever:
 
     def _post_filter(self, ranked: list[tuple[str, float]],
                      f: dict) -> list[tuple[str, float]]:
+        """Drop candidates failing the filter, preserving the legs' rank order.
+
+        This is the stage ordinal addressing replaces. At 1000 candidates the
+        SQLite path costs ~400 ms because a W-id is a *sparse* key and
+        resolving one is a search; the ordinal path is a binary search plus a
+        vectorised mask over mmap'd columns, measured at ~1 ms (doc 18 §4.1,
+        §11 — 120-211x on this stage, byte-parity PASS on 360 trials).
+
+        Note only the SPLADE and dense legs reach here: `_bm25f_leg` pushes
+        filters into tantivy as boolean clauses instead.
+        """
+        if self._ordinals is not None:
+            kept, unresolved = self._ordinals.post_filter(ranked, f)
+            if not unresolved:
+                return kept
+            # Docs with no build-time ordinal — warm-cache growth (doc 18 §6
+            # risk 3) and anything else outside the build. They MUST go through
+            # the SQLite path: dropping them here would silently lose exactly
+            # the documents the warm cache exists to surface. Re-walking
+            # `ranked` keeps the merged result in the legs' rank order.
+            survivors = {d for d, _ in kept}
+            survivors |= {d for d, _ in self._post_filter_sqlite(unresolved, f)}
+            return [r for r in ranked if r[0] in survivors]
+        return self._post_filter_sqlite(ranked, f)
+
+    def _post_filter_sqlite(self, ranked: list[tuple[str, float]],
+                            f: dict) -> list[tuple[str, float]]:
         rows = self._meta_rows([d for d, _ in ranked])
         keep = []
         for did, score in ranked:
