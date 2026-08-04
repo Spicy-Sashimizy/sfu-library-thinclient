@@ -330,6 +330,13 @@ byte-identical to `AbstractStore.fetch`. Same id set, zero mismatches.
 | 50 | 80.06 ms | 27.91 ms | 2.87× |
 | 100 | 159.36 ms | 55.22 ms | **2.89×** |
 
+> **QUALIFIED 2026-08-03 by §16: the 2.89× is a 9p number and does not transfer
+> to production.** Both sides of this comparison were on 9p (`work_n5` is on the
+> passthrough mount), so it is like-for-like and not the §14 error — but with
+> both sides on **local disk**, the identical payload move measures **1.21×**.
+> §16 also shows the locator this section deliberately left in SQLite is worth a
+> further **4.55×**, i.e. §9 optimised the smaller half.
+>
 > **CORRECTION 2026-08-02 (audit): N5 is a latency lever, NOT a space lever.**
 > §7 above described N5 as worth "~3.4× on abstract hydration and ~2.2 GB". The
 > 2.2 GB is doc 17 §11's *computed* ceiling (flagged there as "computed, not
@@ -396,6 +403,15 @@ this time, but caught by a question rather than by discipline.
 ---
 
 ## 11. N3 + N4 EXECUTED (2026-08-02): parity PASS, **120–211× on the filter stage**
+
+> **RE-ATTRIBUTED 2026-08-03 by §14 — the multiple is real, its CAUSE is not
+> what this section says.** The 120–211× was measured against a `meta.sqlite`
+> sitting on **9p**. §14's control staged that same file to local disk with no
+> code change and the filter stage went 222.2 → **4.0 ms** on its own. Ordinals
+> then take it 4.0 → 1.5 ms: a further 2.7×, worth **2.5 ms (2.0%)** of the
+> query, which is *inside* §14's ±4% noise floor. Read every multiple below as
+> "ordinals vs SQLite-on-9p", not "ordinals vs SQLite". The parity results and
+> the build numbers are unaffected.
 
 ### N3 — ordinal artifacts built from the real `meta.sqlite`
 
@@ -482,7 +498,9 @@ should ship before it exists.
 - Code: `src/lib/thinclient/ordinals.py` — `OrdinalSpace`, `write_stamp`,
   `load_if_enabled`. **Read by nothing yet**: no serving path imports it, and
   it is inert unless `SFU_THINCLIENT_ORDINALS` names a directory.
-- Tests: `scripts/tests/test_ordinals_guard.py` — **12/12 pass 2026-08-02**.
+- Tests: `scripts/tests/test_ordinals_guard.py` — 12/12 pass 2026-08-02; the
+  suite has since grown to **21/21 pass 2026-08-03** (`pytest -q`; the file is
+  pytest-style and running it directly is a silent no-op that exits 0).
 
 **Mechanism.** The build mints a uuid4 `ordinal_space_id` into
 `ordinal_space.json` beside the arrays; the index `manifest.json` must carry the
@@ -540,6 +558,17 @@ unlike the latency extrapolations that were wrong by up to 96×.
 ---
 
 ## 13. N6 EXECUTED (2026-08-02): **whole-query 3.20× at production's default top_k**
+
+> **RE-ATTRIBUTED 2026-08-03 by §14 — this section's headline is a FILESYSTEM
+> result, not an addressing result.** N6 staged the ordinal arrays to overlay
+> (correctly — see "Residency" below) but left the production arm's
+> `meta.sqlite` on **9p**, so its two arms differed in *two* ways at once and
+> the 3.20× could not be attributed. §14's 2×2 control does attribute it:
+> staging `meta.sqlite` alone, **with no ordinals and no code change**, gets
+> 2.83× — statistically the same as the ordinal arm's 2.72×, and adding
+> ordinals on top of staging gets nothing further. The measurements below are
+> sound; the causal claim is not. **Do not quote 3.20× as the value of ordinal
+> addressing.**
 
 §11's "not settled #1", the number that decides whether any of this ships.
 
@@ -642,3 +671,772 @@ the 14-minute `SELECT count(*)` full scan. An under-estimating `--rows` is
 **refused**, not silently truncated: the old `i >= n_rows` break would have
 emitted a partial ordinal space, and a missing tail is invisible at query time
 (those ids simply fail the `found` check).
+
+---
+
+## 14. N7 EXECUTED (2026-08-03): the 3.20× was the FILESYSTEM, not the addressing
+
+- Code: `spike/meta_consolidation/12_n7_fs_control.py`
+- Results: `data/eval_results/n7_fs_control_20260803_0548.json`
+
+### The flaw in N6 that this section exists to correct
+
+§13 established residency as a precondition and staged the ordinal arrays to
+`/var/tmp` (overlay). It did **not** stage `meta.sqlite`, which lives at
+`data/thinclient_index/meta.sqlite` — **9p** in this container (`df -T`,
+2026-08-03). So N6's two arms differed in two ways simultaneously:
+
+| N6 arm | filter addressing | `meta.sqlite` filesystem |
+|---|---|---|
+| production | SQLite B-tree | **9p** (~0.5 ms/fault, page cache does not hold) |
+| ordinal | mmap'd columns | (overlay, for the arrays) |
+
+A two-variable experiment cannot attribute its result to one variable. §13's
+own method section demands a negative control for exactly this reason and then
+did not apply it to the filesystem. **The 3.20× was an upper bound on the
+addressing win, and the split had never been measured.**
+
+### The control: a 2×2 factorial over the two levers
+
+Four arms on the real `ThinClientRetriever.search()`, interleaved within each
+rep with order randomised per rep, every arm warmed (N6 warmed only production,
+which mildly favours the SQLite arms). `_meta` is swapped by rebinding
+`retriever._meta` to a second `sqlite3.connect` on a byte copy of the file,
+opened exactly as `retriever.py:414` opens the original; the staged copy's row
+count and schema are asserted equal before any timing. 12 queries × 3 reps,
+n=36 per arm per case, `SFU_DENSE_WARMCACHE=0`, SEISMIC staged.
+
+**Whole-query p50 (ms), `year_range=(2010,2025) + type=article`:**
+
+| case | `prod_9p` | `sqlite_staged` | `ordinal_9p` | `ordinal_staged` |
+|---|---|---|---|---|
+| **splade k=50** | **332.3** | **117.3 (2.83×)** | **122.3 (2.72×)** | **125.6 (2.65×)** |
+| **splade k=100** | **684.5** | **257.1 (2.66×)** | **248.4 (2.76×)** | **258.6 (2.65×)** |
+| bm25f k=50 *(control)* | 524.7 | 528.0 (0.99×) | 546.3 (0.96×) | 525.4 (1.00×) |
+| bm25f k=100 *(control)* | 527.4 | 509.2 (1.04×) | 534.1 (0.99×) | 527.5 (1.00×) |
+
+**PARITY PASS: 4/4 cases, 0 mismatches** — all four arms returned identical
+`(id, score)` lists, so the arms are comparable and the swap is sound.
+
+**Noise floor ±4%** (bm25f spans 0.96–1.04×), tighter than §13's 1.09× because
+every arm is warmed here. The SPLADE effects clear it by ~65×.
+
+### Where the time actually goes — the number that settles it
+
+**Stage profile, splade k=50, mean ms per query:**
+
+| arm | `_post_filter` | `hydrate_meta` | `fetch_abstracts` | other | total |
+|---|---|---|---|---|---|
+| `prod_9p` | **222.2** | 15.0 | 24.3 | 124.5 | 385.9 |
+| `sqlite_staged` | **4.0** | 0.3 | 20.5 | 102.5 | 127.4 |
+| `ordinal_9p` | **1.5** | 7.5 | 19.9 | 101.3 | 130.2 |
+| `ordinal_staged` | **1.5** | 0.4 | 19.9 | 102.5 | 124.3 |
+
+**Copying a file cut the filter stage 222.2 → 4.0 ms — 55×, no code change.**
+Ordinals then take 4.0 → 1.5 ms: a further 2.7× on the stage, but worth
+**2.5 ms on a 127.4 ms query = 2.0%**, which is inside the ±4% noise floor and
+therefore **not claimable**. Whole-query, `sqlite_staged` (117.3 ms) is
+nominally *faster* than `ordinal_staged` (125.6 ms); the marginal effect of
+ordinals is not resolvable at this sample size.
+
+### The two levers are redundant, not additive
+
+Each alone gets ~2.7×; both together get nothing more. The mechanism is
+consistent: `_post_filter` resolves ~500 candidates against a 24.9 GB B-tree,
+which on 9p is thousands of ~0.5 ms faults. Ordinals remove the faults by
+shrinking the filter's working set to 1.96 GB of mmap'd arrays; staging removes
+them by making the faults cheap. Either clears the bottleneck, so the remaining
+~250 ms is the SEISMIC leg + SPLADE encode, which neither lever touches.
+`ordinal_9p` staying fast while its `_hydrate` still reads 9p fits the same
+mechanism — hydrate touches only `top_k` ids, not the 10× over-fetched
+candidate set.
+
+### What this does to the case for ordinal addressing
+
+**Ordinals are a RESIDENCY lever, not a latency lever and not a disk-space
+lever.** The first draft of this section called them a space lever; that was
+wrong and is corrected here the same day. **Ordinals do not let you delete
+`meta.sqlite`** — `_hydrate` still reads title/DOI/section from it
+(`retriever.py:1014`) and §13 rejected extending ordinals to hydrate, so the
+1.96 GB is **additive to** the 24.9 GB, not a replacement. Nothing about disk
+footprint improves; it gets 1.96 GB worse.
+
+What actually shrinks is the **page-cache working set the filter stage
+touches** — 1.96 GB of mmap'd columns instead of random descent through a
+24.9 GB B-tree. That is §4.2's original "residency is the mechanism" claim and
+§12's 1.95 GB figure, and it is the only surviving case for this module:
+
+| | stage/site `meta.sqlite` locally | ordinal addressing |
+|---|---|---|
+| filter-stage resident set | ~24.9 GB B-tree, randomly descended | **1.96 GB**, additive |
+| total disk | 24.9 GB | 24.9 GB **+ 1.96 GB** |
+| whole-query k=50 | 117.3 ms | 125.6 ms |
+| filter stage | 4.0 ms | 1.5 ms |
+| build cost | none | 25.4 min, rebuilt every index build |
+| serving code | none | `ordinals.py` + `_post_filter` branch |
+| failure mode | none new | stale ordinals return the WRONG doc silently (§6 risk 1) |
+| operator ceremony | none | stamp `ordinal_space_id` into `manifest.json` |
+
+So the decision rule is **RAM**, not speed and not disk: on a host with enough
+page cache to hold the hot part of the B-tree, ordinals are worth ~2% and
+should not ship. On a RAM-constrained host they may hold their 1.5 ms while
+staged SQLite degrades toward the 9p numbers. **That degradation has not been
+measured** — see "Not settled" #5, which is now the only experiment that could
+justify this module.
+
+**By this investigation's own standing bar, ordinals-over-staging does not
+clear it.** §7 N2's MPHF (~2%), §11's C3 locator (1.3%) and §13's `_hydrate`
+(4.1%) were all rejected as off-critical-path. Ordinals-over-staging is 2.0%,
+and unlike those it also ships a silent-wrong-answer failure mode.
+
+### Not settled by this section
+
+1. **The staging plumbing does not exist.** `SFU_SEISMIC_STAGE_DIR` /
+   `_stage_shards_local` (`retriever.py:112`) stages SEISMIC shards only; there
+   is no `meta.sqlite` equivalent. N7 measured the lever by swapping the
+   connection, which is what such a path would do, but **the production code to
+   stage `meta.sqlite` is UNBUILT** — this is a measured lever, not a shipped
+   one.
+2. **Both copies were resident in one process.** Holding a 9p and an overlay
+   copy of a 24.9 GB file against 56 GB RAM doubles the meta working set, so
+   both arms saw more cache pressure than a single-copy deployment would.
+   Interleaving is still correct — the two files are distinct, so cross-arm
+   fault reuse on `meta.sqlite` is impossible by construction, while the shared
+   SEISMIC/tantivy/ordinal resources still need it.
+3. **`prod_9p` HAS NO ANALOGUE IN PRODUCTION, so the realisable win is 2.0%,
+   not 2.83×.** `THIN_CLIENT_SWAP.md` (2026-07-18, lines 251-254) already
+   settles this for the SEISMIC shards and the same reasoning applies to
+   `meta.sqlite`: on a DO droplet the index sits on local block storage, "cold
+   faults are already native-fast and page cache holds; the 9p wall is a
+   WSL2-dev-container artifact that does not exist off 9p." Production's real
+   baseline is therefore the `sqlite_staged` arm — `_post_filter` ≈ 4.0 ms —
+   and everything ordinals can still win on the target is **4.0 → 1.5 ms**.
+   Building a `meta.sqlite` staging path would be a **no-op on the droplet**,
+   exactly as SEISMIC staging already is. (An earlier draft of this section
+   hedged this as "may simply not exist there"; the repo had already answered
+   it and the hedge is withdrawn.)
+4. Concurrency, the dense leg, and the warm-cache `unresolved` merge path are
+   all still unmeasured (§13 status list), and all of them inherit this
+   section's correction: they must be measured against a **staged** baseline,
+   not against `prod_9p`. At 4.0 ms of staged, lock-held filter work the
+   concurrency ceiling is far higher than `_meta_lock` made it look.
+5. **The residency cliff is unmeasured, and it is the only remaining case for
+   this module.** Staged SQLite at 4.0 ms assumes the hot B-tree pages stay
+   cached. What happens to that 4.0 ms as available page cache shrinks — and
+   whether ordinals' 1.5 ms holds while it degrades — decides whether ordinal
+   addressing is worth anything at all. This project already treats RAM as a
+   hard serving constraint (`THIN_CLIENT_SWAP.md`: "≤ 8 GB DO NOT SHIP — 2–5
+   s/query permanent thrash"), so the question is live rather than academic.
+
+### The methodological lesson, which is the real result (§14)
+
+§13's method section says "every speed claim needs a negative control — an arm
+that *cannot* be affected by the change", and N6 built one (`bm25f`) for the
+*addressing* variable while leaving the *filesystem* variable uncontrolled.
+A negative control only covers the variable you point it at. The prompt-level
+rule "check the filesystem before believing any latency number" was applied to
+the new code's artifacts and not to the baseline's — and the baseline is where
+the entire multiple came from.
+
+---
+
+## 15. C7 (2026-08-03): `meta.sqlite` CAN be deleted — **−10.22 GB, and faster**
+
+- Code: `spike/meta_consolidation/13_c7_meta_flat_sizing.py`
+- Results: `data/eval_results/c7_meta_flat_20260803_0635.json`
+- **Status: MEASURED at 1M-doc scale. IMPLEMENTED: no. Nothing built or wired.**
+
+### Why §13's rejection was reopened
+
+§13 rejected extending ordinals to title/DOI because `hydrate_meta` is **4.1%**
+of query latency — correct against a *latency* objective, and **the wrong
+objective** for the consolidation goal doc 17 §13 set ("separate storage
+databases 4 → 0"). The question is not "how much faster" but "can a 24.9 GB
+SQLite database be deleted, and what does it cost". Reopened on that basis, per
+this doc's standing rule that a rejected item needs *the number that changed* —
+here the changed number is the objective function itself.
+
+**Operator constraint (2026-08-03): consolidation must leave serving
+performance IDENTICAL to mainline.** Not faster — *not slower*. That gate is
+what decides between the designs below, and it disqualifies the smallest one.
+
+### What actually has to be replaced
+
+`docs(id INTEGER PRIMARY KEY, title, doi, year, type, is_oa, section)`.
+`year/type/is_oa/section` are **already** flat ordinal columns (§12, 0.75 GB),
+and `docs_other` is **empty — 0 rows, measured**, so the TEXT-overflow path
+costs nothing. Deleting `meta.sqlite` therefore reduces to one question: what
+does a flat, ordinal-indexed **title + DOI** store cost?
+
+### Three designs, measured against the shipped SQLite path
+
+50 ids per lookup (production `top_k`), 200 trials, arms interleaved and
+order-randomised per trial, titles/DOIs compared byte-for-byte against
+`meta.sqlite` on the same ids. Baseline reads the **staged** copy (local disk),
+because per §14 measuring against the 9p copy would flatter every design ~50×.
+
+| design | p50 (50 hits) | vs mainline | payload B/doc | replacement total | vs `meta.sqlite` |
+|---|---|---|---|---|---|
+| `sqlite_mainline` | 0.2324 ms | 1.00× | — | 24.91 GB | — |
+| `raw` (u64 offsets, uncompressed mmap) | 0.1424 ms | 0.61× | 142.1 | 24.52 GB | **−0.39 GB** |
+| `zstd_blocks` (32 KB, zstd-19, dict) | 2.7684 ms | **11.91× — FAILS** | 36.5 | 7.45 GB | −17.46 GB |
+| **`zstd_perdoc` (per-record, shared dict)** | **0.1628 ms** | **0.70× ✓** | **76.7** | **14.69 GB** | **−10.22 GB** |
+
+**PARITY PASS on all three** — every design returned title/DOI identical to
+SQLite on every trial. Replacement total = design payload+locator + §12's
+already-built filter columns (0.75 GB) and `wids` (1.20 GB).
+
+**Verdict: `zstd_perdoc`.** It is *faster* than mainline (0.70×), so it clears
+the no-regression gate outright, and it removes a 24.9 GB SQLite database for
+14.69 GB of flat mmap'd artifacts — **−10.22 GB and one database gone**.
+
+### Why the block design fails and the per-doc design does not
+
+`zstd_blocks` is the shipped abstracts-v3 pattern, and it is the *wrong* shape
+here. Its blocks hold **230 docs**; `_hydrate`'s 50 ids are scattered, so a
+lookup decompresses ~230 records to read one, 50 times over. Abstracts can
+afford that because a ~1.5 KB abstract amortises the block; a **142 B** record
+cannot. `zstd_perdoc` is the abstracts **v1/v2** shape — one record decompressed
+per lookup — and it keeps 62% of the block design's compression (76.7 vs
+36.5 B/doc against 142.1 raw) at 17× its speed.
+
+### The sampling bias that nearly got recorded as a result
+
+The first two runs sampled **the first 1M rows by `id`**. `id` *is* the numeric
+W-id, so that is the **oldest** OpenAlex works, and it measured **115.1 B/doc**.
+Re-sampled as 20 contiguous windows spread across the whole id range, the true
+figure is **142.1 B/doc — 23% larger**. Every projection from the head sample
+was wrong, and the error was not uniform: it **inverted a verdict**. On the head
+sample `raw` looked like a viable −4.44 GB; corrected, it saves **0.39 GB**,
+which is nothing. Contiguity was still required (design B's layout depends on
+it) — the fix was *many* contiguous windows, not a random scatter.
+
+### NOT SETTLED — the latency numbers are an EXTRAPOLATION
+
+1. **Everything above was measured on a ~1M-doc slice that fits in page
+   cache.** At 150.4M the `zstd_perdoc` store is ~12.7 GB and 50 scattered
+   lookups become 50 random page faults across it. **This doc's own history
+   says that extrapolation is the dangerous one**: the same filter code measured
+   4.15 ms at 208k docs and 400 ms at 150M, a **96× gap**, and §14 exists
+   because a latency comparison was contaminated by exactly this class of
+   effect. The *size* projection is the trustworthy half (§12 found build/size
+   extrapolations linear and accurate); **the 0.70× is not yet a result.**
+   The gate is: build the store at full 150.4M and re-run against the real
+   `_hydrate`, staged, with the §14 arm discipline.
+2. **The locator is now the biggest single line item.** `zstd_perdoc`'s u64
+   offsets are 8 B/doc = **1.20 GB**, against a 76.7 B/doc payload — and it is
+   *additive* to `wids`' identical 1.20 GB. Both are prime targets (delta +
+   bit-packing; the offsets are monotonic by construction) before anything
+   ships. Untouched here.
+3. **`_hydrate` also fetches `section`**, which is already an ordinal column, so
+   it is free — but the rewrite that reads title/DOI from the blob and `section`
+   from the column has not been written, and byte-parity of the *whole*
+   `_hydrate` output is a separate gate from the title/DOI parity measured here.
+4. This measures nothing about **build time** for the store at 150.4M.
+
+### What this does to the consolidation scorecard
+
+Doc 17 §13 claimed 4 → 0. With C7 measured, the honest reachable target is:
+
+| storage DB | route | status |
+|---|---|---|
+| `meta.sqlite` 24.9 GB | ordinal columns (§12, built) + `zstd_perdoc` title/DOI | **route KILLED (§19): −10.64 GB but 87× SLOWER at full 150.4M. §15's 0.70× was a 1M-doc page-cache artifact. Meta's SQLite baseline is a fast uncompressed-text read nothing compressed beats at scale** |
+| `abstracts.sqlite` 13.47 GB | N5 flat blocks + ordinal locator + rehomed dicts | **DELETABLE (§18): served SQLite-free with the file gone, parity PASS, 1.19× p50, `_db is None`. −1.92 GB.** Reader + dicts shipped; only the build-time path is left (§18 #1). NOT §16's 5.53× — that was a cold-cache artifact (§17) |
+| `dense/ids.json` 41 MB | ordinal *is* the usearch key | unbuilt; needs a dense index rebuild for a 41 MB prize |
+| `dense/delta.sqlite` | "reserved high ordinal range" | **likely unreachable**: the warm cache mints addresses at query time, and this design's entire safety argument (§6 risk 1) is that addresses never move |
+
+So **4 → 2 is the defensible target**, not 4 → 0. *(SUPERSEDED 2026-08-04 by
+§20: the meta title/DOI store fails the speed gate at full scale, so meta.sqlite
+stays and the reachable target is **4 → 3**, abstracts only.)*
+
+---
+
+## 16. C8 EXECUTED (2026-08-03): `abstracts.sqlite` is deletable — and **the locator was the cost, not the payload**
+
+- Code: `spike/meta_consolidation/14_c8_abstract_ordinal_locator.py`
+- Results: `data/eval_results/c8_abs_locator_20260803_0649.json`
+- Artifacts built (under `/var/tmp`, not shipped): flat sidecar 11.13 GB /
+  1,062,917 blocks in **115 s**; ordinal locator 421.2 MB in **55 s**.
+
+### What §9 left undone
+
+§9 moved the abstract **payload** into a flat `blocks.bin` (2.89×) and
+**deliberately kept the locator in SQLite**, because doc 17 §11 measured a
+tantivy locator as a 27–54× regression. That is why §9's own audit note
+reclassified N5 as a latency lever and *not* a space lever — and why
+`abstracts.sqlite` survives even with the sidecar built: `docs` is still the
+only way to find a document's bytes.
+
+The locator is `docs(id TEXT PRIMARY KEY, b, off, n)` over **23,398,073 rows** —
+a B-tree over variable-length TEXT W-ids, i.e. exactly the sparse-key search
+§1 is about. tantivy lost that job because it is a search engine being asked to
+do random access. **Flat arrays were never tried.**
+
+### Result: three arms, byte-parity PASS on 20,000 ids each
+
+50 ids per fetch, 150 trials, arms interleaved with order randomised per trial,
+**all three stores on local disk** (`overlay`), so no arm gains a filesystem
+advantage — the §14 discipline.
+
+| arm | p50 | mean | p90 | p50 vs mainline |
+|---|---|---|---|---|
+| `mainline` (sqlite blocks + sqlite locator) | 5.092 ms | 5.362 | 6.488 | 1.00× |
+| `flat_only` (flat blocks + sqlite locator) = **N5 as shipped** | 4.194 ms | 3.309 | 5.970 | 1.21× |
+| **`flat_ordinal` (flat blocks + ordinal locator)** | **0.921 ms** | 2.561 | 5.450 | **5.53×** |
+
+**`skipped_non_wid: 0`** — every id in the locator is a plain `W<digits>`, so
+unlike `meta.sqlite`'s `docs_other` there is no overflow class and nothing falls
+back. Locator dtypes were chosen from **measured** maxima: `b` u32
+(max 1,517,006), `off` u16 (max 32,767), **`n` u32 — max 71,073, which
+OVERFLOWS u16.** Assuming u16 for `n` because blocks target ~32 KB would have
+silently truncated the longest abstracts.
+
+### The finding: §9 optimised the wrong half
+
+Moving the payload is worth **1.21×**. Replacing the locator on top of it is
+worth a further **4.55×**. The locator — the part §9 deliberately did not
+touch — is where the time actually was.
+
+The saving is roughly a **constant ~4 ms** per fetch (the SQLite `docs` query
+over 50 TEXT keys), which is why it reads as 5.53× at p50 and only ~1.19× at
+p90: at p90 the tail is dominated by block decompression on `BLOCK_CACHE` misses,
+which all three arms share and neither change addresses. **On the mean the
+consolidated path is 2.09×.** Quote the mean or quote all three; the 5.53× alone
+overstates it.
+
+### §9's 2.89× does not transfer to production — a qualification, not an error
+
+§9 built its flat store in `spike/meta_consolidation/work_n5`, which is **9p**,
+from a source that is also 9p. That is a valid like-for-like comparison (unlike
+§13's, which crossed filesystems — §14). But it is **filesystem-dependent**: on
+9p, SQLite's B-tree block read costs several ~0.5 ms faults against the flat
+store's single `pread`, so the flat store wins 2.89×. With both sides on local
+disk — what the droplet has — the identical change measures **1.21×** here.
+**The production-realisable payload win is ~1.21×, not 2.89×.** §9's number
+stands as measured; it just does not describe the deployment target. The
+`n5_flat_blocks_*.json` results file records no filesystem at all, which is why
+this had to be reconstructed from the work directory.
+
+### Consolidation arithmetic
+
+| | |
+|---|---|
+| `abstracts.sqlite` today | **13.47 GB** |
+| flat `blocks.bin` | 11.15 GB |
+| ordinal locator (4 arrays, 18.00 B/doc) | 0.42 GB |
+| **replacement total** | **11.57 GB** |
+| **saved** | **1.90 GB, and one database removed** |
+
+### NOT SETTLED
+
+1. ~~**Nothing is wired.**~~ **DONE 2026-08-03 — §17.** The reader now ships in
+   `abstracts.py` (`AbstractLocator` + the fail-closed identity gate,
+   `AbstractStore.fetch` routes through it). Measured through the shipped
+   `fetch()`: parity PASS, **no regression**. But see §17 — the 5.53× below did
+   **not** survive to the shipped path in a warm-cache run.
+2. **The `meta` table still has to go somewhere.** It holds the trained zstd
+   dictionaries (~KB). Small, but `abstracts.sqlite` cannot actually be deleted
+   until they live beside the blocks. Not counted in the arithmetic above.
+3. **One section only.** `social_sciences__recent` is the only section with an
+   `abstracts.sqlite` today, so this is the whole current abstract store — but a
+   build that adds hot sections multiplies both artifacts.
+4. **p90 is unimproved** (6.49 → 5.45, 1.19×). If tail latency is what matters,
+   this change is close to neutral and the block cache is the target instead.
+5. Measured on **local disk**; the shipped path would inherit whatever the host
+   provides (§14).
+
+---
+
+## 17. C9 EXECUTED (2026-08-03): the locator reader SHIPS — and the 5.53× does **not** survive the shipped path
+
+- Code: `src/lib/thinclient/abstracts.py` — `AbstractLocator` (the fail-closed
+  identity gate), `build_ordinal_locator`, `build_flat_sidecar` now stamps a
+  `flat_store_id`, `AbstractStore.fetch` routes through the locator when present
+  and verified.
+- Tests: `scripts/tests/test_abstract_locator.py` (19, all pass) — parity, every
+  fail-closed refusal, the miss contract, the encoder pin.
+- Harness: `spike/meta_consolidation/15_c9_shipped_locator_reader.py`.
+- Results: `data/eval_results/c9_locator_reader_20260803_2308.json` (+ `_2311`
+  confirmation, seed 41).
+- **Status: IMPLEMENTED + MEASURED through the shipped `fetch()`. Not built into
+  `build_thinclient_index.py`; `abstracts.sqlite` not deletable yet (§2 dicts).**
+
+### What was built
+
+C8 (§16) measured a *harness* `OrdinalLocator` + `fetch_ordinal`. C9 makes it
+shipped code: `AbstractStore.fetch()` now consults an `AbstractLocator`
+(`searchsorted` over a sorted int64 W-id array + parallel `b/off/n` columns,
+written into `<name>.flat/` beside `blocks.bin`) instead of the SQLite `docs`
+B-tree, automatically, whenever the locator is present and its identity checks
+out. Ids the locator cannot address (non-`W<digits>`) fall back to `docs`
+(hazard 2). The reader is not a reimplementation the bench flatters — **every
+arm below calls the shipped `fetch()`.**
+
+### The identity gate (the reason this is a class, not four `np.load`s)
+
+A locator addresses *into* `blocks.bin`; paired with a `blocks.bin` from a
+different build it returns a real, plausible, **wrong** abstract with no error —
+§6 risk 1 in the abstract store. So `build_flat_sidecar` mints a fresh
+`flat_store_id` (uuid4, per build, never a content hash — §12's reasoning) into
+`flat_store.json` *after* `blocks.bin` is complete; `build_ordinal_locator`
+copies it into `locator.json` and refuses to build against a source whose stat
+does not match the one those blocks recorded; `AbstractLocator.__init__` refuses
+to load unless the two ids match and every column is full-length. It **fails
+closed** (missing stamp on either side = refusal, no override flag), and a
+mismatch **raises** out of `AbstractStore.__init__` rather than serving — there
+is no lossless fallback for a wrong locator the way there is for a half-built
+flat sidecar. `test_abstract_locator.py` asserts each refusal.
+
+### Result: parity PASS, no regression — but **1.18×, not 5.53×**
+
+50 ids/fetch, 200 trials, four arms interleaved and order-randomised per trial,
+**all on local disk (`overlay`)**, every arm warmed, `mainline_ctrl` a second
+identical SQLite store as the noise floor. 20,000-id byte-parity gate.
+
+| arm (all via shipped `AbstractStore.fetch`) | p50 | mean | p90 | vs mainline |
+|---|---|---|---|---|
+| `mainline` (sqlite blocks + sqlite `docs`) | 3.547 ms | 3.607 | 3.781 | 1.00× |
+| `flat_only` (flat blocks + sqlite `docs`) | 3.250 | 3.317 | 3.505 | 1.09× |
+| **`flat_ordinal` (flat blocks + ordinal locator)** | **3.012** | **3.067** | **3.283** | **1.18×** |
+| `mainline_ctrl` (noise floor) | 3.636 | 3.694 | 3.911 | 0.98× |
+
+Parity **PASS on all four arms**, `skipped_non_wid = 0`. Noise floor **2.51%**
+(run 2, seed 41: p50 **1.19×**, noise **0.34%** — the multiple is stable). The
+shipped reader is **faster than mainline at p50, mean AND p90, and slower in no
+percentile**, so it **clears the operator's no-regression gate outright** while
+removing a database.
+
+### Why the 5.53× evaporated — and what is actually invariant
+
+§16's win decomposes, warm, into almost nothing. Payload move: 3.547 → 3.250 =
+**0.30 ms**. Locator on top: 3.250 → 3.012 = **0.24 ms**. C8 measured the
+locator saving at **~4 ms**; here it is **~0.24 ms**. The difference is the
+SQLite `docs` B-tree query over 50 TEXT keys: **~4 ms when its pages are cold**
+(C8's number), **~0.24 ms when they are hot** (this run warmed it with a
+20,000-id parity pass first). Block *decompression* — which every arm shares and
+the locator does not touch — dominates both, so once the `docs` query is warm
+the locator's edge is a thin constant.
+
+**So C8's 5.53× is not a shippable headline; it was a cold-cache artifact.**
+What survives contact with the shipped path is the thing that actually matters
+for consolidation: **byte-parity, no regression in any percentile, and
+−1.90 GB with a database removed.** The honest latency claim is "neutral to
+~1.18× faster, cache-state-dependent," not "5.53×." A droplet serving from local
+disk with a warm working set will see the small number; the win is the removed
+database, not the speed. (This is the §16 hedge — "roughly a constant few ms" —
+landing on the small end of its own range.)
+
+### Consolidation arithmetic (unchanged from §16, re-confirmed via shipped build)
+
+`abstracts.sqlite` 13.47 GB → `blocks.bin` 11.15 GB + locator 0.421 GB (18.00
+B/doc, `b` u32 / `off` u16 / `n` u32 from measured maxima) = **11.57 GB, −1.90
+GB**. 23,398,073 rows, `skipped_non_wid = 0`.
+
+### NOT SETTLED
+
+1. ~~**`abstracts.sqlite` is still load-bearing.**~~ **DONE 2026-08-03 — §18.**
+   Dicts rehomed (`dump_dict_sidecar`), `skipped_non_wid == 0` confirmed, and
+   `AbstractStore` now serves in **SQLite-free mode** with the file deleted.
+2. **No build-time path** (the only remaining blocker to actual deletion in a
+   real build). `build_flat_sidecar` / `build_ordinal_locator` /
+   `dump_dict_sidecar` are shipped functions but `build_thinclient_index.py`
+   does not call them; consolidation lands in a *build* only when the builder
+   emits the sidecar. Until then deletion is an after-the-fact operator step.
+3. **One section.** `social_sciences__recent` only; a build that adds hot
+   sections multiplies both artifacts.
+4. **Shrinking the locator is untouched.** `off`/`n`/`b` and the u64-free `wids`
+   are monotonic-ish and compressible (§15 #2); 0.421 GB is small but free.
+
+---
+
+## 18. C10 EXECUTED (2026-08-03): a section served with `abstracts.sqlite` **deleted**
+
+- Code: `src/lib/thinclient/abstracts.py` — `dump_dict_sidecar`,
+  `build_flat_sidecar` now rehomes dicts, `AbstractStore` SQLite-free mode
+  (`_sqlite_free`, `_db is None`); `retriever.py` opens a store on the flat
+  sidecar's presence, not the `.sqlite` file's.
+- Tests: `scripts/tests/test_abstract_locator.py` (27, all pass) — SQLite-free
+  serves byte-identical, drops unaddressable ids, requires a locator, refuses a
+  mismatched dict sidecar, sqlite-vs-sidecar dict parity incl. a trained dict.
+- Harness: `spike/meta_consolidation/16_c10_sqlite_free_serving.py`.
+- Results: `data/eval_results/c10_sqlite_free_20260803_2329.json`.
+- **Status: the store SERVES with `abstracts.sqlite` deleted. Not yet emitted by
+  `build_thinclient_index.py` (§17 #2 is now the sole remaining blocker).**
+
+### What was closed
+
+§17 left the file "still load-bearing" for two reasons: the trained zstd dicts
+were read from the `meta` table at open, and `AbstractStore.__init__` connected
+to the `.sqlite` file unconditionally. C10 closes both. `dump_dict_sidecar`
+copies the seven trained dicts (784 KB) into the flat sidecar as
+`dicts.json` + raw `zdict_*` files, bound to the same `flat_store_id` as the
+blocks (a wrong dict set decodes `blocks.bin` to garbage — zstd usually raises a
+dict-id mismatch, but the identity gate refuses it outright). `AbstractStore`
+gains a **SQLite-free mode**: when the `.sqlite` file is absent and a
+`dicts.json` sidecar is present it holds **no SQLite connection at all** —
+blocks from `blocks.bin`, block index from `loc_*.npy`, dicts from the sidecar.
+The locator is *mandatory* there (no `docs` table means no other way to resolve
+an address) and unaddressable ids have no fallback, which is exactly why
+deletion is gated on `skipped_non_wid == 0`.
+
+### Result: byte-parity PASS with the file gone, no regression
+
+`social_sciences__recent`, 50 ids/fetch, 200 trials, four arms interleaved and
+order-randomised, all on local disk (`overlay`), warmed, 20,000-id parity gate.
+`sqlite_free` is opened on a directory holding **only** the flat sidecar — no
+`abstracts.sqlite`.
+
+| arm | p50 | mean | p90 | vs mainline |
+|---|---|---|---|---|
+| `mainline` (sqlite blocks + sqlite `docs`) | 3.512 ms | 3.644 | 4.119 | 1.00× |
+| `flat_ordinal` (flat + locator, sqlite present) | 2.952 | 3.053 | 3.360 | 1.19× |
+| **`sqlite_free` (flat + locator + dicts, NO sqlite)** | **2.948** | 3.034 | 3.440 | **1.19×** |
+| `mainline_ctrl` (noise floor) | 3.536 | 3.661 | 4.122 | 0.99× |
+
+Parity **PASS on all four**, `_db is None` on the free arm **asserted**, noise
+floor **0.69%**. The SQLite-free path is indistinguishable from the
+sqlite-present locator path (2.948 vs 2.952) and holds the no-regression gate —
+consistent with §17: removing the connection changes nothing about the read
+path, which was already flat blocks + ordinal locator.
+
+### The file is now deletable: −1.92 GB, 13.47 → 0
+
+| | size |
+|---|---|
+| `abstracts.sqlite` today | 13.47 GB |
+| `blocks.bin` | 11.13 GB |
+| ordinal locator (`loc_*.npy`) | 0.421 GB |
+| dicts (`dicts.json` + 7 × `zdict_*`) | 0.0008 GB |
+| **replacement total** | **11.55 GB** |
+| **saved, and the SQLite database GONE** | **1.92 GB** |
+
+This is the whole `abstracts.sqlite` for the only section that has one, so for
+the current index the abstract database drops **4 → 3** on the scorecard (§15).
+
+### NOT SETTLED
+
+1. **Build-time path (the last mile).** Deletion is still an after-the-fact step
+   on a built index; `build_thinclient_index.py` must emit the flat sidecar +
+   locator + dicts and (optionally) drop the `.sqlite`. Until then this ships as
+   an operator/repack action, not a build output.
+2. **The dicts sidecar leans on zstd's own dict-id check** for the
+   plain-codec buckets (a below-bar store trains none); the identity gate is the
+   belt to that suspenders. Both tested, but note the two layers.
+3. **One section**, as above. Nothing measured about a multi-hot-section build.
+
+---
+
+## 19. C11 EXECUTED (2026-08-04): the `meta.sqlite` title/DOI route is **−10.64 GB but 87× SLOWER at full scale** — the route is DEAD on the speed gate
+
+- Code: `spike/meta_consolidation/17_c11_meta_store_fullscale.py`
+- Results: `data/eval_results/c11_meta_store_20260804_0031.json`
+- **Status: the C7 §15 route is KILLED by its own gate. Nothing to ship. This is
+  the 96× extrapolation trap §15 warned about, now measured.**
+
+### What was built and measured
+
+§15's NOT-SETTLED #1 demanded the one thing that would settle the route: build
+the `zstd_perdoc` title/DOI store at the **full 150.4M** (not a 1M sample) and
+re-measure latency, staged, because "the 0.70× is not yet a result." So C11
+streamed the whole store — 150,413,098 records, `title\x00doi` per-doc zstd-19
+against one trained dict, indexed by the global ordinal (offsets[ordinal]),
+verifying `docs.id == wids[ordinal]` row-by-row as it went (2,981 s, 50,453
+docs/s). Then it measured `meta_store` vs the **staged** `meta.sqlite` on the
+same ids, interleaved, warmed, §14 discipline.
+
+### The result: the size held, the speed collapsed
+
+| arm | p50 | mean | p90 | vs mainline |
+|---|---|---|---|---|
+| `sqlite_mainline` (staged meta.sqlite) | **0.331 ms** | 0.376 | 0.554 | 1.00× |
+| **`meta_store` (perdoc zstd, ordinal-indexed)** | **28.74 ms** | 37.73 | 87.06 | **0.012× — 87× SLOWER** |
+| `sqlite_ctrl` (noise floor) | 0.296 | 0.334 | 0.551 | 1.12× |
+
+Parity **PASS** (byte-identical title/DOI, NULL sentinel intact). Size **held
+exactly as projected**: 12.32 GB store (73.9 B/doc) + 0.75 filter + 1.20 wids =
+14.27 GB, **−10.64 GB** vs 24.91 GB. **Size extrapolates; latency does not** —
+§15's 0.70× was a 1M-doc, page-cache-resident artifact, and at 150.4M the store
+is a **87× regression**. The operator gate is no-regression; this fails it by
+almost two orders of magnitude. **The route is dead as designed.**
+
+### Why abstracts consolidated and meta cannot — the load-bearing asymmetry
+
+This is the important part, because it is not obvious and it is general:
+
+- **The abstract SQLite path is decompression-bound and SLOW** (§18: 3.5 ms
+  mainline). A fetch decompresses a 32 KB zstd block per id. A flat ordinal
+  store does the *same* decompression, so it matches/beats SQLite — the win was
+  never latency, it was removing the database at par.
+- **The meta SQLite path is a cheap uncompressed TEXT read and FAST** (0.331 ms
+  warm). SQLite reads `title`/`doi` bytes straight from a page-cache-resident
+  B-tree, no decompression. **Nothing compressed can beat that at 150M scale:**
+  the 12.3 GB perdoc store is *not* resident, so 50 scattered ids become 50 cold
+  random page-faults + 50 zstd-dict decompressions ≈ 28 ms, against SQLite's 50
+  warm B-tree reads ≈ 0.33 ms.
+
+So the consolidation lever that worked for abstracts (move payload + ordinal
+locator) **does not transfer to meta**, because the baseline it must not
+regress is ~10× cheaper. The two stores looked like the same problem; they are
+not. A fast, uncompressed baseline is the hard one to beat.
+
+### What (if anything) is left for meta
+
+The only C7 design that avoids decompression is **`raw`** (uncompressed mmap +
+u64 offsets), and §15 measured it at **−0.39 GB** — i.e. it saves *nothing*
+(the 24.9 GB is mostly the title/DOI text, and uncompressed it is ~the same
+size). So the meta route faces a **size/speed conflict abstracts never had**:
+save space (compress) → lose the speed gate; hold the speed gate (raw) → save
+nothing. Whether an off-the-shelf random-access columnar store (Lance
+`take(ordinal)`, Vortex) can break that conflict at full scale is the open
+question C12 tests — but the burden of proof is now high, and the honest
+default is that **`meta.sqlite` may simply not be consolidatable under the
+no-regression gate.** The −10.64 GB is real; it is just not free, and the price
+is 87×.
+
+### NOT SETTLED
+
+1. ~~**C12 (queued): Lance `take` vs raw vs perdoc vs SQLite.**~~ **DONE — §20.
+   Nothing beats warm SQLite; meta consolidation stops here.**
+2. **The filter columns still stand.** year/type/is_oa/section as ordinal
+   columns (§12) are a real, separate −0.75-GB-for-1.96-GB-resident lever for
+   the *filter* stage; C11 says nothing against them. It is only the title/DOI
+   *hydration* store that fails.
+
+---
+
+## 20. C12 EXECUTED (2026-08-04): the meta bake-off — **no store holds the speed gate; meta.sqlite stays**
+
+- Code: `spike/meta_consolidation/18_c12_lance_take_bakeoff.py` (run under
+  `.venv-lance`)
+- Results: `data/eval_results/c12_lance_bakeoff_20260804_0046.json`
+- **Status: meta title/DOI consolidation is CLOSED. The reachable target is
+  4 → 3 (abstracts only), NOT the 4 → 2 the C7/C8 pairing implied.**
+
+### The bake-off §19 queued, run at full 150.4M
+
+A single streaming pass (442 s) built two new stores from staged `meta.sqlite`
+in ordinal order (verifying `docs.id == wids[ordinal]`) — an **uncompressed
+`raw`** blob + u64 offsets, and a **Lance dataset** (title/doi columns) — and
+reused C11's perdoc store. Five arms, all addressed by ordinal, interleaved,
+warmed, all on local disk. The point was Lance's **`take([ordinal])`**: doc 17's
+C5 rejected Lance on its BTREE *scalar index* (a searcher, 255 ms) and **never
+measured positional take**, which is Lance's real random-access path and is
+exactly ordinal addressing. That is the number that changed — so it was measured.
+
+| arm | p50 | mean | p90 | vs mainline | store | saves |
+|---|---|---|---|---|---|---|
+| `sqlite_mainline` | **0.302 ms** | 1.712 | 4.035 | 1.00× | — | — |
+| `raw_mmap` (uncompressed) | 0.695 | 2.831 | 7.454 | **0.43× (2.3× slower)** | 17.68 GB | 5.28 GB |
+| `perdoc_zstd` (C11) | 2.178 | 3.033 | 5.686 | 0.14× (7.2× slower) | 12.32 GB | 10.64 GB |
+| **`lance_take`** | **6.371** | 6.430 | 7.217 | **0.05× (21× slower)** | **10.80 GB** | 12.16 GB |
+| `sqlite_ctrl` (noise) | 0.289 | 1.670 | 3.975 | 1.04× | — | — |
+
+**Quality gate PASS on all arms** (byte-parity of title/doi incl. the NULL
+sentinel, 20,000 ids). **Speed gate FAILED by all three** — SQLite wins every
+percentile. Noise floor 4.12%.
+
+### What the numbers say
+
+- **Lance `take` is the *slowest* on p50 (21×) despite compressing the *best*.**
+  Its columnar string encoding beat zstd-19 per-doc (10.80 vs 12.32 GB, saving
+  12.16 GB), but a 50-row scattered `take` pays fixed per-call overhead
+  (fragment lookup + columnar decode + Arrow Table materialization) that dwarfs
+  the payoff. Lance's "2000× random access vs Parquet" is a throughput/scan
+  claim; it does not describe a 50-id point-gather. **The number that changed
+  changed the wrong way** — addressed by `take`, Lance is worse than the
+  hand-rolled store, not better. C5's rejection stands, now on both axes.
+- **`raw` (uncompressed) is closest on p50 (2.3×) and still a regression**, is
+  worse than SQLite on mean and p90, and saves only 5.28 GB — the least. It
+  confirms §15's point: uncompressed buys speed you still can't match and saves
+  almost nothing.
+- **The size/speed conflict is total.** Across uncompressed, per-doc-zstd, and
+  off-the-shelf columnar, *every* store that saves space regresses latency, and
+  the one that comes closest on latency saves least. There is no point on this
+  frontier that clears the no-regression gate.
+
+### The verdict, and what it does to the scorecard
+
+**`meta.sqlite`'s title/DOI is not consolidatable under the operator's
+no-regression constraint.** The meta SQLite path is a warm, uncompressed-text
+B-tree read (~0.3 ms); nothing that compresses (decode cost) or grows
+(page-fault cost) beats it at 150M. This is the mirror image of abstracts (§18),
+which consolidated *because* its SQLite path was slow. So:
+
+| DB | outcome |
+|---|---|
+| `abstracts.sqlite` | **removed** (§18, −1.92 GB, SQLite-free) |
+| `meta.sqlite` | **stays** — title/DOI hydration cannot beat warm SQLite (C11/§19, C12/§20). Filter columns (§12) remain a separate resident-RAM lever, but do not remove the DB |
+| `dense/ids.json`, `dense/delta.sqlite` | unbuilt / likely-unreachable, unchanged |
+
+**Reachable consolidation is 4 → 3, not 4 → 2.** The −10.64 GB was real and the
+route was worth chasing to a full-scale number; the gate is what stops it, and
+"nothing here clears the bar" is the correct answer. Lance stays a documented
+alternative, not a plan — and now on the `take` axis too, not just the scalar
+index. *(Vortex is no longer only "documented" — §21 measured it.)*
+
+---
+
+## 21. C13 EXECUTED (2026-08-04): Vortex — **best compression of all, worst latency of all.** Meta stays closed.
+
+- Code: `spike/meta_consolidation/19_c13_vortex_take_bakeoff.py` (run under
+  `.venv-lance`, `vortex-data` 0.83.0)
+- Results: `data/eval_results/c13_vortex_bakeoff_20260804_0159.json`
+- **Status: the second and last credible columnar store, measured. Same verdict
+  as Lance — regresses the speed gate. Meta consolidation is comprehensively
+  closed.**
+
+### The test
+
+Vortex (spiraldb, LF AI & Data) is the other random-access columnar format, and
+it pitches hydration-grade random access — so it got C12's exact bake-off. A
+Vortex file of title/doi was built at the full 150.4M in ordinal order
+(streaming via a PyArrow `RecordBatchReader`, verifying `id == wids[ordinal]`,
+302k docs/s, 550 s), then measured against staged `meta.sqlite`, reusing C12's
+raw + Lance stores as arms. **Quirk the reader must handle:**
+`VortexFile.scan(indices=)` is a *monotonic selection*, not an ordered gather —
+so the reader sorts the 50 ordinals, scans, and reindexes to request order, and
+that cost is counted.
+
+| arm | p50 | mean | p90 | vs mainline | store | saves |
+|---|---|---|---|---|---|---|
+| `sqlite_mainline` | **0.449 ms** | 12.22 | 36.05 | 1.00× | — | — |
+| `lance_take` | 6.89 | 7.02 | 8.04 | 0.065× (15×) | 10.80 GB | 12.16 GB |
+| `raw_mmap` | 9.10 | 14.28 | 36.04 | 0.049× (20×) | 17.68 GB | 5.28 GB |
+| **`vortex_take`** | **12.14** | 13.07 | 18.30 | **0.037× (27×)** | **9.31 GB** | **13.65 GB** |
+| `sqlite_ctrl` (noise) | 0.367 | 11.35 | 40.89 | 1.22× | — | — |
+
+Quality gate **PASS** (byte-parity incl. NULL, 20,000 ids).
+
+### The finding, and a measurement caveat
+
+**Vortex compressed the best of everything tested — 9.31 GB, saving 13.65 GB —
+and was the *slowest* arm, 27× slower than SQLite on p50.** This is C12's
+lesson taken to its limit: across raw (17.68 GB / 20×), perdoc-zstd (12.32 GB /
+7×), Lance (10.80 GB / 15×) and now Vortex (9.31 GB / 27×), **better compression
+buys a bigger decode cost per gather, and none come within an order of magnitude
+of a warm uncompressed B-tree read.** Vortex's FSST/cascade encoding is superb
+for size and wrong for a 50-id scattered point-gather.
+
+*Caveat, stated plainly:* this run's noise floor was **18.28%** and the SQLite
+baseline's mean/p90 were inflated (12 / 36 ms vs C12's 1.7 / 4.0) — five
+multi-GB stores now share the page cache, so the box was under pressure. **The
+p50 verdict is robust anyway** — 27× is an order of magnitude past the noise,
+and a clean baseline (C11's 0.33 ms) would make the ratio *worse*, not better.
+The size figures are unaffected. A more optimised Vortex reader might shave the
+per-scan setup, but it cannot close a 27× gap to sub-millisecond.
+
+### Verdict
+
+Both credible off-the-shelf columnar stores are now measured on the right axis
+(positional random gather) and both regress. **There is no consolidating store —
+hand-rolled or off-the-shelf, compressed or raw — that holds meta's
+no-regression gate.** The frontier is exhausted: the more you save, the slower
+you get. `meta.sqlite` stays; reachable consolidation is **4 → 3** (abstracts).
+Do not reopen without a design that byte-matches AND holds p50 ≤ ~0.3 ms at full
+scale — C11–C13 map the whole size/speed frontier and none of it does.
+
+**Synthesis + the one untested design:**
+`spike/meta_consolidation/META_CONSOLIDATION_FEASIBILITY.md` aggregates C1–C13,
+the five root causes, per-store specs, and the **C14 bespoke proposal** (an FSST
+row-store with a *compiled* gather — the only combination the frontier points at
+but no test tried). DESIGN ONLY, unmeasured; ~1-in-3 odds on the strict gate.

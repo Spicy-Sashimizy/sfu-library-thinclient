@@ -90,7 +90,36 @@ force pruning to bind and overlap falls to 0.3942 at still 7.1× the size). The
 mirror question is a harder no: tantivy cannot serve SPLADE (overlap@10 0.485).
 Code `spike/bm25_seismic/`, results `data/eval_results/bm25_seismic_spike_*`.
 
-## 18 — Ordinal addressing design (MEASURED PRIMITIVES, NOT IMPLEMENTED, 2026-08-02)
+## 18 — Ordinal addressing design (MEASURED, NOT IMPLEMENTED; RE-ATTRIBUTED 2026-08-03)
+
+> **READ §14–§16 BEFORE QUOTING ANY MULTIPLE BELOW (2026-08-03).** The
+> headline numbers in this entry — 3.20×, 120–211×, 2.89× — were all measured
+> against a `meta.sqlite`/`abstracts.sqlite` on **9p**, a WSL2-dev-container
+> artifact that **does not exist on the deployment target** (a DO droplet
+> serves the index from local block storage; `THIN_CLIENT_SWAP.md:251-254`).
+>
+> - **§14:** N6's 3.20× is a **filesystem** result, not an addressing one.
+>   Staging `meta.sqlite` to local disk — no code change — gets 2.83×; adding
+>   ordinals on top gets nothing further. The two levers are **redundant, not
+>   additive**. Against a production-realistic baseline the whole ordinal win
+>   is **4.0 → 1.5 ms = 2.0% of the query**, inside the ±4% noise floor.
+>   Ordinals are a **residency** lever (and *additive* 1.96 GB on disk, since
+>   `_hydrate` still needs `meta.sqlite`), not a latency or space lever.
+> - **§15 (C7):** with the goal changed from latency to **consolidation**,
+>   §13's rejected title/DOI store was reopened and measured: a per-record zstd
+>   store replaces `meta.sqlite` for **14.69 GB vs 24.91 GB (−10.22 GB)** while
+>   `_hydrate` gets *faster* (0.70× mainline). Latency is a 1M-doc
+>   extrapolation; size is trustworthy. **Unbuilt.**
+> - **§16 (C8):** `abstracts.sqlite` is deletable — **13.47 → 11.57 GB
+>   (−1.90 GB)**, parity PASS on 20,000 ids. And **§9 optimised the wrong
+>   half**: the payload move is worth 1.21× on a level filesystem, while
+>   replacing the **locator** (23.4M rows keyed by TEXT W-ids) adds 4.55× on
+>   top. p50 5.53×, mean 2.09×, **p90 essentially unimproved (1.19×)**.
+>   Reader **unwritten**.
+>
+> Consolidation scorecard: doc 17 §13's "4 → 0 storage databases" is not
+> reachable; **4 → 2** is (`meta.sqlite` + `abstracts.sqlite` removable, both
+> dense artifacts stay). Nothing is enabled or built.
 
 `18_ORDINAL_ADDRESSING_DESIGN.md`. The follow-on from 17 §10–§13. Finding: the
 thin client's storage cost is an **addressing** problem, not a storage-engine
@@ -122,5 +151,10 @@ measurement** — `hydrate_meta` is 17.5 ms / 4.1%, not worth a 150.4M-doc blob
 run from a 9p mount the ordinal arm measured 8× *slower* than SQLite. §12 built
 the full 150M space (98,867 docs/s, 1.96 GB vs meta.sqlite's 24.91 GB), the
 stale-ordinal guard, and the retriever gate `SFU_THINCLIENT_ORDINALS`
-(default off; nothing is enabled). Code `spike/meta_consolidation/`, results
-`data/eval_results/c6_*`, `n3_*`, `n4_*`, `n5_*`, `n6_*`.
+(default off; nothing is enabled). **§14–§16 (2026-08-03) re-attribute every
+multiple in this paragraph and pivot the work to consolidation — see the banner
+at the top of this entry. The `_hydrate` rejection in particular was REOPENED
+(§15): it was made against a latency objective, and the goal is deleting a
+database.** Code `spike/meta_consolidation/`, results
+`data/eval_results/c6_*`, `n3_*`, `n4_*`, `n5_*`, `n6_*`, `n7_fs_control_*`,
+`c7_meta_flat_*`, `c8_abs_locator_*`.

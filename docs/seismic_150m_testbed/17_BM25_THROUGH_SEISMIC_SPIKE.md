@@ -1010,3 +1010,45 @@ and is required before this becomes a plan:
    gate against the current retriever.
 
 **Not adopted. No production code changed by this spike.**
+
+---
+
+> ## ⚠️ WHAT ACTUALLY HAPPENED TO C6 — read this before quoting §13 (2026-08-03)
+>
+> C6 was pursued in **`18_ORDINAL_ADDRESSING_DESIGN.md`**. Only ONE slice of the
+> §13 vision was ever built, and the payoff is far smaller than §13 implies.
+>
+> **The "4 → 0 / SQLite leaves the container entirely" scorecard above did not
+> happen and is not on a path to happening.** Storage databases today: still 4,
+> zero removed. Of the "What it consolidates" table:
+>
+> | §13 claimed | actual status 2026-08-03 |
+> |---|---|
+> | `meta.sqlite` → columns + title/DOI blob | **filter columns only** (doc 18 §11–12), built, **gated OFF**. The title/DOI blob was rejected on *latency* grounds (doc 18 §13) but **REOPENED and measured against the consolidation objective on 2026-08-03 (doc 18 §15): a per-record zstd store replaces `meta.sqlite` for −10.22 GB while being FASTER than mainline (0.70×)**. Route measured at 1M-doc scale, **still unbuilt**, and the latency half is an extrapolation. |
+> | `abstracts.sqlite` locator → ordinal arrays | **not built** |
+> | `abstracts.sqlite` blocks → flat file | built as N5 (doc 18 §9, 2.89×), **gated OFF — no `.flat/` sidecar exists for any served section** |
+> | `dense/ids.json` disappears (C4) | **not built** |
+> | `dense/delta.sqlite` → reserved range | **not built** |
+>
+> **`meta.sqlite` removal now has a measured route** (doc 18 §15, 2026-08-03),
+> reversing the "can never be removed" reading of §13's latency-grounds
+> rejection: a per-record zstd title/DOI store plus the already-built ordinal
+> columns replaces it for **14.69 GB vs 24.91 GB** while `_hydrate` gets
+> *faster* (0.70× mainline). **Nothing is built**, and the latency half is a
+> 1M-doc extrapolation, not a 150M result. Until it is built, the ordinal
+> arrays remain **additive** to the 24.9 GB rather than a replacement.
+>
+> **The reachable target is 4 → 2, not 4 → 0** — see doc 18 §15's scorecard.
+> `dense/delta.sqlite` is likely unreachable on correctness grounds, not
+> performance ones: the warm cache mints addresses at query time, and the
+> ordinal design's safety argument (§6 risk 1) is that addresses never move.
+>
+> **And the speed case collapsed.** Doc 18 §13's headline 3.20× was
+> re-attributed on 2026-08-03 (doc 18 §14): it was measured against a
+> `meta.sqlite` on **9p**, a WSL2-dev-container artifact that does not exist on
+> the deployment target. Against a production-realistic baseline the whole
+> ordinal win is **4.0 → 1.5 ms = 2.0% of the query**. §13's "the consolidation
+> that is faster" is only true versus a filesystem production does not have.
+>
+> C6 survives, if at all, as a **residency** lever on RAM-constrained hosts —
+> unmeasured, doc 18 §14 "not settled" #5.

@@ -4,10 +4,20 @@ Design + measurements: `docs/seismic_150m_testbed/18_ORDINAL_ADDRESSING_DESIGN.m
 
 A W-id (`W2803642969`) is an **identity**. It is sparse — 150,413,098 documents
 spread over a key range up to 7.14e9, density ~1 in 47 — so resolving one is a
-*search*, which is why the `meta.sqlite` post-filter mask costs ~400 ms per
-1000 candidates (doc 18 §4.1). An **ordinal** is an *address*: looking one up is
-an array index. Lucene has always kept this split (internal docid vs external
-UID); this index collapsed the two, and doc 18 §1-§3 is why.
+*search*. An **ordinal** is an *address*: looking one up is an array index.
+Lucene has always kept this split (internal docid vs external UID); this index
+collapsed the two, and doc 18 §1-§3 is why.
+
+**This module is a SPACE lever, not a latency lever** (doc 18 §14, measured
+2026-08-03). The `meta.sqlite` post-filter mask's ~400 ms per 1000 candidates
+(doc 18 §4.1) is dominated by the filesystem under the file, not by the sparse
+key: staging that same `meta.sqlite` to local disk with no code change takes the
+filter stage from 222.2 ms to **4.0 ms**, and ordinals then reach 1.5 ms — a
+further 2.7x on the stage, but only 2.0% of the whole query and inside the
+measured noise floor. What ordinals actually buy is that latency for **1.96 GB**
+of resident local disk instead of **24.9 GB**. Adopt them when local disk is the
+binding constraint; otherwise stage the file, which carries none of the two
+hazards below.
 
 This module is the read side. The arrays are built by
 `spike/meta_consolidation/09_n3_build_ordinals.py`.

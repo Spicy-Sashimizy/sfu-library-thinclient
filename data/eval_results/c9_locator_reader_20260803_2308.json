@@ -1,0 +1,104 @@
+{
+  "date_utc": "2026-08-03T23:07:34",
+  "goal": "CONSOLIDATION: the SHIPPED AbstractStore ordinal-locator reader (abstracts.py), measured through fetch().",
+  "gate": "NO-REGRESSION vs mainline (operator constraint 2026-08-03)",
+  "src": "/var/tmp/abs_stage/abstracts.sqlite",
+  "src_bytes": 13470433280,
+  "src_fstype": "overlay",
+  "arms": {
+    "mainline": {
+      "n": 200,
+      "p50_ms": 3.5474,
+      "mean_ms": 3.6068,
+      "p90_ms": 3.7807,
+      "vs_mainline": 1.0,
+      "regression": false
+    },
+    "flat_only": {
+      "n": 200,
+      "p50_ms": 3.2501,
+      "mean_ms": 3.3174,
+      "p90_ms": 3.5047,
+      "vs_mainline": 1.091,
+      "regression": false
+    },
+    "flat_ordinal": {
+      "n": 200,
+      "p50_ms": 3.012,
+      "mean_ms": 3.0668,
+      "p90_ms": 3.2834,
+      "vs_mainline": 1.178,
+      "regression": false,
+      "vs_mainline_mean": 1.176,
+      "vs_mainline_p90": 1.151
+    },
+    "mainline_ctrl": {
+      "n": 200,
+      "p50_ms": 3.6364,
+      "mean_ms": 3.6941,
+      "p90_ms": 3.9109,
+      "vs_mainline": 0.976,
+      "regression": true
+    }
+  },
+  "parity": {
+    "mainline": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "flat_only": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "flat_ordinal": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "mainline_ctrl": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    }
+  },
+  "sizes": {
+    "abstracts_sqlite_gb": 13.47,
+    "flat_blocks_gb": 11.15,
+    "ordinal_locator_gb": 0.421,
+    "replacement_gb": 11.57,
+    "saved_gb": 1.9,
+    "note": "replacement = blocks.bin + loc_*.npy; the `meta` table (zstd dicts) is NOT yet rehomed, so abstracts.sqlite is still load-bearing \u2014 this measures the READER, not deletion."
+  },
+  "flat_build": {
+    "blocks": 1062917,
+    "slots": 1517007,
+    "bytes": 11131511857,
+    "path": "/var/tmp/abs_stage/abstracts.sqlite.flat",
+    "flat_store_id": "c98574ea-46af-452a-8a5c-ac70c3852a64",
+    "seconds": 27.6
+  },
+  "locator_build": {
+    "flat_store_id": "c98574ea-46af-452a-8a5c-ac70c3852a64",
+    "built_utc": "2026-08-03T23:08:36",
+    "rows": 23398073,
+    "skipped_non_wid": 0,
+    "bytes": 421165826,
+    "bytes_per_doc": 18.0,
+    "dtypes": {
+      "b": "uint32",
+      "off": "uint16",
+      "n": "uint32"
+    },
+    "source": {
+      "path": "/var/tmp/abs_stage/abstracts.sqlite",
+      "bytes": 13470433280,
+      "mtime_ns": 1785739590827766955
+    },
+    "note": "delete abstracts.sqlite only when skipped_non_wid == 0 AND the zstd dicts (meta table) have been rehomed beside blocks.bin \u2014 until then the SQLite file is still load-bearing",
+    "seconds": 34.1
+  },
+  "noise_floor_pct": 2.51,
+  "parity_overall_pass": true
+}

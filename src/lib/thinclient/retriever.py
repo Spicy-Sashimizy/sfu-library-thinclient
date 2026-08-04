@@ -407,7 +407,10 @@ class ThinClientRetriever:
                         "schema": idx.schema, "bmp": shards,
                     }
                     abs_path = sdir / "abstracts.sqlite"
-                    if abs_path.exists():
+                    # A consolidated section may have abstracts.sqlite deleted,
+                    # served entirely from the flat sidecar (doc 18 §18); open
+                    # on the sidecar's presence, not just the SQLite file's.
+                    if abs_path.exists() or (sdir / "abstracts.sqlite.flat").is_dir():
                         self._abstract_stores[sdir.name] = AbstractStore(abs_path)
             meta_path = self.root / "meta.sqlite"
             if meta_path.exists():
@@ -1040,11 +1043,19 @@ class ThinClientRetriever:
                      f: dict) -> list[tuple[str, float]]:
         """Drop candidates failing the filter, preserving the legs' rank order.
 
-        This is the stage ordinal addressing replaces. At 1000 candidates the
-        SQLite path costs ~400 ms because a W-id is a *sparse* key and
-        resolving one is a search; the ordinal path is a binary search plus a
-        vectorised mask over mmap'd columns, measured at ~1 ms (doc 18 §4.1,
-        §11 — 120-211x on this stage, byte-parity PASS on 360 trials).
+        **What actually costs time here is the filesystem under `meta.sqlite`,
+        not the addressing scheme** (doc 18 §14, measured 2026-08-03). At 500
+        candidates this stage costs 222.2 ms with `meta.sqlite` on 9p and
+        **4.0 ms with the same file on local disk** — 55x for a file copy, no
+        code change. The ordinal path reaches 1.5 ms, a further 2.7x on the
+        stage but only 2.5 ms (2.0%) of the whole query, which is inside that
+        run's +/-4% noise floor and is NOT a claimable win.
+
+        So ordinals are a SPACE lever, not a latency one: they buy the staged
+        baseline's latency for 1.96 GB of local disk instead of 24.9 GB. Doc 18
+        §11's "120-211x" and §13's "whole-query 3.20x" both measured ordinals
+        against SQLite-on-9p and misattributed that filesystem win to the
+        addressing change; both sections now carry dated correction banners.
 
         Note only the SPLADE and dense legs reach here: `_bm25f_leg` pushes
         filters into tantivy as boolean clauses instead.

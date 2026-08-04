@@ -1,0 +1,84 @@
+{
+  "date_utc": "2026-08-03T06:46:40",
+  "goal": "CONSOLIDATION: delete abstracts.sqlite. N5 (doc 18 \u00a79) moved the payload out; this moves the LOCATOR out, which is what actually removes the database.",
+  "gate": "NO-REGRESSION vs mainline (operator constraint 2026-08-03)",
+  "src": "/var/tmp/abs_stage/abstracts.sqlite",
+  "src_bytes": 13470433280,
+  "src_fstype": "overlay",
+  "arms": {
+    "mainline": {
+      "n": 150,
+      "p50_ms": 5.092,
+      "mean_ms": 5.3616,
+      "p90_ms": 6.4876,
+      "vs_mainline": 1.0,
+      "regression": true
+    },
+    "flat_only": {
+      "n": 150,
+      "p50_ms": 4.1938,
+      "mean_ms": 3.3091,
+      "p90_ms": 5.9703,
+      "vs_mainline": 1.214,
+      "regression": false
+    },
+    "flat_ordinal": {
+      "n": 150,
+      "p50_ms": 0.9211,
+      "mean_ms": 2.5612,
+      "p90_ms": 5.45,
+      "vs_mainline": 5.528,
+      "regression": false
+    }
+  },
+  "parity": {
+    "mainline": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "flat_only": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "flat_ordinal": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    }
+  },
+  "sizes": {
+    "abstracts_sqlite_gb": 13.47,
+    "flat_blocks_gb": 11.15,
+    "ordinal_locator_gb": 0.421,
+    "replacement_gb": 11.57,
+    "saved_gb": 1.9,
+    "note": "replacement = blocks.bin + locator arrays; the `meta` table (zstd dictionaries, ~KB) still has to be carried somewhere, and is NOT counted here \u2014 see the doc's not-settled list"
+  },
+  "flat_build": {
+    "blocks": 1062917,
+    "slots": 1517007,
+    "bytes": 11131511857,
+    "path": "/var/tmp/abs_stage/abstracts.sqlite.flat",
+    "seconds": 114.9
+  },
+  "locator_build": {
+    "rows": 23398073,
+    "skipped_non_wid": 0,
+    "bytes": 421165826,
+    "bytes_per_doc": 18.0,
+    "dtypes": {
+      "b": "uint32",
+      "off": "uint16",
+      "n": "uint32"
+    },
+    "max": {
+      "b": 1517006,
+      "off": 32767,
+      "n": 71073
+    },
+    "seconds": 54.6
+  },
+  "parity_overall_pass": true
+}

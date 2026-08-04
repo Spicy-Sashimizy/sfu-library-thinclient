@@ -1,0 +1,276 @@
+{
+  "date_utc": "2026-08-03T05:36:19",
+  "question": "decompose doc 18 \u00a713's 3.20x into the addressing lever and the meta.sqlite filesystem lever, which N6 varied together",
+  "design": "2x2 factorial: _ordinals {off,on} x meta.sqlite {9p,overlay}",
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "ordinal_docs_covered": 150413098,
+  "filters": {
+    "year_range": [
+      2010,
+      2025
+    ],
+    "type": "article"
+  },
+  "queries": [
+    "bioethics organ allocation transplant consent scarce medical resources",
+    "open access scholarly publishing academic journals business models APC",
+    "income stratification class reproduction social mobility intergenerational",
+    "Canadian immigration settlement services multicultural policy",
+    "long COVID post-acute sequelae epidemiology treatment",
+    "urban food security community garden land access food sovereignty",
+    "Cold War Canada NATO nuclear deterrence foreign policy diplomacy",
+    "quantum computing qubit decoherence error correction fault tolerant",
+    "green chemistry catalysis sustainable synthesis solvent-free organic",
+    "knowledge management organizational learning communities of practice firm",
+    "medical anthropology traditional healing Indigenous medicine health systems integration",
+    "distributed systems Byzantine fault tolerance consensus algorithm"
+  ],
+  "reps_per_query": 3,
+  "overfetch_filtered": 10,
+  "env": {
+    "splade_backend": "seismic",
+    "seismic_stage_dir": "/var/tmp/seismic_stage",
+    "seismic_federation": null,
+    "shard_fstype_served": "overlay",
+    "ordinal_dir": "/var/tmp/ordinals_stage",
+    "ordinal_dir_fstype": "overlay",
+    "meta_9p_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+    "meta_9p_fstype": "9p",
+    "meta_staged_path": "/var/tmp/meta_stage/meta.sqlite",
+    "meta_staged_fstype": "overlay",
+    "dense_warmcache": "0",
+    "cache_pressure_note": "staged SEISMIC ~42 GB + staged meta.sqlite ~24.9 GB against 56 GB RAM: the staged arms cannot hold their full working set resident and evict each other, as a real host would"
+  },
+  "method": "real ThinClientRetriever.search(); 4 arms interleaved within each rep, order randomised per rep; every arm warmed; only _ordinals and _meta differ between arms",
+  "results": {
+    "splade_k50": {
+      "arms": {
+        "prod_9p": {
+          "n": 36,
+          "p50_ms": 332.32,
+          "mean_ms": 1492.71,
+          "min_ms": 281.59,
+          "max_ms": 18764.43,
+          "p90_ms": 482.1
+        },
+        "sqlite_staged": {
+          "n": 36,
+          "p50_ms": 117.27,
+          "mean_ms": 595.7,
+          "min_ms": 80.49,
+          "max_ms": 9067.27,
+          "p90_ms": 173.79
+        },
+        "ordinal_9p": {
+          "n": 36,
+          "p50_ms": 122.26,
+          "mean_ms": 3100.7,
+          "min_ms": 84.72,
+          "max_ms": 85609.8,
+          "p90_ms": 779.64
+        },
+        "ordinal_staged": {
+          "n": 36,
+          "p50_ms": 125.63,
+          "mean_ms": 1254.81,
+          "min_ms": 85.23,
+          "max_ms": 27043.69,
+          "p90_ms": 1070.74
+        }
+      },
+      "speedup_vs_prod_9p": {
+        "prod_9p": 1.0,
+        "sqlite_staged": 2.834,
+        "ordinal_9p": 2.718,
+        "ordinal_staged": 2.645
+      },
+      "candidates_post_filtered": 500
+    },
+    "splade_k100": {
+      "arms": {
+        "prod_9p": {
+          "n": 36,
+          "p50_ms": 684.46,
+          "mean_ms": 796.67,
+          "min_ms": 511.01,
+          "max_ms": 2747.68,
+          "p90_ms": 1449.37
+        },
+        "sqlite_staged": {
+          "n": 36,
+          "p50_ms": 257.07,
+          "mean_ms": 402.45,
+          "min_ms": 102.92,
+          "max_ms": 5002.35,
+          "p90_ms": 352.15
+        },
+        "ordinal_9p": {
+          "n": 36,
+          "p50_ms": 248.42,
+          "mean_ms": 229.8,
+          "min_ms": 95.59,
+          "max_ms": 841.75,
+          "p90_ms": 285.86
+        },
+        "ordinal_staged": {
+          "n": 36,
+          "p50_ms": 258.56,
+          "mean_ms": 411.59,
+          "min_ms": 107.56,
+          "max_ms": 1480.02,
+          "p90_ms": 1326.14
+        }
+      },
+      "speedup_vs_prod_9p": {
+        "prod_9p": 1.0,
+        "sqlite_staged": 2.663,
+        "ordinal_9p": 2.755,
+        "ordinal_staged": 2.647
+      },
+      "candidates_post_filtered": 1000
+    },
+    "bm25f_k50": {
+      "arms": {
+        "prod_9p": {
+          "n": 36,
+          "p50_ms": 524.7,
+          "mean_ms": 879.4,
+          "min_ms": 265.25,
+          "max_ms": 7373.71,
+          "p90_ms": 2714.6
+        },
+        "sqlite_staged": {
+          "n": 36,
+          "p50_ms": 527.97,
+          "mean_ms": 826.9,
+          "min_ms": 262.25,
+          "max_ms": 5451.04,
+          "p90_ms": 1937.72
+        },
+        "ordinal_9p": {
+          "n": 36,
+          "p50_ms": 546.28,
+          "mean_ms": 791.47,
+          "min_ms": 262.18,
+          "max_ms": 2764.63,
+          "p90_ms": 1797.61
+        },
+        "ordinal_staged": {
+          "n": 36,
+          "p50_ms": 525.4,
+          "mean_ms": 722.45,
+          "min_ms": 257.84,
+          "max_ms": 2736.69,
+          "p90_ms": 1895.82
+        }
+      },
+      "speedup_vs_prod_9p": {
+        "prod_9p": 1.0,
+        "sqlite_staged": 0.994,
+        "ordinal_9p": 0.96,
+        "ordinal_staged": 0.999
+      },
+      "candidates_post_filtered": 500
+    },
+    "bm25f_k100": {
+      "arms": {
+        "prod_9p": {
+          "n": 36,
+          "p50_ms": 527.43,
+          "mean_ms": 690.07,
+          "min_ms": 259.64,
+          "max_ms": 3072.4,
+          "p90_ms": 784.24
+        },
+        "sqlite_staged": {
+          "n": 36,
+          "p50_ms": 509.19,
+          "mean_ms": 686.95,
+          "min_ms": 258.78,
+          "max_ms": 2870.94,
+          "p90_ms": 1005.28
+        },
+        "ordinal_9p": {
+          "n": 36,
+          "p50_ms": 534.14,
+          "mean_ms": 731.38,
+          "min_ms": 258.06,
+          "max_ms": 2809.57,
+          "p90_ms": 1010.36
+        },
+        "ordinal_staged": {
+          "n": 36,
+          "p50_ms": 527.55,
+          "mean_ms": 690.63,
+          "min_ms": 258.56,
+          "max_ms": 2846.78,
+          "p90_ms": 828.11
+        }
+      },
+      "speedup_vs_prod_9p": {
+        "prod_9p": 1.0,
+        "sqlite_staged": 1.036,
+        "ordinal_9p": 0.987,
+        "ordinal_staged": 1.0
+      },
+      "candidates_post_filtered": 1000
+    }
+  },
+  "parity": {
+    "splade_k50": {
+      "pairs": 36,
+      "mismatches": 0,
+      "pass": true
+    },
+    "splade_k100": {
+      "pairs": 36,
+      "mismatches": 0,
+      "pass": true
+    },
+    "bm25f_k50": {
+      "pairs": 36,
+      "mismatches": 0,
+      "pass": true
+    },
+    "bm25f_k100": {
+      "pairs": 36,
+      "mismatches": 0,
+      "pass": true
+    }
+  },
+  "stage_profile": {
+    "prod_9p": {
+      "post_filter": 222.17,
+      "hydrate_meta": 14.98,
+      "hydrate_abstracts": 24.26,
+      "total": 385.89,
+      "other_ms": 124.48,
+      "samples": 36
+    },
+    "sqlite_staged": {
+      "post_filter": 3.97,
+      "hydrate_meta": 0.34,
+      "hydrate_abstracts": 20.52,
+      "total": 127.36,
+      "other_ms": 102.53,
+      "samples": 36
+    },
+    "ordinal_9p": {
+      "post_filter": 1.48,
+      "hydrate_meta": 7.48,
+      "hydrate_abstracts": 19.89,
+      "total": 130.18,
+      "other_ms": 101.33,
+      "samples": 36
+    },
+    "ordinal_staged": {
+      "post_filter": 1.5,
+      "hydrate_meta": 0.4,
+      "hydrate_abstracts": 19.91,
+      "total": 124.33,
+      "other_ms": 102.52,
+      "samples": 36
+    }
+  },
+  "parity_overall_pass": true
+}

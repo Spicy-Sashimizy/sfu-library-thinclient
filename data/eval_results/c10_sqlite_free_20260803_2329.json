@@ -1,0 +1,113 @@
+{
+  "date_utc": "2026-08-03T23:27:55",
+  "goal": "serve with abstracts.sqlite DELETED (doc 18 \u00a718)",
+  "gate": "byte-parity + no-regression vs mainline",
+  "src": "/var/tmp/abs_stage/abstracts.sqlite",
+  "src_fstype": "overlay",
+  "arms": {
+    "mainline": {
+      "n": 200,
+      "p50_ms": 3.5119,
+      "mean_ms": 3.644,
+      "p90_ms": 4.1187,
+      "vs_mainline": 1.0,
+      "regression": false
+    },
+    "flat_ordinal": {
+      "n": 200,
+      "p50_ms": 2.952,
+      "mean_ms": 3.0528,
+      "p90_ms": 3.3596,
+      "vs_mainline": 1.19,
+      "regression": false
+    },
+    "sqlite_free": {
+      "n": 200,
+      "p50_ms": 2.9481,
+      "mean_ms": 3.0338,
+      "p90_ms": 3.44,
+      "vs_mainline": 1.191,
+      "regression": false
+    },
+    "mainline_ctrl": {
+      "n": 200,
+      "p50_ms": 3.536,
+      "mean_ms": 3.6613,
+      "p90_ms": 4.1222,
+      "vs_mainline": 0.993,
+      "regression": true
+    }
+  },
+  "parity": {
+    "mainline": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "flat_ordinal": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "sqlite_free": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    },
+    "mainline_ctrl": {
+      "ids": 20000,
+      "mismatched_chunks": 0,
+      "pass": true
+    }
+  },
+  "noise_floor_pct": 0.69,
+  "parity_overall_pass": true,
+  "locator_build": {
+    "flat_store_id": "951f244e-b1fc-4920-be49-065dc2e21615",
+    "built_utc": "2026-08-03T23:28:50",
+    "rows": 23398073,
+    "skipped_non_wid": 0,
+    "bytes": 421165826,
+    "bytes_per_doc": 18.0,
+    "dtypes": {
+      "b": "uint32",
+      "off": "uint16",
+      "n": "uint32"
+    },
+    "source": {
+      "path": "/var/tmp/abs_stage/abstracts.sqlite",
+      "bytes": 13470433280,
+      "mtime_ns": 1785739590827766955
+    },
+    "note": "delete abstracts.sqlite only when skipped_non_wid == 0 AND the zstd dicts (meta table) have been rehomed beside blocks.bin \u2014 until then the SQLite file is still load-bearing"
+  },
+  "dicts": {
+    "flat_store_id": "951f244e-b1fc-4920-be49-065dc2e21615",
+    "built_utc": "2026-08-03T23:28:16",
+    "format": "v3",
+    "names": [
+      "latin",
+      "cyrillic",
+      "hangul",
+      "arabic",
+      "han",
+      "greek",
+      "kana"
+    ],
+    "files": [
+      "zdict_arabic",
+      "zdict_cyrillic",
+      "zdict_greek",
+      "zdict_han",
+      "zdict_hangul",
+      "zdict_kana",
+      "zdict_latin"
+    ]
+  },
+  "sizes": {
+    "abstracts_sqlite_gb": 13.47,
+    "flat_blocks_gb": 11.13,
+    "ordinal_locator_gb": 0.421,
+    "dicts_mb": 0.8
+  }
+}

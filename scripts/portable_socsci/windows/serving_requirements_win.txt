@@ -1,0 +1,23 @@
+# Minimal Windows CPU serving deps for the portable social-sciences bundle.
+# Traced from the SERVE path (not build/train): the SPLADE query encoder runs on
+# onnxruntime CPU — "no torch, no network" (opensearch_retriever.py) — so torch /
+# sentence-transformers are NOT here (dense leg is stripped, D1). pip resolves the
+# transitive deps (tokenizers, huggingface-hub, regex, safetensors, pyyaml,
+# filelock, tqdm, anyio, h11, click, ... all have win_amd64 or none-any wheels).
+#
+# Fetched by build_windows_runtime.ps1 with:
+#   pip install --only-binary=:all: -r serving_requirements_win.txt
+# (or, to pre-stage offline on this Linux host:
+#   pip download --platform win_amd64 --only-binary=:all: --python-version 311 \
+#       -r serving_requirements_win.txt -d wheels/ )
+
+onnxruntime            # SPLADE query encode (CPU)
+tantivy                # BM25F lexical leg
+numpy                  # vector plumbing (seismic/onnx IO)
+zstandard              # abstracts v3 zstd-dict blocks
+transformers           # SPLADE query tokenizer (tokenizer-only; no torch import)
+tokenizers             # (transformers dep, pinned explicit for the win_amd64 wheel)
+uvicorn                # ASGI server for serve_http
+starlette              # web framework (/app, REST, /health)
+requests               # remote-abstract fallback (imported even when offline)
+mcp>=1.0.0             # the /mcp endpoint

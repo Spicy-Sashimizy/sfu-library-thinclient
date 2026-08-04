@@ -39,6 +39,8 @@ import json
 import logging
 import sqlite3
 import threading
+import time
+import uuid
 from collections import OrderedDict
 from pathlib import Path
 
@@ -55,6 +57,17 @@ FLUSH_BYTES = 4 << 20           # post-training per-bucket buffer cap
 BLOCK_CACHE = 64                # reader: decompressed blocks kept hot
 
 RU_DICT_ID = 1                  # v2 compatibility (reader only)
+
+# Ordinal locator (doc 18 §16/§17): the flat store's SQLite-free block index.
+# Both stamps live inside the `<name>.flat/` sidecar. FLAT_STAMP carries the
+# identity `build_flat_sidecar` minted for `blocks.bin`; LOCATOR_STAMP copies
+# it, and the reader refuses any pairing whose ids disagree — a locator over
+# the wrong blocks returns a real, WRONG abstract with no error (doc 18 §6
+# risk 1, the abstract-store instance of it).
+FLAT_STAMP = "flat_store.json"
+LOCATOR_STAMP = "locator.json"
+DICTS_STAMP = "dicts.json"
+FLAT_ID_KEY = "flat_store_id"
 
 _SCRIPT_RANGES = (
     ("cyrillic", ((0x0400, 0x0500),)),
@@ -278,6 +291,8 @@ def build_flat_sidecar(src: Path, out: Path | None = None,
     src = Path(src)
     out = Path(out) if out else src.with_suffix(src.suffix + ".flat")
     out.mkdir(parents=True, exist_ok=True)
+    src_st = src.stat()
+    flat_id = str(uuid.uuid4())     # minted per build; see FLAT_ID_KEY comment
     db = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
     try:
         max_b = db.execute("SELECT max(b) FROM blocks").fetchone()[0]
@@ -309,7 +324,287 @@ def build_flat_sidecar(src: Path, out: Path | None = None,
         tmp.rename(out / "blocks.bin")
     finally:
         db.close()
-    return {"blocks": n, "slots": n_slots, "bytes": pos, "path": str(out)}
+    # Stamp the identity AFTER blocks.bin is complete: a locator binds to this
+    # id, so it must never certify a half-written block file. A fresh uuid per
+    # build (not a content hash) because a locator built against a *different*
+    # build of the same corpus is still wrong — the addresses moved.
+    stamp = {FLAT_ID_KEY: flat_id,
+             "built_utc": time.strftime("%Y-%m-%dT%H:%M:%S"),
+             "blocks": n, "slots": n_slots, "bytes": pos,
+             "source": {"path": str(src), "bytes": src_st.st_size,
+                        "mtime_ns": src_st.st_mtime_ns}}
+    (out / FLAT_STAMP).write_text(json.dumps(stamp, indent=2))
+    # Rehome the dicts in the same build: with them beside blocks.bin, the only
+    # thing keeping abstracts.sqlite alive is the `docs` locator, which
+    # build_ordinal_locator replaces (doc 18 §17-§18).
+    dump_dict_sidecar(src, out)
+    return {"blocks": n, "slots": n_slots, "bytes": pos, "path": str(out),
+            FLAT_ID_KEY: flat_id}
+
+
+class AbstractLocatorMismatch(RuntimeError):
+    """The locator arrays cannot be proven to address these `blocks.bin`.
+
+    Raised instead of serving a plausible WRONG abstract. See the FLAT_ID_KEY
+    comment and doc 18 §17; this is the abstract-store twin of
+    `OrdinalSpaceMismatch`.
+    """
+
+
+def _encode_wid(doc_id: str) -> int | None:
+    """`W2031234567` -> 2031234567, or None when the id wouldn't round-trip.
+
+    Inlined mirror of `builder.encode_meta_id` (importing it would be circular:
+    builder imports this module). The two MUST agree on the leading-zero
+    rejection: if they drift, "W0123" resolves to the ordinal of the DIFFERENT
+    document "W123", passes the verification read, and returns the wrong
+    abstract silently — doc 18's first real bug, now guarded by
+    test_abstract_locator.test_encoder_agrees_with_the_builder.
+    """
+    if len(doc_id) > 1 and doc_id[0] == "W":
+        digits = doc_id[1:]
+        if digits.isdigit() and digits[0] != "0":
+            return int(digits)
+    return None
+
+
+class AbstractLocator:
+    """`W-id -> (block, offset, length)` for a flat abstract store, replacing
+    the SQLite `docs` B-tree over 23.4M variable-length TEXT keys with a
+    `searchsorted` over a sorted int64 array + three parallel columns (doc 18
+    §16: p50 5.53x, mean 2.09x, parity PASS).
+
+    The identity gate below is the whole reason this is a class and not four
+    `np.load`s. A locator addresses INTO `blocks.bin`; paired with a
+    `blocks.bin` from a different build its (block, offset) pairs point at the
+    wrong bytes and it returns a real, plausible, WRONG abstract with no error
+    — ordinals hazard 1 (doc 18 §6 risk 1) in the abstract store. So it refuses
+    to load unless the `flat_store_id` it was stamped with matches the one
+    `build_flat_sidecar` stamped into the blocks it is about to address. It
+    fails closed: a missing stamp on either side is a refusal, never a
+    best-effort pairing, and there is no override flag by design.
+    """
+
+    def __init__(self, flat_dir: str | Path):
+        import numpy as np
+
+        self.flat_dir = Path(flat_dir)
+        loc_path = self.flat_dir / LOCATOR_STAMP
+        if not loc_path.exists():
+            raise AbstractLocatorMismatch(
+                f"{loc_path} is missing — the arrays carry no identity, so they "
+                f"cannot be proven to address these blocks. Rebuild them with "
+                f"build_ordinal_locator, which writes the stamp last.")
+        self.stamp = json.loads(loc_path.read_text())
+
+        # ── identity gate: fail closed ───────────────────────────────────────
+        flat_path = self.flat_dir / FLAT_STAMP
+        if not flat_path.exists():
+            raise AbstractLocatorMismatch(
+                f"{flat_path} is missing — the flat blocks carry no identity, "
+                f"so the locator cannot be shown to address them. Refusing: a "
+                f"mismatched pair returns the WRONG abstract with no error "
+                f"(doc 18 §6 risk 1).")
+        flat = json.loads(flat_path.read_text())
+        want, got = flat.get(FLAT_ID_KEY), self.stamp.get(FLAT_ID_KEY)
+        if not got:
+            raise AbstractLocatorMismatch(f"{loc_path} has no {FLAT_ID_KEY!r}")
+        if not want:
+            raise AbstractLocatorMismatch(
+                f"{flat_path} has no {FLAT_ID_KEY!r}, so the blocks cannot be "
+                f"shown to share an identity with {loc_path}.")
+        if want != got:
+            raise AbstractLocatorMismatch(
+                f"abstract locator mismatch: blocks {want!r} != locator {got!r} "
+                f"({self.flat_dir}). The locator was built against a different "
+                f"blocks.bin; its (block, offset) pairs address the wrong bytes. "
+                f"Rebuild the locator against these blocks.")
+
+        self.rows = int(self.stamp["rows"])
+        for name in ("wids", "b", "off", "n"):
+            arr = np.load(self.flat_dir / f"loc_{name}.npy", mmap_mode="r")
+            # Every column full-length, not just wids: an interrupted copy can
+            # leave wids complete and `off` short, and then the tail addresses
+            # whatever the shorter array holds (doc 18 §12, hit for real
+            # 2026-08-02 on the ordinal columns).
+            if len(arr) != self.rows:
+                raise AbstractLocatorMismatch(
+                    f"loc_{name}.npy holds {len(arr)} entries but the stamp "
+                    f"declares {self.rows} — the locator is truncated or the "
+                    f"stamp is stale; the tail addresses nothing.")
+            setattr(self, name, arr)
+        logger.info("abstract locator %s loaded: %d rows from %s",
+                    got, self.rows, self.flat_dir)
+
+    def lookup(self, ids: list[str]):
+        """`W-id -> (positions, found)`. `found` is the verification read that
+        makes a miss visible; `positions` is meaningless where `found` is False.
+        Mirrors `OrdinalSpace.lookup` exactly."""
+        import numpy as np
+
+        nums = np.empty(len(ids), dtype=np.int64)
+        valid = np.zeros(len(ids), dtype=bool)
+        for i, s in enumerate(ids):
+            w = _encode_wid(s)
+            if w is not None:
+                nums[i], valid[i] = w, True
+        if self.rows == 0:
+            return np.zeros(len(ids), dtype=np.int64), valid & False
+        pos = np.clip(np.searchsorted(self.wids, nums), 0, self.rows - 1)
+        found = valid & (self.wids[pos] == nums)   # verification read
+        return pos, found
+
+
+def build_ordinal_locator(src: Path, flat_dir: Path | None = None) -> dict:
+    """Build the SQLite-free block locator for a flat abstract store: a sorted
+    section-local W-id array + parallel (b, off, n) columns, written INTO the
+    flat sidecar beside `blocks.bin` (doc 18 §16).
+
+    Read-only against `src`. Binds the locator to the exact blocks it will
+    address by copying the `flat_store_id` `build_flat_sidecar` minted, and
+    refuses to build against a source that did not produce those blocks (stat
+    mismatch) — otherwise the copied id would certify a false pairing.
+    """
+    import numpy as np
+
+    src = Path(src)
+    flat_dir = Path(flat_dir) if flat_dir else src.with_suffix(src.suffix + ".flat")
+    flat_path = flat_dir / FLAT_STAMP
+    if not flat_path.exists():
+        raise FileNotFoundError(
+            f"{flat_path} is missing — build the flat sidecar first "
+            f"(build_flat_sidecar), which mints the identity the locator binds "
+            f"to.")
+    flat = json.loads(flat_path.read_text())
+    flat_id = flat.get(FLAT_ID_KEY)
+    if not flat_id:
+        raise ValueError(f"{flat_path} carries no {FLAT_ID_KEY!r}")
+    # Build-time guard: the (b, off, n) come from `src`'s docs table and must
+    # index blocks built from the SAME src. If src is not what build_flat_sidecar
+    # recorded, copying its id would certify a false pairing — refuse instead.
+    recorded, st = flat.get("source", {}), src.stat()
+    if (recorded.get("bytes") != st.st_size
+            or recorded.get("mtime_ns") != st.st_mtime_ns):
+        raise ValueError(
+            f"{src} is not the source build_flat_sidecar recorded for these "
+            f"blocks ({recorded}); a locator built here would certify a false "
+            f"pairing. Rebuild the flat sidecar from this src, or point src at "
+            f"the recorded source.")
+
+    db = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+    try:
+        n_rows = db.execute("SELECT count(*) FROM docs").fetchone()[0]
+        mx_b, mx_off, mx_n = db.execute(
+            "SELECT max(b), max(off), max(n) FROM docs").fetchone()
+        # dtypes from MEASURED maxima, never assumed: `n` maxes at 71,073 in
+        # production, which OVERFLOWS u16 despite the ~32 KB block target
+        # (doc 18 §16). Guessing would truncate the longest abstracts silently.
+        off_dt = np.uint16 if (mx_off or 0) < 2 ** 16 else np.uint32
+        n_dt = np.uint16 if (mx_n or 0) < 2 ** 16 else np.uint32
+        b_dt = np.uint32 if (mx_b or 0) < 2 ** 32 else np.uint64
+
+        wids = np.zeros(n_rows, dtype=np.int64)
+        bs = np.zeros(n_rows, dtype=b_dt)
+        offs = np.zeros(n_rows, dtype=off_dt)
+        ns = np.zeros(n_rows, dtype=n_dt)
+
+        i = 0
+        skipped: list[str] = []
+        for did, b, off, n in db.execute("SELECT id, b, off, n FROM docs"):
+            w = _encode_wid(did)
+            if w is None:
+                skipped.append(did)      # keeps the SQLite path; ideally 0
+                continue
+            wids[i], bs[i], offs[i], ns[i] = w, b, off, n
+            i += 1
+        if skipped:
+            logger.warning("abstract locator: %d ids are not plain W-numbers "
+                           "(e.g. %s) — the locator cannot address them; they "
+                           "keep the SQLite docs path", len(skipped), skipped[:3])
+        wids, bs, offs, ns = wids[:i], bs[:i], offs[:i], ns[:i]
+
+        order = np.argsort(wids, kind="stable")     # searchsorted needs sorted
+        wids, bs, offs, ns = wids[order], bs[order], offs[order], ns[order]
+        if i and not np.all(np.diff(wids) > 0):
+            raise ValueError("W-ids are not strictly increasing after sort — "
+                             "duplicate ids would make the lookup ambiguous")
+        for name, arr in (("wids", wids), ("b", bs), ("off", offs), ("n", ns)):
+            if len(arr) != i:
+                raise ValueError(f"loc_{name} is {len(arr)}, expected {i}")
+            np.save(flat_dir / f"loc_{name}.npy", arr)
+    finally:
+        db.close()
+
+    total = sum((flat_dir / f"loc_{k}.npy").stat().st_size
+                for k in ("wids", "b", "off", "n"))
+    stamp = {
+        FLAT_ID_KEY: flat_id,
+        "built_utc": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "rows": int(i),
+        "skipped_non_wid": len(skipped),
+        "bytes": int(total),
+        "bytes_per_doc": round(total / max(i, 1), 2),
+        "dtypes": {"b": str(np.dtype(b_dt)), "off": str(np.dtype(off_dt)),
+                   "n": str(np.dtype(n_dt))},
+        "source": {"path": str(src), "bytes": st.st_size,
+                   "mtime_ns": st.st_mtime_ns},
+        "note": ("delete abstracts.sqlite only when skipped_non_wid == 0 AND "
+                 "the zstd dicts (meta table) have been rehomed beside "
+                 "blocks.bin — until then the SQLite file is still load-bearing"),
+    }
+    # locator.json LAST: the reader keys detection off it, so a crash leaves
+    # arrays with no stamp (ignored) rather than a stamp over half-written arrays.
+    (flat_dir / LOCATOR_STAMP).write_text(json.dumps(stamp, indent=2))
+    return stamp
+
+
+def dump_dict_sidecar(src: Path, flat_dir: Path | None = None) -> dict:
+    """Copy the trained zstd dictionaries out of the source `meta` table into
+    the flat sidecar, so a section can be served with `abstracts.sqlite`
+    DELETED (the dicts are the only other thing `AbstractStore.__init__` reads
+    from SQLite). Read-only against `src`.
+
+    The dicts decode `blocks.bin`, so a wrong set produces garbage — zstd
+    usually catches this itself (a dictionary-id mismatch raises), but the
+    sidecar is bound to the flat store's identity anyway, defence in depth.
+    Files are named exactly as the reader looks them up (`zdict_<name>`,
+    `zdict_latin`), so the sidecar and SQLite dict-loading paths differ only in
+    where the bytes come from.
+    """
+    src = Path(src)
+    flat_dir = Path(flat_dir) if flat_dir else src.with_suffix(src.suffix + ".flat")
+    flat_path = flat_dir / FLAT_STAMP
+    if not flat_path.exists():
+        raise FileNotFoundError(
+            f"{flat_path} is missing — build the flat sidecar first "
+            f"(build_flat_sidecar), which mints the identity the dicts bind to.")
+    flat_id = json.loads(flat_path.read_text()).get(FLAT_ID_KEY)
+    if not flat_id:
+        raise ValueError(f"{flat_path} carries no {FLAT_ID_KEY!r}")
+
+    db = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+    try:
+        fmt_row = db.execute("SELECT v FROM meta WHERE k='format'").fetchone()
+        names_row = db.execute("SELECT v FROM meta WHERE k='dicts'").fetchone()
+        # v3 uses positional dict ids (`names`); v1/v2 name their dicts `zdict`
+        # / `zdict_ru`. Dump every `zdict%` row verbatim either way.
+        fmt = fmt_row[0] if fmt_row else ("v3" if names_row else "v1")
+        names = json.loads(names_row[0]) if names_row else []
+        files: list[str] = []
+        for (k, v) in db.execute("SELECT k, v FROM meta WHERE k LIKE 'zdict%'"):
+            (flat_dir / k).write_bytes(v)      # raw dict bytes = what the reader loads
+            files.append(k)
+    finally:
+        db.close()
+
+    meta = {FLAT_ID_KEY: flat_id, "built_utc": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "format": fmt, "names": names, "files": sorted(files)}
+    # dicts.json LAST: the reader keys sidecar detection off it, so a crash
+    # leaves raw dict files with no manifest (ignored) rather than a manifest
+    # over a half-written dict set.
+    (flat_dir / DICTS_STAMP).write_text(json.dumps(meta, indent=2))
+    logger.info("abstracts: rehomed %d dicts (%s) into %s", len(files), fmt, flat_dir)
+    return meta
 
 
 class AbstractStore:
@@ -317,8 +612,45 @@ class AbstractStore:
 
     def __init__(self, path: Path):
         self.path = Path(path)
-        self._db = sqlite3.connect(str(self.path), check_same_thread=False)
         self._lock = threading.Lock()
+        self._block_cache: OrderedDict[int, bytes] = OrderedDict()
+        self._flat = None
+        self._locator = None
+        flat_dir = self.path.with_suffix(self.path.suffix + ".flat")
+
+        # ── SQLite-free mode (doc 18 §18) ────────────────────────────────────
+        # abstracts.sqlite has been deleted; the flat sidecar carries every
+        # payload (blocks.bin), the block index (loc_*.npy), and the dicts
+        # (dicts.json + zdict_*). No SQLite connection at all.
+        self._sqlite_free = ((flat_dir / DICTS_STAMP).exists()
+                             and not self.path.exists())
+        if not self.path.exists() and not self._sqlite_free:
+            # Never let sqlite3.connect() silently CREATE an empty db here.
+            raise FileNotFoundError(
+                f"{self.path} does not exist and {flat_dir / DICTS_STAMP} is "
+                f"missing — cannot open a SQLite-free store without the "
+                f"rehomed dicts (doc 18 §18).")
+
+        if self._sqlite_free:
+            self._db = None
+            self._v3 = True
+            self._has_docs = False       # no `docs`; the locator is mandatory
+            self._load_dicts_from_sidecar(flat_dir)
+            self._open_flat(flat_dir)
+            if self._flat is None:
+                raise RuntimeError(
+                    f"{self.path}: SQLite-free store but the flat sidecar "
+                    f"{flat_dir} is unusable — there are no payloads to serve.")
+            self._open_locator(flat_dir)
+            if self._locator is None:
+                raise RuntimeError(
+                    f"{self.path}: SQLite-free store has no ordinal locator; "
+                    f"without `docs` there is no way to resolve block addresses. "
+                    f"Run build_ordinal_locator before deleting abstracts.sqlite.")
+            return
+
+        # ── SQLite-backed mode (v1/v2/v3) ────────────────────────────────────
+        self._db = sqlite3.connect(str(self.path), check_same_thread=False)
         tables = {r[0] for r in self._db.execute(
             "SELECT name FROM sqlite_master WHERE type='table'")}
         # `docs` (the block locator) is the v3 marker, NOT `blocks`. Once a
@@ -326,23 +658,23 @@ class AbstractStore:
         # reclaim its space — keying detection off `blocks` would then silently
         # fall through to the v1/v2 path and query a non-existent `abs` table.
         self._v3 = "docs" in tables or "blocks" in tables
-        self._block_cache: OrderedDict[int, bytes] = OrderedDict()
-
-        def _zdict(key: str):
-            row = self._db.execute("SELECT v FROM meta WHERE k=?", (key,)).fetchone()
-            return zstandard.ZstdCompressionDict(row[0]) if row else None
+        # The ordinal locator's miss path (hazard 2) needs the `docs` table; an
+        # operator who has dropped it has committed to ordinal-only addressing.
+        self._has_docs = "docs" in tables
 
         if self._v3:
-            names = json.loads(self._db.execute(
-                "SELECT v FROM meta WHERE k='dicts'").fetchone()[0])
-            plain = zstandard.ZstdDecompressor()
-            latin = _zdict("zdict_latin")
-            self._dctxs = {}
-            for i, name in enumerate(names):
-                zd = _zdict(f"zdict_{name}") or latin
-                self._dctxs[i] = (zstandard.ZstdDecompressor(dict_data=zd)
-                                  if zd else plain)
+            # Prefer the rehomed sidecar dicts when present, so the exact code
+            # path SQLite-free mode uses is exercised here too (before deletion
+            # is irreversible), and both paths are held byte-identical by test.
+            if (flat_dir / DICTS_STAMP).exists():
+                self._load_dicts_from_sidecar(flat_dir)
+            else:
+                self._load_dicts_from_sqlite()
         else:
+            def _zdict(key: str):
+                row = self._db.execute(
+                    "SELECT v FROM meta WHERE k=?", (key,)).fetchone()
+                return zstandard.ZstdCompressionDict(row[0]) if row else None
             zd = _zdict("zdict")
             main = (zstandard.ZstdDecompressor(dict_data=zd) if zd
                     else zstandard.ZstdDecompressor())
@@ -354,10 +686,62 @@ class AbstractStore:
             self._has_dict_col = "d" in cols   # v1: two columns, one dict
 
         # v3-flat (N5): payloads in a flat file, everything else unchanged.
-        self._flat = None
-        flat_dir = self.path.with_suffix(self.path.suffix + ".flat")
         if self._v3 and flat_dir.is_dir():
             self._open_flat(flat_dir)
+            # The locator addresses INTO blocks.bin, so it rides on the flat
+            # store: no flat file, no ordinal locator (doc 18 §17).
+            if self._flat is not None:
+                self._open_locator(flat_dir)
+
+    # ── dict loading (shared by SQLite and sidecar sources) ──────────────────
+
+    @staticmethod
+    def _build_v3_dctxs(zdict_fn, names: list[str]) -> dict:
+        """Positional dict-id -> decompressor. `zdict_fn(key)` returns a
+        `ZstdCompressionDict` or None; a bucket with no dict of its own shares
+        latin, and a store trained below the bar shares the plain codec. Shared
+        by both dict sources so they cannot drift."""
+        plain = zstandard.ZstdDecompressor()
+        latin = zdict_fn("zdict_latin")
+        dctxs = {}
+        for i, name in enumerate(names):
+            zd = zdict_fn(f"zdict_{name}") or latin
+            dctxs[i] = (zstandard.ZstdDecompressor(dict_data=zd) if zd else plain)
+        return dctxs
+
+    def _load_dicts_from_sqlite(self) -> None:
+        def _zdict(key: str):
+            row = self._db.execute(
+                "SELECT v FROM meta WHERE k=?", (key,)).fetchone()
+            return zstandard.ZstdCompressionDict(row[0]) if row else None
+        names = json.loads(self._db.execute(
+            "SELECT v FROM meta WHERE k='dicts'").fetchone()[0])
+        self._dctxs = self._build_v3_dctxs(_zdict, names)
+
+    def _load_dicts_from_sidecar(self, flat_dir: Path) -> None:
+        """Load the rehomed dicts (doc 18 §18). Identity-checked against the
+        blocks the same way the locator is — a dict set from a different build
+        would otherwise decode `blocks.bin` into garbage."""
+        meta = json.loads((flat_dir / DICTS_STAMP).read_text())
+        self._require_flat_identity(flat_dir, meta.get(FLAT_ID_KEY), DICTS_STAMP)
+
+        def _zdict(key: str):
+            p = flat_dir / key
+            return zstandard.ZstdCompressionDict(p.read_bytes()) if p.exists() else None
+        self._dctxs = self._build_v3_dctxs(_zdict, meta["names"])
+
+    @staticmethod
+    def _require_flat_identity(flat_dir: Path, got: str | None, which: str) -> None:
+        flat_path = flat_dir / FLAT_STAMP
+        if not flat_path.exists():
+            raise AbstractLocatorMismatch(
+                f"{flat_path} is missing — the blocks carry no identity, so "
+                f"{which} cannot be proven to belong to them.")
+        want = json.loads(flat_path.read_text()).get(FLAT_ID_KEY)
+        if not want or not got or want != got:
+            raise AbstractLocatorMismatch(
+                f"{which} identity {got!r} != blocks {want!r} in {flat_dir}; "
+                f"the sidecar was built against different blocks.")
 
     def _open_flat(self, flat_dir: Path) -> None:
         """Attach the N5 flat block file. Only the payload source changes: the
@@ -377,23 +761,43 @@ class AbstractStore:
             # A half-built sidecar must not take the section down: v3 still
             # holds every payload, so falling back is lossless (unlike the
             # ordinal guard, where falling back would mean wrong answers).
-            # UNLESS the blocks table was dropped to reclaim its space — then
-            # there is no fallback and a clear error beats an obscure sqlite
-            # one from three frames deeper.
-            has_blocks = self._db.execute(
+            # UNLESS the blocks table was dropped to reclaim its space — or this
+            # is SQLite-free mode, where there is no `blocks` table AT ALL — then
+            # there is no fallback and a clear error beats an obscure one three
+            # frames deeper.
+            has_blocks = self._db and self._db.execute(
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name='blocks'"
             ).fetchone()
             if not has_blocks:
                 raise RuntimeError(
                     f"{self.path}: flat sidecar {flat_dir} is unusable ({exc}) "
-                    f"and the `blocks` table has been dropped — this store has "
-                    f"no payloads left. Restore the sidecar or rebuild.") from exc
+                    f"and there is no `blocks` table to fall back to — this "
+                    f"store has no payloads left. Restore the sidecar or "
+                    f"rebuild.") from exc
             logger.warning("abstracts: flat sidecar %s unusable (%s); "
                            "serving the v3 blocks table", flat_dir, exc)
             return
         self._flat = {"off": off, "len": ln, "did": did, "fd": fd}
         logger.info("abstracts: %s serving %d blocks from flat store",
                     self.path.name, len(off))
+
+    def _open_locator(self, flat_dir: Path) -> None:
+        """Attach the ordinal locator (doc 18 §17) when it is present AND its
+        identity is proven against these blocks.
+
+        Absent locator (no `locator.json`): serve via the SQLite `docs` table,
+        no error — the pre-consolidation default. Present-but-mismatched
+        locator: `AbstractLocator` RAISES, and this does not catch it. Unlike a
+        half-built flat sidecar (which falls back losslessly to the v3 blocks
+        table), a mismatched locator loads fine and returns wrong abstracts, so
+        the only safe response is to refuse loudly — the operator built it to be
+        used, and using the wrong one is the failure this gate exists for."""
+        if not (flat_dir / LOCATOR_STAMP).exists():
+            return
+        self._locator = AbstractLocator(flat_dir)   # raises on any mismatch
+        logger.info("abstracts: %s serving the ordinal locator (%d rows) — "
+                    "block lookups no longer touch SQLite", self.path.name,
+                    self._locator.rows)
 
     def _block_flat(self, b: int) -> bytes:
         import os
@@ -423,19 +827,51 @@ class AbstractStore:
             self._block_cache.popitem(last=False)
         return payload
 
+    def _fetch_via_docs(self, chunk: list[str], out: dict[str, str]) -> None:
+        """v3 SQLite locator: resolve (block, offset, length) from the `docs`
+        table, then slice the (flat or SQLite) block. Also the ordinal
+        locator's miss path — ids it cannot address keep this route."""
+        marks = ",".join("?" * len(chunk))
+        for doc_id, b, off, n in self._db.execute(
+                f"SELECT id, b, off, n FROM docs WHERE id IN ({marks})", chunk):
+            out[doc_id] = self._block(b)[off:off + n].decode("utf-8")
+
+    def _fetch_via_locator(self, ids: list[str], out: dict[str, str]) -> None:
+        """flat blocks + ordinal locator — the SQLite-free block lookup
+        (doc 18 §17). Byte-identical to the `docs` path by construction: same
+        blocks, same (b, off, n), only the index structure changes."""
+        loc = self._locator
+        pos, found = loc.lookup(ids)
+        miss: list[str] = []
+        for i, did in enumerate(ids):
+            if not found[i]:
+                miss.append(did)
+                continue
+            p = int(pos[i])
+            blk = self._block(int(loc.b[p]))
+            o, n = int(loc.off[p]), int(loc.n[p])
+            out[did] = blk[o:o + n].decode("utf-8")
+        if miss and self._has_docs:
+            # A valid W-id simply absent from this store lands here and
+            # correctly returns nothing (SQLite would too). A non-W-number id
+            # is a docs_other-class id the ordinal locator cannot address and
+            # MUST keep the SQLite path, or it vanishes silently (hazard 2).
+            for s in range(0, len(miss), 500):
+                self._fetch_via_docs(miss[s:s + 500], out)
+
     def fetch(self, ids: list[str]) -> dict[str, str]:
         """Return {id: abstract} for ids present in this store."""
         out: dict[str, str] = {}
         with self._lock:
-            for chunk_start in range(0, len(ids), 500):
-                chunk = ids[chunk_start:chunk_start + 500]
-                marks = ",".join("?" * len(chunk))
-                if self._v3:
-                    for doc_id, b, off, n in self._db.execute(
-                            f"SELECT id, b, off, n FROM docs "
-                            f"WHERE id IN ({marks})", chunk):
-                        out[doc_id] = self._block(b)[off:off + n].decode("utf-8")
-                else:
+            if self._locator is not None:
+                self._fetch_via_locator(ids, out)
+            elif self._v3:
+                for s in range(0, len(ids), 500):
+                    self._fetch_via_docs(ids[s:s + 500], out)
+            else:
+                for s in range(0, len(ids), 500):
+                    chunk = ids[s:s + 500]
+                    marks = ",".join("?" * len(chunk))
                     sel = ("SELECT id, z, d FROM abs" if self._has_dict_col
                            else "SELECT id, z, 0 FROM abs")
                     for doc_id, z, d in self._db.execute(

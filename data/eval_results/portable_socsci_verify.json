@@ -1,0 +1,48 @@
+{
+  "bundle": "/var/tmp/portable_socsci_bundle",
+  "manifest": "/var/tmp/portable_socsci_bundle/seismic/shards.e5.v2.json",
+  "index_root": "/var/tmp/portable_socsci_bundle/thinclient_index",
+  "utc": "2026-08-04T20:00:03",
+  "status": "PASS",
+  "sections_loaded": [
+    "social_sciences__archive",
+    "social_sciences__recent"
+  ],
+  "load_ms": 319.1,
+  "federation": "parallel",
+  "queries": [
+    {
+      "query": "kinship structures in stateless societies",
+      "n_hits": 10,
+      "n_with_local_abstract": 10,
+      "latency_ms": 112296.9,
+      "top_title": "The Evolutionary Origins of Kinship Structures",
+      "top_id": "W2531180330"
+    },
+    {
+      "query": "electoral systems and coalition government",
+      "n_hits": 10,
+      "n_with_local_abstract": 8,
+      "latency_ms": 3168.4,
+      "top_title": "Electoral Systems and Inequalities in Government Interventions",
+      "top_id": "W7110627902"
+    },
+    {
+      "query": "causes of the industrial revolution",
+      "n_hits": 10,
+      "n_with_local_abstract": 7,
+      "latency_ms": 1236.3,
+      "top_title": "The Causes of the Industrial Revolution: An Essay in Methodology 1",
+      "top_id": "W4248098458"
+    },
+    {
+      "query": "social capital and civic participation",
+      "n_hits": 10,
+      "n_with_local_abstract": 10,
+      "latency_ms": 658.5,
+      "top_title": "Civic Participation and Soft Social Capital: Evidence from Greece",
+      "top_id": "W2717325945"
+    }
+  ],
+  "note": "full-seismic v1 served bit-exact from the bundle; social-only via trimmed meta.sqlite; abstracts offline (local sidecars). Windows runtime still unproven (design \u00a77)."
+}

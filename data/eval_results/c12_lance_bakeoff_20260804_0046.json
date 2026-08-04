@@ -1,0 +1,96 @@
+{
+  "date_utc": "2026-08-04T00:46:17",
+  "goal": "META bake-off: can lance_take or raw_mmap hold the speed gate C11 failed?",
+  "corpus_rows": 150413098,
+  "meta_gb": 24.91,
+  "meta_fstype": "overlay",
+  "sizes": {
+    "raw_mmap": {
+      "store_gb": 17.68,
+      "replacement_gb": 19.63,
+      "saved_gb": 5.28
+    },
+    "lance_take": {
+      "store_gb": 10.8,
+      "replacement_gb": 12.75,
+      "saved_gb": 12.16
+    },
+    "perdoc_zstd": {
+      "store_gb": 12.32,
+      "replacement_gb": 14.27,
+      "saved_gb": 10.64
+    }
+  },
+  "parity": {
+    "lance_take": true,
+    "raw_mmap": true,
+    "perdoc_zstd": true,
+    "sqlite_ctrl": true
+  },
+  "lookup": {
+    "sqlite_mainline": {
+      "n": 200,
+      "p50_ms": 0.3015,
+      "mean_ms": 1.7121,
+      "p90_ms": 4.0345,
+      "vs_mainline": 1.0,
+      "regression": false,
+      "parity_pass": true
+    },
+    "lance_take": {
+      "n": 200,
+      "p50_ms": 6.3714,
+      "mean_ms": 6.43,
+      "p90_ms": 7.2172,
+      "vs_mainline": 0.047,
+      "regression": true,
+      "parity_pass": true
+    },
+    "raw_mmap": {
+      "n": 200,
+      "p50_ms": 0.695,
+      "mean_ms": 2.8309,
+      "p90_ms": 7.454,
+      "vs_mainline": 0.434,
+      "regression": true,
+      "parity_pass": true
+    },
+    "perdoc_zstd": {
+      "n": 200,
+      "p50_ms": 2.178,
+      "mean_ms": 3.033,
+      "p90_ms": 5.6862,
+      "vs_mainline": 0.138,
+      "regression": true,
+      "parity_pass": true
+    },
+    "sqlite_ctrl": {
+      "n": 200,
+      "p50_ms": 0.2891,
+      "mean_ms": 1.6697,
+      "p90_ms": 3.9749,
+      "vs_mainline": 1.043,
+      "regression": false,
+      "parity_pass": true
+    }
+  },
+  "noise_floor_pct": 4.12,
+  "quality_gate_pass": true,
+  "verdict": {
+    "lance_take": {
+      "holds_speed_gate": false,
+      "parity_pass": true,
+      "saves_gb": 12.16
+    },
+    "raw_mmap": {
+      "holds_speed_gate": false,
+      "parity_pass": true,
+      "saves_gb": 5.28
+    },
+    "perdoc_zstd": {
+      "holds_speed_gate": false,
+      "parity_pass": true,
+      "saves_gb": 10.64
+    }
+  }
+}

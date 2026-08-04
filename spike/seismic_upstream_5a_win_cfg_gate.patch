@@ -1,0 +1,126 @@
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 3ae6e2d..56255b6 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -55,6 +55,46 @@ use crate::inverted_index_wrapper::resolve_query_tokens;
+ 
+ use num_traits::FromPrimitive;
+ 
++// ── Cross-platform page-cache / residency hooks (PORTABLE_SOCSCI §7) ──────────
++// The F3–F6 prefault / mlock / madvise optimizations are POSIX-only. They are
++// pure *performance* hints over a read-only mmap — correctness-neutral, since the
++// OS demand-pages the mapping identically without them. Funnelling every `libc`
++// syscall through these two shims lets the engine cross-compile for native
++// Windows x86-64 (the portable social-sciences thumb-drive bundle): real
++// syscalls on unix, no-ops elsewhere (Windows accepts slower cold faults; the
++// prefault/pin tier simply does not apply). Correctness on Linux is unchanged —
++// the shim expands to the exact prior `libc::` calls under `#[cfg(unix)]`.
++// See docs/infrastructure/PORTABLE_SOCSCI_WINDOWS_BUNDLE.md §7.
++#[derive(Clone, Copy)]
++enum Advice { WillNeed, Sequential, DontNeed, Random }
++
++/// `madvise(2)` on a read-only mmap range; no-op on non-unix.
++#[cfg(unix)]
++#[inline]
++unsafe fn os_madvise(ptr: *mut core::ffi::c_void, len: usize, advice: Advice) {
++    let a = match advice {
++        Advice::WillNeed => libc::MADV_WILLNEED,
++        Advice::Sequential => libc::MADV_SEQUENTIAL,
++        Advice::DontNeed => libc::MADV_DONTNEED,
++        Advice::Random => libc::MADV_RANDOM,
++    };
++    unsafe { libc::madvise(ptr, len, a); }
++}
++#[cfg(not(unix))]
++#[inline]
++unsafe fn os_madvise(_ptr: *mut core::ffi::c_void, _len: usize, _advice: Advice) {}
++
++/// `mlock(2)` on a read-only mmap range. Returns 0 on success (unix). On non-unix
++/// returns -1 so callers record 0 bytes locked (the pin tier degrades to no-op).
++#[cfg(unix)]
++#[inline]
++unsafe fn os_mlock(ptr: *const core::ffi::c_void, len: usize) -> i32 {
++    unsafe { libc::mlock(ptr, len) as i32 }
++}
++#[cfg(not(unix))]
++#[inline]
++unsafe fn os_mlock(_ptr: *const core::ffi::c_void, _len: usize) -> i32 { -1 }
++
+ // ---------------------------------------------------------------------------
+ // Manifest types (serde_json; the only structured format — all data is flat raw)
+ // ---------------------------------------------------------------------------
+@@ -1151,9 +1191,9 @@ fn touch_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and is
+     // safe to call on the mapping base address.
+     unsafe {
+-        let ptr = bytes.as_ptr() as *mut libc::c_void;
+-        libc::madvise(ptr, bytes.len(), libc::MADV_WILLNEED);
+-        libc::madvise(ptr, bytes.len(), libc::MADV_SEQUENTIAL);
++        let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++        os_madvise(ptr, bytes.len(), Advice::WillNeed);
++        os_madvise(ptr, bytes.len(), Advice::Sequential);
+     }
+     // Use an atomic to guarantee the reads happen; plain u64 accumulator was
+     // compiled out on the first C2 run (fault-in appeared instant, RssFile unchanged).
+@@ -1185,8 +1225,8 @@ fn release_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and is
+     // safe to call on the mapping base address (same reasoning as `touch_bytes`).
+     unsafe {
+-        let ptr = bytes.as_ptr() as *mut libc::c_void;
+-        libc::madvise(ptr, bytes.len(), libc::MADV_DONTNEED);
++        let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++        os_madvise(ptr, bytes.len(), Advice::DontNeed);
+     }
+     let n = bytes.len() as u64;
+     counter.fetch_add(n as usize, Ordering::Relaxed);
+@@ -1215,10 +1255,8 @@ fn mlock_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // the data is read-only identical). A permission failure returns EPERM/
+     // ENOMEM without corrupting the mapping — we swallow it and report 0 locked.
+     let locked = unsafe {
+-        let ptr = bytes.as_ptr() as *const libc::c_void;
+-        // mlock takes a *const but the syscall treats it as const; cast to mute
+-        // the const-correctness friction with the libc crate's signature.
+-        libc::mlock(ptr as *const libc::c_void, bytes.len())
++        let ptr = bytes.as_ptr() as *const core::ffi::c_void;
++        os_mlock(ptr, bytes.len())
+     };
+     let n = if locked == 0 {
+         bytes.len() as u64
+@@ -1262,7 +1300,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+         }
+     }
+     let mut released: u64 = 0;
+-    let base = bytes.as_ptr() as *mut libc::c_void;
++    let base = bytes.as_ptr() as *mut core::ffi::c_void;
+     // Walk page-by-page; DONTNEED the gaps between kept extents. Coalescing
+     // contiguous release runs into one madvise call (fewer syscalls) but
+     // keeping it page-granular is simplest and correct; the DV forward slab is
+@@ -1275,7 +1313,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+                 let len = (p - s) * page;
+                 if len > 0 {
+                     unsafe {
+-                        libc::madvise(base.add(off), len, libc::MADV_DONTNEED);
++                        os_madvise(base.add(off), len, Advice::DontNeed);
+                     }
+                     released += len as u64;
+                 }
+@@ -1291,7 +1329,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+         let len = len.min(bytes.len() - off);
+         if len > 0 {
+             unsafe {
+-                libc::madvise(base.add(off), len, libc::MADV_DONTNEED);
++                os_madvise(base.add(off), len, Advice::DontNeed);
+             }
+             released += len as u64;
+         }
+@@ -1334,8 +1372,8 @@ fn leak_mmap_advise(path: std::path::PathBuf, random: bool) -> std::io::Result<&
+         // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and
+         // is safe on the mapping base address (same reasoning as `touch_bytes`).
+         unsafe {
+-            let ptr = bytes.as_ptr() as *mut libc::c_void;
+-            libc::madvise(ptr, bytes.len(), libc::MADV_RANDOM);
++            let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++            os_madvise(ptr, bytes.len(), Advice::Random);
+         }
+     }
+     Ok(bytes)

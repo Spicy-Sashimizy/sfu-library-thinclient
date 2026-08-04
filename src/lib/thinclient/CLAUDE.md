@@ -6,7 +6,10 @@ tantivy + BMP shards + sidecars; per-slice `slice_checkpoint()`/resume — meta 
 abstracts are WAL, BMP shards never span spool slices; kill/resume parity test:
 `scripts/tests/test_build_resume.py`) · `retriever.py` (drop-in ThinClientRetriever,
 RRF k=60, era pruning) · `abstracts.py` (v3 script-bucketed 32KB zstd-dict
-blocks; reads v1/v2 too) · `packer.py` (hot/cold tar+zstd-19 on built artifacts)
+blocks; reads v1/v2 too; N5 flat sidecar + ordinal block locator + rehomed dicts with a fail-closed
+identity gate — doc 18 §17-§18; serves SQLite-free with abstracts.sqlite
+deleted, only the build-time emit is left)
+· `packer.py` (hot/cold tar+zstd-19 on built artifacts)
 · `dense_cache.py` (query-driven warm cache, `SFU_DENSE_WARMCACHE`, default on)
 · `doc_encoder.py` (GPU TRT batch SPLADE encoder for monthly rebuilds).
 

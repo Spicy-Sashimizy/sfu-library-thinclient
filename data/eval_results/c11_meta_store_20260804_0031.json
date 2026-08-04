@@ -1,0 +1,58 @@
+{
+  "date_utc": "2026-08-03T23:41:34",
+  "goal": "META GATE: full-150.4M title/DOI store latency (convert \u00a715's extrapolation)",
+  "gate": "no-regression vs staged meta.sqlite; size ~= \u00a715 projection",
+  "meta_path": "/var/tmp/meta_stage/meta.sqlite",
+  "meta_bytes": 24908001280,
+  "meta_fstype": "overlay",
+  "corpus_rows": 150413098,
+  "docs_other_rows": 0,
+  "level": 19,
+  "build": {
+    "seconds": 2981.2,
+    "docs_per_s": 50453,
+    "payload_bytes": 11115059147
+  },
+  "sizes": {
+    "title_doi_payload_gb": 11.115,
+    "offsets_locator_gb": 1.203,
+    "dict_mb": 0.115,
+    "payload_bytes_per_doc": 73.9,
+    "title_doi_store_gb": 12.32,
+    "meta_replacement_gb": 14.27,
+    "meta_sqlite_gb": 24.91,
+    "saved_gb": 10.64,
+    "note": "replacement = title/doi store + \u00a712 filter cols (0.75) + wids (1.20)"
+  },
+  "lookup": {
+    "sqlite_mainline": {
+      "n": 200,
+      "p50_ms": 0.3306,
+      "mean_ms": 0.3762,
+      "p90_ms": 0.5535,
+      "vs_mainline": 1.0,
+      "regression": false,
+      "parity_pass": true
+    },
+    "meta_store": {
+      "n": 200,
+      "p50_ms": 28.7378,
+      "mean_ms": 37.7253,
+      "p90_ms": 87.0556,
+      "vs_mainline": 0.012,
+      "regression": true,
+      "parity_pass": true
+    },
+    "sqlite_ctrl": {
+      "n": 200,
+      "p50_ms": 0.2956,
+      "mean_ms": 0.3344,
+      "p90_ms": 0.551,
+      "vs_mainline": 1.118,
+      "regression": false,
+      "parity_pass": true
+    }
+  },
+  "noise_floor_pct": 10.59,
+  "parity_overall_pass": true
+}

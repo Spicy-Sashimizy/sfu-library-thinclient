@@ -1,0 +1,77 @@
+{
+  "date_utc": "2026-08-04T01:59:23",
+  "goal": "META bake-off: does Vortex hold the speed gate C11/C12 failed?",
+  "corpus_rows": 150413098,
+  "meta_gb": 24.91,
+  "sizes": {
+    "vortex_take": {
+      "store_gb": 9.31,
+      "replacement_gb": 11.26,
+      "saved_gb": 13.65
+    }
+  },
+  "parity": {
+    "vortex_take": true,
+    "lance_take": true,
+    "raw_mmap": true,
+    "sqlite_ctrl": true
+  },
+  "lookup": {
+    "sqlite_mainline": {
+      "n": 200,
+      "p50_ms": 0.4489,
+      "mean_ms": 12.2221,
+      "p90_ms": 36.045,
+      "vs_mainline": 1.0,
+      "regression": false,
+      "parity_pass": true
+    },
+    "vortex_take": {
+      "n": 200,
+      "p50_ms": 12.1367,
+      "mean_ms": 13.0655,
+      "p90_ms": 18.2952,
+      "vs_mainline": 0.037,
+      "regression": true,
+      "parity_pass": true
+    },
+    "lance_take": {
+      "n": 200,
+      "p50_ms": 6.8914,
+      "mean_ms": 7.0247,
+      "p90_ms": 8.0415,
+      "vs_mainline": 0.065,
+      "regression": true,
+      "parity_pass": true
+    },
+    "raw_mmap": {
+      "n": 200,
+      "p50_ms": 9.1036,
+      "mean_ms": 14.2759,
+      "p90_ms": 36.0419,
+      "vs_mainline": 0.049,
+      "regression": true,
+      "parity_pass": true
+    },
+    "sqlite_ctrl": {
+      "n": 200,
+      "p50_ms": 0.3668,
+      "mean_ms": 11.3514,
+      "p90_ms": 40.8877,
+      "vs_mainline": 1.224,
+      "regression": false,
+      "parity_pass": true
+    }
+  },
+  "noise_floor_pct": 18.28,
+  "quality_gate_pass": true,
+  "verdict": {
+    "vortex_take": {
+      "holds_speed_gate": false,
+      "parity_pass": true,
+      "saves_gb": 13.65,
+      "p50_ms": 12.1367,
+      "vs_mainline": 0.037
+    }
+  }
+}
