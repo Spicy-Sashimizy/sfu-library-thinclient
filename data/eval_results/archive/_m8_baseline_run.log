@@ -1,0 +1,8 @@
+21:23:36 INFO Loading SPLADE ONNX model from models/splade_onnx_fp16/model.onnx (tokenizer sfu-academic-embed-v1)
+21:23:41 INFO SPLADE ONNX model loaded (CPU)
+[m8-baseline] 100 queries encoded
+[m8-baseline] shard1.dv (global_shard1of8.dotvbyte.e5.v2.mmap): 25.9s
+[m8-baseline] shard1.f16 (global_shard1of8.mmap): 75.7s
+[m8-baseline] shard2.dv (global_shard2of8.dotvbyte.e5.v2.mmap): 26.0s
+[m8-baseline] shard2.f16 (global_shard2of8.mmap): 75.4s
+[m8-baseline] wrote /workspaces/sfu-library-thinclient/data/eval_results/m8_pre_baseline.json

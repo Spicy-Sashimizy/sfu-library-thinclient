@@ -1,0 +1,38 @@
+06:46:40 INFO building flat sidecar (N5) — 11.13 GB / ~1.06M blocks measured 2026-08-02
+06:46:42 INFO flat sidecar abstracts.sqlite: 50000 blocks, 0.52 GB
+06:46:44 INFO flat sidecar abstracts.sqlite: 100000 blocks, 1.05 GB
+06:46:46 INFO flat sidecar abstracts.sqlite: 150000 blocks, 1.57 GB
+06:46:49 INFO flat sidecar abstracts.sqlite: 200000 blocks, 2.10 GB
+06:46:51 INFO flat sidecar abstracts.sqlite: 250000 blocks, 2.62 GB
+06:46:55 INFO flat sidecar abstracts.sqlite: 300000 blocks, 3.14 GB
+06:47:04 INFO flat sidecar abstracts.sqlite: 350000 blocks, 3.67 GB
+06:47:11 INFO flat sidecar abstracts.sqlite: 400000 blocks, 4.19 GB
+06:47:14 INFO flat sidecar abstracts.sqlite: 450000 blocks, 4.72 GB
+06:47:18 INFO flat sidecar abstracts.sqlite: 500000 blocks, 5.24 GB
+06:47:25 INFO flat sidecar abstracts.sqlite: 550000 blocks, 5.76 GB
+06:47:33 INFO flat sidecar abstracts.sqlite: 600000 blocks, 6.28 GB
+06:47:42 INFO flat sidecar abstracts.sqlite: 650000 blocks, 6.81 GB
+06:47:47 INFO flat sidecar abstracts.sqlite: 700000 blocks, 7.33 GB
+06:47:52 INFO flat sidecar abstracts.sqlite: 750000 blocks, 7.86 GB
+06:48:00 INFO flat sidecar abstracts.sqlite: 800000 blocks, 8.38 GB
+06:48:04 INFO flat sidecar abstracts.sqlite: 850000 blocks, 8.90 GB
+06:48:10 INFO flat sidecar abstracts.sqlite: 900000 blocks, 9.43 GB
+06:48:15 INFO flat sidecar abstracts.sqlite: 950000 blocks, 9.95 GB
+06:48:25 INFO flat sidecar abstracts.sqlite: 1000000 blocks, 10.47 GB
+06:48:33 INFO flat sidecar abstracts.sqlite: 1050000 blocks, 11.00 GB
+06:48:35 INFO   flat sidecar: 1062917 blocks, 11.13 GB in 115 s
+06:48:35 INFO building ordinal locator
+06:48:44 INFO locator: 23,398,073 rows, max b=1517006 off=32767 n=71073
+06:49:29 INFO   locator: 23,398,073 rows, 421.2 MB (18.00 B/doc), dtypes {'b': 'uint32', 'off': 'uint16', 'n': 'uint32'}, 55 s
+06:49:29 INFO abstracts: abstracts.sqlite serving 1517007 blocks from flat store
+06:49:29 INFO arms ready: mainline flat=False | flat_only flat=True
+06:49:32 INFO id pool: 20,000
+06:49:32 INFO parity: 20,000 ids
+06:49:44 INFO   mainline      parity PASS
+06:49:44 INFO   flat_only     parity PASS
+06:49:44 INFO   flat_ordinal  parity PASS
+06:49:46 INFO mainline      p50    5.092 ms | 1.00x mainline  <-- REGRESSION
+06:49:46 INFO flat_only     p50    4.194 ms | 1.21x mainline
+06:49:46 INFO flat_ordinal  p50    0.921 ms | 5.53x mainline
+06:49:46 INFO abstracts.sqlite 13.47 GB -> blocks 11.15 GB + locator 0.421 GB = 11.57 GB (saves 1.90 GB)
+06:49:46 INFO results -> /workspaces/sfu-library-thinclient/data/eval_results/c8_abs_locator_20260803_0649.json (parity PASS)

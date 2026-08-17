@@ -1,0 +1,23 @@
+{
+ "date": "2026-08-10",
+ "gate": "c",
+ "reps": 3,
+ "bar": "PROMOTE p50 ratio (on/off) <=0.95 both shards; KEEP <1.00 consistently; REVERT >=1.00",
+ "cells": {
+  "shard1": {
+   "p50_on_ms": 2.161,
+   "p50_off_ms": 2.114,
+   "ratio": 1.0223,
+   "p90_on_ms": 3.138,
+   "p90_off_ms": 3.141
+  },
+  "shard2": {
+   "p50_on_ms": 2.31,
+   "p50_off_ms": 2.213,
+   "ratio": 1.0435,
+   "p90_on_ms": 3.463,
+   "p90_off_ms": 3.306
+  }
+ },
+ "verdict": "REVERT"
+}

@@ -1,0 +1,21 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Everything is committed and pushed (origin/sfu-library-thinclient..HEAD is empty). The host monitor also landed a verification commit (38d99f8: "W7-1/W7-2 ACCEPTED — WI-17c-fix verified"). The tree is clean and pause-safe.
+
+The campaign is complete at 07:38Z — well under the 08:15Z hard stop for new work and the 08:45Z absolute exit.
+
+## Wave 7 summary — all 4 work items DONE, plus host fixes
+
+**WI-17a — cache wiring.** The existing thread-safe `lib/cache.ResponseCache` is now wired into `api_search` as a read-through result cache (no new cache class). Versioned key `v1|<norm_query>|limit|page|year_from|year_to|oa|type|prefer_local|stamp=<manifest_built>@<engines>` — casefold+whitespace+outer-punct normalized query (mirrors the serve query log), so an index/model swap rotates the stamp and never serves stale. Never caches errors/degraded/leg-breaker/BM25F-fallback/cold-warmup responses; cache-failure falls through to the normal path. `/health` exposes hit/miss/store/bypass/resident/hit_ratio counters; `cache_hit` boolean added to the serve query log. Env gate `SFU_RESULT_CACHE` (default ON staging — owner-granted exception for this wave; `=0` one-env rollback). Tests 26/26.
+
+**WI-17b — pre-seed primer.** On-start `_run_cache_preseed` runs strictly after warmup, sequentially (concurrency 1 — never a parallel burst on the single-GPU cross-encoder), via the shared `read_through` so planted keys match real clicks. Standalone `scripts/prime_result_cache.py` re-primes a running serve (refuses while warming). Seed list = 4 landing examples read from their **source** `web/src/search.jsx` (not the compiled artifact) + owner-extensible `demo_seed_queries.txt`. Bar met: resident 6/6 after warmup; re-prime idempotent (resident stable, hits +6, stores +0).
+
+**WI-17c — measured efficacy (F6).** All 4 bars PASS on the warm+primed staging serve:
+- **A**: cache-hit p50 **3.7–4.1 ms** vs cold-miss p50 **0.2–3.0 s** → **50×–776× speedup** (n=20/leg × 6 queries)
+- **B + B2**: round-trip parity for all 6; **and** the genuine contract bar — serve-restart OFF-vs-ON byte parity (cached == fresh uncached) all 6 PASS
+- **C**: miss-path 0.26–3.0 s = warm-search floor, no regression
+
+**WI-17d (stretch).** `ResultCacheCard` in the Index Manager Warm Cache tab shows live hit ratio + resident + primer state from `/health`; jsdom verify 14/14.
+
+**Host-monitor fixes (W7-1, W7-2)** — resolved same session. The host caught two real F6 issues in my first WI-17c pass: (1) `speedup_p50x` didn't reproduce from the stored p50 fields (I'd used a separate raw median sample) and (2) bar B was only round-trip identity, not the promised OFF-vs-ON parity. Both fixed: arithmetic now recomputes from stored fields (F6-verified, raw sample arrays stored), and a new `scripts/eval_result_cache_parity.py` runs the genuine OFF-vs-ON byte-parity leg. The host also flagged that my `threading.local` cache_hit bridge was effectively process-global on the single event-loop thread — replaced with `contextvars.ContextVar` (asyncio-task-scoped). The host monitor verified and accepted all fixes (commit 38d99f8).
+
+Every item is commit-complete and independently pause-safe; ledger rows final; docs synced in the same commits; working tree clean.

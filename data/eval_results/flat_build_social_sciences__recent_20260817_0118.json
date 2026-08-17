@@ -1,0 +1,100 @@
+{
+  "date_utc": "2026-08-17T00:59:10",
+  "section": "social_sciences__recent",
+  "src": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite",
+  "published_dir": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat",
+  "staging_dir": null,
+  "stages": {
+    "flat": {
+      "blocks": 1062917,
+      "slots": 1517007,
+      "bytes": 11131511857,
+      "path": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat.building",
+      "flat_store_id": "01ce8b7f-b9f3-442a-8c23-2ff5997651aa",
+      "seconds": 823.9,
+      "skipped": false
+    },
+    "dicts": {
+      "skipped": true,
+      "reason": "ok"
+    },
+    "locator": {
+      "flat_store_id": "01ce8b7f-b9f3-442a-8c23-2ff5997651aa",
+      "built_utc": "2026-08-17T01:15:06",
+      "rows": 23398073,
+      "skipped_non_wid": 0,
+      "bytes": 421165826,
+      "bytes_per_doc": 18.0,
+      "dtypes": {
+        "b": "uint32",
+        "off": "uint16",
+        "n": "uint32"
+      },
+      "source": {
+        "path": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite",
+        "bytes": 13470433280,
+        "mtime_ns": 1781493865675739600
+      },
+      "note": "delete abstracts.sqlite only when skipped_non_wid == 0 AND the zstd dicts (meta table) have been rehomed beside blocks.bin \u2014 until then the SQLite file is still load-bearing",
+      "seconds": 132.0,
+      "skipped": false
+    }
+  },
+  "pass": true,
+  "preflight": {
+    "src_bytes": 13470433280,
+    "format": "v3",
+    "free_bytes_before": 333008785408,
+    "est_sidecar_bytes": 13335728947
+  },
+  "sizes": {
+    "abstracts_sqlite_bytes": 13470433280,
+    "blocks_bin_bytes": 11131511857,
+    "block_index_bytes": 19721475,
+    "locator_bytes": 421165826,
+    "dicts_bytes": 802816,
+    "sidecar_total_bytes": 11573201974,
+    "delta_vs_sqlite_bytes": -1897231306
+  },
+  "skipped_non_wid": 0,
+  "sqlite_deletable": true,
+  "verify_reads": {
+    "ids_checked": 14000,
+    "arms": {
+      "flat_docs": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "flat_ordinal": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "sqlite_free": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      }
+    },
+    "pass": true,
+    "addressable_ids": 14000,
+    "v3_returned": 14000,
+    "locator_attached": true,
+    "sqlite_free_has_no_db": true,
+    "seconds": 13.0
+  },
+  "verify_blocks": {
+    "blocks_checked": 500,
+    "mismatched": 0,
+    "examples": [],
+    "pass": true
+  },
+  "published": true
+}

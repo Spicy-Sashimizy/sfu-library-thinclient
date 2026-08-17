@@ -38,10 +38,14 @@ PASSES = 3
 # Dials: (name, pin_budget_gb, mlock_floor). The F1 sidecars hot50_1.6gb /
 # hot80_4.2gb are loaded by name when the budget matches (the backend's
 # budget_aliases maps 1.6->hot50_1.6gb, 4.2->hot80_4.2gb).
+# 2026-08-17: `SFU_SEISMIC_MLOCK_FLOOR=1` was RESCOPED (navigation runs only,
+# ~20 MB/shard). These dials keep `full` — the whole-slab floor pin they were
+# recorded against on 2026-07-14 — so a re-run reproduces the original cells;
+# use `1` for a run of the rescoped floor.
 DIALS = [
     ("off", "0", "0"),
-    ("1.6gb_hot50", "1.6", "1"),
-    ("4.2gb_hot80", "4.2", "1"),
+    ("1.6gb_hot50", "1.6", "full"),
+    ("4.2gb_hot80", "4.2", "full"),
 ]
 
 

@@ -1,0 +1,24 @@
+step 250/5601 ep0 loss_ema 0.04400 dev_mse 0.00057 dev_top64 0.2812 best 0.2812
+step 500/5601 ep0 loss_ema 0.00399 dev_mse 0.00042 dev_top64 0.3379 best 0.3379
+step 750/5601 ep0 loss_ema 0.00066 dev_mse 0.00034 dev_top64 0.4056 best 0.4056
+step 1000/5601 ep0 loss_ema 0.00035 dev_mse 0.00029 dev_top64 0.4695 best 0.4695
+step 1250/5601 ep0 loss_ema 0.00028 dev_mse 0.00024 dev_top64 0.5314 best 0.5314
+step 1500/5601 ep0 loss_ema 0.00025 dev_mse 0.00022 dev_top64 0.5617 best 0.5617
+step 1750/5601 ep0 loss_ema 0.00023 dev_mse 0.00021 dev_top64 0.5864 best 0.5864
+step 2000/5601 ep1 loss_ema 0.00022 dev_mse 0.00019 dev_top64 0.6036 best 0.6036
+step 2250/5601 ep1 loss_ema 0.00021 dev_mse 0.00019 dev_top64 0.6151 best 0.6151
+step 2500/5601 ep1 loss_ema 0.00020 dev_mse 0.00018 dev_top64 0.6263 best 0.6263
+step 2750/5601 ep1 loss_ema 0.00019 dev_mse 0.00017 dev_top64 0.6353 best 0.6353
+step 3000/5601 ep1 loss_ema 0.00019 dev_mse 0.00017 dev_top64 0.6478 best 0.6478
+step 3250/5601 ep1 loss_ema 0.00018 dev_mse 0.00016 dev_top64 0.6516 best 0.6516
+step 3500/5601 ep1 loss_ema 0.00018 dev_mse 0.00016 dev_top64 0.6523 best 0.6523
+step 3750/5601 ep2 loss_ema 0.00018 dev_mse 0.00016 dev_top64 0.6602 best 0.6602
+step 4000/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6645 best 0.6645
+step 4250/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6640 best 0.6645
+step 4500/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6675 best 0.6675
+step 4750/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6699 best 0.6699
+step 5000/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6697 best 0.6699
+step 5250/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6702 best 0.6702
+step 5500/5601 ep2 loss_ema 0.00016 dev_mse 0.00015 dev_top64 0.6703 best 0.6703
+step 5601/5601 ep2 loss_ema 0.00017 dev_mse 0.00015 dev_top64 0.6703 best 0.6703
+DONE in 43 min; best dev top-64 overlap 0.6703; checkpoints -> /workspaces/sfu-library-thinclient/models/sfu-splade-student-l4/{latest,best}

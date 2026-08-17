@@ -1,0 +1,179 @@
+{
+  "date": "2026-07-18",
+  "limit": 50,
+  "seed": 20260718,
+  "serve": "http://127.0.0.1:8080",
+  "debounce_ms": 400,
+  "min_len": 8,
+  "profiles": {
+    "slow": 35,
+    "medium": 55,
+    "fast": 90
+  },
+  "A_cold_floor": {
+    "cell": "A_cold_floor_cache_off",
+    "n": 20,
+    "p50_ms": 2335.88,
+    "p95_ms": 4464.08,
+    "mean_ms": 2628.2,
+    "min_ms": 1422.31,
+    "max_ms": 4744.14,
+    "samples_ms": [
+      1422.31,
+      3468.99,
+      2772.78,
+      2989.63,
+      1923.07,
+      2352.21,
+      4464.08,
+      1746.47,
+      3515.03,
+      2288.3,
+      4211.07,
+      2273.99,
+      2289.24,
+      1747.88,
+      2335.88,
+      1566.65,
+      2366.65,
+      4744.14,
+      1912.74,
+      2172.98
+    ],
+    "trials": [
+      {
+        "query": "air pollution exposure epidemiology",
+        "status": 200,
+        "enter_response_ms": 1422.31
+      },
+      {
+        "query": "large language model alignment techniques",
+        "status": 200,
+        "enter_response_ms": 3468.99
+      },
+      {
+        "query": "telemedicine rural access barriers",
+        "status": 200,
+        "enter_response_ms": 2772.78
+      },
+      {
+        "query": "grid scale energy storage",
+        "status": 200,
+        "enter_response_ms": 2989.63
+      },
+      {
+        "query": "health equity social determinants",
+        "status": 200,
+        "enter_response_ms": 1923.07
+      },
+      {
+        "query": "database query optimization",
+        "status": 200,
+        "enter_response_ms": 2352.21
+      },
+      {
+        "query": "protein structure prediction with alphafold",
+        "status": 200,
+        "enter_response_ms": 4464.08
+      },
+      {
+        "query": "vaccine hesitancy social media",
+        "status": 200,
+        "enter_response_ms": 1746.47
+      },
+      {
+        "query": "causal inference from observational data",
+        "status": 200,
+        "enter_response_ms": 3515.03
+      },
+      {
+        "query": "topological insulators spin transport",
+        "status": 200,
+        "enter_response_ms": 2288.3
+      },
+      {
+        "query": "gender gap in academic publishing",
+        "status": 200,
+        "enter_response_ms": 4211.07
+      },
+      {
+        "query": "stem cell differentiation pathways",
+        "status": 200,
+        "enter_response_ms": 2273.99
+      },
+      {
+        "query": "differential privacy synthetic data",
+        "status": 200,
+        "enter_response_ms": 2289.24
+      },
+      {
+        "query": "federated learning privacy preservation",
+        "status": 200,
+        "enter_response_ms": 1747.88
+      },
+      {
+        "query": "program synthesis from examples",
+        "status": 200,
+        "enter_response_ms": 2335.88
+      },
+      {
+        "query": "agent based models epidemiology",
+        "status": 200,
+        "enter_response_ms": 1566.65
+      },
+      {
+        "query": "bibliometric indicators research evaluation",
+        "status": 200,
+        "enter_response_ms": 2366.65
+      },
+      {
+        "query": "gut microbiome and metabolic disease",
+        "status": 200,
+        "enter_response_ms": 4744.14
+      },
+      {
+        "query": "procedural content generation",
+        "status": 200,
+        "enter_response_ms": 1912.74
+      },
+      {
+        "query": "systematic review meta analysis methods",
+        "status": 200,
+        "enter_response_ms": 2172.98
+      }
+    ],
+    "serve_state": {
+      "warmup": "warm",
+      "warm": true,
+      "cache_preseed": "disabled",
+      "result_cache": {
+        "enabled": false,
+        "hit": 0,
+        "miss": 0,
+        "store": 0,
+        "bypass": 0,
+        "resident": 0,
+        "hit_ratio": 0.0
+      },
+      "speculation": {
+        "enabled": false,
+        "fired": 0,
+        "dropped_busy": 0,
+        "suppressed_by_guard": 0,
+        "predicted": 0,
+        "literal": 0,
+        "stores": 0,
+        "suppressed_by_reason": {
+          "warming": 0,
+          "degraded": 0,
+          "cache-off": 0,
+          "shed": 0,
+          "short-input": 0
+        }
+      }
+    }
+  },
+  "bars": {
+    "d_armD_within_10pct_armA": null
+  }
+}

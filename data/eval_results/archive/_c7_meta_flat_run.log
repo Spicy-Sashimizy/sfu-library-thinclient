@@ -1,0 +1,12 @@
+06:31:30 INFO reading 1,000,000 contiguous rows from /var/tmp/meta_stage/meta.sqlite
+06:31:33 INFO   read 1,000,000 rows in 2.3 s
+06:31:33 INFO payload: 115.1 MB raw, mean 115.1 B/doc
+06:31:34 INFO training zstd dictionary on 20000 records
+06:31:34 INFO packing ~32 KB blocks at zstd-19
+06:31:53 INFO   packed 3520 blocks in 18.8 s
+06:31:54 INFO sqlite_mainline  p50  0.2315 ms (1.00x mainline) | parity PASS
+06:31:54 INFO raw              p50  0.1478 ms (0.64x mainline) | parity PASS
+06:31:54 INFO zstd_blocks      p50  3.7200 ms (16.07x mainline) | parity PASS
+06:31:54 INFO results -> /workspaces/sfu-library-thinclient/data/eval_results/c7_meta_flat_20260803_0631.json
+06:31:54 INFO raw          projected 18.52 GB payload+locator | full replacement 20.47 GB vs meta.sqlite 24.91 GB (saves 4.44)
+06:31:54 INFO zstd_blocks  projected  7.58 GB payload+locator | full replacement  9.53 GB vs meta.sqlite 24.91 GB (saves 15.38)

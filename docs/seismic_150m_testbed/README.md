@@ -158,3 +158,13 @@ at the top of this entry. The `_hydrate` rejection in particular was REOPENED
 database.** Code `spike/meta_consolidation/`, results
 `data/eval_results/c6_*`, `n3_*`, `n4_*`, `n5_*`, `n6_*`, `n7_fs_control_*`,
 `c7_meta_flat_*`, `c8_abs_locator_*`.
+**§22 (2026-08-17): the flat abstract sidecar was BUILT AND PUBLISHED** for
+`social_sciences__recent` (gate PASS, 11.57 GB, 19 min 33 s) — the section
+serves flat today. **§23 (2026-08-17): its SERVING efficacy is now measured**
+against that directory rather than carried forward from the spikes — byte-parity
+PASS, **local disk 1.091× warm / 2.546× cold**, 9p 2.876× (a filesystem
+artifact), −1,897,229,898 B; §17's 1.18× does not reproduce on real ranked
+result sets, and a freshly started process is **0.919×** (slower) until its
+421 MB locator is resident. Harness
+`scripts/seismic_testbed/j1_flat_sidecar_serving_ab.py`, results
+`data/eval_results/j1_flat_*_20260817.json`.

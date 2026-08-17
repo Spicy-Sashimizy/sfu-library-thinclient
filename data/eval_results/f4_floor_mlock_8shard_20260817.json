@@ -1,0 +1,9 @@
+{
+ "date": "2026-08-17",
+ "manifest": "/workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+ "n_shards": 8,
+ "nav_floor_bytes_total": 1225697128,
+ "locked_bytes": 159907840,
+ "vmlck_delta_bytes": 159907840,
+ "seconds": 7.65
+}

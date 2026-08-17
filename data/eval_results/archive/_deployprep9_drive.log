@@ -1,0 +1,22 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Wave 9 final stretch is complete. I was the relaunched GLM instance under HOST-NOTE-W9-5 (credit-constrained, commit-after-every-step). All four priority items are done, committed, and pushed:
+
+## What got done (HEAD `27f87b5`)
+
+**(a) Bank the W9-3 re-run** — `speculation_ab_2026-07-28.json` committed (`01270b2`); F6 review REQ-2 submitted (`123f4ae`). All three W9-3 contamination signatures verified resolved in the raw data: arm D all 20 genuine misses (p50 1979ms, no bimodal hits), C-literal 0.0 hit-rate across profiles (was 100%), arm F 1.7/1.1/0.6 spec_execs/trial (was 0.0).
+
+**(b) Ledger rows** — WI-19b finish, WI-19c, wind-down all written (`18e6f52`, `2d0d82b`).
+
+**(c) WI-19c docs** — TBD cells filled in `DEMO_DEPENDABILITY` §Wave 8→8-9 (`1b138f9`); backlog §WI-18 flipped to MEASURED with PASS/FAIL per bar + recommend OFF (`7353d1f`); HOST-NOTE-W9-6 amendments A+B folded in (`cfca065`). `THIN_CLIENT_SWAP` unchanged (env gates already current).
+
+**(d) Serve restore** — restarted from speculation-ON (left by the re-run) to speculation-OFF, cache ON, preseed ON; `/health` verified warm + primed + `speculation.enabled=false`.
+
+## F6 verdict and headline
+
+REQ-2 was **ACCEPTED with two amendments** (HOST-NOTE-W9-6), both folded in:
+- **A** — lead-time fields invalid (absolute-vs-relative timebase units bug); recorded in JSON `provenance_notes`, no headline affected, no re-run.
+- **B** — G-parity 5/6 divergence is real and unexplained; my wrong "cache-hit" explanation was corrected.
+
+**3 of 6 pre-registered bars FAIL → recommendation: speculation OFF for the live review.** The predictor mode's value is confined to the slow-profile known/in-pool scenario (1.00 hit-rate); at demo-representative medium/fast profiles it collapses to 0.20/0.15 (bar b refuted, not renegotiated). Waste is bounded (1.1 execs/search), so OFF is low-regret. Feature ships built+wired (spec tests 24/24 green); default stays OFF.
+
+The serve is left RUNNING, warm + primed, speculation OFF — as the wind-down requires. If credit dies now, `27f87b5` is the wave's final state. WI-19d remains cancelled per W9-5.

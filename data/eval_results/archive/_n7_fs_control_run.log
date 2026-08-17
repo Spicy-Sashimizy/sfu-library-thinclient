@@ -1,0 +1,59 @@
+05:36:05 INFO thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True, ordinals=False
+05:36:05 INFO retriever: 10 sections, splade backend='seismic', meta_numeric=True
+05:36:19 INFO staged meta.sqlite: 150,413,098 docs, schema matches
+05:36:19 INFO ordinal space 7012d0ed-52a2-4899-a8ec-f188e53b8cf3 loaded: 150413098 docs from /var/tmp/ordinals_stage
+05:36:19 INFO ordinal space 7012d0ed-52a2-4899-a8ec-f188e53b8cf3: 150413098 docs
+05:36:19 INFO warmup: 2 queries x 4 arms x 2 modes
+05:36:19 INFO SEISMIC stage: global_shard0of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+05:36:19 INFO SEISMIC stage: global_shard1of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+05:36:19 INFO SEISMIC stage: global_shard2of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+05:36:20 INFO SEISMIC stage: global_shard3of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+05:36:20 INFO SEISMIC stage: global_shard4of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+05:36:20 INFO SEISMIC stage: global_shard5of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+05:36:20 INFO SEISMIC stage: global_shard6of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+05:36:20 INFO SEISMIC stage: global_shard7of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+05:36:20 INFO SEISMIC federation auto-selected 'parallel' (overlay on /var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap)
+05:36:20 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap
+05:36:21 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+05:36:21 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard1of8.dotvbyte.e5.v2.mmap
+05:36:21 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+05:36:21 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard2of8.dotvbyte.e5.v2.mmap
+05:36:21 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+05:36:21 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard3of8.dotvbyte.e5.v2.mmap
+05:36:22 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+05:36:22 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard4of8.dotvbyte.e5.v2.mmap
+05:36:22 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+05:36:22 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard5of8.dotvbyte.e5.v2.mmap
+05:36:23 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+05:36:23 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard6of8.dotvbyte.e5.v2.mmap
+05:36:23 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+05:36:23 INFO federated: loading shard (mmap) /var/tmp/seismic_stage/global_shard7of8.dotvbyte.e5.v2.mmap
+05:36:23 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+05:38:16 INFO Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+05:38:26 INFO SPLADE ONNX model loaded (CPU)
+05:38:44 INFO   warmup splade prod_9p        0: 145016 ms
+05:38:45 INFO   warmup splade sqlite_staged  0: 196 ms
+05:38:46 INFO   warmup splade ordinal_9p     0: 1328 ms
+05:38:46 INFO   warmup splade ordinal_staged 0: 139 ms
+05:38:59 INFO   warmup splade prod_9p        1: 13353 ms
+05:39:00 INFO   warmup splade sqlite_staged  1: 140 ms
+05:39:01 INFO   warmup splade ordinal_9p     1: 1081 ms
+05:39:01 INFO   warmup splade ordinal_staged 1: 121 ms
+05:39:10 INFO   warmup bm25f prod_9p        0: 9631 ms
+05:39:11 INFO   warmup bm25f sqlite_staged  0: 325 ms
+05:39:11 INFO   warmup bm25f ordinal_9p     0: 323 ms
+05:39:11 INFO   warmup bm25f ordinal_staged 0: 325 ms
+05:39:14 INFO   warmup bm25f prod_9p        1: 2342 ms
+05:39:14 INFO   warmup bm25f sqlite_staged  1: 578 ms
+05:39:15 INFO   warmup bm25f ordinal_9p     1: 566 ms
+05:39:15 INFO   warmup bm25f ordinal_staged 1: 567 ms
+05:43:07 INFO splade_k50   prod_9p   332.3ms (1.00x) | sqlite_staged   117.3ms (2.83x) | ordinal_9p   122.3ms (2.72x) | ordinal_staged   125.6ms (2.65x) | parity PASS
+05:44:14 INFO splade_k100  prod_9p   684.5ms (1.00x) | sqlite_staged   257.1ms (2.66x) | ordinal_9p   248.4ms (2.76x) | ordinal_staged   258.6ms (2.65x) | parity PASS
+05:46:10 INFO bm25f_k50    prod_9p   524.7ms (1.00x) | sqlite_staged   528.0ms (0.99x) | ordinal_9p   546.3ms (0.96x) | ordinal_staged   525.4ms (1.00x) | parity PASS
+05:47:50 INFO bm25f_k100   prod_9p   527.4ms (1.00x) | sqlite_staged   509.2ms (1.04x) | ordinal_9p   534.1ms (0.99x) | ordinal_staged   527.5ms (1.00x) | parity PASS
+05:47:50 INFO stage profile per arm (12 queries x 3 reps, splade k=50)
+05:48:04 INFO   prod_9p        post_filter   222.2 | hydrate_meta   15.0 | abstracts   24.3 | other  124.5 | total   385.9
+05:48:09 INFO   sqlite_staged  post_filter     4.0 | hydrate_meta    0.3 | abstracts   20.5 | other  102.5 | total   127.4
+05:48:13 INFO   ordinal_9p     post_filter     1.5 | hydrate_meta    7.5 | abstracts   19.9 | other  101.3 | total   130.2
+05:48:18 INFO   ordinal_staged post_filter     1.5 | hydrate_meta    0.4 | abstracts   19.9 | other  102.5 | total   124.3
+05:48:18 INFO results -> /workspaces/sfu-library-thinclient/data/eval_results/n7_fs_control_20260803_0548.json (parity PASS)

@@ -1,0 +1,432 @@
+{
+  "phase": "done",
+  "round": "escalation-marginmse",
+  "date": "2026-07-28 21:22:20",
+  "step": 14940,
+  "total_steps": 14940,
+  "epoch": 6.0,
+  "epochs": 6,
+  "loss_qvec_ema": 0.00010789731814752411,
+  "loss_margin_ema": 0.13843226420795543,
+  "lambda": 0.0018548717489466071,
+  "lr": 0.0,
+  "best_dev_top64_overlap": 0.765167236328125,
+  "elapsed_s": 4328,
+  "eta_s": null,
+  "gpu_mem_gb": 9.5,
+  "args": {
+    "init": "/workspaces/sfu-library-thinclient/models/sfu-splade-student-l4/best",
+    "epochs": 6,
+    "batch": 192,
+    "lr": 5e-05,
+    "eval_every": 250,
+    "warmup_steps": 100,
+    "doc_pool": 40000,
+    "docs_per_batch": 64,
+    "max_doc_nnz": 256,
+    "dev_subsample": 512
+  },
+  "history": [
+    {
+      "step": 2750,
+      "loss_qvec_ema": 0.000154,
+      "loss_margin_ema": 0.26052,
+      "dev_mse": 0.000135,
+      "dev_top64_overlap": 0.7068,
+      "elapsed_s": 837
+    },
+    {
+      "step": 3000,
+      "loss_qvec_ema": 0.00015,
+      "loss_margin_ema": 0.253091,
+      "dev_mse": 0.00014,
+      "dev_top64_overlap": 0.7167,
+      "elapsed_s": 909
+    },
+    {
+      "step": 3250,
+      "loss_qvec_ema": 0.000149,
+      "loss_margin_ema": 0.245962,
+      "dev_mse": 0.000132,
+      "dev_top64_overlap": 0.7256,
+      "elapsed_s": 982
+    },
+    {
+      "step": 3500,
+      "loss_qvec_ema": 0.000148,
+      "loss_margin_ema": 0.243451,
+      "dev_mse": 0.000132,
+      "dev_top64_overlap": 0.7254,
+      "elapsed_s": 1054
+    },
+    {
+      "step": 3750,
+      "loss_qvec_ema": 0.000145,
+      "loss_margin_ema": 0.231451,
+      "dev_mse": 0.000128,
+      "dev_top64_overlap": 0.7253,
+      "elapsed_s": 1125
+    },
+    {
+      "step": 4000,
+      "loss_qvec_ema": 0.000142,
+      "loss_margin_ema": 0.231369,
+      "dev_mse": 0.000132,
+      "dev_top64_overlap": 0.7307,
+      "elapsed_s": 1196
+    },
+    {
+      "step": 4250,
+      "loss_qvec_ema": 0.000142,
+      "loss_margin_ema": 0.245315,
+      "dev_mse": 0.000125,
+      "dev_top64_overlap": 0.7331,
+      "elapsed_s": 1269
+    },
+    {
+      "step": 4500,
+      "loss_qvec_ema": 0.000142,
+      "loss_margin_ema": 0.261107,
+      "dev_mse": 0.000127,
+      "dev_top64_overlap": 0.7304,
+      "elapsed_s": 1341
+    },
+    {
+      "step": 4750,
+      "loss_qvec_ema": 0.000138,
+      "loss_margin_ema": 0.228974,
+      "dev_mse": 0.000121,
+      "dev_top64_overlap": 0.7309,
+      "elapsed_s": 1413
+    },
+    {
+      "step": 5000,
+      "loss_qvec_ema": 0.000136,
+      "loss_margin_ema": 0.214269,
+      "dev_mse": 0.00012,
+      "dev_top64_overlap": 0.737,
+      "elapsed_s": 1484
+    },
+    {
+      "step": 5250,
+      "loss_qvec_ema": 0.000138,
+      "loss_margin_ema": 0.223745,
+      "dev_mse": 0.000122,
+      "dev_top64_overlap": 0.7379,
+      "elapsed_s": 1556
+    },
+    {
+      "step": 5500,
+      "loss_qvec_ema": 0.000134,
+      "loss_margin_ema": 0.216478,
+      "dev_mse": 0.000117,
+      "dev_top64_overlap": 0.7358,
+      "elapsed_s": 1628
+    },
+    {
+      "step": 5750,
+      "loss_qvec_ema": 0.000131,
+      "loss_margin_ema": 0.192878,
+      "dev_mse": 0.000117,
+      "dev_top64_overlap": 0.74,
+      "elapsed_s": 1699
+    },
+    {
+      "step": 6000,
+      "loss_qvec_ema": 0.000131,
+      "loss_margin_ema": 0.207346,
+      "dev_mse": 0.000117,
+      "dev_top64_overlap": 0.7412,
+      "elapsed_s": 1771
+    },
+    {
+      "step": 6250,
+      "loss_qvec_ema": 0.000129,
+      "loss_margin_ema": 0.192319,
+      "dev_mse": 0.000115,
+      "dev_top64_overlap": 0.7434,
+      "elapsed_s": 1844
+    },
+    {
+      "step": 6500,
+      "loss_qvec_ema": 0.000128,
+      "loss_margin_ema": 0.191573,
+      "dev_mse": 0.000113,
+      "dev_top64_overlap": 0.7491,
+      "elapsed_s": 1916
+    },
+    {
+      "step": 6750,
+      "loss_qvec_ema": 0.000128,
+      "loss_margin_ema": 0.197857,
+      "dev_mse": 0.000113,
+      "dev_top64_overlap": 0.7451,
+      "elapsed_s": 1988
+    },
+    {
+      "step": 7000,
+      "loss_qvec_ema": 0.000126,
+      "loss_margin_ema": 0.184713,
+      "dev_mse": 0.000116,
+      "dev_top64_overlap": 0.7473,
+      "elapsed_s": 2059
+    },
+    {
+      "step": 7250,
+      "loss_qvec_ema": 0.000126,
+      "loss_margin_ema": 0.19781,
+      "dev_mse": 0.000111,
+      "dev_top64_overlap": 0.7469,
+      "elapsed_s": 2130
+    },
+    {
+      "step": 7500,
+      "loss_qvec_ema": 0.000123,
+      "loss_margin_ema": 0.174864,
+      "dev_mse": 0.000112,
+      "dev_top64_overlap": 0.751,
+      "elapsed_s": 2201
+    },
+    {
+      "step": 7750,
+      "loss_qvec_ema": 0.000123,
+      "loss_margin_ema": 0.174728,
+      "dev_mse": 0.00011,
+      "dev_top64_overlap": 0.755,
+      "elapsed_s": 2273
+    },
+    {
+      "step": 8000,
+      "loss_qvec_ema": 0.000121,
+      "loss_margin_ema": 0.172167,
+      "dev_mse": 0.000108,
+      "dev_top64_overlap": 0.7516,
+      "elapsed_s": 2345
+    },
+    {
+      "step": 8250,
+      "loss_qvec_ema": 0.00012,
+      "loss_margin_ema": 0.169686,
+      "dev_mse": 0.000107,
+      "dev_top64_overlap": 0.7534,
+      "elapsed_s": 2416
+    },
+    {
+      "step": 8500,
+      "loss_qvec_ema": 0.00012,
+      "loss_margin_ema": 0.160802,
+      "dev_mse": 0.000105,
+      "dev_top64_overlap": 0.7549,
+      "elapsed_s": 2487
+    },
+    {
+      "step": 8750,
+      "loss_qvec_ema": 0.000118,
+      "loss_margin_ema": 0.160616,
+      "dev_mse": 0.000107,
+      "dev_top64_overlap": 0.7581,
+      "elapsed_s": 2558
+    },
+    {
+      "step": 9000,
+      "loss_qvec_ema": 0.000117,
+      "loss_margin_ema": 0.162603,
+      "dev_mse": 0.000106,
+      "dev_top64_overlap": 0.7565,
+      "elapsed_s": 2630
+    },
+    {
+      "step": 9250,
+      "loss_qvec_ema": 0.000116,
+      "loss_margin_ema": 0.159302,
+      "dev_mse": 0.000104,
+      "dev_top64_overlap": 0.7565,
+      "elapsed_s": 2701
+    },
+    {
+      "step": 9500,
+      "loss_qvec_ema": 0.000116,
+      "loss_margin_ema": 0.157673,
+      "dev_mse": 0.000102,
+      "dev_top64_overlap": 0.7583,
+      "elapsed_s": 2771
+    },
+    {
+      "step": 9750,
+      "loss_qvec_ema": 0.000115,
+      "loss_margin_ema": 0.158696,
+      "dev_mse": 0.000104,
+      "dev_top64_overlap": 0.759,
+      "elapsed_s": 2843
+    },
+    {
+      "step": 10000,
+      "loss_qvec_ema": 0.000115,
+      "loss_margin_ema": 0.154421,
+      "dev_mse": 0.000104,
+      "dev_top64_overlap": 0.7594,
+      "elapsed_s": 2916
+    },
+    {
+      "step": 10250,
+      "loss_qvec_ema": 0.000114,
+      "loss_margin_ema": 0.14962,
+      "dev_mse": 0.000103,
+      "dev_top64_overlap": 0.7604,
+      "elapsed_s": 2988
+    },
+    {
+      "step": 10500,
+      "loss_qvec_ema": 0.000112,
+      "loss_margin_ema": 0.155458,
+      "dev_mse": 0.000102,
+      "dev_top64_overlap": 0.7613,
+      "elapsed_s": 3060
+    },
+    {
+      "step": 10750,
+      "loss_qvec_ema": 0.000112,
+      "loss_margin_ema": 0.144763,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7634,
+      "elapsed_s": 3132
+    },
+    {
+      "step": 11000,
+      "loss_qvec_ema": 0.000112,
+      "loss_margin_ema": 0.147561,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7644,
+      "elapsed_s": 3205
+    },
+    {
+      "step": 11250,
+      "loss_qvec_ema": 0.000111,
+      "loss_margin_ema": 0.144613,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7635,
+      "elapsed_s": 3277
+    },
+    {
+      "step": 11500,
+      "loss_qvec_ema": 0.000111,
+      "loss_margin_ema": 0.147061,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7636,
+      "elapsed_s": 3348
+    },
+    {
+      "step": 11750,
+      "loss_qvec_ema": 0.000112,
+      "loss_margin_ema": 0.141175,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7644,
+      "elapsed_s": 3418
+    },
+    {
+      "step": 12000,
+      "loss_qvec_ema": 0.000111,
+      "loss_margin_ema": 0.143657,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7622,
+      "elapsed_s": 3489
+    },
+    {
+      "step": 12250,
+      "loss_qvec_ema": 0.00011,
+      "loss_margin_ema": 0.135825,
+      "dev_mse": 0.000101,
+      "dev_top64_overlap": 0.7643,
+      "elapsed_s": 3560
+    },
+    {
+      "step": 12500,
+      "loss_qvec_ema": 0.000111,
+      "loss_margin_ema": 0.137587,
+      "dev_mse": 0.0001,
+      "dev_top64_overlap": 0.7645,
+      "elapsed_s": 3631
+    },
+    {
+      "step": 12750,
+      "loss_qvec_ema": 0.00011,
+      "loss_margin_ema": 0.134218,
+      "dev_mse": 0.0001,
+      "dev_top64_overlap": 0.7642,
+      "elapsed_s": 3703
+    },
+    {
+      "step": 13000,
+      "loss_qvec_ema": 0.00011,
+      "loss_margin_ema": 0.14659,
+      "dev_mse": 0.0001,
+      "dev_top64_overlap": 0.7648,
+      "elapsed_s": 3774
+    },
+    {
+      "step": 13250,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.137448,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7639,
+      "elapsed_s": 3846
+    },
+    {
+      "step": 13500,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.135555,
+      "dev_mse": 0.0001,
+      "dev_top64_overlap": 0.7652,
+      "elapsed_s": 3917
+    },
+    {
+      "step": 13750,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.135959,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7646,
+      "elapsed_s": 3989
+    },
+    {
+      "step": 14000,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.133118,
+      "dev_mse": 0.0001,
+      "dev_top64_overlap": 0.765,
+      "elapsed_s": 4060
+    },
+    {
+      "step": 14250,
+      "loss_qvec_ema": 0.000108,
+      "loss_margin_ema": 0.135856,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7648,
+      "elapsed_s": 4131
+    },
+    {
+      "step": 14500,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.133611,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.765,
+      "elapsed_s": 4202
+    },
+    {
+      "step": 14750,
+      "loss_qvec_ema": 0.000109,
+      "loss_margin_ema": 0.135217,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7647,
+      "elapsed_s": 4272
+    },
+    {
+      "step": 14940,
+      "loss_qvec_ema": 0.000108,
+      "loss_margin_ema": 0.138432,
+      "dev_mse": 9.9e-05,
+      "dev_top64_overlap": 0.7647,
+      "elapsed_s": 4327
+    }
+  ],
+  "final_dev_top64_overlap": 0.7647
+}

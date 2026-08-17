@@ -1,5 +1,17 @@
 # Hybrid demo deployment — NAS broker + DO scale-to-zero compute
 
+> **⚠ DEPRECATED / SUPERSEDED 2026-08-06 — the public tech demo moved to Oracle
+> Cloud.** The canonical plan is now `OCI_DEMO_DEPLOYMENT.md` (same folder). It
+> supersedes this doc for the **cloud / wake / cost layer** (OCI stops-and-starts
+> one persistent instance — compute billing pauses when stopped — instead of the
+> DO destroy-and-reseed dance here) and **reuses everything engine-independent
+> from this doc**: the broker (`scripts/demo_broker/`), the token landing +
+> waiting-room + idle-reaper + killswitch design, the abstract live-fetch
+> decision (§4 #2), and the int8 ONNX cross-encoder (§4 #4 / §6). Kept in place
+> (not moved) because that reused content is still current and referenced.
+> **Do not follow the DigitalOcean tier/price/wake specifics below** — read the
+> OCI doc first.
+
 **Date:** 2026-06-16 · **Status:** PLAN (nothing built yet) · **Goal:** host a public
 tech demo of the **full 150M thin-client stack** for a **5–15 concurrent, self-serving**
 audience, CPU-only, on **$200 DigitalOcean credit that must last ≥3 weeks**

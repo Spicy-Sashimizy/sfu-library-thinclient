@@ -1,0 +1,48 @@
+{
+  "date_utc": "2026-08-02T05:25:57",
+  "meta_sqlite_bytes": 24908001280,
+  "sections_opened": 10,
+  "pool_ids": 2000,
+  "seed": 17,
+  "results": {
+    "100": {
+      "disjoint_reps": true,
+      "sqlite": {
+        "cache_0mb": {
+          "reps": 3,
+          "p50_ms": 39.05,
+          "mean_ms": 27.29,
+          "min_ms": 0.73,
+          "max_ms": 42.09
+        },
+        "cache_64mb": {
+          "reps": 3,
+          "p50_ms": 39.31,
+          "mean_ms": 26.68,
+          "min_ms": 0.66,
+          "max_ms": 40.08
+        },
+        "cache_1024mb": {
+          "reps": 3,
+          "p50_ms": 39.58,
+          "mean_ms": 26.64,
+          "min_ms": 0.61,
+          "max_ms": 39.74
+        }
+      },
+      "tantivy_fanout": {
+        "reps": 3,
+        "p50_ms": 982.95,
+        "mean_ms": 829.04,
+        "min_ms": 19.96,
+        "max_ms": 1484.21
+      },
+      "coverage": {
+        "requested": 100,
+        "sqlite_found": 100,
+        "tantivy_found": 100
+      },
+      "tantivy_over_best_sqlite": 25.17
+    }
+  }
+}

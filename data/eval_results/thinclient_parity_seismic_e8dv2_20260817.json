@@ -1,0 +1,368 @@
+{
+  "config": {
+    "index_root": "/workspaces/sfu-library-thinclient/data/thinclient_index",
+    "queries": 40,
+    "top_k": 50,
+    "baseline": null
+  },
+  "latency_ms": {
+    "tc_bm25f": 2970.4,
+    "tc_splade": 2197.1,
+    "os_bm25f": null,
+    "os_splade": null
+  },
+  "ndcg@10": {
+    "tc_rrf": {
+      "mean": 0.5369,
+      "judged_queries": 38
+    },
+    "os_rrf": {
+      "mean": null,
+      "judged_queries": 0
+    }
+  },
+  "overlap_vs_baseline@50": {
+    "bm25f": null,
+    "splade": null,
+    "rrf": null
+  },
+  "tc_leg_complementarity": {
+    "avg_bm25f_splade_overlap@50": 5.35
+  },
+  "per_query": [
+    {
+      "query": "indigenous language revitalization First Nations British Columbia",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2814
+    },
+    {
+      "query": "What initiatives and programs exist to revitalize Indigenous languages among First Nations communities in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2162
+    },
+    {
+      "query": "How are First Nations in British Columbia working to preserve and revitalize their Indigenous languages?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.1422
+    },
+    {
+      "query": "residential school trauma intergenerational effects Indigenous communities",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7876
+    },
+    {
+      "query": "What are the intergenerational effects of residential school trauma on Indigenous communities?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7876
+    },
+    {
+      "query": "How does trauma from residential schools continue to affect Indigenous communities across multiple generations?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.497
+    },
+    {
+      "query": "Truth and Reconciliation Commission calls to action implementation Canada",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7804
+    },
+    {
+      "query": "How have Canadian institutions and governments implemented the Truth and Reconciliation Commission's calls to action?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6642
+    },
+    {
+      "query": "What progress has Canada made in responding to the Truth and Reconciliation Commission's calls to action?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7402
+    },
+    {
+      "query": "land back movement Indigenous rights treaty negotiations British Columbia",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6728
+    },
+    {
+      "query": "How does the land back movement relate to Indigenous rights and treaty negotiations in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.5657
+    },
+    {
+      "query": "What role does the land back movement play in shaping contemporary treaty negotiations and Indigenous sovereignty claims in British Columbia?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.0336
+    },
+    {
+      "query": "housing affordability crisis Metro Vancouver rental market",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.5411
+    },
+    {
+      "query": "What factors are contributing to the housing affordability crisis in Metro Vancouver's rental market?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.5293
+    },
+    {
+      "query": "How is the housing affordability crisis impacting renters in Metro Vancouver?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.4834
+    },
+    {
+      "query": "Canadian immigration settlement services multicultural policy",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.8701
+    },
+    {
+      "query": "How do Canadian settlement services for immigrants align with and reflect multicultural policy objectives?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6652
+    },
+    {
+      "query": "What is the relationship between Canada's multicultural policy and the design of immigration settlement services?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6086
+    },
+    {
+      "query": "BC provincial politics electoral reform referendum",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7157
+    },
+    {
+      "query": "What electoral reform referendums has British Columbia held, and what impact did they have on provincial politics?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.5716
+    },
+    {
+      "query": "In what ways have British Columbians used referendums to push for electoral reform in their provincial system?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2712
+    },
+    {
+      "query": "Chinese Canadian discrimination exclusion act immigration history",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7559
+    },
+    {
+      "query": "What was the history of discrimination and exclusion acts against Chinese Canadians?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7034
+    },
+    {
+      "query": "How did discriminatory immigration policies and exclusion acts shape Chinese Canadian settlement and community experiences?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "restorative justice alternatives incarceration recidivism reduction",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.9216
+    },
+    {
+      "query": "How effective are restorative justice programs as alternatives to incarceration in reducing recidivism?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.4427
+    },
+    {
+      "query": "To what extent can restorative justice approaches decrease re-offending rates compared to traditional incarceration?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2566
+    },
+    {
+      "query": "police use of force racial profiling Black Indigenous communities Canada",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.7208
+    },
+    {
+      "query": "How does racial profiling by Canadian police contribute to the use of force against Black and Indigenous communities?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2572
+    },
+    {
+      "query": "What are the documented patterns and disparities in police use of force and racial profiling targeting Black and Indigenous peoples in Canada?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2768
+    },
+    {
+      "query": "cybercrime financial fraud digital forensics investigation",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.8522
+    },
+    {
+      "query": "How do investigators use digital forensics techniques to detect and prosecute financial fraud in cybercrime cases?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6332
+    },
+    {
+      "query": "What investigative methods and digital forensics approaches are most effective for identifying perpetrators of financial fraud committed through cybercrimes?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.2817
+    },
+    {
+      "query": "prison population mental health services rehabilitation programs",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.4252
+    },
+    {
+      "query": "How do mental health services in prisons support rehabilitation outcomes for incarcerated populations?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50
+    },
+    {
+      "query": "What mental health and rehabilitation programs are most effective for individuals currently serving sentences in the prison system?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.0948
+    },
+    {
+      "query": "interactive media experience design user engagement game mechanics",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.6027
+    },
+    {
+      "query": "How do game mechanics enhance user engagement in interactive media experience design?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.5966
+    },
+    {
+      "query": "What design strategies most effectively combine game mechanics with interactive media to create engaging user experiences?",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 0.1546
+    },
+    {
+      "query": "virtual reality augmented reality immersive learning environments",
+      "tc_bm25f_n": 50,
+      "tc_splade_n": 50,
+      "tc_rrf_ndcg@10": 1.0
+    }
+  ],
+  "latency_detail": {
+    "note": "query 1 is the cold-mmap-fault outlier (dev-container artifact); warm_* excludes it",
+    "tc_bm25f": {
+      "cold_first_query_ms": 5400.3,
+      "all_mean_ms": 2970.4,
+      "all_p50_ms": 3127.3,
+      "warm_mean_ms": 2908.1,
+      "warm_p50_ms": 3037.6,
+      "warm_p95_ms": 6338.8,
+      "warm_max_ms": 7520.3
+    },
+    "tc_splade": {
+      "cold_first_query_ms": 76945.9,
+      "all_mean_ms": 2197.1,
+      "all_p50_ms": 248.3,
+      "warm_mean_ms": 280.5,
+      "warm_p50_ms": 247.9,
+      "warm_p95_ms": 543.4,
+      "warm_max_ms": 581.7
+    },
+    "bm25f_storage": "tantivy on 9p/v9fs (NOT staged) \u2014 dominates warm latency",
+    "splade_storage": "SEISMIC E8 dv-v2 8 shards staged to /var/tmp/seismic_stage (overlay, local)"
+  },
+  "per_leg_parity_vs_prior_backends@50": {
+    "note": "OpenSearch 150M baseline is DECOMMISSIONED (host.docker.internal:9200 unreachable 2026-08-17), so overlap_vs_baseline@50 is null. These are per-leg overlaps vs the two PREVIOUSLY-SERVED thin-client SPLADE backends on the identical 40-query set.",
+    "vs_qdrant_20260625": {
+      "bm25f": 1.0,
+      "splade": 0.8855,
+      "rrf": 0.951
+    },
+    "vs_bmp_waves_20260618": {
+      "bm25f": 1.0,
+      "splade": 0.8775,
+      "rrf": 0.9485
+    },
+    "reference_qdrant_vs_bmp": {
+      "bm25f": 1.0,
+      "splade": 0.974
+    },
+    "interpretation": "bm25f == 1.0000 exactly vs both priors -> the tantivy leg is bit-stable across all three runs, confirming harness + index identity; splade differs because SEISMIC is an approximate (query_cut/heap_factor/k_prime) engine vs qdrant/BMP exact posting-list dot products."
+  },
+  "ndcg_paired_vs_prior_backends": {
+    "vs_qdrant_20260625": {
+      "n": 38,
+      "mean_delta": -0.0076,
+      "ci95": [
+        -0.0189,
+        0.0041
+      ],
+      "verdict": "indistinguishable (95% CI spans zero)"
+    },
+    "vs_bmp_waves_20260618": {
+      "n": 38,
+      "mean_delta": -0.0064,
+      "ci95": [
+        -0.0198,
+        0.0067
+      ],
+      "verdict": "indistinguishable (95% CI spans zero)"
+    },
+    "reference_qdrant_vs_bmp": {
+      "n": 39,
+      "mean_delta": 0.001,
+      "ci95": [
+        -0.0042,
+        0.0064
+      ],
+      "verdict": "indistinguishable (95% CI spans zero)"
+    }
+  },
+  "judge_coverage": {
+    "mean_judged_docs_in_top10": {
+      "seismic_e8dv2": 5.33,
+      "qdrant": 5.4,
+      "bmp": 5.38
+    },
+    "note": "NDCG is judge-cache-limited: unjudged docs are skipped in DCG while IDCG uses the full cached ideal, biasing all backends DOWNWARD equally. Coverage is balanced across the three backends (5.33-5.40 of 10), so the paired comparison is not confounded by coverage."
+  },
+  "provenance": {
+    "metric": "NDCG@10 (RRF k=60, bm25f+splade) + per-leg overlap@50 + latency",
+    "backend": "seismic (E8 dv-v2)",
+    "backend_note": "SFU_SPLADE_BACKEND unset -> code default 'seismic'; manifest default data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json (E8 dv-v2, forward_format_version=2), load_mode=mmap, federation auto-selected 'parallel' (staged shards on local overlay), SFU_DENSE_WARMCACHE=0",
+    "corpus_size": 150413098,
+    "corpus_size_source": "sum of the 8 mmap'd shard doc counts in the run log",
+    "query_set": "data/eval_results/diverse_queries.json (first 40 dedup-by-paraphrase \u2014 the SAME selection as the BMP 2026-06-18 and qdrant 2026-06-25 runs)",
+    "eval_script": "scripts/eval_thinclient_parity.py record-tc + compare",
+    "run_mode": "phase A (record-tc) + phase C (compare) of scripts/run_parity_safe.sh; phase B (record-os) SKIPPED \u2014 OpenSearch decommissioned",
+    "judge": "claude-haiku-4-5-20251001 0-3 rubric, TREC-pooled, cached (data/eval_results/llm_judge_cache.json); NO live judge call \u2014 $0 re-judge",
+    "git_commit": "be37cd9",
+    "code_note": "src/lib/thinclient/retriever.py was committed concurrently mid-session (a2f05b9 meta.sqlite staging); that lever is OPT-IN (SFU_META_STAGE_DIR/SFU_STAGE_META unset here) so it was a no-op for this run and cannot affect these numbers",
+    "timestamp": "2026-08-17T00:49:26Z",
+    "host": "dev container, 56 GB RAM / 16 vCPU; index source on 9p (v9fs), SEISMIC shards staged to local overlay",
+    "baseline_ref": "data/eval_results/thinclient_parity_qdrant_20260625_0001.json (qdrant) and thinclient_parity_waves_150m.json (BMP) \u2014 same 40q/corpus/judge cache/RRF k=60",
+    "scale": "150M-live",
+    "comparable_to_training": true
+  }
+}

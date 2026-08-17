@@ -381,6 +381,154 @@ def _resolve_mmap_dir(p: str, load_mode: str) -> str | None:
     return f"{stem}.mmap"
 
 
+def _mlock_floor_mode() -> str:
+    """F4-rescoped (2026-08-17): decode `SFU_SEISMIC_MLOCK_FLOOR`.
+
+      `0` / unset  → "off"   (DEFAULT — byte-identical to the pre-F4 path)
+      `1`          → "floor" (the RESCOPED structural navigation floor,
+                              budget-capped; see `mlock_structural_floor`)
+      `full`       → "legacy" (the 2026-07-14 over-scoped whole-slab mlock:
+                              posting_lists + doc-mapping + forward_offsets =
+                              1.67 GB/shard × 8 ≈ 13.4 GB. Retained ONLY so the
+                              original measurement is reproducible; NOT a
+                              min-RAM setting.)
+
+    Anything else is treated as "off" with a warning (fail safe, never pin
+    gigabytes because of a typo)."""
+    v = os.environ.get("SFU_SEISMIC_MLOCK_FLOOR", "0").strip().lower()
+    if v in ("0", "", "off", "false"):
+        return "off"
+    if v == "1":
+        return "floor"
+    if v in ("full", "legacy", "slabs"):
+        return "legacy"
+    log.warning("SFU_SEISMIC_MLOCK_FLOOR=%r not one of 0/1/full — floor mlock OFF", v)
+    return "off"
+
+
+# F4-rescoped (2026-08-17): the on-disk layout of `posting_lists.bin`, as the
+# Rust reader walks it (`mmap_io.rs::read_posting_lists`). Per posting list, in
+# order: (manifest key, element size, alignment, role). `read_pod` pads the
+# cursor up to the element alignment; `read_bytes` (values, align 1) does not.
+# NAV = the structural navigation metadata a list scan traverses to LOCATE
+# blocks/summaries (skip pointers + Elias-Fano offsets + DArray inventories);
+# DATA = the postings/summary payload the scorer reads. Verified exact: walking
+# this table over a shard manifest reproduces `posting_lists.bin`'s byte length
+# to the byte (shard0: 1,159,211,728 B, 2026-08-17).
+_PL_LAYOUT = (
+    ("packed_postings_words",        8, 8, "DATA"),  # packed postings (u64)
+    ("block_offsets_len",            8, 8, "NAV"),   # per-block skip offsets
+    ("ef_high_bits_n_words",         8, 8, "NAV"),   # EF offsets: high bits
+    ("inv_block_inventory_len",      8, 8, "NAV"),   # DArray inventories
+    ("inv_subblock_inventory_len",   2, 2, "NAV"),
+    ("inv_overflow_positions_len",   8, 8, "NAV"),
+    ("ef_low_bits_n_words",          8, 8, "NAV"),   # EF offsets: low bits
+    ("summaries_ids_n_words",        8, 8, "DATA"),  # summary component ids
+    ("values_len",                   1, 1, "DATA"),  # summary u8 values
+    ("minimums_len",                 4, 4, "DATA"),  # per-summary f32
+    ("quants_len",                   4, 4, "DATA"),
+    ("component_ids_len",            2, 2, "DATA"),  # optional (has_component_ids)
+)
+
+
+def _postings_nav_runs(mmap_dir: str) -> tuple[list[tuple[int, int]], int]:
+    """F4-rescoped (2026-08-17): the byte ranges of the posting-list NAVIGATION
+    metadata inside `<shard>.mmap/posting_lists.bin`, one contiguous run per
+    posting list (`block_offsets .. ef_low_bits` are adjacent in the layout, so
+    each list contributes exactly ONE range — see `_PL_LAYOUT`).
+
+    Returns `(runs, walked_len)` where `runs` is a list of `(offset, length)`
+    and `walked_len` is the total byte length the walk consumed. The caller
+    MUST check `walked_len == os.path.getsize(posting_lists.bin)` and refuse on
+    mismatch — a layout drift would otherwise mlock the wrong bytes (harmless
+    to results, since mlock is residency-only, but silently useless).
+
+    Measured shard0 (150M dv-v2, 2026-08-17): 28,702 runs, 153.1 MB of nav out
+    of 1,159.2 MB of posting_lists (13.2%); the DATA components (packed
+    postings 322.9 MB + summary ids 305.2 MB + values 295.7 MB + minimums/
+    quants 25.6 MB + component_ids 56.5 MB) are NOT included."""
+    man = json.loads((Path(mmap_dir) / "manifest.json").read_text())
+    cursor = 0
+    runs: list[tuple[int, int]] = []
+    for plm in man.get("posting_lists", []):
+        nav_start = nav_end = None
+        for key, size, align, role in _PL_LAYOUT:
+            if key == "component_ids_len" and not plm.get("has_component_ids"):
+                continue
+            cursor += (align - (cursor % align)) % align
+            if role == "NAV":
+                if nav_start is None:
+                    nav_start = cursor
+                nav_end = cursor + plm[key] * size
+            cursor += plm[key] * size
+        if nav_start is not None and nav_end > nav_start:
+            runs.append((nav_start, nav_end - nav_start))
+    return runs, cursor
+
+
+def _mapping_base_addr(file_path: str) -> int | None:
+    """F4-rescoped (2026-08-17): the virtual base address at which THIS process
+    mapped `file_path` (the Rust reader's `leak_mmap` of a whole slab file), read
+    from `/proc/self/maps`. `base = vma_start − vma_file_offset`, so a mapping
+    already split into several VMAs (by an earlier `madvise`/`mlock`) still
+    resolves to the same base. Returns None when the file is not mapped (or on a
+    non-Linux host) — the caller degrades to a logged no-op, never a crash."""
+    try:
+        target = os.path.realpath(file_path)
+        with open("/proc/self/maps") as fh:
+            for ln in fh:
+                parts = ln.rstrip("\n").split(None, 5)
+                if len(parts) < 6:
+                    continue
+                path = parts[5].strip()
+                if path.endswith(" (deleted)"):
+                    path = path[:-len(" (deleted)")]
+                if path != target:
+                    continue
+                start = int(parts[0].split("-")[0], 16)
+                return start - int(parts[2], 16)
+    except OSError:
+        pass
+    return None
+
+
+def _mlock_addr_ranges(base: int, ranges) -> int:
+    """F4-rescoped (2026-08-17): `mlock(2)` the given (offset, length) ranges of
+    the mapping at `base`, via ctypes. Returns the bytes successfully locked.
+
+    Residency-only: `mlock` never changes a byte the scorer reads → T1
+    bit-identical by construction. Degrades to a partial/zero lock (logged once)
+    when the kernel refuses — ENOMEM = RLIMIT_MEMLOCK exhausted, EPERM = no
+    CAP_IPC_LOCK — exactly like the .so hooks' no-op fallback: an unprivileged
+    process pins less, it never crashes."""
+    import ctypes
+    try:
+        libc = ctypes.CDLL("libc.so.6", use_errno=True)
+        libc.mlock.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+        libc.mlock.restype = ctypes.c_int
+    except OSError as exc:      # pragma: no cover — non-glibc host
+        log.warning("mlock_structural_floor: libc unavailable (%s) — no-op", exc)
+        return 0
+    locked = 0
+    failures = 0
+    first_errno = 0
+    for off, length in ranges:
+        if libc.mlock(ctypes.c_void_p(base + off), ctypes.c_size_t(length)) == 0:
+            locked += length
+        else:
+            failures += 1
+            if not first_errno:
+                first_errno = ctypes.get_errno()
+    if failures:
+        log.warning("mlock_structural_floor: %d/%d ranges refused by the kernel "
+                    "(first errno %d: %s) — locked %.1f MB, degrading to a "
+                    "partial pin (no-OOM contract, never a crash)",
+                    failures, len(ranges), first_errno,
+                    os.strerror(first_errno) if first_errno else "?",
+                    locked / 1e6)
+    return locked
+
+
 def _memavailable_gb() -> float:
     """F3 (2026-07-14): MemAvailable in GB, read from /proc/meminfo. The no-OOM
     budget check pins against this (minus the floor + headroom). Returns a very
@@ -569,14 +717,16 @@ class _SeismicBackendBase:
         # first search otherwise); when pinning is OFF, keep the lazy-load
         # behavior (no behavioral change for the default path).
         self._floor_mlocked = False
+        self._floor_mlocked_bytes = 0
         self._hotset_pinned_gb = 0.0
         # F6 prefault (PREFLOOR_HOTSET) triggers the same encoder interaction as
         # the pin tier: the .so hook runs before the first lazy encode, and the
         # ORT/tokenizer load fails afterwards (measured 2026-07-14: every query
         # of the F6 bench raised ImportError and scored 0.0 ms — the invalid
         # "cold p95 30 ms" cells). Eager-load for it too.
+        _floor_mode = _mlock_floor_mode()
         _pin_on = (load_mode == "mmap" and (
-            os.environ.get("SFU_SEISMIC_MLOCK_FLOOR", "0") == "1"
+            _floor_mode != "off"
             or os.environ.get("SFU_SEISMIC_PREFLOOR_HOTSET", "0") == "1"
             or float(os.environ.get("SFU_SEISMIC_PIN_BUDGET_GB", "0") or "0") > 0))
         if _pin_on:
@@ -590,8 +740,16 @@ class _SeismicBackendBase:
             from lib.opensearch_retriever import encode_splade
             encode_splade("initialize thread pools", self.splade_model_path)
         if load_mode == "mmap":
-            # F4 — floor mlock (Q9 upgrade). Gated by SFU_SEISMIC_MLOCK_FLOOR=1.
-            if os.environ.get("SFU_SEISMIC_MLOCK_FLOOR", "0") == "1":
+            # F4 — floor mlock. `SFU_SEISMIC_MLOCK_FLOOR=1` is the RESCOPED
+            # structural navigation floor (2026-08-17, budget-capped ~20 MB/
+            # shard); `=full` reproduces the 2026-07-14 over-scoped whole-slab
+            # pin (~13.4 GB across 8 shards — measurement reproduction only).
+            if _floor_mode == "floor":
+                self.mlock_structural_floor()
+            elif _floor_mode == "legacy":
+                log.warning("SFU_SEISMIC_MLOCK_FLOOR=full — the OVER-SCOPED "
+                            "whole-slab floor pin (~1.67 GB/shard); this is the "
+                            "2026-07-14 reproduction path, NOT a min-RAM setting")
                 self.mlock_floor(include_forward_offsets=True)
             # F3 — hot-set pin tier. Gated by SFU_SEISMIC_PIN_BUDGET_GB (>0).
             budget_env = os.environ.get("SFU_SEISMIC_PIN_BUDGET_GB", "0")
@@ -638,13 +796,149 @@ class _SeismicBackendBase:
                  (time.perf_counter() - t0), include_forward_offsets)
         return total
 
+    def mlock_structural_floor(self, budget_mb: float | None = None,
+                               max_ranges_per_shard: int = 2048) -> int:
+        """F4-RESCOPED (2026-08-17): mlock ONLY the posting-list **navigation**
+        metadata — per list, the contiguous `block_offsets + Elias-Fano offsets
+        (high/low bits) + DArray inventories` run (`_PL_LAYOUT` NAV rows) — of
+        each shard's `posting_lists.bin`. Gate `SFU_SEISMIC_MLOCK_FLOOR=1`.
+
+        WHY THE RESCOPE (the 13.4 GB → ~20 MB/shard correction). The 2026-07-14
+        `mlock_floor` locks whole SLABS: posting_lists (1.16 GB) + doc-mapping
+        strings/offsets (0.36 GB) + forward_offsets (0.15 GB) = 1.67 GB/shard ×
+        8 = **~13.4 GB** — which defeats the min-RAM goal the pin tier exists
+        for. The doc-03/11 target of a "~20 MB true floor (Q9's ~5,000 pages)"
+        was itself a unit error: doc 10 §7.3 measured 5,093 *major faults*, and
+        states in the same row that those faults carry **~1.27 GB** of pages
+        (readahead amortizes ~64 pages/fault) — 5,093 × 4 KiB = 20 MB was never
+        a measured residency. There is therefore no 20 MB slab to lock; what
+        DOES exist is a small always-traversed structural subset *inside*
+        posting_lists.bin: the navigation runs, 153.1 MB/shard = 13.2% of the
+        slab (measured 2026-08-17, shard0 dv-v2). This method pins a
+        budget-capped, largest-run-first slice of exactly that, and nothing
+        else — no data extents, no doc-mapping, no forward slabs.
+
+        Dials + guards:
+          - `SFU_SEISMIC_MLOCK_FLOOR_MB` — TOTAL budget across shards, default
+            **160 MB** (= 20 MB/shard at 8 shards). Split evenly per shard.
+          - no-OOM guard (the `load_hotset_and_pin` pattern): the effective
+            budget is capped at `MemAvailable − 1.0 GB` headroom.
+          - VMA-split cap: ≤ `max_ranges_per_shard` locked ranges (each `mlock`
+            splits a VMA; ~33k ranges/shard saturated `vm.max_map_count` in the
+            F3/F6 runs — see `_coalesce_extents`). Ranges are page-aligned then
+            merged; if still over the cap, the smallest are dropped.
+          - layout check: the `_PL_LAYOUT` walk must reproduce
+            `posting_lists.bin`'s byte length exactly, else the shard is
+            SKIPPED with an error (never mlock bytes we cannot name).
+          - selection = largest nav run first, i.e. the longest posting lists =
+            the most frequent terms (a size proxy for query-term frequency —
+            HEURISTIC, efficacy unmeasured).
+
+        Residency-only ⇒ T1 bit-identical by construction. Returns total bytes
+        locked (0 ⇒ nothing mappable/lockable — a logged no-op, never a
+        crash)."""
+        import time
+        t0 = time.perf_counter()
+        if budget_mb is None:
+            raw = os.environ.get("SFU_SEISMIC_MLOCK_FLOOR_MB", "160")
+            try:
+                budget_mb = float(raw)
+            except ValueError:
+                log.warning("SFU_SEISMIC_MLOCK_FLOOR_MB=%r not numeric — using 160", raw)
+                budget_mb = 160.0
+        # no-OOM guard (same discipline as the F3 pin budget).
+        headroom_gb = 1.0
+        avail_gb = _memavailable_gb()
+        cap_mb = max(0.0, (avail_gb - headroom_gb) * 1000.0)
+        effective_mb = min(budget_mb, cap_mb)
+        if effective_mb <= 0:
+            log.warning("mlock_structural_floor: budget 0 after MemAvailable cap "
+                        "(avail %.1f GB − %.1f headroom) — floor pin OFF (no-OOM)",
+                        avail_gb, headroom_gb)
+            return 0
+        n_shards = max(1, len(self.shards))
+        per_shard_budget = int(effective_mb * 1e6 / n_shards)
+        log.info("mlock_structural_floor: budget %.1f MB total (requested %.1f; "
+                 "MemAvailable %.1f GB − %.1f headroom) → %.1f MB/shard over %d shards",
+                 effective_mb, budget_mb, avail_gb, headroom_gb,
+                 per_shard_budget / 1e6, n_shards)
+        total = 0
+        for shard_dir in self._shard_mmap_dirs:
+            if not shard_dir:
+                log.debug("mlock_structural_floor: shard mmap_dir unknown — skipped")
+                continue
+            pl_path = Path(shard_dir) / "posting_lists.bin"
+            if not pl_path.is_file():
+                log.warning("mlock_structural_floor: %s absent — shard skipped", pl_path)
+                continue
+            try:
+                runs, walked = _postings_nav_runs(shard_dir)
+            except (OSError, KeyError, ValueError) as exc:
+                log.error("mlock_structural_floor: manifest walk failed for %s (%s)"
+                          " — shard skipped", shard_dir, exc)
+                continue
+            pl_size = pl_path.stat().st_size
+            if walked != pl_size:
+                log.error("mlock_structural_floor: REFUSING %s — layout walk "
+                          "consumed %d B but posting_lists.bin is %d B (reader "
+                          "layout drifted from _PL_LAYOUT); shard skipped",
+                          shard_dir, walked, pl_size)
+                continue
+            base = _mapping_base_addr(str(pl_path))
+            if base is None:
+                log.warning("mlock_structural_floor: %s is not mapped in this "
+                            "process (load_mode!=mmap or non-Linux) — shard skipped",
+                            pl_path)
+                continue
+            # Largest nav runs first, page-aligned, until the per-shard budget.
+            take: list[tuple[int, int]] = []
+            acc = 0
+            for off, length in sorted(runs, key=lambda r: -r[1]):
+                pg_start = (off // 4096) * 4096
+                pg_end = min(pl_size, -(-(off + length) // 4096) * 4096)
+                nbytes = pg_end - pg_start
+                if acc + nbytes > per_shard_budget and acc > 0:
+                    break
+                take.append((pg_start, nbytes))
+                acc += nbytes
+            # Merge page ranges that touch/overlap (two adjacent lists can share
+            # a page), then honor the VMA-split cap by dropping the smallest.
+            take.sort()
+            merged: list[list[int]] = []
+            for start, length in take:
+                if merged and start <= merged[-1][0] + merged[-1][1]:
+                    merged[-1][1] = max(merged[-1][0] + merged[-1][1],
+                                        start + length) - merged[-1][0]
+                else:
+                    merged.append([start, length])
+            if len(merged) > max_ranges_per_shard:
+                merged = sorted(sorted(merged, key=lambda r: -r[1])[:max_ranges_per_shard])
+            locked = _mlock_addr_ranges(base, [(s, ln) for s, ln in merged])
+            total += locked
+            log.info("mlock_structural_floor: %s locked %.1f MB in %d ranges "
+                     "(nav floor %.1f MB total in this shard; budget %.1f MB)",
+                     Path(shard_dir).name, locked / 1e6, len(merged),
+                     sum(ln for _, ln in runs) / 1e6, per_shard_budget / 1e6)
+        self._floor_mlocked = total > 0
+        self._floor_mlocked_bytes = total
+        log.info("mlock_structural_floor: locked %.1f MB across %d shards in %.1fs "
+                 "(RESCOPED navigation floor — NOT the 13.4 GB whole-slab pin)",
+                 total / 1e6, len(self.shards), time.perf_counter() - t0)
+        return total
+
     def mlock_floor(self, include_forward_offsets: bool = True) -> int:
-        """F4 (Phase 2): mlock each shard's structural floor (the same slabs
-        `prefault_floor` touches) so kswapd can never steal them on a capped
-        host. Call AFTER prefault_floor so pages are faulted in first. Gate:
-        `SFU_SEISMIC_MLOCK_FLOOR=1`. Returns total bytes locked across shards
-        (0 ⇒ mlock denied — no-op, not crash). T1-untouched (residency only).
-        Doc 03 §2 F4."""
+        """F4 LEGACY / OVER-SCOPED (2026-07-14; superseded 2026-08-17 by
+        `mlock_structural_floor`). mlocks each shard's whole floor SLABS (the
+        same ones `prefault_floor` touches: posting_lists 1.16 GB + doc-mapping
+        0.36 GB + optional forward_offsets 0.15 GB = 1.67 GB/shard ⇒ **~13.4 GB
+        across the 8 150M shards**). That is a hard RAM commitment ~9× the
+        6 GB localized deploy's entire budget, so this path is reachable only
+        via `SFU_SEISMIC_MLOCK_FLOOR=full`, kept so the 2026-07-14 measurement
+        stays reproducible. `=1` now runs the rescoped navigation floor.
+
+        Call AFTER prefault_floor so pages are faulted in first. Returns total
+        bytes locked across shards (0 ⇒ mlock denied — no-op, not crash).
+        T1-untouched (residency only). Doc 03 §2 F4."""
         import time
         t0 = time.perf_counter()
         total = 0
@@ -655,6 +949,7 @@ class _SeismicBackendBase:
                 continue
             total += int(fn(include_forward_offsets))
         self._floor_mlocked = True
+        self._floor_mlocked_bytes = total
         log.info("mlock_floor: locked %.2f GB across %d shards in %.1fs "
                  "(include_forward_offsets=%s)",
                  total / 1e9, len(self.shards),

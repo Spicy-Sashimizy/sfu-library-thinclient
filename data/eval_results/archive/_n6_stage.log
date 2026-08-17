@@ -1,0 +1,17 @@
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard0of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard0of8.dotvbyte.e5.v2.mmap copied (5.5 GB) in 53s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard1of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard1of8.dotvbyte.e5.v2.mmap copied (5.6 GB) in 54s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard2of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard2of8.dotvbyte.e5.v2.mmap copied (5.5 GB) in 54s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard3of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard3of8.dotvbyte.e5.v2.mmap copied (5.5 GB) in 53s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard4of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard4of8.dotvbyte.e5.v2.mmap copied (5.6 GB) in 52s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard5of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard5of8.dotvbyte.e5.v2.mmap copied (5.6 GB) in 53s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard6of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard6of8.dotvbyte.e5.v2.mmap copied (5.5 GB) in 53s
+INFO:sfu_library_mcp:SEISMIC stage: copying global_shard7of8.dotvbyte.e5.v2.mmap -> /var/tmp/seismic_stage
+INFO:sfu_library_mcp:SEISMIC stage: global_shard7of8.dotvbyte.e5.v2.mmap copied (5.6 GB) in 52s
+staged manifest: /var/tmp/seismic_stage/staged_manifest.json

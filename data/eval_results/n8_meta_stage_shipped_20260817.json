@@ -1,0 +1,77 @@
+{
+  "date_utc": "2026-08-17T01:59:18",
+  "question": "does the SHIPPED _stage_meta_local/_connect_meta path reproduce doc 18 \u00a714's hand-copied filter-stage win (222.2 -> 4.0 ms) on the real 24.9 GB meta.sqlite?",
+  "design": "2 arms, one variable: retriever._meta staged vs unstaged",
+  "n7_expectation_ms": {
+    "unstaged_9p": 222.2,
+    "staged_local": 4.0,
+    "source": "doc 18 \u00a714, 2026-08-03, hand copy"
+  },
+  "filters": {
+    "year_range": [
+      2010,
+      2025
+    ],
+    "type": "article"
+  },
+  "queries": [
+    "bioethics organ allocation transplant consent scarce medical resources",
+    "open access scholarly publishing academic journals business models APC",
+    "income stratification class reproduction social mobility intergenerational",
+    "Canadian immigration settlement services multicultural policy",
+    "long COVID post-acute sequelae epidemiology treatment",
+    "urban food security community garden land access food sovereignty",
+    "Cold War Canada NATO nuclear deterrence foreign policy diplomacy",
+    "quantum computing qubit decoherence error correction fault tolerant",
+    "green chemistry catalysis sustainable synthesis solvent-free organic",
+    "knowledge management organizational learning communities of practice firm",
+    "medical anthropology traditional healing Indigenous medicine health systems integration",
+    "distributed systems Byzantine fault tolerance consensus algorithm"
+  ],
+  "reps_per_query": 3,
+  "top_k": 50,
+  "candidates_per_query": {
+    "min": 500,
+    "max": 500,
+    "mean": 500.0
+  },
+  "docs_in_meta": 150413098,
+  "retriever_load_s": 2.6,
+  "env": {
+    "meta_source_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+    "meta_source_fstype": "9p",
+    "meta_staged_path": "/var/tmp/meta_stage/meta.sqlite",
+    "meta_staged_fstype": "overlay",
+    "meta_stage_dir": "/var/tmp/meta_stage",
+    "meta_stage_verify": "fingerprint",
+    "seismic_stage_dir": "/var/tmp/seismic_stage",
+    "dense_warmcache": "0",
+    "splade_backend": "seismic",
+    "meta_schema": "v2-numeric"
+  },
+  "method": "candidate lists captured once per query from real search() calls, then replayed against both arms; arms interleaved, order randomised per rep; both warmed",
+  "stage_ms": {
+    "unstaged": {
+      "n": 36,
+      "p50_ms": 186.671,
+      "mean_ms": 187.88,
+      "min_ms": 180.615,
+      "max_ms": 204.423,
+      "p90_ms": 194.59
+    },
+    "staged": {
+      "n": 36,
+      "p50_ms": 2.972,
+      "mean_ms": 2.972,
+      "min_ms": 2.57,
+      "max_ms": 3.41,
+      "p90_ms": 3.138
+    }
+  },
+  "speedup_staged_vs_unstaged": 62.81,
+  "parity": {
+    "pairs": 36,
+    "mismatches": 0,
+    "pass": true
+  }
+}

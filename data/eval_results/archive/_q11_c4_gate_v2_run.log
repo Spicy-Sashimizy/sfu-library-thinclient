@@ -1,0 +1,26 @@
+/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/transformers/modeling_attn_mask_utils.py:196: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  inverted_mask = torch.tensor(1.0, dtype=dtype) - expanded_mask
+21:24:11 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.mmap
+21:24:11 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+21:24:11 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+21:24:11 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:24:11 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+21:24:12 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+21:24:12 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.mmap
+21:24:12 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+21:24:12 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.mmap
+21:24:13 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+21:24:13 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.mmap
+21:24:13 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+21:24:13 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.mmap
+21:24:13 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+21:24:13 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.mmap
+21:24:14 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+21:24:14 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.mmap
+21:24:14 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+21:24:14 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.mmap
+21:24:14 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+merged: @10 0.76 (min 0.3) @50 0.7504
+shard1: @10 0.726 (min 0.3) @50 0.7492
+shard2: @10 0.752 (min 0.3) @50 0.7412
+verdict=KILL worst-arm @10 0.726 encode speedup 1.69x -> /workspaces/sfu-library-thinclient/data/eval_results/q11_c4_distill_gate_20260728_2127.json

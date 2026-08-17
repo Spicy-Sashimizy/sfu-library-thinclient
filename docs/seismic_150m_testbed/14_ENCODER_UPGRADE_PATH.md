@@ -1,5 +1,12 @@
 # 14 · Encoder upgrade path — query-encoder spike (D-track successor)
 
+> **Status note 2026-08-10:** the 2026-07-10 banner below is the
+> creation-time state and is superseded by §4/§6 — **C1–C5 are all
+> measured/decided (C1/C2/C5 KILL 2026-07-10, C3 skipped, C4 distillation
+> KILL 2026-07-28); the encoder book is CLOSED.** Only the §5 re-encode
+> branch (prechecks 2–3: shelf domain pilot + fine-tune probe) remains open,
+> unscheduled.
+
 > **Status 2026-07-10: SPIKE — design + candidate registry only. NOTHING
 > MEASURED.** Registered as **Q11** in `12_EXECUTION_ROADMAP.md` §3. Every
 > quality/latency claim below is `*est.*` or literature-reported until a row

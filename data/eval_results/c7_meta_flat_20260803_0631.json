@@ -1,0 +1,82 @@
+{
+  "date_utc": "2026-08-03T06:31:33",
+  "goal": "CONSOLIDATION: can meta.sqlite be deleted? Doc 18 \u00a713 rejected this on latency grounds, which is the wrong objective for a consolidation goal.",
+  "gate": "NO-REGRESSION vs mainline SQLite, not speedup (operator constraint 2026-08-03). Must not be slower; need not be faster.",
+  "corpus_rows": 150413098,
+  "sample_rows": 1000000,
+  "meta_path": "/var/tmp/meta_stage/meta.sqlite",
+  "meta_bytes": 24908001280,
+  "docs_other_rows": 0,
+  "payload_raw_bytes_per_doc": 115.1,
+  "designs": {
+    "raw": {
+      "payload_bytes_per_doc": 115.105,
+      "locator_bytes_per_doc": 8.0,
+      "total_bytes_per_doc": 123.105,
+      "projected_total_gb": 18.52,
+      "note": "u64 offsets; a lookup is one mmap random read, no decompress",
+      "meta_sqlite_replacement_gb": 20.47,
+      "vs_meta_sqlite_gb": 4.44
+    },
+    "zstd_blocks": {
+      "blocks": 3520,
+      "docs_per_block": 284.1,
+      "payload_bytes_per_doc": 50.319,
+      "locator_bytes_per_doc": 0.0563,
+      "dict_bytes": 114688,
+      "total_bytes_per_doc": 50.376,
+      "projected_total_gb": 7.58,
+      "note": "ordinal-ordered blocks => locator is one (start,off) pair PER BLOCK, not per doc \u2014 doc 17 \u00a713's 'C3 locator solved without tantivy or SQLite'. A lookup decompresses a block.",
+      "meta_sqlite_replacement_gb": 9.53,
+      "vs_meta_sqlite_gb": 15.38
+    }
+  },
+  "lookup": {
+    "sqlite_mainline": {
+      "n": 200,
+      "p50_ms": 0.2315,
+      "mean_ms": 0.242,
+      "p90_ms": 0.2939,
+      "vs_mainline": 1.0,
+      "regression": true
+    },
+    "raw": {
+      "n": 200,
+      "p50_ms": 0.1478,
+      "mean_ms": 0.165,
+      "p90_ms": 0.2385,
+      "vs_mainline": 0.639,
+      "regression": false
+    },
+    "zstd_blocks": {
+      "n": 200,
+      "p50_ms": 3.72,
+      "mean_ms": 3.7966,
+      "p90_ms": 4.1269,
+      "vs_mainline": 16.072,
+      "regression": true
+    }
+  },
+  "parity": {
+    "sqlite_mainline": {
+      "trials": 200,
+      "mismatches": 0,
+      "pass": true
+    },
+    "raw": {
+      "trials": 200,
+      "mismatches": 0,
+      "pass": true
+    },
+    "zstd_blocks": {
+      "trials": 200,
+      "mismatches": 0,
+      "pass": true
+    }
+  },
+  "note_existing_ordinal_artifacts_gb": {
+    "filter_columns": 0.75,
+    "wids": 1.2,
+    "source": "doc 18 \u00a712 (already built, 1.96 GB total)"
+  }
+}

@@ -115,10 +115,10 @@
         // {status, tools}; if/when it adds `warm`, the Search UI's >10s warming
         // message (spec §1 row 3) keys off it. No serving-path change is made
         // here — we only READ a field that may be absent.
-        return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true };
+        return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true, sequential: !!(data && data.sequential) };
       } catch (e) {
         this._online = false;
-        return { data: { status: "offline" }, source: "mock", warm: false };
+        return { data: { status: "offline" }, source: "mock", warm: false, sequential: false };
       }
     },
 

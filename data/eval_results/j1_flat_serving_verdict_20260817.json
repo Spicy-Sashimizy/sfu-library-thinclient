@@ -1,0 +1,192 @@
+{
+ "date_utc": "2026-08-17T23:08:36",
+ "harness": "j1 verdict",
+ "prereg": {
+  "registered": "in-source, committed before the first run (see git log for this file's add commit vs the results files' commit)",
+  "subject": "the PUBLISHED sidecar at data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/ (built + gate-PASSED 2026-08-17, commit f55ce5f), read through the shipped AbstractStore",
+  "claims_under_test": {
+   "doc18_s17_warm_p50": "flat_ordinal 1.18x mainline p50 (3.547 -> 3.012 ms), spike, local disk, 50 random ids/fetch",
+   "doc18_s17_all_percentiles": "flat faster at p50, mean AND p90; slower in no percentile (the operator no-regression gate)",
+   "doc18_s16_cold_vs_warm": "the `docs` B-tree costs ~4 ms cold and ~0.24 ms hot; that is the whole 5.53x -> 1.18x collapse",
+   "doc18_s22_bytes": "11,573,201,974 B flat vs 13,470,433,280 B sqlite = -1,897,231,306 B (-1.90 GB)"
+  },
+  "bars": {
+   "B1_parity": {
+    "hard_gate": true,
+    "statement": "every abstract fetched by the flat arm is BYTE-IDENTICAL to the sqlite arm's, for every sampled doc, in every trial, plus a windowed 20,000-id gate",
+    "on_fail": "STOP. No latency number from this run is valid or publishable; report the mismatch and do not touch the serving default."
+   },
+   "B2_warm_no_regression": {
+    "statement": "flat warm per-batch p50 <= sqlite warm per-batch p50",
+    "why": "the operator constraint recorded in doc 18 \u00a716/\u00a717 \u2014 faster is a bonus, slower is a failure"
+   },
+   "B3_warm_p50_ge_1_18x": {
+    "statement": "flat warm p50 multiple >= 1.18x (doc 18 \u00a717's shipped-path number) once the noise floor is subtracted",
+    "predicted": "MET OR EXCEEDED. \u00a717 measured on local disk; this is 9p, where \u00a716 measured the same payload move 2.4x higher (2.89x vs 1.21x).",
+    "interpretation_rule": "a warm multiple > 1.5x is a 9p artifact and must NOT be quoted as production-realisable; the transferable figure stays ~1.18x."
+   },
+   "B4_warm_p95_no_regression": {
+    "statement": "flat warm per-batch p95 <= sqlite warm per-batch p95",
+    "predicted": "MET but thin. \u00a716 measured p90 at only 1.19x because the tail is block decompression, which both arms share."
+   },
+   "B5_cold_multiple_gt_warm": {
+    "statement": "flat cold p50 multiple > flat warm p50 multiple",
+    "why": "this is the direct test of \u00a716/\u00a717's cold-B-tree explanation. If cold <= warm, that explanation is wrong and \u00a717's 'C8's 5.53x was a cold-cache artifact' needs rewriting."
+   },
+   "B6_bytes": {
+    "statement": "published flat total is 11,573,201,974 B and the sqlite it replaces is 13,470,433,280 B (-1,897,231,306 B), re-confirmed by stat of the published directory"
+   },
+   "B7_miss_asymmetry": {
+    "directional_only": true,
+    "statement": "on synthetic_miss50 the flat arm's advantage SHRINKS relative to the hits-only regime, because a locator miss pays searchsorted AND the `docs` fallback while a sqlite miss pays only `docs`",
+    "why": "not a pass/fail bar \u2014 this container has one live section so the true production miss rate is unknown. It bounds the risk of generalising the hits-only number to a federated deploy."
+   }
+  },
+  "n": "120 real bm25f queries; top_k 50 (production default) and 100; cold = 2 reps x 120 batches per arm with drop_caches before each; warm = 300 order-randomised interleaved trials per arm per regime",
+  "if_slower": "record the number, leave the serving default exactly as it is (the sidecar is already published and serving), and flag it."
+ },
+ "inputs": {
+  "interleaved": "data/eval_results/j1_flat_serving_warm_20260817.json",
+  "cold": [
+   "data/eval_results/j1_flat_serving_cold_sqlite_rep1_20260817.json",
+   "data/eval_results/j1_flat_serving_cold_sqlite_rep2_20260817.json",
+   "data/eval_results/j1_flat_serving_cold_flat_rep1_20260817.json",
+   "data/eval_results/j1_flat_serving_cold_flat_rep2_20260817.json"
+  ]
+ },
+ "src_fstype": "9p",
+ "sizes": {
+  "sqlite_bytes": 13470433280,
+  "flat_total_bytes": 11573203382,
+  "saved_bytes": 1897229898,
+  "saved_gb": 1.897,
+  "flat_files": {
+   "block_dictids.npy": 1517135,
+   "block_lengths.npy": 6068156,
+   "block_offsets.npy": 12136184,
+   "blocks.bin": 11131511857,
+   "dicts.json": 379,
+   "flat_store.json": 367,
+   "loc_b.npy": 93592420,
+   "loc_n.npy": 93592420,
+   "loc_off.npy": 46796274,
+   "loc_wids.npy": 187184712,
+   "locator.json": 662,
+   "zdict_arabic": 114688,
+   "zdict_cyrillic": 114688,
+   "zdict_greek": 114688,
+   "zdict_han": 114688,
+   "zdict_hangul": 114688,
+   "zdict_kana": 114688,
+   "zdict_latin": 114688
+  }
+ },
+ "bars": {
+  "B1_parity": {
+   "windowed_gate": {
+    "ids_requested": 20000,
+    "ids_checked": 14000,
+    "docs_returned": {
+     "sqlite": 14000,
+     "flat": 14000,
+     "sqlite_ctrl": 14000
+    },
+    "mismatched_chunks": {
+     "sqlite": 0,
+     "flat": 0,
+     "sqlite_ctrl": 0
+    },
+    "pass": true
+   },
+   "per_trial": {
+    "real_top50": {
+     "sqlite": 0,
+     "flat": 0,
+     "sqlite_ctrl": 0
+    },
+    "synthetic_miss50_top50": {
+     "sqlite": 0,
+     "flat": 0,
+     "sqlite_ctrl": 0
+    },
+    "real_top100": {
+     "sqlite": 0,
+     "flat": 0,
+     "sqlite_ctrl": 0
+    },
+    "synthetic_miss50_top100": {
+     "sqlite": 0,
+     "flat": 0,
+     "sqlite_ctrl": 0
+    }
+   },
+   "cross_process_digests_equal": true,
+   "verdict": "PASS"
+  },
+  "B2_warm_no_regression": {
+   "sqlite_p50_ms": 45.679,
+   "flat_p50_ms": 15.8855,
+   "verdict": "PASS"
+  },
+  "B3_warm_p50_ge_1_18x": {
+   "multiple": 2.876,
+   "noise_floor_pct": 0.56,
+   "verdict": "PASS",
+   "nine_p_flag": true
+  },
+  "B4_warm_p95_no_regression": {
+   "sqlite_p95_ms": 67.7294,
+   "flat_p95_ms": 17.6293,
+   "multiple": 3.842,
+   "verdict": "PASS"
+  },
+  "B5_cold_multiple_gt_warm": {
+   "cold_p50_ms": {
+    "sqlite": [
+     46.695,
+     46.363
+    ],
+    "flat": [
+     26.154,
+     25.826
+    ]
+   },
+   "cold_multiple": 1.79,
+   "warm_multiple": 2.876,
+   "verdict": "FAIL"
+  },
+  "B6_bytes": {
+   "sqlite_bytes": 13470433280,
+   "flat_total_bytes": 11573203382,
+   "saved_bytes": 1897229898,
+   "saved_gb": 1.897,
+   "doc18_s22_claim_bytes": -1897231306,
+   "verdict": "DIFFERS"
+  },
+  "B7_miss_asymmetry": {
+   "hits_only_multiple": 2.876,
+   "miss50_multiple": 2.856,
+   "shrinks_as_predicted": true,
+   "flat_regresses_on_miss50": false
+  }
+ },
+ "headline": {
+  "primary_regime": "real_top50",
+  "warm_p50_ms": {
+   "sqlite": 45.679,
+   "flat": 15.8855
+  },
+  "warm_p95_ms": {
+   "sqlite": 67.7294,
+   "flat": 17.6293
+  },
+  "warm_per_doc_p50_ms": {
+   "sqlite": 2.0378,
+   "flat": 0.6959
+  },
+  "warm_multiple_p50": 2.876,
+  "cold_multiple_p50": 1.79,
+  "parity": "PASS",
+  "fs_caveat": "index mount is 9p; doc 18 \u00a716 measured this payload move 2.89x on 9p vs 1.21x on local disk, so any fault-bound multiple here is an upper bound for a local-disk droplet"
+ }
+}

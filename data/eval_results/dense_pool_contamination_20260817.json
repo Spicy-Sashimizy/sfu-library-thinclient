@@ -1,0 +1,39 @@
+{
+  "measured_utc": "2026-08-17T00:49:59Z",
+  "what": "ground-truth coverage of the SERVED dense pool (data/thinclient_index/dense/ids.json)",
+  "inputs": {
+    "dense_ids": "data/thinclient_index/dense/ids.json",
+    "judge_cache": "data/eval_results/llm_judge_cache.json",
+    "query_set": "data/eval_results/diverse_queries.json",
+    "relevant_grade_threshold": 2,
+    "full_corpus_docs": 150413098
+  },
+  "pool": {
+    "dense_vectors": 600000,
+    "corpus_fraction": 0.003989
+  },
+  "query_set": {
+    "records": 360,
+    "unique_judged_topics": 120
+  },
+  "coverage": {
+    "relevant_judged_docs": 2107,
+    "relevant_in_pool": 1903,
+    "relevant_in_pool_frac": 0.9032,
+    "all_judged_docs": 4034,
+    "all_judged_in_pool": 3390,
+    "all_judged_in_pool_frac": 0.8404
+  },
+  "enrichment_vs_random_subset": 226.4,
+  "strata": {
+    "fully_covered_topics": 50,
+    "partially_covered_topics": 70,
+    "held_out_topics_zero_relevant_in_pool": 0,
+    "topics_with_no_relevant_judged": 0
+  },
+  "interpretation": [
+    "90.3% of the eval set's relevant docs sit in the served dense pool, vs 0.3989% for a random subset of the same size \u2014 226x enrichment, by construction.",
+    "Therefore the recorded dense deltas (dense_poc_eval.json +0.2924 retrieval nDCG@10, pipeline_dense_comparison.json +0.119 post-rerank) are an UPPER bound on production benefit, not a lower bound. eval_pipeline.py's caveat ('OPTIMISTIC / an upper bound') is the correct reading; eval_dense_poc.py's ('a LOWER BOUND') is wrong for the deployed configuration.",
+    "0 topics have zero relevant docs in the pool, so the standard query set CANNOT provide a held-out stratum: a keep/drop ablation run on it would re-measure the oracle, not the leg. A fresh judged query set is required. See docs/DENSE_PARTITION_AND_ABLATION.md."
+  ]
+}

@@ -1,5 +1,13 @@
 # DigitalOcean Droplet Sizing for the Qdrant SPLADE Demo
 
+> **⚠ DEPRECATED for the cloud target 2026-08-06 — the demo moved to Oracle
+> Cloud (OCI).** The **RAM→latency sizing MODEL** in this doc is still valid and
+> is cited by `docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §2, but the
+> **DigitalOcean droplet SKUs, prices, and the Qdrant engine** here are
+> superseded: the SPLADE leg is SEISMIC (see the 2026-07-17 POINTER below), and
+> the deployment target is OCI (E4.Flex x86 / A1.Flex ARM), not DO. Use the OCI
+> doc for shape + price; use this doc only for the sizing *reasoning*.
+
 Derived from **measured** page-cache behaviour (NOT an estimate). Source numbers
 are in `docs/THIN_CLIENT_SWAP.md` (Off-BMP section, 2026-06-19/2021) and the
 ops table in `METRICS_CATALOG.md`. BMP-decommission plan Workstream C5.

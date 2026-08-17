@@ -1,0 +1,14 @@
+06:35:05 INFO reading 20 runs x 50,000 rows spread over id 108..7143276021
+06:35:07 INFO   read 1,000,000 rows in 1.9 s
+06:35:08 INFO payload: 142.1 MB raw, mean 142.1 B/doc
+06:35:10 INFO training zstd dictionary on 20000 records
+06:35:10 INFO packing ~32 KB blocks at zstd-19
+06:35:27 INFO   packed 4347 blocks in 17.1 s
+06:35:51 INFO sqlite_mainline  p50  0.2324 ms (1.00x mainline) | parity PASS
+06:35:51 INFO raw              p50  0.1424 ms (0.61x mainline) | parity PASS
+06:35:51 INFO zstd_blocks      p50  2.7684 ms (11.91x mainline) | parity PASS
+06:35:51 INFO zstd_perdoc      p50  0.1628 ms (0.70x mainline) | parity PASS
+06:35:51 INFO results -> /workspaces/sfu-library-thinclient/data/eval_results/c7_meta_flat_20260803_0635.json
+06:35:51 INFO raw          projected 22.57 GB payload+locator | full replacement 24.52 GB vs meta.sqlite 24.91 GB (saves 0.39)
+06:35:51 INFO zstd_blocks  projected  5.50 GB payload+locator | full replacement  7.45 GB vs meta.sqlite 24.91 GB (saves 17.46)
+06:35:51 INFO zstd_perdoc  projected 12.74 GB payload+locator | full replacement 14.69 GB vs meta.sqlite 24.91 GB (saves 10.22)

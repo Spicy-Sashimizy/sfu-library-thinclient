@@ -1,6 +1,13 @@
 # 11 · Experiment backlog — pre-registered hypotheses for the G8b/G8c host session and beyond
 
-**Created 2026-07-04. Status: PRE-REGISTERED, UNMEASURED (every row).** This is
+**Created 2026-07-04. Status: PRE-REGISTERED, UNMEASURED (every row).**
+
+> **Status note 2026-08-10:** the header above is the creation-time state and
+> is now stale — most rows carry inline MEASURED verdicts (through
+> 2026-07-28). Where a row here disagrees with
+> `12_EXECUTION_ROADMAP.md`'s decision ledger, the roadmap wins.
+
+This is
 the testbed registry for "if we're paying for a 58 GB host session, extract
 every cheap answer while the cache is hot." Each hypothesis has a prediction
 and a decision rule written BEFORE the run (the E7/E7b discipline). Results
@@ -53,13 +60,13 @@ traverses; 40×3 would take hours for no extra information).
 | id | hypothesis | method | status |
 |---|---|---|---|
 | **E5 co-access reordering** | docs scored together share pages after a co-access permute of the forward index → majflt ↓ beyond dv's 0.560 (the one remaining fault-count lever, doc 10 §7.4) | SIMULATE FIRST at page-touch granularity with the §7.4 pack-walk method (`e7_straddle_analysis.py` lineage) using real query candidate sets; only build the converter/id-indirection if the sim clears ~0.45 | PRE-REGISTERED, sim not written |
-| **M2b i32-widen** | M2's gate-a fail (0.984 @ n=100) is i16 accumulator saturation; widening to i32 recovers ≥0.99 at ~half of M2's projected speedup | kernel variant behind the existing `SFU_SEISMIC_M2_INT6` plumbing; gate a at n=100 FIRST (the n=40→100 lesson, `math_optimization/07`) | PRE-REGISTERED, not built |
+| **M2b i32-widen** | M2's gate-a fail (0.984 @ n=100) is i16 accumulator saturation; widening to i32 recovers ≥0.99 at ~half of M2's projected speedup | kernel variant behind the existing `SFU_SEISMIC_M2_INT6` plumbing; gate a at n=100 FIRST (the n=40→100 lesson, `math_optimization/07`) | **KILLED 2026-07-10** — gate a FAIL 0.987/0.983 < 0.99 (Q4, `12_EXECUTION_ROADMAP.md` ledger) |
 | **E3 n_postings-down** | n_postings below default shrinks the index at zero quality cost (the UP direction proved inert 2026-06-27; DOWN was never run) | one rebuilt shard0 variant + parity vs f16 baseline | BLOCKED on build budget (shard rebuild ~hours; /tmp sources gone — needs spool re-derivation) |
 | **M7 bitmap/intersection sim** (2026-07-05) | moving the query-membership test *before* the gather (3.6 KB L1 bitmap vs 115 KB L2 dense table) skips most packs — the 76.7% zero-lane waste has enough pack-level clustering to matter | Stage-0 Python lane-accounting sim on real candidate sets: distribution of query-hits per 8-lane pack; bars pre-registered in `math_optimization/08_FURTHER_MATH_CANDIDATES.md` (all-miss-pack rate ≥0.5 GO / <0.3 KILL); dv shards serve as-is either way | **KILLED 2026-07-08** — all-miss-pack rate **0.194** (shard1 0.197, shard2 0.190; bar <0.3 = KILL): hits anti-cluster, ~80% of packs contain ≥1 query hit. Per-lane zero rate 0.7646 reproduces 06's 76.7% anchor. `scripts/seismic_testbed/m7_pack_membership_sim.py`, `data/eval_results/m7_pack_membership_sim_20260708.json`; verdict details `math_optimization/08` §M7 |
-| **M6 VNNI/UDOT pre-gates** (2026-07-05) | `vpdpbusd`/`UDOT` i32 accumulation removes the i16 saturation that capped M2 at 6-bit → 7-bit query clears the 0.99 quality bar at n=100 (pre-gate model exists; 0.995 at n=40) | (1) cpuid inventory across dev/host/DO CPUs (`lscpu \| grep vnni`, ARM `asimddp`); (2) `m2_pregate_query_integer_dot.py` at 7-bit, n=100; gated behind M2b's verdict — see `math_optimization/08` §M6 | PRE-REGISTERED, not run |
+| **M6 VNNI/UDOT pre-gates** (2026-07-05) | `vpdpbusd`/`UDOT` i32 accumulation removes the i16 saturation that capped M2 at 6-bit → 7-bit query clears the 0.99 quality bar at n=100 (pre-gate model exists; 0.995 at n=40) | (1) cpuid inventory across dev/host/DO CPUs (`lscpu \| grep vnni`, ARM `asimddp`); (2) `m2_pregate_query_integer_dot.py` at 7-bit, n=100; gated behind M2b's verdict — see `math_optimization/08` §M6 | **KILLED 2026-07-10** — transitively by M2b's Q4 gate-a FAIL (Q5, `12_EXECUTION_ROADMAP.md` ledger); cpuid inventory never run (moot) |
 | **M8 survivors-per-block instrument** (2026-07-05) | surviving posting blocks contribute ≥4 candidates on average → batched (register-blocked) scoring has material batch width | 20-line counter in the traverse path (or offline from posting-block stats); if typical batch <2, M8 dies on paper — `math_optimization/08` §M8 | PRE-REGISTERED, not run |
 | **E7 readahead on ext4** | gate-c's 0.560 is partly drvfs; on a native ext4 host the fault profile may differ | would need shards copied to ext4 — **violates Rule Zero on this host** (no space guarantee); only for a future machine with a second SSD | PARKED |
-| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 vs f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** vs FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. **Stage-1 GO 2026-07-10** — v2 codec/converter/reader shipped (format version 2, per-doc f16 vmax record head); all 4 pre-registered bars PASS on both shards: overlap@10 **0.997/0.993** (= the Stage-0 proxy exactly), size **+0.67%** (the *est.* −6% did NOT materialize — the u8 re-distribution compresses the same, the f16 heads add ~+0.7%), warm p50 **0.985×/1.039×**, T1 bit-identity 0/0. `scripts/seismic_testbed/e8_dvv2_gates.py`, `data/eval_results/e8_dvv2_stage1_shard{1,2}_20260710.json`. Next: Stage 2 (host-tier full 8-shard re-conversion + E5-perm fold + G8d re-run; only that serves v2) |
+| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 vs f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** vs FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. **Stage-1 GO 2026-07-10** — v2 codec/converter/reader shipped (format version 2, per-doc f16 vmax record head); all 4 pre-registered bars PASS on both shards: overlap@10 **0.997/0.993** (= the Stage-0 proxy exactly), size **+0.67%** (the *est.* −6% did NOT materialize — the u8 re-distribution compresses the same, the f16 heads add ~+0.7%), warm p50 **0.985×/1.039×**, T1 bit-identity 0/0. `scripts/seismic_testbed/e8_dvv2_gates.py`, `data/eval_results/e8_dvv2_stage1_shard{1,2}_20260710.json`. **Stage 2 COMPLETE 2026-07-13** (8/8 shards re-converted, corpus-mean 0.9955) + **served-default flip 2026-07-14** — see `12_EXECUTION_ROADMAP.md` Q1 |
 
 ### Q12 access-skew / hot-set telemetry probe (2026-07-13, disk_streaming_research candidate #1)
 
@@ -174,6 +181,13 @@ scoring path → T1 bit-identical by construction.
   32 GB deploy combos. Any fault under pressure OR warm >1.10× = the mlock
   cost isn't free → keep it opt-in only.
 - Kill-switch: `SFU_SEISMIC_MLOCK_FLOOR=1` (=0 → today's behavior, byte-identical).
+- **Scope amended 2026-08-17 (the pre-registration above assumed the whole floor
+  slabs):** `=1` now locks the posting-list navigation runs only, budget-capped
+  (`SFU_SEISMIC_MLOCK_FLOOR_MB`, default 160 MB total ≈ 20 MB/shard); `=full`
+  keeps the original whole-slab arm. The three bars are UNCHANGED and still
+  pre-registered — only the pinned byte set (and hence the RAM cost of a PASS)
+  shrank ~671×. Residency + parity legs already measured (see the F4/F5 build-
+  state section below); the latency/pressure legs remain unrun.
 
 ### F3 mlock_ranges pin tier (2026-07-14, disk-streaming Phase 3)
 
@@ -215,11 +229,25 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
   `mlock_floor` locks the FULL `_postings_mmap` slab (posting_lists.bin,
   1.16 GB/shard) × 8 = **~13.4 GB floor pin total**, NOT the doc-03 "~1.5 GB".
   The doc-03 "~1.5 GB structural floor" is PER SHARD (posting_lists 1.16 +
-  doc-mapping 0.35); the Q9 "~5,000 pages = 20 MB constant floor" is the true
-  small floor, NOT what `mlock_floor` locks (it locks the whole slab, like
-  `prefault_floor`). For min-RAM, `mlock_floor` needs rescoping to the ~20 MB
-  true structural floor; **default-off (kill-switch `SFU_SEISMIC_MLOCK_FLOOR=0`)
-  is correct** until then. F4 EFFICACY UNMEASURED (and over-scoped).
+  doc-mapping 0.35). **RESCOPED 2026-08-17 (WS-C)** — `SFU_SEISMIC_MLOCK_FLOOR=1`
+  now runs `sharded_seismic_backend.mlock_structural_floor`, which locks ONLY
+  the posting-list navigation runs (per list: block_offsets + Elias-Fano
+  offsets + DArray inventories) inside `posting_lists.bin`, budget-capped by
+  `SFU_SEISMIC_MLOCK_FLOOR_MB` (TOTAL across shards, default 160 = ~20 MB/shard)
+  under the F3 no-OOM guard (`MemAvailable − 1.0 GB`) and a ≤2048-ranges/shard
+  VMA cap; `=full` reproduces the old whole-slab pin; `=0` stays the default.
+  Implemented pure-Python (`/proc/self/maps` base + `ctypes` `mlock`), so the
+  served .so is unchanged. **MEASURED 2026-08-17** (shard0,
+  `data/eval_results/f4_floor_mlock_rescope_20260817.json`,
+  `scripts/seismic_testbed/f4_floor_mlock_smoke.py`): **19,980,288 B locked in
+  929 ranges in 1.6 s**, `VmLck` delta equal to the reported bytes; the shard's
+  whole navigation floor is 153.1 MB of the 1,159.2 MB slab (13.2%); parity
+  gate-ON vs OFF **5/5 bit-identical**. **Also corrected:** the "Q9 ~5,000
+  pages = 20 MB constant floor" this backlog cited as the rescope target was a
+  unit error — doc 10 §7.3 measured 5,093 major FAULTS carrying ~1.27 GB of
+  readahead pages; there is no 20 MB slab. F4 LATENCY EFFICACY still
+  **UNMEASURED** at 150M (host busy with the WS-A parity eval on 2026-08-17);
+  A/B command in doc `disk_streaming_research/03` §5 step 2.
 - **F3 `mlock_ranges`**: hook works; the manual 8-shard pin path (load via
   `_load_one_shard` + `mlock_ranges` per shard, 0.2 GB/shard = 1.6 GB budget)
   pinned **0.782 GB across all 8 shards** cleanly (mlock returns 0 past the
@@ -341,7 +369,8 @@ capacity math" bound applied. Only benefit observed: a modest cold-pass
 prefault effect at 8G (pass 1 3.09 s vs 3.39 s). Remaining untested pin
 value: protection against EXTERNAL cache competitors (not self-thrash) — a
 different regime, pre-registered here as an open question, plus the
-F4-rescoped ~20 MB floor pin.
+F4 navigation-floor pin (RESCOPED 2026-08-17 to ~20 MB/shard, ~160 MB total;
+built + residency-measured, latency UNMEASURED — see the F4 entry above).
 
 **F5 release-except cell (2026-07-14, `r1_cap16g_f5rel_20260714.json`) —
 NULL RESULT as built, with a diagnosed scope bug.** Pass-for-pass identical

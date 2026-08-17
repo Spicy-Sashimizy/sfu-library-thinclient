@@ -1,0 +1,35 @@
+{
+ "schema": "f4.floor_mlock_rescope.v1",
+ "date": "2026-08-17",
+ "what": "F4 floor-mlock RESCOPE: SFU_SEISMIC_MLOCK_FLOOR=1 now locks only the posting-list navigation runs (block_offsets + Elias-Fano offsets + DArray inventories) inside posting_lists.bin, budget-capped; the 2026-07-14 whole-slab pin (1.67 GB/shard = ~13.4 GB over 8 shards) moved behind SFU_SEISMIC_MLOCK_FLOOR=full.",
+ "host_note": "dev container, co-loaded with the WS-A 150M parity eval; smoke test only (1 shard, no benchmark) \u2014 latency efficacy at 150M UNMEASURED.",
+ "smoke": {
+  "script": "scripts/seismic_testbed/f4_floor_mlock_smoke.py",
+  "manifest": "1-shard slice of data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json (global_shard0of8.dotvbyte.e5.v2.mmap)",
+  "budget_mb_total": 20.0,
+  "n_shards": 1,
+  "posting_lists_bytes": 1159211728,
+  "nav_floor_bytes_total": 153140640,
+  "nav_floor_fraction_of_slab": 0.1321,
+  "locked_bytes": 19980288,
+  "locked_ranges": 929,
+  "vmlck_delta_bytes": 19980288,
+  "seconds": 1.6,
+  "legacy_whole_slab_bytes_per_shard": 1667000000,
+  "legacy_whole_slab_bytes_8shards": 13400000000
+ },
+ "parity": {
+  "harness": "scripts/seismic_testbed/seismic_result_parity.py",
+  "arms": "SFU_SEISMIC_MLOCK_FLOOR unset (OFF) vs =1 with SFU_SEISMIC_MLOCK_FLOOR_MB=20",
+  "queries": 5,
+  "top_k": 10,
+  "backend": "parallel",
+  "result": "5/5 identical (ids+scores); capture files byte-identical",
+  "sha256_off": "a7589a2798270b0bb3b07c8a2feaf8e5fc33ca47a1af6351ae2abfe6aa7d70bd",
+  "sha256_on": "a7589a2798270b0bb3b07c8a2feaf8e5fc33ca47a1af6351ae2abfe6aa7d70bd"
+ },
+ "unmeasured": [
+  "latency A/B at 150M (8 shards, cold/warm p50/p95) \u2014 host busy 2026-08-17",
+  "durability under memory pressure (zero floor re-faults) \u2014 needs the capped host"
+ ]
+}

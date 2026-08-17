@@ -57,7 +57,7 @@ else is elastic.
 | F1 | **Usage telemetry** (colibrì `eusage`) | Offline/periodic, NOT per-query-in-serving: rerun `q12_access_skew_probe.py`-style collection over the real query log on a schedule (or sample 1-in-N served queries via `search_visited`), aggregate to **extents** | Per-query telemetry in the hot path costs a Vec copy per query for data that changes slowly; the hot set is a *distribution*, sampled is enough. Zero serving-path risk |
 | F2 | **Hot-set persistence** (colibrì `.coli_usage`) | JSON sidecar per shard: `<shard>.mmap/hotset.json` = sorted list of `(page_start, page_len)` **extents** + the manifest's `forward_format_version` + `forward_reordered` + a generation date; refuse (and log) on key mismatch | E5's `block_walk_canonical` made hot pages contiguous → extents are few and large; version-keying makes E8 Stage-2 reconversion fail-loud instead of pinning garbage |
 | F3 | **Pin tier** (colibrì `pin`) | `mlock_ranges(extents)` pyo3 hook on `MmapSeismicIndex` + budget check: pin ≤ min(dial, `MemAvailable` − floor − headroom) at load, largest-coverage extents first (greedy by touch count — the Q12 counter is the ranking) | mlock-on-mmap keeps zero-copy and needs ~10% of the pread rewrite's code; budget-from-`MemAvailable` is colibrì's own discipline and the no-OOM guarantee |
-| F4 | **Floor prefault → floor pin** (Q9 upgrade) | extend `prefault_floor` with an optional mlock flag (same slabs) | the floor faults identically every cold start (measured constant, Fix#4); on capped hosts it's the first thing kswapd steals back — locking it makes Q9's win durable |
+| F4 | **Floor prefault → floor pin** (Q9 upgrade) | ~~extend `prefault_floor` with an optional mlock flag (same slabs)~~ → **RESCOPED 2026-08-17**: lock only the posting-list *navigation* runs (block_offsets + EF offsets + inventories) inside `posting_lists.bin`, budget-capped (`SFU_SEISMIC_MLOCK_FLOOR_MB`, default 160 MB total) under the F3 no-OOM guard — §5 step 2 | the same-slabs form pins 1.67 GB/shard = 13.4 GB (min-RAM goal defeated); the navigation runs are the small always-traversed structural subset (153.1 MB/shard, 13.2% of the slab, measured 2026-08-17) and 20 MB/shard of them locks in 1.6 s, parity 5/5. **A/B RUN 2026-08-17: warm p50 1.019× (bar ≤1.05× PASS), parity 10/10 PASS, pressure-refault bar NOT MEASURED — default stays 0** — §5 step 2 |
 | F5 | **Eviction between shards** (mechanism B) | `release_pages_except(pinned_extents)` — range-split `MADV_DONTNEED` around pinned extents | plain DONTNEED **EINVALs on mlocked ranges** (doc 02 §4); the split keeps the sequential ~1-shard residency guarantee for the *unpinned* remainder |
 | F6 | **Serving method** | keep Q7 `HybridSeismicBackend` unchanged (sequential-cold → parallel-warm, adaptive flip) | flip threshold is self-derived from observed cold, so a pin tier that lowers cold traverse auto-tightens it — zero new code |
 | F7 | **Software LRU proper** (colibrì `ESlot`/`eclock`) | **omitted** from the combo | with F1–F5, the kernel LRU only manages Tier C, where its blindness is acceptable; a userspace LRU adds policy code for the low-value residual (rung 3 — only if F3 measurably plateaus) |
@@ -79,8 +79,13 @@ nothing.
 > **~15.5 GB**, and below it no residency policy helps (capacity math).
 > Honest deploy floor: **16 GB minimum / 24 GB comfortable**. The 6 GB shape
 > requires working-set reduction (compression, k′ tightening), not pinning.
-> Still-open pin regimes: external cache competitors; rescoped ~20 MB F4
-> floor. F6 prefault remains the proven lever (2.8× cold p95, all shapes).
+> Still-open pin regimes: external cache competitors; the F4 navigation-floor
+> pin (RESCOPED 2026-08-17 to ~20 MB/shard — built, residency-measured, and
+> latency-A/B'd 2026-08-17: **free per query (warm p50 1.019×) and
+> bit-identical, but the residency benefit is still unproven — no
+> memory-pressure pass exists in this container; default stays 0**;
+> §5 step 2).
+> F6 prefault remains the proven lever (2.8× cold p95, all shapes).
 > Recommended config: `THIN_CLIENT_SWAP.md` env register.
 
 Fixed costs (measured): anon serving floor ~1.1 GB (Path-C), structural floor
@@ -92,10 +97,27 @@ floor" is **PER SHARD** (posting_lists.bin 1.16 GB + doc-mapping 0.35 GB), NOT
 the 8-shard total. `mlock_floor` as built locks the FULL posting_lists slab × 8
 = **~13.4 GB total floor pin** — which **defeats the min-RAM goal** and would
 blow the 6 GB localized combo below. The combos below are corrected
-accordingly: **F4 (floor-mlock) is NOT in the combo until rescoped** to the
-~20 MB true constant floor (Q9's "~5,000 pages"). F3 hotset pin (1.6 / 4.2 GB
-total, correctly scoped) is the real min-RAM lever. Until F4 is rescoped, the
-combos drop the F4 term.
+accordingly: **F4 (floor-mlock) is NOT in the combo until rescoped**. F3 hotset
+pin (1.6 / 4.2 GB total, correctly scoped) is the real min-RAM lever.
+
+> **2026-08-17 UPDATE — F4 RESCOPED (and the "~20 MB true floor" target was a
+> unit error).** `SFU_SEISMIC_MLOCK_FLOOR=1` now locks only the posting-list
+> **navigation** runs inside `posting_lists.bin` (block_offsets + Elias-Fano
+> offsets + DArray inventories), budget-capped by `SFU_SEISMIC_MLOCK_FLOOR_MB`
+> (default 160 MB TOTAL = ~20 MB/shard) under the F3 no-OOM guard — MEASURED
+> **19,980,288 B in 929 ranges on shard0**, parity 5/5 bit-identical
+> (`f4_floor_mlock_rescope_20260817.json`). The old whole-slab pin needs
+> `=full`. The "~20 MB true constant floor (Q9's ~5,000 pages)" this doc
+> previously called the target **does not exist**: doc 10 §7.3's 5,093 was a
+> major-*fault* count carrying ~1.27 GB of readahead pages, not 5,093 resident
+> pages. The measured always-traversable structural subset is the 153.1 MB/shard
+> navigation floor (13.2% of the slab); ~20 MB/shard is a *budget*, not the
+> floor's size. F4's term in the combos below is therefore ~0.16 GB (register
+> default). **Latency A/B RUN 2026-08-17** (`f4_floor_ab_verdict_20260817.json`):
+> warm p50 62.17 → 63.35 ms (**1.019×**, bar ≤1.05× PASS), parity **10/10**
+> identical, load cost **2.8 → 91.4 s** on a cold page cache; the
+> pressure-refault bar is **NOT MEASURED** (no RAM cap here), so the gate stays
+> **default 0** — §5 step 2.
 
 | Deploy shape | Combo (dial settings) | Guaranteed RSS (*est.*) | Expected behavior (*est.*) |
 |---|---|---|---|
@@ -139,16 +161,123 @@ bit-identical by construction (residency-only levers; T1 untouched).
    the Phase-3 dials (hot50_1.6gb / hot80_4.2gb / full_touched) over the Q12b
    production query log; sidecars + inventory under `data/eval_results/`. EFFICACY: F1
    sidecars PENDING EMIT (Phase 0b GO → emit step next).
-2. F4 floor-mlock flag (one-arg change to an existing hook). **BUILT 2026-07-14;
-   EFFICACY UNMEASURED + OVER-SCOPED**: `mlock_floor(include_forward_offsets)`
-   pyo3 hook on `MmapSeismicIndex` (both codecs) +
-   `sharded_seismic_backend.mlock_floor`; gate `SFU_SEISMIC_MLOCK_FLOOR=1`.
-   Hook works (1.67 GB locked on shard 0) BUT it locks the FULL posting_lists
-   slab (1.16 GB/shard × 8 = **~13.4 GB total**) — NOT the doc-03 "~1.5 GB".
-   The "~1.5 GB structural floor" is PER SHARD; the true small constant floor
-   is ~5,000 pages = 20 MB (Q9). **Default-off (kill-switch) is correct** until
-   `mlock_floor` is rescoped to the ~20 MB true floor; 13 GB of floor pin
-   defeats the min-RAM goal. Degrades to no-op if mlock denied.
+2. F4 floor-mlock flag (one-arg change to an existing hook). **BUILT 2026-07-14
+   (OVER-SCOPED) → RESCOPED 2026-08-17; MECHANISM MEASURED, LATENCY EFFICACY
+   UNMEASURED.**
+
+   *As built 2026-07-14:* `mlock_floor(include_forward_offsets)` pyo3 hook on
+   `MmapSeismicIndex` (both codecs) + `sharded_seismic_backend.mlock_floor`
+   locks whole SLABS — posting_lists 1.16 GB + doc-mapping 0.36 GB +
+   forward_offsets 0.15 GB = 1.67 GB/shard × 8 = **~13.4 GB total**, which
+   defeats the min-RAM goal (the "~1.5 GB structural floor" of §3 is PER
+   SHARD).
+
+   *The "~20 MB true floor" target was itself wrong (found 2026-08-17).* It came
+   from Q9/E7-Fix#4 via doc 10 §7.3, which measured **5,093 major FAULTS**
+   stripped by `prefault_floor` — and states in the same row that those faults
+   carry **~1.27 GB** of pages (readahead amortizes ~64 pages per major fault).
+   `5,093 × 4 KiB = 20 MB` was a fault-count-as-page-count unit error; no 20 MB
+   slab exists to lock.
+
+   *Rescope as shipped 2026-08-17* (`sharded_seismic_backend.mlock_structural_floor`,
+   pure Python — `/proc/self/maps` base + `ctypes` `mlock(2)` on sub-slab
+   ranges; no .so rebuild, so the served kernel/.so is untouched): gate `=1`
+   now locks ONLY the posting-list **navigation** metadata — per list, the
+   contiguous `block_offsets + Elias-Fano offsets (high/low bits) + DArray
+   inventories` run inside `posting_lists.bin` (`_PL_LAYOUT` NAV rows; the walk
+   reproduces the slab's byte length exactly, else the shard is refused). Never
+   the data extents (packed postings / summary ids / values / minimums /
+   quants), never doc-mapping, never the forward slabs. Dials + guards:
+   `SFU_SEISMIC_MLOCK_FLOOR_MB` (TOTAL across shards, default **160** =
+   20 MB/shard at 8), the F3 no-OOM guard (`MemAvailable − 1.0 GB`), the
+   ≤2048-ranges/shard VMA-split cap, largest-run-first selection (a size proxy
+   for term frequency — HEURISTIC). `SFU_SEISMIC_MLOCK_FLOOR=full` reproduces
+   the old whole-slab pin; `=0` (default) is byte-identical to the pre-F4 path.
+
+   **MEASURED 2026-08-17** (`data/eval_results/f4_floor_mlock_rescope_20260817.json`,
+   `scripts/seismic_testbed/f4_floor_mlock_smoke.py`, shard0 dv-v2, budget
+   20 MB): **locked 19,980,288 B in 929 ranges in 1.6 s**, process `VmLck`
+   delta equal to the reported byte count (kernel-side confirmation); the
+   shard's complete navigation floor is **153.1 MB of the 1,159.2 MB slab
+   (13.2%)**, so the budget pinned the top 13% of it. Full-register default
+   = 8 × ~20 MB ≈ **160 MB vs the old 13.4 GB (671× less)**. Result parity
+   gate-ON vs gate-OFF: **5/5 queries bit-identical** (top-10 ids+scores,
+   capture files byte-identical; `seismic_result_parity.py`).
+
+   **LATENCY A/B RUN 2026-08-17 (idle host, NOT RAM-capped): 2 of 3
+   pre-registered bars PASS, 1 NOT MEASURED — default stays 0.**
+   Results: `data/eval_results/f4_floor_ab_verdict_20260817.json` (summary),
+   `f4_floor_ab_off_20260817.json` / `f4_floor_ab_on_20260817.json` (arms),
+   `f4_floor_mlock_8shard_20260817.json` (residency smoke),
+   `f4_floor_parity_{off,on}_20260817.json` (capture files).
+
+   | bar (pre-registered above) | measured | verdict |
+   |---|---|---|
+   | warm p50 ON ≤ 1.05× OFF | **1.019×** (62.17 → 63.35 ms) | **PASS** |
+   | zero navigation-page re-faults under pressure | — | **NOT MEASURED** |
+   | parity 0 mismatches | 0 (10/10 ids+scores identical) | **PASS** |
+
+   Full-register residency smoke, 8 shards: **159,907,840 B locked in 7.65 s**,
+   `VmLck` delta equal to the reported bytes; the complete navigation floor
+   across the register is **1,225,697,128 B**, so the 160 MB budget pins 13.0%
+   of it. Warm p95 **105.6 → 95.0 ms** and warm mean **67.2 → 63.4 ms** are
+   nominally BETTER with the gate on, i.e. mlock costs nothing per query;
+   `anon_floor` moves 1.1359 → 1.1370 GB (+1.1 MB) and `VmRSS` peak 17.61 →
+   17.73 GB (+0.12 GB ≈ the locked bytes). **Cost that was not on anyone's
+   list:** load time **2.8 s → 91.4 s**, because the mlock walk faults the
+   160 MB of navigation runs off 9p with a page cache the previous arm's
+   `fadvise(DONTNEED)` had just emptied (the same walk took 7.65 s warm). It is
+   a one-time load cost, but it is 88 s of it on a cold container.
+
+   **Why this is not a green light.** The bar that would justify the gate —
+   *residency under pressure* — is the one that was not measured:
+   `serve_footprint_bench` has no memory-pressure pass and this container has
+   no RAM cap, so nothing here forced the navigation pages to compete for
+   reclaim. mlock'd pages are unevictable by kernel semantics and `VmLck`
+   proves the lock landed, but "the pages survive pressure" was asserted, not
+   observed. The cold arm (p50 968.5 vs 1199.1 ms, 0.81×) looks favourable and
+   is **not claimable**: n=100 single-pass with p95 6.8/8.8 s, a spread that
+   dwarfs the difference. So: the A/B licenses *enabling* the gate on a host
+   that wants it (it is free and bit-identical), and does not demonstrate a
+   win. **Default stays 0**; the real test remains the R1/R3 RAM-capped host
+   ladder.
+
+   The A/B as run (reproduce on a RAM-capped host for the missing bar):
+
+   ```bash
+   # ── 1. residency (light, no benchmark): what does the gate actually lock? ──
+   SFU_SEISMIC_LOAD_MODE=mmap SFU_SEISMIC_MLOCK_FLOOR_MB=160 .venv/bin/python3 \
+     scripts/seismic_testbed/f4_floor_mlock_smoke.py \
+     --out data/eval_results/f4_floor_mlock_8shard_<YYYYMMDD>.json
+
+   # ── 2. latency A/B (HEAVY — idle host only): same binary, same manifest ──
+   M=data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json
+   SFU_SEISMIC_LOAD_MODE=mmap .venv/bin/python3 \
+     scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest $M \
+     --federation hybrid --queries 100 --passes 3 \
+     --result-file data/eval_results/f4_floor_ab_off_<YYYYMMDD>.json
+   SFU_SEISMIC_LOAD_MODE=mmap SFU_SEISMIC_MLOCK_FLOOR=1 \
+   SFU_SEISMIC_MLOCK_FLOOR_MB=160 .venv/bin/python3 \
+     scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest $M \
+     --federation hybrid --queries 100 --passes 3 \
+     --result-file data/eval_results/f4_floor_ab_on_<YYYYMMDD>.json
+
+   # ── 3. bit-identity (always, both arms) ──
+   SFU_SEISMIC_LOAD_MODE=mmap .venv/bin/python3 \
+     scripts/seismic_testbed/seismic_result_parity.py capture /tmp/off.json
+   SFU_SEISMIC_LOAD_MODE=mmap SFU_SEISMIC_MLOCK_FLOOR=1 .venv/bin/python3 \
+     scripts/seismic_testbed/seismic_result_parity.py capture /tmp/on.json
+   .venv/bin/python3 scripts/seismic_testbed/seismic_result_parity.py \
+     compare /tmp/off.json /tmp/on.json
+   ```
+
+   (Step 2 loads all 8 shards and runs 300 queries per arm with
+   `fadvise(DONTNEED)` between cells — it evicts the machine's page cache and
+   must NOT be run while another eval is measuring on the same host.)
+
+   Bars (pre-registered 2026-08-17): warm p50 ON ≤ 1.05× OFF (mlock adds no
+   per-query work), zero navigation-page re-faults under a memory-pressure
+   pass, parity 0 mismatches. Anything else = keep default-off.
 3. F3 `mlock_ranges` + budget check; A/B on the 32 GB host vs pin-off. **BUILT
    2026-07-14; MECHANISM VERIFIED; latency A/B HOST-GATED**: `mlock_ranges(extents)`
    pyo3 hook (greedy by touch count in Python, budget-capped at
@@ -211,4 +340,13 @@ bit-identical by construction (residency-only levers; T1 untouched).
 Kill-switch discipline: everything behind env gates (`SFU_SEISMIC_PIN_BUDGET_GB=0`
 = today's behavior exactly). F4 behind `SFU_SEISMIC_MLOCK_FLOOR=0`. F6 behind
 `SFU_SEISMIC_PREFLOOR_HOTSET=0`. All default-off → byte-identical to the
-pre-program path.
+pre-program path. **The rescope preserved this (2026-08-17):**
+`SFU_SEISMIC_MLOCK_FLOOR` is parsed by `_mlock_floor_mode()` — `0`/unset/
+unrecognized → OFF (fail-safe: a typo can never pin gigabytes), `1` → the
+rescoped navigation floor, `full` → the 2026-07-14 whole-slab pin. With the
+gate off, the load path executes the identical statements it did before the
+rescope (the only edit on the OFF path is the env decode, which yields the same
+`False` for unset/`0`); empirically the gate-OFF and gate-ON parity captures are
+byte-identical files. A pre-rescope-binary arm was NOT re-run (the machine was
+running the WS-A parity eval on 2026-08-17) — OFF-path identity is established
+by diff inspection, not by a third capture.

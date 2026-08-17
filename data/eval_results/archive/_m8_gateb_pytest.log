@@ -1,0 +1,104 @@
+F.F................                                                      [100%]
+=================================== FAILURES ===================================
+_________________ test_federated_mmap_backend_returns_results __________________
+
+synth_shard = PosixPath('/tmp/pytest-of-vscode/pytest-22/test_federated_mmap_backend_re0/synth.index.seismic')
+
+    def test_federated_mmap_backend_returns_results(synth_shard):
+        """`SFU_SEISMIC_SHARD_MANIFEST` + mmap → `_splade_leg_seismic` returns
+        [(oaid, score)], same shape as the Qdrant/BMP legs RRF fuses on."""
+        stock = synth_shard
+        manifest = stock.parent / "manifest.json"
+        manifest.write_text(json.dumps([str(stock)]))
+    
+        env = {**os.environ, "SFU_SPLADE_BACKEND": "seismic",
+               "SFU_SEISMIC_SHARD_MANIFEST": str(manifest)}
+        from lib.thinclient.retriever import ThinClientRetriever
+    
+        with _env_patch(env):
+            r = ThinClientRetriever(index_root="", remote_abstracts=False,
+                                    splade_model_path="")  # no model: search drives the leg directly
+            # _seismic_backend() must take the manifest+mmap branch (load_mode defaults
+            # to "mmap" — the served 150M path, NOT stock Path-A).
+>           backend = r._seismic_backend()
+                      ^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_served_seismic_path.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/lib/thinclient/retriever.py:892: in _seismic_backend
+    sample = repo_root / self._first_manifest_mmap_dir(manifest)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+manifest_path = '/tmp/pytest-of-vscode/pytest-22/test_federated_mmap_backend_re0/manifest.json'
+
+    @staticmethod
+    def _first_manifest_mmap_dir(manifest_path: str) -> str:
+        """The first shard's `mmap_dir` (repo-relative) from a shard manifest —
+        a representative path for FS-type detection. '' if unreadable."""
+        try:
+            with open(manifest_path) as fh:
+>               shards = json.load(fh).get("shards", [])
+                         ^^^^^^^^^^^^^^^^^
+E               AttributeError: 'list' object has no attribute 'get'
+
+src/lib/thinclient/retriever.py:492: AttributeError
+---------------------------- Captured stdout setup -----------------------------
+
+Building the index...
+Configuration { pruning: GlobalThreshold { n_postings: 3500, max_fraction: 1.5 }, blocking: RandomKmeans { centroid_fraction: 0.1, min_cluster_size: 2, clustering_algorithm: RandomKmeansInvertedIndexApprox { doc_cut: 15 } }, summarization: EnergyPreserving { summary_energy: 0.4 }, knn: KnnConfiguration { nknn: 0, knn_path: None } }
+Reading the collection..
+Number of rows: 200
+Elapsed time to read the collection: 0 secs
+Distributing and pruning postings: 0 secs
+Number of posting lists: 10
+Avg posting list length: 200.00
+Building summaries: 0 secs
+Saving ... /tmp/pytest-of-vscode/pytest-22/test_federated_mmap_backend_re0/synth.index.seismic
+_________________ test_load_mode_mmap_default_for_served_path __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c37b8186750>
+tmp_path = PosixPath('/tmp/pytest-of-vscode/pytest-22/test_load_mode_mmap_default_fo0')
+
+    def test_load_mode_mmap_default_for_served_path(monkeypatch, tmp_path):
+        """`_seismic_backend()` defaults `SFU_SEISMIC_LOAD_MODE` to `mmap` for the
+        served manifest path — if that default ever flips to `stock`, the served
+        150M package would silently re-OOM. Pin it."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps([str(tmp_path / "synth-never-built.index.seismic")]))
+        monkeypatch.setenv("SFU_SPLADE_BACKEND", "seismic")
+        monkeypatch.setenv("SFU_SEISMIC_SHARD_MANIFEST", str(manifest))
+        monkeypatch.delenv("SFU_SEISMIC_LOAD_MODE", raising=False)
+    
+        from lib.thinclient.retriever import ThinClientRetriever
+        r = ThinClientRetriever(index_root="", remote_abstracts=False, splade_model_path="")
+    
+        # The gate fires at first load: must be the mmap RuntimeError (missing dir),
+        # NOT a Path-A stock deserialize of a nonexistent file (different exception).
+        with pytest.raises(RuntimeError, match=r"mmap dir not found|load_mode=mmap"):
+>           r._seismic_backend()
+
+scripts/tests/test_served_seismic_path.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/lib/thinclient/retriever.py:892: in _seismic_backend
+    sample = repo_root / self._first_manifest_mmap_dir(manifest)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+manifest_path = '/tmp/pytest-of-vscode/pytest-22/test_load_mode_mmap_default_fo0/manifest.json'
+
+    @staticmethod
+    def _first_manifest_mmap_dir(manifest_path: str) -> str:
+        """The first shard's `mmap_dir` (repo-relative) from a shard manifest —
+        a representative path for FS-type detection. '' if unreadable."""
+        try:
+            with open(manifest_path) as fh:
+>               shards = json.load(fh).get("shards", [])
+                         ^^^^^^^^^^^^^^^^^
+E               AttributeError: 'list' object has no attribute 'get'
+
+src/lib/thinclient/retriever.py:492: AttributeError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_served_seismic_path.py::test_federated_mmap_backend_returns_results
+FAILED scripts/tests/test_served_seismic_path.py::test_load_mode_mmap_default_for_served_path
+2 failed, 17 passed in 92.09s (0:01:32)

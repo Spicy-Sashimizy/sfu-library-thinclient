@@ -25,6 +25,8 @@
     analyticsApp: false,        // Analytics app (suite nav)
     indexManagerApp: false,    // Index Manager app (suite nav)
     adminPanels: false,         // Admin/operator panels
+    searchQueue: false,         // one-at-a-time search queue: manual value...
+    searchQueueAuto: true,      // ...but by default follow the server's sequential flag
     density: "comfortable"      // comfortable | compact
   };
 

@@ -808,6 +808,459 @@ mod tests {
         );
     }
 
+    // ---- M8 register-blocked batch6 tests ----
+    //
+    // The M8 contract is bit-identity BY CONSTRUCTION: `compute_distances_batch6_exact`
+    // must return exactly what six independent `compute_distance` calls return,
+    // compared with `f32::to_bits` (never an epsilon), for both value scales
+    // (v1 fixed 1/64 and E8 dv-v2 per-doc vmax/255).
+
+    /// Encode one v1 (FixedU8Q, global 1/64) record.
+    fn encode_v1(encoder: &DotVByteFixedU8Encoder, components: &[u16], values: &[f32]) -> Vec<u64> {
+        let quantized: Vec<FixedU8Q> = values.iter().map(|&v| fixed(v)).collect();
+        let mut buffer = Vec::new();
+        encoder.push_encoded(
+            SparseVectorView::new(components, &quantized),
+            &mut buffer,
+        );
+        buffer
+    }
+
+    /// Encode one E8 dv-v2 (per-doc `vmax/255`) record from original f32s.
+    fn encode_v2(encoder: &DotVByteFixedU8Encoder, components: &[u16], values: &[f32]) -> Vec<u64> {
+        let mut buffer = Vec::new();
+        encoder.push_encoded_per_doc(components, values, &mut buffer);
+        buffer
+    }
+
+    /// The M8 invariant: batch6 == six singles, bit for bit. Returns the batch
+    /// scores so callers can assert the case was not vacuously zero.
+    fn assert_batch6_bit_identical(
+        evaluator: &DotVByteFixedU8QueryEvaluator<'_>,
+        buffers: &[Vec<u64>; 6],
+        case: &str,
+    ) -> [f32; 6] {
+        let views: [PackedVectorView<'_, u64>; 6] = [
+            PackedVectorView::new(&buffers[0]),
+            PackedVectorView::new(&buffers[1]),
+            PackedVectorView::new(&buffers[2]),
+            PackedVectorView::new(&buffers[3]),
+            PackedVectorView::new(&buffers[4]),
+            PackedVectorView::new(&buffers[5]),
+        ];
+
+        let batch = evaluator.compute_distances_batch6_exact(views);
+        for (j, view) in views.iter().enumerate() {
+            let single = evaluator.compute_distance(*view);
+            assert_eq!(
+                batch[j].0.to_bits(),
+                single.0.to_bits(),
+                "{case}: candidate {j} batch6 {} (bits {:#010x}) != scalar {} (bits {:#010x})",
+                batch[j].0,
+                batch[j].0.to_bits(),
+                single.0,
+                single.0.to_bits()
+            );
+        }
+        batch.map(|d| d.0)
+    }
+
+    /// Deterministic strictly increasing components; `stride > 255` exercises
+    /// the two-byte dgap codes through the bitvec path.
+    fn strided_components(start: u16, stride: u16, n: usize) -> Vec<u16> {
+        (0..n).map(|i| start + stride * i as u16).collect()
+    }
+
+    /// Deterministic values inside the v1 FixedU8Q range (cap 255/64 ≈ 3.98).
+    fn ramp_values(n: usize, offset: usize) -> Vec<f32> {
+        (0..n)
+            .map(|i| 0.05 + 0.13 * (((i + offset) % 25) as f32))
+            .collect()
+    }
+
+    /// Dense-ish query used by the M8 tests: every third component carries
+    /// weight, so most gathers land on zeros (the corpus is ~76.7% zero-gather).
+    fn m8_query(dim: usize) -> (Vec<u16>, Vec<f32>) {
+        let components: Vec<u16> = (0..dim as u16).step_by(3).collect();
+        let values: Vec<f32> = components
+            .iter()
+            .map(|&c| 0.1 + (c as f32) * 0.001)
+            .collect();
+        (components, values)
+    }
+
+    /// (a) v1 codec: six candidates with different nnz — full packs + remainder,
+    /// an exact pack multiple, a sub-pack doc, and long docs with >255 dgaps.
+    /// Pack counts are 2/2/1/5/1/3, so the kernel runs one fully interleaved
+    /// round and then drains the longer candidates lane by lane.
+    #[test]
+    fn dotvbyte_batch6_v1_bit_identical_to_six_singles() {
+        let dim = 6000usize;
+        let encoder = DotVByteFixedU8Encoder::new(dim, dim);
+
+        let component_sets = [
+            strided_components(0, 3, 19),   // 2 packs + 3 remainder
+            strided_components(1, 300, 16), // exact pack multiple, 2-byte dgaps
+            strided_components(5, 7, 11),   // 1 pack + 3 remainder
+            strided_components(2, 11, 40),  // 5 packs, no remainder
+            strided_components(9, 1, 8),    // exactly one pack
+            strided_components(4, 111, 27), // 3 packs + 3 remainder, 2-byte dgaps
+        ];
+
+        let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+            let components = &component_sets[j];
+            let values = ramp_values(components.len(), j * 3);
+            encode_v1(&encoder, components, &values)
+        });
+
+        let (query_components, query_values) = m8_query(dim);
+        let evaluator =
+            encoder.query_evaluator(SparseVectorView::new(&query_components, &query_values));
+
+        let scores = assert_batch6_bit_identical(&evaluator, &buffers, "v1 mixed nnz");
+        assert!(
+            scores.iter().filter(|&&s| s > 0.5).count() >= 3,
+            "test must compare non-trivial scores (lanes that miss the query \
+             support entirely score 0 by design), got {scores:?}"
+        );
+    }
+
+    /// Deep interleaving: every candidate carries 8+ packs, so the round-robin
+    /// region does most of the work (`min_packs` >= 8) and the per-candidate
+    /// drain handles only the tails. Both codecs.
+    #[test]
+    fn dotvbyte_batch6_many_packs_all_lanes_live() {
+        let dim = 40000usize;
+        let lens = [64usize, 72, 81, 88, 96, 105];
+        // Strides 300/400 push the dgaps past 255 (two-byte codes) on two lanes.
+        let strides = [7u16, 13, 300, 41, 400, 2];
+        let component_sets: [Vec<u16>; 6] =
+            std::array::from_fn(|j| strided_components(j as u16, strides[j], lens[j]));
+        for (j, set) in component_sets.iter().enumerate() {
+            assert_eq!(set.len(), lens[j]);
+            assert!(*set.last().unwrap() < dim as u16);
+            assert!(set.len() / 8 >= 8, "candidate {j} must carry >= 8 packs");
+        }
+
+        let (query_components, query_values) = m8_query(dim);
+
+        for &per_doc_scale in &[false, true] {
+            let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+            encoder.set_per_doc_scale(per_doc_scale);
+
+            let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+                let components = &component_sets[j];
+                let values: Vec<f32> = ramp_values(components.len(), j * 4)
+                    .iter()
+                    .map(|&v| if per_doc_scale { v * (1.0 + 9.0 * j as f32) } else { v })
+                    .collect();
+                if per_doc_scale {
+                    encode_v2(&encoder, components, &values)
+                } else {
+                    encode_v1(&encoder, components, &values)
+                }
+            });
+
+            let evaluator =
+                encoder.query_evaluator(SparseVectorView::new(&query_components, &query_values));
+            let scores = assert_batch6_bit_identical(
+                &evaluator,
+                &buffers,
+                if per_doc_scale {
+                    "v2 many packs"
+                } else {
+                    "v1 many packs"
+                },
+            );
+            assert!(
+                scores.iter().filter(|&&s| s > 1.0).count() >= 3,
+                "test must compare non-trivial scores (lanes that miss the \
+                 query support entirely score 0 by design), got {scores:?}"
+            );
+        }
+    }
+
+    /// (b) E8 dv-v2 codec with SIX DISTINCT per-doc `vmax` values: the per-doc
+    /// factor must stay per-candidate and multiply at the same point the scalar
+    /// kernel applies it.
+    #[test]
+    fn dotvbyte_batch6_v2_bit_identical_with_distinct_vmax() {
+        let dim = 6000usize;
+        let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+        encoder.set_per_doc_scale(true);
+
+        let component_sets = [
+            strided_components(0, 3, 19),
+            strided_components(1, 300, 16),
+            strided_components(5, 7, 2),
+            strided_components(2, 11, 40),
+            strided_components(9, 1, 8),
+            strided_components(4, 111, 27),
+        ];
+        // Per-doc magnitudes far apart (and well above the v1 ceiling) so each
+        // record carries a different vmax. Deliberately long mantissas: round
+        // scales can hide an op-order change behind exact arithmetic.
+        let doc_scales = [0.3719f32, 1.0731, 4.5137, 11.2571, 40.3129, 120.5713];
+
+        let mut vmaxes = Vec::new();
+        let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+            let components = &component_sets[j];
+            let values: Vec<f32> = ramp_values(components.len(), j * 5)
+                .iter()
+                .map(|&v| v * doc_scales[j])
+                .collect();
+            let vmax = half::f16::from_f32(values.iter().fold(0.0f32, |a, &b| a.max(b)));
+            vmaxes.push(vmax);
+            encode_v2(&encoder, components, &values)
+        });
+        for j in 0..6 {
+            for k in (j + 1)..6 {
+                assert_ne!(
+                    vmaxes[j], vmaxes[k],
+                    "test setup: candidates {j} and {k} share a vmax"
+                );
+            }
+        }
+
+        let (query_components, query_values) = m8_query(dim);
+        let evaluator =
+            encoder.query_evaluator(SparseVectorView::new(&query_components, &query_values));
+
+        let scores = assert_batch6_bit_identical(&evaluator, &buffers, "v2 distinct vmax");
+        assert!(
+            scores.iter().filter(|&&s| s > 0.5).count() >= 3,
+            "test must compare non-trivial scores (lanes that miss the query \
+             support entirely score 0 by design), got {scores:?}"
+        );
+    }
+
+    /// (c) Degenerate lengths and zero overlap, both codecs: 0/1/2-component
+    /// docs and docs whose components miss the query support entirely (the
+    /// gather returns zeros — the common case in the real corpus).
+    #[test]
+    fn dotvbyte_batch6_short_and_zero_overlap_vectors() {
+        let dim = 1024usize;
+        // The query carries weight ONLY on multiples of 3.
+        let query_components: Vec<u16> = (0..dim as u16).step_by(3).collect();
+        let query_values: Vec<f32> = query_components
+            .iter()
+            .map(|&c| 0.25 + (c as f32) * 0.002)
+            .collect();
+
+        let component_sets: [Vec<u16>; 6] = [
+            vec![],                            // empty doc
+            vec![7],                           // 1 component, no query overlap
+            vec![3, 9],                        // 2 components, both overlapping
+            vec![1, 2, 4, 5, 7, 8, 10, 11],    // exactly one pack, ZERO overlap
+            strided_components(0, 3, 12),      // 1 pack + 4 remainder, all overlap
+            vec![1, 5, 7, 11, 13, 17, 19, 23, 25], // 1 pack + 1 remainder, zero overlap
+        ];
+
+        for &per_doc_scale in &[false, true] {
+            let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+            encoder.set_per_doc_scale(per_doc_scale);
+
+            let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+                let components = &component_sets[j];
+                let values = ramp_values(components.len(), j * 7);
+                if per_doc_scale {
+                    encode_v2(&encoder, components, &values)
+                } else {
+                    encode_v1(&encoder, components, &values)
+                }
+            });
+
+            let evaluator =
+                encoder.query_evaluator(SparseVectorView::new(&query_components, &query_values));
+            assert_batch6_bit_identical(
+                &evaluator,
+                &buffers,
+                if per_doc_scale {
+                    "v2 short/zero-overlap"
+                } else {
+                    "v1 short/zero-overlap"
+                },
+            );
+        }
+    }
+
+    /// (d) Seeded pseudo-random candidates over several seeds and lengths, both
+    /// codecs, against a sparse query (so most gathers hit zeros).
+    #[test]
+    fn dotvbyte_batch6_random_seeds_bit_identical_both_codecs() {
+        use rand::rngs::StdRng;
+        use rand::{Rng, SeedableRng};
+
+        let dim = 4096usize;
+
+        for seed in [1u64, 7, 42, 2026, 90210] {
+            let mut rng = StdRng::seed_from_u64(seed);
+
+            // Sparse query: ~30% of the dimensions carry weight.
+            let mut query_components: Vec<u16> = Vec::new();
+            let mut query_values: Vec<f32> = Vec::new();
+            for c in 0..dim as u16 {
+                if rng.gen_range(0.0f32..1.0) < 0.3 {
+                    query_components.push(c);
+                    query_values.push(rng.gen_range(0.05f32..2.55));
+                }
+            }
+
+            // Two length profiles per seed: one spanning nothing/sub-pack/
+            // multi-pack (drain-heavy, `min_packs == 0`), one where every lane
+            // carries several packs (round-robin-heavy).
+            let mixed_lens: [usize; 6] = [
+                rng.gen_range(0..3),
+                rng.gen_range(1..3),
+                rng.gen_range(3..9),
+                rng.gen_range(9..40),
+                rng.gen_range(40..130),
+                rng.gen_range(0..200),
+            ];
+            let dense_lens: [usize; 6] = std::array::from_fn(|_| rng.gen_range(24..120));
+
+            for (profile, lens) in [("mixed", mixed_lens), ("dense", dense_lens)] {
+                let mut component_sets: Vec<Vec<u16>> = Vec::with_capacity(6);
+                let mut value_sets: Vec<Vec<f32>> = Vec::with_capacity(6);
+                for &len in lens.iter() {
+                    let mut components: Vec<u16> = Vec::with_capacity(len);
+                    let mut values: Vec<f32> = Vec::with_capacity(len);
+                    // Gaps are sized so the requested nnz fits inside `dim`;
+                    // the short profiles get gaps above 255 (two-byte dgaps).
+                    let max_gap = ((dim as u32 - 32) / (len.max(1) as u32)).max(2).min(400);
+                    let mut c: u32 = rng.gen_range(0..20u32);
+                    for _ in 0..len {
+                        if c >= dim as u32 {
+                            break;
+                        }
+                        components.push(c as u16);
+                        // Inside the v1 FixedU8Q range so both codecs use the
+                        // same magnitudes; the v2 path rescales them per doc.
+                        values.push(rng.gen_range(0.01f32..3.91));
+                        c += rng.gen_range(1..max_gap);
+                    }
+                    component_sets.push(components);
+                    value_sets.push(values);
+                }
+
+                for &per_doc_scale in &[false, true] {
+                    let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+                    encoder.set_per_doc_scale(per_doc_scale);
+
+                    let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+                        if per_doc_scale {
+                            // Distinct per-doc magnitudes → distinct vmax heads.
+                            let scaled: Vec<f32> = value_sets[j]
+                                .iter()
+                                .map(|&v| v * (1.0 + j as f32 * 6.5))
+                                .collect();
+                            encode_v2(&encoder, &component_sets[j], &scaled)
+                        } else {
+                            encode_v1(&encoder, &component_sets[j], &value_sets[j])
+                        }
+                    });
+
+                    let evaluator = encoder
+                        .query_evaluator(SparseVectorView::new(&query_components, &query_values));
+                    let scores = assert_batch6_bit_identical(
+                        &evaluator,
+                        &buffers,
+                        &format!("seed {seed} profile {profile} per_doc_scale={per_doc_scale}"),
+                    );
+                    if profile == "dense" {
+                        assert!(
+                            scores.iter().filter(|&&s| s > 0.0).count() >= 3,
+                            "seed {seed}: dense profile must score non-trivially, got {scores:?}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    /// A trained encoder (component remapping active) must batch exactly like
+    /// the scalar path — the batch kernel walks the same mapped component space.
+    #[test]
+    fn dotvbyte_batch6_with_component_mapping_bit_identical() {
+        let dim = 512usize;
+        let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+        let training_values = [fixed(1.0), fixed(2.0), fixed(0.5)];
+        let training = vec![SparseVectorView::new(&[2u16, 7, 300], &training_values)];
+        encoder.train(training.into_iter());
+        assert!(encoder.component_mapping().is_some());
+
+        let component_sets = [
+            strided_components(0, 5, 17),
+            strided_components(3, 9, 8),
+            strided_components(1, 2, 1),
+            strided_components(7, 13, 33),
+            strided_components(2, 3, 11),
+            strided_components(11, 17, 24),
+        ];
+        let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+            let components = &component_sets[j];
+            let values = ramp_values(components.len(), j * 2);
+            encode_v1(&encoder, components, &values)
+        });
+
+        let query_components: Vec<u16> = (0..dim as u16).step_by(4).collect();
+        let query_values: Vec<f32> = query_components
+            .iter()
+            .map(|&c| 0.2 + (c as f32) * 0.003)
+            .collect();
+        let evaluator =
+            encoder.query_evaluator(SparseVectorView::new(&query_components, &query_values));
+
+        assert_batch6_bit_identical(&evaluator, &buffers, "v1 remapped components");
+    }
+
+    /// M8 must NOT compose with the M2 int6 kernel (killed experiment, default
+    /// OFF): with the integer query active, batch6 falls through to the six
+    /// scalar calls and stays bit-identical to them, for both codecs.
+    #[test]
+    fn dotvbyte_batch6_int6_gate_falls_back_to_scalar() {
+        let dim = 1024usize;
+        let component_sets = [
+            strided_components(0, 3, 19),
+            strided_components(1, 7, 16),
+            strided_components(5, 11, 3),
+            strided_components(2, 13, 40),
+            strided_components(9, 1, 8),
+            strided_components(4, 17, 27),
+        ];
+        let (query_components, query_values) = m8_query(dim);
+
+        for &per_doc_scale in &[false, true] {
+            let mut encoder = DotVByteFixedU8Encoder::new(dim, dim);
+            encoder.set_per_doc_scale(per_doc_scale);
+
+            let buffers: [Vec<u64>; 6] = std::array::from_fn(|j| {
+                let components = &component_sets[j];
+                let values = ramp_values(components.len(), j);
+                if per_doc_scale {
+                    encode_v2(&encoder, components, &values)
+                } else {
+                    encode_v1(&encoder, components, &values)
+                }
+            });
+
+            let evaluator = DotVByteFixedU8QueryEvaluator::with_int6_query(
+                SparseVectorView::new(&query_components, &query_values),
+                &encoder,
+                true,
+            );
+            assert_batch6_bit_identical(
+                &evaluator,
+                &buffers,
+                if per_doc_scale {
+                    "v2 int6 gate"
+                } else {
+                    "v1 int6 gate"
+                },
+            );
+        }
+    }
+
     /// `with_int6_query(.., false)` must be byte-for-byte the pre-M2 f32 path
     /// (the shipped default when `SFU_SEISMIC_M2_INT6` is unset).
     #[test]
@@ -994,6 +1447,41 @@ impl<'e, 'v> QueryEvaluator<PackedVectorView<'v, u64>> for DotVByteFixedU8QueryE
                 dotvbyte_view.dot_product_int6(query_int6) as f32 * self.int6_scale,
             ),
             None => DotProduct::from(dotvbyte_view.dot_product(&self.dense_query)),
+        }
+    }
+
+    /// M8 register-blocked scoring: six candidates in one pass over the
+    /// query-side structures, their packed streams advanced in round robin so
+    /// the six independent gather → FMA dependency chains overlap.
+    ///
+    /// BIT-IDENTICAL to six [`Self::compute_distance`] calls by construction,
+    /// not approximately: each candidate keeps its own `Simd<f32, 8>`
+    /// accumulator, its own sliding query slice and its own summation order, so
+    /// the sequence of float ops applied to any single candidate is exactly the
+    /// sequence [`DotVbyteFixedu8::dot_product`] (v1) /
+    /// [`DotVbyteFixedu8::dot_product_v2`] (E8 dv-v2) applies. Only the order
+    /// ACROSS candidates changes.
+    ///
+    /// Does NOT compose with the M2 int6 kernel (`SFU_SEISMIC_M2_INT6`, a
+    /// killed experiment, default OFF): when the integer query is active this
+    /// falls through to the six independent scalar calls, keeping M2 orthogonal.
+    #[inline]
+    fn compute_distances_batch6_exact(&self, vectors: [PackedVectorView<'v, u64>; 6]) -> [DotProduct; 6] {
+        if self.dense_query_int6.is_some() {
+            return vectors.map(|v| self.compute_distance(v));
+        }
+
+        if self.per_doc_scale {
+            // E8 dv-v2: per-doc linear scale, vmax at each record's head.
+            let views = vectors
+                .map(|v| unsafe { DotVbyteFixedu8::from_unchecked_slice_v2(v.data()) });
+            DotVbyteFixedu8::dot_product_batch6::<true>(&views, &self.dense_query)
+                .map(DotProduct::from)
+        } else {
+            let views =
+                vectors.map(|v| unsafe { DotVbyteFixedu8::from_unchecked_slice(v.data()) });
+            DotVbyteFixedu8::dot_product_batch6::<false>(&views, &self.dense_query)
+                .map(DotProduct::from)
         }
     }
 }
@@ -1357,6 +1845,173 @@ impl<'a> DotVbyteFixedu8<'a> {
             .fold(0f32, |acc, x| acc.algebraic_add(x));
 
         simd_result.algebraic_add(remaining_result) * (self.vmax / 255.0)
+    }
+
+    /// M8: one packed-pack step for ONE candidate — a transliteration of the
+    /// body of [`Self::iter_raw`] fused with the loop body of
+    /// [`Self::dot_product`] (`V2 == false`) / [`Self::dot_product_v2`]
+    /// (`V2 == true`), with the per-candidate stream cursor (`scroll`), sliding
+    /// query slice and accumulator passed in explicitly.
+    ///
+    /// Splitting the step out is exactly what lets [`Self::dot_product_batch6`]
+    /// advance six candidates in round robin without perturbing any single
+    /// candidate's float-op sequence: pack order, the point where the value
+    /// scale multiplies (v1: `·1/64` on the u8→f32 cast, BEFORE the FMA; v2:
+    /// no per-pack factor at all) and the `mul_add` into the candidate's own
+    /// accumulator are unchanged.
+    #[inline(always)]
+    fn dot_product_pack_step<'q, const V2: bool>(
+        &self,
+        pack: usize,
+        scroll: &mut usize,
+        query: &mut &'q [f32],
+        acc: &mut Simd<f32, N>,
+    ) {
+        // --- iter_raw's body, for a single pack ---
+        let raw_bytes = unsafe {
+            self.bytes
+                .as_ptr()
+                .add(*scroll)
+                .cast::<Simd<u8, 16>>()
+                .read_unaligned()
+        };
+        let idx_len = unsafe { *self.idx_lens.get_unchecked(pack) };
+        let mask = MASKS[idx_len as usize];
+        *scroll += 8 + idx_len.count_ones() as usize;
+        let components: Simd<u16, N> = unsafe { transmute_copy(&swizzle(raw_bytes, mask)) };
+        let values: Simd<u8, N> = unsafe { *self.values.get_unchecked(pack) };
+
+        // --- dot_product / dot_product_v2 loop body, verbatim ---
+        let components = simd_prefix_sum(components);
+        let values: Simd<f32, N> = if V2 {
+            values.cast()
+        } else {
+            simd_fixedu8_to_f32(values)
+        };
+        let query_values = unsafe {
+            Simd::gather_select_unchecked(
+                *query,
+                Mask::splat(true),
+                components.cast(),
+                Simd::splat(0.0),
+            )
+        };
+
+        *acc = values.mul_add(query_values, *acc);
+        let last_component = *components.to_array().last().unwrap();
+        // New starting point for the gather
+        *query = unsafe { query.split_at_unchecked(last_component as usize).1 };
+    }
+
+    /// M8: per-candidate epilogue — a transliteration of the tail of
+    /// [`Self::dot_product`] (`V2 == false`) / [`Self::dot_product_v2`]
+    /// (`V2 == true`): the candidate's own accumulator is horizontally summed
+    /// with the same `reduce_sum`, its unpacked remainder terms are folded in
+    /// the same order with the same `algebraic_mul`/`algebraic_add`, and (v2
+    /// only) the per-doc `vmax / 255` factor multiplies at exactly the same
+    /// point — after the remainder has been added, once per candidate.
+    #[inline(always)]
+    fn dot_product_finish<const V2: bool>(&self, acc: Simd<f32, N>, query: &[f32]) -> f32 {
+        let simd_result = acc.reduce_sum();
+
+        let remaining_result = if V2 {
+            self.bytes_remaining
+                .iter()
+                .zip(self.values_remaining.iter())
+                .scan(0, move |acc, (&c, &v)| {
+                    *acc += c;
+                    Some(unsafe {
+                        query
+                            .get_unchecked(*acc as usize)
+                            .algebraic_mul(v as f32)
+                    })
+                })
+                .fold(0f32, |acc, x| acc.algebraic_add(x))
+        } else {
+            self.bytes_remaining
+                .iter()
+                .zip(self.values_remaining.iter())
+                .scan(0, move |acc, (&c, &v)| {
+                    *acc += c;
+                    let vector_value = FixedU8Q::from_bits(v).to_f32().unwrap();
+
+                    Some(unsafe {
+                        query
+                            .get_unchecked(*acc as usize)
+                            .algebraic_mul(vector_value)
+                    })
+                })
+                .fold(0f32, |acc, x| acc.algebraic_add(x))
+        };
+
+        let result = simd_result.algebraic_add(remaining_result);
+        if V2 {
+            result * (self.vmax / 255.0)
+        } else {
+            result
+        }
+    }
+
+    /// M8 register-blocked kernel: score six candidates against one dense query
+    /// with six independent `Simd<f32, 8>` accumulators, interleaving the six
+    /// packed streams so their independent dependency chains overlap and the
+    /// gather latency of one candidate is hidden behind the arithmetic of the
+    /// others. `V2` selects the E8 dv-v2 value scale (per-doc `vmax/255`, kept
+    /// per candidate) over the v1 FixedU8Q scale (global `1/64`).
+    ///
+    /// The six candidates have different nnz, so packs are round-robined only
+    /// while every candidate still has packs left; each candidate then finishes
+    /// its own remaining packs (the same shape as the dense house kernel
+    /// `dot_product_dense_sparse_batch6_unchecked`). Nothing is padded and no
+    /// candidate's own op sequence changes: each still consumes its packs in
+    /// increasing order into its own accumulator, so the result is
+    /// `f32::to_bits`-equal to [`Self::dot_product`] / [`Self::dot_product_v2`].
+    ///
+    /// Pure `std::simd` — no hand intrinsics and no `cfg(target_arch)`
+    /// branches, per `docs/math_optimization/04_ISA_PORTABILITY_RULES.md`.
+    fn dot_product_batch6<'q, const V2: bool>(views: &[Self; 6], query: &'q [f32]) -> [f32; 6] {
+        let mut accs = [Simd::<f32, N>::splat(0.0); 6];
+        let mut queries: [&'q [f32]; 6] = [query; 6];
+        let mut scrolls = [0usize; 6];
+
+        // `iter_raw` zips idx_lens with the packed values, so the pack count is
+        // the shorter of the two (they are equal by construction).
+        let mut n_packs = [0usize; 6];
+        for j in 0..6 {
+            n_packs[j] = views[j].idx_lens.len().min(views[j].values.len());
+        }
+        let min_packs = n_packs.iter().copied().min().unwrap_or(0);
+
+        // Interleaved region: all six lanes live.
+        for pack in 0..min_packs {
+            for j in 0..6 {
+                views[j].dot_product_pack_step::<V2>(
+                    pack,
+                    &mut scrolls[j],
+                    &mut queries[j],
+                    &mut accs[j],
+                );
+            }
+        }
+
+        // Exhausted lanes simply stop participating; the longer candidates
+        // finish their own streams, still in increasing pack order.
+        for j in 0..6 {
+            for pack in min_packs..n_packs[j] {
+                views[j].dot_product_pack_step::<V2>(
+                    pack,
+                    &mut scrolls[j],
+                    &mut queries[j],
+                    &mut accs[j],
+                );
+            }
+        }
+
+        let mut out = [0f32; 6];
+        for j in 0..6 {
+            out[j] = views[j].dot_product_finish::<V2>(accs[j], queries[j]);
+        }
+        out
     }
 
     /// M2 integer-domain dot: `Σ q_u6[c] · d_u8[c]` over the packed doc terms,

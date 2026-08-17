@@ -1,0 +1,197 @@
+2026-07-28 03:40:06 [WARNING] sfu_library_mcp: Config: OPENALEX_TRACKER_PATH is in /tmp — the daily call counter will reset on container restart. Set OPENALEX_TRACKER_PATH to a persistent volume path to preserve budget across restarts.
+2026-07-28 03:40:06 [INFO] sfu_library_mcp: Serving web GUI from /workspaces/sfu-library-thinclient/web at /app
+2026-07-28 03:40:06 [INFO] sfu_library_mcp: Starting SFU Library MCP HTTP server on 0.0.0.0:8080
+2026-07-28 03:40:06 [INFO] sfu_library_mcp: Tools available: 27
+INFO:     Started server process [90262]
+INFO:     Waiting for application startup.
+2026-07-28 03:40:07 [INFO] sfu_library_mcp: Startup warmup: loading retrieval stack + faulting hot set (6 queries) ...
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2026-07-28 03:40:12 [INFO] sfu_library_mcp: dense warm cache: restored 9321 docs from delta.sqlite
+2026-07-28 03:40:12 [INFO] sfu_library_mcp: thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True
+INFO:     127.0.0.1:41112 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard0of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard1of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard2of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard3of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard4of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard5of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard6of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC stage: global_shard7of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 03:40:17 [INFO] sfu_library_mcp: SEISMIC federation auto-selected 'parallel' (overlay on /var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap)
+INFO:     127.0.0.1:41128 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47898 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47904 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53874 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35762 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35776 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54092 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54096 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49184 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49186 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49200 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49220 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49228 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48358 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48366 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:41:34 [INFO] sfu_library_mcp: Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-07-28 03:41:39 [INFO] sfu_library_mcp: SPLADE ONNX model loaded (CPU)
+INFO:     127.0.0.1:33324 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:41:40 [INFO] sfu_library_mcp: Loading embedding model: /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+INFO:     127.0.0.1:33332 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56702 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56710 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:41:56 [INFO] sfu_library_mcp: Embedding model loaded (/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5)
+2026-07-28 03:41:56 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:41:57 [INFO] sfu_library_mcp: CrossEncoder loaded: /workspaces/sfu-library-thinclient/models/sfu-cross-encoder-v1
+2026-07-28 03:41:57 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:54680 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:42:00 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:42:00 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 03:42:02 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:42:02 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 03:42:03 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:42:03 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:54690 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:42:05 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:42:05 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 03:42:06 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 03:42:06 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 03:42:06 [INFO] sfu_library_mcp: Startup warmup complete in 119.1s
+INFO:     127.0.0.1:51166 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57004 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57018 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50136 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50148 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39788 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39800 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52570 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52574 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54332 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54344 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56876 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56884 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54088 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54096 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58556 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58564 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60986 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60988 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48388 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48402 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48414 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39866 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39882 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58112 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58118 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49132 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49144 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49262 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49270 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51322 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51336 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:44:38 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:38 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:51346 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51356 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:44:41 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:41 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:51354 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:44:44 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:44 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:51360 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51368 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:44:47 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:47 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:51366 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:44:50 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:50 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:35230 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35256 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:44:52 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:52 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:35246 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35274 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:44:56 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:56 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:35266 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:44:57 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:44:57 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:60656 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60670 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:01 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:01 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:60664 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:04 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:04 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:60676 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46306 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:08 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:09 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:60680 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46322 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:11 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:11 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:46310 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:14 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:14 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:46332 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58018 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:16 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:16 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:46336 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58048 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:18 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:18 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58032 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:20 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:20 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58058 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58084 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:22 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:22 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58074 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45400 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:28 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:28 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58100 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:30 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:30 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:45414 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45422 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:33 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:33 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:45418 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45430 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47014 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:36 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:36 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:45442 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:40 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:40 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:47028 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47054 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:43 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:43 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:47038 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:44 [INFO] sfu_library_mcp: Loading dense embedder /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5 on cuda
+2026-07-28 03:45:45 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:45 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:47062 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58892 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 03:45:46 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:46 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58886 - "POST /api/search HTTP/1.1" 200 OK
+2026-07-28 03:45:50 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 03:45:50 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:58908 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58922 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58934 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45382 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45394 - "GET /health HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90262]

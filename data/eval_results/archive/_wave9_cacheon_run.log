@@ -1,0 +1,45 @@
+Waiting for serve http://127.0.0.1:8080 to be warm ...
+Warm: warm cache_preseed=primed spec=True
+
+Results → /workspaces/sfu-library-thinclient/data/eval_results/speculation_ab_2026-07-28.json
+Bars: {
+  "a_arm_B_hit_p50_le_10ms": true,
+  "b_arm_C_medium_predictor_hitrate_ge_80pct": false,
+  "b_arm_C_medium_hit_latency_le_2x_armB": false,
+  "c_literal_implausible_100pct_all_profiles_w9_3_check": false,
+  "c_parity_6_of_6_off_vs_on": false,
+  "d_armD_within_10pct_armA": false,
+  "d_armD_all_trials_genuine_miss_w9_3_check": true,
+  "d_armE_within_15pct_armA": true,
+  "e_waste_le_3_per_search_medium": true
+}
+Final serve state: {
+  "warmup": "warm",
+  "warm": true,
+  "cache_preseed": "primed",
+  "result_cache": {
+    "enabled": true,
+    "hit": 83,
+    "miss": 294,
+    "store": 294,
+    "bypass": 0,
+    "resident": 256,
+    "hit_ratio": 0.2202
+  },
+  "speculation": {
+    "enabled": true,
+    "fired": 165,
+    "dropped_busy": 137,
+    "suppressed_by_guard": 0,
+    "predicted": 58,
+    "literal": 107,
+    "stores": 135,
+    "suppressed_by_reason": {
+      "warming": 0,
+      "degraded": 0,
+      "cache-off": 0,
+      "shed": 0,
+      "short-input": 0
+    }
+  }
+}

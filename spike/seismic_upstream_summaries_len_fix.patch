@@ -1,0 +1,47 @@
+From 2c3cf48d60439b5ba2fcf51184302a844ebffb33 Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Mon, 10 Aug 2026 21:27:46 +0000
+Subject: [PATCH] fork: fix summaries_ids length label in the mmap reader
+ (values_len, not n_summaries)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+read_posting_lists reconstructed the summaries_ids BitFieldSlice with
+n_summaries (block count) as its length instead of values_len (summary-
+posting count == the owned summaries_ids.len() by writer construction).
+Born c987160 (2026-07-03). Release serving was never wrong — the physical
+bit length was always the true one, reads in-bounds and value-correct
+(release parity 7/7) — but every values_len > n_summaries list tripped
+the reader debug_asserts (the only bounds guard on the unsafe gets), so
+the debug suite was red from birth (mmap parity tests 3/7 failing), and
+any future checked .get()/.len() would have silently truncated.
+Debug suite now 10/10. No format change; existing manifests already
+carry values_len.
+---
+ src/mmap_io.rs | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 0622649..8136aa4 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -684,7 +684,14 @@ fn read_posting_lists(
+                     sids_bv,
+                     plm.summaries_ids_field_width,
+                     compute_mask(plm.summaries_ids_field_width as usize),
+-                    plm.n_summaries,
++                    // values_len == the owned summaries_ids.len() (codes/ids
++                    // are extended in lockstep, quantized_summary.rs) — NOT
++                    // n_summaries (block count). Mislabeling as n_summaries
++                    // (c987160..2026-08-10) tripped the reader's
++                    // debug_asserts on every values_len > n_summaries list;
++                    // release reads were in-bounds and value-correct (the
++                    // physical bit length below is the true one).
++                    plm.values_len,
+                 )
+             };
+ 
+-- 
+2.53.0
+

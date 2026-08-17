@@ -1,0 +1,9 @@
+[m8-gatea] shard1.dv batch=on: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard1.f16 batch=on: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard2.dv batch=on: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard2.f16 batch=on: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard1.dv batch=off: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard1.f16 batch=off: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard2.dv batch=off: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] shard2.f16 batch=off: hard=0 swaps=0 exact=100/100 PASS
+[m8-gatea] overall PASS -> /workspaces/sfu-library-thinclient/data/eval_results/m8_batch_kernel_gatea_20260810.json

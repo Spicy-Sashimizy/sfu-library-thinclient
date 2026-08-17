@@ -1,0 +1,74 @@
+{
+  "date_utc": "2026-08-02T20:52:29",
+  "ordinal_docs_covered": 150413098,
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "filters": {
+    "year_range": [
+      2010,
+      2025
+    ],
+    "type": "article"
+  },
+  "queries": [
+    "bioethics organ allocation transplant consent scarce medical resources",
+    "open access scholarly publishing academic journals business models APC",
+    "income stratification class reproduction social mobility intergenerational"
+  ],
+  "reps_per_query": 1,
+  "overfetch_filtered": 10,
+  "env": {
+    "splade_backend": "seismic",
+    "seismic_stage_dir": "/var/tmp/seismic_stage",
+    "seismic_federation": null,
+    "shard_fstype": "9p",
+    "note": "on 9p each mmap fault costs ~0.5 ms and page cache does not hold; an unstaged run measures the dev container's filesystem, not the design"
+  },
+  "method": "real ThinClientRetriever.search(); arms interleaved per rep, order randomised per rep; only _post_filter differs",
+  "results": {
+    "splade_k50": {
+      "production": {
+        "n": 3,
+        "p50_ms": 362.06,
+        "mean_ms": 455.26,
+        "min_ms": 348.82,
+        "max_ms": 654.92,
+        "p90_ms": 654.92
+      },
+      "ordinal": {
+        "n": 3,
+        "p50_ms": 2973.08,
+        "mean_ms": 3058.3,
+        "min_ms": 2020.4,
+        "max_ms": 4181.43,
+        "p90_ms": 4181.43
+      },
+      "delta_p50_ms": -2611.02,
+      "speedup_p50": 0.122,
+      "candidates_post_filtered": 500
+    }
+  },
+  "parity": {
+    "splade_k50": {
+      "pairs": 3,
+      "mismatches": 0,
+      "pass": true
+    }
+  },
+  "stage_profile_production": {
+    "post_filter": 233.47,
+    "hydrate_meta": 17.97,
+    "hydrate_abstracts": 68.76,
+    "total": 431.86,
+    "other_ms": 111.66,
+    "samples": 3,
+    "note": "mean ms per query, mode=splade top_k=50 (=500 candidates). 'other' is dominated by the SEISMIC leg + SPLADE encode. hydrate_meta is the target of doc 18 \u00a711 not-settled #3; post_filter is what N4/N6 replace."
+  },
+  "ordinal_coverage": {
+    "ids_seen": 1500,
+    "ids_without_ordinal": 0,
+    "miss_rate": 0.0,
+    "queries_needing_sqlite_fallback": 0,
+    "note": "ids with no ordinal fall back to the SQLite filter, so a nonzero miss rate costs latency but never correctness; against a full-corpus build it should be ~0 apart from warm-cache docs"
+  },
+  "parity_overall_pass": true
+}

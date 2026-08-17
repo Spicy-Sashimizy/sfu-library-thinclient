@@ -757,7 +757,13 @@ class AbstractStore:
             ln = np.load(flat_dir / "block_lengths.npy", mmap_mode="r")
             did = np.load(flat_dir / "block_dictids.npy", mmap_mode="r")
             fd = os.open(str(flat_dir / "blocks.bin"), os.O_RDONLY)
-        except OSError as exc:
+        except (OSError, ValueError, EOFError) as exc:
+            # np.load does NOT confine torn `.npy` files to OSError (measured
+            # 2026-08-17): a truncated data section raises ValueError ("mmap
+            # length is greater than file size"), a zero-byte file raises
+            # EOFError, and a header-corrupt file raises ValueError (pickled
+            # data). Catching only OSError meant the documented lossless
+            # fallback below never ran for the most likely half-built shapes.
             # A half-built sidecar must not take the section down: v3 still
             # holds every payload, so falling back is lossless (unlike the
             # ordinal guard, where falling back would mean wrong answers).

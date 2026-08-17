@@ -9,6 +9,9 @@ Phases (all checkpointed in <index_root>/build_status.json):
      deleted); completed slices are never re-exported.
   2. BUILD   per section: one streaming pass over its spools -> tantivy index
      + BMP shards + meta.sqlite rows + abstracts.sqlite (hot sections only).
+  2b. FLAT   (OPT-IN, --flat-sidecar) abstracts.sqlite.flat/ per section that
+     has abstracts, via scripts/build_flat_blocks.py — staged build, four-arm
+     byte-parity gate, atomic publish; a failed gate aborts the build.
   3. PACK    cold sections (everything not in the persona's hot list) ->
      packed/<name>.tar.zst (zstd-19 LDM), live dir removed.
   4. DENSE   usearch b1 + int8 rescore from the existing dense-POC vectors.
@@ -399,6 +402,87 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
     save_status(root, status)
 
 
+# ── phase 2b: flat abstract sidecars (OPT-IN, --flat-sidecar) ────────────────
+
+def _flat_report_path(section: str, report_dir: Path | None) -> Path:
+    d = Path(report_dir) if report_dir else REPO_ROOT / "data" / "eval_results"
+    return d / f"flat_build_{section}_{time.strftime('%Y%m%d_%H%M')}.json"
+
+
+def phase_flat_sidecar(root: Path, status: dict, verify_ids: int,
+                       verify_blocks: int, report_dir: Path | None = None) -> None:
+    """Emit `abstracts.sqlite.flat/` inline for every section that has an
+    `abstracts.sqlite` (doc 18 §17/§22).
+
+    OPT-IN via `--flat-sidecar`; without the flag this phase never runs and the
+    build's output is byte-for-byte what it always was. Nothing here
+    re-implements the builders or the gate: each section is handed to
+    `scripts/build_flat_blocks.py:build_section`, which stages into
+    `abstracts.sqlite.flat.building/`, runs the four-arm byte-parity gate
+    (v3 oracle vs flat+`docs` vs flat+locator vs SQLite-free) plus the
+    container-level `pread`-vs-`z`-BLOB check, and only then renames the
+    directory into the served name. The `flat_store_id` identity checks inside
+    that script are what bind the dicts and locator to the payloads.
+
+    **Fail-closed.** A section whose gate does not PASS keeps its staging
+    directory, is never published, and makes this phase raise — a build must
+    not exit 0 having emitted an unverified sidecar. Sections are checkpointed
+    in `build_status.json:flat_sections`, and an already-published sidecar is
+    left alone (the sub-script refuses to overwrite one), so a rerun resumes.
+    """
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    import build_flat_blocks as flat        # local: pulls numpy + the reader
+
+    done = status.setdefault("flat_sections", [])
+    rows = [r for r in flat.survey(root) if r["src"]]   # smallest-first
+    todo = [r for r in rows if not r["published"] and r["section"] not in done]
+    if not todo:
+        logger.info("FLAT: nothing to do (%d section(s) with abstracts, all "
+                    "published or done)", len(rows))
+        return
+    logger.info("FLAT: %d section(s) to build: %s", len(todo),
+                [r["section"] for r in todo])
+    failures: list[str] = []
+    for r in todo:
+        section = r["section"]
+        logger.info("FLAT %s: building sidecar from %.2f GB of abstracts",
+                    section, r["src_bytes"] / 1e9)
+        try:
+            rep = flat.build_section(Path(r["src"]), verify_ids=verify_ids,
+                                     verify_blocks_n=verify_blocks)
+        except (Exception, SystemExit) as exc:   # noqa: BLE001
+            logger.exception("FLAT %s: build FAILED", section)
+            status.setdefault("flat_info", {})[section] = {
+                "published": False, "error": f"{type(exc).__name__}: {exc}"}
+            failures.append(section)
+            save_status(root, status)
+            continue
+        out = _flat_report_path(section, report_dir)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        flat._write_report(argparse.Namespace(report=str(out)), rep,
+                           f"flat_build_{section}")
+        status.setdefault("flat_info", {})[section] = {
+            "published": bool(rep.get("published")), "pass": rep.get("pass"),
+            "sizes": rep.get("sizes"),
+            "sqlite_deletable": rep.get("sqlite_deletable"),
+            "report": str(out)}
+        if rep.get("pass") and rep.get("published"):
+            done.append(section)
+            logger.info("FLAT %s: PASS — published %s", section,
+                        rep["published_dir"])
+        else:
+            logger.error("FLAT %s: parity gate FAILED — sidecar NOT published, "
+                         "staging kept at %s (report %s)", section,
+                         rep.get("staging_dir"), out)
+            failures.append(section)
+        save_status(root, status)
+    if failures:
+        raise RuntimeError(
+            f"FLAT: sidecar build/verify failed for {sorted(failures)} — the "
+            f"sections still serve from their v3 abstracts.sqlite (nothing was "
+            f"published); see the reports and tracebacks above")
+
+
 # ── phase 3: pack cold sections ──────────────────────────────────────────────
 
 def phase_pack(root: Path, status: dict, hot_sections: list[str]) -> None:
@@ -471,6 +555,17 @@ def main() -> None:
                              "each worker runs TWO era builders; 3 workers "
                              "OOM-killed the 150M build on a 31 GB host)")
     parser.add_argument("--keep-spool", action="store_true")
+    parser.add_argument("--flat-sidecar", action="store_true",
+                        help="after BUILD, emit abstracts.sqlite.flat/ for every "
+                             "section that has abstracts, via "
+                             "scripts/build_flat_blocks.py (staged build + "
+                             "four-arm byte-parity gate + atomic publish). "
+                             "OFF by default; a failed gate aborts the build.")
+    parser.add_argument("--flat-verify-ids", type=int, default=20_000,
+                        help="ids in the sidecar byte-parity gate (doc 18's "
+                             "gate is 20,000; 0 disables the read gate)")
+    parser.add_argument("--flat-verify-blocks", type=int, default=500,
+                        help="blocks in the container-level byte check")
     args = parser.parse_args()
 
     if args.limit:
@@ -487,6 +582,11 @@ def main() -> None:
     phase_export(root, status, args.slices, args.workers, args.limit)
     phase_build(root, status, hot, args.keep_spool, args.bmp_shard_docs,
                 args.build_workers)
+    if args.flat_sidecar:
+        # Before PACK: packing removes a cold section's live directory, and the
+        # sidecar is derived from the on-disk abstracts.sqlite.
+        phase_flat_sidecar(root, status, args.flat_verify_ids,
+                           args.flat_verify_blocks)
     phase_pack(root, status, hot)
     phase_dense(root, status)
     write_manifest(root, args.persona, hot, status)

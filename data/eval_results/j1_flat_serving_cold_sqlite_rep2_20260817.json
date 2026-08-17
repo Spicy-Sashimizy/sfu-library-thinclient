@@ -1,0 +1,276 @@
+{
+ "date_utc": "2026-08-17T23:05:44",
+ "harness": "j1 bench",
+ "prereg": {
+  "registered": "in-source, committed before the first run (see git log for this file's add commit vs the results files' commit)",
+  "subject": "the PUBLISHED sidecar at data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/ (built + gate-PASSED 2026-08-17, commit f55ce5f), read through the shipped AbstractStore",
+  "claims_under_test": {
+   "doc18_s17_warm_p50": "flat_ordinal 1.18x mainline p50 (3.547 -> 3.012 ms), spike, local disk, 50 random ids/fetch",
+   "doc18_s17_all_percentiles": "flat faster at p50, mean AND p90; slower in no percentile (the operator no-regression gate)",
+   "doc18_s16_cold_vs_warm": "the `docs` B-tree costs ~4 ms cold and ~0.24 ms hot; that is the whole 5.53x -> 1.18x collapse",
+   "doc18_s22_bytes": "11,573,201,974 B flat vs 13,470,433,280 B sqlite = -1,897,231,306 B (-1.90 GB)"
+  },
+  "bars": {
+   "B1_parity": {
+    "hard_gate": true,
+    "statement": "every abstract fetched by the flat arm is BYTE-IDENTICAL to the sqlite arm's, for every sampled doc, in every trial, plus a windowed 20,000-id gate",
+    "on_fail": "STOP. No latency number from this run is valid or publishable; report the mismatch and do not touch the serving default."
+   },
+   "B2_warm_no_regression": {
+    "statement": "flat warm per-batch p50 <= sqlite warm per-batch p50",
+    "why": "the operator constraint recorded in doc 18 \u00a716/\u00a717 \u2014 faster is a bonus, slower is a failure"
+   },
+   "B3_warm_p50_ge_1_18x": {
+    "statement": "flat warm p50 multiple >= 1.18x (doc 18 \u00a717's shipped-path number) once the noise floor is subtracted",
+    "predicted": "MET OR EXCEEDED. \u00a717 measured on local disk; this is 9p, where \u00a716 measured the same payload move 2.4x higher (2.89x vs 1.21x).",
+    "interpretation_rule": "a warm multiple > 1.5x is a 9p artifact and must NOT be quoted as production-realisable; the transferable figure stays ~1.18x."
+   },
+   "B4_warm_p95_no_regression": {
+    "statement": "flat warm per-batch p95 <= sqlite warm per-batch p95",
+    "predicted": "MET but thin. \u00a716 measured p90 at only 1.19x because the tail is block decompression, which both arms share."
+   },
+   "B5_cold_multiple_gt_warm": {
+    "statement": "flat cold p50 multiple > flat warm p50 multiple",
+    "why": "this is the direct test of \u00a716/\u00a717's cold-B-tree explanation. If cold <= warm, that explanation is wrong and \u00a717's 'C8's 5.53x was a cold-cache artifact' needs rewriting."
+   },
+   "B6_bytes": {
+    "statement": "published flat total is 11,573,201,974 B and the sqlite it replaces is 13,470,433,280 B (-1,897,231,306 B), re-confirmed by stat of the published directory"
+   },
+   "B7_miss_asymmetry": {
+    "directional_only": true,
+    "statement": "on synthetic_miss50 the flat arm's advantage SHRINKS relative to the hits-only regime, because a locator miss pays searchsorted AND the `docs` fallback while a sqlite miss pays only `docs`",
+    "why": "not a pass/fail bar \u2014 this container has one live section so the true production miss rate is unknown. It bounds the risk of generalising the hits-only number to a federated deploy."
+   }
+  },
+  "n": "120 real bm25f queries; top_k 50 (production default) and 100; cold = 2 reps x 120 batches per arm with drop_caches before each; warm = 300 order-randomised interleaved trials per arm per regime",
+  "if_slower": "record the number, leave the serving default exactly as it is (the sidecar is already published and serving), and flag it."
+ },
+ "arm": "sqlite",
+ "top_k": 50,
+ "caches_dropped_before": true,
+ "eviction": {
+  "method": "posix_fadvise(POSIX_FADV_DONTNEED)",
+  "drop_caches_available": false,
+  "drop_caches_note": "/proc/sys/vm/drop_caches is read-only in this container (measured 2026-08-17)",
+  "files": 19,
+  "cached_before": 7065038848,
+  "cached_after": 7065038848,
+  "cached_freed_bytes": 0
+ },
+ "store_open_ms": 169.05,
+ "flat_attached": false,
+ "locator_attached": false,
+ "src": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite",
+ "src_fstype": "9p",
+ "batches": 120,
+ "passes": [
+  {
+   "pass": 0,
+   "phase": "cold",
+   "per_batch": {
+    "n": 120,
+    "p50_ms": 46.3631,
+    "mean_ms": 46.6745,
+    "p90_ms": 64.4305,
+    "p95_ms": 67.7987,
+    "p99_ms": 73.1895
+   },
+   "per_doc": {
+    "n": 120,
+    "p50_ms": 1.9806,
+    "mean_ms": 2.2136,
+    "p90_ms": 2.8157,
+    "p95_ms": 4.0862,
+    "p99_ms": 4.6837
+   },
+   "docs_returned": 2806,
+   "wall_s": 5.6
+  },
+  {
+   "pass": 1,
+   "phase": "warm",
+   "per_batch": {
+    "n": 120,
+    "p50_ms": 46.5169,
+    "mean_ms": 47.6927,
+    "p90_ms": 64.1325,
+    "p95_ms": 68.9135,
+    "p99_ms": 90.9919
+   },
+   "per_doc": {
+    "n": 120,
+    "p50_ms": 2.0571,
+    "mean_ms": 2.252,
+    "p90_ms": 2.8503,
+    "p95_ms": 4.0874,
+    "p99_ms": 4.8683
+   },
+   "docs_returned": 2806,
+   "wall_s": 5.72
+  },
+  {
+   "pass": 2,
+   "phase": "warm",
+   "per_batch": {
+    "n": 120,
+    "p50_ms": 46.0941,
+    "mean_ms": 46.7416,
+    "p90_ms": 63.7419,
+    "p95_ms": 67.872,
+    "p99_ms": 72.8265
+   },
+   "per_doc": {
+    "n": 120,
+    "p50_ms": 2.0248,
+    "mean_ms": 2.2133,
+    "p90_ms": 2.8206,
+    "p95_ms": 4.1109,
+    "p99_ms": 4.8864
+   },
+   "docs_returned": 2806,
+   "wall_s": 5.61
+  }
+ ],
+ "result_digests_pass0": [
+  "82d0fc1c554e1f166b5162665f5dfeb9c17e7c936f08b241d65e7f472e4fb677",
+  "796816e28205a85ebe89ef55c0c7e5b9ed6e048ca44f327c0a960ea6252ed92c",
+  "b180be1d365e3b99db6965beee010399560e523f65ccca6658ff54ea9251c438",
+  "80802573d7c7aee7197208102a214b21bbbb7ad06f580558ed1f2ee28ed9f28c",
+  "25d00656dae495e1e30acd0ba7a3ca16bba14f8038d502ba41188cd28498bba3",
+  "6ab464aaf86b77bc30c3600d85d74be3c4e55151912baff2c2eb20e1e83a5045",
+  "134a147d236729f198720f417eba0418e1d20d1e5217237b6f61d397e9f0ac60",
+  "fed06ed1ef305ee8d119483adc16428b0e5a19ddbc763f20f96d93959053d1ab",
+  "7883103c503cc4d3625059b36ade8c5c5e403b23898701c9f388b31fd2045e7d",
+  "f1e2cc2191be57d3719866d71a01b6538268c8864f724d13b167472cb81ddba2",
+  "8ff49a5d8b4792790814a7e475439fdc197939da582e70d078273b37c7f9358e",
+  "7dd79ae10ec842b94761e6939a99b28e602d72e75bcf465b0686a65d1cb4ecb1",
+  "24005af1a0905d27c62b62f5c5c0cfc5bf85db5fe5b526d1bd755b51bd3eba3e",
+  "65afa6c7a2b1323991a40e9995e3dd604da0ff5aee8c9d1777935514c6344937",
+  "9ec872116cbf266c33765dbd8f767b30431bf273a981a3f234b8d364ae5ba66f",
+  "df4d7d683e4da88ac3bb76e2d29a5a6af8eafa7f75723143f94528f307a92d0d",
+  "26355ca387c97d11067da7c01e0589e10371dc23197a0d145cbcf6873a98621a",
+  "25844176cc3cb3fa151d6ee67def795af9d8c7810895759b1052e7791ee3a85e",
+  "ca9cfaca90c5ded467e65da3e9de88822f99a446aa32ce89bdb5c1c26ba92995",
+  "ff333a61d14c8db919ed1cf5d78e6aa4dcda31008e970affbf05a7914c3e1af3",
+  "50875e6e3517f02aabe2d7412179ac5fdcb43d007e9d885658a4077793f6938d",
+  "ee2d82073d05c74142cef3a0f19f105432de8035fb5a05b38deb73b62e7ed6fc",
+  "000b1b04d944fd8d362745219042a1c38df7fc6f331f62893ade5005aea9d4fd",
+  "3a5c4e4c7aca21a41fc494a2191ae833cda3b41df75f296354594c2ff88663f3",
+  "16a1fed48699e0299779a7b09ab7b1d1a5cde566a55d51592289d239f07128a4",
+  "f2f747f562a4bef345810a88538471197a3f71571e922ff4d9e9f1cda383671b",
+  "c9a46168ecbeb93c43349666a8423fdf48de9cbf0906e3a5374913a24ad98a5d",
+  "47df1589569581916b8c071ee01d90a31e89635521032746313fb03f31b02bfd",
+  "d13a663d3767723877386985a4391870a608449850b3a025d14ae147feeac07f",
+  "8be5b2c67922a1849f0099cbea78f552076d83a0f13eeb839f41591f1159d348",
+  "75ac4410bf1095ea085415637fb15ce3d0c462bf20dc8ac44145776eba760ca8",
+  "2d7b062c0eba4f6c3997e64aac3e1c5b757c94178dbca232baa9af84d4705fb7",
+  "7e4673249a1666c9f5ac2c0cabe78eef9f111f54c4c76a24aa396001d034f246",
+  "63284fe136a733f61724ec9c5201dd2ed306b00c568e853ce0e1d2fdf40ec18d",
+  "38823aff32bb413c95677af244c190db584dd6b7829a4253b83f9717f11fdb92",
+  "8618159011efbbbae986abe120e4ea96f877a6badfc62ebe003671834e353e9e",
+  "d9467439b10111961c682ecef5e9a0914a8bfa5ff62ed19d93049309873fb442",
+  "e76d9983e4a8083ae936ec00d71ebac9c33fe25f8eb957f31ed6b1740725b7ee",
+  "abbfb1580140fee5a6dce48f665446b20796bd02d5092deca1af03e32575a6a6",
+  "fb79580f1e66477e59ee7ca253387257b4b70a624840e65a53a1cf9b1c6e25b9",
+  "ce40ffc1faf78ea15c083917bb4a9533ec1be8fcdc7805583e8bf1cc8fe046f3",
+  "0b0664c20922947f7b357a2bb0f21e5a03d0a9b6fcbfcb0727ef6d16a4f1294f",
+  "23ddc79fbb3d09c31a27b0b883f48c10210e2bd1fe74c6a24fa78b246dbd1fb6",
+  "b16c621a86f25a778f351710c808dbec05f7f3a82023a7ab66da1199995ee57d",
+  "cb193c945784144a77336130dc12329cf476c5bf483598e8f4a597c9bfae099a",
+  "da1567b01f0fe72fa52d8bc1b1ca09fa63b041b5c5c35a0c303423dfe617a23c",
+  "66a4b8d03a26d1fb52cadfb8f5a8261da03ce99fe5a9fb861a1b4db69e50b31c",
+  "b0aa3c3afbf3872d928251c8c35b405543ac11c12387602fc2cfd13408dc74da",
+  "aec97a98a40a1701149026edb86aea9834c6195674176d7dcfb550938c0722ae",
+  "99bd9a56d9f5f283faaa230927d12585feddeeb9bff75fb1abac76e7d321a001",
+  "e31df6fd25f677272c56b1a3d55a7bb0fc3c0762e0404f13c24ce73ddba2a643",
+  "26d87a948be769d20ec354e9eeceec4d47c75faa55c5336079483d2c5135edc5",
+  "4f41b96eca8e7f7a0023351e79285fb8e373aea5fddbe527ff02c96c44b18096",
+  "d6700e88f69803078053bee689ee083703ac0276d2c0a01fe9b499a64e7a3086",
+  "c1d5de612a1f322ab7bef07a6d45644d10cca5828d60f5b6564e9d1ec0812293",
+  "4d37550dd2e7506db9e885d71cd6a5600c9384a62945ca8594ed5c448a3177e8",
+  "71d777431c800d04e40ba746eb74b35a6d65eb7a9e01e094cc5d48b5fd9ab0ff",
+  "417097156555f88b03ed3515b6ddd9bbedf1bf0cf85eace216fb4b2417cd9652",
+  "ef7628dbe2335f36f8197f97f0846684cde99ad767107002c30ad9a09bd6b028",
+  "da2c0d4bfacfb9056df4b7d06e19586a3f3fd35a8d1107627bda22fa568a3988",
+  "12db39b017e09b249846d5aa88313f5f31b06be2d05b868b80ed6e343b87963c",
+  "f1cbf53901adfea6a39fda4131a97862f73e1b0af6358764495c9ed06fcfd89d",
+  "9d216405ab3bc154ddf2aeeba7d0d96ad4218aa4b555d38427a59160fc1d55ea",
+  "4cba33bbc46fd43911dd43739e4c9c14359a40af22da734520545aff44f10f6f",
+  "2569a29df59d810946f6f5aeb3bfd6e4af96931ed755ce661a960207956a8f0a",
+  "ec39b3762783a708344e1833d3f030c9e02b605bfc5be1017985c1f389ef1e18",
+  "0c9dae98175e789ef665f58dc9d22e2b619e11cba709ef86d016fc186d08b79e",
+  "15b1b270867aa6024689411ea863ebfe5138e460b67198284f8ce176177e517f",
+  "0ca0516eba1456d9be5f0bec87f6fd6b65e81abb7c326fab8dcb287f629bff07",
+  "6e450bab0682a9c9885f87d2a8e2c7d17e694392fdbfbd04b02ca60e2c1ee35c",
+  "43d8c4293acaa8fba747468e48a7dbf45e9f4f03d35429943e79cb63ac45dfce",
+  "6ec2584fba95a26d5950f7e61610314ace78363ed14d3c1373bb147bee90de41",
+  "b83f5d5908856aa8f942cab67240c22010b9f0491fcfd9ad1ce3efcc70f3fdf6",
+  "e4c0fb3693a8ce0d0366559173ca76998a4307d6cd32a8bd65c0b48c2c2b54e7",
+  "c7fac39d46c2514080b0dfaf4d640be32f2837b40a604e4eb8566a8e0b1dc36a",
+  "11229e81c899aeb36180ba1d185db369f71ce168424e01884a55a6afdb3fd510",
+  "18a240c2fb8efb45fda447ed61fe02122633e305dcca54a9eeabaa85b30f891e",
+  "643d2193c4f3e90169e7cd70ee8e66593aa4bf896afe5ba7cb4fecc56d9e0afd",
+  "fd0a2766c33515780e2a0f4020994dba071ae792cea4db574e73ab1fcca67d31",
+  "ef4a34cbdb1b731ac3559e640b70f8d9517681352615cb9666997b810102eb91",
+  "f14b4164e1429642f329008ebd8898580797dd73d3fd9a4d085902ad174d0a3e",
+  "61f4557a66ef1c290d9e3a9416285b0a4bb5ef5c1e5acd1a1da6b91111ba4eaa",
+  "64ee77d930aecf161957e9e61d183056313a5fa5f4354babe0ae99c0e2ab8ef6",
+  "09fc3a2e3d7e3180b9d2ec0af4e8229e3bd225262398ceacfa3097d512b7d05f",
+  "72747b5549154aaa69ca5660d9b60ed5e29e9b61cebd583471f9098556363440",
+  "3dfdfd0232f9c95fc69615a0d47f8ac9b3e0f5739af11e39f4770c01a75ea5ec",
+  "04ab8725bb493103987348f80ff310a872c606906a0e628bce01e1f1dd80a436",
+  "34a1739cf89efc008caff1594f8ce81f4584d87e37f6f7c73c9937c937c8d910",
+  "5a9bd078cc49de67c9c675b8f0c2d3f5edcd595dc0f01b258e49819233b54ec3",
+  "8d33fd0b826e87a060e0cdcb9a684557ea6dbc8955c430d1558dfb3be9b5d15d",
+  "4dfc999c5fdccf79f714cd01837e38490606b98288976ce9075c1c48d762b43b",
+  "bf66a6d6f876c93965faf71897e16fdaac35f19c903339a3488e2636c37ec063",
+  "7cb83efe96069f94315eb71fd7f29b69c7ff1a550768eb7c0ec3721a86348357",
+  "557a3c0512755edf8492709c0664143ec030ea36682805eaa46c2daaed390fd9",
+  "a7701e8b6050d2768de58e37a3c873aee5a81cab47d863333a0645962fdda8d8",
+  "6ce81fc1b305003efbe438eb9dcb3332a65b915aaefae01dbb11cf3630bc7467",
+  "ad33c5fe471e9f2dc6b5043e5b57ac76d52c4cc16f2c8186cac9930b43454f1d",
+  "7adaddf225913000838f05d037247bbfe9ccabd33f59b5922fe4ce385ec0a167",
+  "038ef4b9da0d4e8f73e3ae85c6333c6b04a699c03eaac2a33d69d6e8be207da1",
+  "85c929553763c690827ef60016470e7d7d8d1a604df0cde489a5b58a62081944",
+  "bf8b8dd2ebddaa4c5ca6a4d3ace5d25912fdca128b10c8e15f802aeb58ec2a60",
+  "650263c3421c88e30dd9b17df74e90ecde73cd5ba7d25a86697b931da866051e",
+  "66a0c2bd9154b416a757257cc99877f9c0fb1de230c3e3437205b22602ff5d21",
+  "a28eacbd4a66595c03be2bb264995acc43cb18206db2afa177439697e084d389",
+  "77305f93958f07196a97be41c16ace6adbd9cefe426dfd2d1fd38e79162a1483",
+  "046915945b93c08dac1ff11a919a629755f1b3432b5114c232075d5dd9553da7",
+  "8798f3337ef225d13db00eead9e0c1a44add5c89cf2f2313a211a0e3f7eb3d4a",
+  "be698948704ee2427524f914bca266f0e4f1fcb5973d7383ab64ebb73f6d696a",
+  "5ed27a8716b806e515555bd2b528dea27e9bd6cc7d5f12c00597d226bd866e91",
+  "35a18f9749469817172adce0044825cdf0f44541b6ff4c2c6f77a652a4e1c16a",
+  "f3aca0987e841e5cd27221c40f2f6a062912d25cf6d5068ec79682ad19e0a014",
+  "09d7d538f1879ee500c41a76fd96c94fbed8569a4111bfae16027800b049f7e9",
+  "993f561da15f5ff9def4b0d42c4fa0c4e0d3ea3931682a6674af62ee6b16cab2",
+  "099d39c40d73555f88bd924e823d5327b07cba616f882b710ab8ed8fb2f5a3bf",
+  "38f2f7a6192e3fd768f873f81d202f0904b287bb6ada8f94bd6f3049c1627278",
+  "9f53da28bb69d0a32dbf0a15ea89a5a23da698f4dd2cee47af2897c0f691a899",
+  "442c7f3008581a26e148b75df7291d62d4b0967a9331ba94fa0ab413f049849e",
+  "572b8d54268a5b286273974796efe42d90fa9b0a7cd70af20c29b72fdd806d53",
+  "3d43e1c89f7dca7e0651d715e5204cce93f5ee7f9382a19b52b8fd795f1964d4",
+  "70a98c6a710da6022e1e80498ec8146443e30643b10a16fda6e1e7da923f84fd"
+ ],
+ "mem": {
+  "before_open": {
+   "vmhwm": 23330816,
+   "vmrss": 23330816,
+   "memavailable": 56329138176,
+   "cached": 7065038848
+  },
+  "after_open": {
+   "vmhwm": 27418624,
+   "vmrss": 27418624,
+   "memavailable": 56328441856,
+   "cached": 7065444352
+  },
+  "after": {
+   "vmhwm": 32243712,
+   "vmrss": 32243712,
+   "memavailable": 56268877824,
+   "cached": 7065751552
+  }
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "date_utc": "2026-08-17T02:18:38",
+ "experiment": "F4 mlock structural floor \u2014 pre-registered A/B (disk_streaming_research/03 \u00a75 step 2)",
+ "arms": {
+  "off": "SFU_SEISMIC_LOAD_MODE=mmap (gate default 0)",
+  "on": "+ SFU_SEISMIC_MLOCK_FLOOR=1 SFU_SEISMIC_MLOCK_FLOOR_MB=160"
+ },
+ "harness": "scripts/seismic_testbed/serve_footprint_bench.py --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json --federation hybrid --queries 100 --passes 3",
+ "host": "WSL2 dev container, 56 GB RAM, shards on the 9p index mount (NOT the /var/tmp stage), no RAM cap",
+ "residency_smoke": {
+  "date": "2026-08-17",
+  "manifest": "/workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "n_shards": 8,
+  "nav_floor_bytes_total": 1225697128,
+  "locked_bytes": 159907840,
+  "vmlck_delta_bytes": 159907840,
+  "seconds": 7.65
+ },
+ "latency_ms": {
+  "off": {
+   "warm": {
+    "p50_ms": 62.17111500154715,
+    "p95_ms": 105.55156199916382,
+    "mean_ms": 67.16,
+    "min_ms": 34.7814919987286,
+    "max_ms": 158.78663699913886,
+    "n": 200
+   },
+   "cold": {
+    "p50_ms": 1199.0587889995368,
+    "p95_ms": 8796.10788699938,
+    "mean_ms": 2299.33,
+    "min_ms": 179.80237799929455,
+    "max_ms": 15563.633229001425,
+    "n": 100
+   },
+   "all_p50": 75.20789999762201
+  },
+  "on": {
+   "warm": {
+    "p50_ms": 63.34539800081984,
+    "p95_ms": 95.04065300279763,
+    "mean_ms": 63.41,
+    "min_ms": 34.4351870007813,
+    "max_ms": 114.92840699793305,
+    "n": 200
+   },
+   "cold": {
+    "p50_ms": 968.4873389996937,
+    "p95_ms": 6794.709512996633,
+    "mean_ms": 2043.84,
+    "min_ms": 197.97055199887836,
+    "max_ms": 15271.785416996863,
+    "n": 100
+   },
+   "all_p50": 73.02675199753139
+  },
+  "ratios_on_over_off": {
+   "warm_p50": 1.0189,
+   "warm_p95": 0.9004,
+   "warm_mean": 0.9442,
+   "cold_p50": 0.8077,
+   "cold_mean": 0.8889
+  }
+ },
+ "ram": {
+  "off": {
+   "anon_floor_gb": 1.1359,
+   "rss_anon_gb": 1.1359,
+   "vmswap_gb": 0.0,
+   "anon_delta_gb": 1.1181,
+   "pss_anon_gb": 1.1359,
+   "vmrss_peak_gb": 17.6095,
+   "vmrss_peak_bytes": 18908094464,
+   "anon_bytes_per_doc": 8.108829139334661,
+   "baseline_anon_gb": 0.0178
+  },
+  "on": {
+   "anon_floor_gb": 1.137,
+   "rss_anon_gb": 1.137,
+   "vmswap_gb": 0.0,
+   "anon_delta_gb": 1.1191,
+   "pss_anon_gb": 1.137,
+   "vmrss_peak_gb": 17.7289,
+   "vmrss_peak_bytes": 19036213248,
+   "anon_bytes_per_doc": 8.11650847055886,
+   "baseline_anon_gb": 0.0178
+  },
+  "vmrss_peak_delta_gb": 0.1194,
+  "anon_floor_delta_gb": 0.0011
+ },
+ "load_seconds": {
+  "off": 2.8,
+  "on": 91.36,
+  "note": "the ON arm's extra time is the mlock walk faulting 160 MB of navigation runs off 9p with a cold page cache (the previous arm's fadvise(DONTNEED) evicted it); the same walk took 7.65 s warm in the residency smoke"
+ },
+ "parity": {
+  "queries": 10,
+  "top_k": 10,
+  "mismatches": 0,
+  "pass": true,
+  "files": [
+   "data/eval_results/f4_floor_parity_off_20260817.json",
+   "data/eval_results/f4_floor_parity_on_20260817.json"
+  ],
+  "tool": "scripts/seismic_testbed/seismic_result_parity.py compare (exit 0)"
+ },
+ "pre_registered_bars": {
+  "warm_p50_on_le_1.05x_off": {
+   "measured": 1.0189,
+   "verdict": "PASS"
+  },
+  "zero_navigation_page_refaults_under_pressure": {
+   "measured": null,
+   "verdict": "NOT MEASURED \u2014 serve_footprint_bench has no memory-pressure pass and this container has no RAM cap; mlock'd pages are unevictable by kernel semantics (VmLck delta confirms the lock landed), but the pressure pass itself was not run"
+  },
+  "parity_0_mismatches": {
+   "measured": 0,
+   "verdict": "PASS"
+  }
+ },
+ "verdict": "2 of 3 bars PASS, 1 NOT MEASURED. mlock adds no measurable warm per-query cost (1.019x, inside noise; warm p95 and mean are nominally BETTER ON) and changes no result bit. The residency benefit it exists for is still unproven: the memory-pressure re-fault bar needs a RAM-capped host (the R1/R3 host-gated ladder). DEFAULT STAYS 0 \u2014 the A/B licenses enabling the gate, it does not yet demonstrate a win.",
+ "cold_arm_caveat": "cold p50 968.5 vs 1199.1 ms (0.81x) and cold mean 2043.8 vs 2299.3 ms look favourable, but n=100 single-pass cold with p95 6794.7/8796.1 ms \u2014 the cold arm's spread dwarfs the difference. NOT CLAIMABLE from one pass."
+}

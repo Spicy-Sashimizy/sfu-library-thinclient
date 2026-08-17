@@ -1,0 +1,104 @@
+{
+  "date_utc": "2026-08-02T03:33:26",
+  "corpus": "/workspaces/sfu-library-thinclient/spike/bm25_seismic/work/corpus.jsonl",
+  "seed": 17,
+  "sections": 10,
+  "workloads": {
+    "100": {
+      "parity": {
+        "sqlite_rows": 100,
+        "tantivy_rows": 100,
+        "ids_requested": 100,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite": {
+          "reps": 30,
+          "p50_ms": 1.442,
+          "mean_ms": 1.456,
+          "p95_ms": 1.698,
+          "min_ms": 1.339,
+          "max_ms": 1.784
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 5.77,
+          "mean_ms": 5.762,
+          "p95_ms": 6.131,
+          "min_ms": 5.487,
+          "max_ms": 6.144
+        },
+        "tantivy_over_sqlite": 4.0
+      },
+      "full_hydrate": {
+        "sqlite": {
+          "reps": 30,
+          "p50_ms": 1.521,
+          "mean_ms": 1.589,
+          "p95_ms": 2.039,
+          "min_ms": 1.369,
+          "max_ms": 2.422
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 6.152,
+          "mean_ms": 6.181,
+          "p95_ms": 6.64,
+          "min_ms": 5.617,
+          "max_ms": 6.866
+        },
+        "tantivy_over_sqlite": 4.04
+      }
+    },
+    "1000": {
+      "parity": {
+        "sqlite_rows": 1000,
+        "tantivy_rows": 1000,
+        "ids_requested": 1000,
+        "same_id_set": true,
+        "rows_identical": true,
+        "example_mismatch": null
+      },
+      "filter_mask": {
+        "sqlite": {
+          "reps": 30,
+          "p50_ms": 200.829,
+          "mean_ms": 202.048,
+          "p95_ms": 209.582,
+          "min_ms": 197.466,
+          "max_ms": 215.992
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 21.152,
+          "mean_ms": 21.218,
+          "p95_ms": 22.515,
+          "min_ms": 20.41,
+          "max_ms": 22.636
+        },
+        "tantivy_over_sqlite": 0.11
+      },
+      "full_hydrate": {
+        "sqlite": {
+          "reps": 30,
+          "p50_ms": 203.112,
+          "mean_ms": 205.472,
+          "p95_ms": 223.189,
+          "min_ms": 196.887,
+          "max_ms": 235.378
+        },
+        "tantivy_fanout": {
+          "reps": 30,
+          "p50_ms": 21.481,
+          "mean_ms": 21.657,
+          "p95_ms": 22.631,
+          "min_ms": 21.067,
+          "max_ms": 23.723
+        },
+        "tantivy_over_sqlite": 0.11
+      }
+    }
+  }
+}

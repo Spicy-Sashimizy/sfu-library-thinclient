@@ -180,6 +180,217 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
     return str(staged_manifest)
 
 
+# ── meta.sqlite staging (same lever as _stage_shards_local, different artifact) ─
+# Measured 2026-08-03 (doc seismic_150m_testbed/18 §14): at 500 candidates the
+# SPLADE/dense post-filter stage costs 222.2 ms with `meta.sqlite` on 9p and
+# 4.0 ms with the SAME FILE on local disk — 55x for a file copy, no code change.
+# Like _stage_shards_local this is a DEV-CONTAINER lever: on a droplet the index
+# already sits on local block storage, so the source FS check below makes it a
+# NO-OP there by construction (SFU_META_STAGE_FORCE=1 overrides, for tests).
+META_STAGE_FAST_TAIL = 65536      # head+tail bytes hashed by the 'fingerprint' verify
+
+
+def _file_fingerprint(path: Path, size: int) -> str:
+    """sha256 of (size, first 64 KiB, last 64 KiB). Cheap enough to run over 9p
+    on a 24 GB file (128 KiB read) and strong enough to tell two different
+    builds apart — a same-size *different* meta.sqlite differs in the header
+    page (change counter / page count) and in the tail. Not a full-content
+    checksum: use SFU_META_STAGE_VERIFY=sha256 for that."""
+    import hashlib
+    h = hashlib.sha256(str(size).encode())
+    with open(path, "rb") as fh:
+        h.update(fh.read(META_STAGE_FAST_TAIL))
+        if size > META_STAGE_FAST_TAIL:
+            fh.seek(max(0, size - META_STAGE_FAST_TAIL))
+            h.update(fh.read(META_STAGE_FAST_TAIL))
+    return h.hexdigest()
+
+
+def _file_sha256(path: Path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(8 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _meta_stage_identity(path: Path, mode: str) -> dict:
+    """The identity recorded in / compared against the `.staged_ok` marker."""
+    st = path.stat()
+    ident = {"size": st.st_size, "mtime_ns": st.st_mtime_ns, "verify": mode}
+    if mode == "sha256":
+        ident["sha256"] = _file_sha256(path)
+    elif mode != "size":
+        ident["fingerprint"] = _file_fingerprint(path, st.st_size)
+    return ident
+
+
+def _meta_is_quiesced(src: Path) -> bool:
+    """True when `src` has no live rollback journal / non-empty WAL beside it.
+
+    A raw byte copy of a WAL-mode database that has a non-empty `-wal` loses
+    every commit still in that WAL, and copying the `-wal`/`-shm` along with it
+    is worse (the `-shm` is machine-state, not data). The build checkpoints with
+    `PRAGMA wal_checkpoint(TRUNCATE)` at the end of every slice
+    (builder.py:299), so the served file is normally already clean — verified
+    2026-08-17 on the real 24.9 GB `data/thinclient_index/meta.sqlite`: WAL
+    journal mode in the header, no `-wal`/`-shm` present. If a WAL IS live we
+    refuse to stage (serve the original) rather than serve a torn copy."""
+    for suffix in ("-wal", "-journal"):
+        side = src.with_name(src.name + suffix)
+        try:
+            if side.is_file() and side.stat().st_size > 0:
+                return False
+        except OSError:
+            return False
+    return True
+
+
+def _stage_meta_local(src: Path) -> Path:
+    """Copy `meta.sqlite` to a fast local dir and return the path to open.
+
+    Gates (all default OFF — staging never happens unless asked for):
+      SFU_META_STAGE_DIR=<dir>   destination. If unset, `SFU_STAGE_META=1`
+                                 reuses `SFU_SEISMIC_STAGE_DIR` (one dir for
+                                 both artifacts, the dev-container setup).
+      SFU_META_STAGE_FORCE=1     stage even when the source FS is already local
+                                 (default: skip -> production no-op).
+      SFU_META_STAGE_VERIFY=     size | fingerprint (default) | sha256.
+
+    Guarantees:
+      * atomic — the copy lands on `<dst>.tmp-<pid>` and is `os.replace`d into
+        place only after the size (and fingerprint/sha256) check passes, so a
+        killed copy can never be opened;
+      * idempotent — a `<name>.staged_ok` marker records the SOURCE identity
+        (size + mtime_ns + fingerprint); a matching staged copy is reused, and
+        a source rebuild (new mtime/size) forces a restage;
+      * clean-state only — refuses to copy a database with a live WAL/journal;
+      * never mutates the source (read-only) and never leaves `-wal`/`-shm`
+        sidecars from a previous stage next to the new copy.
+
+    Raises on failure; the caller serves the unstaged source instead.
+    """
+    import shutil
+    stage_dir = os.environ.get("SFU_META_STAGE_DIR")
+    if not stage_dir and os.environ.get("SFU_STAGE_META") == "1":
+        stage_dir = os.environ.get("SFU_SEISMIC_STAGE_DIR")
+    if not stage_dir:
+        return src
+    if not os.environ.get("SFU_META_STAGE_FORCE") == "1":
+        fstype = (_fstype_for_path(str(src)) or "").lower()
+        if fstype not in _SLOW_FEDERATION_FSTYPES:
+            logger.info("meta stage: source already on a local FS (%s) — no-op",
+                        fstype or "unknown-fs")
+            return src
+    verify = os.environ.get("SFU_META_STAGE_VERIFY", "fingerprint").lower()
+    if verify not in ("size", "fingerprint", "sha256"):
+        raise ValueError(f"SFU_META_STAGE_VERIFY must be size|fingerprint|sha256, "
+                         f"got {verify!r}")
+    if not _meta_is_quiesced(src):
+        raise RuntimeError(
+            f"{src} has a live -wal/-journal; a byte copy would drop the "
+            f"uncommitted-to-main-db pages. Checkpoint it first: "
+            f"sqlite3 {src} 'PRAGMA wal_checkpoint(TRUNCATE);'")
+
+    stage = Path(stage_dir)
+    stage.mkdir(parents=True, exist_ok=True)
+    dst = stage / src.name
+    marker = stage / (src.name + ".staged_ok")
+    want = _meta_stage_identity(src, verify)
+
+    have = None
+    if marker.is_file():
+        try:
+            have = json.loads(marker.read_text())
+        except (OSError, ValueError):
+            have = None
+    if have == want and dst.is_file() and dst.stat().st_size == want["size"]:
+        logger.info("meta stage: %s already staged (%.1f GB), skipping",
+                    dst, want["size"] / 1e9)
+        return dst
+
+    free = os.statvfs(stage).f_bavail * os.statvfs(stage).f_frsize
+    if free < want["size"] * 1.02:
+        raise RuntimeError(f"meta stage: {stage} has {free / 1e9:.1f} GB free, "
+                           f"need ~{want['size'] * 1.02 / 1e9:.1f} GB")
+
+    # Any leftover tmp from a killed copy is garbage — never resumed (a partial
+    # SQLite file is not a shorter valid one) and never opened.
+    for stale in stage.glob(src.name + ".tmp-*"):
+        try:
+            stale.unlink()
+        except OSError:
+            pass
+    tmp = stage / f"{src.name}.tmp-{os.getpid()}"
+    t0 = time.perf_counter()
+    logger.info("meta stage: copying %s (%.1f GB) -> %s",
+                src, want["size"] / 1e9, stage)
+    try:
+        marker.unlink(missing_ok=True)   # the old copy is about to be replaced
+        with open(src, "rb") as fsrc, open(tmp, "wb") as fdst:
+            shutil.copyfileobj(fsrc, fdst, 8 << 20)
+            fdst.flush()
+            os.fsync(fdst.fileno())
+        got = _meta_stage_identity(tmp, verify)
+        # `mtime_ns` is the source's own; compare only the content fields.
+        for field in ("size", "sha256", "fingerprint"):
+            if field in want and want[field] != got.get(field):
+                raise RuntimeError(f"meta stage: {field} mismatch after copy "
+                                   f"({want[field]} != {got.get(field)}) — "
+                                   f"source changed mid-copy or the stage FS "
+                                   f"is lying about durability")
+        # A previous stage's sidecars must not shadow the new file.
+        for suffix in ("-wal", "-shm", "-journal"):
+            (stage / (src.name + suffix)).unlink(missing_ok=True)
+        os.replace(tmp, dst)            # atomic: readers see old-or-new, never partial
+        marker.write_text(json.dumps(want))
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+    logger.info("meta stage: %s staged (%.1f GB) in %.0fs",
+                dst, want["size"] / 1e9, time.perf_counter() - t0)
+    return dst
+
+
+def _connect_meta(path: Path, staged: bool = False) -> sqlite3.Connection:
+    """Open `meta.sqlite` for serving.
+
+    Serving only ever runs SELECT/PRAGMA against this handle (`_meta_rows` and
+    the schema probe in `_load` are the only two call sites) — the read-only
+    contract is real, but until 2026-08-17 it was only *observed*, not enforced:
+    the connection was a plain read-write one.
+
+    A STAGED copy is opened `mode=ro&immutable=1`. Immutable is honest there and
+    nowhere else: the stage dir is written only by `_stage_meta_local`, which
+    promotes with `os.replace` — a new inode, so an open connection keeps
+    reading its own consistent file. It also means SQLite needs no `-wal`/`-shm`
+    and takes no locks, so the staged copy can never be dirtied by the serve.
+
+    The UNSTAGED source keeps the historical plain connect: `immutable=1` on a
+    file that a rebuild may replace in place would return corrupt pages, and a
+    read-only URI open of a WAL-journal-mode database leaves a 0-byte `-wal` +
+    `-shm` behind in the index root (measured 2026-08-17) instead of cleaning
+    them up on close. Falls back to the plain connect if the URI open fails.
+    """
+    if not staged:
+        return sqlite3.connect(str(path), check_same_thread=False)
+    conn = None
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro&immutable=1", uri=True,
+                               check_same_thread=False)
+        # sqlite3_open is lazy: force a real read so an unusable open fails NOW,
+        # on the fallback path, and not on the first served query.
+        conn.execute("PRAGMA schema_version").fetchone()
+        return conn
+    except sqlite3.Error as exc:
+        logger.warning("meta: read-only open of staged %s failed (%s) — "
+                       "plain connect", path, exc)
+        if conn is not None:
+            conn.close()
+        return sqlite3.connect(str(path), check_same_thread=False)
+
+
 def _auto_federation_mode(sample_path: str) -> str:
     """Federation default when SFU_SEISMIC_FEDERATION is unset: 'sequential' when
     the shards sit on a slow passthrough FS (see _SLOW_FEDERATION_FSTYPES),
@@ -304,10 +515,12 @@ class ThinClientRetriever:
         self._sections: dict[str, dict] = {}   # name -> {tantivy, searcher, bmp:[...]}
         self._abstract_stores: dict[str, Any] = {}
         self._meta: sqlite3.Connection | None = None
+        self._meta_path: Path | None = None   # staged copy when staging is on
         self._meta_numeric = False
         self._meta_lock = threading.Lock()
         self._dense: dict | None = None
         self._dense_cache = None   # query-driven warm cache (dense_cache.py)
+        self._dense_leg_enabled = True   # set from SFU_DENSE_LEG at load time
         self._loaded = False
 
         # Serving gate. SFU_SPLADE_BACKEND selects the SPLADE leg engine:
@@ -414,14 +627,43 @@ class ThinClientRetriever:
                         self._abstract_stores[sdir.name] = AbstractStore(abs_path)
             meta_path = self.root / "meta.sqlite"
             if meta_path.exists():
-                self._meta = sqlite3.connect(str(meta_path), check_same_thread=False)
+                # Residency lever, same family as the SEISMIC shard staging
+                # below: served off 9p the post-filter stage costs 222.2 ms vs
+                # 4.0 ms for the same file on local disk (2026-08-03). Gated
+                # OFF by default and a no-op when the source is already local,
+                # so a droplet deploy is unaffected. Best-effort: a staging
+                # failure logs and serves the original rather than failing the
+                # load — a slow filter stage beats no index.
+                try:
+                    meta_path = _stage_meta_local(meta_path)
+                except Exception:
+                    logger.exception("meta stage failed; serving meta.sqlite "
+                                     "from %s (slow if on 9p/NFS)", meta_path)
+                self._meta_path = meta_path
+                self._meta = _connect_meta(
+                    meta_path, staged=meta_path != self.root / "meta.sqlite")
                 # v2 schema stores W-ids as INTEGER PRIMARY KEY (+ docs_other
                 # TEXT overflow); v1 indexes (e.g. thinclient_1m) are TEXT.
                 cols = {r[1]: (r[2] or "").upper() for r in
                         self._meta.execute("PRAGMA table_info(docs)")}
                 self._meta_numeric = cols.get("id", "").startswith("INT")
+            # SFU_DENSE_LEG=0 excludes the WHOLE dense leg — static usearch seed
+            # AND the query-driven warm cache — so a payload shipped without
+            # `dense/` costs nothing per query. The absence of `dense/` alone is
+            # already SAFE (verified 2026-08-17,
+            # `test_serves_with_no_dense_dir`): `_dense` stays None,
+            # `dense_search` returns [] before it encodes anything, and RRF
+            # fuses the surviving legs with no error spam. But it is not FREE —
+            # the warm cache re-CREATES `dense/`, opens `delta.sqlite` and loads
+            # the 128 MB bi-encoder to encode every surfaced doc, paying encoder
+            # cost with no static coverage to fuse it against. This gate is the
+            # clean off switch for that. Default "1" = byte-identical to the
+            # pre-gate behavior. Partition, sizes and the keep/drop evidence:
+            # docs/DENSE_PARTITION_AND_ABLATION.md.
+            dense_leg = os.environ.get("SFU_DENSE_LEG", "1") != "0"
+            self._dense_leg_enabled = dense_leg
             dense_dir = self.root / "dense"
-            if (dense_dir / "b1.usearch").exists():
+            if dense_leg and (dense_dir / "b1.usearch").exists():
                 import numpy as np
                 from usearch.index import Index
                 view = Index.restore(str(dense_dir / "b1.usearch"), view=True)
@@ -430,7 +672,7 @@ class ThinClientRetriever:
                     "rescore": np.load(dense_dir / "rescore_int8.npy", mmap_mode="r"),
                     "ids": json.loads((dense_dir / "ids.json").read_text()),
                 }
-            if os.environ.get("SFU_DENSE_WARMCACHE", "1") != "0":
+            if dense_leg and os.environ.get("SFU_DENSE_WARMCACHE", "1") != "0":
                 try:
                     from lib.thinclient.dense_cache import DenseWarmCache
                     self._dense_cache = DenseWarmCache(
@@ -489,9 +731,16 @@ class ThinClientRetriever:
         a representative path for FS-type detection. '' if unreadable."""
         try:
             with open(manifest_path) as fh:
-                shards = json.load(fh).get("shards", [])
-            return shards[0].get("mmap_dir", "") if shards else ""
-        except (OSError, ValueError, KeyError, IndexError):
+                data = json.load(fh)
+            # Both served manifest forms: dict {"shards": [{"mmap_dir": ...}]}
+            # (the e5/e8 promotion manifests) and the bare list of shard-dir
+            # strings (single-index testbeds + the served-path test fixtures).
+            shards = data.get("shards", []) if isinstance(data, dict) else data
+            if not shards:
+                return ""
+            first = shards[0]
+            return first.get("mmap_dir", "") if isinstance(first, dict) else str(first)
+        except (OSError, ValueError, KeyError, IndexError, AttributeError, TypeError):
             return ""
 
     def _seismic_federation_mode(self) -> str:
@@ -549,7 +798,17 @@ class ThinClientRetriever:
             "dense_vectors": len(self._dense["ids"]) if self._dense else 0,
             "dense_warm_cache": (self._dense_cache.info()
                                  if self._dense_cache else None),
+            # Which optional payload components are actually live — lets a
+            # deploy PROVE it shipped/omitted the dense partition rather than
+            # inferring it from a zero vector count (which an absent `dense/`
+            # and a disabled leg both produce).
+            "dense_leg_enabled": self._dense_leg_enabled,
             "meta_schema": "v2-numeric" if self._meta_numeric else "v1-text",
+            # Which copy of meta.sqlite the filter stage is actually reading —
+            # the 55x variable (staged local vs 9p), so it belongs in info().
+            "meta_path": str(self._meta_path) if self._meta_path else None,
+            "meta_staged": bool(self._meta_path
+                                and self._meta_path != self.root / "meta.sqlite"),
             "manifest": self._manifest(),
         }
 
@@ -560,8 +819,10 @@ class ThinClientRetriever:
         with self._lock:
             old = (self._sections, self._abstract_stores, self._meta,
                    self._dense, self._dense_cache)
+            old_meta_path = self._meta_path
             self._sections, self._abstract_stores = {}, {}
             self._meta, self._dense, self._dense_cache = None, None, None
+            self._meta_path = None
             self._loaded = False
         try:
             self._load()
@@ -570,6 +831,7 @@ class ThinClientRetriever:
             with self._lock:
                 (self._sections, self._abstract_stores, self._meta,
                  self._dense, self._dense_cache) = old
+                self._meta_path = old_meta_path
                 self._loaded = True
             raise
         if old[2] is not None:
@@ -626,7 +888,11 @@ class ThinClientRetriever:
                      filters: dict | None = None) -> list[dict]:
         """usearch b1 + int8 rescore. Coverage = the dense POC subset until the
         full corpus is encoded (same partial-coverage caveat as the OpenSearch
-        dense leg)."""
+        dense leg).
+
+        Returns [] — before encoding the query, so at no encoder cost — when
+        the leg has nothing to serve: `dense/` absent from the payload, or
+        `SFU_DENSE_LEG=0`. Callers fuse the surviving legs."""
         self._load()
         cache = self._dense_cache
         if not self._dense and not (cache and cache.info()["docs"]):
@@ -667,24 +933,87 @@ class ThinClientRetriever:
         return out
 
     def search_rrf(self, query: str, top_k: int = 50,
-                   filters: dict | None = None, include_dense: bool = False) -> list[dict]:
-        """Convenience 2/3-leg RRF (k=60) — same fusion the router applies."""
-        legs = [self.search(query, top_k, mode="bm25f", filters=filters),
-                self.search(query, top_k, mode="splade", filters=filters)]
+                   filters: dict | None = None, include_dense: bool = False,
+                   with_provenance: bool = False) -> list[dict]:
+        """Convenience 2/3-leg RRF (k=60) — same fusion the router applies.
+
+        `with_provenance=True` adds ONE extra key per returned doc,
+        `rrf_legs = {leg: 1-based rank in that leg}` for every leg that
+        surfaced it (insertion-ordered bm25f → splade → dense). Everything
+        else — the ranking, the `score`, the `source`, the doc fields — is
+        bit-identical with the flag on or off; the default return shape is
+        exactly what it was before provenance existed, so existing callers
+        (serve path, leg_breaker's guardian, portable-stack verifiers) are
+        untouched. Needed by the dense-leg ablation's dense-vote-share and
+        leg-overlap metrics (docs/DENSE_PARTITION_AND_ABLATION.md §7)."""
+        legs, _ = self._rrf_legs(query, top_k, filters, include_dense)
+        return self._rrf_fuse(legs, top_k, with_provenance)
+
+    def search_rrf_detailed(self, query: str, top_k: int = 50,
+                            filters: dict | None = None,
+                            include_dense: bool = False) -> dict:
+        """`search_rrf` + the per-leg record an offline analysis needs, in one
+        retrieval pass:
+
+            {"results": [...],                  # == search_rrf(..., with_provenance=True)
+             "legs": {leg: [openalex_id, ...]}, # each leg's own ranking, pre-fusion
+             "leg_latency_ms": {leg: float}}    # wall ms per leg, in fusion order
+
+        A leg absent from `legs` never ran (e.g. dense under `SFU_DENSE_LEG=0`,
+        or an index root with no `dense/`). Read-only instrumentation: it runs
+        the identical legs in the identical order as `search_rrf`."""
+        legs, lat = self._rrf_legs(query, top_k, filters, include_dense)
+        return {"results": self._rrf_fuse(legs, top_k, with_provenance=True),
+                "legs": {n: [d["openalex_id"] for d in docs]
+                         for n, docs in legs.items()},
+                "leg_latency_ms": {n: round(ms, 2) for n, ms in lat.items()}}
+
+    def _rrf_legs(self, query: str, top_k: int, filters: dict | None,
+                  include_dense: bool) -> tuple[dict[str, list[dict]], dict[str, float]]:
+        """Run the RRF legs in their fixed fusion order (bm25f → splade →
+        dense). Returns ({leg: docs}, {leg: wall ms}); dict insertion order IS
+        the fusion order, so float accumulation stays bit-identical to the
+        pre-provenance list-of-legs form. The dense condition is unchanged:
+        `include_dense and self._dense` (the two lexical legs have already run
+        `_load()` by the time it is evaluated)."""
+        legs: dict[str, list[dict]] = {}
+        lat: dict[str, float] = {}
+        t0 = time.perf_counter()
+        legs["bm25f"] = self.search(query, top_k, mode="bm25f", filters=filters)
+        lat["bm25f"] = (time.perf_counter() - t0) * 1000
+        t0 = time.perf_counter()
+        legs["splade"] = self.search(query, top_k, mode="splade", filters=filters)
+        lat["splade"] = (time.perf_counter() - t0) * 1000
         if include_dense and self._dense:
-            legs.append(self.dense_search(query, top_k, filters=filters))
+            t0 = time.perf_counter()
+            legs["dense"] = self.dense_search(query, top_k, filters=filters)
+            lat["dense"] = (time.perf_counter() - t0) * 1000
+        return legs, lat
+
+    @staticmethod
+    def _rrf_fuse(legs: dict[str, list[dict]], top_k: int,
+                  with_provenance: bool = False) -> list[dict]:
+        """RRF k=60 over the per-leg rankings. `with_provenance` only ADDS the
+        `rrf_legs` key — it touches neither `scores` nor the sort, so the
+        ranking is bit-identical either way (pinned by
+        `test_rrf_provenance_does_not_change_ranking`)."""
         scores: dict[str, float] = {}
         by_id: dict[str, dict] = {}
-        for leg in legs:
+        prov: dict[str, dict[str, int]] = {}
+        for name, leg in legs.items():
             for rank, doc in enumerate(leg, start=1):
                 did = doc["openalex_id"]
                 scores[did] = scores.get(did, 0.0) + 1.0 / (RRF_K + rank)
                 by_id.setdefault(did, doc)
+                if with_provenance:
+                    prov.setdefault(did, {})[name] = rank
         out = []
         for did in sorted(scores, key=lambda d: scores[d], reverse=True)[:top_k]:
             doc = dict(by_id[did])
             doc["score"] = scores[did]
             doc["source"] = "thinclient_rrf"
+            if with_provenance:
+                doc["rrf_legs"] = prov[did]
             out.append(doc)
         return out
 

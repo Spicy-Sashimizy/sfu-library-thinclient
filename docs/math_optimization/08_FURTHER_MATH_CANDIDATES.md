@@ -1,7 +1,21 @@
 # 08 — Further math candidates (M6–M10): pre-registered, UNMEASURED
 
 **Created 2026-07-05. Status: DESIGN ONLY / PRE-REGISTERED — every row
-UNMEASURED unless it cites a result file.** This doc extends the M1–M5
+UNMEASURED unless it cites a result file.**
+
+> **Status note 2026-08-10** (verdicts recorded in
+> `../seismic_150m_testbed/12_EXECUTION_ROADMAP.md`'s ledger, back-ported here):
+> **M7 KILLED 2026-07-08** (Q2, all-miss-pack 0.194 < 0.3 bar). **M2b
+> KILLED 2026-07-10** (Q4, gate a 0.987/0.983 < 0.99) → **M6 KILLED
+> transitively same day** (Q5; the cpuid inventory never ran — moot). **M8
+> pre-gate GO 2026-07-10** (Q3, median 18 candidates/block vs bar 4); the
+> register-blocked kernel build itself was planned
+> (`.claude/plans/m8-register-blocked-kernel.md`, now in done/) and **BUILT
+> + MEASURED 2026-08-10 — gate c REVERT, ships in-tree DEFAULT-OFF**
+> (bit-identity gate a 100/100; warm ratio 1.0223/1.0435 vs the ≥1.00
+> revert bar — full RESULT under §M8 below). M9's
+> "unless M6+M7 both land" condition is therefore unreachable — M9 and M10
+> remain parked/dead. This doc extends the M1–M5
 interaction map (`03_INTERACTION_MAP.md`) with five additional restructurings
 of the mmap-serving dot kernel
 (`spike/vectorium_fork/src/encoders/dotvbyte_fixedu8.rs:603-642`), grounded in
@@ -283,6 +297,54 @@ rebuilt (native); the 12/12 sequential parity suite re-passes.
 medium; precedents (SimSIMD batch APIs, Elastic simdvec bulk scoring) put
 2–4× kernel-level for gather-latency-bound loops, Amdahl-capped here as
 always by the decode third.
+
+**Kernel RESULT (2026-08-10): BUILT + MEASURED — gate c REVERT; ships
+in-tree DEFAULT-OFF behind `SFU_SEISMIC_M8_BATCH=1` (the M2 precedent).**
+The value `*est.*` above did NOT materialize warm: the fully-warm regime
+has too few gather stalls to hide, and the two-phase overhead (survivor
+Vec + view-array construction) costs more than the interleave ILP buys.
+
+- **Built as specified** with two recorded deviations: batch width **6**
+  via the pre-existing `compute_distances_batch6` trait seam (dense-batch6
+  house precedent) instead of the planned width-4 new API; and BOTH block-
+  loop copies patched — `posting_list.rs` AND the verbatim `mmap_index.rs`
+  copy the served `MmapSeismicIndex` path actually uses (the plan's single
+  line-anchor would have gated green while never running in production).
+  Six independent `Simd<f32,8>` accumulators, one shared query pass,
+  round-robin pack interleave + per-lane drain; per-candidate op order
+  preserved exactly; both value scales (v1 1/64, E8 v2 per-doc vmax/255);
+  M2-int6 falls back to scalar. Fork commits 8b51b0b/27900f3/ddca859
+  (patch `spike/seismic_upstream_m8_batch.patch`); vectorium tracked
+  directly.
+- **Gate a (bit-identity) PASS** — hard=0, tie_swaps=0, **100/100 lists on
+  every cell** (shards 1–2 × {f16, dv-e5.v2} × {batch ON, OFF}) vs the
+  pre-M8 .so baseline (n=100 diverse, k'=100, saved encoded queries
+  replayed). `m8_batch_kernel_gatea_20260810.json` (+ baseline
+  `m8_pre_baseline.json`, untracked, 1.6 MB). **First run FAILED on the
+  f16 cells (3301/3328 hard) — a REAL catch:** the pre-existing
+  `ScalarSparseQueryEvaluator::compute_distances_batch6` override (6-lane
+  kernel) reorders per-lane accumulation and is NOT bit-identical to its
+  own singles. M8 therefore calls a new
+  `compute_distances_batch6_exact` seam (default = six scalar calls;
+  only bit-proven kernels override — dotvbyte moved there verbatim);
+  the legacy seam + its users are untouched.
+- **Gate b (suites) PASS** — vectorium 136/136 debug (7 new to_bits-
+  equality tests, mutation-checked) + release green modulo the 2 known
+  release-invalid should_panic tests; fork 10/10 (incl. the new M8 width
+  1/2/3/6/13/18 + ragged-width + live-env-flip tests); served-path +
+  sequential pytest suite 19/19 (after fixing a pre-existing Python
+  manifest-form bug in `retriever._first_manifest_mmap_dir`, a335cb0).
+- **Gate c (warm traverse p50, one-process paired ON/OFF ×3 reps) —
+  REVERT:** shard1 **2.161 vs 2.114 ms = 1.0223×**, shard2 **2.310 vs
+  2.213 ms = 1.0435×** (bars: PROMOTE ≤0.95, KEEP <1.00, REVERT ≥1.00;
+  p90 1.00×/1.05×). `m8_batch_kernel_gatec_20260810.json`.
+- **Gate d (federated, info-only): not run — moot after REVERT** (kernel
+  share of federated p50 is ~2–3 ms of ~54; nothing left to decide).
+- Driver `scripts/seismic_testbed/m8_batch_kernel_gates.py`. Session
+  side-finds fixed on the way: the mmap-reader `summaries_ids` length-
+  label bug (fork 2c3cf48, doc 12 ledger) and the retriever manifest-form
+  bug (a335cb0). **M8 closed; the math-candidate book (M1–M10) is now
+  fully decided — every candidate measured, killed, or dead-parked.**
 
 
 ---

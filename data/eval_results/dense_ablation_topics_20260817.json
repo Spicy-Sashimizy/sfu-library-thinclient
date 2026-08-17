@@ -1,0 +1,789 @@
+{
+  "drawn_utc": "2026-08-17T23:31:37Z",
+  "what": "the FRESH topic draw for the pre-registered dense-leg ablation (docs/DENSE_PARTITION_AND_ABLATION.md \u00a77). Committed BEFORE any retrieval or judgment, so the draw is on the record.",
+  "protocol": {
+    "n_topics": 120,
+    "forms_per_topic": [
+      "keyword",
+      "natural"
+    ],
+    "n_query_records": 240,
+    "subject_spread": "the same 49 SFU subjects and the same per-subject counts as data/eval_results/diverse_queries.json",
+    "disjoint_from": "data/eval_results/diverse_queries.json (asserted here)",
+    "judge_key": "the keyword form (<= 80 chars, so it is never truncated)",
+    "judged_later_on": "the NATURAL-language form \u2014 \u00a74's only robust finding is that the dense effect is NL-shaped"
+  },
+  "subjects": {
+    "Accounting": 2,
+    "Anthropology": 2,
+    "Applied Legal Studies": 2,
+    "Archaeology": 2,
+    "Biomedical Physiology and Kinesiology (BPK)": 4,
+    "Business Administration": 2,
+    "Canadian Studies": 4,
+    "Chemistry": 2,
+    "Communication": 3,
+    "Computing Science": 3,
+    "Criminology": 4,
+    "Economics": 3,
+    "Education": 3,
+    "Engineering Science": 2,
+    "English - General": 2,
+    "Film": 2,
+    "Finance": 3,
+    "Forensics": 1,
+    "Gender, Sexuality, and Women's Studies": 2,
+    "Geography": 2,
+    "Gerontology": 2,
+    "Global Health": 2,
+    "Health Sciences": 5,
+    "History": 3,
+    "Indigenous Studies": 4,
+    "Interactive Arts & Technology (SIAT)": 4,
+    "International Studies": 2,
+    "Labour Studies": 2,
+    "Latin American Studies": 2,
+    "Linguistics": 2,
+    "Management & Organizational Studies": 2,
+    "Mathematics": 2,
+    "Mechatronic Systems Engineering": 2,
+    "Molecular Biology & Biochemistry": 2,
+    "Music": 2,
+    "Philosophy": 2,
+    "Physics": 2,
+    "Political Science": 3,
+    "Psychology": 3,
+    "Public Policy": 2,
+    "Publishing": 2,
+    "Resource & Environmental Management": 4,
+    "Sociology": 2,
+    "Statistics & Actuarial Science": 2,
+    "Sustainable Community Development": 2,
+    "Sustainable Energy Engineering (SEE)": 2,
+    "Theatre": 2,
+    "Urban Studies": 2,
+    "Visual Arts": 2
+  },
+  "topics": [
+    {
+      "judge_key": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "subject": "Health Sciences",
+      "keyword": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "natural": "What lifestyle interventions delivered in primary care actually prevent type 2 diabetes?"
+    },
+    {
+      "judge_key": "hospital emergency department overcrowding wait times patient outcomes",
+      "subject": "Health Sciences",
+      "keyword": "hospital emergency department overcrowding wait times patient outcomes",
+      "natural": "How does emergency department overcrowding affect patient wait times and outcomes?"
+    },
+    {
+      "judge_key": "childhood vaccination coverage school immunization programs uptake",
+      "subject": "Health Sciences",
+      "keyword": "childhood vaccination coverage school immunization programs uptake",
+      "natural": "What drives childhood vaccination coverage and uptake in school immunization programs?"
+    },
+    {
+      "judge_key": "palliative care access rural communities end of life symptom management",
+      "subject": "Health Sciences",
+      "keyword": "palliative care access rural communities end of life symptom management",
+      "natural": "How can rural communities improve access to palliative and end-of-life symptom care?"
+    },
+    {
+      "judge_key": "wearable device physical activity monitoring chronic disease self management",
+      "subject": "Health Sciences",
+      "keyword": "wearable device physical activity monitoring chronic disease self management",
+      "natural": "Can wearable activity monitors help people self-manage a chronic disease?"
+    },
+    {
+      "judge_key": "Indigenous data sovereignty OCAP principles research governance",
+      "subject": "Indigenous Studies",
+      "keyword": "Indigenous data sovereignty OCAP principles research governance",
+      "natural": "What are Indigenous data sovereignty principles and how do they govern research?"
+    },
+    {
+      "judge_key": "urban Indigenous friendship centres community services identity",
+      "subject": "Indigenous Studies",
+      "keyword": "urban Indigenous friendship centres community services identity",
+      "natural": "What role do urban friendship centres play in supporting Indigenous community and identity?"
+    },
+    {
+      "judge_key": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "subject": "Indigenous Studies",
+      "keyword": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "natural": "How does harvesting traditional country foods support Indigenous food sovereignty and nutrition?"
+    },
+    {
+      "judge_key": "Metis identity scrip land dispossession prairie history",
+      "subject": "Indigenous Studies",
+      "keyword": "Metis identity scrip land dispossession prairie history",
+      "natural": "How did the scrip system and land dispossession shape Metis identity on the prairies?"
+    },
+    {
+      "judge_key": "Quebec language policy Bill 101 French minority rights",
+      "subject": "Canadian Studies",
+      "keyword": "Quebec language policy Bill 101 French minority rights",
+      "natural": "How has Quebec's language legislation shaped French and minority language rights?"
+    },
+    {
+      "judge_key": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+      "subject": "Canadian Studies",
+      "keyword": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+      "natural": "What are the sovereignty and governance disputes over shipping in the Northwest Passage?"
+    },
+    {
+      "judge_key": "Canadian universal pharmacare drug coverage policy debate",
+      "subject": "Canadian Studies",
+      "keyword": "Canadian universal pharmacare drug coverage policy debate",
+      "natural": "What is the evidence and policy debate around universal pharmacare in Canada?"
+    },
+    {
+      "judge_key": "interprovincial trade barriers Canadian economic union regulation",
+      "subject": "Canadian Studies",
+      "keyword": "interprovincial trade barriers Canadian economic union regulation",
+      "natural": "How do interprovincial trade barriers affect the Canadian economic union?"
+    },
+    {
+      "judge_key": "bail reform pretrial detention remand population Canada",
+      "subject": "Criminology",
+      "keyword": "bail reform pretrial detention remand population Canada",
+      "natural": "How does bail reform change pretrial detention and remand populations?"
+    },
+    {
+      "judge_key": "intimate partner violence risk assessment protective orders",
+      "subject": "Criminology",
+      "keyword": "intimate partner violence risk assessment protective orders",
+      "natural": "How well do risk assessment tools and protective orders prevent intimate partner violence?"
+    },
+    {
+      "judge_key": "gang desistance youth intervention programs street involvement",
+      "subject": "Criminology",
+      "keyword": "gang desistance youth intervention programs street involvement",
+      "natural": "What programs actually help young people leave gangs and street involvement behind?"
+    },
+    {
+      "judge_key": "wildlife crime illegal trafficking enforcement conservation criminology",
+      "subject": "Criminology",
+      "keyword": "wildlife crime illegal trafficking enforcement conservation criminology",
+      "natural": "How is illegal wildlife trafficking enforced against, and what does conservation criminology say?"
+    },
+    {
+      "judge_key": "haptic feedback tangible interface design user perception",
+      "subject": "Interactive Arts & Technology (SIAT)",
+      "keyword": "haptic feedback tangible interface design user perception",
+      "natural": "How does haptic feedback in a tangible interface change what the user perceives?"
+    },
+    {
+      "judge_key": "data physicalization tangible data representation public engagement",
+      "subject": "Interactive Arts & Technology (SIAT)",
+      "keyword": "data physicalization tangible data representation public engagement",
+      "natural": "Can physical, tangible representations of data improve public engagement and understanding?"
+    },
+    {
+      "judge_key": "serious games health behaviour change gamification design",
+      "subject": "Interactive Arts & Technology (SIAT)",
+      "keyword": "serious games health behaviour change gamification design",
+      "natural": "Do serious games and gamified designs really change health behaviour?"
+    },
+    {
+      "judge_key": "wearable computing textile interfaces embodied interaction design",
+      "subject": "Interactive Arts & Technology (SIAT)",
+      "keyword": "wearable computing textile interfaces embodied interaction design",
+      "natural": "How are textiles and wearable computing used to design embodied interaction?"
+    },
+    {
+      "judge_key": "concussion return to play protocol youth sport recovery",
+      "subject": "Biomedical Physiology and Kinesiology (BPK)",
+      "keyword": "concussion return to play protocol youth sport recovery",
+      "natural": "How do return-to-play protocols after concussion in youth sport work, and do they help recovery?"
+    },
+    {
+      "judge_key": "high altitude hypoxia ventilatory acclimatization physiology",
+      "subject": "Biomedical Physiology and Kinesiology (BPK)",
+      "keyword": "high altitude hypoxia ventilatory acclimatization physiology",
+      "natural": "How does human ventilation acclimatize to hypoxia at high altitude?"
+    },
+    {
+      "judge_key": "thermoregulation heat strain occupational workers hydration",
+      "subject": "Biomedical Physiology and Kinesiology (BPK)",
+      "keyword": "thermoregulation heat strain occupational workers hydration",
+      "natural": "How do workers thermoregulate under occupational heat strain, and what does hydration do?"
+    },
+    {
+      "judge_key": "gait analysis prosthetic limb amputee walking energetics",
+      "subject": "Biomedical Physiology and Kinesiology (BPK)",
+      "keyword": "gait analysis prosthetic limb amputee walking energetics",
+      "natural": "How does a prosthetic limb change an amputee's gait and the energy cost of walking?"
+    },
+    {
+      "judge_key": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "subject": "Resource & Environmental Management",
+      "keyword": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "natural": "How effective is eelgrass restoration for coastal habitat and carbon sequestration?"
+    },
+    {
+      "judge_key": "caribou herd decline habitat disturbance boreal recovery planning",
+      "subject": "Resource & Environmental Management",
+      "keyword": "caribou herd decline habitat disturbance boreal recovery planning",
+      "natural": "Why are boreal caribou herds declining and what recovery planning addresses habitat disturbance?"
+    },
+    {
+      "judge_key": "mine tailings dam failure water quality remediation monitoring",
+      "subject": "Resource & Environmental Management",
+      "keyword": "mine tailings dam failure water quality remediation monitoring",
+      "natural": "What happens to water quality after a tailings dam failure and how is it remediated?"
+    },
+    {
+      "judge_key": "marine protected area network design fisheries spillover effects",
+      "subject": "Resource & Environmental Management",
+      "keyword": "marine protected area network design fisheries spillover effects",
+      "natural": "How should marine protected area networks be designed, and do they produce fisheries spillover?"
+    },
+    {
+      "judge_key": "cryptocurrency market volatility bitcoin price contagion spillover",
+      "subject": "Finance",
+      "keyword": "cryptocurrency market volatility bitcoin price contagion spillover",
+      "natural": "How does cryptocurrency volatility spill over into other financial markets?"
+    },
+    {
+      "judge_key": "household debt mortgage stress test housing finance Canada",
+      "subject": "Finance",
+      "keyword": "household debt mortgage stress test housing finance Canada",
+      "natural": "How have mortgage stress tests affected household debt and housing finance in Canada?"
+    },
+    {
+      "judge_key": "corporate bond liquidity credit spread market microstructure",
+      "subject": "Finance",
+      "keyword": "corporate bond liquidity credit spread market microstructure",
+      "natural": "What drives corporate bond liquidity and credit spreads at the market microstructure level?"
+    },
+    {
+      "judge_key": "electoral turnout youth voter mobilization campaign contact",
+      "subject": "Political Science",
+      "keyword": "electoral turnout youth voter mobilization campaign contact",
+      "natural": "What kinds of campaign contact actually raise youth voter turnout?"
+    },
+    {
+      "judge_key": "federal provincial fiscal transfers equalization intergovernmental relations",
+      "subject": "Political Science",
+      "keyword": "federal provincial fiscal transfers equalization intergovernmental relations",
+      "natural": "How do equalization and fiscal transfers shape federal-provincial relations?"
+    },
+    {
+      "judge_key": "foreign election interference disinformation state actors democracy",
+      "subject": "Political Science",
+      "keyword": "foreign election interference disinformation state actors democracy",
+      "natural": "How do foreign state actors interfere in elections through disinformation?"
+    },
+    {
+      "judge_key": "podcast audiences intimacy parasocial relationship listeners",
+      "subject": "Communication",
+      "keyword": "podcast audiences intimacy parasocial relationship listeners",
+      "natural": "Why do podcast listeners form intimate, parasocial relationships with hosts?"
+    },
+    {
+      "judge_key": "news deserts local journalism decline community information",
+      "subject": "Communication",
+      "keyword": "news deserts local journalism decline community information",
+      "natural": "What happens to a community's information supply when local journalism collapses?"
+    },
+    {
+      "judge_key": "influencer marketing disclosure sponsored content consumer trust",
+      "subject": "Communication",
+      "keyword": "influencer marketing disclosure sponsored content consumer trust",
+      "natural": "Does disclosing sponsored content change how much consumers trust influencer marketing?"
+    },
+    {
+      "judge_key": "minimum wage employment effects small business labour demand",
+      "subject": "Economics",
+      "keyword": "minimum wage employment effects small business labour demand",
+      "natural": "What are the employment effects of minimum wage increases on small business labour demand?"
+    },
+    {
+      "judge_key": "immigration labour market wages native workers displacement",
+      "subject": "Economics",
+      "keyword": "immigration labour market wages native workers displacement",
+      "natural": "Does immigration displace native-born workers or push down their wages?"
+    },
+    {
+      "judge_key": "carbon border adjustment mechanism trade competitiveness leakage",
+      "subject": "Economics",
+      "keyword": "carbon border adjustment mechanism trade competitiveness leakage",
+      "natural": "How would a carbon border adjustment mechanism affect trade competitiveness and carbon leakage?"
+    },
+    {
+      "judge_key": "Spanish influenza 1918 pandemic public health response cities",
+      "subject": "History",
+      "keyword": "Spanish influenza 1918 pandemic public health response cities",
+      "natural": "How did cities respond to the 1918 Spanish influenza pandemic?"
+    },
+    {
+      "judge_key": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+      "subject": "History",
+      "keyword": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+      "natural": "What role did Indigenous labour and exchange networks play in the fur trade?"
+    },
+    {
+      "judge_key": "women's suffrage movement provincial franchise campaigns Canada",
+      "subject": "History",
+      "keyword": "women's suffrage movement provincial franchise campaigns Canada",
+      "natural": "How did provincial campaigns win women the vote in Canada?"
+    },
+    {
+      "judge_key": "compiler optimization loop vectorization SIMD code generation",
+      "subject": "Computing Science",
+      "keyword": "compiler optimization loop vectorization SIMD code generation",
+      "natural": "How do optimizing compilers vectorize loops into SIMD code?"
+    },
+    {
+      "judge_key": "approximate nearest neighbour search vector index billion scale",
+      "subject": "Computing Science",
+      "keyword": "approximate nearest neighbour search vector index billion scale",
+      "natural": "How do approximate nearest neighbour indexes scale to billions of vectors?"
+    },
+    {
+      "judge_key": "static analysis memory safety vulnerability detection C programs",
+      "subject": "Computing Science",
+      "keyword": "static analysis memory safety vulnerability detection C programs",
+      "natural": "How does static analysis detect memory safety vulnerabilities in C programs?"
+    },
+    {
+      "judge_key": "teacher retention burnout attrition rural schools workforce",
+      "subject": "Education",
+      "keyword": "teacher retention burnout attrition rural schools workforce",
+      "natural": "Why do teachers burn out and leave rural schools?"
+    },
+    {
+      "judge_key": "early literacy phonics instruction reading intervention primary grades",
+      "subject": "Education",
+      "keyword": "early literacy phonics instruction reading intervention primary grades",
+      "natural": "How effective is phonics instruction as an early reading intervention in the primary grades?"
+    },
+    {
+      "judge_key": "graduate student supervision mentorship doctoral completion attrition",
+      "subject": "Education",
+      "keyword": "graduate student supervision mentorship doctoral completion attrition",
+      "natural": "How does supervision and mentorship affect doctoral completion and attrition?"
+    },
+    {
+      "judge_key": "sleep deprivation memory consolidation cognitive performance",
+      "subject": "Psychology",
+      "keyword": "sleep deprivation memory consolidation cognitive performance",
+      "natural": "How does sleep deprivation impair memory consolidation and cognitive performance?"
+    },
+    {
+      "judge_key": "loneliness social isolation mental health older adults intervention",
+      "subject": "Psychology",
+      "keyword": "loneliness social isolation mental health older adults intervention",
+      "natural": "What interventions reduce loneliness and social isolation among older adults?"
+    },
+    {
+      "judge_key": "implicit bias measurement predictive validity discrimination behaviour",
+      "subject": "Psychology",
+      "keyword": "implicit bias measurement predictive validity discrimination behaviour",
+      "natural": "Do implicit bias measures actually predict discriminatory behaviour?"
+    },
+    {
+      "judge_key": "transgender healthcare access gender affirming care barriers",
+      "subject": "Gender, Sexuality, and Women's Studies",
+      "keyword": "transgender healthcare access gender affirming care barriers",
+      "natural": "What barriers do transgender people face getting access to gender-affirming health care?"
+    },
+    {
+      "judge_key": "unpaid care work gender division household labour time use",
+      "subject": "Gender, Sexuality, and Women's Studies",
+      "keyword": "unpaid care work gender division household labour time use",
+      "natural": "How is unpaid care work divided by gender within households?"
+    },
+    {
+      "judge_key": "5G millimeter wave antenna array beamforming design",
+      "subject": "Engineering Science",
+      "keyword": "5G millimeter wave antenna array beamforming design",
+      "natural": "How are millimetre-wave antenna arrays designed for 5G beamforming?"
+    },
+    {
+      "judge_key": "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "subject": "Engineering Science",
+      "keyword": "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "natural": "How do defects and microstructure affect fatigue life in metal 3D printed parts?"
+    },
+    {
+      "judge_key": "autonomous vehicle sensor fusion lidar camera perception",
+      "subject": "Mechatronic Systems Engineering",
+      "keyword": "autonomous vehicle sensor fusion lidar camera perception",
+      "natural": "How do autonomous vehicles fuse lidar and camera data for perception?"
+    },
+    {
+      "judge_key": "soft robotics pneumatic actuator compliant gripper design",
+      "subject": "Mechatronic Systems Engineering",
+      "keyword": "soft robotics pneumatic actuator compliant gripper design",
+      "natural": "How are soft pneumatic actuators designed into compliant robotic grippers?"
+    },
+    {
+      "judge_key": "religious participation secularization generational change belonging",
+      "subject": "Sociology",
+      "keyword": "religious participation secularization generational change belonging",
+      "natural": "How has secularization changed religious participation and belonging across generations?"
+    },
+    {
+      "judge_key": "neighbourhood effects concentrated disadvantage child outcomes",
+      "subject": "Sociology",
+      "keyword": "neighbourhood effects concentrated disadvantage child outcomes",
+      "natural": "How does growing up in a concentrated-disadvantage neighbourhood affect children's outcomes?"
+    },
+    {
+      "judge_key": "free will moral responsibility determinism compatibilism",
+      "subject": "Philosophy",
+      "keyword": "free will moral responsibility determinism compatibilism",
+      "natural": "Can moral responsibility survive determinism, as compatibilists claim?"
+    },
+    {
+      "judge_key": "philosophy of mind consciousness qualia explanatory gap",
+      "subject": "Philosophy",
+      "keyword": "philosophy of mind consciousness qualia explanatory gap",
+      "natural": "What is the explanatory gap between physical processes and conscious experience?"
+    },
+    {
+      "judge_key": "topological data analysis persistent homology point clouds",
+      "subject": "Mathematics",
+      "keyword": "topological data analysis persistent homology point clouds",
+      "natural": "How does persistent homology extract structure from point cloud data?"
+    },
+    {
+      "judge_key": "stochastic partial differential equations numerical approximation convergence",
+      "subject": "Mathematics",
+      "keyword": "stochastic partial differential equations numerical approximation convergence",
+      "natural": "How are stochastic partial differential equations approximated numerically, and do the schemes converge?"
+    },
+    {
+      "judge_key": "gravitational wave detection black hole merger interferometer",
+      "subject": "Physics",
+      "keyword": "gravitational wave detection black hole merger interferometer",
+      "natural": "How do interferometers detect gravitational waves from black hole mergers?"
+    },
+    {
+      "judge_key": "topological insulator edge states spin orbit coupling materials",
+      "subject": "Physics",
+      "keyword": "topological insulator edge states spin orbit coupling materials",
+      "natural": "What are the edge states of a topological insulator and how does spin-orbit coupling create them?"
+    },
+    {
+      "judge_key": "lithium ion battery electrolyte degradation cathode interface",
+      "subject": "Chemistry",
+      "keyword": "lithium ion battery electrolyte degradation cathode interface",
+      "natural": "What degrades the electrolyte and the cathode interface in a lithium-ion battery?"
+    },
+    {
+      "judge_key": "PFAS forever chemicals water treatment removal degradation",
+      "subject": "Chemistry",
+      "keyword": "PFAS forever chemicals water treatment removal degradation",
+      "natural": "How can PFAS forever chemicals be removed or degraded during water treatment?"
+    },
+    {
+      "judge_key": "remote work hybrid arrangements productivity employee wellbeing",
+      "subject": "Business Administration",
+      "keyword": "remote work hybrid arrangements productivity employee wellbeing",
+      "natural": "How do hybrid and remote work arrangements affect productivity and employee wellbeing?"
+    },
+    {
+      "judge_key": "family business succession planning governance next generation",
+      "subject": "Business Administration",
+      "keyword": "family business succession planning governance next generation",
+      "natural": "How do family businesses plan succession and govern the handover to the next generation?"
+    },
+    {
+      "judge_key": "migrant agricultural workers temporary foreign worker program conditions",
+      "subject": "Labour Studies",
+      "keyword": "migrant agricultural workers temporary foreign worker program conditions",
+      "natural": "What working conditions do migrant agricultural workers face under temporary foreign worker programs?"
+    },
+    {
+      "judge_key": "workplace automation job displacement reskilling worker adjustment",
+      "subject": "Labour Studies",
+      "keyword": "workplace automation job displacement reskilling worker adjustment",
+      "natural": "How does workplace automation displace jobs, and what reskilling helps workers adjust?"
+    },
+    {
+      "judge_key": "code switching bilingual speakers sociolinguistic variation",
+      "subject": "Linguistics",
+      "keyword": "code switching bilingual speakers sociolinguistic variation",
+      "natural": "Why do bilingual speakers code-switch, and how does it vary socially?"
+    },
+    {
+      "judge_key": "prosody intonation speech perception listener comprehension",
+      "subject": "Linguistics",
+      "keyword": "prosody intonation speech perception listener comprehension",
+      "natural": "How do prosody and intonation shape the way listeners comprehend speech?"
+    },
+    {
+      "judge_key": "modernist poetry fragmentation form early twentieth century",
+      "subject": "English - General",
+      "keyword": "modernist poetry fragmentation form early twentieth century",
+      "natural": "How did early twentieth-century modernist poets use fragmentation of poetic form?"
+    },
+    {
+      "judge_key": "graphic novels comics studies narrative visual storytelling",
+      "subject": "English - General",
+      "keyword": "graphic novels comics studies narrative visual storytelling",
+      "natural": "How do comics and graphic novels tell stories through visual narrative?"
+    },
+    {
+      "judge_key": "film festival circuit curation programming world cinema",
+      "subject": "Film",
+      "keyword": "film festival circuit curation programming world cinema",
+      "natural": "How does festival programming and curation shape what counts as world cinema?"
+    },
+    {
+      "judge_key": "sound design film music affect audience emotional response",
+      "subject": "Film",
+      "keyword": "sound design film music affect audience emotional response",
+      "natural": "How do sound design and film music shape an audience's emotional response?"
+    },
+    {
+      "judge_key": "glacier retreat mass balance monitoring mountain water supply",
+      "subject": "Geography",
+      "keyword": "glacier retreat mass balance monitoring mountain water supply",
+      "natural": "How does glacier retreat, measured through mass balance, affect mountain water supply?"
+    },
+    {
+      "judge_key": "coastal erosion sea level rise shoreline retreat adaptation",
+      "subject": "Geography",
+      "keyword": "coastal erosion sea level rise shoreline retreat adaptation",
+      "natural": "How are communities adapting to shoreline retreat from coastal erosion and sea level rise?"
+    },
+    {
+      "judge_key": "falls prevention older adults balance training home hazards",
+      "subject": "Gerontology",
+      "keyword": "falls prevention older adults balance training home hazards",
+      "natural": "What prevents falls in older adults - balance training, or removing home hazards?"
+    },
+    {
+      "judge_key": "social prescribing older adults community programs wellbeing",
+      "subject": "Gerontology",
+      "keyword": "social prescribing older adults community programs wellbeing",
+      "natural": "Does social prescribing to community programs improve older adults' wellbeing?"
+    },
+    {
+      "judge_key": "ritual kinship exchange gift economies ethnography Melanesia",
+      "subject": "Anthropology",
+      "keyword": "ritual kinship exchange gift economies ethnography Melanesia",
+      "natural": "How do gift economies and ritual exchange structure kinship in Melanesia?"
+    },
+    {
+      "judge_key": "migration transnational families remittances belonging ethnography",
+      "subject": "Anthropology",
+      "keyword": "migration transnational families remittances belonging ethnography",
+      "natural": "How do transnational families sustain belonging across migration and remittances?"
+    },
+    {
+      "judge_key": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+      "subject": "Archaeology",
+      "keyword": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+      "natural": "How is Bayesian modelling used with radiocarbon dates to build site chronologies?"
+    },
+    {
+      "judge_key": "ancient DNA population migration archaeogenetics prehistoric Europe",
+      "subject": "Archaeology",
+      "keyword": "ancient DNA population migration archaeogenetics prehistoric Europe",
+      "natural": "What does ancient DNA reveal about prehistoric population migration in Europe?"
+    },
+    {
+      "judge_key": "refugee resettlement burden sharing international protection regime",
+      "subject": "International Studies",
+      "keyword": "refugee resettlement burden sharing international protection regime",
+      "natural": "How is responsibility for refugee resettlement shared under the international protection regime?"
+    },
+    {
+      "judge_key": "economic sanctions effectiveness compliance target state behaviour",
+      "subject": "International Studies",
+      "keyword": "economic sanctions effectiveness compliance target state behaviour",
+      "natural": "Do economic sanctions actually change the behaviour of the states they target?"
+    },
+    {
+      "judge_key": "Cuban revolution health system export medical diplomacy",
+      "subject": "Latin American Studies",
+      "keyword": "Cuban revolution health system export medical diplomacy",
+      "natural": "How does Cuba use medical diplomacy and health system exports as foreign policy?"
+    },
+    {
+      "judge_key": "Andean agrarian reform peasant movements land tenure",
+      "subject": "Latin American Studies",
+      "keyword": "Andean agrarian reform peasant movements land tenure",
+      "natural": "How did agrarian reform and peasant movements reshape land tenure in the Andes?"
+    },
+    {
+      "judge_key": "informal settlements upgrading tenure security global south cities",
+      "subject": "Urban Studies",
+      "keyword": "informal settlements upgrading tenure security global south cities",
+      "natural": "How does upgrading informal settlements improve tenure security in global south cities?"
+    },
+    {
+      "judge_key": "cycling infrastructure bike lanes mode shift urban mobility",
+      "subject": "Urban Studies",
+      "keyword": "cycling infrastructure bike lanes mode shift urban mobility",
+      "natural": "Does building bike lanes actually shift people onto bicycles?"
+    },
+    {
+      "judge_key": "access to justice self represented litigants legal aid funding",
+      "subject": "Applied Legal Studies",
+      "keyword": "access to justice self represented litigants legal aid funding",
+      "natural": "How do self-represented litigants and legal aid funding shape access to justice?"
+    },
+    {
+      "judge_key": "environmental litigation climate lawsuits state liability courts",
+      "subject": "Applied Legal Studies",
+      "keyword": "environmental litigation climate lawsuits state liability courts",
+      "natural": "How are courts handling climate lawsuits and state liability for emissions?"
+    },
+    {
+      "judge_key": "gut microbiome host immune interaction metabolite signalling",
+      "subject": "Molecular Biology & Biochemistry",
+      "keyword": "gut microbiome host immune interaction metabolite signalling",
+      "natural": "How does the gut microbiome signal to the host immune system through metabolites?"
+    },
+    {
+      "judge_key": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "subject": "Molecular Biology & Biochemistry",
+      "keyword": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "natural": "How do lipid nanoparticles deliver mRNA vaccines, and what governs their stability?"
+    },
+    {
+      "judge_key": "jazz improvisation performance analysis interaction ensemble",
+      "subject": "Music",
+      "keyword": "jazz improvisation performance analysis interaction ensemble",
+      "natural": "How do jazz musicians interact with each other during ensemble improvisation?"
+    },
+    {
+      "judge_key": "music streaming royalties artist income platform economics",
+      "subject": "Music",
+      "keyword": "music streaming royalties artist income platform economics",
+      "natural": "How do streaming platform economics determine what artists earn in royalties?"
+    },
+    {
+      "judge_key": "childcare policy universal early learning affordability workforce",
+      "subject": "Public Policy",
+      "keyword": "childcare policy universal early learning affordability workforce",
+      "natural": "How does universal early learning and childcare policy affect affordability and workforce participation?"
+    },
+    {
+      "judge_key": "public procurement innovation policy government purchasing outcomes",
+      "subject": "Public Policy",
+      "keyword": "public procurement innovation policy government purchasing outcomes",
+      "natural": "Can government purchasing be used as an innovation policy lever?"
+    },
+    {
+      "judge_key": "maternal mortality skilled birth attendance low resource settings",
+      "subject": "Global Health",
+      "keyword": "maternal mortality skilled birth attendance low resource settings",
+      "natural": "How much does skilled birth attendance reduce maternal mortality in low-resource settings?"
+    },
+    {
+      "judge_key": "neglected tropical disease mass drug administration elimination",
+      "subject": "Global Health",
+      "keyword": "neglected tropical disease mass drug administration elimination",
+      "natural": "How effective is mass drug administration at eliminating neglected tropical diseases?"
+    },
+    {
+      "judge_key": "solar photovoltaic degradation module reliability field performance",
+      "subject": "Sustainable Energy Engineering (SEE)",
+      "keyword": "solar photovoltaic degradation module reliability field performance",
+      "natural": "Why do solar photovoltaic modules degrade, and how reliable are they in the field?"
+    },
+    {
+      "judge_key": "district heating waste heat recovery thermal network efficiency",
+      "subject": "Sustainable Energy Engineering (SEE)",
+      "keyword": "district heating waste heat recovery thermal network efficiency",
+      "natural": "How does waste heat recovery improve the efficiency of a district heating network?"
+    },
+    {
+      "judge_key": "auditor independence non-audit services fee dependence quality",
+      "subject": "Accounting",
+      "keyword": "auditor independence non-audit services fee dependence quality",
+      "natural": "Do non-audit service fees compromise auditor independence and audit quality?"
+    },
+    {
+      "judge_key": "revenue recognition standard IFRS 15 adoption financial reporting",
+      "subject": "Accounting",
+      "keyword": "revenue recognition standard IFRS 15 adoption financial reporting",
+      "natural": "How did adopting IFRS 15 change revenue recognition in financial reporting?"
+    },
+    {
+      "judge_key": "causal inference propensity score matching observational studies",
+      "subject": "Statistics & Actuarial Science",
+      "keyword": "causal inference propensity score matching observational studies",
+      "natural": "How is propensity score matching used for causal inference in observational studies?"
+    },
+    {
+      "judge_key": "extreme value theory tail risk catastrophe insurance modelling",
+      "subject": "Statistics & Actuarial Science",
+      "keyword": "extreme value theory tail risk catastrophe insurance modelling",
+      "natural": "How does extreme value theory model tail risk for catastrophe insurance?"
+    },
+    {
+      "judge_key": "socially engaged art practice participation community collaboration",
+      "subject": "Visual Arts",
+      "keyword": "socially engaged art practice participation community collaboration",
+      "natural": "What does socially engaged art practice mean for participation and community collaboration?"
+    },
+    {
+      "judge_key": "conservation of contemporary art materials degradation museum practice",
+      "subject": "Visual Arts",
+      "keyword": "conservation of contemporary art materials degradation museum practice",
+      "natural": "How do museums conserve contemporary artworks whose materials are degrading?"
+    },
+    {
+      "judge_key": "dramaturgy new play development workshop process",
+      "subject": "Theatre",
+      "keyword": "dramaturgy new play development workshop process",
+      "natural": "How does dramaturgy shape the development of a new play through workshops?"
+    },
+    {
+      "judge_key": "puppetry object theatre performance materiality audience",
+      "subject": "Theatre",
+      "keyword": "puppetry object theatre performance materiality audience",
+      "natural": "How do puppetry and object theatre use materiality to engage an audience?"
+    },
+    {
+      "judge_key": "audiobook market growth narration production publishing industry",
+      "subject": "Publishing",
+      "keyword": "audiobook market growth narration production publishing industry",
+      "natural": "How is audiobook production and narration reshaping the publishing industry?"
+    },
+    {
+      "judge_key": "peer review reform preprints open science scholarly communication",
+      "subject": "Publishing",
+      "keyword": "peer review reform preprints open science scholarly communication",
+      "natural": "How are preprints and open science reforming peer review and scholarly communication?"
+    },
+    {
+      "judge_key": "community land trust affordable housing stewardship models",
+      "subject": "Sustainable Community Development",
+      "keyword": "community land trust affordable housing stewardship models",
+      "natural": "How do community land trusts steward permanently affordable housing?"
+    },
+    {
+      "judge_key": "participatory budgeting civic engagement municipal decision making",
+      "subject": "Sustainable Community Development",
+      "keyword": "participatory budgeting civic engagement municipal decision making",
+      "natural": "Does participatory budgeting actually increase civic engagement in municipal decisions?"
+    },
+    {
+      "judge_key": "psychological safety team performance speaking up organizations",
+      "subject": "Management & Organizational Studies",
+      "keyword": "psychological safety team performance speaking up organizations",
+      "natural": "How does psychological safety affect whether people speak up and how teams perform?"
+    },
+    {
+      "judge_key": "corporate social responsibility greenwashing stakeholder perception",
+      "subject": "Management & Organizational Studies",
+      "keyword": "corporate social responsibility greenwashing stakeholder perception",
+      "natural": "How do stakeholders tell real corporate social responsibility from greenwashing?"
+    },
+    {
+      "judge_key": "forensic entomology postmortem interval insect succession estimation",
+      "subject": "Forensics",
+      "keyword": "forensic entomology postmortem interval insect succession estimation",
+      "natural": "How does forensic entomology use insect succession to estimate the postmortem interval?"
+    }
+  ]
+}

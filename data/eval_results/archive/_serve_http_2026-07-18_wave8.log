@@ -1,0 +1,139 @@
+2026-07-18 21:15:24 [WARNING] sfu_library_mcp: Config: OPENALEX_TRACKER_PATH is in /tmp — the daily call counter will reset on container restart. Set OPENALEX_TRACKER_PATH to a persistent volume path to preserve budget across restarts.
+2026-07-18 21:15:24 [INFO] sfu_library_mcp: Serving web GUI from /workspaces/sfu-library-thinclient/web at /app
+2026-07-18 21:15:24 [INFO] sfu_library_mcp: Starting SFU Library MCP HTTP server on 0.0.0.0:8080
+2026-07-18 21:15:24 [INFO] sfu_library_mcp: Tools available: 27
+INFO:     Started server process [2697540]
+INFO:     Waiting for application startup.
+2026-07-18 21:15:24 [INFO] sfu_library_mcp: Startup warmup: loading retrieval stack + faulting hot set (6 queries) ...
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:42502 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:15:30 [INFO] sfu_library_mcp: dense warm cache: restored 1832 docs from delta.sqlite
+2026-07-18 21:15:30 [INFO] sfu_library_mcp: thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True
+INFO:     127.0.0.1:42516 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56152 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:15:35 [INFO] sfu_library_mcp: SEISMIC stage: global_shard0of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-18 21:15:35 [INFO] sfu_library_mcp: SEISMIC stage: global_shard1of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-18 21:15:35 [INFO] sfu_library_mcp: SEISMIC stage: global_shard2of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC stage: global_shard3of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC stage: global_shard4of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC stage: global_shard5of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC stage: global_shard6of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC stage: global_shard7of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-18 21:15:36 [INFO] sfu_library_mcp: SEISMIC federation auto-selected 'parallel' (overlay on /var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap)
+INFO:     127.0.0.1:56158 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55538 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55550 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55554 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55558 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34000 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34006 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34010 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34022 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43592 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43608 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43620 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58360 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58376 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.21.0.5:59134 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35616 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35630 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35642 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36492 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36506 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36508 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44816 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44830 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44838 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44854 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36842 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36858 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36868 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59372 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59384 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59388 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59390 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51550 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51562 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51566 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51574 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.21.0.5:43850 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33196 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33204 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33212 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:17:30 [INFO] sfu_library_mcp: Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+INFO:     127.0.0.1:47940 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:17:35 [INFO] sfu_library_mcp: SPLADE ONNX model loaded (CPU)
+2026-07-18 21:17:37 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:17:37 [INFO] sfu_library_mcp: Loading embedding model: /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+INFO:     127.0.0.1:47944 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47946 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46674 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46686 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46698 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46714 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50570 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50584 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:17:56 [INFO] sfu_library_mcp: Embedding model loaded (/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5)
+2026-07-18 21:17:57 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:17:58 [INFO] sfu_library_mcp: CrossEncoder loaded: /workspaces/sfu-library-thinclient/models/sfu-cross-encoder-v1
+2026-07-18 21:17:58 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:50590 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:01 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:01 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:18:01 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:42716 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:03 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:04 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:18:04 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-18 21:18:05 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:05 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:18:05 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:42724 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:07 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:07 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:18:07 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:42728 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:08 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:08 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-18 21:18:08 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-18 21:18:08 [INFO] sfu_library_mcp: Startup warmup complete in 164.0s
+2026-07-18 21:18:09 [INFO] sfu_library_mcp: cache pre-seed: planting 6 demo seed queries (sequential, post-warmup) ...
+INFO:     127.0.0.1:41476 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41492 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:14 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:14 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:14 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-18 21:18:16 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:16 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:16 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-18 21:18:22 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:22 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:22 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     172.21.0.5:34260 - "GET /health HTTP/1.1" 200 OK
+2026-07-18 21:18:24 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:24 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:24 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-18 21:18:35 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:35 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:35 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-18 21:18:36 [WARNING] sfu_library_mcp: Embedding model path /workspaces/sfu-library-mcp-training/models/sfu-academic-embed-v5 not found; using repo-local /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+2026-07-18 21:18:36 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-18 21:18:36 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-18 21:18:36 [INFO] sfu_library_mcp: cache pre-seed: complete in 27.0s (6/6 planted; cache resident=6, miss=6, store=6, hit=0)
+INFO:     127.0.0.1:36418 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35426 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35428 - "POST /api/speculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35442 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35452 - "POST /api/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35468 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.21.0.5:60996 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46642 - "POST /api/speculate HTTP/1.1" 200 OK
+INFO:     172.21.0.5:52866 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.21.0.5:43796 - "GET /health HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2697540]

@@ -791,12 +791,56 @@ and unlike those it also ships a silent-wrong-answer failure mode.
 
 ### Not settled by this section
 
-1. **The staging plumbing does not exist.** `SFU_SEISMIC_STAGE_DIR` /
-   `_stage_shards_local` (`retriever.py:112`) stages SEISMIC shards only; there
+1. ~~**The staging plumbing does not exist.**~~ **SETTLED 2026-08-17 — the
+   plumbing now exists.** As written (and true when measured): `SFU_SEISMIC_STAGE_DIR` /
+   `_stage_shards_local` stages SEISMIC shards only; there
    is no `meta.sqlite` equivalent. N7 measured the lever by swapping the
    connection, which is what such a path would do, but **the production code to
    stage `meta.sqlite` is UNBUILT** — this is a measured lever, not a shipped
    one.
+   **Correction 2026-08-17:** `retriever._stage_meta_local` + `_connect_meta`
+   ship it — `SFU_META_STAGE_DIR=<dir>` (or `SFU_STAGE_META=1` to reuse
+   `SFU_SEISMIC_STAGE_DIR`), `SFU_META_STAGE_FORCE=1`,
+   `SFU_META_STAGE_VERIFY=size|fingerprint|sha256`; default OFF, and a no-op
+   unless the source FS is 9p/virtiofs/NFS/… so it is a dev-container lever and
+   a droplet no-op. Atomic tmp+rename with a verified copy, a `.staged_ok`
+   marker keyed on the SOURCE size+mtime_ns+fingerprint, and a refusal to copy
+   a database with a live `-wal`. Tested at synthetic size:
+   `scripts/tests/test_meta_staging.py` (23 cases). Full command:
+   `docs/THIN_CLIENT_SWAP.md` §"The same lever for `meta.sqlite`".
+
+   > **N8 — the automated path MEASURED at full size, 2026-08-17.** The
+   > 2026-08-03 numbers above came from a hand `cp` + a hand
+   > `sqlite3.connect`; this is the *shipped* path (`_stage_meta_local` +
+   > `_connect_meta`'s `mode=ro&immutable=1` open) on the real 24.9 GB file.
+   > Code: `spike/meta_consolidation/20_n8_meta_stage_shipped.py`. Results:
+   > `data/eval_results/n8_meta_stage_shipped_20260817.json`.
+   >
+   > | `_post_filter`, 500 candidates | p50 | mean | p90 |
+   > |---|---|---|---|
+   > | unstaged (`meta.sqlite` on 9p) | **186.7 ms** | 187.9 | 194.6 |
+   > | staged (`/var/tmp/meta_stage`, overlay) | **2.97 ms** | 2.97 | 3.14 |
+   > | **ratio** | **62.8×** | | |
+   >
+   > n=36/arm (12 queries × 3 reps), arms interleaved with order randomised per
+   > rep, both warmed, candidate lists captured once per query from real
+   > `search()` calls and replayed identically to both arms, `_ordinals` off in
+   > both (so this is purely the filesystem variable). **Parity 36/36, 0
+   > mismatches.** The staging copy itself: **194 s** for 24,908,001,280 B
+   > (~128 MB/s off 9p), fingerprint-verified; the second call **skipped in
+   > 0.01 s** off the `.staged_ok` marker; `PRAGMA quick_check` = ok,
+   > 150,413,098 rows on the copy.
+   >
+   > **The N7 expectation (222.2 → 4.0 ms, 55×) is reproduced and slightly
+   > exceeded** — both arms here are a little faster than 2026-08-03's, and the
+   > ratio is of the same order, so the shipped path buys the measured lever
+   > with no loss from the immutable read-only open. Aside worth recording: the
+   > harness's one-off `SELECT count(*) FROM docs` against the *unstaged* 9p
+   > file took **~25.7 min** (01:29:49 → 01:55:29) — a full-table scan of
+   > 150.4 M rows over 9p, outside all timed sections, but a vivid measure of
+   > what the filter stage is fighting. Item 3 below still applies: on a
+   > droplet the source FS is local, `_stage_meta_local` is a no-op by
+   > construction, and the staged arm IS the baseline.
 2. **Both copies were resident in one process.** Holding a 9p and an overlay
    copy of a 24.9 GB file against 56 GB RAM doubles the meta working set, so
    both arms saw more cache pressure than a single-copy deployment would.
@@ -953,6 +997,17 @@ stays and the reachable target is **4 → 3**, abstracts only.)*
 
 ## 16. C8 EXECUTED (2026-08-03): `abstracts.sqlite` is deletable — and **the locator was the cost, not the payload**
 
+> **CONFIRMED AND EXTENDED 2026-08-17 (§23).** This section's two central
+> filesystem/cache claims were re-tested against the **published** sidecar and
+> both hold: (a) the payload move is worth ~2.9× on 9p and far less on local
+> disk — measured 2.876× vs 1.091× warm, reproducing the 2.89×/1.21× split;
+> (b) the cold/warm gap is real — 2.546× cold vs 1.091× warm on local disk. Two
+> refinements: this section's cold explanation (SQLite's `docs` pages) is
+> **local-disk-only** — on 9p the SQLite arm never warms *at all* while the
+> mmap'd locator does, so the cold multiple is *smaller* than the warm one
+> there; and the **consolidation arithmetic below is 1,408 B optimistic**
+> (the three JSON stamps): the real saving is **1,897,229,898 B**.
+
 - Code: `spike/meta_consolidation/14_c8_abstract_ordinal_locator.py`
 - Results: `data/eval_results/c8_abs_locator_20260803_0649.json`
 - Artifacts built (under `/var/tmp`, not shipped): flat sidecar 11.13 GB /
@@ -1049,6 +1104,17 @@ this had to be reconstructed from the work directory.
 
 ## 17. C9 EXECUTED (2026-08-03): the locator reader SHIPS — and the 5.53× does **not** survive the shipped path
 
+> **SUPERSEDED IN PART, 2026-08-17 (§23).** The **1.18× warm** below is a spike
+> number — a `/var/tmp` store, fetched on `ORDER BY random()` ids. Measured
+> against the **published** sidecar on **real ranked result sets**, local disk,
+> fully warm, the same shipped path is **1.091×** (seed-41 confirmation
+> 1.086×), and **2.546× cold**. This section's *direction* and its conclusion
+> ("the durable win is −1.90 GB and a database removed, not speed") both stand;
+> the multiple is smaller than stated here. §23 also records a negative this
+> section's methodology hid: every arm here was warmed by a 20,000-id parity
+> pass first, so it never saw that a **freshly started** process serving flat
+> is **0.919×** sqlite until its 421 MB locator is resident.
+
 - Code: `src/lib/thinclient/abstracts.py` — `AbstractLocator` (the fail-closed
   identity gate), `build_ordinal_locator`, `build_flat_sidecar` now stamps a
   `flat_store_id`, `AbstractStore.fetch` routes through the locator when present
@@ -1137,11 +1203,16 @@ GB**. 23,398,073 rows, `skipped_non_wid = 0`.
 1. ~~**`abstracts.sqlite` is still load-bearing.**~~ **DONE 2026-08-03 — §18.**
    Dicts rehomed (`dump_dict_sidecar`), `skipped_non_wid == 0` confirmed, and
    `AbstractStore` now serves in **SQLite-free mode** with the file deleted.
-2. **No build-time path** (the only remaining blocker to actual deletion in a
-   real build). `build_flat_sidecar` / `build_ordinal_locator` /
-   `dump_dict_sidecar` are shipped functions but `build_thinclient_index.py`
-   does not call them; consolidation lands in a *build* only when the builder
-   emits the sidecar. Until then deletion is an after-the-fact operator step.
+2. ~~**No build-time path**~~ **CLOSED 2026-08-17 — §22.** An operator build
+   path exists (`scripts/build_flat_blocks.py`: staged publish + four-arm
+   byte-parity gate + per-stage resume); **the production build was RUN
+   2026-08-17, gate PASS, `social_sciences__recent` published**; and
+   `build_thinclient_index.py --flat-sidecar` now drives that same
+   `build_section` **inline** (after BUILD, before PACK, fail-closed, off by
+   default), so a fresh build can emit the sidecar as a build output instead of
+   needing an after-the-fact operator step. The inline path is
+   **IMPLEMENTED, not exercised at production scale — tested synthetic-only**
+   (§22 "still not settled" #2).
 3. **One section.** `social_sciences__recent` only; a build that adds hot
    sections multiplies both artifacts.
 4. **Shrinking the locator is untouched.** `off`/`n`/`b` and the u64-free `wids`
@@ -1440,3 +1511,424 @@ scale — C11–C13 map the whole size/speed frontier and none of it does.
 the five root causes, per-store specs, and the **C14 bespoke proposal** (an FSST
 row-store with a *compiled* gather — the only combination the frontier points at
 but no test tried). DESIGN ONLY, unmeasured; ~1-in-3 odds on the strict gate.
+
+---
+
+## 22. The production BUILD path (2026-08-17): BUILT AND RUN — the section serves flat
+
+§17's not-settled #2 — "no build-time path" — was the last thing standing
+between the shipped flat-store reader and a section that actually serves flat.
+Every builder shipped on 2026-08-03; nothing called them, and no `.flat/`
+directory existed under `data/thinclient_index/`.
+
+- Code: `scripts/build_flat_blocks.py` (`plan` / `build` / `verify`)
+- Tests: `scripts/tests/test_flat_block_builder.py` — **22**, all pass
+  2026-08-17 (12 build-path cases + the 6 torn-published-index cases added with
+  the `_open_flat` fix in hazard 1 below + 4 for the inline
+  `build_thinclient_index.py --flat-sidecar` path, §22 "still not settled" #2)
+- Results (SYNTHETIC scale, 2026-08-17):
+  `data/eval_results/flat_build_synthetic20k_20260817.json` — a 20,000-doc v3
+  store built through the shipped writer, 84 blocks; gate **PASS** on 13,535
+  unique sampled ids across all three non-oracle arms and on 84/84 blocks
+  byte-for-byte; `sqlite_deletable: false` (the fixture deliberately contains
+  two ids the ordinal locator cannot address, so the guard is exercised).
+- Docs: `docs/THIN_CLIENT_SWAP.md` §"Building it"
+
+> **SERVING EFFICACY MEASURED 2026-08-17 — §23.** The "separate future run"
+> this section calls for below has been done, against this directory, in the
+> serving path. Read §23 before quoting any latency figure from §16/§17 for the
+> published sidecar: **local disk, fully warm, real ranked result sets →
+> 1.091×, not §17's 1.18×**; 9p → 2.876×, which is a filesystem artifact;
+> cold → 2.546× on local disk. Byte-parity PASS. Bytes here are 1,408 B high.
+
+**STATUS: PRODUCTION BUILD RUN 2026-08-17 — GATE PASS, PUBLISHED.**
+`data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/`
+now exists and the section serves flat (see "The production run" below for the
+measured wall time, bytes and gate verdict). What the *tests* measure is still
+the build path's behaviour on synthetic 1,200-doc v3 stores built through the
+shipped `AbstractStoreWriter`. **SERVING-LATENCY EFFICACY OF THE PUBLISHED
+SIDECAR IS MEASURED — §23, 2026-08-17.** It is no longer §16/§17/§18's spike
+numbers carried forward: measured against *this* directory, local disk, fully
+warm, on real ranked result sets, the shipped path is **1.091×** (not
+1.18–1.19×), **2.546× cold**, **2.876× on this container's 9p mount** (a
+filesystem artifact), byte-parity PASS, **−1,897,229,898 B**.
+
+### What it does beyond calling the three builders in a row
+
+**1. Staged publish (a real hazard, not defensive decoration).** `AbstractStore`
+attaches a sidecar on the *existence* of `abstracts.sqlite.flat/`, and
+`_open_flat` used to catch only `OSError` — the case where `blocks.bin` is
+missing. A **truncated `block_*.npy` raises `ValueError` out of `np.load`**,
+which nothing caught, so a build killed midway through `np.save` would leave a
+directory that takes the section down on next open instead of falling back to
+v3.
+
+> **FIXED 2026-08-17** (`src/lib/thinclient/abstracts.py`, `_open_flat`). The
+> failure modes were measured rather than assumed: truncated data section →
+> `ValueError("mmap length is greater than file size")`; zero-byte file →
+> `EOFError("No data left in file")`; header-corrupt file → `ValueError`
+> (pickled-data path). The except clause is now
+> `(OSError, ValueError, EOFError)`, so a torn *published* index degrades to
+> the v3 `blocks` table losslessly instead of taking the section down. In
+> SQLite-free mode there is nothing to fall back to, so the explicit
+> `RuntimeError("… no payloads left …")` still fires. Six regression cases
+> (3 tear shapes × {fallback, sqlite-free}) added to
+> `scripts/tests/test_flat_block_builder.py`; all 6 fail on the pre-fix code.
+> Suite: 45 pass (was 39). Staging below remains the first line of defence —
+> the fix covers tears that happen *after* publication, which staging cannot.
+
+The script therefore builds into `abstracts.sqlite.flat.building/` and
+`os.rename`s it into place only after the gate passes: the served name never
+exists in a half-populated state. (`build_flat_sidecar`'s own
+`blocks.bin.partial` rename covers only the payload file, not the arrays.)
+
+**2. A four-arm byte-parity gate, before publishing.** Default 20,000 ids — the
+gate size §9/§16/§17 used. All four readers are the *shipped* `AbstractStore`,
+constructed over symlink views of the same bytes, so no read path is
+re-implemented in the verifier:
+
+| arm | reads | compared against |
+|---|---|---|
+| `v3` | sqlite `blocks` + sqlite `docs` | — (the oracle) |
+| `flat_docs` | `blocks.bin` + sqlite `docs` | `v3`, byte-identical |
+| `flat_ordinal` | `blocks.bin` + `loc_*.npy` | `v3`, byte-identical |
+| `sqlite_free` | sidecar only, no `.sqlite` at all | `v3` on addressable ids |
+
+Plus a container-level check independent of the codec: random blocks `pread`
+out of `blocks.bin` must equal the source `z` BLOB **byte for byte**, with the
+same dict id. Both gates are shown by test to *catch* corruption — a single
+flipped payload byte and a shifted block offset each fail them.
+
+**3. Sampling discipline.** Ids are drawn as contiguous windows spread across
+the whole rowid range and de-duplicated, never a head slice: §16 records a
+head-sampled measurement that was 23% wrong *and inverted a verdict*, because
+`id` is the numeric W-id and its head is the oldest works.
+
+**4. Per-stage resume.** flat → dicts → locator. A stage counts as done only if
+the stamp its builder writes *last* is present, its `flat_store_id` matches the
+blocks, **and every array's length matches the stamp** — the §12 failure (one
+column short, tail addressing whatever the shorter array holds) is checked for
+explicitly, not assumed away. Sub-stage checkpointing was deliberately not
+built: each stage is one sequential pass of ~2–15 min per section, so it would
+buy minutes and cost a correctness surface.
+
+**5. Additive only.** Source opened read-only; refuses to overwrite a published
+sidecar; refuses to reuse a staging directory containing any file it did not
+write; verification views are symlinks in a temp dir outside the index tree.
+Revert stays `rm -rf <section>/abstracts.sqlite.flat`.
+
+### The production run — RUN 2026-08-17, GATE PASS, PUBLISHED
+
+**MEASURED 2026-08-17** (machine idle, the 150M parity eval having finished).
+Command exactly as recorded below; results
+`data/eval_results/flat_build_social_sciences__recent_20260817_0118.json` and
+`data/eval_results/flat_verify_social_sciences__recent_20260817_0121.json`.
+
+| stage | measured | prior estimate |
+|---|---|---|
+| flat (`blocks.bin`) | **823.9 s** (13.7 min), 1,062,917 blocks / 1,517,007 slots | ~15 min on 9p ✓ |
+| dicts | rehomed inside the flat stage (7 dicts, 0.8 MB); the explicit stage then SKIPped | unmeasured |
+| locator | **132.0 s**, 23,398,073 rows, `skipped_non_wid: 0` | unmeasured |
+| 4-arm read gate + 500-block byte check | **~3.6 min** (reads 13.0 s, the block check the rest) | 46 s in the N5 spike (much smaller store) |
+| **build total (wall)** | **19 min 33 s** | ~15 min + unmeasured stages |
+| `verify` re-run (independent) | **2 min 49 s**, PASS | — |
+
+**Bytes (measured, not estimated):** `blocks.bin` 11,131,511,857 B + block
+index 19,721,475 B + locator 421,165,826 B + dicts 802,816 B =
+**11,573,201,974 B (11.57 GB)** — *below* the 12.12 GB estimate. Against the
+13,470,433,280 B sqlite that is **−1,897,231,306 B (−1.90 GB)**, which
+reproduces §16/§17's −1.92 GB claim at production scale. Free space on the 9p
+index mount before the build: 333.0 GB.
+
+**Gate verdict: PASS on every arm.** `flat_docs`, `flat_ordinal` and
+`sqlite_free` each returned all sampled abstracts byte-identical to the v3
+SQLite oracle (0 mismatched, 0 missing), and 500 random blocks `pread` out of
+`blocks.bin` equalled the source `z` BLOBs. `locator_attached: true`,
+`sqlite_free_has_no_db: true`, `sqlite_deletable: true` (0 non-W ids and the
+dicts rehomed) — deleting `abstracts.sqlite` is now *legal*, and remains a
+separate explicit operator step that has NOT been taken.
+
+**Gate coverage caveat (measured, honest):** `ids_checked` is **14,000**, not
+the nominal 20,000. `sample_ids` draws 20 contiguous rowid windows of 1,000;
+this table's rowids run to 33,429,674 for 23,398,073 rows, with a ~4.6 M-wide
+gap above 23.4 M, so several random starts landing in the gap snap forward to
+the *same* run and dedupe away. The gate is therefore 14,000 distinct ids per
+arm (deterministic at seed 17 — the `verify` re-run drew the same 14,000). Not
+a failure, but the sampler over-reports its own nominal coverage on a table
+with rowid gaps.
+
+**Reader hardening shipped in the same session** — see hazard 1 above; a torn
+*published* index now degrades to the v3 blocks table instead of raising.
+
+`plan` (stat-only, safe to run any time) reported one section before the build —
+it is the only one with an `abstracts.sqlite`:
+
+```
+section                              sqlite  sidecar est  flat est (9p)  state
+social_sciences__recent              13.47G       12.12G         14.6m  not built
+```
+
+```bash
+.venv/bin/python3 scripts/build_flat_blocks.py build --section social_sciences__recent
+```
+
+Runtime estimate from the two MEASURED rates for this exact source (878 s on the
+9p index mount 2026-08-02; 114.9 s on local disk 2026-08-03): **~15 min for the
+flat stage on the 9p mount, ~2 min on local disk.** Locator and dict stages at
+this scale are *unmeasured* (`bytes_per_doc` 18.0 is measured; wall time is
+not); the 20,000-id gate took 46 s in the N5 spike. Disk: **+12.1 GB estimated**
+(measured components: blocks.bin 11.13 GB + locator 0.421 GB + dicts 0.8 MB),
+**additive** on top of the 13.47 GB sqlite until an operator deletes it — and
+deletion is legal only when the report says `sqlite_deletable: true`
+(`skipped_non_wid == 0` and the dicts rehomed), which §17 measured true for this
+section (23,398,073 rows, 0 skipped).
+
+### Still not settled
+
+1. ~~**The production build has not been run.**~~ ~~**Its serving efficacy is
+   unmeasured.**~~ **BOTH SETTLED 2026-08-17.** The build ran, gate PASS,
+   published (above); and **§23 measured the published directory in the serving
+   path.** Byte-parity PASS (14,000-id windowed gate + every timed trial +
+   cross-process digests, 0 mismatches). Latency, real ranked result sets,
+   300 interleaved trials per arm: **9p 2.876× warm** (45.679 → 15.886 ms p50,
+   p95 3.84×) — which reproduces §9/§16's 9p figure and is *not* production-
+   realisable; **local disk 2.546× cold and 1.091× warm**, so §17's 1.18× does
+   **not** reproduce against the serving path's own inputs. Bytes re-stat'd:
+   −1,897,229,898 B (§22's figure was 1,408 B high — the three JSON stamps).
+   New negative, previously unrecorded: **a freshly started process serving
+   flat is 0.919× sqlite until its 421 MB locator is resident.** Serving
+   default unchanged.
+2. ~~**`build_thinclient_index.py` still does not emit the sidecar inline.**~~
+   **SETTLED 2026-08-17** — `build_thinclient_index.py --flat-sidecar` adds a
+   FLAT phase that runs after BUILD and **before PACK** (packing removes a cold
+   section's live directory, and the sidecar is derived from the on-disk
+   `abstracts.sqlite`). For every section that has an `abstracts.sqlite` it
+   calls this script's own `build_section` — the same staged build, the same
+   `flat_store_id` identity checks, the same four-arm byte-parity gate plus
+   block `pread` check, the same atomic publish. Nothing is re-implemented.
+   **Fail-closed:** a section whose gate does not PASS keeps its staging
+   directory, is never published, and the phase raises `RuntimeError` naming
+   it, so a build cannot exit 0 having emitted an unverified sidecar. Progress
+   is checkpointed in `build_status.json` (`flat_sections`, `flat_info` with
+   the per-section report path), and an already-published sidecar is filtered
+   out rather than tripping the sub-script's overwrite refusal, so a resumed
+   build is safe. Gate size is tunable: `--flat-verify-ids` (default 20,000,
+   the doc 18 gate), `--flat-verify-blocks` (default 500).
+   **Off by default — without the flag the build's output is unchanged.**
+   **IMPLEMENTED, not exercised at production scale — tested synthetic-only**
+   (`scripts/tests/test_flat_block_builder.py`, 18 → **22 tests, all pass
+   2026-08-17**; the 4 new ones cover the gated-off default, gated-on emission
+   + serving through the shipped reader, gate-failure abort, and a rerun
+   leaving a published sidecar untouched). No 150M build was re-run for this —
+   the published `social_sciences__recent` sidecar remains the one the
+   standalone script built (above), and this inline path has never processed a
+   production-scale store.
+3. **Multi-section behaviour is untested at scale** because only one section
+   has abstracts today; `plan` orders smallest-first for when that changes.
+
+---
+
+## 23. J1 EXECUTED (2026-08-17): the PUBLISHED sidecar's SERVING efficacy — **2.88× on 9p, 2.55× cold on local disk, 1.09× warm on local disk**, parity PASS
+
+- Harness: `scripts/seismic_testbed/j1_flat_sidecar_serving_ab.py` +
+  `j1_flat_sidecar_serving_ab.sh` (six phases: collect → cold → warm → verdict
+  → stage-to-local-disk → the same three again)
+- **Pre-registered in commit `2e56b02`, before any arm was run.** Seven bars
+  live in an in-source `PREREG` block and are copied verbatim into every
+  results file, so the pre-registration's timestamp is git history rather than
+  the harness's own say-so.
+- Results (`data/eval_results/`): `j1_flat_idsets_20260817.json`;
+  `j1_flat_serving_cold_{sqlite,flat}_rep{1,2}_20260817.json` and their
+  `_local_` twins; `j1_flat_serving_warm_20260817.json`,
+  `..._warm_local_20260817.json`, `..._warm_local_seed41_20260817.json`,
+  `..._warm_local_rerun17_20260817.json`; verdicts
+  `j1_flat_serving_verdict_20260817.json` (9p),
+  `..._verdict_local_20260817.json` (local, first touch),
+  `..._verdict_local_warmed_20260817.json` (local, fully warm).
+
+### What §22 left open, and why §17's number could not answer it
+
+§22 published the sidecar and then quoted §16/§17's **1.18–1.19× warm** and
+**−1.90 GB** for it. Those are *spike* numbers: stores built under `/var/tmp`,
+fetched by a spike harness, on **random** ids (`SELECT id FROM docs ORDER BY
+random()`). Production fetches the **ranked top-k of a real query** —
+`_hydrate()` hands `[d for d, _ in ranked]` to `fetch_abstracts()` — and ranked
+ids are co-topical, so they cluster in the store's script buckets and therefore
+in its blocks. A random-id benchmark measures a different locality regime than
+the serving path. Nothing had ever been measured against the published
+directory.
+
+### The arms — and the finding that `AbstractStore` has no env gate
+
+`AbstractStore` serves flat **iff `<name>.flat/` `is_dir()`**. There is no
+env var, no manifest flag, nothing to switch. The arms are therefore built the
+way this repo already builds them — **symlink views in a temp directory outside
+the index tree**, the same mechanism `build_flat_blocks.py`'s own gate and
+§17's harness use — so **no published file was moved, renamed or written**:
+
+| arm | view | wiring asserted before any timing |
+|---|---|---|
+| `sqlite` | `abstracts.sqlite` → published, **no `.flat` sibling** | `_flat is None`, `_locator is None` |
+| `flat` | `abstracts.sqlite` → published, `abstracts.sqlite.flat` → published `.flat/` | `_flat` and `_locator` both attached |
+| `sqlite_ctrl` | a second `sqlite` view | the per-run noise floor (§14) |
+
+`journal_mode=delete` (verified), so opening the db read-write — exactly as
+`retriever.py:627` does — writes nothing. `find … -newermt` over the section
+after the run confirmed no file changed.
+
+**Inputs are real, and federated.** `collect` ran the shipped `_bm25f_leg` over
+the 120 `data/sfu_eval_queries.json` queries at `top_k=100`. All **10** sections
+are live, so the ranked sets span the whole index and only **46.9%** of ranked
+ids resolve in this store — the natural miss mix, not a contrivance. A
+`synthetic_miss50` regime (half of each list replaced by well-formed W-ids past
+the store's maximum) stresses the miss path further, because the arms are not
+symmetric on a miss: a locator miss pays `searchsorted` **and then** the same
+`docs` probe as fallback.
+
+### The cold mechanism this container cannot run — and what replaced it
+
+`sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'`, the f4/serve_footprint_bench
+precedent, **cannot run here**: sudo succeeds and the write still fails,
+`cannot create /proc/sys/vm/drop_caches: Read-only file system` (WSL2). The
+harness uses `posix_fadvise(POSIX_FADV_DONTNEED)` over every file of the
+section instead and **records the measured `Cached:` delta**, so a cold claim
+is judged on whether eviction happened rather than on the call returning 0. It
+evicts *both* arms' files on every run, so arm order cannot leave one warmer.
+Measured: **24.44 GB freed** on the first local-disk eviction (the mechanism is
+real), and **0 B freed on 9p** — see the 9p page-cache finding below.
+
+### Result 1 — this container (9p), `real_top50`, 300 interleaved trials
+
+| arm | p50 | p95 | p99 | mean | per-doc p50 | vs `sqlite` |
+|---|---|---|---|---|---|---|
+| `sqlite` | 45.679 ms | 67.729 | 73.934 | 45.401 | 2.038 ms | 1.00× |
+| **`flat`** | **15.886** | **17.629** | 19.499 | 15.379 | **0.696** | **2.876×** (p95 **3.84×**) |
+| `sqlite_ctrl` | 45.596 | 67.291 | 74.010 | 45.460 | 2.037 | 0.999× |
+
+Noise floor **0.56%**. Reproduced across two independent driver runs (2.857× and
+2.876×). Other regimes: `real_top100` **2.965×**, `synthetic_miss50_top50`
+**2.856×**, `synthetic_miss50_top100` **2.892×**.
+
+**This reproduces §9/§16's 9p figure (2.82–2.89×) at production scale, on the
+published bytes, with real ranked result sets** — and it is exactly the number
+§16 warned is *not* production-realisable.
+
+### Result 2 — LOCAL DISK (overlay), the same published bytes
+
+The published section was byte-copied to overlay (`stage`, 19/19 files, 258 s,
+identity gate re-checked on the copy) and the identical arms re-run.
+
+| state | `sqlite` p50 | `flat` p50 | multiple |
+|---|---|---|---|
+| **cold** (fadvise-evicted, fresh process, 2 reps) | 27.645 / 31.744 ms | **11.033 / 12.296** | **2.546×** |
+| **warm, first touch after eviction** (seed 17) | 1.907 | 2.075 | **0.919× — a REGRESSION** |
+| **warm, fully warmed** (seed 17 rerun) | 1.726 | 1.581 | 1.091× |
+| **warm, fully warmed** (seed 41 confirmation) | 1.827 | 1.683 | 1.086× |
+
+Fully warm at `top_k=100`: **1.105×** / **1.098×**. p95 better in every fully-warm
+regime (2.951 → 2.628 at `real_top50`).
+
+### The three things this changes
+
+**1. §17's 1.18× does NOT reproduce on the serving path's own inputs.** On local
+disk, fully warm, against real ranked result sets, the shipped flat+ordinal path
+measures **1.086–1.105×**, not 1.18×. Same sign, no regression, smaller. §17's
+figure came from random ids on a spike-built store; the honest production
+claim is now **"~1.09×, i.e. neutral"**. The durable win remains **−1.90 GB and
+a database removed**, exactly as §17 concluded — the arithmetic survives, the
+multiple shrinks.
+
+**2. A newly started process serving flat is SLOWER than sqlite until its
+locator is resident — previously unrecorded.** The `0.919×` row is not noise
+(the noise floor in that run was 0.46%) and it is not a seed effect: rerunning
+the *same seed 17* once the store was warm gave 1.091×. It is the flat arm
+faulting in its **421 MB of mmap'd `loc_*.npy`** — visible as a tail, flat p95
+9.597 ms vs sqlite's 3.526 and flat mean 3.238 vs p50 2.075, all of which are
+gone by the next run. §17's harness never saw this because it warmed every arm
+with a 20,000-id parity pass first. **Operationally: the sidecar has a
+warm-up cost a restarting server pays and `abstracts.sqlite` does not.**
+
+**3. §16/§17's cold-vs-warm mechanism is CONFIRMED on local disk and INVERTED on
+9p.** Pre-registered bar B5 said the cold multiple must exceed the warm one, and
+on local disk it does — **2.546× cold vs 1.091× warm**, which is §16's "the
+`docs` B-tree costs ~4 ms cold and ~0.24 ms hot" landing exactly as predicted.
+On 9p it **fails**: cold 1.79× vs warm 2.876×, because the caching asymmetry
+runs the other way (below).
+
+### The 9p page cache does not hold for `abstracts.sqlite` — but it does for the sidecar
+
+On 9p the `sqlite` arm shows **no warm-up at all**: 46.7 (cold) → 47.0 → 47.5 ms
+across three passes of the same process, and 45.7 ms in the interleaved warm run.
+`posix_fadvise` freed **0 bytes** there, and host `Cached:` sat at 7.06 GB after
+reading a 13.47 GB file. The `flat` arm *does* warm on the same mount
+(26.2 → 15.9 ms), because its locator is `mmap`'d rather than read through
+SQLite's pager. So on 9p every SQLite measurement is permanently cold, which is
+both why the multiple is 2.88× and why B5 inverts. This is §14's "the page cache
+does not hold" stated for the abstract store specifically, and measured.
+
+### Byte-parity — the hard gate, PASS everywhere
+
+- **Windowed 20,000-id gate** (`build_flat_blocks.sample_ids`, seed 17 → 14,000
+  distinct ids after the rowid-gap dedupe §22 documents): **0 mismatches**, on
+  every arm, in all **six** interleaved runs.
+- **Every timed trial**, not a sample: the flat arm's returned dict compared to
+  the sqlite arm's on all 300 trials × 4 regimes × 6 runs — **0 mismatches**.
+- **Cross-process**: the sqlite and flat cold processes' per-query SHA-256
+  digests of the fetched `{id: abstract}` are equal.
+
+### Bar-by-bar (pre-registered in `2e56b02`)
+
+| bar | 9p | local disk | note |
+|---|---|---|---|
+| **B1 parity** (hard gate) | **PASS** | **PASS** | any failure would have voided every number here |
+| B2 warm no-regression | PASS | PASS warm / **FAIL first touch** | finding 2 |
+| B3 warm p50 ≥ 1.18× | PASS 2.876× — but flagged a 9p artifact by its own rule (>1.5×) | **FAIL, 1.091×** | finding 1 |
+| B4 warm p95 no-regression | PASS 3.84× | PASS warm / FAIL first touch | |
+| B5 cold multiple > warm | **FAIL** (1.79× vs 2.876×) | **PASS** (2.546× vs 1.091×) | finding 3 |
+| B6 bytes | **DIFFERS by 1,408 B** | — | below |
+| B7 miss asymmetry (directional) | not observed | not observed | below |
+
+**B6 — a 1,408-byte correction to §22.** On-disk total is **11,573,203,382 B**,
+not the 11,573,201,974 B §22 records; the saving is **1,897,229,898 B**, not
+1,897,231,306 B. The difference is exactly the three JSON stamps
+(`flat_store.json` 367 + `locator.json` 662 + `dicts.json` 379 = 1,408 B), which
+§22's build report did not count. **−1.90 GB is unaffected.**
+
+**B7 — the predicted miss asymmetry did not appear**, and the reason is worth
+recording: cost tracks **hits, not ids**. On 9p a 50-id fetch returning 22 docs
+costs 45.7 ms and one returning 11 costs 24.0 ms — ~2.07 ms per *returned* doc
+either way. An absent key is cheap in both arms (the flat arm's extra
+`searchsorted` is nanoseconds and its `docs` fallback probe returns nothing
+quickly), so a federated deployment's high miss rate does **not** erode the
+sidecar's position. Multiples on the miss regimes: 2.856×/2.892× (9p),
+1.080×/1.075× (local, warm).
+
+### Filesystem caveat, stated the way §14 requires
+
+`data/thinclient_index` is **9p**; a droplet serves off local block storage.
+**The 2.88× is a 9p artifact and must not be quoted as a production number.**
+What transfers to the droplet is the local-disk column: **2.55× cold, ~1.09×
+warm, a first-touch warm-up penalty, byte-parity, and −1.90 GB.** Both columns
+are reported here; neither is quotable alone.
+
+### Verdict on the serving default
+
+**Leave it exactly as it is.** The sidecar is published and serving, it is
+byte-identical, it is faster on this container's filesystem and neutral-to-
+faster on the target's once warm, and it removes 1.90 GB and a database. The
+one genuinely new negative — the first-touch warm-up — is an argument for
+touching the locator at load time, not for unpublishing anything.
+
+### Still not settled (§23)
+
+1. **The warm-up is unmitigated.** `AbstractStore.__init__` could read the
+   `loc_*.npy` arrays once (421 MB sequential) and turn the 0.919× first-touch
+   row into a bounded one-off load cost. **Not built, not measured.**
+2. **The win is not decomposed here.** J1 measures the shipped composite
+   (flat blocks + ordinal locator) against plain sqlite, which is the operator's
+   question; §16/§17 hold the payload-vs-locator split, and those are spike
+   measurements this run did not redo.
+3. **One section, one query set.** 120 bm25f queries against
+   `social_sciences__recent`; the SPLADE leg's ranked sets were not collected
+   (staging 42 GB of SEISMIC shards would have evicted the very page cache under
+   test).

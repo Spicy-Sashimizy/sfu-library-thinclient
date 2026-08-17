@@ -1,0 +1,70 @@
+{
+  "date_utc": "2026-08-17T01:18:56",
+  "section": "social_sciences__recent",
+  "src": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite",
+  "flat_dir": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat",
+  "mode": "verify-only",
+  "stage_state": {
+    "flat": {
+      "ok": true,
+      "why": "ok"
+    },
+    "dicts": {
+      "ok": true,
+      "why": "ok"
+    },
+    "locator": {
+      "ok": true,
+      "why": "ok"
+    }
+  },
+  "verify_reads": {
+    "ids_checked": 14000,
+    "arms": {
+      "flat_docs": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "flat_ordinal": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "sqlite_free": {
+        "returned": 14000,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      }
+    },
+    "pass": true,
+    "addressable_ids": 14000,
+    "v3_returned": 14000,
+    "locator_attached": true,
+    "sqlite_free_has_no_db": true
+  },
+  "verify_blocks": {
+    "blocks_checked": 500,
+    "mismatched": 0,
+    "examples": [],
+    "pass": true
+  },
+  "sizes": {
+    "abstracts_sqlite_bytes": 13470433280,
+    "blocks_bin_bytes": 11131511857,
+    "block_index_bytes": 19721475,
+    "locator_bytes": 421165826,
+    "dicts_bytes": 802816,
+    "sidecar_total_bytes": 11573201974,
+    "delta_vs_sqlite_bytes": -1897231306
+  },
+  "skipped_non_wid": 0,
+  "sqlite_deletable": true,
+  "pass": true
+}

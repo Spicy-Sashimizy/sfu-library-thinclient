@@ -1,0 +1,100 @@
+{
+  "date_utc": "2026-08-17T00:45:03",
+  "section": "synthetic_20k__recent",
+  "src": "/tmp/flatsyn/sections/synthetic_20k__recent/abstracts.sqlite",
+  "published_dir": "/tmp/flatsyn/sections/synthetic_20k__recent/abstracts.sqlite.flat",
+  "staging_dir": null,
+  "stages": {
+    "flat": {
+      "blocks": 84,
+      "slots": 84,
+      "bytes": 38214,
+      "path": "/tmp/flatsyn/sections/synthetic_20k__recent/abstracts.sqlite.flat.building",
+      "flat_store_id": "33395219-65d4-4ca0-86da-4afc00b8726b",
+      "seconds": 0.0,
+      "skipped": false
+    },
+    "dicts": {
+      "skipped": true,
+      "reason": "ok"
+    },
+    "locator": {
+      "flat_store_id": "33395219-65d4-4ca0-86da-4afc00b8726b",
+      "built_utc": "2026-08-17T00:45:04",
+      "rows": 20000,
+      "skipped_non_wid": 2,
+      "bytes": 320512,
+      "bytes_per_doc": 16.03,
+      "dtypes": {
+        "b": "uint32",
+        "off": "uint16",
+        "n": "uint16"
+      },
+      "source": {
+        "path": "/tmp/flatsyn/sections/synthetic_20k__recent/abstracts.sqlite",
+        "bytes": 1032192,
+        "mtime_ns": 1786927503736075458
+      },
+      "note": "delete abstracts.sqlite only when skipped_non_wid == 0 AND the zstd dicts (meta table) have been rehomed beside blocks.bin \u2014 until then the SQLite file is still load-bearing",
+      "seconds": 0.0,
+      "skipped": false
+    }
+  },
+  "pass": true,
+  "preflight": {
+    "src_bytes": 1032192,
+    "format": "v3",
+    "free_bytes_before": 840928038912,
+    "est_sidecar_bytes": 1021870
+  },
+  "sizes": {
+    "abstracts_sqlite_bytes": 1032192,
+    "blocks_bin_bytes": 38214,
+    "block_index_bytes": 1476,
+    "locator_bytes": 320512,
+    "dicts_bytes": 218402,
+    "sidecar_total_bytes": 578604,
+    "delta_vs_sqlite_bytes": -453588
+  },
+  "skipped_non_wid": 2,
+  "sqlite_deletable": false,
+  "verify_reads": {
+    "ids_checked": 13535,
+    "arms": {
+      "flat_docs": {
+        "returned": 13535,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "flat_ordinal": {
+        "returned": 13535,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      },
+      "sqlite_free": {
+        "returned": 13533,
+        "mismatched": 0,
+        "missing": 0,
+        "examples": [],
+        "pass": true
+      }
+    },
+    "pass": true,
+    "addressable_ids": 13533,
+    "v3_returned": 13535,
+    "locator_attached": true,
+    "sqlite_free_has_no_db": true,
+    "seconds": 0.1
+  },
+  "verify_blocks": {
+    "blocks_checked": 84,
+    "mismatched": 0,
+    "examples": [],
+    "pass": true
+  },
+  "published": true
+}

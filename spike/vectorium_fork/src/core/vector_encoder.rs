@@ -27,6 +27,20 @@ pub trait QueryEvaluator<V: VectorView> {
     fn compute_distances_batch6(&self, vectors: [V; 6]) -> [Self::Distance; 6] {
         vectors.map(|v| self.compute_distance(v))
     }
+
+    /// Batch-of-6 variant that MUST be bit-identical to six independent
+    /// `compute_distance` calls (same per-vector op order; only cross-vector
+    /// interleaving may differ). This is the seam the M8 register-blocked
+    /// posting-block loop calls: override it ONLY with kernels proven
+    /// bit-exact against singles (`f32::to_bits` equality). It is distinct
+    /// from `compute_distances_batch6` because existing overrides of that
+    /// method (e.g. the scalar-sparse 6-lane kernel) reorder per-lane
+    /// accumulation and are NOT bit-identical — measured 2026-08-10, M8
+    /// gate a: f16 cells 3301/3328 hard mismatches when routed through it.
+    #[inline]
+    fn compute_distances_batch6_exact(&self, vectors: [V; 6]) -> [Self::Distance; 6] {
+        vectors.map(|v| self.compute_distance(v))
+    }
 }
 
 /// The encoder abstraction used by datasets.

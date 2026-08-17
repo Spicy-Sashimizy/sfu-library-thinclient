@@ -275,6 +275,10 @@ async def health_check(request: Request) -> JSONResponse:
         # → true (the server answers, possibly cold — same as before warmup).
         "warm": state != "warming",
         "warmup": state,
+        # Portable-bundle sequential mode (SFU_SEQUENTIAL_MODE=1, set by the
+        # Windows START.bat in Run-from-USB): the web UI defaults its one-at-a-
+        # time search queue ON from this. Absent/0 on normal installs.
+        "sequential": os.environ.get("SFU_SEQUENTIAL_MODE", "0") not in ("", "0", "false", "False", "off", "OFF"),
         # Result cache hit/miss/store/bypass + resident count (WI-17). The
         # enabled flag reflects SFU_RESULT_CACHE so an operator can confirm the
         # one-env rollback took.

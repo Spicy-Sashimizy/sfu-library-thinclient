@@ -1,0 +1,1080 @@
+From 8b51b0be1d75ab588c0f4a1c36b1468112dbef2d Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Mon, 10 Aug 2026 21:18:06 +0000
+Subject: [PATCH] fork: M8 two-phase batch block loop behind
+ SFU_SEISMIC_M8_BATCH
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Both copies of evaluate_posting_block (posting_list.rs in-RAM +
+mmap_index.rs served mmap path) restructured: phase 1 = existing
+visited-filter collecting survivors in-order, phase 2 = score in chunks
+of 6 via the compute_distances_batch6 evaluator seam, scalar tail <6.
+Per-candidate op order preserved exactly (bit-identity by construction);
+heap-push order unchanged; scored_in_block semantics unchanged.
+Env gate read once per posting-list scan (4 sites), live-flippable
+in-process for the paired A/B; =0/false forces the verbatim old loop.
+Tests: m8_batch_matches_scalar_exactly (widths 1/2/3/6/13/18, both
+loops, mmap<->in-RAM cross-equality) + m8_env_gate_is_live (ragged
+multi-term widths, 9 in-process flips).
+
+Also completes the half-committed 2026-07-10 Q3 block_stats signature
+changes (posting_list.rs/mmap_index.rs/inverted_index.rs) that had left
+HEAD 85e30dd uncompilable — the mmap_io.rs half was committed alone.
+---
+ src/inverted_index.rs |   4 +-
+ src/mmap_index.rs     |  99 +++++++++--
+ src/mmap_io.rs        | 372 ++++++++++++++++++++++++++++++++++++++++--
+ src/posting_list.rs   | 128 ++++++++++++++-
+ 4 files changed, 568 insertions(+), 35 deletions(-)
+
+diff --git a/src/inverted_index.rs b/src/inverted_index.rs
+index f107e27..6d4e277 100644
+--- a/src/inverted_index.rs
++++ b/src/inverted_index.rs
+@@ -243,7 +243,7 @@ where
+                 heap_factor,
+                 &mut heap,
+                 &mut visited,
+-                &self.forward_index,
++                &self.forward_index, None,
+             );
+         }
+         for (&component_id, _value) in iter {
+@@ -255,7 +255,7 @@ where
+                 heap_factor,
+                 &mut heap,
+                 &mut visited,
+-                &self.forward_index,
++                &self.forward_index, None,
+             );
+         }
+         if n_knn > 0
+diff --git a/src/mmap_index.rs b/src/mmap_index.rs
+index 9eeebea..ac2d5ed 100644
+--- a/src/mmap_index.rs
++++ b/src/mmap_index.rs
+@@ -44,7 +44,7 @@ use vectorium::dataset::ScoredRange;
+ use vectorium::ScoredVectorDotProduct;
+ 
+ use crate::index_traits::{ComponentFor, EncoderFor, SeismicSearchDataset};
+-use crate::posting_list::PackedPostingBlock;
++use crate::posting_list::{M8_BATCH_WIDTH, PackedPostingBlock, m8_batch_enabled};
+ use crate::utils::KHeap;
+ use crate::inverted_index::Knn;
+ use crate::configurations::Configuration;
+@@ -304,20 +304,36 @@ impl<'a> MmapPostingList<'a> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
++        mut block_stats: Option<&mut Vec<usize>>,
+     ) where
+         S: SeismicSearchDataset,
+     {
+         let dots = self.summaries.distances(query);
+ 
++        // M8: read the batch gate once per posting-list scan. This is the
++        // SERVED path's read point — `MmapSeismicIndex::search_raw_visited`
++        // (mmap_io.rs) inlines the index-level traversal and calls this method
++        // directly, so hoisting any higher would miss it.
++        let m8_batch = m8_batch_enabled();
++
+         for (block_id, dot) in dots.into_iter().enumerate() {
+             if heap.len() == k && dot < heap_factor * heap.peek().distance.distance() {
+                 continue;
+             }
+-            self.evaluate_posting_block(self.block_slice(block_id), evaluator, heap, visited, forward_index);
++            let scored = self.evaluate_posting_block(self.block_slice(block_id), evaluator, heap, visited, forward_index, m8_batch);
++            if let Some(acc) = block_stats.as_deref_mut() {
++                // Q3/M8 instrument (2026-07-10): per surviving posting block,
++                // record how many candidate packs it contributed. None ⇒ the
++                // served path (no overhead).
++                acc.push(scored);
++            }
+         }
+     }
+ 
+-    /// Verbatim from `PostingList::evaluate_posting_block` (posting_list.rs:188-215).
++    /// Verbatim from `PostingList::evaluate_posting_block` (posting_list.rs:245-330),
++    /// including the M8 two-phase restructure and its `SFU_SEISMIC_M8_BATCH`
++    /// fallback. THIS is the loop the served `MmapSeismicIndex` /
++    /// `MmapSeismicIndexDotVByte` queries run.
+     #[allow(clippy::too_many_arguments)]
+     fn evaluate_posting_block<'e, S>(
+         &self,
+@@ -326,7 +342,9 @@ impl<'a> MmapPostingList<'a> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
+-    ) where
++        m8_batch: bool,
++    ) -> usize
++    where
+         S: SeismicSearchDataset,
+     {
+         for pack in packed_posting_block.iter() {
+@@ -337,15 +355,66 @@ impl<'a> MmapPostingList<'a> {
+             forward_index.prefetch_with_range(range);
+         }
+ 
++        // Q3/M8 instrument (2026-07-10): count the candidate packs this block
++        // scored (the survivors-per-block distribution M8 batches over). Both
++        // paths below return the same count (= candidates pushed to the heap).
++        if !m8_batch {
++            // ---- pre-M8 single-pass path (SFU_SEISMIC_M8_BATCH=0/false) ----
++            let mut scored_in_block = 0usize;
++            for pack in packed_posting_block.iter() {
++                let range = pack.unpack();
++
++                if visited.insert(range.start) {
++                    let vector = forward_index.get_with_range(range.clone());
++                    let distance = evaluator.compute_distance(vector);
++                    heap.push(ScoredRange { distance, range });
++                    scored_in_block += 1;
++                }
++            }
++            return scored_in_block;
++        }
++
++        // ---- M8 phase 1: survivor filter (same predicate + same order) ----
++        let mut survivors: Vec<std::ops::Range<usize>> =
++            Vec::with_capacity(packed_posting_block.len());
+         for pack in packed_posting_block.iter() {
+             let range = pack.unpack();
+-
+             if visited.insert(range.start) {
+-                let vector = forward_index.get_with_range(range.clone());
+-                let distance = evaluator.compute_distance(vector);
+-                heap.push(ScoredRange { distance, range });
++                survivors.push(range);
++            }
++        }
++
++        // ---- M8 phase 2: score survivors 6 at a time ----------------------
++        // Chunks in survivor order, lanes consumed 0..5 in order ⇒ heap pushes
++        // land in EXACTLY the single-pass candidate order. <6 tail = scalar.
++        let mut chunks = survivors.chunks_exact(M8_BATCH_WIDTH);
++        for chunk in chunks.by_ref() {
++            let vectors = [
++                forward_index.get_with_range(chunk[0].clone()),
++                forward_index.get_with_range(chunk[1].clone()),
++                forward_index.get_with_range(chunk[2].clone()),
++                forward_index.get_with_range(chunk[3].clone()),
++                forward_index.get_with_range(chunk[4].clone()),
++                forward_index.get_with_range(chunk[5].clone()),
++            ];
++            let distances = evaluator.compute_distances_batch6(vectors);
++            for (distance, range) in distances.into_iter().zip(chunk.iter()) {
++                heap.push(ScoredRange {
++                    distance,
++                    range: range.clone(),
++                });
+             }
+         }
++        for range in chunks.remainder() {
++            let vector = forward_index.get_with_range(range.clone());
++            let distance = evaluator.compute_distance(vector);
++            heap.push(ScoredRange {
++                distance,
++                range: range.clone(),
++            });
++        }
++
++        survivors.len()
+     }
+ }
+ 
+@@ -459,7 +528,7 @@ impl<'a> MmapInvertedIndex<'a> {
+                 let component_idx: usize = component_id.as_();
+                 self.posting_lists[component_idx].sort_and_search(
+                     &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited,
+-                    self.forward_index,
++                    self.forward_index, None,
+                 );
+             }
+         }
+@@ -467,7 +536,7 @@ impl<'a> MmapInvertedIndex<'a> {
+             let component_idx: usize = component_id.as_();
+             self.posting_lists[component_idx].search(
+                 &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited,
+-                self.forward_index,
++                self.forward_index, None,
+             );
+         }
+         if n_knn > 0 && let Some(knn) = self.knn.as_ref() {
+@@ -497,6 +566,7 @@ impl<'a> MmapPostingList<'a> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
++        mut block_stats: Option<&mut Vec<usize>>,
+     ) where
+         S: SeismicSearchDataset,
+     {
+@@ -505,11 +575,18 @@ impl<'a> MmapPostingList<'a> {
+             .sorted_unstable_by(|&(_, a), &(_, b)| b.total_cmp(&a))
+             .collect();
+ 
++        // M8: read the batch gate once per posting-list scan (served path —
++        // `first_sorted` sends the top query term through here).
++        let m8_batch = m8_batch_enabled();
++
+         for (block_id, dot) in dots {
+             if heap.len() == k && dot < heap_factor * heap.peek().distance.distance() {
+                 continue;
+             }
+-            self.evaluate_posting_block(self.block_slice(block_id), evaluator, heap, visited, forward_index);
++            let scored = self.evaluate_posting_block(self.block_slice(block_id), evaluator, heap, visited, forward_index, m8_batch);
++            if let Some(acc) = block_stats.as_deref_mut() {
++                acc.push(scored);
++            }
+         }
+     }
+ }
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 3ae6e2d..0622649 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -55,6 +55,46 @@ use crate::inverted_index_wrapper::resolve_query_tokens;
+ 
+ use num_traits::FromPrimitive;
+ 
++// ── Cross-platform page-cache / residency hooks (PORTABLE_SOCSCI §7) ──────────
++// The F3–F6 prefault / mlock / madvise optimizations are POSIX-only. They are
++// pure *performance* hints over a read-only mmap — correctness-neutral, since the
++// OS demand-pages the mapping identically without them. Funnelling every `libc`
++// syscall through these two shims lets the engine cross-compile for native
++// Windows x86-64 (the portable social-sciences thumb-drive bundle): real
++// syscalls on unix, no-ops elsewhere (Windows accepts slower cold faults; the
++// prefault/pin tier simply does not apply). Correctness on Linux is unchanged —
++// the shim expands to the exact prior `libc::` calls under `#[cfg(unix)]`.
++// See docs/infrastructure/PORTABLE_SOCSCI_WINDOWS_BUNDLE.md §7.
++#[derive(Clone, Copy)]
++enum Advice { WillNeed, Sequential, DontNeed, Random }
++
++/// `madvise(2)` on a read-only mmap range; no-op on non-unix.
++#[cfg(unix)]
++#[inline]
++unsafe fn os_madvise(ptr: *mut core::ffi::c_void, len: usize, advice: Advice) {
++    let a = match advice {
++        Advice::WillNeed => libc::MADV_WILLNEED,
++        Advice::Sequential => libc::MADV_SEQUENTIAL,
++        Advice::DontNeed => libc::MADV_DONTNEED,
++        Advice::Random => libc::MADV_RANDOM,
++    };
++    unsafe { libc::madvise(ptr, len, a); }
++}
++#[cfg(not(unix))]
++#[inline]
++unsafe fn os_madvise(_ptr: *mut core::ffi::c_void, _len: usize, _advice: Advice) {}
++
++/// `mlock(2)` on a read-only mmap range. Returns 0 on success (unix). On non-unix
++/// returns -1 so callers record 0 bytes locked (the pin tier degrades to no-op).
++#[cfg(unix)]
++#[inline]
++unsafe fn os_mlock(ptr: *const core::ffi::c_void, len: usize) -> i32 {
++    unsafe { libc::mlock(ptr, len) as i32 }
++}
++#[cfg(not(unix))]
++#[inline]
++unsafe fn os_mlock(_ptr: *const core::ffi::c_void, _len: usize) -> i32 { -1 }
++
+ // ---------------------------------------------------------------------------
+ // Manifest types (serde_json; the only structured format — all data is flat raw)
+ // ---------------------------------------------------------------------------
+@@ -1151,9 +1191,9 @@ fn touch_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and is
+     // safe to call on the mapping base address.
+     unsafe {
+-        let ptr = bytes.as_ptr() as *mut libc::c_void;
+-        libc::madvise(ptr, bytes.len(), libc::MADV_WILLNEED);
+-        libc::madvise(ptr, bytes.len(), libc::MADV_SEQUENTIAL);
++        let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++        os_madvise(ptr, bytes.len(), Advice::WillNeed);
++        os_madvise(ptr, bytes.len(), Advice::Sequential);
+     }
+     // Use an atomic to guarantee the reads happen; plain u64 accumulator was
+     // compiled out on the first C2 run (fault-in appeared instant, RssFile unchanged).
+@@ -1185,8 +1225,8 @@ fn release_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and is
+     // safe to call on the mapping base address (same reasoning as `touch_bytes`).
+     unsafe {
+-        let ptr = bytes.as_ptr() as *mut libc::c_void;
+-        libc::madvise(ptr, bytes.len(), libc::MADV_DONTNEED);
++        let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++        os_madvise(ptr, bytes.len(), Advice::DontNeed);
+     }
+     let n = bytes.len() as u64;
+     counter.fetch_add(n as usize, Ordering::Relaxed);
+@@ -1215,10 +1255,8 @@ fn mlock_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // the data is read-only identical). A permission failure returns EPERM/
+     // ENOMEM without corrupting the mapping — we swallow it and report 0 locked.
+     let locked = unsafe {
+-        let ptr = bytes.as_ptr() as *const libc::c_void;
+-        // mlock takes a *const but the syscall treats it as const; cast to mute
+-        // the const-correctness friction with the libc crate's signature.
+-        libc::mlock(ptr as *const libc::c_void, bytes.len())
++        let ptr = bytes.as_ptr() as *const core::ffi::c_void;
++        os_mlock(ptr, bytes.len())
+     };
+     let n = if locked == 0 {
+         bytes.len() as u64
+@@ -1262,7 +1300,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+         }
+     }
+     let mut released: u64 = 0;
+-    let base = bytes.as_ptr() as *mut libc::c_void;
++    let base = bytes.as_ptr() as *mut core::ffi::c_void;
+     // Walk page-by-page; DONTNEED the gaps between kept extents. Coalescing
+     // contiguous release runs into one madvise call (fewer syscalls) but
+     // keeping it page-granular is simplest and correct; the DV forward slab is
+@@ -1275,7 +1313,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+                 let len = (p - s) * page;
+                 if len > 0 {
+                     unsafe {
+-                        libc::madvise(base.add(off), len, libc::MADV_DONTNEED);
++                        os_madvise(base.add(off), len, Advice::DontNeed);
+                     }
+                     released += len as u64;
+                 }
+@@ -1291,7 +1329,7 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+         let len = len.min(bytes.len() - off);
+         if len > 0 {
+             unsafe {
+-                libc::madvise(base.add(off), len, libc::MADV_DONTNEED);
++                os_madvise(base.add(off), len, Advice::DontNeed);
+             }
+             released += len as u64;
+         }
+@@ -1334,8 +1372,8 @@ fn leak_mmap_advise(path: std::path::PathBuf, random: bool) -> std::io::Result<&
+         // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and
+         // is safe on the mapping base address (same reasoning as `touch_bytes`).
+         unsafe {
+-            let ptr = bytes.as_ptr() as *mut libc::c_void;
+-            libc::madvise(ptr, bytes.len(), libc::MADV_RANDOM);
++            let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
++            os_madvise(ptr, bytes.len(), Advice::Random);
+         }
+     }
+     Ok(bytes)
+@@ -2457,7 +2495,7 @@ pub fn read_rss_kb() -> (usize, usize) {
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+-    use crate::configurations::Configuration;
++    use crate::configurations::{BlockingStrategy, Configuration, PruningStrategy};
+     use crate::inverted_index_wrapper::SeismicIndex;
+     use crate::mmap_index::OwnedForward;
+     use half::f16;
+@@ -2898,4 +2936,308 @@ mod tests {
+         eprintln!("reorder_parity_both_layouts OK ({n_docs} docs, packs f16={} dv={})",
+             rep_f16["packs_rewritten"], rep_dv["packs_rewritten"]);
+     }
++
++    // =======================================================================
++    // M8 WP-B — register-blocked (batch-of-6) candidate scoring.
++    //
++    // `evaluate_posting_block` (posting_list.rs = in-RAM path, mmap_index.rs =
++    // SERVED path) now runs a survivor-filter phase followed by a scoring phase
++    // that feeds six candidates at a time to
++    // `QueryEvaluator::compute_distances_batch6`. `SFU_SEISMIC_M8_BATCH=0`
++    // restores the pre-M8 single-pass loop verbatim.
++    //
++    // The gate must be an EXACT A/B: same doc ids, same score bit patterns,
++    // same order. These tests build fixed-block-size synthetic indexes so the
++    // survivor width per block is known exactly (1, 2, 3, 6, 13, 18 — covering
++    // every remainder lane, the exact-one-batch case, and the >6 case around
++    // the measured median of 18), assert the widths really occurred via the
++    // Q3 block-stats instrument, then compare both paths.
++    //
++    // CONCURRENCY: these tests mutate a process-global env var. They serialize
++    // against each other through `M8_ENV_LOCK`, but `std::env::set_var` races
++    // with any *other* thread calling `std::env::var` — and every search in
++    // this binary now reads `SFU_SEISMIC_M8_BATCH`. Run the suite with
++    // `cargo test --no-default-features -- --test-threads=1`.
++    // =======================================================================
++
++    /// Serializes the env-mutating M8 tests against each other.
++    static M8_ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
++
++    /// Set `SFU_SEISMIC_M8_BATCH` (or remove it when `None`), run `f`, restore.
++    ///
++    /// SAFETY: the M8 tests hold `M8_ENV_LOCK` across this call, so no other
++    /// M8 test mutates the environment concurrently; the suite is run with
++    /// `--test-threads=1` so no sibling test reads it concurrently either.
++    fn with_m8_env<R>(value: Option<&str>, f: impl FnOnce() -> R) -> R {
++        const KEY: &str = "SFU_SEISMIC_M8_BATCH";
++        let previous = std::env::var(KEY).ok();
++        unsafe {
++            match value {
++                Some(v) => std::env::set_var(KEY, v),
++                None => std::env::remove_var(KEY),
++            }
++        }
++        let out = f();
++        unsafe {
++            match previous {
++                Some(v) => std::env::set_var(KEY, v),
++                None => std::env::remove_var(KEY),
++            }
++        }
++        out
++    }
++
++    /// Build a synthetic index whose posting list for token `t0` splits into
++    /// fixed-size blocks of `block_size` docs.
++    ///
++    /// Every doc carries `t0`, so posting list 0 holds all `n_docs` docs. With
++    /// `BlockingStrategy::FixedSize` the boundaries are
++    /// `0, B, 2B, …, (n_docs/B − 1)·B, n_docs` (see
++    /// `PostingList::fixed_size_blocking`), so when `n_docs % B == 0` every
++    /// block is exactly `B` long, and otherwise the LAST block absorbs the
++    /// remainder (`B + n_docs % B`). A single-token query with `query_cut = 1`
++    /// scans only that list, and since each doc appears in it once, every block
++    /// contributes exactly its length as survivors to `evaluate_posting_block`.
++    ///
++    /// `t1` is carried by the even docs only (≈ half the corpus) so multi-term
++    /// queries can produce RAGGED survivor counts through the `visited` dedup.
++    fn build_fixed_block_index(block_size: usize, n_docs: usize) -> SeismicIndex<OwnedForward> {
++        let dim = 16usize;
++        let mut token_to_id_map = HashMap::new();
++        for i in 0..dim {
++            token_to_id_map.insert(format!("t{}", i), i);
++        }
++        let encoder = ScalarSparseQuantizer::<u16, f32, f16, DotProduct>::new(dim, dim);
++        let mut ds = SparseDatasetGrowable::new(encoder);
++        for i in 0..n_docs {
++            // t0 (shared, drives the posting list under test) + t1 on even docs
++            // + two spread tokens so the summaries are non-degenerate. Distinct
++            // t0 weights (step 0.01, distinctly representable in f16 near 1.0)
++            // keep the ranking total — no ties to make the comparison ambiguous.
++            let comps: Vec<u16> = {
++                let mut c = vec![0u16, 3 + (i % 4) as u16, 8 + (i % 5) as u16];
++                if i % 2 == 0 {
++                    c.push(1);
++                }
++                c.sort_unstable();
++                c.dedup();
++                c
++            };
++            let vals: Vec<f32> = comps
++                .iter()
++                .map(|&c| {
++                    if c == 0 {
++                        1.0 + i as f32 * 0.01
++                    } else {
++                        0.25 + (c as f32) * 0.05
++                    }
++                })
++                .collect();
++            ds.push(SparseVectorView::new(&comps, &vals));
++        }
++        let frozen: OwnedForward = ds.into();
++        let doc_mapping: Vec<String> = (0..n_docs).map(|i| format!("doc{}", i)).collect();
++        let config = Configuration::default()
++            .pruning_strategy(PruningStrategy::FixedSize { n_postings: n_docs })
++            .blocking_strategy(BlockingStrategy::FixedSize { block_size });
++        SeismicIndex::new(
++            frozen,
++            config,
++            Some(doc_mapping),
++            None::<Vec<Option<String>>>,
++            token_to_id_map,
++        )
++    }
++
++    /// (doc id, score bits) — the exact-equality projection the A/B compares.
++    fn m8_fingerprint(results: &[ScoredVectorDotProduct]) -> Vec<(u64, u32)> {
++        results
++            .iter()
++            .map(|s| (s.vector, s.distance.distance().to_bits()))
++            .collect()
++    }
++
++    /// Batch-of-6 scoring must be EXACTLY the pre-M8 single-pass path, on both
++    /// the in-RAM loop (`posting_list.rs`) and the served mmap loop
++    /// (`mmap_index.rs`), for every survivor width that exercises a different
++    /// lane of the chunked loop.
++    #[test]
++    fn m8_batch_matches_scalar_exactly() {
++        let _guard = M8_ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
++
++        // (block_size, n_blocks): 1/2/3 = pure-remainder blocks, 6 = exactly one
++        // full batch and no remainder, 13 = two batches + 1 remainder, 18 = three
++        // full batches (the measured median survivors-per-block).
++        let cases: [(usize, usize); 6] = [(1, 8), (2, 6), (3, 5), (6, 4), (13, 3), (18, 3)];
++
++        let base = std::path::PathBuf::from(format!("/tmp/seismic_m8_test_{}", std::process::id()));
++        let _ = std::fs::remove_dir_all(&base);
++
++        for (block_size, n_blocks) in cases {
++            let n_docs = block_size * n_blocks;
++            let owned = build_fixed_block_index(block_size, n_docs);
++            let dir = base.join(format!("b{block_size}"));
++            std::fs::create_dir_all(&dir).expect("create test dir");
++            write_mmap_index(&owned, &dir).expect("write_mmap_index");
++            let mmap_idx = MmapSeismicIndex::from_mmap(&dir).expect("from_mmap");
++
++            let toks: Vec<String> = vec!["t0".to_string()];
++            let vals: Vec<f32> = vec![1.0];
++            let k = n_docs; // keep every candidate so the whole list is compared
++            let query_cut = 1; // scan ONLY posting list 0
++            let heap_factor = 0.0; // dots are ≥ 0 ⇒ no block is ever pruned
++
++            // `first_sorted = true` routes the term through `sort_and_search`,
++            // `false` through `search` — both entry points funnel into
++            // `evaluate_posting_block` and both must be covered.
++            for first_sorted in [true, false] {
++                // The block-stats instrument proves this case really produced
++                // the survivor width it claims to test — and, asserted under
++                // BOTH gate settings, that the `scored_in_block` counter
++                // semantics are unchanged by the restructure (Q3 depends on it).
++                for gate in [None, Some("0")] {
++                    let stats = with_m8_env(gate, || {
++                        mmap_idx
++                            .search_raw_block_stats(
++                                &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
++                            )
++                            .2
++                    });
++                    assert_eq!(
++                        stats,
++                        vec![block_size; n_blocks],
++                        "block_size={block_size} first_sorted={first_sorted} gate={gate:?}: \
++                         survivors-per-block should be {n_blocks} blocks of {block_size}"
++                    );
++                }
++
++                let owned_batch = with_m8_env(None, || {
++                    m8_fingerprint(&owned.search_raw(
++                        &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
++                    ))
++                });
++                let owned_scalar = with_m8_env(Some("0"), || {
++                    m8_fingerprint(&owned.search_raw(
++                        &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
++                    ))
++                });
++                assert_eq!(
++                    owned_batch.len(),
++                    n_docs,
++                    "block_size={block_size}: expected all {n_docs} docs scored"
++                );
++                assert_eq!(
++                    owned_batch, owned_scalar,
++                    "IN-RAM path diverged (block_size={block_size}, first_sorted={first_sorted})"
++                );
++
++                let mmap_batch = with_m8_env(None, || {
++                    m8_fingerprint(&mmap_idx.search_raw(
++                        &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
++                    ))
++                });
++                let mmap_scalar = with_m8_env(Some("0"), || {
++                    m8_fingerprint(&mmap_idx.search_raw(
++                        &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
++                    ))
++                });
++                assert_eq!(
++                    mmap_batch, mmap_scalar,
++                    "SERVED mmap path diverged (block_size={block_size}, first_sorted={first_sorted})"
++                );
++                // Cross-check: the two loops are arithmetic twins, so the mmap
++                // path must also equal the in-RAM path bit-for-bit.
++                assert_eq!(
++                    mmap_batch, owned_batch,
++                    "mmap/in-RAM twin broke (block_size={block_size}, first_sorted={first_sorted})"
++                );
++            }
++            eprintln!(
++                "m8_batch_matches_scalar_exactly OK: block_size={block_size} \
++                 ({n_blocks} blocks, {n_docs} docs)"
++            );
++        }
++        let _ = std::fs::remove_dir_all(&base);
++    }
++
++    /// The gate must be re-readable BETWEEN QUERIES inside one process (the
++    /// latency A/B toggles it live) — i.e. nothing may cache it in a
++    /// `OnceLock`/`lazy_static`. Also pins the accepted spellings: unset / "1"
++    /// / "true" = batch ON; "0" / "false" / "FALSE" / "False" = single-pass.
++    #[test]
++    fn m8_env_gate_is_live_and_covers_multi_term_queries() {
++        let _guard = M8_ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
++
++        let base =
++            std::path::PathBuf::from(format!("/tmp/seismic_m8_live_{}", std::process::id()));
++        let _ = std::fs::remove_dir_all(&base);
++        std::fs::create_dir_all(&base).expect("create test dir");
++
++        // block_size 18 over 59 docs ⇒ t0's blocks are 18/18/23 (the tail block
++        // absorbs the remainder), and t1 (even docs, 30 of them) forms its own
++        // 30-doc block that is scanned FIRST (highest query weight ⇒
++        // `first_sorted` sends it through `sort_and_search`). The `visited`
++        // dedup then leaves t0's blocks RAGGED — the case where phase 1 and
++        // phase 2 could most easily desynchronize.
++        let owned = build_fixed_block_index(18, 59);
++        write_mmap_index(&owned, &base).expect("write_mmap_index");
++        let mmap_idx = MmapSeismicIndex::from_mmap(&base).expect("from_mmap");
++
++        let toks: Vec<String> = vec!["t0".to_string(), "t1".to_string(), "t9".to_string()];
++        let vals: Vec<f32> = vec![1.0, 2.0, 0.5];
++        // heap_factor 0.0 ⇒ dots are ≥ 0 ⇒ no block is pruned, so the block
++        // geometry asserted below is deterministic.
++        let run = |idx: &MmapSeismicIndex| {
++            m8_fingerprint(&idx.search_raw(&toks, &vals, 20, 4, 0.0, 0, true))
++        };
++        let run_owned = || {
++            m8_fingerprint(&owned.search_raw(&toks, &vals, 20, 4, 0.0, 0, true))
++        };
++
++        // Ragged widths really happen here, and the instrument counter reports
++        // them identically under both gate settings.
++        let stats =
++            with_m8_env(None, || mmap_idx.search_raw_block_stats(&toks, &vals, 20, 4, 0.0, 0, true).2);
++        let stats_scalar = with_m8_env(Some("0"), || {
++            mmap_idx.search_raw_block_stats(&toks, &vals, 20, 4, 0.0, 0, true).2
++        });
++        assert_eq!(stats, stats_scalar, "scored_in_block counter diverged across the gate");
++        assert!(!stats.is_empty(), "no blocks survived — test geometry is wrong");
++        assert!(
++            stats.iter().any(|&s| s != stats[0]),
++            "expected ragged survivor counts from the multi-term dedup, got {stats:?}"
++        );
++        assert!(
++            stats.iter().any(|&s| s > 6) && stats.iter().any(|&s| s % 6 != 0),
++            "ragged case should cover both a full-batch and a remainder tail, got {stats:?}"
++        );
++
++        // Alternate the gate inside one process; every ON reading must equal
++        // every OFF reading. If the gate were cached, the later toggles would
++        // silently keep the first value — which this still catches only via a
++        // divergence, so we ALSO assert the readings are all identical to the
++        // very first, i.e. the toggle never corrupts results either way.
++        let mut readings = Vec::new();
++        for value in [None, Some("0"), None, Some("false"), Some("1"), Some("FALSE"),
++                      Some("true"), Some("False"), None] {
++            readings.push(with_m8_env(value, || (run(&mmap_idx), run_owned())));
++        }
++        let first = readings[0].clone();
++        assert!(!first.0.is_empty(), "search returned nothing — test geometry is wrong");
++        for (i, r) in readings.iter().enumerate() {
++            assert_eq!(*r, first, "reading {i} diverged under gate toggling");
++        }
++
++        // Direct proof the gate is not cached: the helper reads the env each
++        // call, so flipping it must flip the reported value within one process.
++        unsafe { std::env::set_var("SFU_SEISMIC_M8_BATCH", "0") };
++        assert!(!crate::posting_list::m8_batch_enabled());
++        unsafe { std::env::set_var("SFU_SEISMIC_M8_BATCH", "1") };
++        assert!(crate::posting_list::m8_batch_enabled());
++        unsafe { std::env::remove_var("SFU_SEISMIC_M8_BATCH") };
++        assert!(crate::posting_list::m8_batch_enabled(), "unset must default to batch ON");
++
++        let _ = std::fs::remove_dir_all(&base);
++        eprintln!("m8_env_gate_is_live_and_covers_multi_term_queries OK: block_stats={stats:?}");
++    }
+ }
+diff --git a/src/posting_list.rs b/src/posting_list.rs
+index 9447449..a308a86 100644
+--- a/src/posting_list.rs
++++ b/src/posting_list.rs
+@@ -79,6 +79,39 @@ impl SpaceUsage for PackedPostingBlock {
+     }
+ }
+ 
++/// M8 batch width — the arity of `QueryEvaluator::compute_distances_batch6`.
++pub(crate) const M8_BATCH_WIDTH: usize = 6;
++
++/// M8 register-blocked scoring switch (default ON).
++///
++/// `evaluate_posting_block` splits the block loop into a survivor-filter phase
++/// and a scoring phase that feeds candidates six at a time through
++/// `QueryEvaluator::compute_distances_batch6`. Set `SFU_SEISMIC_M8_BATCH=0`
++/// (or `false`) to take the pre-M8 single-pass path instead — that fallback is
++/// the verbatim old loop, so the two are an exact A/B.
++///
++/// Default-ON is safe at this layer: the *default* `compute_distances_batch6`
++/// impl (vectorium `core/vector_encoder.rs:27`) is six independent
++/// `compute_distance` calls, so the batch path is bit-identical to the scalar
++/// path for every encoder that has not overridden it. Whether a *specialized*
++/// kernel ships default-ON is a separate gate decision.
++///
++/// Read ONCE PER POSTING-LIST SCAN (in `search` / `sort_and_search`, i.e.
++/// at most `query_cut` times per query — typically ≤ 32 reads/query) and
++/// passed down as a bool. Deliberately NOT read inside
++/// `evaluate_posting_block`: that runs once per *surviving block* (thousands
++/// of times per query on the 150M index), and an `env::var` lookup scans and
++/// heap-allocates, which would show up as noise in exactly the latency A/B
++/// this gate exists to run. Deliberately NOT cached in a `OnceLock` either —
++/// the A/B harness toggles the variable between queries inside one process.
++#[inline]
++pub(crate) fn m8_batch_enabled() -> bool {
++    !matches!(
++        std::env::var("SFU_SEISMIC_M8_BATCH").ok().as_deref(),
++        Some("0") | Some("false") | Some("FALSE") | Some("False")
++    )
++}
++
+ #[derive(Default, PartialEq, Debug, Clone, Serialize, Deserialize)]
+ pub(crate) struct PostingList<C: ComponentType> {
+     packed_postings: Box<[PackedPostingBlock]>,
+@@ -135,11 +168,16 @@ impl<C: ComponentType> PostingList<C> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
++        mut block_stats: Option<&mut Vec<usize>>,
+     ) where
+         S: SeismicSearchDataset,
+     {
+         let dots = self.summaries().distances(query);
+ 
++        // M8: read the batch gate once per posting-list scan (see
++        // `m8_batch_enabled` for why not per block and why not cached).
++        let m8_batch = m8_batch_enabled();
++
+         for (block_id, dot) in dots.into_iter().enumerate() {
+             if heap.len() == k && dot < heap_factor * heap.peek().distance.distance() {
+                 continue;
+@@ -149,13 +187,21 @@ impl<C: ComponentType> PostingList<C> {
+             let packed_posting_block =
+                 &self.packed_postings()[block_offsets[block_id]..block_offsets[block_id + 1]];
+ 
+-            self.evaluate_posting_block(
++            let scored = self.evaluate_posting_block(
+                 evaluator,
+                 packed_posting_block,
+                 heap,
+                 visited,
+                 forward_index,
++                m8_batch,
+             );
++            if let Some(acc) = block_stats.as_deref_mut() {
++                // Q3/M8 instrument (2026-07-10): per surviving posting block,
++                // record how many candidate packs it contributed (the
++                // survivors-per-batch distribution M8 batches over). None ⇒
++                // the visited-only path (no overhead).
++                acc.push(scored);
++            }
+         }
+     }
+ 
+@@ -169,6 +215,7 @@ impl<C: ComponentType> PostingList<C> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
++        mut block_stats: Option<&mut Vec<usize>>,
+     ) where
+         S: SeismicSearchDataset,
+     {
+@@ -179,6 +226,9 @@ impl<C: ComponentType> PostingList<C> {
+             .sorted_unstable_by(|&(_, a), &(_, b)| b.total_cmp(&a))
+             .collect();
+ 
++        // M8: read the batch gate once per posting-list scan.
++        let m8_batch = m8_batch_enabled();
++
+         for (block_id, dot) in dots {
+             if heap.len() == k && dot < heap_factor * heap.peek().distance.distance() {
+                 continue;
+@@ -188,13 +238,17 @@ impl<C: ComponentType> PostingList<C> {
+             let packed_posting_block =
+                 &self.packed_postings()[block_offsets[block_id]..block_offsets[block_id + 1]];
+ 
+-            self.evaluate_posting_block(
++            let scored = self.evaluate_posting_block(
+                 evaluator,
+                 packed_posting_block,
+                 heap,
+                 visited,
+                 forward_index,
++                m8_batch,
+             );
++            if let Some(acc) = block_stats.as_deref_mut() {
++                acc.push(scored);
++            }
+         }
+     }
+ 
+@@ -206,7 +260,9 @@ impl<C: ComponentType> PostingList<C> {
+         heap: &mut KHeap<ScoredRange<DotProduct>>,
+         visited: &mut FxHashSet<usize>,
+         forward_index: &'e S,
+-    ) where
++        m8_batch: bool,
++    ) -> usize
++    where
+         S: SeismicSearchDataset,
+     {
+         for pack in packed_posting_block.iter() {
+@@ -217,15 +273,73 @@ impl<C: ComponentType> PostingList<C> {
+             forward_index.prefetch_with_range(range);
+         }
+ 
++        // Q3/M8 instrument (2026-07-10): count the candidate packs this block
++        // actually scored (the survivors-per-block distribution). Returned to
++        // the caller (search/sort_and_search) which appends it to the
++        // block_stats accumulator when instrumented. Zero overhead on the
++        // non-instrumented path (an int add + return). Both paths below return
++        // exactly the same count (= number of candidates pushed to the heap).
++        if !m8_batch {
++            // ---- pre-M8 single-pass path (SFU_SEISMIC_M8_BATCH=0/false) ----
++            // Kept verbatim so the gate is an exact A/B of the same arithmetic.
++            let mut scored_in_block = 0usize;
++            for pack in packed_posting_block.iter() {
++                let range = pack.unpack();
++
++                if visited.insert(range.start) {
++                    let vector = forward_index.get_with_range(range.clone());
++                    let distance = evaluator.compute_distance(vector);
++                    heap.push(ScoredRange { distance, range });
++                    scored_in_block += 1;
++                }
++            }
++            return scored_in_block;
++        }
++
++        // ---- M8 phase 1: survivor filter -------------------------------
++        // Identical predicate, identical `visited` side effects, identical
++        // pack order as the single-pass loop above; only the scoring moves.
++        let mut survivors: Vec<std::ops::Range<usize>> =
++            Vec::with_capacity(packed_posting_block.len());
+         for pack in packed_posting_block.iter() {
+             let range = pack.unpack();
+-
+             if visited.insert(range.start) {
+-                let vector = forward_index.get_with_range(range.clone());
+-                let distance = evaluator.compute_distance(vector);
+-                heap.push(ScoredRange { distance, range });
++                survivors.push(range);
++            }
++        }
++
++        // ---- M8 phase 2: score survivors 6 at a time -------------------
++        // `chunks_exact` walks survivors in order and the batch results are
++        // consumed lane 0..5 in order, so heap pushes happen in EXACTLY the
++        // single-pass candidate order. The <6 tail uses the scalar call.
++        let mut chunks = survivors.chunks_exact(M8_BATCH_WIDTH);
++        for chunk in chunks.by_ref() {
++            let vectors = [
++                forward_index.get_with_range(chunk[0].clone()),
++                forward_index.get_with_range(chunk[1].clone()),
++                forward_index.get_with_range(chunk[2].clone()),
++                forward_index.get_with_range(chunk[3].clone()),
++                forward_index.get_with_range(chunk[4].clone()),
++                forward_index.get_with_range(chunk[5].clone()),
++            ];
++            let distances = evaluator.compute_distances_batch6(vectors);
++            for (distance, range) in distances.into_iter().zip(chunk.iter()) {
++                heap.push(ScoredRange {
++                    distance,
++                    range: range.clone(),
++                });
+             }
+         }
++        for range in chunks.remainder() {
++            let vector = forward_index.get_with_range(range.clone());
++            let distance = evaluator.compute_distance(vector);
++            heap.push(ScoredRange {
++                distance,
++                range: range.clone(),
++            });
++        }
++
++        survivors.len()
+     }
+ 
+     fn fixed_size_blocking(posting_list: &[usize], block_size: usize) -> Vec<usize> {
+-- 
+2.53.0
+
+From 27900f3fe4e3c79daf1ed125ebeb903c1bdef9e5 Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Mon, 10 Aug 2026 21:37:11 +0000
+Subject: [PATCH] fork: M8 block loops call compute_distances_batch6_exact
+ (bit-exact seam)
+
+Gate a exposed that the pre-existing ScalarSparseQueryEvaluator
+compute_distances_batch6 override (6-lane kernel) is NOT bit-identical
+to its own singles (f16 cells: 3301/3328 hard mismatches, batch ON).
+The M8 path now calls the new _exact seam whose default is six scalar
+calls and which only bit-proven kernels (dotvbyte) override.
+---
+ src/mmap_index.rs   | 2 +-
+ src/posting_list.rs | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/mmap_index.rs b/src/mmap_index.rs
+index ac2d5ed..526b5cd 100644
+--- a/src/mmap_index.rs
++++ b/src/mmap_index.rs
+@@ -397,7 +397,7 @@ impl<'a> MmapPostingList<'a> {
+                 forward_index.get_with_range(chunk[4].clone()),
+                 forward_index.get_with_range(chunk[5].clone()),
+             ];
+-            let distances = evaluator.compute_distances_batch6(vectors);
++            let distances = evaluator.compute_distances_batch6_exact(vectors);
+             for (distance, range) in distances.into_iter().zip(chunk.iter()) {
+                 heap.push(ScoredRange {
+                     distance,
+diff --git a/src/posting_list.rs b/src/posting_list.rs
+index a308a86..f928a9e 100644
+--- a/src/posting_list.rs
++++ b/src/posting_list.rs
+@@ -79,18 +79,18 @@ impl SpaceUsage for PackedPostingBlock {
+     }
+ }
+ 
+-/// M8 batch width — the arity of `QueryEvaluator::compute_distances_batch6`.
++/// M8 batch width — the arity of `QueryEvaluator::compute_distances_batch6_exact`.
+ pub(crate) const M8_BATCH_WIDTH: usize = 6;
+ 
+ /// M8 register-blocked scoring switch (default ON).
+ ///
+ /// `evaluate_posting_block` splits the block loop into a survivor-filter phase
+ /// and a scoring phase that feeds candidates six at a time through
+-/// `QueryEvaluator::compute_distances_batch6`. Set `SFU_SEISMIC_M8_BATCH=0`
++/// `QueryEvaluator::compute_distances_batch6_exact`. Set `SFU_SEISMIC_M8_BATCH=0`
+ /// (or `false`) to take the pre-M8 single-pass path instead — that fallback is
+ /// the verbatim old loop, so the two are an exact A/B.
+ ///
+-/// Default-ON is safe at this layer: the *default* `compute_distances_batch6`
++/// Default-ON is safe at this layer: the *default* `compute_distances_batch6_exact`
+ /// impl (vectorium `core/vector_encoder.rs:27`) is six independent
+ /// `compute_distance` calls, so the batch path is bit-identical to the scalar
+ /// path for every encoder that has not overridden it. Whether a *specialized*
+@@ -322,7 +322,7 @@ impl<C: ComponentType> PostingList<C> {
+                 forward_index.get_with_range(chunk[4].clone()),
+                 forward_index.get_with_range(chunk[5].clone()),
+             ];
+-            let distances = evaluator.compute_distances_batch6(vectors);
++            let distances = evaluator.compute_distances_batch6_exact(vectors);
+             for (distance, range) in distances.into_iter().zip(chunk.iter()) {
+                 heap.push(ScoredRange {
+                     distance,
+-- 
+2.53.0
+
+From ddca8599d166582d268dd52998858094abb3991d Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Mon, 10 Aug 2026 21:49:43 +0000
+Subject: [PATCH] fork: M8 default OFF (gate c REVERT 2026-08-10)
+
+Warm p50 ratio ON/OFF 1.0223/1.0435 on shards 1-2 vs the pre-registered
+PROMOTE <=0.95 / REVERT >=1.00 bars. Kernel kept in-tree behind
+SFU_SEISMIC_M8_BATCH=1 (the M2 precedent); unset = the verbatim
+pre-M8 single-pass loop. Tests updated to pin the flipped semantics.
+---
+ src/mmap_io.rs      | 14 +++++++-------
+ src/posting_list.rs | 24 ++++++++++++------------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 8136aa4..067743e 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -3102,7 +3102,7 @@ mod tests {
+                 // the survivor width it claims to test — and, asserted under
+                 // BOTH gate settings, that the `scored_in_block` counter
+                 // semantics are unchanged by the restructure (Q3 depends on it).
+-                for gate in [None, Some("0")] {
++                for gate in [Some("1"), None] {
+                     let stats = with_m8_env(gate, || {
+                         mmap_idx
+                             .search_raw_block_stats(
+@@ -3118,7 +3118,7 @@ mod tests {
+                     );
+                 }
+ 
+-                let owned_batch = with_m8_env(None, || {
++                let owned_batch = with_m8_env(Some("1"), || {
+                     m8_fingerprint(&owned.search_raw(
+                         &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
+                     ))
+@@ -3138,7 +3138,7 @@ mod tests {
+                     "IN-RAM path diverged (block_size={block_size}, first_sorted={first_sorted})"
+                 );
+ 
+-                let mmap_batch = with_m8_env(None, || {
++                let mmap_batch = with_m8_env(Some("1"), || {
+                     m8_fingerprint(&mmap_idx.search_raw(
+                         &toks, &vals, k, query_cut, heap_factor, 0, first_sorted,
+                     ))
+@@ -3169,8 +3169,8 @@ mod tests {
+ 
+     /// The gate must be re-readable BETWEEN QUERIES inside one process (the
+     /// latency A/B toggles it live) — i.e. nothing may cache it in a
+-    /// `OnceLock`/`lazy_static`. Also pins the accepted spellings: unset / "1"
+-    /// / "true" = batch ON; "0" / "false" / "FALSE" / "False" = single-pass.
++    /// `OnceLock`/`lazy_static`. Also pins the accepted spellings: "1" / "true"
++    /// / "TRUE" / "True" = batch ON; unset / anything else = single-pass (the gate-c REVERT default, 2026-08-10).
+     #[test]
+     fn m8_env_gate_is_live_and_covers_multi_term_queries() {
+         let _guard = M8_ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+@@ -3204,7 +3204,7 @@ mod tests {
+         // Ragged widths really happen here, and the instrument counter reports
+         // them identically under both gate settings.
+         let stats =
+-            with_m8_env(None, || mmap_idx.search_raw_block_stats(&toks, &vals, 20, 4, 0.0, 0, true).2);
++            with_m8_env(Some("1"), || mmap_idx.search_raw_block_stats(&toks, &vals, 20, 4, 0.0, 0, true).2);
+         let stats_scalar = with_m8_env(Some("0"), || {
+             mmap_idx.search_raw_block_stats(&toks, &vals, 20, 4, 0.0, 0, true).2
+         });
+@@ -3242,7 +3242,7 @@ mod tests {
+         unsafe { std::env::set_var("SFU_SEISMIC_M8_BATCH", "1") };
+         assert!(crate::posting_list::m8_batch_enabled());
+         unsafe { std::env::remove_var("SFU_SEISMIC_M8_BATCH") };
+-        assert!(crate::posting_list::m8_batch_enabled(), "unset must default to batch ON");
++        assert!(!crate::posting_list::m8_batch_enabled(), "unset must default to single-pass (gate c REVERT 2026-08-10)");
+ 
+         let _ = std::fs::remove_dir_all(&base);
+         eprintln!("m8_env_gate_is_live_and_covers_multi_term_queries OK: block_stats={stats:?}");
+diff --git a/src/posting_list.rs b/src/posting_list.rs
+index f928a9e..4826455 100644
+--- a/src/posting_list.rs
++++ b/src/posting_list.rs
+@@ -82,19 +82,19 @@ impl SpaceUsage for PackedPostingBlock {
+ /// M8 batch width — the arity of `QueryEvaluator::compute_distances_batch6_exact`.
+ pub(crate) const M8_BATCH_WIDTH: usize = 6;
+ 
+-/// M8 register-blocked scoring switch (default ON).
++/// M8 register-blocked scoring switch (default OFF — gate c REVERT
++/// 2026-08-10: warm p50 ratio ON/OFF 1.0223/1.0435 on shards 1–2, vs the
++/// pre-registered PROMOTE ≤0.95 / REVERT ≥1.00 bars; the fully-warm regime
++/// has too few gather stalls to hide and the two-phase overhead costs more
++/// than the ILP wins. Kernel kept in-tree behind the gate, the M2 precedent;
++/// `data/eval_results/m8_batch_kernel_gatec_20260810.json`).
+ ///
+ /// `evaluate_posting_block` splits the block loop into a survivor-filter phase
+ /// and a scoring phase that feeds candidates six at a time through
+-/// `QueryEvaluator::compute_distances_batch6_exact`. Set `SFU_SEISMIC_M8_BATCH=0`
+-/// (or `false`) to take the pre-M8 single-pass path instead — that fallback is
+-/// the verbatim old loop, so the two are an exact A/B.
+-///
+-/// Default-ON is safe at this layer: the *default* `compute_distances_batch6_exact`
+-/// impl (vectorium `core/vector_encoder.rs:27`) is six independent
+-/// `compute_distance` calls, so the batch path is bit-identical to the scalar
+-/// path for every encoder that has not overridden it. Whether a *specialized*
+-/// kernel ships default-ON is a separate gate decision.
++/// `QueryEvaluator::compute_distances_batch6_exact`. Set `SFU_SEISMIC_M8_BATCH=1`
++/// (or `true`) to take the batch path; unset/anything else = the pre-M8
++/// single-pass path (the verbatim old loop, so the two are an exact A/B —
++/// bit-identity measured: gate a 100/100 all cells, both arms).
+ ///
+ /// Read ONCE PER POSTING-LIST SCAN (in `search` / `sort_and_search`, i.e.
+ /// at most `query_cut` times per query — typically ≤ 32 reads/query) and
+@@ -106,9 +106,9 @@ pub(crate) const M8_BATCH_WIDTH: usize = 6;
+ /// the A/B harness toggles the variable between queries inside one process.
+ #[inline]
+ pub(crate) fn m8_batch_enabled() -> bool {
+-    !matches!(
++    matches!(
+         std::env::var("SFU_SEISMIC_M8_BATCH").ok().as_deref(),
+-        Some("0") | Some("false") | Some("FALSE") | Some("False")
++        Some("1") | Some("true") | Some("TRUE") | Some("True")
+     )
+ }
+ 
+-- 
+2.53.0
+

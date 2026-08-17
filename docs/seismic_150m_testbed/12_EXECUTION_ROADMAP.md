@@ -220,6 +220,34 @@ the environment for, follow its recipe, write the result file + doc rows per
   traverse ≤0.95×, KEEP <1.00×, REVERT ≥1.00×; cold reported wall-clock
   only, never gate-c); paste-ready session prompt
   `scripts/seismic_testbed/SESSION_PROMPT_M8_KERNEL.md` (container).
+  **Kernel BUILT + MEASURED 2026-08-10 — gate c REVERT; ships in-tree
+  DEFAULT-OFF behind `SFU_SEISMIC_M8_BATCH=1` (M2 precedent). M8 CLOSED.**
+  Gate a bit-identity PASS 100/100 every cell (shards 1–2 × f16/dv ×
+  ON/OFF vs the pre-M8 .so; `m8_batch_kernel_gatea_20260810.json`);
+  gate b suites PASS (vectorium 136/136, fork 10/10, pytest 19/19);
+  gate c warm p50 ON/OFF **1.0223× / 1.0435×** (REVERT ≥1.00 bar;
+  `m8_batch_kernel_gatec_20260810.json`); gate d not run (moot).
+  Driver `scripts/seismic_testbed/m8_batch_kernel_gates.py`. The first
+  gate-a run caught the pre-existing scalar-sparse batch6 override being
+  non-bit-exact (f16 3301/3328 hard) → M8 got its own
+  `compute_distances_batch6_exact` seam. Full record: math 08 §M8. Both loop copies restructured (posting_list.rs
+  AND the verbatim mmap_index.rs copy the served MmapSeismicIndex path
+  actually uses — a recorded deviation from the plan's single line-anchor),
+  behind `SFU_SEISMIC_M8_BATCH` (=0 forces the verbatim old loop; live-
+  flippable in-process). Second recorded deviation: batch width 6 via the
+  pre-existing `compute_distances_batch6` trait seam (dense-batch6 house
+  precedent) instead of the plan's width-4 new API; bars unchanged. The
+  interleaved dotvbyte kernel (six independent `Simd<f32,8>` accumulators,
+  one shared query pass, per-candidate op order preserved exactly) covers
+  BOTH value scales (v1 1/64, E8 v2 per-doc vmax/255); M2-int6 falls back
+  to scalar. Fork-local commit 8b51b0b (+ completes the half-committed Q3
+  signature halves that had left fork HEAD 85e30dd uncompilable); tracked
+  as `spike/seismic_upstream_m8_batch.patch`; vectorium change tracked
+  directly (main-repo 844c81b). Tests: vectorium 136/136 (7 new, all
+  f32::to_bits equality, mutation-checked); fork m8 tests green (widths
+  1/2/3/6/13/18 + ragged multi-term, mmap↔in-RAM cross-equality). Gate
+  driver `scripts/seismic_testbed/m8_batch_kernel_gates.py`. Results row
+  lands here when gates a–d complete.
 
 
 ### Q4 — M2b: i32-widen, 7-bit query (lossy — DEMOTED below the quality-free items post-G8d)
@@ -561,6 +589,29 @@ n_postings-down (blocked on build budget, backlog `11`), E7-readahead-on-ext4
   re-passes. **M8 unblocked for the register-blocked kernel build** (next
   step; bit-identical, latency-gated). §Q3 above; result
   `q3_m8_survivors_per_block_20260710.json`; math 08 §M8 pre-gate RESULT.
+- **2026-08-10 (container):** **M8 register-blocked kernel MEASURED —
+  gate c REVERT; in-tree DEFAULT-OFF; M8 + the whole M-candidate book
+  CLOSED.** Warm p50 ON/OFF 1.0223×/1.0435× (shards 1–2, one-process
+  paired ×3 reps, k'=100; PROMOTE ≤0.95 / REVERT ≥1.00) — the warm regime
+  hides no gather latency and the two-phase overhead outweighs the ILP.
+  Bit-identity gate a 100/100 every cell both arms; suites green. Two
+  latent bugs found + fixed en route: the non-bit-exact legacy
+  scalar-sparse batch6 override (M8 re-seamed to
+  `compute_distances_batch6_exact`) and the retriever manifest-form
+  AttributeError (a335cb0). Results
+  `m8_batch_kernel_gate{a,c}_20260810.json`; math 08 §M8 kernel RESULT;
+  fork 8b51b0b/27900f3/ddca859 via `spike/seismic_upstream_m8_batch.patch`.
+- **2026-08-10 (container, M8-session side-find):** **mmap reader
+  summaries_ids length-label BUG fixed** (fork 2c3cf48, patch
+  `spike/seismic_upstream_summaries_len_fix.patch`): `read_posting_lists`
+  labeled the summaries_ids BitFieldSlice with `n_summaries` (block count)
+  instead of `values_len` (summary-posting count) — born c987160
+  (2026-07-03). Release serving was NEVER wrong (physical bit length was
+  correct; reads in-bounds + value-correct, release parity 7/7), but the
+  fork debug suite was red from birth (3/7 mmap parity tests) and any
+  future checked `.get()`/`.len()` would have silently truncated. Debug
+  suite 10/10 post-fix. No format change (manifests already carry
+  `values_len`); no shard rewrite.
 - **2026-07-10 Q4 (container):** **M2b 7-bit/i32 FAIL — KILL (kills Q5).**
   7-bit query + i32 horizontal accumulation (the widened M2 variant; n=100,
   k'=100 served default, shards 1–2): `query_int7_i32` overlap@10 **0.987/

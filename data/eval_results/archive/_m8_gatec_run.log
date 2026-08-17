@@ -1,0 +1,3 @@
+[m8-gatec] shard1: on 2.16ms off 2.11ms ratio 1.0223
+[m8-gatec] shard2: on 2.31ms off 2.21ms ratio 1.0435
+[m8-gatec] verdict REVERT -> /workspaces/sfu-library-thinclient/data/eval_results/m8_batch_kernel_gatec_20260810.json
