@@ -24,9 +24,10 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
+from lib.thinclient import abstracts  # noqa: E402
 from lib.thinclient.abstracts import (  # noqa: E402
-    DICTS_STAMP, FLAT_ID_KEY, FLAT_STAMP, LOCATOR_STAMP, AbstractLocator,
-    AbstractLocatorMismatch, AbstractStore, AbstractStoreWriter,
+    DICTS_STAMP, FLAT_ID_KEY, FLAT_STAMP, LOCATOR_STAMP, PREFAULT_ENV,
+    AbstractLocator, AbstractLocatorMismatch, AbstractStore, AbstractStoreWriter,
     _encode_wid, build_flat_sidecar, build_ordinal_locator)
 
 # W-ids deliberately out of insertion order (the locator must sort them), plus
@@ -340,3 +341,126 @@ def test_encoder_agrees_with_the_builder_on_a_sweep():
               "X100", "W007", "W1", "w100", "W 1"]
     for p in probes:
         assert _encode_wid(p) == encode_meta_id(p), p
+
+
+# ── locator pre-fault, the §23 first-touch mitigation ────────────────────────
+# J1 (doc 18 §23) measured a freshly started process serving flat at 0.919x
+# sqlite until its 421 MB of mmap'd loc_*.npy are resident. SFU_ABSTRACTS_PREFAULT=1
+# touches them once at load instead. It is residency-only, so the contract these
+# tests hold is: OFF changes nothing, ON changes nothing a caller can observe
+# except the stats dict, and a pre-fault that fails still serves.
+
+@pytest.fixture
+def big_store(tmp_path):
+    """A locator whose columns span many pages, so the strided page touch has
+    something to walk (the 3-row `store` fixture fits inside one 4 KiB page)."""
+    src = tmp_path / "abstracts.sqlite"
+    w = AbstractStoreWriter(src)
+    docs = {f"W{1000 + i}": f"synthetic abstract number {i} " * 6
+            for i in range(6000)}
+    for doc_id, text in docs.items():
+        w.add(doc_id, text)
+    w.finish()
+    build_flat_sidecar(src)
+    flat_dir = src.with_suffix(src.suffix + ".flat")
+    build_ordinal_locator(src, flat_dir)
+    return src, flat_dir, docs
+
+
+def test_prefault_is_off_by_default(store, monkeypatch):
+    """Gate absent from the environment => no pre-fault, no stats, and the
+    store behaves exactly as it did before this lever existed."""
+    src, _ = store
+    monkeypatch.delenv(PREFAULT_ENV, raising=False)
+    s = AbstractStore(src)
+    assert s.prefault_stats is None
+    assert s.fetch(list(DOCS)) == DOCS
+
+
+@pytest.mark.parametrize("value", ["0", "", "true", "yes", "2"])
+def test_prefault_fires_only_on_exactly_1(store, monkeypatch, value):
+    """Same shape as SFU_SEISMIC_PREFLOOR_HOTSET: only the literal "1" is on, so
+    a typo silently leaves the shipped default rather than half-enabling it."""
+    src, _ = store
+    monkeypatch.setenv(PREFAULT_ENV, value)
+    assert AbstractStore(src).prefault_stats is None
+
+
+def test_prefault_touches_every_column_and_reports_what_it_did(store, monkeypatch):
+    src, flat_dir = store
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    s = AbstractStore(src)
+    st = s.prefault_stats
+    assert st is not None and st["error"] is None
+    assert st["columns"] == 4                        # wids + b + off + n
+    expected = sum(np.load(flat_dir / f"loc_{c}.npy", mmap_mode="r").nbytes
+                   for c in ("wids", "b", "off", "n"))
+    assert st["bytes"] == expected                   # every byte of the locator
+    assert st["ms"] >= 0.0
+
+
+def test_prefault_does_not_change_a_single_fetched_byte(store, monkeypatch):
+    """The hard gate. Residency is not a result: with the gate on, every fetch
+    must be byte-identical to the same fetch with it off."""
+    src, _ = store
+    monkeypatch.delenv(PREFAULT_ENV, raising=False)
+    cold = AbstractStore(src).fetch(list(DOCS))
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    warm = AbstractStore(src).fetch(list(DOCS))
+    assert warm == cold == DOCS
+
+
+def test_prefault_walks_a_multipage_locator_byte_identically(big_store, monkeypatch):
+    """Synthetic scale: 6,000 rows, so the columns span many 4 KiB pages and the
+    strided touch does real work — production is the same code over 23.4M rows."""
+    src, flat_dir, docs = big_store
+    monkeypatch.delenv(PREFAULT_ENV, raising=False)
+    off = AbstractStore(src)
+    assert off.prefault_stats is None
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    on = AbstractStore(src)
+    st = on.prefault_stats
+    assert st["error"] is None and st["columns"] == 4
+    assert st["bytes"] > 4096 * 4                    # genuinely multi-page
+    ids = list(docs)
+    assert on.fetch(ids) == off.fetch(ids) == docs
+
+
+def test_prefault_failure_is_non_fatal(store, monkeypatch):
+    """Fail-open by contract: pre-faulting cannot change an answer, so no
+    failure of it is a reason to refuse to serve. The store opens, the error is
+    recorded, and the fetches are unaffected."""
+    src, _ = store
+
+    def boom(arr):
+        raise OSError("simulated madvise/mmap failure")
+
+    monkeypatch.setattr(abstracts, "_touch_pages", boom)
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    s = AbstractStore(src)                            # must NOT raise
+    assert s.prefault_stats["error"].startswith("OSError")
+    assert s.prefault_stats["bytes"] == 0
+    assert s.fetch(list(DOCS)) == DOCS                # serving is unaffected
+
+
+def test_prefault_applies_in_sqlite_free_mode(store, monkeypatch):
+    """The deployed shape (doc 18 §18): abstracts.sqlite deleted, locator
+    mandatory — that is exactly the process that pays the first-touch cost."""
+    src, _ = store
+    src.rename(src.with_suffix(".sqlite.deleted"))
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    s = AbstractStore(src)
+    assert s._sqlite_free is True
+    assert s.prefault_stats["columns"] == 4 and s.prefault_stats["error"] is None
+    assert s.fetch(list(WID_ONLY)) == WID_ONLY
+
+
+def test_prefault_without_a_locator_records_nothing(store, monkeypatch):
+    """No locator attached => nothing to pre-fault; the gate must not invent a
+    stats dict (or touch the SQLite `docs` path) just because it is set."""
+    src, flat_dir = store
+    (flat_dir / LOCATOR_STAMP).unlink()               # serve via SQLite docs
+    monkeypatch.setenv(PREFAULT_ENV, "1")
+    s = AbstractStore(src)
+    assert s._locator is None and s.prefault_stats is None
+    assert s.fetch(list(DOCS)) == DOCS

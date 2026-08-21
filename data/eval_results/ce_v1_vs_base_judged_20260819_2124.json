@@ -1,0 +1,63 @@
+{
+  "date": "2026-08-19T21:24:23Z",
+  "what": "serve-path CE rerank eval: 2-leg RRF(k=60) top-20 -> CE -> nDCG@10 (gain 2^grade-1, IDCG over the 20 candidates)",
+  "judged_set": "dense_ablation_qrels_20260817.json",
+  "arms": {
+    "none": "RRF order, no CE",
+    "base": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "v1": "models/sfu-cross-encoder-v1 (torch; int8 ONNX is order-faithful)"
+  },
+  "forms_evaluated": 240,
+  "topics": 120,
+  "unjudged_candidates": {
+    "count": 0,
+    "of": 4800,
+    "frac": 0.0
+  },
+  "ndcg10_mean": {
+    "none": 0.7139,
+    "base": 0.8069,
+    "v1": 0.7904
+  },
+  "by_query_type": {
+    "keyword": {
+      "none": 0.7296,
+      "base": 0.7942,
+      "v1": 0.7835,
+      "n_forms": 120
+    },
+    "natural": {
+      "none": 0.6981,
+      "base": 0.8197,
+      "v1": 0.7973,
+      "n_forms": 120
+    }
+  },
+  "paired_bootstrap_10k_topic_level": {
+    "v1_minus_base": {
+      "mean": -0.0165,
+      "ci95": [
+        -0.0281,
+        -0.0051
+      ],
+      "topics": 120
+    },
+    "v1_minus_none": {
+      "mean": 0.0766,
+      "ci95": [
+        0.0548,
+        0.0993
+      ],
+      "topics": 120
+    },
+    "base_minus_none": {
+      "mean": 0.0931,
+      "ci95": [
+        0.0725,
+        0.114
+      ],
+      "topics": 120
+    }
+  },
+  "elapsed_s": 14.5
+}

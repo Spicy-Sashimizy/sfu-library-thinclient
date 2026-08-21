@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import threading
 import time
 from datetime import datetime
 
@@ -21,11 +22,56 @@ CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT NOT NULL);
 """
 
 
+class _Rows:
+    """Materialized query result standing in for a sqlite3 cursor."""
+
+    def __init__(self, rows):
+        self._rows = rows
+
+    def fetchone(self):
+        return self._rows[0] if self._rows else None
+
+    def fetchall(self):
+        return list(self._rows)
+
+    def __iter__(self):
+        return iter(self._rows)
+
+
+class LockedDB:
+    """Serialize ALL access to one sqlite connection shared across FastAPI's
+    request thread pool. A shared `check_same_thread=False` connection is NOT
+    safe for truly concurrent calls — the 2026-08-21 saturation battery hit
+    `sqlite3.InterfaceError: bad parameter or other API misuse` (a 500) the
+    first time two /api/search requests raced. Rows are materialized inside
+    the lock so no cursor outlives it."""
+
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+        self._lock = threading.RLock()
+
+    @property
+    def row_factory(self):
+        return self._conn.row_factory
+
+    @row_factory.setter
+    def row_factory(self, f):
+        self._conn.row_factory = f
+
+    def execute(self, sql: str, params=()) -> _Rows:
+        with self._lock:
+            return _Rows(self._conn.execute(sql, params).fetchall())
+
+    def executescript(self, script: str) -> None:
+        with self._lock:
+            self._conn.executescript(script)
+
+
 class StateStore:
     def __init__(self, path: str):
         self.path = path
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        self._db = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
+        self._db = LockedDB(sqlite3.connect(path, isolation_level=None, check_same_thread=False))
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.executescript(_SCHEMA)
 

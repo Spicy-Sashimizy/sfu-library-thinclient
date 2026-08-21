@@ -17,6 +17,8 @@ import sqlite3
 import time
 from dataclasses import dataclass
 
+from state import LockedDB
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS invites (
   token TEXT PRIMARY KEY, name TEXT, created_at REAL, max_sessions INTEGER DEFAULT 0,
@@ -48,7 +50,7 @@ class Session:
 
 class TenantStore:
     def __init__(self, path: str):
-        self._db = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
+        self._db = LockedDB(sqlite3.connect(path, isolation_level=None, check_same_thread=False))
         self._db.row_factory = sqlite3.Row
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.executescript(_SCHEMA)

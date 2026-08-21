@@ -89,3 +89,18 @@ class DOClient:
             return True
         res = self._req("GET", f"/droplets/{droplet_id}")
         return res.get("droplet", {}).get("status") == "active"
+
+    # --- provider-neutral protocol (see cloud.make_cloud_client) ---
+    # DO wake/sleep are create/destroy; OCI's are START/STOP on a persistent
+    # instance. The broker only ever calls these four names.
+    def wake(self) -> str:
+        return self.create_droplet()
+
+    def sleep(self, compute_id: str = "") -> None:
+        self.destroy_droplet(compute_id)
+
+    def compute_ip(self, compute_id: str) -> str | None:
+        return self.droplet_ip(compute_id)
+
+    def compute_active(self, compute_id: str) -> bool:
+        return self.droplet_active(compute_id)

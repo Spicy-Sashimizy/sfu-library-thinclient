@@ -1,0 +1,34 @@
+# Demo broker unit — the always-on landing/control box (OCI Phase 3).
+#
+# Runs the FastAPI broker (app.py) under uvicorn from a dedicated venv, with
+# config loaded from an EnvironmentFile (demo.env form — see demo.env.example).
+# The broker box is the 1 GB Always-Free E2.1.Micro: keep the dependency tree
+# tiny (fastapi + uvicorn + cryptography; no `oci` SDK — oci_client.py signs
+# requests itself).
+#
+# Install (on the broker box):
+#   sudo cp sfu-broker.service /etc/systemd/system/
+#   edit paths/EnvironmentFile below if the checkout differs, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-broker
+
+[Unit]
+Description=SFU library demo broker (landing page + wake/sleep control plane)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=ubuntu
+WorkingDirectory=/home/ubuntu/demo_broker
+EnvironmentFile=/home/ubuntu/demo_broker/demo.env
+ExecStart=/home/ubuntu/broker-venv/bin/uvicorn app:app --host 0.0.0.0 --port 8080
+Restart=on-failure
+RestartSec=5
+
+# hygiene — the broker holds the OCI signing key; keep the process boring
+NoNewPrivileges=true
+LimitNOFILE=8192
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

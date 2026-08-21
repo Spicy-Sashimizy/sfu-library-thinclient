@@ -42,6 +42,9 @@ def build_payload(kind: str, title: str, message: str, token: str = "") -> tuple
 
 def _post(url: str, body: bytes, headers: dict) -> None:
     req = urllib.request.Request(url, data=body, method="POST")
+    # Cloudflare Browser Integrity Check 403s urllib's default UA (error 1010);
+    # the ntfy sink sits behind the CF proxy since 2026-08-21.
+    req.add_header("User-Agent", "Mozilla/5.0 (compatible; DuckLibraryBroker/1.0)")
     for k, v in headers.items():
         req.add_header(k, v)
     try:

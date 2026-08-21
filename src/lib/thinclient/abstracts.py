@@ -69,6 +69,17 @@ LOCATOR_STAMP = "locator.json"
 DICTS_STAMP = "dicts.json"
 FLAT_ID_KEY = "flat_store_id"
 
+# Locator pre-fault (doc 18 §23 "still not settled" #1). J1 measured a freshly
+# started process serving flat at 0.919x sqlite — an 8.8% REGRESSION — on its
+# first touch after page-cache eviction, purely because the 421 MB of mmap'd
+# `loc_*.npy` fault in one page at a time under the queries. The same seed rerun
+# warm is 1.091x. This gate turns that scattered first-query cost into a bounded
+# one-off sequential touch at load. OFF by default: on it is residency-only and
+# therefore byte-identical, but it costs load time a short-lived process would
+# never earn back. Same shape as `SFU_SEISMIC_PREFLOOR_HOTSET` (F6).
+PREFAULT_ENV = "SFU_ABSTRACTS_PREFAULT"
+_PAGE_BYTES = 4096
+
 _SCRIPT_RANGES = (
     ("cyrillic", ((0x0400, 0x0500),)),
     ("han", ((0x4E00, 0xA000), (0x3400, 0x4DC0))),
@@ -368,6 +379,37 @@ def _encode_wid(doc_id: str) -> int | None:
     return None
 
 
+def _touch_pages(arr) -> tuple[int, int]:
+    """Fault in every page of one mmap'd locator column, sequentially.
+
+    Returns `(bytes_touched, checksum)`. The checksum is an anti-DCE accumulator
+    (the F6 `touch_bytes` pattern): reading one byte per 4 KiB page is the whole
+    point, so the result has to be consumed or numpy is free not to do the read.
+    `madvise(MADV_WILLNEED)` is issued first where the platform has it — it is
+    advisory *readahead*, asynchronous and unguaranteed, so the strided read is
+    what actually establishes residency; the advice just lets the kernel batch
+    the I/O instead of servicing ~103k separate minor faults.
+
+    Residency-only: no byte of any column changes, so a store with the gate on
+    returns bit-identical abstracts to one with it off, by construction.
+    """
+    import mmap as _mmap
+
+    import numpy as np
+
+    mm = getattr(arr, "_mmap", None)
+    advise = getattr(mm, "madvise", None)
+    if advise is not None and hasattr(_mmap, "MADV_WILLNEED"):
+        try:
+            advise(_mmap.MADV_WILLNEED)
+        except (OSError, ValueError):
+            pass                      # advisory only — the read below still runs
+    flat = np.asarray(arr).reshape(-1).view(np.uint8)
+    if flat.size == 0:
+        return 0, 0
+    return int(flat.nbytes), int(flat[::_PAGE_BYTES].sum(dtype=np.int64))
+
+
 class AbstractLocator:
     """`W-id -> (block, offset, length)` for a flat abstract store, replacing
     the SQLite `docs` B-tree over 23.4M variable-length TEXT keys with a
@@ -435,6 +477,51 @@ class AbstractLocator:
             setattr(self, name, arr)
         logger.info("abstract locator %s loaded: %d rows from %s",
                     got, self.rows, self.flat_dir)
+
+    def prefault(self) -> dict:
+        """Touch all four locator columns once at load (doc 18 §23 mitigation).
+
+        J1 (§23) measured the negative this exists for: a freshly started
+        process serving flat is **0.919x** sqlite until its 421 MB of mmap'd
+        `loc_*.npy` are resident — flat p95 9.597 ms vs sqlite's 3.526, gone by
+        the next run. Faulting the columns in one sequential pass here moves
+        that cost out of the first queries and into a bounded, measurable load
+        step. IMPLEMENTED 2026-08-18, EFFICACY UNMEASURED (see the docstring
+        note in `AbstractStore._open_locator`).
+
+        FAIL-OPEN, and deliberately so: pre-faulting cannot change an answer
+        (it reads read-only pages and writes nothing), so no failure of it is a
+        reason to refuse to serve. Any error is logged and recorded in the
+        returned dict; the store carries on with a cold locator, i.e. exactly
+        the gate-off behaviour. This is the opposite of the identity gate above,
+        which fails CLOSED because that one *can* return wrong bytes.
+
+        Returns `{"bytes", "ms", "columns", "checksum", "error"}`.
+        """
+        t0 = time.perf_counter()
+        stats: dict = {"bytes": 0, "ms": 0.0, "columns": 0,
+                       "checksum": 0, "error": None}
+        try:
+            for name in ("wids", "b", "off", "n"):
+                arr = getattr(self, name, None)
+                if arr is None:
+                    continue
+                nbytes, chk = _touch_pages(arr)
+                stats["bytes"] += nbytes
+                stats["checksum"] ^= chk
+                stats["columns"] += 1
+        except Exception as exc:      # noqa: BLE001 — fail-open by contract
+            stats["error"] = f"{type(exc).__name__}: {exc}"
+            logger.warning("abstract locator %s: pre-fault failed (%s) — serving "
+                           "with a cold locator (first-touch cost unchanged)",
+                           self.flat_dir, stats["error"])
+        stats["ms"] = (time.perf_counter() - t0) * 1e3
+        if stats["error"] is None:
+            logger.info("abstract locator %s: pre-faulted %.1f MB across %d "
+                        "columns in %.0f ms (%s=1)", self.flat_dir,
+                        stats["bytes"] / 1e6, stats["columns"], stats["ms"],
+                        PREFAULT_ENV)
+        return stats
 
     def lookup(self, ids: list[str]):
         """`W-id -> (positions, found)`. `found` is the verification read that
@@ -616,6 +703,10 @@ class AbstractStore:
         self._block_cache: OrderedDict[int, bytes] = OrderedDict()
         self._flat = None
         self._locator = None
+        # Set by `_open_locator` when SFU_ABSTRACTS_PREFAULT=1; stays None when
+        # the gate is off or no locator attached. The store's only metrics
+        # surface — what the pre-fault touched and what it cost (doc 18 §23).
+        self.prefault_stats: dict | None = None
         flat_dir = self.path.with_suffix(self.path.suffix + ".flat")
 
         # ── SQLite-free mode (doc 18 §18) ────────────────────────────────────
@@ -797,13 +888,24 @@ class AbstractStore:
         half-built flat sidecar (which falls back losslessly to the v3 blocks
         table), a mismatched locator loads fine and returns wrong abstracts, so
         the only safe response is to refuse loudly — the operator built it to be
-        used, and using the wrong one is the failure this gate exists for."""
+        used, and using the wrong one is the failure this gate exists for.
+
+        `SFU_ABSTRACTS_PREFAULT=1` additionally pre-faults the locator columns
+        here (doc 18 §23's mitigation for the 0.919x first-touch regression).
+        Default OFF, residency-only when on, fail-open. **IMPLEMENTED
+        2026-08-18, EFFICACY UNMEASURED** — the first-touch re-measurement is
+        pending via `scripts/seismic_testbed/j1_flat_sidecar_serving_ab.py`
+        (its first-touch phase) on an idle machine."""
+        import os
+
         if not (flat_dir / LOCATOR_STAMP).exists():
             return
         self._locator = AbstractLocator(flat_dir)   # raises on any mismatch
         logger.info("abstracts: %s serving the ordinal locator (%d rows) — "
                     "block lookups no longer touch SQLite", self.path.name,
                     self._locator.rows)
+        if os.environ.get(PREFAULT_ENV, "0") == "1":
+            self.prefault_stats = self._locator.prefault()
 
     def _block_flat(self, b: int) -> bytes:
         import os

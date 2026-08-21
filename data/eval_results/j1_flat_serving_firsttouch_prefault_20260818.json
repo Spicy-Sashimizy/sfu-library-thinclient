@@ -1,0 +1,397 @@
+{
+ "date_utc": "2026-08-18T19:57:21",
+ "harness": "j1 interleaved (warm)",
+ "prereg": {
+  "registered": "in-source, committed before the first run (see git log for this file's add commit vs the results files' commit)",
+  "subject": "the PUBLISHED sidecar at data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/ (built + gate-PASSED 2026-08-17, commit f55ce5f), read through the shipped AbstractStore",
+  "claims_under_test": {
+   "doc18_s17_warm_p50": "flat_ordinal 1.18x mainline p50 (3.547 -> 3.012 ms), spike, local disk, 50 random ids/fetch",
+   "doc18_s17_all_percentiles": "flat faster at p50, mean AND p90; slower in no percentile (the operator no-regression gate)",
+   "doc18_s16_cold_vs_warm": "the `docs` B-tree costs ~4 ms cold and ~0.24 ms hot; that is the whole 5.53x -> 1.18x collapse",
+   "doc18_s22_bytes": "11,573,201,974 B flat vs 13,470,433,280 B sqlite = -1,897,231,306 B (-1.90 GB)"
+  },
+  "bars": {
+   "B1_parity": {
+    "hard_gate": true,
+    "statement": "every abstract fetched by the flat arm is BYTE-IDENTICAL to the sqlite arm's, for every sampled doc, in every trial, plus a windowed 20,000-id gate",
+    "on_fail": "STOP. No latency number from this run is valid or publishable; report the mismatch and do not touch the serving default."
+   },
+   "B2_warm_no_regression": {
+    "statement": "flat warm per-batch p50 <= sqlite warm per-batch p50",
+    "why": "the operator constraint recorded in doc 18 \u00a716/\u00a717 \u2014 faster is a bonus, slower is a failure"
+   },
+   "B3_warm_p50_ge_1_18x": {
+    "statement": "flat warm p50 multiple >= 1.18x (doc 18 \u00a717's shipped-path number) once the noise floor is subtracted",
+    "predicted": "MET OR EXCEEDED. \u00a717 measured on local disk; this is 9p, where \u00a716 measured the same payload move 2.4x higher (2.89x vs 1.21x).",
+    "interpretation_rule": "a warm multiple > 1.5x is a 9p artifact and must NOT be quoted as production-realisable; the transferable figure stays ~1.18x."
+   },
+   "B4_warm_p95_no_regression": {
+    "statement": "flat warm per-batch p95 <= sqlite warm per-batch p95",
+    "predicted": "MET but thin. \u00a716 measured p90 at only 1.19x because the tail is block decompression, which both arms share."
+   },
+   "B5_cold_multiple_gt_warm": {
+    "statement": "flat cold p50 multiple > flat warm p50 multiple",
+    "why": "this is the direct test of \u00a716/\u00a717's cold-B-tree explanation. If cold <= warm, that explanation is wrong and \u00a717's 'C8's 5.53x was a cold-cache artifact' needs rewriting."
+   },
+   "B6_bytes": {
+    "statement": "published flat total is 11,573,201,974 B and the sqlite it replaces is 13,470,433,280 B (-1,897,231,306 B), re-confirmed by stat of the published directory"
+   },
+   "B7_miss_asymmetry": {
+    "directional_only": true,
+    "statement": "on synthetic_miss50 the flat arm's advantage SHRINKS relative to the hits-only regime, because a locator miss pays searchsorted AND the `docs` fallback while a sqlite miss pays only `docs`",
+    "why": "not a pass/fail bar \u2014 this container has one live section so the true production miss rate is unknown. It bounds the risk of generalising the hits-only number to a federated deploy."
+   }
+  },
+  "n": "120 real bm25f queries; top_k 50 (production default) and 100; cold = 2 reps x 120 batches per arm with drop_caches before each; warm = 300 order-randomised interleaved trials per arm per regime",
+  "if_slower": "record the number, leave the serving default exactly as it is (the sidecar is already published and serving), and flag it."
+ },
+ "src": "/var/tmp/j1_abs_stage/abstracts.sqlite",
+ "src_fstype": "overlay",
+ "seed": 17,
+ "sizes": {
+  "sqlite_bytes": 13470433280,
+  "flat_total_bytes": 11573203382,
+  "saved_bytes": 1897229898,
+  "saved_gb": 1.897,
+  "flat_files": {
+   "block_dictids.npy": 1517135,
+   "block_lengths.npy": 6068156,
+   "block_offsets.npy": 12136184,
+   "blocks.bin": 11131511857,
+   "dicts.json": 379,
+   "flat_store.json": 367,
+   "loc_b.npy": 93592420,
+   "loc_n.npy": 93592420,
+   "loc_off.npy": 46796274,
+   "loc_wids.npy": 187184712,
+   "locator.json": 662,
+   "zdict_arabic": 114688,
+   "zdict_cyrillic": 114688,
+   "zdict_greek": 114688,
+   "zdict_han": 114688,
+   "zdict_hangul": 114688,
+   "zdict_kana": 114688,
+   "zdict_latin": 114688
+  }
+ },
+ "regimes": {
+  "real_top50": {
+   "trials": 300,
+   "ids_per_fetch": 50,
+   "docs_returned_median": {
+    "sqlite": 22.0,
+    "flat": 22.0,
+    "sqlite_ctrl": 22.0
+   },
+   "parity_mismatched_trials": {
+    "sqlite": 0,
+    "flat": 0,
+    "sqlite_ctrl": 0
+   },
+   "parity_pass": true,
+   "arms": {
+    "sqlite": {
+     "n": 300,
+     "p50_ms": 1.9319,
+     "mean_ms": 4.9165,
+     "p90_ms": 18.5175,
+     "p95_ms": 24.8444,
+     "p99_ms": 30.8422,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0805,
+      "mean_ms": 0.2447,
+      "p90_ms": 0.9249,
+      "p95_ms": 1.0159,
+      "p99_ms": 1.6643
+     },
+     "vs_sqlite_p50": 1.0,
+     "regression_vs_sqlite": false
+    },
+    "flat": {
+     "n": 300,
+     "p50_ms": 1.843,
+     "mean_ms": 3.2812,
+     "p90_ms": 8.3979,
+     "p95_ms": 10.1667,
+     "p99_ms": 12.1528,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0774,
+      "mean_ms": 0.1577,
+      "p90_ms": 0.3354,
+      "p95_ms": 0.4168,
+      "p99_ms": 0.9462
+     },
+     "vs_sqlite_p50": 1.048,
+     "regression_vs_sqlite": false
+    },
+    "sqlite_ctrl": {
+     "n": 300,
+     "p50_ms": 1.8469,
+     "mean_ms": 6.0737,
+     "p90_ms": 17.9044,
+     "p95_ms": 27.2871,
+     "p99_ms": 45.2384,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0816,
+      "mean_ms": 0.2335,
+      "p90_ms": 0.8269,
+      "p95_ms": 1.0361,
+      "p99_ms": 1.4634
+     },
+     "vs_sqlite_p50": 1.046,
+     "regression_vs_sqlite": false
+    }
+   },
+   "noise_floor_pct": 4.4
+  },
+  "synthetic_miss50_top50": {
+   "trials": 300,
+   "ids_per_fetch": 50,
+   "docs_returned_median": {
+    "sqlite": 11.0,
+    "flat": 11.0,
+    "sqlite_ctrl": 11.0
+   },
+   "parity_mismatched_trials": {
+    "sqlite": 0,
+    "flat": 0,
+    "sqlite_ctrl": 0
+   },
+   "parity_pass": true,
+   "arms": {
+    "sqlite": {
+     "n": 300,
+     "p50_ms": 0.9529,
+     "mean_ms": 1.0359,
+     "p90_ms": 1.5225,
+     "p95_ms": 1.6411,
+     "p99_ms": 2.2511,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.082,
+      "mean_ms": 0.0947,
+      "p90_ms": 0.1171,
+      "p95_ms": 0.1321,
+      "p99_ms": 0.2158
+     },
+     "vs_sqlite_p50": 1.0,
+     "regression_vs_sqlite": false
+    },
+    "flat": {
+     "n": 300,
+     "p50_ms": 0.8885,
+     "mean_ms": 0.9514,
+     "p90_ms": 1.3577,
+     "p95_ms": 1.5092,
+     "p99_ms": 2.9782,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0774,
+      "mean_ms": 0.0885,
+      "p90_ms": 0.1295,
+      "p95_ms": 0.1498,
+      "p99_ms": 0.2978
+     },
+     "vs_sqlite_p50": 1.072,
+     "regression_vs_sqlite": false
+    },
+    "sqlite_ctrl": {
+     "n": 300,
+     "p50_ms": 0.9541,
+     "mean_ms": 1.0577,
+     "p90_ms": 1.498,
+     "p95_ms": 1.6536,
+     "p99_ms": 6.2338,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0826,
+      "mean_ms": 0.0959,
+      "p90_ms": 0.1124,
+      "p95_ms": 0.1325,
+      "p99_ms": 0.9358
+     },
+     "vs_sqlite_p50": 0.999,
+     "regression_vs_sqlite": true
+    }
+   },
+   "noise_floor_pct": 0.13
+  },
+  "real_top100": {
+   "trials": 300,
+   "ids_per_fetch": 100,
+   "docs_returned_median": {
+    "sqlite": 46.0,
+    "flat": 46.0,
+    "sqlite_ctrl": 46.0
+   },
+   "parity_mismatched_trials": {
+    "sqlite": 0,
+    "flat": 0,
+    "sqlite_ctrl": 0
+   },
+   "parity_pass": true,
+   "arms": {
+    "sqlite": {
+     "n": 300,
+     "p50_ms": 3.7462,
+     "mean_ms": 6.4722,
+     "p90_ms": 19.9914,
+     "p95_ms": 27.2082,
+     "p99_ms": 45.504,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0785,
+      "mean_ms": 0.1419,
+      "p90_ms": 0.4649,
+      "p95_ms": 0.5552,
+      "p99_ms": 0.8001
+     },
+     "vs_sqlite_p50": 1.0,
+     "regression_vs_sqlite": false
+    },
+    "flat": {
+     "n": 300,
+     "p50_ms": 3.6671,
+     "mean_ms": 5.0835,
+     "p90_ms": 10.775,
+     "p95_ms": 12.6538,
+     "p99_ms": 18.1499,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.074,
+      "mean_ms": 0.1145,
+      "p90_ms": 0.2031,
+      "p95_ms": 0.2669,
+      "p99_ms": 0.5421
+     },
+     "vs_sqlite_p50": 1.022,
+     "regression_vs_sqlite": false
+    },
+    "sqlite_ctrl": {
+     "n": 300,
+     "p50_ms": 3.8953,
+     "mean_ms": 7.3529,
+     "p90_ms": 21.5931,
+     "p95_ms": 30.7714,
+     "p99_ms": 43.3626,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0785,
+      "mean_ms": 0.1605,
+      "p90_ms": 0.5221,
+      "p95_ms": 0.598,
+      "p99_ms": 0.7809
+     },
+     "vs_sqlite_p50": 0.962,
+     "regression_vs_sqlite": true
+    }
+   },
+   "noise_floor_pct": 3.98
+  },
+  "synthetic_miss50_top100": {
+   "trials": 300,
+   "ids_per_fetch": 100,
+   "docs_returned_median": {
+    "sqlite": 22.0,
+    "flat": 22.0,
+    "sqlite_ctrl": 22.0
+   },
+   "parity_mismatched_trials": {
+    "sqlite": 0,
+    "flat": 0,
+    "sqlite_ctrl": 0
+   },
+   "parity_pass": true,
+   "arms": {
+    "sqlite": {
+     "n": 300,
+     "p50_ms": 1.7221,
+     "mean_ms": 1.7662,
+     "p90_ms": 2.7195,
+     "p95_ms": 2.9301,
+     "p99_ms": 3.369,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0786,
+      "mean_ms": 0.0807,
+      "p90_ms": 0.0949,
+      "p95_ms": 0.1066,
+      "p99_ms": 0.1268
+     },
+     "vs_sqlite_p50": 1.0,
+     "regression_vs_sqlite": false
+    },
+    "flat": {
+     "n": 300,
+     "p50_ms": 1.6223,
+     "mean_ms": 1.6423,
+     "p90_ms": 2.3956,
+     "p95_ms": 2.624,
+     "p99_ms": 3.117,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0729,
+      "mean_ms": 0.0765,
+      "p90_ms": 0.0931,
+      "p95_ms": 0.1152,
+      "p99_ms": 0.1401
+     },
+     "vs_sqlite_p50": 1.061,
+     "regression_vs_sqlite": false
+    },
+    "sqlite_ctrl": {
+     "n": 300,
+     "p50_ms": 1.7613,
+     "mean_ms": 1.7878,
+     "p90_ms": 2.7082,
+     "p95_ms": 3.0176,
+     "p99_ms": 3.5801,
+     "per_doc": {
+      "n": 300,
+      "p50_ms": 0.0793,
+      "mean_ms": 0.0816,
+      "p90_ms": 0.0986,
+      "p95_ms": 0.1137,
+      "p99_ms": 0.1288
+     },
+     "vs_sqlite_p50": 0.978,
+     "regression_vs_sqlite": true
+    }
+   },
+   "noise_floor_pct": 2.27
+  }
+ },
+ "parity": {
+  "windowed_gate": {
+   "ids_requested": 20000,
+   "ids_checked": 14000,
+   "docs_returned": {
+    "sqlite": 14000,
+    "flat": 14000,
+    "sqlite_ctrl": 14000
+   },
+   "mismatched_chunks": {
+    "sqlite": 0,
+    "flat": 0,
+    "sqlite_ctrl": 0
+   },
+   "pass": true
+  },
+  "overall_pass": true
+ },
+ "mem_start": {
+  "vmhwm": 465924096,
+  "vmrss": 465924096,
+  "memavailable": 56131108864,
+  "cached": 29372129280
+ },
+ "mem_end": {
+  "vmhwm": 505827328,
+  "vmrss": 505827328,
+  "memavailable": 56075833344,
+  "cached": 30004174848
+ }
+}

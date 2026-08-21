@@ -168,6 +168,22 @@ Small Python (FastAPI) service on the NAS, fronted by the **existing** cloudflar
    `IDLE_MINUTES` (default 20) of no queries → **destroy** the droplet, keep the volume.
 6. **Hard killswitch** (cron): enforce a `MAX_RUNTIME_HOURS_PER_DAY` cap — force-destroy
    even if "active", as a budget backstop against a stuck reaper.
+7. **Architecture explainer** `GET /architecture` — public (no auth), no wake.
+   Serves the interactive federated query trace visualization
+   (`scripts/demo_broker/architecture_page.py`): 8-shard pipeline diagram, R1-accurate
+   RAM ladder, phone/thumb-drive deployment scenarios, References tab with links to
+   repos and concept papers. Linked from the waiting room and the landing page footer.
+   The page's "RUN QUERY →" button fires a real search (see item 7a) in parallel with
+   the animation; live results replace the placeholder papers when the response lands.
+7a. **Arch search proxy** `POST /arch-search` — public (no auth), 5 req/min/IP.
+   Unauthenticated thin wrapper around the serve box's `/api/search`; exists because
+   the `/api/{subpath}` catch-all requires a session cookie. Rate-limited in-memory
+   per client IP (`_arch_rate` dict in `app.py`). Added 2026-08-21.
+8. **Share detection** — in-memory (`_session_ips` dict in `app.py`). When an existing
+   session token is presented from a new IP, a `link_shared` event is written to the
+   JSONL event log and a notify fires (same channel as `session_start`). Sharing is not
+   blocked — the detection is observation-only to measure viral reach. Resets on broker
+   restart (intentional; historical visits are not back-filled).
 
 Footprint on the NAS: tiny (<256 MB) — fits the 7 GB free headroom easily.
 
@@ -308,5 +324,9 @@ pre-measurement numbers `*est.*`.
   sudo — configs read from disk). Cloudflare creds already in `.env`; cloudflared's
   NAS config is root-only and not needed. Pommel was down (`pommeld` EXITED) so
   creds came from the NAS directly.
-- **Resumable seed** (`scripts/seed_demo_volume.sh`): interrupt→resume→checksum-verify
+- **Resumable seed** (`scripts/archive/seed_demo_volume.sh` — moved to `archive/`
+  2026-08-19, Qdrant/DO era): interrupt→resume→checksum-verify
   validated; dry-run enumerated the real 41 GB / 30M Qdrant storage (2,509 files).
+  Its successor for the OCI plan is
+  `scripts/demo_dependability/seed_oci_volume.sh` (manifest-driven, thin-client
+  payload) — see `OCI_DEMO_DEPLOYMENT.md` §8/§9.

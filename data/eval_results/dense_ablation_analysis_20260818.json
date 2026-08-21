@@ -1,0 +1,783 @@
+{
+ "what": "dense-leg ablation analysis under the 2026-08-18 amended rule (Option 2, dose-response)",
+ "date": "2026-08-18",
+ "inputs": {
+  "arm_a": "data/eval_results/dense_ablation_A_nodense_20260818.json",
+  "arm_b": "data/eval_results/dense_ablation_B_dense_20260818.json",
+  "qrels": "data/eval_results/dense_ablation_qrels_20260817.json"
+ },
+ "bootstrap": {
+  "resamples": 10000,
+  "seed": 20260818,
+  "paired": "over topics; per-topic = mean of the 2 forms"
+ },
+ "arm_means": {
+  "A_nodense": {
+   "final_ndcg10": 0.7215794063565905,
+   "retrieval_ndcg10": 0.6642110389685618,
+   "recall50": 0.3327341221606429,
+   "unjudged_at10": 0.0
+  },
+  "B_dense": {
+   "final_ndcg10": 0.7138678520567656,
+   "retrieval_ndcg10": 0.6591102941436092,
+   "recall50": 0.3049852347997281,
+   "unjudged_at10": 0.0
+  }
+ },
+ "primary_all_topics_final_ndcg10": {
+  "n_topics": 120,
+  "delta": -0.007711554299824323,
+  "ci95": [
+   -0.015288439955214124,
+   -0.00012118192922273748
+  ],
+  "ci_excludes_zero": true
+ },
+ "dose_response_check_lowcov_c_le_0.10": {
+  "n_topics": 24,
+  "delta": -0.018399843145878784,
+  "ci95": [
+   -0.03623632366758149,
+   -0.0017676341246497206
+  ],
+  "ci_excludes_zero": true
+ },
+ "strict4_heldout_as_originally_preregistered": {
+  "n_topics": 4,
+  "delta": 0.012927258196718324,
+  "ci95": [
+   -0.019296581183778014,
+   0.04289695657567955
+  ],
+  "ci_excludes_zero": false
+ },
+ "delta_by_coverage_band": {
+  "c == 0": {
+   "n_topics": 4,
+   "delta": 0.012927258196718324,
+   "ci95": [
+    -0.019296581183778014,
+    0.04289695657567955
+   ],
+   "ci_excludes_zero": false
+  },
+  "0 < c <= 0.05": {
+   "n_topics": 3,
+   "delta": -0.01203440867284796,
+   "ci95": [
+    -0.043040468404518695,
+    0.011502919072364004
+   ],
+   "ci_excludes_zero": false
+  },
+  "0.05 < c <= 0.10": {
+   "n_topics": 17,
+   "delta": -0.02689423778055413,
+   "ci95": [
+    -0.048297713946599895,
+    -0.006666117330892625
+   ],
+   "ci_excludes_zero": true
+  },
+  "0.10 < c <= 0.25": {
+   "n_topics": 72,
+   "delta": -0.0022356478250482267,
+   "ci95": [
+    -0.011767678556881368,
+    0.007073822876648515
+   ],
+   "ci_excludes_zero": false
+  },
+  "0.25 < c <= 0.50": {
+   "n_topics": 24,
+   "delta": -0.013450984878098158,
+   "ci95": [
+    -0.030998092991037614,
+    0.0035709629282754327
+   ],
+   "ci_excludes_zero": false
+  }
+ },
+ "secondary": {
+  "retrieval_ndcg10": {
+   "n_topics": 120,
+   "delta": -0.00510074482495287,
+   "ci95": [
+    -0.014279939265237315,
+    0.004087117451554045
+   ],
+   "ci_excludes_zero": false
+  },
+  "recall50": {
+   "n_topics": 120,
+   "delta": -0.027748887360914864,
+   "ci95": [
+    -0.03572495420095576,
+    -0.019759290320723173
+   ],
+   "ci_excludes_zero": true
+  }
+ },
+ "dense_vote_share_at10_armB": 0.024583333333333332,
+ "overlap_at50_armB": {
+  "dense∩bm25f": 0.175,
+  "dense∩splade": 0.14166666666666666,
+  "bm25f∩splade": 5.533333333333333
+ },
+ "latency": {
+  "A_nodense": {
+   "lat_bm25f_ms": {
+    "p50_ms": 1244.97,
+    "p95_ms": 3440.05,
+    "n": 240
+   },
+   "lat_final_ms": {
+    "p50_ms": 230.1,
+    "p95_ms": 367.82,
+    "n": 240
+   },
+   "lat_splade_ms": {
+    "p50_ms": 608.87,
+    "p95_ms": 2201.18,
+    "n": 240
+   },
+   "lat_total_ms": {
+    "p50_ms": 2404.01,
+    "p95_ms": 4941.26,
+    "n": 240
+   }
+  },
+  "B_dense": {
+   "lat_bm25f_ms": {
+    "p50_ms": 1206.92,
+    "p95_ms": 3329.35,
+    "n": 240
+   },
+   "lat_dense_ms": {
+    "p50_ms": 61.91,
+    "p95_ms": 117.43,
+    "n": 240
+   },
+   "lat_final_ms": {
+    "p50_ms": 203.68,
+    "p95_ms": 340.2,
+    "n": 240
+   },
+   "lat_splade_ms": {
+    "p50_ms": 149.42,
+    "p95_ms": 296.21,
+    "n": 240
+   },
+   "lat_total_ms": {
+    "p50_ms": 1682.15,
+    "p95_ms": 3842.03,
+    "n": 240
+   }
+  }
+ },
+ "decision_rule": "KEEP iff Δ_all ≥ +0.02 with 95% CI excluding 0 AND low-coverage (c≤0.10) point estimate > 0",
+ "verdict": "DROP from the payload",
+ "per_topic": {
+  "5G millimeter wave antenna array beamforming design": {
+   "coverage": 0.1236,
+   "A_final_ndcg10": 0.8592940867651128,
+   "B_final_ndcg10": 0.8583863729130019
+  },
+  "Andean agrarian reform peasant movements land tenure": {
+   "coverage": 0.4571,
+   "A_final_ndcg10": 0.1377437953559079,
+   "B_final_ndcg10": 0.1664060409193835
+  },
+  "Canadian Arctic sovereignty Northwest Passage shipping governance": {
+   "coverage": 0.1053,
+   "A_final_ndcg10": 0.9729176101801282,
+   "B_final_ndcg10": 0.9729176101801282
+  },
+  "Canadian universal pharmacare drug coverage policy debate": {
+   "coverage": 0.0964,
+   "A_final_ndcg10": 0.9505181047576496,
+   "B_final_ndcg10": 0.9505181047576496
+  },
+  "Cuban revolution health system export medical diplomacy": {
+   "coverage": 0.1778,
+   "A_final_ndcg10": 0.6302463667097717,
+   "B_final_ndcg10": 0.6298701616732806
+  },
+  "Indigenous data sovereignty OCAP principles research governance": {
+   "coverage": 0.1765,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 1.0
+  },
+  "Indigenous food sovereignty traditional harvesting country foods nutrition": {
+   "coverage": 0.2206,
+   "A_final_ndcg10": 0.9322035829865876,
+   "B_final_ndcg10": 0.9314511729136055
+  },
+  "Metis identity scrip land dispossession prairie history": {
+   "coverage": 0.16,
+   "A_final_ndcg10": 0.5625585747876243,
+   "B_final_ndcg10": 0.4431629843261884
+  },
+  "PFAS forever chemicals water treatment removal degradation": {
+   "coverage": 0.0548,
+   "A_final_ndcg10": 0.9079222145365844,
+   "B_final_ndcg10": 0.8553749442848715
+  },
+  "Quebec language policy Bill 101 French minority rights": {
+   "coverage": 0.1714,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 0.9810702218701746
+  },
+  "Spanish influenza 1918 pandemic public health response cities": {
+   "coverage": 0.15,
+   "A_final_ndcg10": 0.5081517490145507,
+   "B_final_ndcg10": 0.5613844845239482
+  },
+  "access to justice self represented litigants legal aid funding": {
+   "coverage": 0.2917,
+   "A_final_ndcg10": 0.9324668441486014,
+   "B_final_ndcg10": 0.9790388794001829
+  },
+  "additive manufacturing metal 3D printing fatigue defects microstructure": {
+   "coverage": 0.0,
+   "A_final_ndcg10": 0.37588017170127414,
+   "B_final_ndcg10": 0.4041037424346541
+  },
+  "ancient DNA population migration archaeogenetics prehistoric Europe": {
+   "coverage": 0.4412,
+   "A_final_ndcg10": 0.034715610968388634,
+   "B_final_ndcg10": 0.034715610968388634
+  },
+  "approximate nearest neighbour search vector index billion scale": {
+   "coverage": 0.1053,
+   "A_final_ndcg10": 0.853709417335879,
+   "B_final_ndcg10": 0.7338707467169006
+  },
+  "audiobook market growth narration production publishing industry": {
+   "coverage": 0.1042,
+   "A_final_ndcg10": 0.8177489393750832,
+   "B_final_ndcg10": 0.8072820561575176
+  },
+  "auditor independence non-audit services fee dependence quality": {
+   "coverage": 0.134,
+   "A_final_ndcg10": 0.7435327229601907,
+   "B_final_ndcg10": 0.7558832454916244
+  },
+  "autonomous vehicle sensor fusion lidar camera perception": {
+   "coverage": 0.0556,
+   "A_final_ndcg10": 0.7802198333001911,
+   "B_final_ndcg10": 0.8177995254338786
+  },
+  "bail reform pretrial detention remand population Canada": {
+   "coverage": 0.0988,
+   "A_final_ndcg10": 0.6967922417628294,
+   "B_final_ndcg10": 0.6705450219978047
+  },
+  "carbon border adjustment mechanism trade competitiveness leakage": {
+   "coverage": 0.2109,
+   "A_final_ndcg10": 0.9790388794001829,
+   "B_final_ndcg10": 0.9566393739777042
+  },
+  "caribou herd decline habitat disturbance boreal recovery planning": {
+   "coverage": 0.0,
+   "A_final_ndcg10": 0.5502961841821884,
+   "B_final_ndcg10": 0.5151595523593577
+  },
+  "causal inference propensity score matching observational studies": {
+   "coverage": 0.1215,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 1.0
+  },
+  "childcare policy universal early learning affordability workforce": {
+   "coverage": 0.2027,
+   "A_final_ndcg10": 0.5437050225218084,
+   "B_final_ndcg10": 0.4870873753153561
+  },
+  "childhood vaccination coverage school immunization programs uptake": {
+   "coverage": 0.2105,
+   "A_final_ndcg10": 0.8183335057988215,
+   "B_final_ndcg10": 0.7474682104846337
+  },
+  "coastal erosion sea level rise shoreline retreat adaptation": {
+   "coverage": 0.2696,
+   "A_final_ndcg10": 0.6005704751921471,
+   "B_final_ndcg10": 0.6341803147463685
+  },
+  "code switching bilingual speakers sociolinguistic variation": {
+   "coverage": 0.1607,
+   "A_final_ndcg10": 0.897102863090234,
+   "B_final_ndcg10": 0.8921447113798313
+  },
+  "community land trust affordable housing stewardship models": {
+   "coverage": 0.0581,
+   "A_final_ndcg10": 0.9601091012703574,
+   "B_final_ndcg10": 0.9601091012703574
+  },
+  "compiler optimization loop vectorization SIMD code generation": {
+   "coverage": 0.0395,
+   "A_final_ndcg10": 0.6332773205230181,
+   "B_final_ndcg10": 0.6447802395953821
+  },
+  "concussion return to play protocol youth sport recovery": {
+   "coverage": 0.1625,
+   "A_final_ndcg10": 0.5772632762815733,
+   "B_final_ndcg10": 0.5863866147354624
+  },
+  "conservation of contemporary art materials degradation museum practice": {
+   "coverage": 0.2059,
+   "A_final_ndcg10": 0.6018747426989276,
+   "B_final_ndcg10": 0.5930479431566851
+  },
+  "corporate bond liquidity credit spread market microstructure": {
+   "coverage": 0.1635,
+   "A_final_ndcg10": 0.6993991516554661,
+   "B_final_ndcg10": 0.6220672353081891
+  },
+  "corporate social responsibility greenwashing stakeholder perception": {
+   "coverage": 0.2624,
+   "A_final_ndcg10": 0.8896720051024587,
+   "B_final_ndcg10": 0.9026447822203222
+  },
+  "cryptocurrency market volatility bitcoin price contagion spillover": {
+   "coverage": 0.0923,
+   "A_final_ndcg10": 0.8011204412504127,
+   "B_final_ndcg10": 0.7165304943761627
+  },
+  "cycling infrastructure bike lanes mode shift urban mobility": {
+   "coverage": 0.2048,
+   "A_final_ndcg10": 0.5323779358618328,
+   "B_final_ndcg10": 0.4806316151645921
+  },
+  "data physicalization tangible data representation public engagement": {
+   "coverage": 0.1275,
+   "A_final_ndcg10": 0.8834953197311748,
+   "B_final_ndcg10": 0.9681896059005242
+  },
+  "district heating waste heat recovery thermal network efficiency": {
+   "coverage": 0.1728,
+   "A_final_ndcg10": 0.9395856345387417,
+   "B_final_ndcg10": 0.9395856345387417
+  },
+  "dramaturgy new play development workshop process": {
+   "coverage": 0.2444,
+   "A_final_ndcg10": 0.5838106624534058,
+   "B_final_ndcg10": 0.5595372047626783
+  },
+  "early literacy phonics instruction reading intervention primary grades": {
+   "coverage": 0.0583,
+   "A_final_ndcg10": 0.8947498188174607,
+   "B_final_ndcg10": 0.7938769159809578
+  },
+  "economic sanctions effectiveness compliance target state behaviour": {
+   "coverage": 0.2804,
+   "A_final_ndcg10": 0.2686451892084582,
+   "B_final_ndcg10": 0.3081834235408117
+  },
+  "eelgrass seagrass habitat restoration coastal carbon sequestration": {
+   "coverage": 0.0,
+   "A_final_ndcg10": 0.4817374300061198,
+   "B_final_ndcg10": 0.5382202962193169
+  },
+  "electoral turnout youth voter mobilization campaign contact": {
+   "coverage": 0.2222,
+   "A_final_ndcg10": 0.6721567080600097,
+   "B_final_ndcg10": 0.6646243847343913
+  },
+  "environmental litigation climate lawsuits state liability courts": {
+   "coverage": 0.1418,
+   "A_final_ndcg10": 0.8221684363050932,
+   "B_final_ndcg10": 0.8658010245118728
+  },
+  "extreme value theory tail risk catastrophe insurance modelling": {
+   "coverage": 0.2143,
+   "A_final_ndcg10": 0.5055901251472437,
+   "B_final_ndcg10": 0.4994430270064417
+  },
+  "falls prevention older adults balance training home hazards": {
+   "coverage": 0.1867,
+   "A_final_ndcg10": 0.9547402421232849,
+   "B_final_ndcg10": 0.9628928538133312
+  },
+  "family business succession planning governance next generation": {
+   "coverage": 0.1579,
+   "A_final_ndcg10": 0.9810702218701746,
+   "B_final_ndcg10": 0.9801625080180636
+  },
+  "federal provincial fiscal transfers equalization intergovernmental relations": {
+   "coverage": 0.1921,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 1.0
+  },
+  "film festival circuit curation programming world cinema": {
+   "coverage": 0.1739,
+   "A_final_ndcg10": 0.6493642222768409,
+   "B_final_ndcg10": 0.6339311504797407
+  },
+  "foreign election interference disinformation state actors democracy": {
+   "coverage": 0.1391,
+   "A_final_ndcg10": 0.7996528600964175,
+   "B_final_ndcg10": 0.8083653390883481
+  },
+  "forensic entomology postmortem interval insect succession estimation": {
+   "coverage": 0.0732,
+   "A_final_ndcg10": 0.8550495279512123,
+   "B_final_ndcg10": 0.8430766258336728
+  },
+  "free will moral responsibility determinism compatibilism": {
+   "coverage": 0.1127,
+   "A_final_ndcg10": 0.8847138367010057,
+   "B_final_ndcg10": 0.8847138367010057
+  },
+  "fur trade Hudson's Bay Company Indigenous labour exchange networks": {
+   "coverage": 0.0625,
+   "A_final_ndcg10": 0.504014788344007,
+   "B_final_ndcg10": 0.5302664604612363
+  },
+  "gait analysis prosthetic limb amputee walking energetics": {
+   "coverage": 0.1194,
+   "A_final_ndcg10": 0.692735571895565,
+   "B_final_ndcg10": 0.6745582038387217
+  },
+  "gang desistance youth intervention programs street involvement": {
+   "coverage": 0.2073,
+   "A_final_ndcg10": 0.870953494024849,
+   "B_final_ndcg10": 0.8605060240703861
+  },
+  "glacier retreat mass balance monitoring mountain water supply": {
+   "coverage": 0.1429,
+   "A_final_ndcg10": 0.7684659929578102,
+   "B_final_ndcg10": 0.7655400405126787
+  },
+  "graduate student supervision mentorship doctoral completion attrition": {
+   "coverage": 0.2048,
+   "A_final_ndcg10": 0.5453096577165352,
+   "B_final_ndcg10": 0.5804720312049567
+  },
+  "graphic novels comics studies narrative visual storytelling": {
+   "coverage": 0.1638,
+   "A_final_ndcg10": 0.7870679044874023,
+   "B_final_ndcg10": 0.6696926886162882
+  },
+  "gravitational wave detection black hole merger interferometer": {
+   "coverage": 0.2167,
+   "A_final_ndcg10": 0.8289109175188447,
+   "B_final_ndcg10": 0.829210928390715
+  },
+  "gut microbiome host immune interaction metabolite signalling": {
+   "coverage": 0.2059,
+   "A_final_ndcg10": 0.6969340238843569,
+   "B_final_ndcg10": 0.7434624627530946
+  },
+  "haptic feedback tangible interface design user perception": {
+   "coverage": 0.1101,
+   "A_final_ndcg10": 0.6701949769018695,
+   "B_final_ndcg10": 0.6455353470380318
+  },
+  "high altitude hypoxia ventilatory acclimatization physiology": {
+   "coverage": 0.087,
+   "A_final_ndcg10": 0.6113092508587805,
+   "B_final_ndcg10": 0.6080506633021374
+  },
+  "hospital emergency department overcrowding wait times patient outcomes": {
+   "coverage": 0.2126,
+   "A_final_ndcg10": 0.8939204752942018,
+   "B_final_ndcg10": 0.9130005707115636
+  },
+  "household debt mortgage stress test housing finance Canada": {
+   "coverage": 0.1389,
+   "A_final_ndcg10": 0.551499647385435,
+   "B_final_ndcg10": 0.551499647385435
+  },
+  "immigration labour market wages native workers displacement": {
+   "coverage": 0.1852,
+   "A_final_ndcg10": 0.9478442566046168,
+   "B_final_ndcg10": 0.9442317140598111
+  },
+  "implicit bias measurement predictive validity discrimination behaviour": {
+   "coverage": 0.093,
+   "A_final_ndcg10": 0.4337370853448028,
+   "B_final_ndcg10": 0.3296057266350192
+  },
+  "influencer marketing disclosure sponsored content consumer trust": {
+   "coverage": 0.1184,
+   "A_final_ndcg10": 0.6484694260519384,
+   "B_final_ndcg10": 0.6972181450011752
+  },
+  "informal settlements upgrading tenure security global south cities": {
+   "coverage": 0.3182,
+   "A_final_ndcg10": 0.16899867704599522,
+   "B_final_ndcg10": 0.12492378570183127
+  },
+  "interprovincial trade barriers Canadian economic union regulation": {
+   "coverage": 0.1034,
+   "A_final_ndcg10": 0.805174957246267,
+   "B_final_ndcg10": 0.8212583060701262
+  },
+  "intimate partner violence risk assessment protective orders": {
+   "coverage": 0.1613,
+   "A_final_ndcg10": 0.8881482811921422,
+   "B_final_ndcg10": 0.8484421538898798
+  },
+  "jazz improvisation performance analysis interaction ensemble": {
+   "coverage": 0.0833,
+   "A_final_ndcg10": 0.7078598187962261,
+   "B_final_ndcg10": 0.7238385245910963
+  },
+  "lithium ion battery electrolyte degradation cathode interface": {
+   "coverage": 0.113,
+   "A_final_ndcg10": 0.8156220940646004,
+   "B_final_ndcg10": 0.8289833384937575
+  },
+  "loneliness social isolation mental health older adults intervention": {
+   "coverage": 0.1803,
+   "A_final_ndcg10": 0.42341724344941645,
+   "B_final_ndcg10": 0.3840746654398801
+  },
+  "mRNA vaccine lipid nanoparticle delivery stability formulation": {
+   "coverage": 0.0654,
+   "A_final_ndcg10": 0.9790388794001829,
+   "B_final_ndcg10": 0.9790388794001829
+  },
+  "marine protected area network design fisheries spillover effects": {
+   "coverage": 0.1681,
+   "A_final_ndcg10": 0.7892621027891322,
+   "B_final_ndcg10": 0.7991555418777248
+  },
+  "maternal mortality skilled birth attendance low resource settings": {
+   "coverage": 0.22,
+   "A_final_ndcg10": 0.5662623819258399,
+   "B_final_ndcg10": 0.5748438519528287
+  },
+  "migrant agricultural workers temporary foreign worker program conditions": {
+   "coverage": 0.1765,
+   "A_final_ndcg10": 0.7151874715924985,
+   "B_final_ndcg10": 0.7500490490364276
+  },
+  "migration transnational families remittances belonging ethnography": {
+   "coverage": 0.4151,
+   "A_final_ndcg10": 0.0942220760638577,
+   "B_final_ndcg10": 0.0942220760638577
+  },
+  "mine tailings dam failure water quality remediation monitoring": {
+   "coverage": 0.3636,
+   "A_final_ndcg10": 0.6781268805027726,
+   "B_final_ndcg10": 0.5643811777005151
+  },
+  "minimum wage employment effects small business labour demand": {
+   "coverage": 0.2456,
+   "A_final_ndcg10": 0.7449762280940125,
+   "B_final_ndcg10": 0.7316143457728339
+  },
+  "modernist poetry fragmentation form early twentieth century": {
+   "coverage": 0.2917,
+   "A_final_ndcg10": 0.6463193734329205,
+   "B_final_ndcg10": 0.5689569563738116
+  },
+  "music streaming royalties artist income platform economics": {
+   "coverage": 0.1771,
+   "A_final_ndcg10": 0.913331929880294,
+   "B_final_ndcg10": 0.8909324244578154
+  },
+  "neglected tropical disease mass drug administration elimination": {
+   "coverage": 0.1489,
+   "A_final_ndcg10": 0.5548099032841213,
+   "B_final_ndcg10": 0.4996528436098565
+  },
+  "neighbourhood effects concentrated disadvantage child outcomes": {
+   "coverage": 0.3238,
+   "A_final_ndcg10": 0.7438113746188686,
+   "B_final_ndcg10": 0.6559976637526501
+  },
+  "news deserts local journalism decline community information": {
+   "coverage": 0.1389,
+   "A_final_ndcg10": 0.8196851841410693,
+   "B_final_ndcg10": 0.8477036462993164
+  },
+  "palliative care access rural communities end of life symptom management": {
+   "coverage": 0.3514,
+   "A_final_ndcg10": 0.9181685826896075,
+   "B_final_ndcg10": 0.8981151759419013
+  },
+  "participatory budgeting civic engagement municipal decision making": {
+   "coverage": 0.24,
+   "A_final_ndcg10": 0.94546789582947,
+   "B_final_ndcg10": 0.9245067752296529
+  },
+  "peer review reform preprints open science scholarly communication": {
+   "coverage": 0.298,
+   "A_final_ndcg10": 0.9530801181981919,
+   "B_final_ndcg10": 0.8770690727278097
+  },
+  "philosophy of mind consciousness qualia explanatory gap": {
+   "coverage": 0.1974,
+   "A_final_ndcg10": 0.9035406681382433,
+   "B_final_ndcg10": 0.9818226319431567
+  },
+  "podcast audiences intimacy parasocial relationship listeners": {
+   "coverage": 0.0385,
+   "A_final_ndcg10": 0.8635701705119803,
+   "B_final_ndcg10": 0.8205297021074616
+  },
+  "prosody intonation speech perception listener comprehension": {
+   "coverage": 0.3303,
+   "A_final_ndcg10": 0.7287201642976521,
+   "B_final_ndcg10": 0.7366025813270362
+  },
+  "psychological safety team performance speaking up organizations": {
+   "coverage": 0.1045,
+   "A_final_ndcg10": 0.9487208271183378,
+   "B_final_ndcg10": 0.9487208271183378
+  },
+  "public procurement innovation policy government purchasing outcomes": {
+   "coverage": 0.1818,
+   "A_final_ndcg10": 0.7662973580663375,
+   "B_final_ndcg10": 0.7246064104443294
+  },
+  "puppetry object theatre performance materiality audience": {
+   "coverage": 0.1,
+   "A_final_ndcg10": 0.7176280911490178,
+   "B_final_ndcg10": 0.6512538559004128
+  },
+  "radiocarbon dating chronology Bayesian modelling stratigraphy": {
+   "coverage": 0.1143,
+   "A_final_ndcg10": 0.44497705842547997,
+   "B_final_ndcg10": 0.4305687780632227
+  },
+  "refugee resettlement burden sharing international protection regime": {
+   "coverage": 0.2738,
+   "A_final_ndcg10": 0.299664740949685,
+   "B_final_ndcg10": 0.34350825392654954
+  },
+  "religious participation secularization generational change belonging": {
+   "coverage": 0.2626,
+   "A_final_ndcg10": 0.5824866767482441,
+   "B_final_ndcg10": 0.5681053917813843
+  },
+  "remote work hybrid arrangements productivity employee wellbeing": {
+   "coverage": 0.2746,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 0.9801625080180636
+  },
+  "revenue recognition standard IFRS 15 adoption financial reporting": {
+   "coverage": 0.0814,
+   "A_final_ndcg10": 1.0,
+   "B_final_ndcg10": 0.972733947914735
+  },
+  "ritual kinship exchange gift economies ethnography Melanesia": {
+   "coverage": 0.0,
+   "A_final_ndcg10": 0.05168129718933788,
+   "B_final_ndcg10": 0.05382052485246481
+  },
+  "serious games health behaviour change gamification design": {
+   "coverage": 0.1927,
+   "A_final_ndcg10": 0.972733947914735,
+   "B_final_ndcg10": 1.0
+  },
+  "sleep deprivation memory consolidation cognitive performance": {
+   "coverage": 0.13,
+   "A_final_ndcg10": 0.5679369899987048,
+   "B_final_ndcg10": 0.5761056034071955
+  },
+  "social prescribing older adults community programs wellbeing": {
+   "coverage": 0.3684,
+   "A_final_ndcg10": 0.03512742662672025,
+   "B_final_ndcg10": 0.0
+  },
+  "socially engaged art practice participation community collaboration": {
+   "coverage": 0.2741,
+   "A_final_ndcg10": 0.9461588136777956,
+   "B_final_ndcg10": 0.9716053328052618
+  },
+  "soft robotics pneumatic actuator compliant gripper design": {
+   "coverage": 0.0698,
+   "A_final_ndcg10": 0.9058797073522828,
+   "B_final_ndcg10": 0.8301837254114235
+  },
+  "solar photovoltaic degradation module reliability field performance": {
+   "coverage": 0.1571,
+   "A_final_ndcg10": 0.9256180470797136,
+   "B_final_ndcg10": 0.9118499466982855
+  },
+  "sound design film music affect audience emotional response": {
+   "coverage": 0.1262,
+   "A_final_ndcg10": 0.8427052517727331,
+   "B_final_ndcg10": 0.8341912339346704
+  },
+  "static analysis memory safety vulnerability detection C programs": {
+   "coverage": 0.0303,
+   "A_final_ndcg10": 0.8709507714621756,
+   "B_final_ndcg10": 0.8663850947757864
+  },
+  "stochastic partial differential equations numerical approximation convergence": {
+   "coverage": 0.2211,
+   "A_final_ndcg10": 0.7702829039398016,
+   "B_final_ndcg10": 0.778792183186569
+  },
+  "teacher retention burnout attrition rural schools workforce": {
+   "coverage": 0.2308,
+   "A_final_ndcg10": 0.35165565653823516,
+   "B_final_ndcg10": 0.4578410464486121
+  },
+  "thermoregulation heat strain occupational workers hydration": {
+   "coverage": 0.175,
+   "A_final_ndcg10": 0.635855777426382,
+   "B_final_ndcg10": 0.6408763993005286
+  },
+  "topological data analysis persistent homology point clouds": {
+   "coverage": 0.1231,
+   "A_final_ndcg10": 0.8349167393647083,
+   "B_final_ndcg10": 0.9049860217197079
+  },
+  "topological insulator edge states spin orbit coupling materials": {
+   "coverage": 0.2551,
+   "A_final_ndcg10": 0.8309885306203142,
+   "B_final_ndcg10": 0.7658633129980974
+  },
+  "transgender healthcare access gender affirming care barriers": {
+   "coverage": 0.1667,
+   "A_final_ndcg10": 0.6228656642701031,
+   "B_final_ndcg10": 0.6673546295859658
+  },
+  "type 2 diabetes prevention lifestyle intervention primary care Canada": {
+   "coverage": 0.1584,
+   "A_final_ndcg10": 0.790441119137979,
+   "B_final_ndcg10": 0.7921265620648001
+  },
+  "unpaid care work gender division household labour time use": {
+   "coverage": 0.2182,
+   "A_final_ndcg10": 0.7304512729710748,
+   "B_final_ndcg10": 0.7454913280318545
+  },
+  "urban Indigenous friendship centres community services identity": {
+   "coverage": 0.2885,
+   "A_final_ndcg10": 0.7094313469258224,
+   "B_final_ndcg10": 0.6959819831485834
+  },
+  "wearable computing textile interfaces embodied interaction design": {
+   "coverage": 0.284,
+   "A_final_ndcg10": 0.7186760164952931,
+   "B_final_ndcg10": 0.7182998114588021
+  },
+  "wearable device physical activity monitoring chronic disease self management": {
+   "coverage": 0.2672,
+   "A_final_ndcg10": 0.9180880186317122,
+   "B_final_ndcg10": 0.9329999866684751
+  },
+  "wildlife crime illegal trafficking enforcement conservation criminology": {
+   "coverage": 0.1348,
+   "A_final_ndcg10": 0.7050288670242519,
+   "B_final_ndcg10": 0.7630431672186478
+  },
+  "women's suffrage movement provincial franchise campaigns Canada": {
+   "coverage": 0.087,
+   "A_final_ndcg10": 0.4659634947677844,
+   "B_final_ndcg10": 0.4819078398387633
+  },
+  "workplace automation job displacement reskilling worker adjustment": {
+   "coverage": 0.3043,
+   "A_final_ndcg10": 0.8508534159272402,
+   "B_final_ndcg10": 0.8419483941642119
+  }
+ }
+}

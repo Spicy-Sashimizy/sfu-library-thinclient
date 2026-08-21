@@ -1821,7 +1821,7 @@ identity gate re-checked on the copy) and the identical arms re-run.
 | state | `sqlite` p50 | `flat` p50 | multiple |
 |---|---|---|---|
 | **cold** (fadvise-evicted, fresh process, 2 reps) | 27.645 / 31.744 ms | **11.033 / 12.296** | **2.546×** |
-| **warm, first touch after eviction** (seed 17) | 1.907 | 2.075 | **0.919× — a REGRESSION** |
+| **warm, first touch after eviction** (seed 17) | 1.907 | 2.075 | **0.919× — a REGRESSION** *(2026-08-18: shown to be a run-ordering cache artifact — symmetric-eviction first touch reads 1.00–1.10×; see §23 "The re-measurement RAN")* |
 | **warm, fully warmed** (seed 17 rerun) | 1.726 | 1.581 | 1.091× |
 | **warm, fully warmed** (seed 41 confirmation) | 1.827 | 1.683 | 1.086× |
 
@@ -1917,13 +1917,99 @@ are reported here; neither is quotable alone.
 byte-identical, it is faster on this container's filesystem and neutral-to-
 faster on the target's once warm, and it removes 1.90 GB and a database. The
 one genuinely new negative — the first-touch warm-up — is an argument for
-touching the locator at load time, not for unpublishing anything.
+touching the locator at load time, not for unpublishing anything. **That
+touch is now built and gated OFF (2026-08-18, below); its efficacy is
+unmeasured.**
+
+### The mitigation is BUILT — `SFU_ABSTRACTS_PREFAULT=1` (2026-08-18)
+
+- Code: `src/lib/thinclient/abstracts.py` — `AbstractLocator.prefault()` +
+  the module-level `_touch_pages()`, called from `AbstractStore._open_locator`
+  behind the gate; `PREFAULT_ENV = "SFU_ABSTRACTS_PREFAULT"`.
+- Tests: `scripts/tests/test_abstract_locator.py` — **39 tests, all pass
+  2026-08-18** (27 before, 12 new).
+- **Status: IMPLEMENTED 2026-08-18, EFFICACY MEASURED 2026-08-18 — see
+  "The re-measurement RAN" below. Short version: the pre-fault works (421.2 MB
+  in 203 ms at open), but the 0.919× regression it targets did not reproduce
+  under a symmetric-eviction protocol; default stays OFF.**
+
+**What it does.** At store open, for each of the four `loc_*.npy` columns:
+`madvise(MADV_WILLNEED)` on the mapping (advisory readahead, so the kernel
+batches the I/O instead of servicing ~103k separate minor faults), then a
+strided read of one byte per 4 KiB page whose sum is kept as an anti-DCE
+checksum — the F6 `touch_bytes` pattern, because numpy is otherwise free not to
+perform the read. 421 MB, sequential, once. That is exactly the "read the
+`loc_*.npy` arrays once" this list asked for below.
+
+**Gate and defaults.** `SFU_ABSTRACTS_PREFAULT=1` turns it on; unset — or any
+other value — is the shipped behaviour, byte-for-byte unchanged. Only the
+literal `"1"` enables, the same shape as `SFU_SEISMIC_PREFLOOR_HOTSET` (F6), so
+a typo leaves the default rather than half-enabling it. **Default OFF** because
+on it costs load time a short-lived process would never earn back, and because
+its benefit is the thing that is still unmeasured.
+
+**Fail-open, deliberately.** Pre-faulting is residency-only: it reads read-only
+pages and writes nothing, so it cannot change an answer and no failure of it is
+a reason to refuse to serve. Errors are logged and recorded in
+`AbstractStore.prefault_stats`; the store carries on with a cold locator, i.e.
+gate-off behaviour. This is the opposite of the locator identity gate (§17),
+which fails **closed** because *that* one can return wrong bytes.
+
+**What it reports.** `AbstractStore.prefault_stats` =
+`{"bytes", "ms", "columns", "checksum", "error"}` (None when the gate is off or
+no locator attached), plus a `logger.info` line: `pre-faulted %.1f MB across %d
+columns in %.0f ms`.
+
+**The 12 new tests**, all synthetic: gate off by default → `prefault_stats is
+None` and fetches unchanged; only `"1"` enables (5 negatives); all four columns
+touched with `bytes` equal to the columns' summed `nbytes`; **fetches
+byte-identical gate-on vs gate-off** at 3 rows and at 6,000 rows (a locator
+spanning many pages, so the strided touch does real work); a raising
+`_touch_pages` is non-fatal and leaves serving unaffected; SQLite-free mode
+(the deployed shape, §18) pre-faults; no locator ⇒ no stats dict.
+
+**The re-measurement RAN — 2026-08-18, idle machine.** Protocol: the published
+section restaged to local disk (`stage`, 19/19 files, identity gate re-checked),
+`posix_fadvise(DONTNEED)` over all 19 files with the measured `Cached:` delta
+recorded (**23.85 GB freed** first eviction, 1.03 GB before the second run —
+i.e. each run started from the same fully-evicted state), then one fresh-process
+`interleaved` run per arm-state, seed 17, defaults (300 trials × 4 regimes,
+20k-id windowed gate):
+
+| gate state | real_top50 | miss50_top50 | real_top100 | miss50_top100 | parity |
+|---|---|---|---|---|---|
+| OFF (control) | 1.059× | 1.050× | 1.002× | 1.095× | PASS |
+| **ON** (`SFU_ABSTRACTS_PREFAULT=1`) | 1.048× | 1.072× | 1.022× | 1.061× | PASS |
+
+Two findings, one of them a correction:
+
+1. **The pre-fault itself works exactly as designed:** `pre-faulted 421.2 MB
+   across 4 columns in 203 ms` at store open from a fully evicted state
+   (local disk). The whole locator warm-up is a **~0.2 s one-off load cost**.
+2. **The 0.919× first-touch regression did NOT reproduce.** Under a
+   *symmetric*-eviction protocol (both arms evicted, fresh process), gate-OFF
+   already reads 1.00–1.10× — neutral-to-better at first touch — and gate-ON is
+   the same within noise. The 2026-08-17 0.919× row was measured in a page
+   cache the preceding cold-bench passes had warmed **asymmetrically** (the
+   sqlite arm's B-tree pages hot for the query working set, the flat arm's
+   `loc_*.npy` arrays not); it was a **run-ordering cache artifact, not a
+   stable serving regression**. The row stays in the table above with this
+   note as its context.
+
+**Verdict: default stays OFF.** There is no measured query-time penalty left to
+earn back; the gate is a correct, cheap belt-and-suspenders for a long-lived
+process that wants deterministic first-query latency (e.g. a demo box warming
+at boot), and that is the honest extent of the claim. Results:
+`data/eval_results/j1_flat_serving_firsttouch_off_20260818.json`,
+`..._firsttouch_prefault_20260818.json`.
 
 ### Still not settled (§23)
 
-1. **The warm-up is unmitigated.** `AbstractStore.__init__` could read the
-   `loc_*.npy` arrays once (421 MB sequential) and turn the 0.919× first-touch
-   row into a bounded one-off load cost. **Not built, not measured.**
+1. ~~**The warm-up is unmitigated.**~~ **BUILT 2026-08-18 and MEASURED
+   2026-08-18 — see "The re-measurement RAN" above.** `SFU_ABSTRACTS_PREFAULT=1`
+   pre-faults 421.2 MB in 203 ms at open; the 0.919× row itself turned out to
+   be a run-ordering cache artifact (symmetric-eviction first touch is
+   1.00–1.10× with the gate off). Default stays OFF. **SETTLED.**
 2. **The win is not decomposed here.** J1 measures the shipped composite
    (flat blocks + ordinal locator) against plain sqlite, which is the operator's
    question; §16/§17 hold the payload-vs-locator split, and those are spike

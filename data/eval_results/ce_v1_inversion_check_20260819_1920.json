@@ -1,0 +1,36 @@
+{
+  "date": "2026-08-19T19:20:32Z",
+  "what": "Spearman(v1 int8 ONNX scores, base ms-marco CE scores) per real retrieval pool",
+  "v1_model": "models/sfu-cross-encoder-v1-onnx-int8 (exported from models/sfu-cross-encoder-v1)",
+  "reference": "cross-encoder/ms-marco-MiniLM-L-6-v2 (direction-correct; judged NDCG@10 0.6763)",
+  "pools_scored": 60,
+  "docs_per_pool_max": 20,
+  "spearman": {
+    "mean": 0.1136,
+    "median": 0.1248,
+    "min": -0.7023,
+    "max": 0.8901,
+    "frac_negative": 0.4
+  },
+  "junk_promotion_top5": {
+    "what": "injected cross-pool (irrelevant, real) docs ranked into top-5 of 8-own+4-injected pools",
+    "v1_int8_onnx": {
+      "promoted": 39,
+      "total": 160,
+      "rate": 0.2437
+    },
+    "base_msmarco": {
+      "promoted": 6,
+      "total": 160,
+      "rate": 0.0375
+    }
+  },
+  "serve_batch20_latency_p50_ms": {
+    "v1_int8_onnx": 288.0,
+    "v1_torch": 25.5,
+    "base_msmarco_torch": 39.3,
+    "note": "batch of _CE_CANDIDATE_POOL=20 pairs, the exact serve call shape; the export bench's 19x was per-pair batch=1 and does not transfer."
+  },
+  "elapsed_s": 20.5,
+  "interpretation": "spearman strongly negative + frac_negative ~1.0 = sign inversion; weakly positive = legitimate reordering. junk_promotion_top5 measures off-topic robustness (lower is better)."
+}

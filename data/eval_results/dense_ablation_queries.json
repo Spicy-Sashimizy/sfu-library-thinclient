@@ -1,0 +1,1922 @@
+[
+  {
+    "paraphrase": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "original_query": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "judge_key": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "query_type": "keyword",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What lifestyle interventions delivered in primary care actually prevent type 2 diabetes?",
+    "original_query": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "judge_key": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "query_type": "natural",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "hospital emergency department overcrowding wait times patient outcomes",
+    "original_query": "hospital emergency department overcrowding wait times patient outcomes",
+    "judge_key": "hospital emergency department overcrowding wait times patient outcomes",
+    "query_type": "keyword",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does emergency department overcrowding affect patient wait times and outcomes?",
+    "original_query": "hospital emergency department overcrowding wait times patient outcomes",
+    "judge_key": "hospital emergency department overcrowding wait times patient outcomes",
+    "query_type": "natural",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "childhood vaccination coverage school immunization programs uptake",
+    "original_query": "childhood vaccination coverage school immunization programs uptake",
+    "judge_key": "childhood vaccination coverage school immunization programs uptake",
+    "query_type": "keyword",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What drives childhood vaccination coverage and uptake in school immunization programs?",
+    "original_query": "childhood vaccination coverage school immunization programs uptake",
+    "judge_key": "childhood vaccination coverage school immunization programs uptake",
+    "query_type": "natural",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "palliative care access rural communities end of life symptom management",
+    "original_query": "palliative care access rural communities end of life symptom management",
+    "judge_key": "palliative care access rural communities end of life symptom management",
+    "query_type": "keyword",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How can rural communities improve access to palliative and end-of-life symptom care?",
+    "original_query": "palliative care access rural communities end of life symptom management",
+    "judge_key": "palliative care access rural communities end of life symptom management",
+    "query_type": "natural",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "wearable device physical activity monitoring chronic disease self management",
+    "original_query": "wearable device physical activity monitoring chronic disease self management",
+    "judge_key": "wearable device physical activity monitoring chronic disease self management",
+    "query_type": "keyword",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Can wearable activity monitors help people self-manage a chronic disease?",
+    "original_query": "wearable device physical activity monitoring chronic disease self management",
+    "judge_key": "wearable device physical activity monitoring chronic disease self management",
+    "query_type": "natural",
+    "subject": "Health Sciences",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Indigenous data sovereignty OCAP principles research governance",
+    "original_query": "Indigenous data sovereignty OCAP principles research governance",
+    "judge_key": "Indigenous data sovereignty OCAP principles research governance",
+    "query_type": "keyword",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What are Indigenous data sovereignty principles and how do they govern research?",
+    "original_query": "Indigenous data sovereignty OCAP principles research governance",
+    "judge_key": "Indigenous data sovereignty OCAP principles research governance",
+    "query_type": "natural",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "urban Indigenous friendship centres community services identity",
+    "original_query": "urban Indigenous friendship centres community services identity",
+    "judge_key": "urban Indigenous friendship centres community services identity",
+    "query_type": "keyword",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What role do urban friendship centres play in supporting Indigenous community and identity?",
+    "original_query": "urban Indigenous friendship centres community services identity",
+    "judge_key": "urban Indigenous friendship centres community services identity",
+    "query_type": "natural",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "original_query": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "judge_key": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "query_type": "keyword",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does harvesting traditional country foods support Indigenous food sovereignty and nutrition?",
+    "original_query": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "judge_key": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "query_type": "natural",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Metis identity scrip land dispossession prairie history",
+    "original_query": "Metis identity scrip land dispossession prairie history",
+    "judge_key": "Metis identity scrip land dispossession prairie history",
+    "query_type": "keyword",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did the scrip system and land dispossession shape Metis identity on the prairies?",
+    "original_query": "Metis identity scrip land dispossession prairie history",
+    "judge_key": "Metis identity scrip land dispossession prairie history",
+    "query_type": "natural",
+    "subject": "Indigenous Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Quebec language policy Bill 101 French minority rights",
+    "original_query": "Quebec language policy Bill 101 French minority rights",
+    "judge_key": "Quebec language policy Bill 101 French minority rights",
+    "query_type": "keyword",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How has Quebec's language legislation shaped French and minority language rights?",
+    "original_query": "Quebec language policy Bill 101 French minority rights",
+    "judge_key": "Quebec language policy Bill 101 French minority rights",
+    "query_type": "natural",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "original_query": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "judge_key": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "query_type": "keyword",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What are the sovereignty and governance disputes over shipping in the Northwest Passage?",
+    "original_query": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "judge_key": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "query_type": "natural",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Canadian universal pharmacare drug coverage policy debate",
+    "original_query": "Canadian universal pharmacare drug coverage policy debate",
+    "judge_key": "Canadian universal pharmacare drug coverage policy debate",
+    "query_type": "keyword",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What is the evidence and policy debate around universal pharmacare in Canada?",
+    "original_query": "Canadian universal pharmacare drug coverage policy debate",
+    "judge_key": "Canadian universal pharmacare drug coverage policy debate",
+    "query_type": "natural",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "interprovincial trade barriers Canadian economic union regulation",
+    "original_query": "interprovincial trade barriers Canadian economic union regulation",
+    "judge_key": "interprovincial trade barriers Canadian economic union regulation",
+    "query_type": "keyword",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do interprovincial trade barriers affect the Canadian economic union?",
+    "original_query": "interprovincial trade barriers Canadian economic union regulation",
+    "judge_key": "interprovincial trade barriers Canadian economic union regulation",
+    "query_type": "natural",
+    "subject": "Canadian Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "bail reform pretrial detention remand population Canada",
+    "original_query": "bail reform pretrial detention remand population Canada",
+    "judge_key": "bail reform pretrial detention remand population Canada",
+    "query_type": "keyword",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does bail reform change pretrial detention and remand populations?",
+    "original_query": "bail reform pretrial detention remand population Canada",
+    "judge_key": "bail reform pretrial detention remand population Canada",
+    "query_type": "natural",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "intimate partner violence risk assessment protective orders",
+    "original_query": "intimate partner violence risk assessment protective orders",
+    "judge_key": "intimate partner violence risk assessment protective orders",
+    "query_type": "keyword",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How well do risk assessment tools and protective orders prevent intimate partner violence?",
+    "original_query": "intimate partner violence risk assessment protective orders",
+    "judge_key": "intimate partner violence risk assessment protective orders",
+    "query_type": "natural",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "gang desistance youth intervention programs street involvement",
+    "original_query": "gang desistance youth intervention programs street involvement",
+    "judge_key": "gang desistance youth intervention programs street involvement",
+    "query_type": "keyword",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What programs actually help young people leave gangs and street involvement behind?",
+    "original_query": "gang desistance youth intervention programs street involvement",
+    "judge_key": "gang desistance youth intervention programs street involvement",
+    "query_type": "natural",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "original_query": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "judge_key": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "query_type": "keyword",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is illegal wildlife trafficking enforced against, and what does conservation criminology say?",
+    "original_query": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "judge_key": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "query_type": "natural",
+    "subject": "Criminology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "haptic feedback tangible interface design user perception",
+    "original_query": "haptic feedback tangible interface design user perception",
+    "judge_key": "haptic feedback tangible interface design user perception",
+    "query_type": "keyword",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does haptic feedback in a tangible interface change what the user perceives?",
+    "original_query": "haptic feedback tangible interface design user perception",
+    "judge_key": "haptic feedback tangible interface design user perception",
+    "query_type": "natural",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "data physicalization tangible data representation public engagement",
+    "original_query": "data physicalization tangible data representation public engagement",
+    "judge_key": "data physicalization tangible data representation public engagement",
+    "query_type": "keyword",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Can physical, tangible representations of data improve public engagement and understanding?",
+    "original_query": "data physicalization tangible data representation public engagement",
+    "judge_key": "data physicalization tangible data representation public engagement",
+    "query_type": "natural",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "serious games health behaviour change gamification design",
+    "original_query": "serious games health behaviour change gamification design",
+    "judge_key": "serious games health behaviour change gamification design",
+    "query_type": "keyword",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Do serious games and gamified designs really change health behaviour?",
+    "original_query": "serious games health behaviour change gamification design",
+    "judge_key": "serious games health behaviour change gamification design",
+    "query_type": "natural",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "wearable computing textile interfaces embodied interaction design",
+    "original_query": "wearable computing textile interfaces embodied interaction design",
+    "judge_key": "wearable computing textile interfaces embodied interaction design",
+    "query_type": "keyword",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are textiles and wearable computing used to design embodied interaction?",
+    "original_query": "wearable computing textile interfaces embodied interaction design",
+    "judge_key": "wearable computing textile interfaces embodied interaction design",
+    "query_type": "natural",
+    "subject": "Interactive Arts & Technology (SIAT)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "concussion return to play protocol youth sport recovery",
+    "original_query": "concussion return to play protocol youth sport recovery",
+    "judge_key": "concussion return to play protocol youth sport recovery",
+    "query_type": "keyword",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do return-to-play protocols after concussion in youth sport work, and do they help recovery?",
+    "original_query": "concussion return to play protocol youth sport recovery",
+    "judge_key": "concussion return to play protocol youth sport recovery",
+    "query_type": "natural",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "high altitude hypoxia ventilatory acclimatization physiology",
+    "original_query": "high altitude hypoxia ventilatory acclimatization physiology",
+    "judge_key": "high altitude hypoxia ventilatory acclimatization physiology",
+    "query_type": "keyword",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does human ventilation acclimatize to hypoxia at high altitude?",
+    "original_query": "high altitude hypoxia ventilatory acclimatization physiology",
+    "judge_key": "high altitude hypoxia ventilatory acclimatization physiology",
+    "query_type": "natural",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "thermoregulation heat strain occupational workers hydration",
+    "original_query": "thermoregulation heat strain occupational workers hydration",
+    "judge_key": "thermoregulation heat strain occupational workers hydration",
+    "query_type": "keyword",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do workers thermoregulate under occupational heat strain, and what does hydration do?",
+    "original_query": "thermoregulation heat strain occupational workers hydration",
+    "judge_key": "thermoregulation heat strain occupational workers hydration",
+    "query_type": "natural",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "gait analysis prosthetic limb amputee walking energetics",
+    "original_query": "gait analysis prosthetic limb amputee walking energetics",
+    "judge_key": "gait analysis prosthetic limb amputee walking energetics",
+    "query_type": "keyword",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does a prosthetic limb change an amputee's gait and the energy cost of walking?",
+    "original_query": "gait analysis prosthetic limb amputee walking energetics",
+    "judge_key": "gait analysis prosthetic limb amputee walking energetics",
+    "query_type": "natural",
+    "subject": "Biomedical Physiology and Kinesiology (BPK)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "original_query": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "judge_key": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "query_type": "keyword",
+    "subject": "Resource & Environmental Management",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "How effective is eelgrass restoration for coastal habitat and carbon sequestration?",
+    "original_query": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "judge_key": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "query_type": "natural",
+    "subject": "Resource & Environmental Management",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "caribou herd decline habitat disturbance boreal recovery planning",
+    "original_query": "caribou herd decline habitat disturbance boreal recovery planning",
+    "judge_key": "caribou herd decline habitat disturbance boreal recovery planning",
+    "query_type": "keyword",
+    "subject": "Resource & Environmental Management",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "Why are boreal caribou herds declining and what recovery planning addresses habitat disturbance?",
+    "original_query": "caribou herd decline habitat disturbance boreal recovery planning",
+    "judge_key": "caribou herd decline habitat disturbance boreal recovery planning",
+    "query_type": "natural",
+    "subject": "Resource & Environmental Management",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "mine tailings dam failure water quality remediation monitoring",
+    "original_query": "mine tailings dam failure water quality remediation monitoring",
+    "judge_key": "mine tailings dam failure water quality remediation monitoring",
+    "query_type": "keyword",
+    "subject": "Resource & Environmental Management",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What happens to water quality after a tailings dam failure and how is it remediated?",
+    "original_query": "mine tailings dam failure water quality remediation monitoring",
+    "judge_key": "mine tailings dam failure water quality remediation monitoring",
+    "query_type": "natural",
+    "subject": "Resource & Environmental Management",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "marine protected area network design fisheries spillover effects",
+    "original_query": "marine protected area network design fisheries spillover effects",
+    "judge_key": "marine protected area network design fisheries spillover effects",
+    "query_type": "keyword",
+    "subject": "Resource & Environmental Management",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How should marine protected area networks be designed, and do they produce fisheries spillover?",
+    "original_query": "marine protected area network design fisheries spillover effects",
+    "judge_key": "marine protected area network design fisheries spillover effects",
+    "query_type": "natural",
+    "subject": "Resource & Environmental Management",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "original_query": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "judge_key": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "query_type": "keyword",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does cryptocurrency volatility spill over into other financial markets?",
+    "original_query": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "judge_key": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "query_type": "natural",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "household debt mortgage stress test housing finance Canada",
+    "original_query": "household debt mortgage stress test housing finance Canada",
+    "judge_key": "household debt mortgage stress test housing finance Canada",
+    "query_type": "keyword",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How have mortgage stress tests affected household debt and housing finance in Canada?",
+    "original_query": "household debt mortgage stress test housing finance Canada",
+    "judge_key": "household debt mortgage stress test housing finance Canada",
+    "query_type": "natural",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "corporate bond liquidity credit spread market microstructure",
+    "original_query": "corporate bond liquidity credit spread market microstructure",
+    "judge_key": "corporate bond liquidity credit spread market microstructure",
+    "query_type": "keyword",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What drives corporate bond liquidity and credit spreads at the market microstructure level?",
+    "original_query": "corporate bond liquidity credit spread market microstructure",
+    "judge_key": "corporate bond liquidity credit spread market microstructure",
+    "query_type": "natural",
+    "subject": "Finance",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "electoral turnout youth voter mobilization campaign contact",
+    "original_query": "electoral turnout youth voter mobilization campaign contact",
+    "judge_key": "electoral turnout youth voter mobilization campaign contact",
+    "query_type": "keyword",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What kinds of campaign contact actually raise youth voter turnout?",
+    "original_query": "electoral turnout youth voter mobilization campaign contact",
+    "judge_key": "electoral turnout youth voter mobilization campaign contact",
+    "query_type": "natural",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "original_query": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "judge_key": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "query_type": "keyword",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do equalization and fiscal transfers shape federal-provincial relations?",
+    "original_query": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "judge_key": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "query_type": "natural",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "foreign election interference disinformation state actors democracy",
+    "original_query": "foreign election interference disinformation state actors democracy",
+    "judge_key": "foreign election interference disinformation state actors democracy",
+    "query_type": "keyword",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do foreign state actors interfere in elections through disinformation?",
+    "original_query": "foreign election interference disinformation state actors democracy",
+    "judge_key": "foreign election interference disinformation state actors democracy",
+    "query_type": "natural",
+    "subject": "Political Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "podcast audiences intimacy parasocial relationship listeners",
+    "original_query": "podcast audiences intimacy parasocial relationship listeners",
+    "judge_key": "podcast audiences intimacy parasocial relationship listeners",
+    "query_type": "keyword",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Why do podcast listeners form intimate, parasocial relationships with hosts?",
+    "original_query": "podcast audiences intimacy parasocial relationship listeners",
+    "judge_key": "podcast audiences intimacy parasocial relationship listeners",
+    "query_type": "natural",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "news deserts local journalism decline community information",
+    "original_query": "news deserts local journalism decline community information",
+    "judge_key": "news deserts local journalism decline community information",
+    "query_type": "keyword",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What happens to a community's information supply when local journalism collapses?",
+    "original_query": "news deserts local journalism decline community information",
+    "judge_key": "news deserts local journalism decline community information",
+    "query_type": "natural",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "influencer marketing disclosure sponsored content consumer trust",
+    "original_query": "influencer marketing disclosure sponsored content consumer trust",
+    "judge_key": "influencer marketing disclosure sponsored content consumer trust",
+    "query_type": "keyword",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Does disclosing sponsored content change how much consumers trust influencer marketing?",
+    "original_query": "influencer marketing disclosure sponsored content consumer trust",
+    "judge_key": "influencer marketing disclosure sponsored content consumer trust",
+    "query_type": "natural",
+    "subject": "Communication",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "minimum wage employment effects small business labour demand",
+    "original_query": "minimum wage employment effects small business labour demand",
+    "judge_key": "minimum wage employment effects small business labour demand",
+    "query_type": "keyword",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What are the employment effects of minimum wage increases on small business labour demand?",
+    "original_query": "minimum wage employment effects small business labour demand",
+    "judge_key": "minimum wage employment effects small business labour demand",
+    "query_type": "natural",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "immigration labour market wages native workers displacement",
+    "original_query": "immigration labour market wages native workers displacement",
+    "judge_key": "immigration labour market wages native workers displacement",
+    "query_type": "keyword",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Does immigration displace native-born workers or push down their wages?",
+    "original_query": "immigration labour market wages native workers displacement",
+    "judge_key": "immigration labour market wages native workers displacement",
+    "query_type": "natural",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "carbon border adjustment mechanism trade competitiveness leakage",
+    "original_query": "carbon border adjustment mechanism trade competitiveness leakage",
+    "judge_key": "carbon border adjustment mechanism trade competitiveness leakage",
+    "query_type": "keyword",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How would a carbon border adjustment mechanism affect trade competitiveness and carbon leakage?",
+    "original_query": "carbon border adjustment mechanism trade competitiveness leakage",
+    "judge_key": "carbon border adjustment mechanism trade competitiveness leakage",
+    "query_type": "natural",
+    "subject": "Economics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Spanish influenza 1918 pandemic public health response cities",
+    "original_query": "Spanish influenza 1918 pandemic public health response cities",
+    "judge_key": "Spanish influenza 1918 pandemic public health response cities",
+    "query_type": "keyword",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did cities respond to the 1918 Spanish influenza pandemic?",
+    "original_query": "Spanish influenza 1918 pandemic public health response cities",
+    "judge_key": "Spanish influenza 1918 pandemic public health response cities",
+    "query_type": "natural",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "original_query": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "judge_key": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "query_type": "keyword",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What role did Indigenous labour and exchange networks play in the fur trade?",
+    "original_query": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "judge_key": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "query_type": "natural",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "women's suffrage movement provincial franchise campaigns Canada",
+    "original_query": "women's suffrage movement provincial franchise campaigns Canada",
+    "judge_key": "women's suffrage movement provincial franchise campaigns Canada",
+    "query_type": "keyword",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did provincial campaigns win women the vote in Canada?",
+    "original_query": "women's suffrage movement provincial franchise campaigns Canada",
+    "judge_key": "women's suffrage movement provincial franchise campaigns Canada",
+    "query_type": "natural",
+    "subject": "History",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "compiler optimization loop vectorization SIMD code generation",
+    "original_query": "compiler optimization loop vectorization SIMD code generation",
+    "judge_key": "compiler optimization loop vectorization SIMD code generation",
+    "query_type": "keyword",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do optimizing compilers vectorize loops into SIMD code?",
+    "original_query": "compiler optimization loop vectorization SIMD code generation",
+    "judge_key": "compiler optimization loop vectorization SIMD code generation",
+    "query_type": "natural",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "approximate nearest neighbour search vector index billion scale",
+    "original_query": "approximate nearest neighbour search vector index billion scale",
+    "judge_key": "approximate nearest neighbour search vector index billion scale",
+    "query_type": "keyword",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do approximate nearest neighbour indexes scale to billions of vectors?",
+    "original_query": "approximate nearest neighbour search vector index billion scale",
+    "judge_key": "approximate nearest neighbour search vector index billion scale",
+    "query_type": "natural",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "static analysis memory safety vulnerability detection C programs",
+    "original_query": "static analysis memory safety vulnerability detection C programs",
+    "judge_key": "static analysis memory safety vulnerability detection C programs",
+    "query_type": "keyword",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does static analysis detect memory safety vulnerabilities in C programs?",
+    "original_query": "static analysis memory safety vulnerability detection C programs",
+    "judge_key": "static analysis memory safety vulnerability detection C programs",
+    "query_type": "natural",
+    "subject": "Computing Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "teacher retention burnout attrition rural schools workforce",
+    "original_query": "teacher retention burnout attrition rural schools workforce",
+    "judge_key": "teacher retention burnout attrition rural schools workforce",
+    "query_type": "keyword",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Why do teachers burn out and leave rural schools?",
+    "original_query": "teacher retention burnout attrition rural schools workforce",
+    "judge_key": "teacher retention burnout attrition rural schools workforce",
+    "query_type": "natural",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "early literacy phonics instruction reading intervention primary grades",
+    "original_query": "early literacy phonics instruction reading intervention primary grades",
+    "judge_key": "early literacy phonics instruction reading intervention primary grades",
+    "query_type": "keyword",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How effective is phonics instruction as an early reading intervention in the primary grades?",
+    "original_query": "early literacy phonics instruction reading intervention primary grades",
+    "judge_key": "early literacy phonics instruction reading intervention primary grades",
+    "query_type": "natural",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "graduate student supervision mentorship doctoral completion attrition",
+    "original_query": "graduate student supervision mentorship doctoral completion attrition",
+    "judge_key": "graduate student supervision mentorship doctoral completion attrition",
+    "query_type": "keyword",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does supervision and mentorship affect doctoral completion and attrition?",
+    "original_query": "graduate student supervision mentorship doctoral completion attrition",
+    "judge_key": "graduate student supervision mentorship doctoral completion attrition",
+    "query_type": "natural",
+    "subject": "Education",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "sleep deprivation memory consolidation cognitive performance",
+    "original_query": "sleep deprivation memory consolidation cognitive performance",
+    "judge_key": "sleep deprivation memory consolidation cognitive performance",
+    "query_type": "keyword",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does sleep deprivation impair memory consolidation and cognitive performance?",
+    "original_query": "sleep deprivation memory consolidation cognitive performance",
+    "judge_key": "sleep deprivation memory consolidation cognitive performance",
+    "query_type": "natural",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "loneliness social isolation mental health older adults intervention",
+    "original_query": "loneliness social isolation mental health older adults intervention",
+    "judge_key": "loneliness social isolation mental health older adults intervention",
+    "query_type": "keyword",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What interventions reduce loneliness and social isolation among older adults?",
+    "original_query": "loneliness social isolation mental health older adults intervention",
+    "judge_key": "loneliness social isolation mental health older adults intervention",
+    "query_type": "natural",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "implicit bias measurement predictive validity discrimination behaviour",
+    "original_query": "implicit bias measurement predictive validity discrimination behaviour",
+    "judge_key": "implicit bias measurement predictive validity discrimination behaviour",
+    "query_type": "keyword",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Do implicit bias measures actually predict discriminatory behaviour?",
+    "original_query": "implicit bias measurement predictive validity discrimination behaviour",
+    "judge_key": "implicit bias measurement predictive validity discrimination behaviour",
+    "query_type": "natural",
+    "subject": "Psychology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "transgender healthcare access gender affirming care barriers",
+    "original_query": "transgender healthcare access gender affirming care barriers",
+    "judge_key": "transgender healthcare access gender affirming care barriers",
+    "query_type": "keyword",
+    "subject": "Gender, Sexuality, and Women's Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What barriers do transgender people face getting access to gender-affirming health care?",
+    "original_query": "transgender healthcare access gender affirming care barriers",
+    "judge_key": "transgender healthcare access gender affirming care barriers",
+    "query_type": "natural",
+    "subject": "Gender, Sexuality, and Women's Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "unpaid care work gender division household labour time use",
+    "original_query": "unpaid care work gender division household labour time use",
+    "judge_key": "unpaid care work gender division household labour time use",
+    "query_type": "keyword",
+    "subject": "Gender, Sexuality, and Women's Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is unpaid care work divided by gender within households?",
+    "original_query": "unpaid care work gender division household labour time use",
+    "judge_key": "unpaid care work gender division household labour time use",
+    "query_type": "natural",
+    "subject": "Gender, Sexuality, and Women's Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "5G millimeter wave antenna array beamforming design",
+    "original_query": "5G millimeter wave antenna array beamforming design",
+    "judge_key": "5G millimeter wave antenna array beamforming design",
+    "query_type": "keyword",
+    "subject": "Engineering Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are millimetre-wave antenna arrays designed for 5G beamforming?",
+    "original_query": "5G millimeter wave antenna array beamforming design",
+    "judge_key": "5G millimeter wave antenna array beamforming design",
+    "query_type": "natural",
+    "subject": "Engineering Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "original_query": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "judge_key": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "query_type": "keyword",
+    "subject": "Engineering Science",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "How do defects and microstructure affect fatigue life in metal 3D printed parts?",
+    "original_query": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "judge_key": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "query_type": "natural",
+    "subject": "Engineering Science",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "autonomous vehicle sensor fusion lidar camera perception",
+    "original_query": "autonomous vehicle sensor fusion lidar camera perception",
+    "judge_key": "autonomous vehicle sensor fusion lidar camera perception",
+    "query_type": "keyword",
+    "subject": "Mechatronic Systems Engineering",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do autonomous vehicles fuse lidar and camera data for perception?",
+    "original_query": "autonomous vehicle sensor fusion lidar camera perception",
+    "judge_key": "autonomous vehicle sensor fusion lidar camera perception",
+    "query_type": "natural",
+    "subject": "Mechatronic Systems Engineering",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "soft robotics pneumatic actuator compliant gripper design",
+    "original_query": "soft robotics pneumatic actuator compliant gripper design",
+    "judge_key": "soft robotics pneumatic actuator compliant gripper design",
+    "query_type": "keyword",
+    "subject": "Mechatronic Systems Engineering",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are soft pneumatic actuators designed into compliant robotic grippers?",
+    "original_query": "soft robotics pneumatic actuator compliant gripper design",
+    "judge_key": "soft robotics pneumatic actuator compliant gripper design",
+    "query_type": "natural",
+    "subject": "Mechatronic Systems Engineering",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "religious participation secularization generational change belonging",
+    "original_query": "religious participation secularization generational change belonging",
+    "judge_key": "religious participation secularization generational change belonging",
+    "query_type": "keyword",
+    "subject": "Sociology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How has secularization changed religious participation and belonging across generations?",
+    "original_query": "religious participation secularization generational change belonging",
+    "judge_key": "religious participation secularization generational change belonging",
+    "query_type": "natural",
+    "subject": "Sociology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "neighbourhood effects concentrated disadvantage child outcomes",
+    "original_query": "neighbourhood effects concentrated disadvantage child outcomes",
+    "judge_key": "neighbourhood effects concentrated disadvantage child outcomes",
+    "query_type": "keyword",
+    "subject": "Sociology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does growing up in a concentrated-disadvantage neighbourhood affect children's outcomes?",
+    "original_query": "neighbourhood effects concentrated disadvantage child outcomes",
+    "judge_key": "neighbourhood effects concentrated disadvantage child outcomes",
+    "query_type": "natural",
+    "subject": "Sociology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "free will moral responsibility determinism compatibilism",
+    "original_query": "free will moral responsibility determinism compatibilism",
+    "judge_key": "free will moral responsibility determinism compatibilism",
+    "query_type": "keyword",
+    "subject": "Philosophy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Can moral responsibility survive determinism, as compatibilists claim?",
+    "original_query": "free will moral responsibility determinism compatibilism",
+    "judge_key": "free will moral responsibility determinism compatibilism",
+    "query_type": "natural",
+    "subject": "Philosophy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "philosophy of mind consciousness qualia explanatory gap",
+    "original_query": "philosophy of mind consciousness qualia explanatory gap",
+    "judge_key": "philosophy of mind consciousness qualia explanatory gap",
+    "query_type": "keyword",
+    "subject": "Philosophy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What is the explanatory gap between physical processes and conscious experience?",
+    "original_query": "philosophy of mind consciousness qualia explanatory gap",
+    "judge_key": "philosophy of mind consciousness qualia explanatory gap",
+    "query_type": "natural",
+    "subject": "Philosophy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "topological data analysis persistent homology point clouds",
+    "original_query": "topological data analysis persistent homology point clouds",
+    "judge_key": "topological data analysis persistent homology point clouds",
+    "query_type": "keyword",
+    "subject": "Mathematics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does persistent homology extract structure from point cloud data?",
+    "original_query": "topological data analysis persistent homology point clouds",
+    "judge_key": "topological data analysis persistent homology point clouds",
+    "query_type": "natural",
+    "subject": "Mathematics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "stochastic partial differential equations numerical approximation convergence",
+    "original_query": "stochastic partial differential equations numerical approximation convergence",
+    "judge_key": "stochastic partial differential equations numerical approximation convergence",
+    "query_type": "keyword",
+    "subject": "Mathematics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are stochastic partial differential equations approximated numerically, and do the schemes converge?",
+    "original_query": "stochastic partial differential equations numerical approximation convergence",
+    "judge_key": "stochastic partial differential equations numerical approximation convergence",
+    "query_type": "natural",
+    "subject": "Mathematics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "gravitational wave detection black hole merger interferometer",
+    "original_query": "gravitational wave detection black hole merger interferometer",
+    "judge_key": "gravitational wave detection black hole merger interferometer",
+    "query_type": "keyword",
+    "subject": "Physics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do interferometers detect gravitational waves from black hole mergers?",
+    "original_query": "gravitational wave detection black hole merger interferometer",
+    "judge_key": "gravitational wave detection black hole merger interferometer",
+    "query_type": "natural",
+    "subject": "Physics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "topological insulator edge states spin orbit coupling materials",
+    "original_query": "topological insulator edge states spin orbit coupling materials",
+    "judge_key": "topological insulator edge states spin orbit coupling materials",
+    "query_type": "keyword",
+    "subject": "Physics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What are the edge states of a topological insulator and how does spin-orbit coupling create them?",
+    "original_query": "topological insulator edge states spin orbit coupling materials",
+    "judge_key": "topological insulator edge states spin orbit coupling materials",
+    "query_type": "natural",
+    "subject": "Physics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "lithium ion battery electrolyte degradation cathode interface",
+    "original_query": "lithium ion battery electrolyte degradation cathode interface",
+    "judge_key": "lithium ion battery electrolyte degradation cathode interface",
+    "query_type": "keyword",
+    "subject": "Chemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What degrades the electrolyte and the cathode interface in a lithium-ion battery?",
+    "original_query": "lithium ion battery electrolyte degradation cathode interface",
+    "judge_key": "lithium ion battery electrolyte degradation cathode interface",
+    "query_type": "natural",
+    "subject": "Chemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "PFAS forever chemicals water treatment removal degradation",
+    "original_query": "PFAS forever chemicals water treatment removal degradation",
+    "judge_key": "PFAS forever chemicals water treatment removal degradation",
+    "query_type": "keyword",
+    "subject": "Chemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How can PFAS forever chemicals be removed or degraded during water treatment?",
+    "original_query": "PFAS forever chemicals water treatment removal degradation",
+    "judge_key": "PFAS forever chemicals water treatment removal degradation",
+    "query_type": "natural",
+    "subject": "Chemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "remote work hybrid arrangements productivity employee wellbeing",
+    "original_query": "remote work hybrid arrangements productivity employee wellbeing",
+    "judge_key": "remote work hybrid arrangements productivity employee wellbeing",
+    "query_type": "keyword",
+    "subject": "Business Administration",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do hybrid and remote work arrangements affect productivity and employee wellbeing?",
+    "original_query": "remote work hybrid arrangements productivity employee wellbeing",
+    "judge_key": "remote work hybrid arrangements productivity employee wellbeing",
+    "query_type": "natural",
+    "subject": "Business Administration",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "family business succession planning governance next generation",
+    "original_query": "family business succession planning governance next generation",
+    "judge_key": "family business succession planning governance next generation",
+    "query_type": "keyword",
+    "subject": "Business Administration",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do family businesses plan succession and govern the handover to the next generation?",
+    "original_query": "family business succession planning governance next generation",
+    "judge_key": "family business succession planning governance next generation",
+    "query_type": "natural",
+    "subject": "Business Administration",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "migrant agricultural workers temporary foreign worker program conditions",
+    "original_query": "migrant agricultural workers temporary foreign worker program conditions",
+    "judge_key": "migrant agricultural workers temporary foreign worker program conditions",
+    "query_type": "keyword",
+    "subject": "Labour Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What working conditions do migrant agricultural workers face under temporary foreign worker programs?",
+    "original_query": "migrant agricultural workers temporary foreign worker program conditions",
+    "judge_key": "migrant agricultural workers temporary foreign worker program conditions",
+    "query_type": "natural",
+    "subject": "Labour Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "workplace automation job displacement reskilling worker adjustment",
+    "original_query": "workplace automation job displacement reskilling worker adjustment",
+    "judge_key": "workplace automation job displacement reskilling worker adjustment",
+    "query_type": "keyword",
+    "subject": "Labour Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does workplace automation displace jobs, and what reskilling helps workers adjust?",
+    "original_query": "workplace automation job displacement reskilling worker adjustment",
+    "judge_key": "workplace automation job displacement reskilling worker adjustment",
+    "query_type": "natural",
+    "subject": "Labour Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "code switching bilingual speakers sociolinguistic variation",
+    "original_query": "code switching bilingual speakers sociolinguistic variation",
+    "judge_key": "code switching bilingual speakers sociolinguistic variation",
+    "query_type": "keyword",
+    "subject": "Linguistics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Why do bilingual speakers code-switch, and how does it vary socially?",
+    "original_query": "code switching bilingual speakers sociolinguistic variation",
+    "judge_key": "code switching bilingual speakers sociolinguistic variation",
+    "query_type": "natural",
+    "subject": "Linguistics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "prosody intonation speech perception listener comprehension",
+    "original_query": "prosody intonation speech perception listener comprehension",
+    "judge_key": "prosody intonation speech perception listener comprehension",
+    "query_type": "keyword",
+    "subject": "Linguistics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do prosody and intonation shape the way listeners comprehend speech?",
+    "original_query": "prosody intonation speech perception listener comprehension",
+    "judge_key": "prosody intonation speech perception listener comprehension",
+    "query_type": "natural",
+    "subject": "Linguistics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "modernist poetry fragmentation form early twentieth century",
+    "original_query": "modernist poetry fragmentation form early twentieth century",
+    "judge_key": "modernist poetry fragmentation form early twentieth century",
+    "query_type": "keyword",
+    "subject": "English - General",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did early twentieth-century modernist poets use fragmentation of poetic form?",
+    "original_query": "modernist poetry fragmentation form early twentieth century",
+    "judge_key": "modernist poetry fragmentation form early twentieth century",
+    "query_type": "natural",
+    "subject": "English - General",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "graphic novels comics studies narrative visual storytelling",
+    "original_query": "graphic novels comics studies narrative visual storytelling",
+    "judge_key": "graphic novels comics studies narrative visual storytelling",
+    "query_type": "keyword",
+    "subject": "English - General",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do comics and graphic novels tell stories through visual narrative?",
+    "original_query": "graphic novels comics studies narrative visual storytelling",
+    "judge_key": "graphic novels comics studies narrative visual storytelling",
+    "query_type": "natural",
+    "subject": "English - General",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "film festival circuit curation programming world cinema",
+    "original_query": "film festival circuit curation programming world cinema",
+    "judge_key": "film festival circuit curation programming world cinema",
+    "query_type": "keyword",
+    "subject": "Film",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does festival programming and curation shape what counts as world cinema?",
+    "original_query": "film festival circuit curation programming world cinema",
+    "judge_key": "film festival circuit curation programming world cinema",
+    "query_type": "natural",
+    "subject": "Film",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "sound design film music affect audience emotional response",
+    "original_query": "sound design film music affect audience emotional response",
+    "judge_key": "sound design film music affect audience emotional response",
+    "query_type": "keyword",
+    "subject": "Film",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do sound design and film music shape an audience's emotional response?",
+    "original_query": "sound design film music affect audience emotional response",
+    "judge_key": "sound design film music affect audience emotional response",
+    "query_type": "natural",
+    "subject": "Film",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "glacier retreat mass balance monitoring mountain water supply",
+    "original_query": "glacier retreat mass balance monitoring mountain water supply",
+    "judge_key": "glacier retreat mass balance monitoring mountain water supply",
+    "query_type": "keyword",
+    "subject": "Geography",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does glacier retreat, measured through mass balance, affect mountain water supply?",
+    "original_query": "glacier retreat mass balance monitoring mountain water supply",
+    "judge_key": "glacier retreat mass balance monitoring mountain water supply",
+    "query_type": "natural",
+    "subject": "Geography",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "coastal erosion sea level rise shoreline retreat adaptation",
+    "original_query": "coastal erosion sea level rise shoreline retreat adaptation",
+    "judge_key": "coastal erosion sea level rise shoreline retreat adaptation",
+    "query_type": "keyword",
+    "subject": "Geography",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are communities adapting to shoreline retreat from coastal erosion and sea level rise?",
+    "original_query": "coastal erosion sea level rise shoreline retreat adaptation",
+    "judge_key": "coastal erosion sea level rise shoreline retreat adaptation",
+    "query_type": "natural",
+    "subject": "Geography",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "falls prevention older adults balance training home hazards",
+    "original_query": "falls prevention older adults balance training home hazards",
+    "judge_key": "falls prevention older adults balance training home hazards",
+    "query_type": "keyword",
+    "subject": "Gerontology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What prevents falls in older adults - balance training, or removing home hazards?",
+    "original_query": "falls prevention older adults balance training home hazards",
+    "judge_key": "falls prevention older adults balance training home hazards",
+    "query_type": "natural",
+    "subject": "Gerontology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "social prescribing older adults community programs wellbeing",
+    "original_query": "social prescribing older adults community programs wellbeing",
+    "judge_key": "social prescribing older adults community programs wellbeing",
+    "query_type": "keyword",
+    "subject": "Gerontology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Does social prescribing to community programs improve older adults' wellbeing?",
+    "original_query": "social prescribing older adults community programs wellbeing",
+    "judge_key": "social prescribing older adults community programs wellbeing",
+    "query_type": "natural",
+    "subject": "Gerontology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "ritual kinship exchange gift economies ethnography Melanesia",
+    "original_query": "ritual kinship exchange gift economies ethnography Melanesia",
+    "judge_key": "ritual kinship exchange gift economies ethnography Melanesia",
+    "query_type": "keyword",
+    "subject": "Anthropology",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "How do gift economies and ritual exchange structure kinship in Melanesia?",
+    "original_query": "ritual kinship exchange gift economies ethnography Melanesia",
+    "judge_key": "ritual kinship exchange gift economies ethnography Melanesia",
+    "query_type": "natural",
+    "subject": "Anthropology",
+    "stratum": "HELD-OUT"
+  },
+  {
+    "paraphrase": "migration transnational families remittances belonging ethnography",
+    "original_query": "migration transnational families remittances belonging ethnography",
+    "judge_key": "migration transnational families remittances belonging ethnography",
+    "query_type": "keyword",
+    "subject": "Anthropology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do transnational families sustain belonging across migration and remittances?",
+    "original_query": "migration transnational families remittances belonging ethnography",
+    "judge_key": "migration transnational families remittances belonging ethnography",
+    "query_type": "natural",
+    "subject": "Anthropology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "original_query": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "judge_key": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "query_type": "keyword",
+    "subject": "Archaeology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is Bayesian modelling used with radiocarbon dates to build site chronologies?",
+    "original_query": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "judge_key": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "query_type": "natural",
+    "subject": "Archaeology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "original_query": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "judge_key": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "query_type": "keyword",
+    "subject": "Archaeology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What does ancient DNA reveal about prehistoric population migration in Europe?",
+    "original_query": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "judge_key": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "query_type": "natural",
+    "subject": "Archaeology",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "refugee resettlement burden sharing international protection regime",
+    "original_query": "refugee resettlement burden sharing international protection regime",
+    "judge_key": "refugee resettlement burden sharing international protection regime",
+    "query_type": "keyword",
+    "subject": "International Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is responsibility for refugee resettlement shared under the international protection regime?",
+    "original_query": "refugee resettlement burden sharing international protection regime",
+    "judge_key": "refugee resettlement burden sharing international protection regime",
+    "query_type": "natural",
+    "subject": "International Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "economic sanctions effectiveness compliance target state behaviour",
+    "original_query": "economic sanctions effectiveness compliance target state behaviour",
+    "judge_key": "economic sanctions effectiveness compliance target state behaviour",
+    "query_type": "keyword",
+    "subject": "International Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Do economic sanctions actually change the behaviour of the states they target?",
+    "original_query": "economic sanctions effectiveness compliance target state behaviour",
+    "judge_key": "economic sanctions effectiveness compliance target state behaviour",
+    "query_type": "natural",
+    "subject": "International Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Cuban revolution health system export medical diplomacy",
+    "original_query": "Cuban revolution health system export medical diplomacy",
+    "judge_key": "Cuban revolution health system export medical diplomacy",
+    "query_type": "keyword",
+    "subject": "Latin American Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does Cuba use medical diplomacy and health system exports as foreign policy?",
+    "original_query": "Cuban revolution health system export medical diplomacy",
+    "judge_key": "Cuban revolution health system export medical diplomacy",
+    "query_type": "natural",
+    "subject": "Latin American Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Andean agrarian reform peasant movements land tenure",
+    "original_query": "Andean agrarian reform peasant movements land tenure",
+    "judge_key": "Andean agrarian reform peasant movements land tenure",
+    "query_type": "keyword",
+    "subject": "Latin American Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did agrarian reform and peasant movements reshape land tenure in the Andes?",
+    "original_query": "Andean agrarian reform peasant movements land tenure",
+    "judge_key": "Andean agrarian reform peasant movements land tenure",
+    "query_type": "natural",
+    "subject": "Latin American Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "informal settlements upgrading tenure security global south cities",
+    "original_query": "informal settlements upgrading tenure security global south cities",
+    "judge_key": "informal settlements upgrading tenure security global south cities",
+    "query_type": "keyword",
+    "subject": "Urban Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does upgrading informal settlements improve tenure security in global south cities?",
+    "original_query": "informal settlements upgrading tenure security global south cities",
+    "judge_key": "informal settlements upgrading tenure security global south cities",
+    "query_type": "natural",
+    "subject": "Urban Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "cycling infrastructure bike lanes mode shift urban mobility",
+    "original_query": "cycling infrastructure bike lanes mode shift urban mobility",
+    "judge_key": "cycling infrastructure bike lanes mode shift urban mobility",
+    "query_type": "keyword",
+    "subject": "Urban Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Does building bike lanes actually shift people onto bicycles?",
+    "original_query": "cycling infrastructure bike lanes mode shift urban mobility",
+    "judge_key": "cycling infrastructure bike lanes mode shift urban mobility",
+    "query_type": "natural",
+    "subject": "Urban Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "access to justice self represented litigants legal aid funding",
+    "original_query": "access to justice self represented litigants legal aid funding",
+    "judge_key": "access to justice self represented litigants legal aid funding",
+    "query_type": "keyword",
+    "subject": "Applied Legal Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do self-represented litigants and legal aid funding shape access to justice?",
+    "original_query": "access to justice self represented litigants legal aid funding",
+    "judge_key": "access to justice self represented litigants legal aid funding",
+    "query_type": "natural",
+    "subject": "Applied Legal Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "environmental litigation climate lawsuits state liability courts",
+    "original_query": "environmental litigation climate lawsuits state liability courts",
+    "judge_key": "environmental litigation climate lawsuits state liability courts",
+    "query_type": "keyword",
+    "subject": "Applied Legal Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are courts handling climate lawsuits and state liability for emissions?",
+    "original_query": "environmental litigation climate lawsuits state liability courts",
+    "judge_key": "environmental litigation climate lawsuits state liability courts",
+    "query_type": "natural",
+    "subject": "Applied Legal Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "gut microbiome host immune interaction metabolite signalling",
+    "original_query": "gut microbiome host immune interaction metabolite signalling",
+    "judge_key": "gut microbiome host immune interaction metabolite signalling",
+    "query_type": "keyword",
+    "subject": "Molecular Biology & Biochemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does the gut microbiome signal to the host immune system through metabolites?",
+    "original_query": "gut microbiome host immune interaction metabolite signalling",
+    "judge_key": "gut microbiome host immune interaction metabolite signalling",
+    "query_type": "natural",
+    "subject": "Molecular Biology & Biochemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "original_query": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "judge_key": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "query_type": "keyword",
+    "subject": "Molecular Biology & Biochemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do lipid nanoparticles deliver mRNA vaccines, and what governs their stability?",
+    "original_query": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "judge_key": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "query_type": "natural",
+    "subject": "Molecular Biology & Biochemistry",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "jazz improvisation performance analysis interaction ensemble",
+    "original_query": "jazz improvisation performance analysis interaction ensemble",
+    "judge_key": "jazz improvisation performance analysis interaction ensemble",
+    "query_type": "keyword",
+    "subject": "Music",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do jazz musicians interact with each other during ensemble improvisation?",
+    "original_query": "jazz improvisation performance analysis interaction ensemble",
+    "judge_key": "jazz improvisation performance analysis interaction ensemble",
+    "query_type": "natural",
+    "subject": "Music",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "music streaming royalties artist income platform economics",
+    "original_query": "music streaming royalties artist income platform economics",
+    "judge_key": "music streaming royalties artist income platform economics",
+    "query_type": "keyword",
+    "subject": "Music",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do streaming platform economics determine what artists earn in royalties?",
+    "original_query": "music streaming royalties artist income platform economics",
+    "judge_key": "music streaming royalties artist income platform economics",
+    "query_type": "natural",
+    "subject": "Music",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "childcare policy universal early learning affordability workforce",
+    "original_query": "childcare policy universal early learning affordability workforce",
+    "judge_key": "childcare policy universal early learning affordability workforce",
+    "query_type": "keyword",
+    "subject": "Public Policy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does universal early learning and childcare policy affect affordability and workforce participation?",
+    "original_query": "childcare policy universal early learning affordability workforce",
+    "judge_key": "childcare policy universal early learning affordability workforce",
+    "query_type": "natural",
+    "subject": "Public Policy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "public procurement innovation policy government purchasing outcomes",
+    "original_query": "public procurement innovation policy government purchasing outcomes",
+    "judge_key": "public procurement innovation policy government purchasing outcomes",
+    "query_type": "keyword",
+    "subject": "Public Policy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Can government purchasing be used as an innovation policy lever?",
+    "original_query": "public procurement innovation policy government purchasing outcomes",
+    "judge_key": "public procurement innovation policy government purchasing outcomes",
+    "query_type": "natural",
+    "subject": "Public Policy",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "maternal mortality skilled birth attendance low resource settings",
+    "original_query": "maternal mortality skilled birth attendance low resource settings",
+    "judge_key": "maternal mortality skilled birth attendance low resource settings",
+    "query_type": "keyword",
+    "subject": "Global Health",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How much does skilled birth attendance reduce maternal mortality in low-resource settings?",
+    "original_query": "maternal mortality skilled birth attendance low resource settings",
+    "judge_key": "maternal mortality skilled birth attendance low resource settings",
+    "query_type": "natural",
+    "subject": "Global Health",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "neglected tropical disease mass drug administration elimination",
+    "original_query": "neglected tropical disease mass drug administration elimination",
+    "judge_key": "neglected tropical disease mass drug administration elimination",
+    "query_type": "keyword",
+    "subject": "Global Health",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How effective is mass drug administration at eliminating neglected tropical diseases?",
+    "original_query": "neglected tropical disease mass drug administration elimination",
+    "judge_key": "neglected tropical disease mass drug administration elimination",
+    "query_type": "natural",
+    "subject": "Global Health",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "solar photovoltaic degradation module reliability field performance",
+    "original_query": "solar photovoltaic degradation module reliability field performance",
+    "judge_key": "solar photovoltaic degradation module reliability field performance",
+    "query_type": "keyword",
+    "subject": "Sustainable Energy Engineering (SEE)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Why do solar photovoltaic modules degrade, and how reliable are they in the field?",
+    "original_query": "solar photovoltaic degradation module reliability field performance",
+    "judge_key": "solar photovoltaic degradation module reliability field performance",
+    "query_type": "natural",
+    "subject": "Sustainable Energy Engineering (SEE)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "district heating waste heat recovery thermal network efficiency",
+    "original_query": "district heating waste heat recovery thermal network efficiency",
+    "judge_key": "district heating waste heat recovery thermal network efficiency",
+    "query_type": "keyword",
+    "subject": "Sustainable Energy Engineering (SEE)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does waste heat recovery improve the efficiency of a district heating network?",
+    "original_query": "district heating waste heat recovery thermal network efficiency",
+    "judge_key": "district heating waste heat recovery thermal network efficiency",
+    "query_type": "natural",
+    "subject": "Sustainable Energy Engineering (SEE)",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "auditor independence non-audit services fee dependence quality",
+    "original_query": "auditor independence non-audit services fee dependence quality",
+    "judge_key": "auditor independence non-audit services fee dependence quality",
+    "query_type": "keyword",
+    "subject": "Accounting",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Do non-audit service fees compromise auditor independence and audit quality?",
+    "original_query": "auditor independence non-audit services fee dependence quality",
+    "judge_key": "auditor independence non-audit services fee dependence quality",
+    "query_type": "natural",
+    "subject": "Accounting",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "original_query": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "judge_key": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "query_type": "keyword",
+    "subject": "Accounting",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How did adopting IFRS 15 change revenue recognition in financial reporting?",
+    "original_query": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "judge_key": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "query_type": "natural",
+    "subject": "Accounting",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "causal inference propensity score matching observational studies",
+    "original_query": "causal inference propensity score matching observational studies",
+    "judge_key": "causal inference propensity score matching observational studies",
+    "query_type": "keyword",
+    "subject": "Statistics & Actuarial Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is propensity score matching used for causal inference in observational studies?",
+    "original_query": "causal inference propensity score matching observational studies",
+    "judge_key": "causal inference propensity score matching observational studies",
+    "query_type": "natural",
+    "subject": "Statistics & Actuarial Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "extreme value theory tail risk catastrophe insurance modelling",
+    "original_query": "extreme value theory tail risk catastrophe insurance modelling",
+    "judge_key": "extreme value theory tail risk catastrophe insurance modelling",
+    "query_type": "keyword",
+    "subject": "Statistics & Actuarial Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does extreme value theory model tail risk for catastrophe insurance?",
+    "original_query": "extreme value theory tail risk catastrophe insurance modelling",
+    "judge_key": "extreme value theory tail risk catastrophe insurance modelling",
+    "query_type": "natural",
+    "subject": "Statistics & Actuarial Science",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "socially engaged art practice participation community collaboration",
+    "original_query": "socially engaged art practice participation community collaboration",
+    "judge_key": "socially engaged art practice participation community collaboration",
+    "query_type": "keyword",
+    "subject": "Visual Arts",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "What does socially engaged art practice mean for participation and community collaboration?",
+    "original_query": "socially engaged art practice participation community collaboration",
+    "judge_key": "socially engaged art practice participation community collaboration",
+    "query_type": "natural",
+    "subject": "Visual Arts",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "conservation of contemporary art materials degradation museum practice",
+    "original_query": "conservation of contemporary art materials degradation museum practice",
+    "judge_key": "conservation of contemporary art materials degradation museum practice",
+    "query_type": "keyword",
+    "subject": "Visual Arts",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do museums conserve contemporary artworks whose materials are degrading?",
+    "original_query": "conservation of contemporary art materials degradation museum practice",
+    "judge_key": "conservation of contemporary art materials degradation museum practice",
+    "query_type": "natural",
+    "subject": "Visual Arts",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "dramaturgy new play development workshop process",
+    "original_query": "dramaturgy new play development workshop process",
+    "judge_key": "dramaturgy new play development workshop process",
+    "query_type": "keyword",
+    "subject": "Theatre",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does dramaturgy shape the development of a new play through workshops?",
+    "original_query": "dramaturgy new play development workshop process",
+    "judge_key": "dramaturgy new play development workshop process",
+    "query_type": "natural",
+    "subject": "Theatre",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "puppetry object theatre performance materiality audience",
+    "original_query": "puppetry object theatre performance materiality audience",
+    "judge_key": "puppetry object theatre performance materiality audience",
+    "query_type": "keyword",
+    "subject": "Theatre",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do puppetry and object theatre use materiality to engage an audience?",
+    "original_query": "puppetry object theatre performance materiality audience",
+    "judge_key": "puppetry object theatre performance materiality audience",
+    "query_type": "natural",
+    "subject": "Theatre",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "audiobook market growth narration production publishing industry",
+    "original_query": "audiobook market growth narration production publishing industry",
+    "judge_key": "audiobook market growth narration production publishing industry",
+    "query_type": "keyword",
+    "subject": "Publishing",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How is audiobook production and narration reshaping the publishing industry?",
+    "original_query": "audiobook market growth narration production publishing industry",
+    "judge_key": "audiobook market growth narration production publishing industry",
+    "query_type": "natural",
+    "subject": "Publishing",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "peer review reform preprints open science scholarly communication",
+    "original_query": "peer review reform preprints open science scholarly communication",
+    "judge_key": "peer review reform preprints open science scholarly communication",
+    "query_type": "keyword",
+    "subject": "Publishing",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How are preprints and open science reforming peer review and scholarly communication?",
+    "original_query": "peer review reform preprints open science scholarly communication",
+    "judge_key": "peer review reform preprints open science scholarly communication",
+    "query_type": "natural",
+    "subject": "Publishing",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "community land trust affordable housing stewardship models",
+    "original_query": "community land trust affordable housing stewardship models",
+    "judge_key": "community land trust affordable housing stewardship models",
+    "query_type": "keyword",
+    "subject": "Sustainable Community Development",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do community land trusts steward permanently affordable housing?",
+    "original_query": "community land trust affordable housing stewardship models",
+    "judge_key": "community land trust affordable housing stewardship models",
+    "query_type": "natural",
+    "subject": "Sustainable Community Development",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "participatory budgeting civic engagement municipal decision making",
+    "original_query": "participatory budgeting civic engagement municipal decision making",
+    "judge_key": "participatory budgeting civic engagement municipal decision making",
+    "query_type": "keyword",
+    "subject": "Sustainable Community Development",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "Does participatory budgeting actually increase civic engagement in municipal decisions?",
+    "original_query": "participatory budgeting civic engagement municipal decision making",
+    "judge_key": "participatory budgeting civic engagement municipal decision making",
+    "query_type": "natural",
+    "subject": "Sustainable Community Development",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "psychological safety team performance speaking up organizations",
+    "original_query": "psychological safety team performance speaking up organizations",
+    "judge_key": "psychological safety team performance speaking up organizations",
+    "query_type": "keyword",
+    "subject": "Management & Organizational Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does psychological safety affect whether people speak up and how teams perform?",
+    "original_query": "psychological safety team performance speaking up organizations",
+    "judge_key": "psychological safety team performance speaking up organizations",
+    "query_type": "natural",
+    "subject": "Management & Organizational Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "corporate social responsibility greenwashing stakeholder perception",
+    "original_query": "corporate social responsibility greenwashing stakeholder perception",
+    "judge_key": "corporate social responsibility greenwashing stakeholder perception",
+    "query_type": "keyword",
+    "subject": "Management & Organizational Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How do stakeholders tell real corporate social responsibility from greenwashing?",
+    "original_query": "corporate social responsibility greenwashing stakeholder perception",
+    "judge_key": "corporate social responsibility greenwashing stakeholder perception",
+    "query_type": "natural",
+    "subject": "Management & Organizational Studies",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "forensic entomology postmortem interval insect succession estimation",
+    "original_query": "forensic entomology postmortem interval insect succession estimation",
+    "judge_key": "forensic entomology postmortem interval insect succession estimation",
+    "query_type": "keyword",
+    "subject": "Forensics",
+    "stratum": "IN-POOL"
+  },
+  {
+    "paraphrase": "How does forensic entomology use insect succession to estimate the postmortem interval?",
+    "original_query": "forensic entomology postmortem interval insect succession estimation",
+    "judge_key": "forensic entomology postmortem interval insect succession estimation",
+    "query_type": "natural",
+    "subject": "Forensics",
+    "stratum": "IN-POOL"
+  }
+]

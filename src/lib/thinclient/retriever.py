@@ -647,20 +647,18 @@ class ThinClientRetriever:
                 cols = {r[1]: (r[2] or "").upper() for r in
                         self._meta.execute("PRAGMA table_info(docs)")}
                 self._meta_numeric = cols.get("id", "").startswith("INT")
-            # SFU_DENSE_LEG=0 excludes the WHOLE dense leg — static usearch seed
-            # AND the query-driven warm cache — so a payload shipped without
-            # `dense/` costs nothing per query. The absence of `dense/` alone is
-            # already SAFE (verified 2026-08-17,
-            # `test_serves_with_no_dense_dir`): `_dense` stays None,
-            # `dense_search` returns [] before it encodes anything, and RRF
-            # fuses the surviving legs with no error spam. But it is not FREE —
-            # the warm cache re-CREATES `dense/`, opens `delta.sqlite` and loads
-            # the 128 MB bi-encoder to encode every surfaced doc, paying encoder
-            # cost with no static coverage to fuse it against. This gate is the
-            # clean off switch for that. Default "1" = byte-identical to the
-            # pre-gate behavior. Partition, sizes and the keep/drop evidence:
-            # docs/DENSE_PARTITION_AND_ABLATION.md.
-            dense_leg = os.environ.get("SFU_DENSE_LEG", "1") != "0"
+            # SFU_DENSE_LEG gates the WHOLE dense leg — static usearch seed
+            # AND the query-driven warm cache. DEFAULT OFF since 2026-08-18:
+            # the served 600k seed covers 0.399% of the corpus and the §7
+            # ablation measured it HARMFUL at that coverage (Δ nDCG@10 −0.0077,
+            # 95% CI excludes 0 — docs/DENSE_PARTITION_AND_ABLATION.md §7
+            # "RESULT"). Re-enable with the literal "1" (same only-"1"-enables
+            # shape as SFU_ABSTRACTS_PREFAULT) once the full corpus is encoded
+            # and the leg re-measures positive. Off is verified-safe with or
+            # without `dense/` on disk (`test_serves_with_no_dense_dir`), and
+            # off also keeps the warm cache from re-creating `dense/` and
+            # loading the 128 MB bi-encoder for a leg with nothing to fuse.
+            dense_leg = os.environ.get("SFU_DENSE_LEG", "0") == "1"
             self._dense_leg_enabled = dense_leg
             dense_dir = self.root / "dense"
             if dense_leg and (dense_dir / "b1.usearch").exists():

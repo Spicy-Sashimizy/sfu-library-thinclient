@@ -8,9 +8,13 @@ abstracts are WAL, BMP shards never span spool slices; kill/resume parity test:
 RRF k=60, era pruning) · `abstracts.py` (v3 script-bucketed 32KB zstd-dict
 blocks; reads v1/v2 too; N5 flat sidecar + ordinal block locator + rehomed dicts with a fail-closed
 identity gate — doc 18 §17-§18; serves SQLite-free with abstracts.sqlite
-deleted, only the build-time emit is left)
+deleted, only the build-time emit is left; optional locator pre-fault at open,
+`SFU_ABSTRACTS_PREFAULT=1`, default OFF, fail-open — doc 18 §23, efficacy
+unmeasured)
 · `packer.py` (hot/cold tar+zstd-19 on built artifacts)
-· `dense_cache.py` (query-driven warm cache, `SFU_DENSE_WARMCACHE`, default on)
+· `dense_cache.py` (query-driven warm cache, `SFU_DENSE_WARMCACHE`; inert by
+default since 2026-08-18 — the dense leg gate `SFU_DENSE_LEG` is DEFAULT OFF,
+only literal `1` enables, per the ablation DROP verdict)
 · `doc_encoder.py` (GPU TRT batch SPLADE encoder for monthly rebuilds).
 
 Run anything with the venv: `/workspaces/sfu-library-thinclient/.venv/bin/python3`.

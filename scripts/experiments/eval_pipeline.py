@@ -10,7 +10,11 @@ Two engines, one harness:
       docs/DENSE_PARTITION_AND_ABLATION.md §7:
 
           arm A  SFU_DENSE_LEG=0 SFU_DENSE_WARMCACHE=0   RRF(bm25f + splade)
-          arm B  SFU_DENSE_WARMCACHE=0                   RRF(bm25f + splade + dense)
+          arm B  SFU_DENSE_LEG=1 SFU_DENSE_WARMCACHE=0   RRF(bm25f + splade + dense)
+
+      ⚠ Since 2026-08-18 the dense leg is DEFAULT OFF in the retriever (the
+      ablation's DROP verdict), so arm B MUST set SFU_DENSE_LEG=1 explicitly —
+      the 2026-08-18 arms ran under the old default-on. Unset now gives arm A.
 
       The env gates are honored by the retriever itself (`_load`), so an arm is
       selected purely by environment — this script never forces a leg on or off.

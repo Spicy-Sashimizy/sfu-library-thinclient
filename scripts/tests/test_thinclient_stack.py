@@ -332,6 +332,7 @@ def test_dense_cache_lifecycle(tmp_path, stub_encoder):
 
 def test_dense_cache_only_leg(tmp_path, stub_encoder, monkeypatch):
     _build_index(tmp_path)
+    monkeypatch.setenv("SFU_DENSE_LEG", "1")  # leg is default OFF (2026-08-18)
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
     r._load()
     assert r._dense is None and r._dense_cache is not None
@@ -387,11 +388,12 @@ def test_serves_with_no_dense_dir(tmp_path, monkeypatch, caplog):
 
 
 def test_dense_leg_env_gate(tmp_path, monkeypatch):
-    """SFU_DENSE_LEG=0 disables the whole leg (seed + warm cache) without
-    touching the encoder; unset preserves the default-on warm cache."""
+    """The dense leg is DEFAULT OFF (2026-08-18 ablation verdict); only the
+    literal "1" enables it. Off never touches the encoder or creates dense/."""
     _build_index(tmp_path)
 
-    monkeypatch.setenv("SFU_DENSE_LEG", "0")
+    # Default (unset) is OFF since 2026-08-18.
+    monkeypatch.delenv("SFU_DENSE_LEG", raising=False)
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
     r._load()
     assert r._dense is None and r._dense_cache is None
@@ -404,8 +406,14 @@ def test_dense_leg_env_gate(tmp_path, monkeypatch):
     assert r.dense_search("politics paper", top_k=10) == []
     assert r.search("politics", top_k=5)     # surviving legs unaffected
 
-    # Default (unset) is unchanged: warm cache constructs as before.
-    monkeypatch.delenv("SFU_DENSE_LEG")
+    # Only the literal "1" enables (typos leave the default, like PREFAULT).
+    for off_value in ("0", "true", "on", "yes"):
+        monkeypatch.setenv("SFU_DENSE_LEG", off_value)
+        r_off = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
+        r_off._load()
+        assert r_off.metrics()["dense_leg_enabled"] is False, off_value
+
+    monkeypatch.setenv("SFU_DENSE_LEG", "1")
     r2 = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
     r2._load()
     assert r2._dense_cache is not None

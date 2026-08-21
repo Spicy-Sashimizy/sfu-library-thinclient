@@ -63,7 +63,7 @@
     const abstract = w.abstract || "";
     const access = isOA
       ? { type: "open_access", url: w.oa_url || (doiRaw ? "https://doi.org/" + doiRaw : "#"), label: "Open Access" }
-      : { type: "sfu_proxy", url: doiRaw ? "https://doi.org/" + doiRaw : "#", label: "SFU Library" };
+      : { type: "sfu_proxy", url: doiRaw ? "https://doi.org/" + doiRaw : "#", label: "Duck Library" };
     return {
       id: w.id || w.openalex_id || ("R" + i),
       title: w.title || "Untitled",

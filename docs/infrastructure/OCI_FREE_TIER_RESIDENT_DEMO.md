@@ -572,6 +572,18 @@ current venv is x86_64-only. Upstream aarch64 availability, checked on PyPI
 | `numpy` 2.4.3 | x86_64 only | ✅ yes |
 | `pyseismic-lsr` | x86_64 only, **not in any requirements file** | ❌ WI-1 |
 
+> **WI-3 STATUS 2026-08-18: BUILT (code + 18 unit tests, no kernel touched) —
+> `scripts/demo_broker/dial.py` (systemd + raw-cgroup backends, bounds,
+> `MemoryMax = rung + guard`), `scripts/demo_broker/systemd/sfu-serve.service`
+> (`MemorySwapMax=0` pinned), broker `GET/POST /admin/dial` (admin-gated,
+> `DEMO_DIAL_*` config). The in-container ladder re-run this item also asked
+> for is IMPOSSIBLE in this dev container — probed 2026-08-18: PID 1 is not
+> systemd, `/sys/fs/cgroup` is mounted read-only (remount denied), and there
+> is no docker socket for the sibling-container mechanism R1/R2 used. So
+> §3.3 caveat 2 (ladder under `MemoryHigh` — expected, not verified) and the
+> F4 pressure bar REMAIN OPEN; both are deferred to the canonical x86 plan's
+> Phase-5 dry run, where the serve runs under the shipped unit.**
+
 **WI-3 — the cgroup dial, built and measured in-container FIRST (no cloud).**
 Write the systemd unit + the `set-property --runtime` dial + a `/dial` control
 in the broker, and re-run the R1/R2 ladder under `MemoryHigh` on the dev
@@ -642,6 +654,15 @@ dial endpoint; killswitch that resizes DOWN.
 
 ### Verdict
 
+> **OPERATOR DECISION 2026-08-18 — this design is SHELVED.** The canonical
+> x86 plan (`OCI_DEMO_DEPLOYMENT.md`) was adopted; WI-1/WI-2 (aarch64 ports)
+> are not being pursued. **WI-3 (the cgroup `MemoryHigh` dial) survives the
+> shelving** — per the verdict below its value is independent of the OCI
+> conclusions — and is scheduled after the 2026-08-18 dense-leg ablation.
+> This doc remains a researched alternative should the free-tier path ever
+> be revisited.
+
+
 **Adopt WI-3 now; keep the OCI variant as a researched alternative, gated on
 WI-1 and on one measurement.**
 
@@ -678,8 +699,10 @@ was measured on OCI.** Everything numeric here is one of:
 
 Open gates before this design could be called ready: WI-1 aarch64 parity;
 WI-3 `MemoryHigh` ladder reproduction + F4 pressure bar; WI-4's six OCI
-measurements (§8). Also inherited, unchanged from the canonical plan: **NDCG
-parity at full 150M is UNMEASURED** (`THIN_CLIENT_SWAP.md`).
+measurements (§8). ~~Also inherited: NDCG parity at full 150M UNMEASURED~~ —
+**CLOSED 2026-08-17** (paired vs both prior backends, indistinguishable;
+`data/eval_results/thinclient_parity_seismic_e8dv2_20260817.json`; the design
+itself is SHELVED per the 2026-08-18 operator decision in §9).
 
 ---
 

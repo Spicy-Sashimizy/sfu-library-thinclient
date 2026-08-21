@@ -1,0 +1,110 @@
+{
+  "built_utc": "2026-08-18T05:57:34Z",
+  "dates": {
+    "drawn": "2026-08-17T23:31:37Z",
+    "pooled": "2026-08-17T23:41:55Z",
+    "judged_through": "2026-08-18T05:57:34Z",
+    "note": "the draw and the pooling ran 2026-08-17 UTC; judging ran 2026-08-17 into 2026-08-18 UTC. File stems keep the 20260817 draw date."
+  },
+  "what": "the fresh judged query set for the pre-registered dense-leg ablation (docs/DENSE_PARTITION_AND_ABLATION.md \u00a77). THE ABLATION ITSELF IS NOT RUN \u2014 these are query-set construction statistics, never ablation results.",
+  "topics": {
+    "n_topics": 120,
+    "n_query_records": 240,
+    "forms_per_topic": [
+      "keyword",
+      "natural"
+    ],
+    "n_subjects": 49,
+    "disjoint_from_diverse_queries": true
+  },
+  "strata": {
+    "HELD-OUT_decision_stratum": 4,
+    "IN-POOL_contrast_only": 116,
+    "NO-GT_no_relevant_doc_judged": 0,
+    "rule": "dense_pool_contamination.py: HELD-OUT = zero grade>=2 docs present in data/thinclient_index/dense/ids.json",
+    "coverage_distribution": {
+      "n_topics_with_ground_truth": 120,
+      "bands": {
+        "==0 (strict HELD-OUT)": 4,
+        "0 < c <= 0.05": 3,
+        "0.05 < c <= 0.10": 17,
+        "0.10 < c <= 0.25": 72,
+        "0.25 < c <= 0.50": 24,
+        "c > 0.50": 0
+      },
+      "median": 0.1681,
+      "mean": 0.1755,
+      "comparison": "the CONTAMINATED standard set (diverse_queries.json) measured 90.3% of relevant docs inside this same pool with 0 topics at zero and 50/120 FULLY covered (dense_pool_contamination_20260817.json)"
+    },
+    "WARNING": "the PRE-REGISTERED binary rule is degenerate on a pool that includes the dense leg's OWN top-50. \u00a77 was written when the only judged docs came from bm25f/splade/rrf/openalex, so 'zero relevant docs in the pool' was reachable. Here ~100 dense-pool docs per topic are judged, and a semantic retriever over 600k academic papers almost always surfaces at least ONE relevant paper \u2014 so almost no topic scores a strict zero. The graded `coverage_distribution` above is the honest instrument; using it as the decision stratum is a CHANGE TO A PRE-REGISTERED PROTOCOL and must be signed off before the ablation runs, not chosen after seeing an arm."
+  },
+  "pool": {
+    "depth_per_leg": 50,
+    "legs_pooled": [
+      "bm25f",
+      "splade",
+      "dense",
+      "rrf(fused)"
+    ],
+    "unique_docs_pooled": 25614,
+    "per_query_form_pool_mean": 144.2,
+    "per_topic_pool_mean": 216.0,
+    "per_topic_pool_min": 162,
+    "per_topic_pool_max": 273,
+    "splade_probe": {
+      "query": "coral reef bleaching thermal stress recovery",
+      "bm25f_splade_overlap@50": 4
+    },
+    "splade_leg_is_real": "bm25f\u2229splade@50 mean over all 240 forms = 5.53 \u2014 matches thinclient_parity_seismic_e8dv2_20260817.json's 5.35, so the SEISMIC leg was genuinely serving (50 would mean a silent BM25F fallback)",
+    "dense_bm25f_overlap@50_mean": 0.175,
+    "dense_splade_overlap@50_mean": 0.142,
+    "retrieval_env": {
+      "SFU_DENSE_LEG": null,
+      "SFU_DENSE_WARMCACHE": "0",
+      "SFU_SPLADE_BACKEND": null,
+      "SFU_SEISMIC_SHARD_MANIFEST": null,
+      "SFU_SEISMIC_STAGE_DIR": "/var/tmp/seismic_stage",
+      "SFU_SEISMIC_FEDERATION": null
+    }
+  },
+  "judgments": {
+    "n_pairs": 25919,
+    "grade_histogram": {
+      "0": 8729,
+      "1": 6019,
+      "2": 4643,
+      "3": 6528
+    },
+    "n_relevant_grade_ge_2": 11171,
+    "n_relevant_inside_served_dense_pool": 2009,
+    "relevant_in_dense_pool_frac": 0.1798,
+    "judged_pairs_without_abstract_title_only": 2849,
+    "pool_docs_title_only_after_backfill": 2827,
+    "abstract_source": "thin-client AbstractStore sidecars first (remote_abstracts=False during pooling), then an OpenAlex backfill for what the sidecars lacked (`hydrate` stage): 58.1% of the 25,614 pooled docs were title-only locally \u2014 evenly across legs (bm25f 64.1% / splade 52.0% / dense 57.2%, so NOT a dense-leg bias) \u2014 and the backfill took that to 11.0%",
+    "judge_model": "claude-haiku-4-5-20251001",
+    "judge_backend": "claude CLI subprocess (-p --output-format text)",
+    "prompt_template_sha256_16": "7141d7866e71a03d",
+    "relevance_scale": {
+      "3": "perfectly relevant (directly about the query)",
+      "2": "highly relevant (strongly related)",
+      "1": "marginally relevant (tangential)",
+      "0": "not relevant (unrelated)"
+    },
+    "gain": "2^grade - 1",
+    "judged_on": "the NATURAL-language form of each topic; the cache key is the KEYWORD form (= judge_key), which is how both forms share one gradebook"
+  },
+  "files": {
+    "topic_draw": "data/eval_results/dense_ablation_topics_20260817.json",
+    "pooling_record": "data/eval_results/dense_ablation_pool_20260817.json",
+    "pool_doc_store": "data/eval_results/dense_ablation_pool_docs_20260817.json",
+    "judge_cache": "data/eval_results/dense_ablation_judge_cache_20260817.json",
+    "qrels": "data/eval_results/dense_ablation_qrels_20260817.json",
+    "query_set": "data/eval_results/dense_ablation_queries.json",
+    "builder": "scripts/experiments/dense_ablation_queryset.py"
+  },
+  "caveats": [
+    "The pooling retrieval was UNTIMED and single-arm (dense ON). Its recorded lat_*_ms are incidental; NO latency claim may be made from this file.",
+    "These are query-set statistics. The ablation (arms A/B) is NOT RUN.",
+    "IN-POOL topics are reported for contrast only and must never be quoted as production benefit (\u00a75)."
+  ]
+}
