@@ -26,9 +26,6 @@ _TEMPORAL_CUES = re.compile(
 
 _RRF_K = 60
 
-# Q2.1 — Zero-coverage subjects. These 15 subjects have 0.0 local NDCG@10 in the
-# 120-query LLM-judged benchmark; the local index holds no useful documents for
-# them, so a LOCAL_RRF route would return blank results. Always route live.
 ALWAYS_LIVE_SUBJECTS = {
     "Theatre", "Music", "Urban Studies", "Applied Legal Studies",
     "Publishing", "Management & Organizational Studies", "Accounting",
@@ -39,26 +36,11 @@ ALWAYS_LIVE_SUBJECTS = {
     "Molecular Biology & Biochemistry", "Global Health",
 }
 
-# Q2.2 — Soft-live subjects. These have real local coverage, but OpenAlex live
-# scores higher than local RRF (Anthropology: RRF 0.898 vs OpenAlex 0.931).
-# Prefer live by default, but allow the caller to override back to local via
-# the `prefer_local` flag (e.g. for offline/air-gapped runs or when live is down).
 SOFT_LIVE_SUBJECTS = {
     "Anthropology",
 }
 
-# Q2.3 — Lightweight query→subject heuristic.
-#
-# A full subject classifier is out of scope for this fix (no model/training data
-# wired into the serving path). Instead we map a small set of high-signal keyword
-# phrases to the subjects that actually matter for routing — i.e. the entries in
-# ALWAYS_LIVE_SUBJECTS / SOFT_LIVE_SUBJECTS. Only those subjects change routing;
-# detecting any other subject would route LOCAL anyway, so we don't bother.
-#
-# Matching is substring/word based and case-insensitive. Longer/more specific
-# phrases are listed first per subject so the most decisive cue wins. This is a
 # pragmatic heuristic, NOT a classifier: it will miss paraphrases and only covers
-# the routing-relevant subjects. Returns "" when nothing matches (default LOCAL).
 _SUBJECT_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("Theatre", ("theatre", "theater", "playwright", "stagecraft", "dramaturgy", "scenography")),
     ("Music", ("music", "musical", "composer", "symphony", "orchestra", "string quartet", "opera", "ethnomusicology")),
@@ -92,7 +74,6 @@ def detect_subject(query: str) -> str:
     lowered = query.lower()
     for subject, keywords in _SUBJECT_KEYWORDS:
         for kw in keywords:
-            # word-ish boundary check for short tokens to avoid e.g. "law" in "flaw"
             if " " in kw:
                 if kw in lowered:
                     return subject
@@ -104,8 +85,8 @@ def detect_subject(query: str) -> str:
 class SearchSource(str, Enum):
     LIVE_API = "live_api"
     LOCAL_INDEX = "local_index"
-    LOCAL_RRF = "local_rrf"  # BM25F + SPLADE on local OpenSearch, fused via RRF
-    BOTH = "both"  # live API + local (RRF if local_rrf_enabled else single-mode)
+    LOCAL_RRF = "local_rrf"
+    BOTH = "both"
 
 
 def _normalize_doi(doi: str) -> str:
@@ -172,12 +153,7 @@ class FederatedSearchRouter:
         self._openalex = openalex_client
         self._opensearch = opensearch_retriever
         self.recency_days = recency_days
-        # When True, historical queries dispatch BM25F + SPLADE on the local
-        # index and RRF-fuse. The 120-query Phase P.11 eval showed RRF beats
-        # either retriever alone (+5.1% NDCG@10 vs BM25, avg overlap only 7.5%).
         self.local_rrf_enabled = local_rrf_enabled
-        # Set by search() when the local cluster fails on every leg attempted;
-        # the handler reads this to emit a degradation notice (Q-LOW item #6).
         self.last_degraded = False
 
     def route(
@@ -219,13 +195,9 @@ class FederatedSearchRouter:
         if _TEMPORAL_CUES.search(query):
             return SearchSource.LIVE_API
 
-        # Q2.1 — zero-coverage subjects: route live before attempting local
-        # retrieval, otherwise the local index returns blank results.
         if subject_hint in ALWAYS_LIVE_SUBJECTS:
             return SearchSource.LIVE_API
 
-        # Q2.2 — soft-live subjects: prefer live, but allow an explicit override
-        # back to the local route.
         if subject_hint in SOFT_LIVE_SUBJECTS and not prefer_local:
             return SearchSource.LIVE_API
 
@@ -257,9 +229,6 @@ class FederatedSearchRouter:
 
         live_results: list[dict] = []
         local_results: list[dict] = []
-        # Track local-leg failures so we can surface a degradation notice rather
-        # than silently returning "no results" when the cluster is down. Mirrors
-        # the S2-fallback notice pattern in tools._s2_fallback.
         self.last_degraded = False
 
         if source in (SearchSource.LIVE_API, SearchSource.BOTH):
@@ -269,9 +238,6 @@ class FederatedSearchRouter:
                 )
                 live_results = data.get("results", [])
             except Exception:
-                # The router coordinates two independent backends and must never
-                # crash the calling handler; the underlying clients already narrow
-                # their own exceptions (see opensearch_retriever._http).
                 logger.exception("FederatedSearchRouter: live API search failed")
 
         if source in (SearchSource.LOCAL_INDEX, SearchSource.BOTH):
@@ -302,7 +268,6 @@ class FederatedSearchRouter:
                 splade_ok = True
             except Exception:
                 logger.exception("FederatedSearchRouter: SPLADE search failed")
-            # Both local legs errored → the local cluster is degraded.
             if not bm25f_ok and not splade_ok:
                 self.last_degraded = True
             return _rrf_merge(bm25f_results, splade_results, top_k)
@@ -312,5 +277,4 @@ class FederatedSearchRouter:
         if source == SearchSource.LOCAL_INDEX:
             return local_results[:top_k]
 
-        # BOTH — RRF merge of live + local
         return _rrf_merge(live_results, local_results, top_k)

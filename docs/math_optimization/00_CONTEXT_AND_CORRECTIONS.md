@@ -14,8 +14,7 @@ on the candidates the mmap path surfaces.
 
 ## Three corrections to the earlier-session framing
 
-These corrections are load-bearing — they change which lever matters and are
-recorded so the framing doesn't drift back.
+Recorded so the framing doesn't drift back.
 
 ### Correction 1 — the math gate is already GREEN
 

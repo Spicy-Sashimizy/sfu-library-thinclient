@@ -16,13 +16,12 @@ def _make_client(**kwargs) -> OpenAlexClient:
     defaults = dict(
         tracker_path="/tmp/test_openalex_tracker.json",
         max_retries=2,
-        retry_base_delay=0.0,  # zero delay for tests
+        retry_base_delay=0.0,
         circuit_breaker_threshold=3,
         circuit_breaker_timeout=5.0,
     )
     defaults.update(kwargs)
     client = OpenAlexClient(**defaults)
-    # Reset tracker so tests start at 0 calls
     client._tracker._count = 0
     client._tracker._date = client._tracker._today()
     return client
@@ -106,7 +105,7 @@ class TestOpenAlexClientRetry:
         client = _make_client(max_retries=2)
         with patch("requests.get", side_effect=requests.Timeout()) as mock_get:
             client._get("/works", {})
-        assert mock_get.call_count == 3  # 1 original + 2 retries
+        assert mock_get.call_count == 3
 
 
 class TestOpenAlexCircuitBreaker:
@@ -120,7 +119,7 @@ class TestOpenAlexCircuitBreaker:
     def test_circuit_open_blocks_request_without_http_call(self):
         client = _make_client(circuit_breaker_threshold=1, max_retries=0)
         with patch("requests.get", side_effect=requests.Timeout()):
-            client._get("/works", {})  # triggers open
+            client._get("/works", {})
         with patch("requests.get") as mock_get:
             result = client._get("/works", {})
         assert result is None
@@ -140,7 +139,6 @@ class TestOpenAlexCircuitBreaker:
             for _ in range(3):
                 client._get("/works", {})
         assert client._breaker.state == CircuitBreaker.OPEN
-        # Manually set to HALF_OPEN so test request is allowed through
         client._breaker.state = CircuitBreaker.HALF_OPEN
         with patch("requests.get", return_value=_ok_response(payload)):
             client._get("/works", {})
@@ -170,7 +168,6 @@ class TestOpenAlexCircuitBreakerWithRetries:
         with patch("requests.get", side_effect=requests.Timeout()) as mock_get:
             result = client._get("/works", {})
         assert result is None
-        # 1 original + 3 retries = 4 HTTP calls, but only ONE breaker failure.
         assert mock_get.call_count == 4
         assert client._breaker.failure_count == 1
         assert client._breaker.state == CircuitBreaker.CLOSED
@@ -191,18 +188,17 @@ class TestOpenAlexCircuitBreakerWithRetries:
         with patch("requests.get", side_effect=requests.Timeout()):
             for _ in range(4):
                 client._get("/works", {})
-        # 4 failing requests < threshold 5 → still closed.
         assert client._breaker.failure_count == 4
         assert client._breaker.state == CircuitBreaker.CLOSED
         with patch("requests.get", side_effect=requests.Timeout()):
-            client._get("/works", {})  # 5th
+            client._get("/works", {})
         assert client._breaker.state == CircuitBreaker.OPEN
 
 
 class TestOpenAlexBudgetBlocking:
     def test_budget_exhausted_blocks_request(self):
         client = _make_client()
-        client._tracker._count = client._tracker.limit  # exhaust budget
+        client._tracker._count = client._tracker.limit
         with patch("requests.get") as mock_get:
             result = client._get("/works", {})
         assert result is None

@@ -17,7 +17,6 @@ import sys
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 BUNDLE = os.environ.get("BUNDLE", "/var/tmp/portable_socsci_bundle")
 
-# (repo-relative source, bundle-relative dest, force CRLF?)
 ROOT_FILES = [
     ("scripts/portable_socsci/windows/SETUP.bat",           "SETUP.bat",           True),
     ("scripts/portable_socsci/windows/install_wizard.ps1",  "install_wizard.ps1",  True),

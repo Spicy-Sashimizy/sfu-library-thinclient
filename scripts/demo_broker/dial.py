@@ -48,9 +48,9 @@ def _fmt_bytes(n: int | None) -> str | None:
 @dataclass(frozen=True)
 class DialStatus:
     backend: str
-    high_bytes: int | None      # None == no limit ("infinity"/"max")
+    high_bytes: int | None
     max_bytes: int | None
-    current_bytes: int | None   # None if the backend cannot read usage
+    current_bytes: int | None
     swap_max_bytes: int | None
 
     def to_json(self) -> dict:
@@ -72,7 +72,7 @@ class SystemdBackend:
     survive a reboot, which is what a demo dial wants."""
 
     name = "systemd"
-    _INF = 2 ** 63 - 1  # systemd prints "infinity" as 2^63-1 via `show`
+    _INF = 2 ** 63 - 1
 
     def __init__(self, unit: str, runner=subprocess.run):
         self.unit = unit
@@ -103,8 +103,6 @@ class SystemdBackend:
                 vals[k] = None
             else:
                 n = int(v)
-                # `show` reports an unset/unlimited value as 2^63-1 (and
-                # MemoryCurrent as [not set] -> huge) — normalise to None
                 vals[k] = None if n >= self._INF else n
         return DialStatus(self.name, vals.get("MemoryHigh"), vals.get("MemoryMax"),
                           vals.get("MemoryCurrent"), vals.get("MemorySwapMax"))
@@ -140,7 +138,6 @@ class CgroupBackend:
         if not (self.dir / "memory.high").exists():
             raise DialError(f"{self.dir} is not a cgroup-v2 memory dir "
                             "(no memory.high)")
-        # widen-then-narrow so max never dips below high transiently
         self._write("memory.max", max_bytes)
         self._write("memory.high", high_bytes)
 

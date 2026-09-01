@@ -15,6 +15,13 @@ stack — the reasoning deserves a durable record, not just commit messages.
 | `03_MEASUREMENT_TABLES.md` | Every table produced this session: E8 status, attention-span mapping, invalid-vs-corrected F6, trust audit, R1 ladder |
 | `04_CONVERGENCE_ARTIFACT.md` | The non-monotonic convergence artifact: the observation, the mechanism, the literature anchoring (WiOpt 2022 / Che-Fagin / MGLRU / sequential flooding), and why it is NOT Belady's anomaly |
 | `05_EXTERNAL_PRECEDENTS.md` | Web-research findings: documented precedents for every phenomenon seen tonight (kernel patch def5efe0, TMO/senpai, Aquifer, Neo4j, ES/OS max_map_count lore) |
+> **Live thread (2026-09-01):** `04_CONVERGENCE_ARTIFACT.md` has grown dated
+> addenda past this session — Tier-1 and Tier-1b synthetic repro both FAILED
+> (2026-08-31, recorded; reading = access-structure dependence), and the
+> Tier-2/3 real-stack MGLRU repro is pre-registered with phase A in flight
+> (harness + records: `spike/convergence_repro/`). Read the artifact's addenda
+> before quoting its status.
+
 | `06_KERNEL_PAGE_RECLAIM_INTERNALS.md` | The precise "how does the kernel actually decide" write-up: not-LRU (accessed bit → 2Q double-clock → shadow-entry refault feedback → pressure-scaled aging), the "binary choice vs accumulated state" correction, MGLRU's explicit PID controller, academic lineage (CLOCK/2Q/LIRS/CLOCK-Pro/ARC), verified topology (WSL2 kernel 6.18.33.1, lru_gen absent → classic two-list), and the one-line mapping of each mechanism to this session's measurements |
 
 ## One-paragraph summary

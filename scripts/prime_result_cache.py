@@ -46,9 +46,6 @@ REPO = Path(__file__).resolve().parents[1]
 SEARCH_JSX = REPO / "web" / "src" / "search.jsx"
 SEED_FILE = REPO / "data" / "eval_results" / "demo_seed_queries.txt"
 
-# The GUI's default search request shape (web/lib/api.js buildSearchArgs with no
-# filters active): {query, limit: 50}. Matching this exactly means the demo's
-# real clicks hit the SAME cache key the primer planted.
 DEFAULT_LIMIT = 50
 
 
@@ -67,9 +64,6 @@ def landing_example_queries() -> list[str]:
     if not SEARCH_JSX.exists():
         return []
     src = SEARCH_JSX.read_text(encoding="utf-8")
-    # The example list is the array literal containing the landing examples,
-    # immediately followed by `.map(ex =>`. Anchor on a known example string so
-    # we match the right array (the JSX has several `[...].map(ex =>` blocks).
     m = re.search(r'\[([^\]]*indigenous knowledge systems in climate adaptation[^\]]*)\]\.map\(ex\s*=>',
                   src, re.DOTALL)
     if not m:
@@ -125,7 +119,6 @@ def _http_json(method: str, url: str, body: dict | None = None, timeout: float =
 
 def prime(host: str, port: int, gap_s: float = 0.5) -> int:
     base = f"http://{host}:{port}"
-    # 1. confirm the serve is up + the cache is enabled.
     st, health, _ = _http_json("GET", f"{base}/health")
     if st != 200:
         print(f"! serve not reachable at {base}/health (HTTP {st})", file=sys.stderr)
@@ -154,8 +147,6 @@ def prime(host: str, port: int, gap_s: float = 0.5) -> int:
     for i, s in enumerate(seeds, 1):
         st, data, _ = _http_json("POST", f"{base}/api/search", body=s["args"],
                                  timeout=120.0)
-        # A priming request that 5xx'd or returned an error shape is NOT cached
-        # (the serve's never-cache-bad guard); surface it but keep going.
         if st != 200 or (isinstance(data, dict) and data.get("error")):
             print(f"  [{i:>2}/{len(seeds)}] SKIP (HTTP {st}, not cached): "
                   f"{s['query'][:60]!r}", file=sys.stderr)
@@ -165,10 +156,8 @@ def prime(host: str, port: int, gap_s: float = 0.5) -> int:
         print(f"  [{i:>2}/{len(seeds)}] sent ({n} results): "
               f"{s['query'][:60]!r}")
         primed += 1
-        time.sleep(gap_s)  # throttle: never a parallel burst on the cross-encoder
+        time.sleep(gap_s)
 
-    # 2. verify residency via the counters (the proof of idempotency: a re-prime
-    # shows resident unchanged + hit incremented + store unchanged).
     st, health2, _ = _http_json("GET", f"{base}/health")
     rc2 = health2.get("result_cache") or {}
     after = rc2.get("resident", before_resident)

@@ -1,38 +1,14 @@
-// L-B model-based walk — the suite is a small state space; encode it as a
-// transition graph and walk ALL shortest paths (BFS). Plan §3 L-B contract.
-//
-// THE MODEL IS THE SPEC of GUI_BAREBONES_PROGRESS_SPEC §2: the Interface
-// toggles ARE the model. Transcribed verbatim from web/lib/interface_prefs.js
-// PREF_DEFAULTS + web/src/_sidebar.jsx SUITE_NAV_ITEMS.
-//
-// States (search-app screens): search, saved, history, databases, settings,
-// admin. Plus the suite apps reached via the suite shell: analytics,
-// index_manager.
-//
-// Events:
-//   nav:<screen>   click the sidebar nav button (saved/history/databases/admin
-//                  are HIDDEN until their toggle is ON — so the model first
-//                  fires the enable-toggle event).
-//   toggle:<key>   flip an Interface pref (role="switch" in Settings → Interface,
-//                  or a density radio). Persisted in localStorage.
-//
-// Bars (plan §3 L-B): every state reached ≥1×, every event fired ≥1×,
-// invariants green on every step.
 import { loadPlaywright, makeLog, arm, check, captureArtifacts, openApp, sleep, mockApi, BASE, DATE_TAG, ROOT } from './lib.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// The model — one entry per nav/toggle/filter, transcribed from spec §2.
-// `from: '*'` means applicable in any state; `to` is the resulting state.
 const EVENTS = [
-  // Nav events (require the screen's toggle ON where applicable).
   { name: 'nav:search',     from: '*', to: 'search',   pre: [],                       do: async p => clickNav(p, 'Search') },
   { name: 'nav:saved',      from: '*', to: 'saved',    pre: ['toggle:savedHistoryNav'], do: async p => clickNav(p, 'Saved') },
   { name: 'nav:history',    from: '*', to: 'history',  pre: ['toggle:savedHistoryNav'], do: async p => clickNav(p, 'History') },
   { name: 'nav:databases',  from: '*', to: 'databases',pre: ['toggle:databasesTab'],  do: async p => clickNav(p, 'Databases') },
   { name: 'nav:settings',   from: '*', to: 'settings', pre: [],                       do: async p => clickNav(p, 'Settings') },
   { name: 'nav:admin',      from: '*', to: 'admin',    pre: ['toggle:adminPanels'],   do: async p => clickNav(p, 'Admin') },
-  // Interface toggles (fire in Settings). Each is its own event so coverage is explicit.
   { name: 'toggle:advancedFiltersOpen', from: '*', to: 'settings', pre: [], do: async p => flipToggle(p, 0) },
   { name: 'toggle:savedHistoryNav',      from: '*', to: 'settings', pre: [], do: async p => flipToggle(p, 1) },
   { name: 'toggle:databasesTab',         from: '*', to: 'settings', pre: [], do: async p => flipToggle(p, 2) },
@@ -40,20 +16,15 @@ const EVENTS = [
   { name: 'toggle:indexManagerApp',      from: '*', to: 'settings', pre: [], do: async p => flipToggle(p, 4) },
   { name: 'toggle:adminPanels',          from: '*', to: 'settings', pre: [], do: async p => flipToggle(p, 5) },
   { name: 'toggle:density',              from: '*', to: 'settings', pre: [], do: async p => clickDensity(p) },
-  // Settings sub-tabs (each is a reachable statelet; counted as events fired).
   { name: 'tab:LLM Backend', from: 'settings', to: 'settings', pre: [], do: async p => clickText(p, 'LLM Backend') },
   { name: 'tab:Zotero',      from: 'settings', to: 'settings', pre: [], do: async p => clickText(p, 'Zotero') },
   { name: 'tab:Dictionary',  from: 'settings', to: 'settings', pre: [], do: async p => clickText(p, 'Dictionary') },
   { name: 'tab:Privacy',     from: 'settings', to: 'settings', pre: [], do: async p => clickText(p, 'Privacy') },
-  // Filters expander (Tier-1 one-interaction-away control).
   { name: 'toggle:filters',  from: '*', to: 'search', pre: [], do: async p => clickText(p, 'Filters') },
 ];
 const ALL_STATES = ['search', 'saved', 'history', 'databases', 'settings', 'admin'];
 
 async function clickNav(page, label) {
-  // Target the sidebar button by exact text. "Settings" is a sibling of <nav>
-  // (not inside it), so scope to `aside button` — NOT `aside nav button`.
-  // Exact match avoids the toggle label "Saved & History nav" shadowing "Saved".
   const btn = page.locator('aside button', { hasText: label }).first();
   await btn.waitFor({ state: 'visible', timeout: 2500 }).catch(() => {});
   await btn.click({ timeout: 3000 }).catch(() => {});
@@ -69,18 +40,12 @@ async function clickDensity(page) {
   await page.getByText('compact', { exact: false }).first().click({ timeout: 3000 }).catch(() => {});
 }
 
-// Start from a known pref state for each event: prefs are persisted in
-// localStorage and toggles are click-TOGGLES, so firing `toggle:adminPanels`
-// (its own event) then later `nav:admin`'s pre-flip would flip it back OFF.
-// Fix: set the pref state deterministically via the app's own helper before
-// each event, enabling exactly this event's `pre` toggles.
 const PREF_KEY = 'sfu-interface-prefs';
 const PREF_DEFAULTS = { advancedFiltersOpen: false, savedHistoryNav: false, databasesTab: false, analyticsApp: false, indexManagerApp: false, adminPanels: false, density: 'comfortable' };
 function prefsForEvent(eventName) {
   const ev = EVENTS.find(e => e.name === eventName);
   const p = { ...PREF_DEFAULTS };
   for (const pre of (ev && ev.pre) || []) {
-    // pre names are toggle:<key>; map to the pref key.
     const key = pre.replace(/^toggle:/, '');
     if (key in p) p[key] = true;
   }
@@ -92,11 +57,7 @@ async function setPrefs(page, prefs) {
   }, [PREF_KEY, prefs]);
 }
 
-// For each target event, arrive in Settings first (toggles only render there),
-// fire any `pre` events to make the target reachable, then fire the target.
 async function fireEvent(page, eventName, log) {
-  // Set deterministic prefs so the target's `pre` toggles are ON (and only those).
-  // Reload so React reads the fresh prefs, then navigate to Settings → Interface.
   await setPrefs(page, prefsForEvent(eventName));
   await page.reload({ waitUntil: 'load' }).catch(() => {});
   await page.waitForFunction(() => document.getElementById('root') && document.getElementById('root').childNodes.length > 0, { timeout: 15000 }).catch(() => {});
@@ -123,29 +84,19 @@ const { page, context } = await openApp({
 });
 
 try {
-  // BFS-ish: fire every event once, recording the resulting state at each.
-  // After each event, detect which state we're in by the sidebar active button
-  // (computed background var(--bg-sidebar-active)) + distinctive screen content.
   for (const ev of EVENTS) {
     log.act(`fire ${ev.name}`);
     await fireEvent(page, ev.name, log);
     eventsFired.add(ev.name);
     actions++;
-    // State detection: the sidebar marks active via background colour, not an
-    // aria-current attribute — so read the active button's background and fall
-    // back to distinctive per-screen text. Order matters: most-specific first.
     const here = await page.evaluate(() => {
       const txt = (document.body.innerText || '').slice(0, 6000);
-      // Active nav button: background === --bg-sidebar-active (oklch 28%).
       let activeLabel = null;
       document.querySelectorAll('aside nav button').forEach(b => {
         if (!b.innerText) return;
         const bg = getComputedStyle(b).backgroundColor;
-        // oklch(28% 0.016 250) ≈ rgb(58,58,72)-ish; compare via a luminance-ish
-        // check: the active button is distinctly lighter than inactive (transparent).
         if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') activeLabel = b.innerText.trim().toLowerCase();
       });
-      // Distinctive screen text (checked first — more reliable than nav colour).
       if (/Saved Papers/i.test(txt)) return 'saved';
       if (/Your search history|History\b/i.test(txt) && !/Saved Papers/i.test(txt)) return 'history';
       if (/Databases\b|SFU databases/i.test(txt)) return 'databases';
@@ -164,7 +115,6 @@ try {
   await context.close();
 }
 
-// Second pass: suite apps (analytics, index_manager) reached standalone.
 for (const app of ['analytics.html', 'index_manager.html']) {
   const c2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const p2 = await c2.newPage();
@@ -174,7 +124,6 @@ for (const app of ['analytics.html', 'index_manager.html']) {
     await p2.goto(`${BASE}/app/${app}`, { waitUntil: 'load', timeout: 30000 });
     await p2.waitForFunction(() => document.getElementById('root') && document.getElementById('root').childNodes.length > 0, { timeout: 15000 }).catch(() => {});
     await sleep(300);
-    // Exercise the suite-app nav to confirm each mounts + is reachable.
     for (const t of (app === 'analytics.html' ? ['About index', 'Operator'] : ['Warm Cache', 'Storage Budget', 'Personas'])) {
       await p2.getByText(t, { exact: false }).first().click({ timeout: 3000 }).catch(() => {});
       await sleep(120); await check(p2, log, `suite:${app} "${t}"`);

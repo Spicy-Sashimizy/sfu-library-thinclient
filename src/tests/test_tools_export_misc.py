@@ -34,14 +34,11 @@ class TestCsvExport:
             with patch("lib.tools._cache_works"):
                 result = await _handle_export_search({"query": "q", "format": "csv"})
         text = result[0].text
-        # The newline inside the title must be wrapped in quotes.
         assert '"A title\nwith a newline"' in text
 
-        # Validate with the stdlib csv parser: body must be a single record.
         import csv, io
-        body = text.split("\n", 1)[1]  # drop the "# CSV Export: ..." comment line
+        body = text.split("\n", 1)[1]
         rows = list(csv.reader(io.StringIO(body)))
-        # row 0 = header, row 1 = the single data record (newline kept inside field)
         assert len(rows) == 2
         assert rows[1][1] == "A title\nwith a newline"
 

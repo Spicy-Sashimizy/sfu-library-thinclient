@@ -25,15 +25,13 @@ import math
 
 from lib.reranker import _CURRENT_YEAR, _score_recency, _score_type_match  # noqa: F401
 
-# Order matters — this is the column order of the trained model's feature matrix and
-# is passed to lgb.Dataset(feature_name=...). Do not reorder without retraining.
 FEATURE_NAMES = [
-    "log_citations",     # log1p(cited_by_count)
-    "recency",           # reranker._score_recency: 1.0 at current year, -0.05/yr
-    "has_doi",           # 1.0 if a DOI is present
-    "type_score",        # reranker._score_type_match: article=1.0 .. other=0.5
-    "abstract_present",  # 1.0 if abstract longer than 50 chars
-    "embed_cosine",      # cosine(query, title+abstract) from the SFU embedding model
+    "log_citations",
+    "recency",
+    "has_doi",
+    "type_score",
+    "abstract_present",
+    "embed_cosine",
 ]
 
 N_FEATURES = len(FEATURE_NAMES)

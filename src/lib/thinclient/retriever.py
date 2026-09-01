@@ -37,7 +37,6 @@ from lib.thinclient.sections import ERA_BOUNDARY_YEAR, ERAS, classify_query
 
 logger = logging.getLogger("sfu_library_mcp")
 
-# Per-leg in-memory metrics (reset on restart), mirrors tools._metrics.
 _leg_metrics: dict[str, dict] = {}
 _metrics_lock = threading.Lock()
 
@@ -55,17 +54,6 @@ def _mem_available_gb() -> float | None:
     return None
 
 
-# Passthrough/network filesystems where mmap page cache does NOT stay resident,
-# so parallel federation's "never release pages" advantage is moot (the pages
-# get dropped between queries anyway). There, SequentialSeismicBackend's lower
-# RAM floor (releases each shard's slabs after searching it) is the better
-# default. On a native local disk (ext4/xfs on a DO droplet) pages DO stay
-# resident, so parallel keeps the working set warm (WI-1 warm p50 ~47 ms) and
-# sequential would sabotage that by releasing — hence parallel there.
-# NOTE: federation mode is roughly latency-NEUTRAL for a genuinely cold fault
-# (measured 2026-07-18, page cache dropped: parallel p50 9134 ms vs sequential
-# 8747 ms); the real cold-latency lever is the filesystem itself (see
-# _stage_shards_local), not this choice.
 _SLOW_FEDERATION_FSTYPES = {"9p", "virtiofs", "nfs", "nfs4", "cifs", "smb3", "fuse.sshfs"}
 
 
@@ -132,7 +120,7 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
     data = json.load(open(src_p))
     shards = data.get("shards") if isinstance(data, dict) else None
     if not shards:
-        return manifest_path  # unknown shape — serve as-is
+        return manifest_path
     stage = Path(stage_dir)
     stage.mkdir(parents=True, exist_ok=True)
     for s in shards:
@@ -143,11 +131,6 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
         if not src.is_absolute():
             src = repo_root / rel
         dst = stage / src.name
-        # Cheap idempotency: a `.staged_ok` marker records the source byte size
-        # from the completed copy. Skip when it matches — avoids re-walking the
-        # 42 GB source tree over a slow mount on every boot (that walk alone can
-        # take minutes on 9p). Only compute the source size when the marker is
-        # missing/mismatched (i.e. a genuine (re)stage is needed).
         marker = dst / ".staged_ok"
         want = None
         if marker.is_file():
@@ -156,9 +139,6 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
             except (OSError, ValueError):
                 want = None
         src_sz = _dir_size(src)
-        # Adopt an existing correct copy that lacks a marker (e.g. staged by
-        # scripts/stage_seismic_local.sh, which uses cp): size-match, then write
-        # the marker so future boots skip the source walk.
         if dst.is_dir() and want is None and _dir_size(dst) - _marker_bytes(dst) == src_sz:
             marker.write_text(str(src_sz)); want = src_sz
         if dst.is_dir() and want == src_sz:
@@ -168,26 +148,19 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
             t0 = time.perf_counter()
             logger.info("SEISMIC stage: copying %s -> %s", src.name, stage)
             if dst.is_dir():
-                shutil.rmtree(dst)  # partial/stale copy — start clean
+                shutil.rmtree(dst)
             shutil.copytree(src, dst)
             marker.write_text(str(src_sz))
             logger.info("SEISMIC stage: %s copied (%.1f GB) in %.0fs",
                         dst.name, src_sz / 1e9, time.perf_counter() - t0)
-        s["mmap_dir"] = str(dst)  # absolute staged path
+        s["mmap_dir"] = str(dst)
     staged_manifest = stage / "staged_manifest.json"
     with open(staged_manifest, "w") as fh:
         json.dump(data, fh)
     return str(staged_manifest)
 
 
-# ── meta.sqlite staging (same lever as _stage_shards_local, different artifact) ─
-# Measured 2026-08-03 (doc seismic_150m_testbed/18 §14): at 500 candidates the
-# SPLADE/dense post-filter stage costs 222.2 ms with `meta.sqlite` on 9p and
-# 4.0 ms with the SAME FILE on local disk — 55x for a file copy, no code change.
-# Like _stage_shards_local this is a DEV-CONTAINER lever: on a droplet the index
-# already sits on local block storage, so the source FS check below makes it a
-# NO-OP there by construction (SFU_META_STAGE_FORCE=1 overrides, for tests).
-META_STAGE_FAST_TAIL = 65536      # head+tail bytes hashed by the 'fingerprint' verify
+META_STAGE_FAST_TAIL = 65536
 
 
 def _file_fingerprint(path: Path, size: int) -> str:
@@ -315,8 +288,6 @@ def _stage_meta_local(src: Path) -> Path:
         raise RuntimeError(f"meta stage: {stage} has {free / 1e9:.1f} GB free, "
                            f"need ~{want['size'] * 1.02 / 1e9:.1f} GB")
 
-    # Any leftover tmp from a killed copy is garbage — never resumed (a partial
-    # SQLite file is not a shorter valid one) and never opened.
     for stale in stage.glob(src.name + ".tmp-*"):
         try:
             stale.unlink()
@@ -327,23 +298,21 @@ def _stage_meta_local(src: Path) -> Path:
     logger.info("meta stage: copying %s (%.1f GB) -> %s",
                 src, want["size"] / 1e9, stage)
     try:
-        marker.unlink(missing_ok=True)   # the old copy is about to be replaced
+        marker.unlink(missing_ok=True)
         with open(src, "rb") as fsrc, open(tmp, "wb") as fdst:
             shutil.copyfileobj(fsrc, fdst, 8 << 20)
             fdst.flush()
             os.fsync(fdst.fileno())
         got = _meta_stage_identity(tmp, verify)
-        # `mtime_ns` is the source's own; compare only the content fields.
         for field in ("size", "sha256", "fingerprint"):
             if field in want and want[field] != got.get(field):
                 raise RuntimeError(f"meta stage: {field} mismatch after copy "
                                    f"({want[field]} != {got.get(field)}) — "
                                    f"source changed mid-copy or the stage FS "
                                    f"is lying about durability")
-        # A previous stage's sidecars must not shadow the new file.
         for suffix in ("-wal", "-shm", "-journal"):
             (stage / (src.name + suffix)).unlink(missing_ok=True)
-        os.replace(tmp, dst)            # atomic: readers see old-or-new, never partial
+        os.replace(tmp, dst)
         marker.write_text(json.dumps(want))
     except BaseException:
         tmp.unlink(missing_ok=True)
@@ -379,8 +348,6 @@ def _connect_meta(path: Path, staged: bool = False) -> sqlite3.Connection:
     try:
         conn = sqlite3.connect(f"file:{path}?mode=ro&immutable=1", uri=True,
                                check_same_thread=False)
-        # sqlite3_open is lazy: force a real read so an unusable open fails NOW,
-        # on the fallback path, and not on the first served query.
         conn.execute("PRAGMA schema_version").fetchone()
         return conn
     except sqlite3.Error as exc:
@@ -459,26 +426,14 @@ def leg_metrics_delta(before: dict) -> dict:
     return out
 
 
-# BMP is a load-into-memory engine (no mmap mode in 0.2.6): `bmp.Searcher`
-# deserializes each *.bmp shard into ANONYMOUS RAM at a measured ~3.07x its
-# on-disk size (probe 2026-06-17, 569 MB shard -> 1747 MB steady-state RSS;
-# ratio holds from 12 MB to 569 MB shards). The full 150M SPLADE set is 68.6 GB
-# on disk -> ~211 GB resident. _load() builds ALL shards eagerly, so on a host
-# that can't hold the set the process is OOM-killed *inside* construction —
-# before any per-query mem-floor guard can run. The guard below samples
-# MemAvailable before each shard and aborts CLEANLY (RuntimeError) instead, so
-# the failure is diagnosable rather than a SIGKILL. Gate: SFU_LOAD_MEM_FLOOR_GB.
-BMP_RESIDENT_RATIO = 3.07       # measured anon-RAM expansion of bmp.Searcher
-LOAD_MEM_FLOOR_GB = 1.5         # abort load if MemAvailable would drop below this
+BMP_RESIDENT_RATIO = 3.07
+LOAD_MEM_FLOOR_GB = 1.5
 
 RRF_K = 60
-QUANT_SCALE = 70                # must match builder.QUANT_SCALE (saturation-free)
-SPLADE_QUERY_TERMS = 64         # top query terms, same cap as the OpenSearch leg
-OVERFETCH = 4                   # sparse/dense over-fetch multiplier (no filters)
-OVERFETCH_FILTERED = 10         # ... when post-filtering
-# BMP block-max approximation: measured on the 1M build (10 SPLADE queries,
-# 64 terms): alpha=0.8 keeps top-50 overlap 1.000 at -29% latency; beta<1.0
-# prunes query terms and visibly costs quality (0.5 -> overlap 0.80).
+QUANT_SCALE = 70
+SPLADE_QUERY_TERMS = 64
+OVERFETCH = 4
+OVERFETCH_FILTERED = 10
 BMP_ALPHA = 0.8
 BMP_BETA = 1.0
 
@@ -497,12 +452,6 @@ class ThinClientRetriever:
     ):
         repo_root = Path(__file__).resolve().parents[3]
         self.root = Path(index_root or repo_root / "data" / "thinclient_index")
-        # SFU_SPLADE_MODEL_PATH lets serving point at a different query encoder
-        # without a code change. Default 2026-07-09 (D2): the offline bert-FUSED
-        # export (same fp32 weights, exact GELU) — 1.11x encode, merged
-        # overlap@10 0.999 vs unfused (doc seismic_150m_testbed/08 §D).
-        # Regenerate via scripts/seismic_testbed/d2_ort_fusion_matrix.py;
-        # models/splade_onnx is the unfused fallback.
         self.splade_model_path = (splade_model_path or os.environ.get("SFU_SPLADE_MODEL_PATH")
                                   or str(repo_root / "models" / "splade_onnx_fused"))
         self.dense_model_path = dense_model_path or str(repo_root / "models" / "sfu-academic-embed-v5")
@@ -512,46 +461,27 @@ class ThinClientRetriever:
         self._qlog_lock = threading.Lock()
 
         self._lock = threading.Lock()
-        self._sections: dict[str, dict] = {}   # name -> {tantivy, searcher, bmp:[...]}
+        self._sections: dict[str, dict] = {}
         self._abstract_stores: dict[str, Any] = {}
         self._meta: sqlite3.Connection | None = None
-        self._meta_path: Path | None = None   # staged copy when staging is on
+        self._meta_path: Path | None = None
         self._meta_numeric = False
         self._meta_lock = threading.Lock()
         self._dense: dict | None = None
-        self._dense_cache = None   # query-driven warm cache (dense_cache.py)
-        self._dense_leg_enabled = True   # set from SFU_DENSE_LEG at load time
+        self._dense_cache = None
+        self._dense_leg_enabled = True
         self._loaded = False
 
-        # Serving gate. SFU_SPLADE_BACKEND selects the SPLADE leg engine:
-        #   seismic (default) — federated SEISMIC over the 8 dotvbyte mmap shards
-        #                      (Path C, anon floor ~0; dv 25.2 GB page-cache
-        #                      resident at 150M vs f16's 41.9 GB — the only
-        #                      layout that fits this 32 GB container, G8b);
-        #   qdrant           — Qdrant on_disk sparse collection (the 2026-06-24
-        #                      default; being split into the archival container,
-        #                      reachable via SFU_SPLADE_QDRANT_URL — the one-env
-        #                      rollback path);
-        #   bmp              — load-into-RAM BMP shards (~211 GB resident at 150M,
-        #                      forensics only; 150M artifacts deleted 2026-06-25,
-        #                      see docs/bmp_decommission_plan/).
-        # Default flipped qdrant→seismic 2026-07-06: G6 system parity PASS
-        # (paired-delta 2026-06-30 — SEISMIC leg NDCG@10 0.9262 vs Qdrant 0.9065,
-        # Δ=+0.0197, 95% CI +0.0098..+0.0297 clears zero, n=120), C2.5
-        # MMAP_SERVE_READY, dv full-corpus parity 0.9906 vs f16 (G8d, accepted
-        # 2026-07-05; shards 1-2 at 0.985 — E8 is the pre-registered recovery
-        # lever). See docs/THIN_CLIENT_SWAP.md + docs/SEISMIC_ARCHIVE_SPLIT.md.
         self._splade_backend = os.environ.get("SFU_SPLADE_BACKEND", "seismic").lower()
         self._splade_qdrant_url = os.environ.get(
             "SFU_SPLADE_QDRANT_URL", "http://localhost:6333")
         self._splade_collection = os.environ.get(
             "SFU_SPLADE_QDRANT_COLLECTION", "splade_150m")
-        self._qdrant_client = None   # lazy, only when backend=qdrant
-        self._bert_vocab = None      # token->id map shared with the ingest
-        self._seismic = None         # lazy, only when backend=seismic (testbed/served-federated)
-        self._ordinals = None        # ordinal space, only when SFU_THINCLIENT_ORDINALS is set
+        self._qdrant_client = None
+        self._bert_vocab = None
+        self._seismic = None
+        self._ordinals = None
 
-    # ── lazy loading ────────────────────────────────────────────────────────
 
     def _manifest(self) -> dict:
         p = self.root / "manifest.json"
@@ -571,17 +501,6 @@ class ThinClientRetriever:
 
             load_floor = float(os.environ.get("SFU_LOAD_MEM_FLOOR_GB",
                                               LOAD_MEM_FLOOR_GB))
-            # SFU_SKIP_BMP: load tantivy/meta/dense only, skip the resident BMP
-            # shards. The BM25F leg (tantivy, mmap) then runs on hosts too small
-            # to hold the ~211 GB SPLADE set — used by the section-wave parity
-            # eval, which records the SPLADE leg shard-by-shard in separate
-            # processes. See scripts/eval_parity_section_waves.py.
-            # backend=qdrant serves SPLADE from Qdrant, so the resident BMP set
-            # is never queried — skip it (this is what reclaims the ~211 GB).
-            # `import bmp` is deferred to the BMP branch below so the qdrant
-            # serving path has NO dependency on the pisa engine being installed
-            # (2026-06-25, Workstream D: BMP artifacts decommissioned; the BMP
-            # package need not be present on a qdrant-only deploy).
             skip_bmp = (os.environ.get("SFU_SKIP_BMP") == "1"
                         or self._splade_backend in ("qdrant", "seismic"))
             sections_dir = self.root / "sections"
@@ -594,7 +513,7 @@ class ThinClientRetriever:
                     shards = []
                     bmp_paths = [] if skip_bmp else sorted(sdir.glob("splade_*.bmp"))
                     if bmp_paths:
-                        import bmp  # deferred: only the BMP branch needs pisa
+                        import bmp
                     for p in bmp_paths:
                         _guard_load_mem(p.stat().st_size, load_floor,
                                         f"{sdir.name}/{p.name}")
@@ -606,9 +525,6 @@ class ThinClientRetriever:
                                 vocab = set(zstandard.ZstdDecompressor().decompress(
                                     vocab_path.read_bytes()).decode().split("\n"))
                             except Exception as e:
-                                # A corrupt sidecar must not take down the whole
-                                # index; vocab=None falls back to querying the
-                                # shard without the zero-overlap guard.
                                 logger.warning("thinclient: bad vocab sidecar %s "
                                                "(%s) — loading shard without it",
                                                vocab_path, e)
@@ -620,20 +536,10 @@ class ThinClientRetriever:
                         "schema": idx.schema, "bmp": shards,
                     }
                     abs_path = sdir / "abstracts.sqlite"
-                    # A consolidated section may have abstracts.sqlite deleted,
-                    # served entirely from the flat sidecar (doc 18 §18); open
-                    # on the sidecar's presence, not just the SQLite file's.
                     if abs_path.exists() or (sdir / "abstracts.sqlite.flat").is_dir():
                         self._abstract_stores[sdir.name] = AbstractStore(abs_path)
             meta_path = self.root / "meta.sqlite"
             if meta_path.exists():
-                # Residency lever, same family as the SEISMIC shard staging
-                # below: served off 9p the post-filter stage costs 222.2 ms vs
-                # 4.0 ms for the same file on local disk (2026-08-03). Gated
-                # OFF by default and a no-op when the source is already local,
-                # so a droplet deploy is unaffected. Best-effort: a staging
-                # failure logs and serves the original rather than failing the
-                # load — a slow filter stage beats no index.
                 try:
                     meta_path = _stage_meta_local(meta_path)
                 except Exception:
@@ -642,22 +548,9 @@ class ThinClientRetriever:
                 self._meta_path = meta_path
                 self._meta = _connect_meta(
                     meta_path, staged=meta_path != self.root / "meta.sqlite")
-                # v2 schema stores W-ids as INTEGER PRIMARY KEY (+ docs_other
-                # TEXT overflow); v1 indexes (e.g. thinclient_1m) are TEXT.
                 cols = {r[1]: (r[2] or "").upper() for r in
                         self._meta.execute("PRAGMA table_info(docs)")}
                 self._meta_numeric = cols.get("id", "").startswith("INT")
-            # SFU_DENSE_LEG gates the WHOLE dense leg — static usearch seed
-            # AND the query-driven warm cache. DEFAULT OFF since 2026-08-18:
-            # the served 600k seed covers 0.399% of the corpus and the §7
-            # ablation measured it HARMFUL at that coverage (Δ nDCG@10 −0.0077,
-            # 95% CI excludes 0 — docs/DENSE_PARTITION_AND_ABLATION.md §7
-            # "RESULT"). Re-enable with the literal "1" (same only-"1"-enables
-            # shape as SFU_ABSTRACTS_PREFAULT) once the full corpus is encoded
-            # and the leg re-measures positive. Off is verified-safe with or
-            # without `dense/` on disk (`test_serves_with_no_dense_dir`), and
-            # off also keeps the warm cache from re-creating `dense/` and
-            # loading the 128 MB bi-encoder for a leg with nothing to fuse.
             dense_leg = os.environ.get("SFU_DENSE_LEG", "0") == "1"
             self._dense_leg_enabled = dense_leg
             dense_dir = self.root / "dense"
@@ -679,12 +572,6 @@ class ThinClientRetriever:
                 except Exception as exc:
                     logger.warning("dense warm cache unavailable: %s", exc)
                     self._dense_cache = None
-            # Ordinal addressing (SFU_THINCLIENT_ORDINALS, default OFF). Raises
-            # rather than falling back if it is configured and unusable: the
-            # arrays only address the index they were built from, and quietly
-            # serving SQLite after being told to serve ordinals would make a
-            # misconfiguration look like a performance regression. See
-            # lib/thinclient/ordinals.py and doc 18 §6 risk 1.
             from lib.thinclient.ordinals import load_if_enabled
             self._ordinals = load_if_enabled(self.root, self._manifest())
 
@@ -694,7 +581,6 @@ class ThinClientRetriever:
                         sorted(self._sections), bool(self._dense),
                         self._ordinals.space_id if self._ordinals else False)
 
-    # ── public surface (OpenSearchRetriever-compatible) ─────────────────────
 
     def is_available(self) -> bool:
         try:
@@ -708,12 +594,6 @@ class ThinClientRetriever:
         self._load()
         return sorted(self._sections)
 
-    # ── serve query-log surface (lib.serve_query_log) ──────────────────────────
-    # Thin accessors the tools-layer search handler calls to attribute a served
-    # query's latency to its legs + record the federation mode. The leg metrics
-    # are otherwise in-memory only (reset on restart); these expose a diff window
-    # so the serve log gets per-leg ms WITHOUT a callback plumbed through every
-    # leg's call path (the least-invasive hook). All three are O(1) + thread-safe.
 
     def _leg_snapshot_for_log(self) -> dict:
         from lib.thinclient.retriever import snapshot_leg_metrics
@@ -730,9 +610,6 @@ class ThinClientRetriever:
         try:
             with open(manifest_path) as fh:
                 data = json.load(fh)
-            # Both served manifest forms: dict {"shards": [{"mmap_dir": ...}]}
-            # (the e5/e8 promotion manifests) and the bare list of shard-dir
-            # strings (single-index testbeds + the served-path test fixtures).
             shards = data.get("shards", []) if isinstance(data, dict) else data
             if not shards:
                 return ""
@@ -751,7 +628,6 @@ class ThinClientRetriever:
         env = os.environ.get("SFU_SEISMIC_FEDERATION")
         if env:
             return env.lower()
-        # Report the mode the backend actually selected (constructed lazily).
         if self._seismic is not None:
             cls = type(self._seismic).__name__
             if "Sequential" in cls:
@@ -768,10 +644,10 @@ class ThinClientRetriever:
         Used for routing telemetry and client-visible unpack hints."""
         self._load()
         base = classify_query(query)
-        if base in self._sections:          # legacy era-less layout
+        if base in self._sections:
             return None
         f = _normalize_filters(filters)
-        for era in ERAS:                    # recent first: the era axis leads
+        for era in ERAS:
             sub = f"{base}__{era}"
             if sub in self._sections or _era_skip(sub, f):
                 continue
@@ -796,14 +672,8 @@ class ThinClientRetriever:
             "dense_vectors": len(self._dense["ids"]) if self._dense else 0,
             "dense_warm_cache": (self._dense_cache.info()
                                  if self._dense_cache else None),
-            # Which optional payload components are actually live — lets a
-            # deploy PROVE it shipped/omitted the dense partition rather than
-            # inferring it from a zero vector count (which an absent `dense/`
-            # and a disabled leg both produce).
             "dense_leg_enabled": self._dense_leg_enabled,
             "meta_schema": "v2-numeric" if self._meta_numeric else "v1-text",
-            # Which copy of meta.sqlite the filter stage is actually reading —
-            # the 55x variable (staged local vs 9p), so it belongs in info().
             "meta_path": str(self._meta_path) if self._meta_path else None,
             "meta_staged": bool(self._meta_path
                                 and self._meta_path != self.root / "meta.sqlite"),
@@ -825,7 +695,6 @@ class ThinClientRetriever:
         try:
             self._load()
         except Exception:
-            # Failed swap: restore the previous live objects.
             with self._lock:
                 (self._sections, self._abstract_stores, self._meta,
                  self._dense, self._dense_cache) = old
@@ -853,7 +722,7 @@ class ThinClientRetriever:
             with self._qlog_lock, open(self.query_log_path, "a") as fh:
                 fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
         except OSError:
-            pass  # a bad log path must never break a query
+            pass
 
     def search(self, query: str, top_k: int = 50, mode: str | None = None,
                filters: dict | None = None) -> list[dict]:
@@ -915,7 +784,6 @@ class ThinClientRetriever:
                 for i in range(keys.size):
                     merged[ids_all[int(keys[i])]] = float(scores[i])
         if cache:
-            # Warm-cache delta: exact same int8·fp32 scoring — merges by score.
             for did, score in cache.search(qbits, q, fetch):
                 if score > merged.get(did, float("-inf")):
                     merged[did] = score
@@ -1015,7 +883,6 @@ class ThinClientRetriever:
             out.append(doc)
         return out
 
-    # ── legs ─────────────────────────────────────────────────────────────────
 
     def _bm25f_leg(self, query: str, top_k: int,
                    f: dict | None) -> list[tuple[str, float]]:
@@ -1052,7 +919,6 @@ class ThinClientRetriever:
         merged.sort(key=lambda t: -t[1])
         return merged[:top_k]
 
-    # ── SPLADE query-vector helpers (shared by both backends) ─────────────────
 
     def _encode_splade_top(self, query: str):
         """Encode the query and return its top-SPLADE_QUERY_TERMS terms, or None
@@ -1061,8 +927,6 @@ class ThinClientRetriever:
         try:
             sparse = encode_splade(query, self.splade_model_path)
         except Exception as exc:
-            # Missing/corrupt ONNX model must degrade the leg, not the query:
-            # RRF still fuses BM25F (+dense) while this leg mirrors BM25F.
             logger.warning("SPLADE encoder failed (%s); falling back to BM25F leg", exc)
             return None
         if not sparse:
@@ -1158,26 +1022,6 @@ class ThinClientRetriever:
             repo_root = Path(__file__).resolve().parents[3]
             if (not manifest
                     and self.root == repo_root / "data" / "thinclient_index"):
-                # Promotion default (2026-07-14 flip, E8 Stage-2 lands): the E8
-                # dv-v2 (per-doc value scale) 8-shard manifest over the E5
-                # block_walk_canonical layout — quality-IMPROVED vs the E5 dv-v1
-                # promotion (per-shard overlap@10 vs f16 0.993–0.997; corpus mean
-                # ~0.9955 vs e5/dv1 ~0.9906; +0.67% size, warm p50 ≤1.05×, T1 0/0
-                # all 8 shards; Q7 federated 2-rep PASS 2026-07-13, manifest
-                # `seismic_c25_shards_150m_mmap_e5_v2.json`; forward_format_version
-                # = 2 (dotvbyte_fixedu8_v2)). The E8 flip was operator-signed-off
-                # (2026-07-14). Falls back down the ladder: E5 dv-v1
-                # (2026-07-09 promotion, block_walk_canonical
-                # locality, quality-identical to dv1) → plain dv (2026-07-06
-                # promotion) — each only when the newer manifest is absent, so a
-                # one-env rollback (`SFU_SEISMIC_SHARD_MANIFEST=<older>`) still
-                # reaches every prior served shard set.
-                # Gated on the REAL serving root so synthetic/test index_roots
-                # never silently pick up the 150M corpus; only used when the
-                # file exists so single-index testbeds (SFU_SEISMIC_INDEX) keep
-                # working without it. A *set* env var always wins (one-env
-                # rollback to any prior manifest) and a missing set path fails
-                # loudly downstream.
                 eval_dir = repo_root / "data" / "eval_results"
                 e5_v2_manifest = eval_dir / "seismic_c25_shards_150m_mmap_e5_v2.json"
                 e5_manifest = eval_dir / "seismic_c25_shards_150m_mmap_e5.json"
@@ -1191,12 +1035,6 @@ class ThinClientRetriever:
                 if default_manifest.exists():
                     manifest = str(default_manifest)
             if manifest:
-                # Portability/perf: stage shards onto a fast local FS when
-                # SFU_SEISMIC_STAGE_DIR is set (serving off a 9p/NFS mount is
-                # ~160–240× slower per mmap fault and page cache doesn't hold —
-                # measured 2026-07-18). No-op on a droplet whose index is already
-                # on local disk. Best-effort: a staging failure logs and serves
-                # from the original manifest rather than taking the serve down.
                 stage_dir = os.environ.get("SFU_SEISMIC_STAGE_DIR")
                 if stage_dir:
                     try:
@@ -1206,14 +1044,6 @@ class ThinClientRetriever:
                             "SEISMIC stage to %s failed; serving from original "
                             "manifest (slow if on 9p/NFS)", stage_dir)
                 load_mode = os.environ.get("SFU_SEISMIC_LOAD_MODE", "mmap")
-                # Pick the concrete serving class directly (two distinct methods,
-                # no shared mutable instance state — see sharded_seismic_backend.py).
-                # Default 'parallel' = the historical server-side fan-out; the env
-                # name/default are unchanged so served-path callers don't cascade.
-                # Default is FS-aware (portability guard, 2026-07-18): sequential
-                # on a slow passthrough FS (9p/virtiofs/nfs — parallel faults
-                # contend on one host channel there, ~13× slower cold), parallel
-                # on native local disk (droplet ext4). Env always overrides.
                 federation = os.environ.get("SFU_SEISMIC_FEDERATION")
                 if not federation:
                     sample = repo_root / self._first_manifest_mmap_dir(manifest)
@@ -1263,10 +1093,6 @@ class ThinClientRetriever:
             qc_env = os.environ.get("SFU_SEISMIC_QUERY_CUT")
             query_cut = int(qc_env) if qc_env else None
             heap_factor = float(os.environ.get("SFU_SEISMIC_HEAP_FACTOR", "0.8"))
-            # Over-fetch before post-filtering, matching the Qdrant/BMP legs
-            # (fixed 2026-07-06: this leg previously fetched exactly top_k and
-            # then filtered, thinning filtered results below top_k). The default
-            # k' = max(2×fetch, 100) scales with it inside the backend (G8f).
             fetch = top_k * (OVERFETCH_FILTERED if f else 1)
             res = self._seismic_backend().search(
                 query, fetch, query_cut=query_cut,
@@ -1288,8 +1114,6 @@ class ThinClientRetriever:
         try:
             sparse = encode_splade(query, self.splade_model_path)
         except Exception as exc:
-            # Missing/corrupt ONNX model must degrade the leg, not the query:
-            # RRF still fuses BM25F (+dense) while this leg mirrors BM25F.
             logger.warning("SPLADE encoder failed (%s); falling back to BM25F leg", exc)
             sparse = None
         if not sparse:
@@ -1303,8 +1127,6 @@ class ThinClientRetriever:
             if _era_skip(name, f):
                 continue
             for shard in sec["bmp"]:
-                # BMP panics (Rust unwrap) when NO query term exists in the
-                # shard — skip via the vocab sidecar; guard for old builds.
                 q_here = qvec
                 if shard["vocab"] is not None:
                     q_here = {t: w for t, w in qvec.items() if t in shard["vocab"]}
@@ -1313,7 +1135,7 @@ class ThinClientRetriever:
                 try:
                     ids, scores = shard["searcher"].search(
                         q_here, k=fetch, alpha=BMP_ALPHA, beta=BMP_BETA)
-                except BaseException as exc:  # pyo3 PanicException subclasses BaseException
+                except BaseException as exc:
                     if isinstance(exc, (KeyboardInterrupt, SystemExit)):
                         raise
                     logger.warning("BMP shard search failed in %s: %s", name, exc)
@@ -1324,7 +1146,6 @@ class ThinClientRetriever:
             merged = self._post_filter(merged, f)
         return merged[:top_k]
 
-    # ── helpers ───────────────────────────────────────────────────────────────
 
     def _meta_rows(self, ids: list[str]) -> dict[str, tuple]:
         if not ids:
@@ -1334,7 +1155,6 @@ class ThinClientRetriever:
             if self._dense_cache is not None:
                 out.update(self._dense_cache.metadata_rows(ids))
             return out
-        # (warm-cache rows for ids missing from meta are filled in below)
 
         def _query(table: str, keys: list, back: dict | None) -> None:
             for start in range(0, len(keys), 500):
@@ -1391,11 +1211,6 @@ class ThinClientRetriever:
             kept, unresolved = self._ordinals.post_filter(ranked, f)
             if not unresolved:
                 return kept
-            # Docs with no build-time ordinal — warm-cache growth (doc 18 §6
-            # risk 3) and anything else outside the build. They MUST go through
-            # the SQLite path: dropping them here would silently lose exactly
-            # the documents the warm cache exists to surface. Re-walking
-            # `ranked` keeps the merged result in the legs' rank order.
             survivors = {d for d, _ in kept}
             survivors |= {d for d, _ in self._post_filter_sqlite(unresolved, f)}
             return [r for r in ranked if r[0] in survivors]
@@ -1445,8 +1260,6 @@ class ThinClientRetriever:
                 "is_oa": is_oa,
             })
         if self._dense_cache is not None and results:
-            # Query-driven dense growth: every surfaced doc is a candidate for
-            # the warm-cache delta (fire-and-forget; dedup inside).
             self._dense_cache.enqueue(results)
         return results
 
@@ -1468,7 +1281,7 @@ class ThinClientRetriever:
         import requests
         out: dict[str, str] = {}
         try:
-            for start in range(0, len(ids), 50):  # OpenAlex max 50 ids per filter
+            for start in range(0, len(ids), 50):
                 chunk = ids[start:start + 50]
                 params = {
                     "filter": "openalex_id:" + "|".join(chunk),

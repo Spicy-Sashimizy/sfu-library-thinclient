@@ -49,8 +49,6 @@ def _build_index(root: Path, n: int = 600, hot: bool = True) -> None:
     meta.close()
 
 
-# ── meta schema ───────────────────────────────────────────────────────────────
-
 def test_encode_meta_id():
     assert encode_meta_id("W2031234567") == 2031234567
     for bad in ("W0123", "X123", "W12a3", "W"):
@@ -94,8 +92,6 @@ def test_meta_v1_text_schema_still_served(tmp_path):
     assert not r._meta_numeric
     assert r._meta_rows(["W1"])["W1"][1] == "t"
 
-
-# ── era sub-sections ─────────────────────────────────────────────────────────
 
 def test_era_helpers_and_personas():
     assert era_of(2015) == "recent" and era_of(1995) == "archive"
@@ -146,8 +142,6 @@ def test_build_worker_era_routing(tmp_path):
     assert r.cold_section_hint("political governance") is None
 
 
-# ── abstracts v3 (+ v1/v2 read compat) ───────────────────────────────────────
-
 def test_script_bucket():
     assert A.script_bucket(EN) == "latin"
     assert A.script_bucket(RU) == "cyrillic"
@@ -159,7 +153,7 @@ def test_abstracts_v3_roundtrip(tmp_path):
     w = A.AbstractStoreWriter(tmp_path / "a.sqlite")
     docs = {f"W{i}": EN + f"variant {i}" for i in range(2000)}
     docs.update({f"WR{i}": RU + f"вариант {i}" for i in range(400)})
-    docs.update({f"WZ{i}": ZH + f"变体 {i}" for i in range(40)})  # below bar
+    docs.update({f"WZ{i}": ZH + f"变体 {i}" for i in range(40)})
     for k, v in docs.items():
         w.add(k, v)
     w.add("Wempty", "")
@@ -172,7 +166,7 @@ def test_abstracts_v3_roundtrip(tmp_path):
     db = sqlite3.connect(tmp_path / "a.sqlite")
     n_dicts = db.execute(
         "SELECT COUNT(*) FROM meta WHERE k LIKE 'zdict_%'").fetchone()[0]
-    assert n_dicts == 2   # latin + cyrillic; han below bar -> latin fallback
+    assert n_dicts == 2
 
 
 def test_abstracts_flat_sidecar_is_byte_identical(tmp_path):
@@ -194,7 +188,7 @@ def test_abstracts_flat_sidecar_is_byte_identical(tmp_path):
     rep = A.build_flat_sidecar(p)
     assert rep["blocks"] > 1
     flat = A.AbstractStore(p)
-    assert flat._flat is not None          # sidecar picked up automatically
+    assert flat._flat is not None
     assert flat.fetch(list(docs)) == before == docs
 
 
@@ -281,8 +275,6 @@ def test_abstracts_v1_v2_read_compat(tmp_path):
     assert A.AbstractStore(p2).fetch(["WR1"]) == {"WR1": RU}
 
 
-# ── dense warm cache ─────────────────────────────────────────────────────────
-
 @pytest.fixture
 def stub_encoder():
     rng = np.random.default_rng(7)
@@ -314,15 +306,14 @@ def test_dense_cache_lifecycle(tmp_path, stub_encoder):
              "abstract": f"about {i}", "doi": "", "year": 2020,
              "type": "article", "is_oa": True} for i in range(1, 101)]
     c.enqueue(docs)
-    c.enqueue(docs)                      # dedup
-    _wait(lambda: c.info()["docs"] == 99)   # seed id W1 skipped
+    c.enqueue(docs)
+    _wait(lambda: c.info()["docs"] == 99)
     q = stub_encoder(["doc 42 about 42"])[0]
     hits = c.search(np.packbits(q > 0), q, fetch=10)
     assert hits[0][0] == "W42" and hits[0][1] > 0.9
     rows = c.metadata_rows(["W42", "Wmissing"])
     assert rows["W42"][1] == "doc 42" and "Wmissing" not in rows
     c.close()
-    # crash-restore from sqlite
     c2 = DenseWarmCache(tmp_path, seed_ids=["W1"], model_path="",
                         encoder=stub_encoder)
     assert c2.info()["docs"] == 99
@@ -332,7 +323,7 @@ def test_dense_cache_lifecycle(tmp_path, stub_encoder):
 
 def test_dense_cache_only_leg(tmp_path, stub_encoder, monkeypatch):
     _build_index(tmp_path)
-    monkeypatch.setenv("SFU_DENSE_LEG", "1")  # leg is default OFF (2026-08-18)
+    monkeypatch.setenv("SFU_DENSE_LEG", "1")
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
     r._load()
     assert r._dense is None and r._dense_cache is not None
@@ -348,11 +339,6 @@ def test_dense_cache_only_leg(tmp_path, stub_encoder, monkeypatch):
     assert out and out[0]["openalex_id"] == d0["openalex_id"]
 
 
-# ── dense partition: the leg is excludable from the payload ──────────────────
-# The OCI demo payload ships `dense/` as an OPTIONAL component
-# (docs/DENSE_PARTITION_AND_ABLATION.md). These two tests are the contract for
-# that: absence must be SAFE, and the env gate must make it FREE.
-
 def test_serves_with_no_dense_dir(tmp_path, monkeypatch, caplog):
     """No `dense/` in the payload → bm25f/SPLADE still serve, RRF fuses the
     surviving legs, the dense leg returns [] and logs nothing."""
@@ -366,13 +352,8 @@ def test_serves_with_no_dense_dir(tmp_path, monkeypatch, caplog):
         assert r._dense is None and r._dense_cache is None
         assert r.is_available()
         assert r.search("politics", top_k=10)
-        # Per-leg metrics are process-global, so measure a WINDOW, not totals.
         before = r._leg_snapshot_for_log()
         caplog.clear()
-        # Repeated queries must not produce per-query error spam. Scoped to the
-        # dense leg: other legs may legitimately warn once here (e.g. an
-        # ambient SFU_SPLADE_BACKEND=seismic with no shard manifest falls back
-        # to BM25F), which is a DIFFERENT leg's degradation path.
         for _ in range(5):
             assert r.dense_search("politics paper", top_k=10) == []
         assert caplog.records == []
@@ -381,7 +362,7 @@ def test_serves_with_no_dense_dir(tmp_path, monkeypatch, caplog):
     assert not [rec for rec in caplog.records
                 if "dense" in rec.getMessage().lower()]
 
-    assert "dense" not in r._leg_delta_for_log(before)   # leg never spent time
+    assert "dense" not in r._leg_delta_for_log(before)
     m = r.metrics()
     assert m["dense_vectors"] == 0 and m["dense_warm_cache"] is None
     assert r.reload()["dense_vectors"] == 0
@@ -392,21 +373,17 @@ def test_dense_leg_env_gate(tmp_path, monkeypatch):
     literal "1" enables it. Off never touches the encoder or creates dense/."""
     _build_index(tmp_path)
 
-    # Default (unset) is OFF since 2026-08-18.
     monkeypatch.delenv("SFU_DENSE_LEG", raising=False)
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
     r._load()
     assert r._dense is None and r._dense_cache is None
     assert r.metrics()["dense_leg_enabled"] is False
-    # Gated off means the warm cache never re-creates the excluded directory.
     assert not (tmp_path / "dense").exists()
-    # ...and never reaches the bi-encoder: this would raise if it did.
     import lib.opensearch_retriever as osr
     monkeypatch.setattr(osr, "encode_dense", _raise_encoder)
     assert r.dense_search("politics paper", top_k=10) == []
-    assert r.search("politics", top_k=5)     # surviving legs unaffected
+    assert r.search("politics", top_k=5)
 
-    # Only the literal "1" enables (typos leave the default, like PREFAULT).
     for off_value in ("0", "true", "on", "yes"):
         monkeypatch.setenv("SFU_DENSE_LEG", off_value)
         r_off = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
@@ -425,12 +402,6 @@ def _raise_encoder(text, model_path):
     raise AssertionError("dense encoder must not be loaded when the leg is off")
 
 
-# ── RRF leg provenance (dense-ablation prerequisite) ─────────────────────────
-# docs/DENSE_PARTITION_AND_ABLATION.md §5/§7: search_rrf used to discard which
-# leg surfaced a fused doc, so the dense-vote-share and dense-leg-overlap
-# metrics could not be recorded. Provenance is OPT-IN and must be
-# ranking-neutral — that is the hard requirement these tests pin.
-
 def _leg(*ids: str) -> list[dict]:
     return [{"openalex_id": i, "title": i, "score": 1.0} for i in ids]
 
@@ -448,15 +419,11 @@ def test_rrf_provenance_synthetic_fusion():
                     "C": {"bm25f": 3},
                     "D": {"splade": 3},
                     "E": {"dense": 1}}
-    # B is in all three legs at good ranks → it must lead.
     assert out[0]["openalex_id"] == "B"
     scores = {d["openalex_id"]: d["score"] for d in out}
     assert scores["B"] == 1 / 62 + 1 / 61 + 1 / 62
     assert scores["E"] == 1 / 61
-    # The dense-vote-share metric: docs whose ONLY contributing leg is dense.
     assert [d["openalex_id"] for d in out if list(d["rrf_legs"]) == ["dense"]] == ["E"]
-    # Provenance is insertion-ordered in the fusion order, so the first key of
-    # a multi-leg doc is its earliest leg — cheap leg-priority reads.
     assert list(prov["B"]) == ["bm25f", "splade", "dense"]
 
 
@@ -471,7 +438,7 @@ def test_rrf_provenance_is_opt_in_and_ranking_neutral():
     assert all("rrf_legs" not in d for d in plain)
     assert [d["openalex_id"] for d in plain] == [d["openalex_id"] for d in withp]
     for a, b in zip(plain, withp):
-        assert a["score"] == b["score"]          # bit-identical, not approx
+        assert a["score"] == b["score"]
         assert b.pop("rrf_legs")
         assert a == b
 
@@ -503,7 +470,7 @@ def test_search_rrf_detailed_carries_legs_and_latency(tmp_path, monkeypatch):
 
     det = r.search_rrf_detailed("politics paper", top_k=20, include_dense=True)
     assert set(det) == {"results", "legs", "leg_latency_ms"}
-    assert set(det["legs"]) == {"bm25f", "splade"}        # no dense/ in this root
+    assert set(det["legs"]) == {"bm25f", "splade"}
     assert set(det["leg_latency_ms"]) == {"bm25f", "splade"}
     assert all(ms >= 0 for ms in det["leg_latency_ms"].values())
     assert det["legs"]["bm25f"] and all(isinstance(i, str)
@@ -512,7 +479,6 @@ def test_search_rrf_detailed_carries_legs_and_latency(tmp_path, monkeypatch):
     assert [d["openalex_id"] for d in det["results"]] == \
            [d["openalex_id"] for d in ref]
     assert [d["score"] for d in det["results"]] == [d["score"] for d in ref]
-    # Every provenance rank must point at the right position in that leg.
     for d in det["results"]:
         for leg, rank in d["rrf_legs"].items():
             assert det["legs"][leg][rank - 1] == d["openalex_id"]
@@ -534,8 +500,6 @@ def test_dense_leg_off_produces_no_dense_provenance(tmp_path, monkeypatch):
     assert r.metrics()["dense_leg_enabled"] is False
 
 
-# ── eval_pipeline.py: the §7 arm runner's pure functions ─────────────────────
-
 def _eval_pipeline_module():
     import importlib.util
     path = REPO / "scripts/experiments/eval_pipeline.py"
@@ -552,7 +516,7 @@ def test_eval_pipeline_query_loader_shapes(tmp_path):
         {"paraphrase": "climate adaptation coastal", "judge_key": "jk1",
          "query_type": "natural", "stratum": "HELD-OUT"},
         {"query": "bare query form"},
-        {"paraphrase": "climate adaptation coastal"},          # dedup
+        {"paraphrase": "climate adaptation coastal"},
     ]))
     rows = EP.load_query_records(p)
     assert [r["query"] for r in rows] == ["climate adaptation coastal",
@@ -582,23 +546,21 @@ def test_eval_pipeline_summary_metrics_from_recorded_lists():
     for name in ("overall", "natural", "HELD-OUT"):
         s = summ[name]
         assert s["n_queries"] == 1 and s["n_judged"] == 1
-        assert s["dense_vote_share@10"] == 0.2      # only E is dense-only
-        assert s["dense_any_share@10"] == 0.4       # B and E
-        assert s["bm25f_splade_overlap@50"] == 1    # {B}
-        assert s["dense_bm25f_overlap@50"] == 1     # {B}
-        assert s["retrieval_recall@50"] == 0.5      # B found, Z not
+        assert s["dense_vote_share@10"] == 0.2
+        assert s["dense_any_share@10"] == 0.4
+        assert s["bm25f_splade_overlap@50"] == 1
+        assert s["dense_bm25f_overlap@50"] == 1
+        assert s["retrieval_recall@50"] == 0.5
         assert s["lat_dense_p50_ms"] == 5.0
     assert summ["overall"]["retrieval_ndcg@10"] > 0
 
-
-# ── retriever serving extras ─────────────────────────────────────────────────
 
 def test_metrics_query_log_and_reload(tmp_path):
     _build_index(tmp_path)
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False,
                             query_log_path=str(tmp_path / "qlog.jsonl"))
     res = r.search("politics", top_k=5)
-    assert res and res[0]["abstract"]            # hot-section v3 sidecar
+    assert res and res[0]["abstract"]
     m = r.metrics()
     assert m["legs"]["bm25f"]["count"] >= 1
     entry = json.loads((tmp_path / "qlog.jsonl").read_text().strip().split("\n")[-1])
@@ -607,8 +569,6 @@ def test_metrics_query_log_and_reload(tmp_path):
     assert "social_sciences__recent" in info["live_sections"]
     assert r.search("politics", top_k=3)
 
-
-# ── MCP tools (integration; needs no network) ────────────────────────────────
 
 @pytest.mark.asyncio
 async def test_mcp_index_tools(tmp_path, monkeypatch):

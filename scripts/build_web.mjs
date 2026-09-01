@@ -1,12 +1,3 @@
-// Precompile the SFU Library Suite apps: JSX -> plain JS, so the browser never
-// runs the (slow, 3 MB) in-browser Babel transformer. Big first-load speedup.
-//
-// First run MIGRATES: extracts each app's `type="text/babel"` source into
-// web/src/<app>.jsx and rewrites the HTML to load the compiled web/<app>.js
-// (dropping vendor/babel.min.js). Subsequent runs just recompile src/ -> js.
-//
-// Run:  node scripts/build_web.mjs        (uses the vendored Babel via Node)
-//   or: PW unused; relies only on web/vendor/babel.min.js
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -25,7 +16,6 @@ const APPS = [
 
 if (!existsSync(SRC)) mkdirSync(SRC, { recursive: true });
 
-// Match a babel script tag, optionally with src="...", capturing src + inline body.
 const BABEL_TAG = /<script type="text\/babel"(?:\s+src="([^"]+)")?\s*>([\s\S]*?)<\/script>/g;
 
 let built = 0;
@@ -34,7 +24,6 @@ for (const app of APPS) {
   const srcPath = path.join(SRC, app.src);
   let html = readFileSync(htmlPath, 'utf8');
 
-  // MIGRATION (only if we haven't extracted source yet AND the HTML still has babel tags)
   if (!existsSync(srcPath) && BABEL_TAG.test(html)) {
     BABEL_TAG.lastIndex = 0;
     const parts = [];
@@ -44,7 +33,6 @@ for (const app of APPS) {
       else parts.push(m[2]);
     }
     writeFileSync(srcPath, parts.join('\n\n'));
-    // Replace the first babel tag with the compiled <script>, drop the rest + babel vendor.
     let replaced = false;
     html = html.replace(BABEL_TAG, () => {
       if (!replaced) { replaced = true; return `<script src="${app.js}"></script>`; }
@@ -58,9 +46,6 @@ for (const app of APPS) {
 
   if (!existsSync(srcPath)) { console.log(`  SKIP ${app.html}: no ${app.src} and no babel tags`); continue; }
 
-  // COMPILE shared sidebar + src/<app>.jsx -> web/<app>.js
-  // _sidebar.jsx is prepended into EVERY app so all three render an identical
-  // sidebar (nav + Session Replay panel + AI status) from one source.
   const sharedPath = path.join(SRC, '_sidebar.jsx');
   const shared = existsSync(sharedPath) ? readFileSync(sharedPath, 'utf8') + '\n\n' : '';
   const jsx = shared + readFileSync(srcPath, 'utf8');

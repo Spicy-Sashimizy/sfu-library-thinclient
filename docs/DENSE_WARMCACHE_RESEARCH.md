@@ -53,7 +53,10 @@ Two-tier delta, FreshDiskANN-style, with CrackIVF's answer-first philosophy:
   to the RAM arrays. Bounded queue (drop-newest on overflow), hard doc cap.
 - **Hydration**: delta rows carry their own title/doi/year/type/is_oa, so warm
   docs hydrate and post-filter even when absent from `meta.sqlite`.
-- Gated by `SFU_DENSE_WARMCACHE` (default on; `0` disables).
+- Gated by `SFU_DENSE_WARMCACHE` (default on; `0` disables the cache only).
+  **Since 2026-08-18 the whole dense leg is DEFAULT OFF** (`SFU_DENSE_LEG`,
+  literal `1` enables — ablation DROP verdict, `DENSE_PARTITION_AND_ABLATION.md`),
+  so the warm cache is inert unless the leg is explicitly enabled.
 
 ### Deferred to v2
 
@@ -64,7 +67,7 @@ Two-tier delta, FreshDiskANN-style, with CrackIVF's answer-first philosophy:
   v1 captures the dominant path (local legs) only.
 - ONNX-int8 export of the v5 encoder (2–3× CPU encode).
 
-### Success metrics
+### Success metrics (all four UNMEASURED as of 2026-09-01)
 
 1. Cross-query recall growth on a replayed query log (expect in-domain payoff
    after ~10–50 queries, per LOCALIZED §5 model).

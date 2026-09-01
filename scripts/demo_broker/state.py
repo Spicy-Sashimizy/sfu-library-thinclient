@@ -75,7 +75,6 @@ class StateStore:
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.executescript(_SCHEMA)
 
-    # --- low-level KV ---
     def get(self, k: str, default=None):
         row = self._db.execute("SELECT v FROM kv WHERE k=?", (k,)).fetchone()
         return json.loads(row[0]) if row else default
@@ -84,7 +83,6 @@ class StateStore:
         self._db.execute("INSERT INTO kv(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",
                          (k, json.dumps(v)))
 
-    # --- single-flight wake lock: 15 simultaneous clicks => one boot ---
     def acquire_wake_lock(self, ttl_s: int = 600) -> bool:
         now = time.time()
         held = self.get("wake_lock")
@@ -96,7 +94,6 @@ class StateStore:
     def release_wake_lock(self) -> None:
         self.set("wake_lock", 0)
 
-    # --- droplet lifecycle bookkeeping ---
     def mark_booting(self, droplet_id: str | None = None) -> None:
         self.set("status", DropletStatus.BOOTING.value)
         self.set("booted_at", time.time())
@@ -111,7 +108,6 @@ class StateStore:
             self.set("booted_at", time.time())
 
     def mark_down(self, now: datetime) -> None:
-        # fold the just-ended run into today's accumulator before clearing.
         self._accrue_runtime(now)
         self.set("status", DropletStatus.DOWN.value)
         self.set("booted_at", 0)
@@ -124,7 +120,6 @@ class StateStore:
     def set_on_demand(self, flag: bool) -> None:
         self.set("on_demand_session", bool(flag))
 
-    # --- runtime accounting (local-tz day) ---
     def _accrue_runtime(self, now: datetime) -> None:
         booted_at = self.get("booted_at") or 0
         if not booted_at:
@@ -135,22 +130,19 @@ class StateStore:
             self.set("runtime_seconds", 0.0)
         elapsed = max(0.0, time.time() - booted_at)
         self.set("runtime_seconds", (self.get("runtime_seconds") or 0.0) + elapsed)
-        self.set("booted_at", time.time())  # reset baseline so we don't double-count
+        self.set("booted_at", time.time())
 
     def runtime_hours_today(self, now: datetime) -> float:
         day = now.date().isoformat()
         accrued = (self.get("runtime_seconds") or 0.0) if self.get("runtime_day") == day else 0.0
         booted_at = self.get("booted_at") or 0
         if booted_at:
-            # clamp the live portion to today's local midnight so a run that crosses
-            # midnight doesn't charge yesterday's hours against today's killswitch cap
             midnight = now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
             live = max(0.0, time.time() - max(booted_at, midnight))
         else:
             live = 0.0
         return (accrued + live) / 3600.0
 
-    # --- snapshot for the scheduler ---
     def snapshot(self, now: datetime) -> BrokerState:
         status = DropletStatus(self.get("status", DropletStatus.DOWN.value))
         last = self.get("last_activity")

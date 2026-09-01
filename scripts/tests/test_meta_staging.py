@@ -48,14 +48,14 @@ def make_meta(path: Path, rows=ROWS) -> Path:
                " year INTEGER, type TEXT, is_oa INTEGER, section TEXT)")
     db.executemany("INSERT INTO docs VALUES (?,?,?,?,?,?,?)", rows)
     db.commit()
-    db.execute("PRAGMA wal_checkpoint(TRUNCATE)")   # what builder.py:299 does
+    db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
     db.close()
     return path
 
 
 def stage_on(monkeypatch, dst_dir: Path, **extra):
     monkeypatch.setenv("SFU_META_STAGE_DIR", str(dst_dir))
-    monkeypatch.setenv("SFU_META_STAGE_FORCE", "1")   # tmp_path is a local FS
+    monkeypatch.setenv("SFU_META_STAGE_FORCE", "1")
     for k, v in extra.items():
         monkeypatch.setenv(k, v)
 
@@ -64,8 +64,6 @@ def all_rows(conn):
     return conn.execute("SELECT id, title, doi, year, type, is_oa, section "
                         "FROM docs ORDER BY id").fetchall()
 
-
-# ── gating: OFF by default, no-op on a local source ───────────────────────────
 
 def test_no_env_is_passthrough(tmp_path):
     src = make_meta(tmp_path / "meta.sqlite")
@@ -98,12 +96,10 @@ def test_shared_stage_dir_opt_in(tmp_path, monkeypatch):
     stage = tmp_path / "seismic_stage"
     monkeypatch.setenv("SFU_SEISMIC_STAGE_DIR", str(stage))
     monkeypatch.setenv("SFU_META_STAGE_FORCE", "1")
-    assert R._stage_meta_local(src) == src      # not opted in yet
+    assert R._stage_meta_local(src) == src
     monkeypatch.setenv("SFU_STAGE_META", "1")
     assert R._stage_meta_local(src) == stage / "meta.sqlite"
 
-
-# ── the copy: happens, verifies, is idempotent ────────────────────────────────
 
 @pytest.mark.parametrize("verify", ["size", "fingerprint", "sha256"])
 def test_stages_and_verifies(tmp_path, monkeypatch, verify):
@@ -124,9 +120,6 @@ def test_second_call_skips_the_copy(tmp_path, monkeypatch):
     stage = tmp_path / "stage"
     stage_on(monkeypatch, stage)
     first = R._stage_meta_local(src).stat()
-    # A re-copy lands on a tmp file and is os.replace'd → a NEW inode. Same
-    # inode == the copy genuinely did not run; the poisoned copyfileobj makes
-    # any attempt to re-read the source a hard failure.
     monkeypatch.setattr(shutil, "copyfileobj",
                         lambda *a, **k: pytest.fail("re-copied an up-to-date stage"))
     second = R._stage_meta_local(src).stat()
@@ -139,7 +132,7 @@ def test_rebuilt_source_forces_a_restage(tmp_path, monkeypatch):
     stage_on(monkeypatch, stage)
     first_ino = R._stage_meta_local(src).stat().st_ino
     src.unlink()
-    make_meta(src, rows=ROWS[:100])            # a different build, same name
+    make_meta(src, rows=ROWS[:100])
     dst = R._stage_meta_local(src)
     assert dst.stat().st_ino != first_ino
     assert dst.read_bytes() == src.read_bytes()
@@ -156,19 +149,16 @@ def test_same_size_different_content_restages(tmp_path, monkeypatch):
     R._stage_meta_local(src)
     marker = stage / "meta.sqlite.staged_ok"
     ident = json.loads(marker.read_text())
-    # Same field widths as ROWS → same page count → same byte size.
     rows2 = [(i, f"OTHER {i}", f"10.9999/{i}", 1990, "article", 0, "z")
              for i in range(500)]
     src.unlink()
     make_meta(src, rows=rows2)
-    assert src.stat().st_size == ident["size"]         # same size, new content
-    ident["mtime_ns"] = src.stat().st_mtime_ns         # forge a matching mtime
+    assert src.stat().st_size == ident["size"]
+    ident["mtime_ns"] = src.stat().st_mtime_ns
     marker.write_text(json.dumps(ident))
     dst = R._stage_meta_local(src)
     assert all_rows(sqlite3.connect(str(dst)))[0][1] == "OTHER 0"
 
-
-# ── failure modes: never promote, never serve torn data ───────────────────────
 
 def test_interrupted_copy_leaves_nothing_openable(tmp_path, monkeypatch):
     """Simulate SIGKILL mid-copy: the partial bytes must stay on the tmp name,
@@ -179,7 +169,7 @@ def test_interrupted_copy_leaves_nothing_openable(tmp_path, monkeypatch):
     real = shutil.copyfileobj
 
     def die(fsrc, fdst, length=0):
-        fdst.write(fsrc.read(4096))            # a truncated, unopenable prefix
+        fdst.write(fsrc.read(4096))
         raise KeyboardInterrupt("simulated kill mid-copy")
 
     monkeypatch.setattr(shutil, "copyfileobj", die)
@@ -187,9 +177,8 @@ def test_interrupted_copy_leaves_nothing_openable(tmp_path, monkeypatch):
         R._stage_meta_local(src)
     assert not (stage / "meta.sqlite").exists()
     assert not (stage / "meta.sqlite.staged_ok").exists()
-    assert not list(stage.glob("meta.sqlite.tmp-*"))   # cleaned on the way out
+    assert not list(stage.glob("meta.sqlite.tmp-*"))
 
-    # And the next boot recovers: a real copy completes and is promoted.
     monkeypatch.setattr(shutil, "copyfileobj", real)
     dst = R._stage_meta_local(src)
     assert dst.read_bytes() == src.read_bytes()
@@ -204,14 +193,14 @@ def test_interrupt_does_not_promote_over_a_good_copy(tmp_path, monkeypatch):
     dst = R._stage_meta_local(src)
     good = dst.read_bytes()
     src.unlink()
-    make_meta(src, rows=ROWS[:10])             # forces a restage
+    make_meta(src, rows=ROWS[:10])
     monkeypatch.setattr(shutil, "copyfileobj",
                         lambda a, b, length=0: (_ for _ in ()).throw(OSError("ENOSPC")))
     with pytest.raises(OSError):
         R._stage_meta_local(src)
-    assert dst.read_bytes() == good            # old copy intact and openable
+    assert dst.read_bytes() == good
     assert len(all_rows(sqlite3.connect(str(dst)))) == 500
-    assert not (stage / "meta.sqlite.staged_ok").exists()   # not claimed current
+    assert not (stage / "meta.sqlite.staged_ok").exists()
 
 
 def test_stale_tmp_from_a_killed_process_is_removed(tmp_path, monkeypatch):
@@ -244,14 +233,14 @@ def test_live_wal_refuses(tmp_path, monkeypatch):
     db = sqlite3.connect(str(src))
     db.execute("PRAGMA journal_mode=WAL")
     db.execute("INSERT INTO docs VALUES (99999,'x','y',2020,'article',1,'s')")
-    db.commit()                                 # commit lands in the -wal
+    db.commit()
     assert src.with_name("meta.sqlite-wal").stat().st_size > 0
     with pytest.raises(RuntimeError, match="wal"):
         R._stage_meta_local(src)
     assert not (stage / "meta.sqlite").exists()
     db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
     db.close()
-    assert R._stage_meta_local(src) == stage / "meta.sqlite"   # clean → stages
+    assert R._stage_meta_local(src) == stage / "meta.sqlite"
 
 
 def test_stale_sidecars_do_not_shadow_a_restage(tmp_path, monkeypatch):
@@ -288,8 +277,6 @@ def test_bad_verify_mode_refuses(tmp_path, monkeypatch):
     with pytest.raises(ValueError):
         R._stage_meta_local(src)
 
-
-# ── the served contract: identical reads, read-only connection ────────────────
 
 def test_staged_and_unstaged_read_identically(tmp_path, monkeypatch):
     src = make_meta(tmp_path / "meta.sqlite")

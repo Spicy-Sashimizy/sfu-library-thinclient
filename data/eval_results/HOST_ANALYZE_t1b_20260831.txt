@@ -1,0 +1,332 @@
+======================================================================================================================
+convergence_repro TIER-1b — synthetic repro of the fixed-window convergence inversion (PREREGISTRATION_TIER1B.md)
+======================================================================================================================
+cells loaded : 21  (boundary, deep, fits, marginal, thrash)
+modes        : converge, fixed3
+early sort   : 11 baseline (`none`) + 10 early-sort cells  (blind, guided, none)
+load order(s): interleaved, r_then_l
+!! 1 EXPLORATORY ORDER-ARM cell(s) present — recorded, NEVER judged; excluded from every table and bar. See the ORDER-ARM section at the end.
+scale(s)     : [1.0]   caps enforced: True
+kernel       : 6.18.33.2-microsoft-standard-WSL2
+lru_gen      : absent   (absent = classic two-list LRU, the regime this spike targets)
+cgroup       : v2  readable in-container: True
+fio randseed : 20260831
+
+======================================================================================================================
+MODE: fixed3
+======================================================================================================================
+     rung    cap pass   p50 us   p95 us  wall s    majflt  ms/flt    pgscanD     wsrfD actfile MiB  R res%  L res%
+----------------------------------------------------------------------------------------------------------------------
+     fits    10g    1     0.32     0.76    1.16         0       -          0         0         0.0   100.0   100.0
+     fits    10g    2     0.29     0.69    1.09         0       -          0         0         0.0   100.0   100.0
+     fits    10g    3     0.31     0.72    1.11         0       -          0         0         0.0   100.0   100.0
+    -> passes_run=3 converged=True (plateau_within_10pct_x2_and_majflt_zero) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=100.0000% L=100.0000%
+----------------------------------------------------------------------------------------------------------------------
+ marginal  6.25g    1     0.42   160.77   26.87   159,641  0.1683    162,988   159,641         0.0    94.7    85.3
+ marginal  6.25g    2     0.41   148.48   19.00   113,034  0.1681    113,172   113,034         0.0    97.1    78.3
+ marginal  6.25g    3     0.36     5.54   11.01    61,130  0.1801     61,600    61,130         0.0    98.3    74.7
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (159,641 -> 113,034 -> 61,130)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=92.3438% L=92.7455%
+----------------------------------------------------------------------------------------------------------------------
+ boundary  5.75g    1     0.47   185.34   52.16   305,251  0.1709    308,712   305,251         0.0    90.7    67.9
+ boundary  5.75g    2     0.42   166.91   34.61   207,951  0.1664    208,556   207,951         0.0    94.3    57.5
+ boundary  5.75g    3     0.38   156.67   21.16   122,974  0.1721    123,148   122,974         0.0    96.7    50.6
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (305,251 -> 207,951 -> 122,974)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=84.8438% L=85.4911%
+----------------------------------------------------------------------------------------------------------------------
+   thrash  3.75g    1   142.34   193.54  142.53   882,466  0.1615    887,992   882,466         0.0    71.9     7.1
+   thrash  3.75g    2     0.51   185.34   68.24   399,193  0.1710    399,247   399,193         0.0    74.3     0.0
+   thrash  3.75g    3   152.58   209.92  158.50   909,489  0.1743    909,504   909,489         0.0    74.3     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (882,466 -> 399,193 -> 909,489)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=54.9609% L=56.6964%
+----------------------------------------------------------------------------------------------------------------------
+     deep  2.75g    1   162.82   211.97  191.22 1,106,425  0.1728  1,112,316   463,353         0.0    54.4     0.0
+     deep  2.75g    2   164.86   216.06  223.99 1,308,916  0.1711  1,308,928 1,308,916         0.0    54.4     0.0
+     deep  2.75g    3   166.91   222.21  227.72 1,308,750  0.1740  1,308,768 1,308,750         0.0    54.4     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (1,106,425 -> 1,308,916 -> 1,308,750)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=40.0000% L=42.4107%
+----------------------------------------------------------------------------------------------------------------------
+
+======================================================================================================================
+MODE: converge
+======================================================================================================================
+     rung    cap pass   p50 us   p95 us  wall s    majflt  ms/flt    pgscanD     wsrfD actfile MiB  R res%  L res%
+----------------------------------------------------------------------------------------------------------------------
+     fits    10g    1     0.36     0.85    1.32         0       -          0         0         0.0   100.0   100.0
+     fits    10g    2     0.35     0.82    1.23         0       -          0         0         0.0   100.0   100.0
+     fits    10g    3     0.40     0.89    1.34         0       -          0         0         0.0   100.0   100.0
+    -> passes_run=3 converged=True (plateau_within_10pct_x2_and_majflt_zero) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=100.0000% L=100.0000%
+----------------------------------------------------------------------------------------------------------------------
+ marginal  6.25g    1     0.46   171.01   28.67   159,547  0.1797    162,845   159,547         0.0    94.6    85.4
+ marginal  6.25g    2     0.43   162.82   20.66   113,327  0.1823    113,456   113,327         0.0    97.1    78.3
+ marginal  6.25g    3     0.36     5.66   11.21    61,055  0.1836     60,992    61,055         0.0    98.3    74.7
+ marginal  6.25g    4     0.34     2.86    7.14    36,328  0.1967     36,424    36,328         0.0    99.6    71.2
+ marginal  6.25g    5     0.34     0.90    3.56    12,991  0.2739     13,512    12,991         0.0    99.5    71.2
+ marginal  6.25g    6     0.36     0.94    3.50    11,832  0.2958     11,772    11,832         0.0    99.5    71.2
+ marginal  6.25g    7     0.35     0.93    3.48    11,637  0.2989     11,200    11,637         0.0    99.6    71.2
+ marginal  6.25g    8     0.35     0.93    3.56    12,047  0.2954     12,224    12,047         0.0    99.6    71.0
+ marginal  6.25g    9     0.34     0.87    2.22     4,936  0.4498      4,928     4,936         0.0   100.0    70.0
+ marginal  6.25g   10     0.33     0.83    1.33         0       -         64         0         0.0   100.0    70.0
+ marginal  6.25g   11     0.33     0.83    1.33         0       -        128         0         0.0   100.0    69.9
+ marginal  6.25g   12     0.32     0.82    1.32         0       -          0         0         0.1   100.0    69.9
+    -> passes_run=12 converged=True (plateau_within_10pct_x2_and_majflt_zero) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=92.3438% L=92.7519%
+----------------------------------------------------------------------------------------------------------------------
+ boundary  5.75g    1     0.44   179.20   51.40   305,665  0.1682    308,976   305,665         0.0    90.7    68.1
+ boundary  5.75g    2     0.42   171.01   35.74   210,368  0.1699    211,264   210,368         0.0    94.2    57.9
+ boundary  5.75g    3     0.38   154.62   21.22   124,656  0.1703    124,600   124,656         0.0    96.6    50.9
+ boundary  5.75g    4     0.35   122.37   12.64    69,820  0.1810     70,048    69,820         0.0    97.8    47.4
+ boundary  5.75g    5     0.34     4.64    7.70    36,068  0.2134     35,980    36,068         0.0    99.0    44.1
+ boundary  5.75g    6     0.33     4.26    5.56    26,191  0.2123     26,456    26,191         0.0    99.1    43.8
+ boundary  5.75g    7     0.33     3.12    3.42    11,928  0.2870     12,256    11,928         0.0   100.0    41.1
+ boundary  5.75g    8     0.29     0.90    1.42         0       -          0         0         0.0   100.0    41.1
+ boundary  5.75g    9     0.30     0.92    1.44       126 11.3984        160       126         0.0   100.0    41.1
+ boundary  5.75g   10     0.30     0.92    1.44       128 11.2805        128       128         0.1   100.0    41.1
+ boundary  5.75g   11     0.30     0.91    1.44        66 21.8742         32        66         0.1   100.0    41.1
+ boundary  5.75g   12     0.31     0.93    1.46       160  9.1162        160       160         0.1   100.0    41.1
+    -> passes_run=12 converged=False (no +/-10% plateau over the last 3 passes (128 -> 66 -> 160)) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=84.8438% L=85.4911%
+----------------------------------------------------------------------------------------------------------------------
+   thrash  3.75g    1   142.34   191.49  140.47   879,134  0.1598    884,550   588,958         0.0    71.2     8.9
+   thrash  3.75g    2     0.51   191.49   87.47   521,210  0.1678    521,200   521,210         0.0    74.4     0.0
+   thrash  3.75g    3   138.24   189.44  126.59   784,874  0.1613    784,864   784,874         0.0    74.4     0.0
+   thrash  3.75g    4     0.49   183.30   85.35   525,523  0.1624    525,536   525,523         0.0    74.4     0.0
+   thrash  3.75g    5   138.24   197.63  128.05   773,660  0.1655    773,664   773,660         0.0    74.4     0.0
+   thrash  3.75g    6     0.51   183.30   85.76   530,214  0.1617    530,240   530,214         0.0    74.4     0.0
+   thrash  3.75g    7   134.14   189.44  123.75   770,173  0.1607    770,176   770,173         0.0    74.4     0.0
+   thrash  3.75g    8     0.50   193.54   90.23   537,381  0.1679    537,376   537,381         0.0    74.4     0.0
+   thrash  3.75g    9   134.14   189.44  123.09   769,273  0.1600    769,312   769,273         0.0    74.4     0.0
+   thrash  3.75g   10     0.51   183.30   86.77   539,571  0.1608    539,552   539,571         0.0    74.4     0.0
+   thrash  3.75g   11   138.24   195.58  126.56   766,524  0.1651    766,528   766,524         0.0    74.4     0.0
+   thrash  3.75g   12     0.52   183.30   87.60   543,987  0.1610    544,000   543,987         0.0    74.4     0.0
+    -> passes_run=12 converged=False (no +/-10% plateau over the last 3 passes (539,571 -> 766,524 -> 543,987)) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=54.9609% L=56.6964%
+----------------------------------------------------------------------------------------------------------------------
+     deep  2.75g    1   150.53   197.63  180.74 1,116,034  0.1619  1,121,437   886,658         0.0    54.4     0.0
+     deep  2.75g    2   154.62   199.68  209.07 1,308,913  0.1597  1,308,896 1,308,913         0.0    54.4     0.0
+     deep  2.75g    3   156.67   201.73  210.84 1,308,984  0.1611  1,309,024 1,308,984         0.0    54.4     0.0
+     deep  2.75g    4   164.86   216.06  222.08 1,303,976  0.1703  1,303,968 1,303,976         0.0    54.4     0.0
+     deep  2.75g    5   164.86   218.11  223.86 1,308,538  0.1711  1,308,544 1,308,538         0.0    54.4     0.0
+     deep  2.75g    6   166.91   218.11  225.21 1,309,742  0.1720  1,309,760 1,309,742         0.0    54.4     0.0
+     deep  2.75g    7   164.86   216.06  223.80 1,309,760  0.1709  1,309,760 1,309,760         0.0    54.4     0.0
+     deep  2.75g    8   156.67   201.73  212.00 1,309,435  0.1619  1,309,440 1,309,435         0.0    54.4     0.0
+     deep  2.75g    9   156.67   201.73  210.97 1,310,452  0.1610  1,310,432 1,310,452         0.0    54.4     0.0
+     deep  2.75g   10   158.72   203.78  213.50 1,310,184  0.1630  1,310,240 1,310,184         0.0    54.4     0.0
+     deep  2.75g   11   158.72   203.78  213.28 1,310,491  0.1628  1,310,496 1,310,491         0.0    54.4     0.0
+     deep  2.75g   12   156.67   203.78  212.54 1,310,590  0.1622  1,310,592 1,310,590         0.0    54.4     0.0
+    -> passes_run=12 converged=False (final majflt 1,310,590 is not <1% of pass-1 1,116,034) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=39.9609% L=42.4107%
+----------------------------------------------------------------------------------------------------------------------
+
+======================================================================================================================
+PRE-REGISTERED BARS (PREREGISTRATION_TIER1B.md) — ALL five must hold for PASS; all latency bars are on clat p95
+======================================================================================================================
+
+BAR 1b: Inversion at the fixed pass-3 window, on clat p95 (PRECONDITION: marginal pass-1 majflt > 0; then boundary p95 < marginal p95 while marginal's majflt is still falling)
+  VERDICT: FAIL
+    PRECONDITION marginal pass-1 majflt = 159,641 (bar > 0) -> True
+      marginal load: order=interleaved post-load residency R=92.3438% L=92.7455%
+    pass-3 p95: boundary=0.1567 ms  marginal=0.0055 ms  -> inversion ratio 0.04x  (NO)
+      (context only, NOT judged) pass-3 p50: boundary=0.0004 ms marginal=0.0004 ms
+    marginal majflt trajectory: 159,641 -> 113,034 -> 61,130  falling=True  still>1%-of-pass1=True
+
+BAR 2b: Same destination, not Belady (marginal & boundary both reach steady state in <=12 passes under the FIXED convergence rule, with steady p95 within +/-10% of each other)
+  VERDICT: FAIL
+    marginal: converged=True (plateau_within_10pct_x2_and_majflt_zero) in 12 passes [plateau_within_10pct_x2_and_majflt_zero] steady p95=0.0008 ms final majflt=0
+    boundary: converged=False (no +/-10% plateau over the last 3 passes (128 -> 66 -> 160)) in 12 passes [no +/-10% plateau over the last 3 passes (128 -> 66 -> 160)] steady p95=0.0009 ms final majflt=160
+    steady-p95 spread = 12.8% (bar: <=10%)   both converged=False  within 12 passes=True
+
+BAR 3b: Cliff: thrash+deep stay flat-and-large (pass3 majflt >= 0.8x pass2) with steady p95 >= 10x the converged reference p95, neither converges; every rung >= boundary converges
+  VERDICT: FAIL
+    converged reference p95 = 0.0008 ms (mean of converged marginal+boundary (converge mode))
+    thrash: majflt p2=521,210 p3=784,874 (p3/p2=1.51, bar>=0.80 -> True); steady p95=0.1833 ms = 223.5x converged (bar>=10x -> True); converged=False (no +/-10% plateau over the last 3 passes (539,571 -> 766,524 -> 543,987))
+    deep: majflt p2=1,308,913 p3=1,308,984 (p3/p2=1.00, bar>=0.80 -> True); steady p95=0.2038 ms = 248.5x converged (bar>=10x -> True); converged=False (final majflt 1,310,590 is not <1% of pass-1 1,116,034)
+    fits: converged=True (plateau_within_10pct_x2_and_majflt_zero) in 3 passes
+    marginal: converged=True (plateau_within_10pct_x2_and_majflt_zero) in 12 passes
+    boundary: converged=False (no +/-10% plateau over the last 3 passes (128 -> 66 -> 160)) in 12 passes
+
+BAR 4b: Pressure-scaled aging: pass-1 cgroup pgscan monotone non-decreasing fits -> deep, with values < 4096 pages (16 MiB) clamped to a single '~0' tier
+  VERDICT: PASS
+    pass-1 pgscan delta (raw): fits=0  marginal=162,988  boundary=308,712  thrash=887,992  deep=1,112,316
+    clamped to the 4096-page noise floor: fits=~0  marginal=162,988  boundary=308,712  thrash=887,992  deep=1,112,316
+    monotone non-decreasing (after clamping) = True
+
+BAR 5: The sort-not-needed datum: at the fits rung active_file stays << R (est. < 0.25 x R) through all passes
+  VERDICT: PASS
+    R = 5120 MiB; bar = active_file < 1280 MiB
+      pass 1: active_file = 0.0 MiB (0.000 x R) OK
+      pass 2: active_file = 0.0 MiB (0.000 x R) OK
+      pass 3: active_file = 0.0 MiB (0.000 x R) OK
+
+======================================================================================================================
+OVERALL: FAIL — see bars above
+======================================================================================================================
+
+======================================================================================================================
+EARLY-SORT ARM (PREREGISTRATION_EARLYSORT.md) — the §5.3 'skip the sort' claim
+======================================================================================================================
+run paired on : run='scale1.0'  date=2026-08-31
+  early_sort=blind   mode=fixed3    rungs: boundary, fits, marginal, thrash
+  early_sort=guided  mode=converge  rungs: boundary, marginal
+  early_sort=guided  mode=fixed3    rungs: boundary, fits, marginal, thrash
+  early_sort=none    mode=converge  rungs: boundary, deep, fits, marginal, thrash
+  early_sort=none    mode=fixed3    rungs: boundary, deep, fits, marginal, thrash
+
+======================================================================================================================
+MODE: fixed3   EARLY_SORT: guided
+======================================================================================================================
+     rung    cap pass   p50 us   p95 us  wall s    majflt  ms/flt    pgscanD     wsrfD actfile MiB  R res%  L res%
+----------------------------------------------------------------------------------------------------------------------
+     fits    10g    1     0.33     0.75    1.21        61 19.7820          0         0         1.8   100.0     0.0
+     fits    10g    2     0.33     0.75    1.17         0       -          0         0        20.6   100.0     0.0
+     fits    10g    3     0.35     0.78    1.20         0       -          0         0        22.8   100.0     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (61 -> 0 -> 0)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=100.0000% L=100.0000%
+    early_sort=guided; applied=True wall=0.0187s; post-action residency R=100.00% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+ marginal  6.25g    1     0.40   150.53   17.97   100,352  0.1791          0   100,352         0.0   100.0     0.0
+ marginal  6.25g    2     0.35     0.82    1.26         0       -          0         0         0.0   100.0     0.0
+ marginal  6.25g    3     0.31     0.74    1.19         0       -          0         0         0.0   100.0     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (100,352 -> 0 -> 0)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=92.3438% L=92.6339%
+    early_sort=guided; applied=True wall=0.0187s; post-action residency R=92.34% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+ boundary  5.75g    1     0.42   175.10   34.04   198,656  0.1714          0   198,656         0.0   100.0     0.0
+ boundary  5.75g    2     0.31     0.77    1.21         0       -          0         0         0.0   100.0     0.0
+ boundary  5.75g    3     0.33     0.79    1.23         0       -          0         0         0.0   100.0     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (198,656 -> 0 -> 0)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=84.8438% L=85.4911%
+    early_sort=guided; applied=True wall=0.0184s; post-action residency R=84.84% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+   thrash  3.75g    1   134.14   199.68  121.73   705,945  0.1724    451,116   705,945         0.0    74.4     0.0
+   thrash  3.75g    2     0.75   193.54   91.87   533,036  0.1724    532,940   533,036         0.0    74.4     0.0
+   thrash  3.75g    3   144.38   207.87  136.53   777,310  0.1756    777,312   777,310         0.0    74.4     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (705,945 -> 533,036 -> 777,310)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=54.9219% L=56.6964%
+    early_sort=guided; applied=True wall=0.0130s; post-action residency R=54.92% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+
+======================================================================================================================
+MODE: converge   EARLY_SORT: guided
+======================================================================================================================
+     rung    cap pass   p50 us   p95 us  wall s    majflt  ms/flt    pgscanD     wsrfD actfile MiB  R res%  L res%
+----------------------------------------------------------------------------------------------------------------------
+ marginal  6.25g    1     0.42   162.82   19.63   105,268  0.1865          0   105,268         0.0   100.0     0.0
+ marginal  6.25g    2     0.35     0.82    1.28         0       -          0         0         0.0   100.0     0.0
+ marginal  6.25g    3     0.38     0.86    1.34         0       -          0         0         0.0   100.0     0.0
+ marginal  6.25g    4     0.40     0.92    1.41         0       -          0         0         0.0   100.0     0.0
+    -> passes_run=4 converged=True (plateau_within_10pct_x2_and_majflt_zero) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=91.9687% L=93.7674%
+    early_sort=guided; applied=True wall=0.0349s; post-action residency R=91.97% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+ boundary  5.75g    1     0.46   183.30   36.46   198,656  0.1835          0   198,656         0.0   100.0     0.0
+ boundary  5.75g    2     0.33     0.81    1.30         0       -          0         0         0.0   100.0     0.0
+ boundary  5.75g    3     0.35     0.84    1.32         0       -          0         0         0.0   100.0     0.0
+ boundary  5.75g    4     0.34     0.83    1.34         0       -          0         0         0.0   100.0     0.0
+    -> passes_run=4 converged=True (plateau_within_10pct_x2_and_majflt_zero) evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=84.8438% L=85.6027%
+    early_sort=guided; applied=True wall=0.0201s; post-action residency R=84.84% L=0.00%
+----------------------------------------------------------------------------------------------------------------------
+
+======================================================================================================================
+MODE: fixed3   EARLY_SORT: blind
+======================================================================================================================
+     rung    cap pass   p50 us   p95 us  wall s    majflt  ms/flt    pgscanD     wsrfD actfile MiB  R res%  L res%
+----------------------------------------------------------------------------------------------------------------------
+     fits    10g    1     0.53   187.39   60.17   342,016  0.1759          0   342,016         0.0   100.0    74.6
+     fits    10g    2     0.36     0.91    1.40         0       -          0         0         0.0   100.0    74.6
+     fits    10g    3     0.34     0.88    1.38         0       -          0         0         0.0   100.0    74.6
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (342,016 -> 0 -> 0)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=100.0000% L=100.0000%
+    early_sort=blind; applied=True wall=0.0234s; post-action residency R=73.91% L=74.55%; requested=1792 MiB; freed(memory.current)=1793 MiB
+----------------------------------------------------------------------------------------------------------------------
+ marginal  6.25g    1     0.60   197.63   79.70   443,392  0.1798          0   443,392         0.0   100.0    67.4
+ marginal  6.25g    2     0.39     0.96    1.58         0       -          0         0         0.0   100.0    67.4
+ marginal  6.25g    3     0.37     0.94    1.46         0       -          0         0         0.0   100.0    67.4
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (443,392 -> 0 -> 0)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=92.3438% L=92.6339%
+    early_sort=blind; applied=True wall=0.0219s; post-action residency R=66.17% L=67.41%; requested=1792 MiB; freed(memory.current)=1792 MiB
+----------------------------------------------------------------------------------------------------------------------
+ boundary  5.75g    1     0.77   195.58   94.55   547,207  0.1728     92,664   547,207         0.0    95.2    54.8
+ boundary  5.75g    2     0.42   158.72   18.37    96,223  0.1909     96,388    96,223         0.0    97.4    48.7
+ boundary  5.75g    3     0.40     7.20   12.50    63,386  0.1972     63,288    63,386         0.0    98.6    45.3
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (547,207 -> 96,223 -> 63,386)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=84.8438% L=85.4911%
+    early_sort=blind; applied=True wall=0.0255s; post-action residency R=58.67% L=60.27%; requested=1792 MiB; freed(memory.current)=1794 MiB
+----------------------------------------------------------------------------------------------------------------------
+   thrash  3.75g    1   162.82   211.97  179.75 1,026,746  0.1751    574,002 1,026,746         0.0    71.7     7.6
+   thrash  3.75g    2   160.77   209.92  211.09 1,265,950  0.1667  1,265,989 1,265,950         0.0    74.3     0.0
+   thrash  3.75g    3   164.86   211.97  221.06 1,306,486  0.1692  1,306,496 1,306,486         0.0    74.3     0.0
+    -> passes_run=3 converged=False (no +/-10% plateau over the last 3 passes (1,026,746 -> 1,265,950 -> 1,306,486)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report] evictOK R=0.0% L=0.0%
+    -> load_order=interleaved chunk=64MiB R=80c/L=28c  post-load residency R=54.9609% L=56.6964%
+    early_sort=blind; applied=True wall=0.0227s; post-action residency R=28.71% L=31.70%; requested=1792 MiB; freed(memory.current)=1791 MiB
+----------------------------------------------------------------------------------------------------------------------
+
+======================================================================================================================
+EARLY-SORT BARS (PREREGISTRATION_EARLYSORT.md) — ES-1..ES-4 all must hold for PASS; ES-5 is recorded, not judged
+======================================================================================================================
+
+BAR ES-1: The claim: at marginal and boundary, guided pass-1 p95 <= 2x that rung's converged steady p95
+  VERDICT: NO DATA
+    marginal: guided pass-1 p95=0.1505 ms  majflt=100,352 | steady=0.0008 ms [`none` converge cell, 12 passes] -> 183.57x (bar <=2.00x -> False)
+        baseline `none` pass-1 for context: p95=0.1608 ms (196.06x steady) majflt=159,641
+    boundary: guided pass-1 p95=0.1751 ms  majflt=198,656 | steady=0.0009 ms [`none` converge cell, 12 passes (did NOT converge: no +/-10% plateau over the last 3 passes (128 -> 66 -> 160) — read with care)] -> 187.88x (bar <=2.00x -> False)   [NOT SCORED: steady reference is a fallback]
+        baseline `none` pass-1 for context: p95=0.1853 ms (198.87x steady) majflt=305,251
+
+BAR ES-2: Transient eliminated: guided transient excess (sum over passes 1-3 of p95-steady) reduced >=80% vs the same rung's `none` cell [judged at marginal+boundary]
+  VERDICT: NO DATA
+    fits: excess none=0.000000 ms (n=3)  guided=0.000000 ms (n=3) -> reduction n/a% (bar >=80%) -> undefined   [informational]
+        baseline excess is 0 at fits: there was no transient to remove, so the reduction is UNDEFINED (recorded, not scored)
+    marginal: excess none=0.312324 ms (n=3)  guided=0.149708 ms (n=3) -> reduction 52.1% (bar >=80%) -> False
+    boundary: excess none=0.506132 ms (n=3)  guided=0.174172 ms (n=3) -> reduction 65.6% (bar >=80%) -> False
+    thrash: excess none=0.038912 ms (n=3)  guided=0.051200 ms (n=3) -> reduction -31.6% (bar >=80%) -> False   [informational]
+    deep: NO DATA (guided=NO baseline=yes steady ref: `none` converge cell, 12 passes (did NOT converge: final majflt 1,310,590 is not <1% of pass-1 1,116,034 — read with care))   [informational]
+
+BAR ES-3: No free lunch at steady state: guided converged steady p95 within +/-10% of the `none` steady p95
+  VERDICT: FAIL
+    marginal: guided steady p95=0.0009 ms (converged=True (plateau_within_10pct_x2_and_majflt_zero), 4 passes)  none steady p95=0.0008 ms (converged=True (plateau_within_10pct_x2_and_majflt_zero), 12 passes) -> deviation 12.7% (bar <=10%) -> False
+    boundary: guided steady p95=0.0008 ms (converged=True (plateau_within_10pct_x2_and_majflt_zero), 4 passes)  none steady p95=0.0009 ms (converged=False (no +/-10% plateau over the last 3 passes (128 -> 66 -> 160)), 12 passes) -> deviation 11.2% (bar <=10%) -> False
+
+BAR ES-4: The boundaries hold: at fits guided changes nothing (pass-1 p95 within +/-25% of `none`); at thrash guided does NOT rescue (pass-3 majflt >= 0.8x pass-2)
+  VERDICT: PASS
+    fits: guided pass-1 p95=0.0007 ms  none pass-1 p95=0.0008 ms -> deviation 2.1% (bar <=25%) -> True
+    thrash: guided majflt p1=705,945 p2=533,036 p3=777,310 (p3/p2=1.46, bar >=0.80 and p2>0) -> True
+
+
+ES-5 (exploratory — RECORDED, NOT PASS/FAIL): blind's transient reduction as a fraction of guided's,
+      and post-reclaim residency of R vs L (did inactive-list order protect the repeat set?).
+      Excess columns are p95-based (Tier-1b). Under the INTERLEAVED load the inactive-list order no
+      longer cleanly favours L, so blind R-survival here is the honest predictor for the map-blind lever;
+      Tier-1's order-protected numbers (100 -> 39.8% descending caps) are the upper bound to compare against.
+     rung  blind state  excess none  excess guid excess blind  guid red% blind red% blind/guid  postR%  postL% freed MiB   act s
+--------------------------------------------------------------------------------------------------------------------------------
+     fits      applied     0.000000     0.000000     0.186516        n/a        n/a        n/a    73.9    74.6      1793    0.02
+ marginal      applied     0.312324     0.149708     0.197076       52.1       36.9       0.71    66.2    67.4      1792    0.02
+ boundary      applied     0.506132     0.174172     0.358708       65.6       29.1       0.44    58.7    60.3      1794    0.03
+   thrash      applied     0.038912     0.051200     0.083968      -31.6     -115.8       3.67    28.7    31.7      1791    0.02
+--------------------------------------------------------------------------------------------------------------------------------
+  fits: requested 1792 MiB; steady ref from: `none` converge cell, 3 passes
+  marginal: requested 1792 MiB; steady ref from: `none` converge cell, 12 passes
+  boundary: requested 1792 MiB; steady ref from: `none` converge cell, 12 passes (did NOT converge: no +/-10% plateau over the last 3 passes (128 -> 66 -> 160) — read with care)
+  thrash: requested 1792 MiB; steady ref from: `none` converge cell, 12 passes (did NOT converge: no +/-10% plateau over the last 3 passes (539,571 -> 766,524 -> 543,987) — read with care)
+  Reading: blind/guid = 1.00 means blind matched the map-guided arm; 0.00 means it did nothing for the transient.
+  postR%/postL% are residency IMMEDIATELY AFTER the action: R high + L low = inactive-list order protected the repeat set.
+
+======================================================================================================================
+EARLY-SORT OVERALL: FAIL — see ES bars above. ES-1/ES-2 failing with a sound harness REFUTES §5.3 for the synthetic; record it, do not tune it away.
+======================================================================================================================
+
+======================================================================================================================
+EXPLORATORY ORDER ARM (PREREGISTRATION_TIER1B.md) — RECORDED, NOT JUDGED
+======================================================================================================================
+Interleaved baselines for the same rung/mode are shown alongside for contrast. No bar is scored on any row here.
+      rung      mode    load order  postload R%  postload L%   p1 majflt   p3 majflt   p1 p95 ms   p3 p95 ms
+------------------------------------------------------------------------------------------------------------
+  marginal    fixed3      r_then_l      89.8828     100.0000     233,448     275,840      0.1853      0.1894
+  marginal    fixed3   interleaved      92.3438      92.7455     159,641      61,130      0.1608      0.0055
+------------------------------------------------------------------------------------------------------------
+  convrepro_t1b_marginal_fixed3_orderr_then_l_20260831.json: load_order=r_then_l  converged=False (no +/-10% plateau over the last 3 passes (233,448 -> 266,095 -> 275,840)) [fixed-window cell: rule applied to its 3 passes; the cell itself does not self-report]
+  Reading: a large postload R% with ~0 pass-1 majflt means the LOAD did the sorting (Tier-1's failure mode).
+======================================================================================================================

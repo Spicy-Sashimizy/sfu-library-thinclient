@@ -10,8 +10,12 @@
    enrichment**. Those numbers are an **upper bound**, not production benefit,
    and the standard query set **cannot** settle keep/drop because it has **zero
    held-out topics**. §4–§6. A **fresh 120-topic judged set was built 2026-08-18**
-   (§7) whose dense-pool contamination is **17.98% vs the standard set's 90.3%**;
-   **the ablation itself is still NOT RUN.**
+   (§7) whose dense-pool contamination is **17.98% vs the standard set's 90.3%**.
+   **The ablation RAN 2026-08-18 — VERDICT: DROP from the payload** (Δ_all
+   −0.0077, 95% CI [−0.0153, −0.0001], significantly negative; no coverage band
+   positive), and `SFU_DENSE_LEG` is DEFAULT OFF in code since 2026-08-18. §7
+   "RESULT". *(Header corrected 2026-09-01 — it previously still said "the
+   ablation itself is still NOT RUN".)*
 
 Related: `DENSE_WARMCACHE_RESEARCH.md` (the warm cache's design),
 `THIN_CLIENT_SWAP.md` (architecture, engine table, storage table),

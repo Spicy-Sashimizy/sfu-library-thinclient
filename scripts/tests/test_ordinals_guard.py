@@ -22,10 +22,9 @@ from lib.thinclient.ordinals import (MANIFEST_KEY, STAMP_FILE,  # noqa: E402
                                      OrdinalSpace, OrdinalSpaceMismatch,
                                      write_stamp)
 
-# ordinal ->            0     1     2     3     4
 WIDS = np.array([100, 200, 300, 400, 500], dtype=np.int64)
-YEARS = np.array([2015, 2020, 0, 2005, 2024], dtype=np.int16)   # 0 = NULL year
-DTYPES = np.array([0, 1, 0, 0, 0], dtype=np.int8)               # 0=article
+YEARS = np.array([2015, 2020, 0, 2005, 2024], dtype=np.int16)
+DTYPES = np.array([0, 1, 0, 0, 0], dtype=np.int8)
 OAS = np.array([1, 1, 0, 1, 0], dtype=np.uint8)
 SECTS = np.array([0, 0, 0, 0, 0], dtype=np.int8)
 CODES = {"type": {"article": 0, "book": 1}, "section": {"s": 0},
@@ -45,8 +44,6 @@ def space(tmp_path):
     return tmp_path, {MANIFEST_KEY: stamp[MANIFEST_KEY]}
 
 
-# ── the guard ───────────────────────────────────────────────────────────────
-
 def test_matching_pair_loads(space):
     work, manifest = space
     s = OrdinalSpace(work, manifest)
@@ -58,7 +55,7 @@ def test_rebuilt_arrays_are_refused(space):
     the manifest still authorises the previous one. Silently serving these
     returns the wrong document for every query."""
     work, manifest = space
-    write_stamp(work, 5, CODES, work / "meta.sqlite")   # a fresh id = a rebuild
+    write_stamp(work, 5, CODES, work / "meta.sqlite")
     with pytest.raises(OrdinalSpaceMismatch, match="mismatch"):
         OrdinalSpace(work, manifest)
 
@@ -103,8 +100,6 @@ def test_any_short_column_is_refused(space, name):
         OrdinalSpace(work, manifest)
 
 
-# ── the filter, incl. the miss contract ─────────────────────────────────────
-
 def _ranked(*nums):
     return [(f"W{n}", 1.0 / (i + 1)) for i, n in enumerate(nums)]
 
@@ -114,8 +109,6 @@ def test_post_filter_matches_the_production_predicates(space):
     s = OrdinalSpace(work, manifest)
     f = {"year_range": (2010, 2025), "type": "article", "is_oa": 1}
     kept, unresolved = s.post_filter(_ranked(100, 200, 300, 400, 500), f)
-    # 100 article/2015/oa keeps; 200 is a book; 300 has a NULL year;
-    # 400 is 2005; 500 is not OA.
     assert [d for d, _ in kept] == ["W100"]
     assert unresolved == []
 
@@ -123,7 +116,7 @@ def test_post_filter_matches_the_production_predicates(space):
 def test_rank_order_is_preserved(space):
     work, manifest = space
     s = OrdinalSpace(work, manifest)
-    ranked = _ranked(500, 100, 400)           # deliberately not id order
+    ranked = _ranked(500, 100, 400)
     kept, _ = s.post_filter(ranked, {"year_range": (2000, 2025)})
     assert [d for d, _ in kept] == ["W500", "W100", "W400"]
     assert kept == [r for r in ranked if r[0] in {"W500", "W100", "W400"}]
@@ -199,8 +192,6 @@ def test_empty_input(space):
     assert s.post_filter([], {"year_range": (2010, 2025)}) == ([], [])
 
 
-# ── retriever wiring ────────────────────────────────────────────────────────
-
 def _retriever():
     from lib.thinclient.retriever import ThinClientRetriever
     return ThinClientRetriever(index_root="/nonexistent", remote_abstracts=False)
@@ -226,15 +217,14 @@ def test_retriever_merges_unresolved_ids_in_rank_order(space):
 
     def fake_sqlite(ranked, f):
         seen["got"] = [d for d, _ in ranked]
-        return ranked                       # the warm-cache doc survives
+        return ranked
 
     r._post_filter_sqlite = fake_sqlite
-    # W999 has no ordinal; W500 fails is_oa; W100 passes on the ordinal path.
     ranked = _ranked(999, 500, 100)
     out = r._post_filter(ranked, {"year_range": (2010, 2025), "is_oa": 1})
-    assert seen["got"] == ["W999"]          # only the strays hit SQLite
-    assert [d for d, _ in out] == ["W999", "W100"]   # input order, not id order
-    assert out == [ranked[0], ranked[2]]    # scores carried through unchanged
+    assert seen["got"] == ["W999"]
+    assert [d for d, _ in out] == ["W999", "W100"]
+    assert out == [ranked[0], ranked[2]]
 
 
 def test_retriever_skips_sqlite_entirely_when_all_ids_resolve(space):

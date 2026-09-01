@@ -4,6 +4,11 @@
 > the `/tmp` wipe, to a path that survives container/host restarts.
 > **BUILT 2026-06-30/07-01 — COMPLETE & VERIFIED.** The served path loads
 > end-to-end against the persistent shards (see "Result" below).
+> **STATUS NOTE 2026-09-01:** the `data/thinclient_index/spool_backup/`
+> (123 GB) this runbook rebuilt from was recorded ABSENT on 2026-08-02
+> (doc 18 §10: "when and how is not established; do not infer"). The rebuild
+> already completed, so nothing here is pending — but this runbook is NOT
+> re-runnable as written until a spool source is re-materialized.
 
 ## What happened
 A host reboot (uptime ~2.5h at 2026-06-30 22:00) wiped `/tmp/seismic_testbed/` —

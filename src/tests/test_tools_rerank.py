@@ -85,8 +85,6 @@ class TestMaybeRerank:
         feats = {"rerank_enabled": True, "rrf_enabled": False, "crossencoder_enabled": True}
         with patch("lib.tools._get_features", return_value=feats):
             with patch("lib.tools.rerank_results", return_value=docs) as mock_rerank:
-                # CE unavailable → second pass is a no-op slice, but we only care
-                # about the Stage-1 limit argument here.
                 with patch("lib.tools.rerank_with_crossencoder", side_effect=lambda d, q, l: d[:l]):
                     _maybe_rerank(docs, "query", 5)
         stage1_limit = mock_rerank.call_args.args[2]
@@ -100,12 +98,10 @@ class TestMaybeRerank:
         docs = [_make_oa_doc(f"Paper {i}") for i in range(30)]
         feats = {"rerank_enabled": True, "rrf_enabled": False, "crossencoder_enabled": True}
         fake_ce = MagicMock()
-        # predict must return something with .tolist(); mirror input length.
         fake_ce.predict.side_effect = lambda pairs, show_progress_bar=False: MagicMock(
             tolist=lambda: [0.0] * len(pairs)
         )
         with patch("lib.tools._get_features", return_value=feats):
-            # Stage-1 passthrough so the CE sees all retrieved docs in order.
             with patch("lib.tools.rerank_results", side_effect=lambda d, q, l, **k: d[:l]):
                 with patch.object(reranker, "_get_cross_encoder", return_value=fake_ce):
                     _maybe_rerank(docs, "query", 5)

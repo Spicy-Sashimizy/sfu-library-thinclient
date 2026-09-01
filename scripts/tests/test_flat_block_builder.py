@@ -44,10 +44,6 @@ from lib.thinclient.abstracts import (  # noqa: E402
     build_flat_sidecar)
 import build_flat_blocks as B  # noqa: E402
 
-# ~1,200 docs of real-ish length spread over three scripts, so the writer packs
-# several 32 KB blocks and trains more than one dictionary — a single-block
-# store would not exercise the block index at all. Two ids are deliberately
-# unaddressable by the ordinal locator (hazard 2).
 LATIN = ("A study of citation half-lives across the social sciences, with "
          "attention to archival provenance and network effects. Document %d.")
 CYR = ("Исследование сетевых эффектов и архивной атрибуции в социальных "
@@ -63,8 +59,6 @@ def make_store(path: Path, n: int = 1200, odd_ids: bool = True) -> dict:
         docs[did] = text
         w.add(did, text)
     if odd_ids:
-        # leading zero + non-numeric: the locator cannot address either, so
-        # they must survive via the SQLite `docs` path and must block deletion.
         docs["W0999"] = "leading-zero id — a docs_other-class record"
         docs["Wxyz"] = "non-numeric id — unaddressable by the ordinal locator"
         w.add("W0999", docs["W0999"])
@@ -91,8 +85,6 @@ def _digest(p: Path) -> str:
     return h.hexdigest()
 
 
-# ── the headline: build, verify, publish ─────────────────────────────────────
-
 def test_build_publishes_only_after_parity_passes(section):
     src, docs = section
     before = _digest(src)
@@ -109,17 +101,14 @@ def test_build_publishes_only_after_parity_passes(section):
               "loc_wids.npy", "loc_b.npy", "loc_off.npy", "loc_n.npy"):
         assert (flat / f).exists(), f
 
-    # every arm byte-identical to the v3 oracle
     for arm, st in rep["verify_reads"]["arms"].items():
         assert st["pass"], (arm, st)
     assert rep["verify_reads"]["locator_attached"] is True
     assert rep["verify_reads"]["sqlite_free_has_no_db"] is True
     assert rep["verify_blocks"]["pass"] and rep["verify_blocks"]["blocks_checked"] > 1
 
-    # additive: the source is untouched, bit for bit
     assert _digest(src) == before
 
-    # and the section now serves the flat store through the shipped reader
     s = AbstractStore(src)
     assert s._flat is not None and s._locator is not None
     assert s.fetch(list(docs)) == docs
@@ -144,7 +133,6 @@ def test_all_wid_store_is_reported_deletable(tmp_path):
     rep = B.build_section(src, verify_ids=400, verify_blocks_n=20)
     assert rep["skipped_non_wid"] == 0
     assert rep["sqlite_deletable"] is True
-    # the §18 claim, checked on this store: it serves with the sqlite gone
     free = tmp_path / "free"
     free.mkdir()
     (free / "abstracts.sqlite.flat").symlink_to(
@@ -154,8 +142,6 @@ def test_all_wid_store_is_reported_deletable(tmp_path):
     assert s.fetch(list(docs)) == docs
 
 
-# ── the served name is never half-populated ──────────────────────────────────
-
 def test_a_failed_verify_does_not_publish(section, monkeypatch):
     src, _ = section
     monkeypatch.setattr(B, "verify_reads", lambda *a, **k: {
@@ -163,8 +149,8 @@ def test_a_failed_verify_does_not_publish(section, monkeypatch):
         "pass": False})
     rep = B.build_section(src, verify_ids=10, verify_blocks_n=5)
     assert rep["pass"] is False and rep["published"] is False
-    assert not src.with_suffix(src.suffix + ".flat").exists()      # served name
-    assert src.with_suffix(src.suffix + ".flat.building").is_dir()  # kept
+    assert not src.with_suffix(src.suffix + ".flat").exists()
+    assert src.with_suffix(src.suffix + ".flat.building").is_dir()
 
 
 def test_build_refuses_to_overwrite_a_published_sidecar(section):
@@ -174,21 +160,18 @@ def test_build_refuses_to_overwrite_a_published_sidecar(section):
         B.build_section(src, verify_ids=200, verify_blocks_n=10)
 
 
-# ── resumability ─────────────────────────────────────────────────────────────
-
 def test_completed_flat_stage_is_detected_and_skipped(section):
     """The expensive stage is a single sequential pass; a rerun must not repeat
     it. Completion is proved from the stamp the builder writes last."""
     src, _ = section
     stage = src.with_suffix(src.suffix + ".flat.building")
-    build_flat_sidecar(src, stage)                 # simulate a crash after it
+    build_flat_sidecar(src, stage)
     flat_id = json.loads((stage / FLAT_STAMP).read_text())["flat_store_id"]
 
     rep = B.build_section(src, verify_ids=500, verify_blocks_n=10)
     assert rep["stages"]["flat"]["skipped"] is True
     assert rep["stages"]["locator"]["skipped"] is False
     assert rep["pass"] is True
-    # the same blocks were kept, not rebuilt (the identity would change)
     flat = src.with_suffix(src.suffix + ".flat")
     assert json.loads((flat / FLAT_STAMP).read_text())["flat_store_id"] == flat_id
 
@@ -197,7 +180,7 @@ def test_interrupted_flat_stage_is_redone_and_the_partial_removed(section):
     src, _ = section
     stage = src.with_suffix(src.suffix + ".flat.building")
     stage.mkdir()
-    (stage / "blocks.bin.partial").write_bytes(b"\x00" * 4096)   # torn run
+    (stage / "blocks.bin.partial").write_bytes(b"\x00" * 4096)
     rep = B.build_section(src, verify_ids=500, verify_blocks_n=10)
     assert rep["stages"]["flat"]["skipped"] is False
     assert rep["pass"] is True
@@ -236,10 +219,10 @@ def test_a_torn_published_index_falls_back_losslessly_to_v3(section, shape):
                    "empty": b"",
                    "garbage": b"not an npy file at all"}[shape])
 
-    s = AbstractStore(src)                 # must not raise
-    assert s._flat is None                 # fell back off the flat store
-    assert s._locator is None              # the locator rides on the blocks
-    assert s.fetch(list(docs)) == docs     # and the fallback is lossless
+    s = AbstractStore(src)
+    assert s._flat is None
+    assert s._locator is None
+    assert s.fetch(list(docs)) == docs
 
 
 @pytest.mark.parametrize("shape", ["truncated", "empty", "garbage"])
@@ -276,20 +259,18 @@ def test_staging_with_foreign_files_is_refused(section):
     assert (stage / "operator_notes.txt").exists()
 
 
-# ── verification catches real corruption ─────────────────────────────────────
-
 def test_block_byte_check_catches_a_corrupted_payload(section):
     src, _ = section
     rep = B.build_section(src, verify_ids=200, verify_blocks_n=10)
     flat = src.with_suffix(src.suffix + ".flat")
-    with open(flat / "blocks.bin", "r+b") as f:            # flip one byte
+    with open(flat / "blocks.bin", "r+b") as f:
         f.seek(3)
         b = f.read(1)
         f.seek(3)
         f.write(bytes([b[0] ^ 0xFF]))
     out = B.verify_blocks(src, flat, 10_000)
     assert not out["pass"] and out["mismatched"] >= 1
-    assert rep["pass"] is True                              # it passed BEFORE
+    assert rep["pass"] is True
 
 
 def test_read_parity_catches_a_shifted_block_index(section, tmp_path):
@@ -300,13 +281,11 @@ def test_read_parity_catches_a_shifted_block_index(section, tmp_path):
     flat = src.with_suffix(src.suffix + ".flat")
     off = np.load(flat / "block_offsets.npy")
     assert len(off) > 1
-    off[1] = off[0]                                          # point block 1 at 0
+    off[1] = off[0]
     np.save(flat / "block_offsets.npy", off)
     out = B.verify_reads(src, flat, tmp_path / "views", 2000)
     assert not out["pass"]
 
-
-# ── planning is stat-only ────────────────────────────────────────────────────
 
 def test_survey_orders_sections_smallest_first(tmp_path):
     root = tmp_path / "idx"
@@ -314,14 +293,12 @@ def test_survey_orders_sections_smallest_first(tmp_path):
         d = root / "sections" / name
         d.mkdir(parents=True)
         make_store(d / "abstracts.sqlite", n=n, odd_ids=False)
-    (root / "sections" / "cold__archive").mkdir(parents=True)   # no abstracts
+    (root / "sections" / "cold__archive").mkdir(parents=True)
     rows = B.survey(root)
     assert [r["section"] for r in rows] == ["small__recent", "big__recent"]
     assert all(r["published"] is False for r in rows)
     assert rows[0]["est_sidecar_bytes"] > 0
 
-
-# ── the inline path: build_thinclient_index.py --flat-sidecar ────────────────
 
 import build_thinclient_index as M  # noqa: E402  (after the sys.path setup)
 
@@ -342,7 +319,6 @@ def _stub_other_phases(monkeypatch, tmp_path):
     for name in ("phase_export", "phase_build", "phase_pack", "phase_dense",
                  "write_manifest"):
         monkeypatch.setattr(M, name, lambda *a, **k: None)
-    # keep build reports out of the repo's data/eval_results
     monkeypatch.setattr(M, "_flat_report_path",
                         lambda section, rd: tmp_path / f"report_{section}.json")
 
@@ -391,7 +367,6 @@ def test_flat_sidecar_flag_emits_a_verified_sidecar_inline(index_root,
     for arm, st in rep["verify_reads"]["arms"].items():
         assert st["pass"], (arm, st)
 
-    # and the section serves flat through the shipped reader
     s = AbstractStore(src)
     assert s._flat is not None and s._locator is not None
     assert s.fetch(list(docs)) == docs
@@ -410,11 +385,11 @@ def test_a_failed_gate_aborts_the_inline_phase_and_publishes_nothing(
     with pytest.raises(RuntimeError, match="synthetic__recent"):
         M.phase_flat_sidecar(root, status, 100, 5, report_dir=tmp_path)
 
-    assert not src.with_suffix(src.suffix + ".flat").exists()   # served name
+    assert not src.with_suffix(src.suffix + ".flat").exists()
     assert src.with_suffix(src.suffix + ".flat.building").is_dir()
     assert status["flat_sections"] == []
     assert status["flat_info"]["synthetic__recent"]["published"] is False
-    assert AbstractStore(src).fetch(list(docs)) == docs         # still serves v3
+    assert AbstractStore(src).fetch(list(docs)) == docs
 
 
 def test_a_published_sidecar_is_left_alone_on_a_rerun(index_root, tmp_path):
@@ -427,7 +402,7 @@ def test_a_published_sidecar_is_left_alone_on_a_rerun(index_root, tmp_path):
     mtime = (flat / "blocks.bin").stat().st_mtime_ns
 
     status: dict = {}
-    M.phase_flat_sidecar(root, status, 200, 10, report_dir=tmp_path)  # no raise
+    M.phase_flat_sidecar(root, status, 200, 10, report_dir=tmp_path)
 
     assert status.get("flat_sections") == []
     assert (flat / "blocks.bin").stat().st_mtime_ns == mtime

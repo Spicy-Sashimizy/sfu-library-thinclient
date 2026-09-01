@@ -37,41 +37,20 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "scripts" / "demo_dependability"))
 
-# ── env: breaker ON. The timeout is generous (30s, the real default) because the
-# timeout is for a HUNG leg, NOT a slow-but-healthy one — WI-7 measured warm diverse
-# p50 up to ~10s on 9p (working-set-bound), so a tight 3s timeout would trip on a
-# HEALTHY leg and contaminate the proof. The HUNG fault sleeps 60s (well past 30s)
-# so it still trips. Cooldown is tightened to 1s so the re-admission check runs in
-# seconds (the BEHAVIOR under test is identical to the default-8s cooldown).
 os.environ.setdefault("SFU_DEMO_LEG_BREAKER", "1")
 os.environ.setdefault("SFU_DEMO_LEG_TIMEOUT_S", "30")
 os.environ.setdefault("SFU_DEMO_LEG_TIMEOUT_SPLADE_S", "30")
-os.environ.setdefault("SFU_DEMO_LEG_BREAKER_N", "2")        # 2 consec fails → open
-os.environ.setdefault("SFU_DEMO_LEG_BREAKER_COOLDOWN_S", "1")  # 1s cooldown (proof)
+os.environ.setdefault("SFU_DEMO_LEG_BREAKER_N", "2")
+os.environ.setdefault("SFU_DEMO_LEG_BREAKER_COOLDOWN_S", "1")
 
 
 def _build_retriever():
     from lib.thinclient.retriever import ThinClientRetriever
-    # remote_abstracts=False: the abstract-fetch path hits OpenAlex for missing
-    # abstracts → under a batch it 429-storms + raises inside _hydrate, which the
-    # guardian would (correctly!) mark as a bm25f-leg failure — contaminating the
-    # fault proof with a NETWORK fault, not the injected leg fault. The proof's
-    # job is the breaker behavior on INJECTED faults; abstracts are orthogonal, so
-    # disable remote fetch (local abstract stores still populate what they have).
     r = ThinClientRetriever(index_root=os.environ.get("SFU_THINCLIENT_INDEX_ROOT", ""),
                             remote_abstracts=False)
-    r.is_available()  # force load (the legs need _sections + _seismic lazy on first splade)
-    # EAGER LOAD the SPLADE model + the SEISMIC backend on the MAIN thread BEFORE
-    # the guardian runs — two reasons: (1) onnxruntime/transformers' FIRST import
-    # must happen on the main thread (some libs register thread-local state; a
-    # worker-thread first-import raises ImportError, mis-seen as a SPLADE-leg
-    # failure), and (2) the first SPLADE query lazy-loads the 8 SEISMIC shards
-    # (~8s+ cold) which would EXCEED the 3s guardian leg timeout and trip the
-    # breaker on a HEALTHY leg. Warm both so the guardian's first timed query is
-    # fast (under the timeout) and the only failures are the INJECTED ones.
+    r.is_available()
     from lib.opensearch_retriever import encode_splade
     encode_splade("initialize thread pools", r.splade_model_path)
-    # force the seismic backend to load now (main thread), then one warm query
     r._seismic_backend()
     r.search("warmup probe", top_k=5, mode="splade")
     return r
@@ -98,7 +77,6 @@ class LegPatcher:
         self.r = r; self.method = method; self.fn = fn; self.orig = None
     def __enter__(self):
         self.orig = getattr(self.r, self.method)
-        # bind as an instance method-like (the guardian calls self.r.<method>)
         import types
         setattr(self.r, self.method, types.MethodType(self.fn, self.r))
         return self
@@ -122,7 +100,7 @@ def _run_phase(guardian, q, top_k=10):
         lat.append(ms)
         deg = d.get("degraded", [])
         total_degraded.update(deg)
-        last_degraded = deg  # the SETTLED state (the recovery bar reads this)
+        last_degraded = deg
         results_returned += 1 if d["results"] else 0
     lat.sort()
     def pct(p):
@@ -142,7 +120,7 @@ def _patch_raises(exc=RuntimeError("INJECTED leg failure (WI-9 fault)")):
 
 def _patch_hang(seconds=60):
     def fn(self, *a, **k):
-        time.sleep(seconds)  # exceeds the 30s leg timeout → timeout fault
+        time.sleep(seconds)
         return []
     return fn
 
@@ -169,9 +147,6 @@ def main():
     guardian = get_guardian(r)
     assert guardian is not None, "guardian OFF — SFU_DEMO_LEG_BREAKER must be 1"
     q = _q()
-    # WARM: prime the SPLADE backend (the first splade query cold-loads the 8 shards;
-    # the proof's fault latency must be measured WARM so the timeout trips on the
-    # INJECTED hang, not on a cold shard load). Run the batch once clean first.
     print(f"  warmup batch ({len(q)} queries, {time.perf_counter()-t0:.1f}s to build)...", flush=True)
     warm = _run_phase(guardian, q)
     out["warm_baseline"] = warm
@@ -188,19 +163,15 @@ def main():
     for name, method, patchfn, desc in faults:
         print(f"\n=== FAULT {name}: {desc} ===", flush=True)
         fault_result = {"name": name, "method": method, "desc": desc}
-        # reset ALL breaker states so each fault starts from CLOSED (isolated)
         for st in guardian._states.values():
             with st._lock:
                 st.consec_fails = 0; st.opened_at = None
                 st.probe_pending = False; st.last_fail_reason = None
-        # ── (1) DURING the fault: drive the batch; expect degraded + results ──
         with LegPatcher(r, method, patchfn):
             during = _run_phase(guardian, q)
         fault_result["during_fault"] = during
         print(f"  DURING: degraded={during['degraded']} results={during['results_returned']}/{during['n']} "
               f"p50={during['p50_ms']}ms p95={during['p95_ms']}ms err5xx={during['err5xx']}", flush=True)
-        # bar (a): no 5xx; (b): results still returned; (c): degraded names the leg
-        # (encoder_down is the graceful-mirror case → degraded should NOT include splade)
         if name == "encoder_down":
             bar_c = "splade" not in during["degraded"]
             expected = "no splade degrade (graceful mirror)"
@@ -216,14 +187,9 @@ def main():
             "c_degraded_names_leg": bar_c,
             "c_expected": expected,
         }
-        # ── (2) AFTER the fault clears + cooldown: expect re-admission ─────────
-        # the patched method is already restored (context exited); wait for cooldown
         time.sleep(float(os.environ["SFU_DEMO_LEG_BREAKER_COOLDOWN_S"]) + 0.2)
         after = _run_phase(guardian, q)
         fault_result["after_clear"] = after
-        # re-admission bar: read the SETTLED state (last query's degraded), not the
-        # batch union (which would include the probe-in-flight window). A leg is
-        # re-admitted once its probe has succeeded → not in last_degraded.
         if name == "encoder_down":
             reopened = "splade" not in after["last_degraded"]
         else:
@@ -234,7 +200,6 @@ def main():
               f"→ recovered={reopened}", flush=True)
         out["faults"].append(fault_result)
 
-    # ── verdict ────────────────────────────────────────────────────────────────
     all_bars = all(all(f["bars"].values()) for f in out["faults"])
     out["verdict"] = "PASS" if all_bars else "FAIL"
     out["verdict_bars"] = {f["name"]: f["bars"] for f in out["faults"]}

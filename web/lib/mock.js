@@ -1,6 +1,4 @@
-/* SFU Library Suite — shared mock/demo data (fallback when live backend is down).
- * Plain JS (no JSX); loaded before the app's babel script so window.SFUMock is
- * available to all three apps. Single source of truth for fallback data. */
+
 (function () {
 const MOCK_RESULTS = [
   {
@@ -144,7 +142,7 @@ const MOCK_DATABASES = [
   { id: 10, name: "SpringerLink", provider: "Springer", subjects: ["Science", "Technology"], proxy: true, free: false },
 ];
 
-// Analytics bundle fallback — mirrors the /analytics panel shapes the server emits.
+
 const ANALYTICS = {
   generated_at: null,
   panels: {
@@ -170,7 +168,7 @@ const ANALYTICS = {
   },
 };
 
-// Index status fallback — mirrors get_index_status (metrics + pack + unpack_jobs).
+
 const INDEX_STATUS = {
   metrics: {
     available: true,
@@ -189,7 +187,7 @@ const INDEX_STATUS = {
   unpack_jobs: {},
 };
 
-// Personas fallback — mirrors list_personas.
+
 const PERSONAS = {
   personas: {
     all_hot: { hot: ["social_sciences__recent","natural_sciences__recent","health_medicine__recent","engineering_cs__recent","arts_humanities__recent"], kind: "Testbed · all sections hot", testbed: true },

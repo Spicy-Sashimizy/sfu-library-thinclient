@@ -1,0 +1,21 @@
+[cell boundary] preflight: mode=converge scale=1.0 cap=5.75g R=5120M L=1792M early_sort=none load_order=interleaved
+[cell boundary] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=6174015488
+[cell boundary] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell boundary] post-evict residency: R=0.0000% L=0.0000%
+[cell boundary] load phase: INTERLEAVED sweep, 64 MiB chunks, R=80 L=28 (total 108)
+[cell boundary] load schedule: RRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRL
+[cell boundary] load done (order=interleaved, wall=2.146s; read-time L=0.473s R=1.304s)
+[cell boundary] post-load residency: R=84.8438% (1112064/1310720 pages)  L=85.4911% (392192/458752 pages)
+[cell boundary] pass 1: wall=51.4049s majflt=305665 ms/fault=0.168174 residency R=90.6687%
+[cell boundary] pass 2: wall=35.7375s majflt=210368 ms/fault=0.169881 residency R=94.1734%
+[cell boundary] pass 3: wall=21.2232s majflt=124656 ms/fault=0.170254 residency R=96.6496%
+[cell boundary] pass 4: wall=12.6384s majflt=69820 ms/fault=0.181014 residency R=97.8407%
+[cell boundary] pass 5: wall=7.6952s majflt=36068 ms/fault=0.213353 residency R=99.0192%
+[cell boundary] pass 6: wall=5.5594s majflt=26191 ms/fault=0.212264 residency R=99.0900%
+[cell boundary] pass 7: wall=3.4234s majflt=11928 ms/fault=0.287005 residency R=100.0000%
+[cell boundary] pass 8: wall=1.4201s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] pass 9: wall=1.4362s majflt=126 ms/fault=11.398413 residency R=99.9974%
+[cell boundary] pass 10: wall=1.4439s majflt=128 ms/fault=11.280469 residency R=99.9974%
+[cell boundary] pass 11: wall=1.4437s majflt=66 ms/fault=21.874242 residency R=100.0000%
+[cell boundary] pass 12: wall=1.4586s majflt=160 ms/fault=9.116250 residency R=100.0000%
+[cell boundary] cell complete: 12 passes, converged=false, swap_confounded=false

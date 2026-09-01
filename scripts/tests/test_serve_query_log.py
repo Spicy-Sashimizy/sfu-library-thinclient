@@ -58,7 +58,7 @@ def _drain_and_read(logger: QueryLogger) -> list[dict]:
     file is flushed/rotated; reconstructs a fresh logger to read from (the file
     is the source of truth)."""
     logger.close()
-    QueryLogger.reset_for_test()  # clear singleton so the next get() rebuilds
+    QueryLogger.reset_for_test()
     p = logger.path
     if not p.exists():
         return []
@@ -71,13 +71,9 @@ def _drain_and_read(logger: QueryLogger) -> list[dict]:
     return out
 
 
-# ── normalization + hash ───────────────────────────────────────────────────────
-
 def test_normalize_collapses_whitespace_and_casing():
     assert _normalize_query("  Machine  Learning ") == "machine learning"
     assert _normalize_query("MACHINE learning") == "machine learning"
-    # outer punctuation stripped; inner kept (queries differing only in outer
-    # punctuation are the same subject)
     assert _normalize_query('"machine learning"') == "machine learning"
     assert _normalize_query("...machine learning...") == "machine learning"
 
@@ -89,8 +85,6 @@ def test_hash_is_stable_and_distinct():
     assert a != _sha1("deep learning"), "distinct input must hash distinctly"
     assert len(a) == 16, "hash truncated to 16 chars (the join key)"
 
-
-# ── write + fields ─────────────────────────────────────────────────────────────
 
 def test_emits_correct_fields(tmp_path):
     lg = _fresh_logger(tmp_path)
@@ -108,9 +102,7 @@ def test_emits_correct_fields(tmp_path):
     assert e["k"] == 50 and e["mode"] == "federated"
     assert e["backend"] == "seismic" and e["federation"] == "parallel"
     assert e["n_results"] == 50 and e["filtered"] is True
-    # leg_ms: None values dropped; total preserved
     assert e["leg_ms"] == {"bm25f": 10.5, "splade": 30.2, "total": 45.0}
-    # result fingerprint = sha1 of the joined oaid list
     assert e["result_fp"] == _sha1("\x1f".join(["W1", "W2", "W3"]))
     assert e["ts"].endswith("Z"), "UTC ISO timestamp"
     assert len(e["session"]) == 8, "per-process session id"
@@ -123,8 +115,6 @@ def test_raw_opt_in_stores_norm_text(tmp_path):
     entries = _drain_and_read(lg)
     assert entries[0]["query_norm"] == "deep learning", "raw opted in"
 
-
-# ── rotation ──────────────────────────────────────────────────────────────────
 
 def _read_all_rotated(lg: QueryLogger) -> list[dict]:
     """Read BOTH the live file and the rotated .1 (the retention model keeps
@@ -142,33 +132,23 @@ def _read_all_rotated(lg: QueryLogger) -> list[dict]:
 
 
 def test_rotation_caps_file_size(tmp_path):
-    # max_bytes tiny so a couple of entries force rotations; buffer big enough
-    # that no entries are dropped via backpressure (rotation, not drop, is the
-    # path under test). Retention keeps live + .1 only (older dropped).
     lg = _fresh_logger(tmp_path, SFU_SERVE_QUERY_LOG_MAX_BYTES="400",
                        SFU_SERVE_QUERY_LOG_BUFFER="4096")
     for i in range(40):
         lg.log(query=f"query number {i}", k=50, mode="federated",
                n_results=10, result_oaids=[f"W{i}"])
     entries = _read_all_rotated(lg)
-    # With a 400-byte cap and ~250-byte entries, ~2 entries fit per file; 40
-    # entries ⟹ ~20 rotations but only live + .1 survive = ~4 entries. The
-    # GUARD: rotation happened (a .1 exists) AND every committed line is valid
-    # AND the live file is capped (never unbounded growth).
     assert len(entries) >= 1, "entries committed"
     live = lg.path
     assert live.exists(), "live file recreated after rotation"
     assert live.stat().st_size <= 800, "live file stays near the cap after rotation"
     rot = live.with_suffix(live.suffix + ".1")
     assert rot.exists(), "a rotation produced a .1 (the bounded-retention model)"
-    # every recovered entry is well-formed + distinct (no corruption from rotation)
     hashes = {e["query_hash"] for e in entries}
     assert len(hashes) == len(entries), "rotation must not duplicate entries"
 
 
 def test_no_rotation_when_under_cap(tmp_path):
-    # a large cap + few entries ⟹ NO rotation; all entries in the live file
-    # (the no-boundary case: everything committed, in order).
     lg = _fresh_logger(tmp_path, SFU_SERVE_QUERY_LOG_MAX_BYTES="1048576",
                        SFU_SERVE_QUERY_LOG_BUFFER="4096")
     for i in range(25):
@@ -184,21 +164,17 @@ def test_rotation_drops_old_rotated_file(tmp_path):
     lg = _fresh_logger(tmp_path, SFU_SERVE_QUERY_LOG_MAX_BYTES="300",
                        SFU_SERVE_QUERY_LOG_BUFFER="4096")
     rot = lg.path.with_suffix(lg.path.suffix + ".1")
-    rot.write_text("pre-existing old log\n")  # a prior .1 sitting on disk
+    rot.write_text("pre-existing old log\n")
     for i in range(40):
         lg.log(query=f"q{i}", k=50, mode="federated",
                n_results=1, result_oaids=[f"X{i}"])
     entries = _read_all_rotated(lg)
     assert len(entries) >= 1
-    # the .1, if it holds anything, is valid JSON lines — the old plaintext is gone
     if rot.exists():
         for ln in rot.read_text().splitlines():
             if ln.strip():
-                json.loads(ln)  # valid JSON (the old "pre-existing" text dropped)
+                json.loads(ln)
 
-
-
-# ── env gating ────────────────────────────────────────────────────────────────
 
 def test_disabled_is_hard_noop(tmp_path):
     lg = _fresh_logger(tmp_path, SFU_SERVE_QUERY_LOG="0")
@@ -219,16 +195,13 @@ def test_staging_default_on(tmp_path):
            ("SFU_SERVE_QUERY_LOG", "SFU_SERVE_QUERY_LOG_STAGING",
             "SFU_ACTIVE_PROFILE", "SFU_ENV")}
     try:
-        # staging: defaults on
         os.environ.pop("SFU_SERVE_QUERY_LOG", None)
         os.environ.pop("SFU_SERVE_QUERY_LOG_STAGING", None)
         os.environ["SFU_ACTIVE_PROFILE"] = "default"
         os.environ.pop("SFU_ENV", None)
         assert _staging_default() is True, "default profile = staging = ON"
-        # production env: defaults off (must opt in)
         os.environ["SFU_ENV"] = "production"
         assert _staging_default() is False, "production default OFF unless opted in"
-        # explicit opt-in wins in production
         os.environ["SFU_SERVE_QUERY_LOG"] = "1"
         assert _staging_default() is True, "explicit enable trumps production default"
     finally:
@@ -240,27 +213,19 @@ def test_staging_default_on(tmp_path):
     QueryLogger.reset_for_test()
 
 
-# ── backpressure ──────────────────────────────────────────────────────────────
-
 def test_backpressure_drops_not_stalls(tmp_path):
-    # tiny buffer + NO draining writer: a flood must drop (not raise/block)
     lg = _fresh_logger(tmp_path, SFU_SERVE_QUERY_LOG_BUFFER="4")
-    # Pause the writer by holding the lock indirectly: fill faster than drain.
-    # We log far more than the buffer holds; log() must NEVER block.
     n = 5000
     t0 = time.perf_counter()
     for i in range(n):
         lg.log(query=f"flood {i}", k=50, mode="federated", n_results=1,
                result_oaids=[f"W{i}"])
     elapsed = time.perf_counter() - t0
-    # 5000 non-blocking puts must complete in well under a second (each is µs)
     assert elapsed < 1.0, f"non-blocking puts took {elapsed:.2f}s — log() blocked!"
     assert lg._dropped > 0, "a flood past a tiny buffer must drop+count (backpressure)"
     lg.close()
     QueryLogger.reset_for_test()
 
-
-# ── result fingerprint (the skew-analysis key) ────────────────────────────────
 
 def test_same_results_same_fingerprint():
     oaids = ["W1", "W2", "W3"]
@@ -274,8 +239,6 @@ def test_different_results_different_fingerprint():
     assert a != b, "differing result sets must fingerprint distinctly"
 
 
-# ── retriever leg-metrics delta surface ──────────────────────────────────────
-
 def test_leg_metrics_delta():
     from lib.thinclient.retriever import (snapshot_leg_metrics,
                                           leg_metrics_delta, _record_leg)
@@ -285,13 +248,11 @@ def test_leg_metrics_delta():
     delta = leg_metrics_delta(before)
     assert delta.get("splade") == 25.0
     assert delta.get("bm25f") == 10.0
-    # legs not advanced are omitted (no spurious 0.0 entries)
     assert "dense" not in delta
 
 
 if __name__ == "__main__":
     import tempfile
-    # Run each test with a fresh tmp dir (pytest-less fallback).
     failures = 0
     g = globals()
     for name in sorted(g):
@@ -301,7 +262,6 @@ if __name__ == "__main__":
                     g[name](Path(td))
                 print(f"PASS {name}")
             except TypeError:
-                # tests that don't take tmp_path
                 try:
                     g[name]()
                     print(f"PASS {name}")

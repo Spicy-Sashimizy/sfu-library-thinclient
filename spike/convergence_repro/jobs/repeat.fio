@@ -1,0 +1,54 @@
+# ONE fio invocation == ONE full pass over the repeat set R.
+#
+# Parameterised entirely by environment variables (fio expands ${VAR}):
+#   R_FILE        absolute path to the repeat-set file (e.g. /data/R.bin)
+#   R_SIZE        its size, e.g. "5120M"  (io_size == size => exactly one pass)
+#   FIO_RANDSEED  fixed seed => the SAME random address sequence every pass and
+#                 every cell (the seeded-synthetic determinism mechanism)
+#
+# CRITICAL SETTINGS — do not "clean these up":
+#   invalidate=0   fio DEFAULTS TO invalidate=1, which fadvise(DONTNEED)s the
+#                  whole file at job start. That would evict the page cache
+#                  before every pass and silently destroy the entire
+#                  experiment (there would be no convergence to observe).
+#   direct=0       we are measuring the page cache; O_DIRECT would bypass it.
+#   randrepeat=1   (fio default, stated explicitly) + fixed randseed.
+#   norandommap=0  fio's default random map: every block in [0,size) is issued
+#                  exactly once, in seeded-random order => io_size == size is a
+#                  true single pass, and majflt is a clean per-block miss count.
+#   fadvise_hint=1 (fio default, stated explicitly) => MADV_RANDOM on the
+#                  mapping => no fault-around, so EXACTLY ONE major fault per
+#                  missing 4 KiB block. This makes majflt an exact counter of
+#                  the pass's miss set, which is the headline metric. Recorded
+#                  in BUILD_NOTES.md as a deliberate difference from the real
+#                  stack (which does not call fadvise and does get fault-around).
+#   thread=1       the job runs as a thread of the fio process, so the process's
+#                  majflt (GNU `time -v` / /proc/<pid>/stat field 12) is the
+#                  pass's fault count with no child-reaping subtleties.
+#   loops=1, time_based=0  one pass, then exit.
+
+[global]
+ioengine=mmap
+rw=randread
+direct=0
+invalidate=0
+randrepeat=1
+randseed=${FIO_RANDSEED}
+norandommap=0
+fadvise_hint=1
+bs=4k
+loops=1
+time_based=0
+thread=1
+numjobs=1
+group_reporting=1
+fallocate=none
+allow_file_create=0
+create_on_open=0
+disable_lat=0
+disable_clat=0
+
+[repeat_pass]
+filename=${R_FILE}
+size=${R_SIZE}
+io_size=${R_SIZE}

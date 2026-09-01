@@ -1,0 +1,22 @@
+[cell marginal] preflight: mode=converge scale=1.0 cap=6.25g R=5120M L=1792M early_sort=none load_order=interleaved
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=6710886400
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase: INTERLEAVED sweep, 64 MiB chunks, R=80 L=28 (total 108)
+[cell marginal] load schedule: RRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRL
+[cell marginal] load done (order=interleaved, wall=3.067s; read-time L=0.680s R=1.987s)
+[cell marginal] post-load residency: R=92.3438% (1210368/1310720 pages)  L=92.7519% (425501/458752 pages)
+[cell marginal] pass 1: wall=28.6699s majflt=159547 ms/fault=0.179696 residency R=94.6334%
+[cell marginal] pass 2: wall=20.6622s majflt=113327 ms/fault=0.182324 residency R=97.1040%
+[cell marginal] pass 3: wall=11.2084s majflt=61055 ms/fault=0.183579 residency R=98.3491%
+[cell marginal] pass 4: wall=7.1442s majflt=36328 ms/fault=0.196658 residency R=99.5704%
+[cell marginal] pass 5: wall=3.5588s majflt=12991 ms/fault=0.273943 residency R=99.5306%
+[cell marginal] pass 6: wall=3.4998s majflt=11832 ms/fault=0.295791 residency R=99.5352%
+[cell marginal] pass 7: wall=3.4788s majflt=11637 ms/fault=0.298943 residency R=99.5686%
+[cell marginal] pass 8: wall=3.5592s majflt=12047 ms/fault=0.295443 residency R=99.6234%
+[cell marginal] pass 9: wall=2.2204s majflt=4936 ms/fault=0.449838 residency R=100.0000%
+[cell marginal] pass 10: wall=1.3321s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 11: wall=1.3284s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 12: wall=1.3160s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] converged at pass 12 (plateau_within_10pct_x2_and_majflt_zero)
+[cell marginal] cell complete: 12 passes, converged=true, swap_confounded=false

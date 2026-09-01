@@ -1,0 +1,11 @@
+[cell boundary] preflight: mode=converge scale=1.0 cap=5.75g R=5120M L=1792M early_sort=none
+[cell boundary] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=6174015488
+[cell boundary] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell boundary] post-evict residency: R=0.0000% L=0.0000%
+[cell boundary] load phase: sequential read of L then R (once)
+[cell boundary] load done: L=0.330s R=1.038s | residency after load R=100.0000% L=42.5223%
+[cell boundary] pass 1: wall=1.2860s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] pass 2: wall=1.1132s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] pass 3: wall=1.1019s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] converged at pass 3 (plateau_within_10pct_x2)
+[cell boundary] cell complete: 3 passes, converged=true, swap_confounded=false

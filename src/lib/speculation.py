@@ -81,8 +81,6 @@ from lib import result_cache
 
 log = logging.getLogger("speculation")
 
-# ── env gate (default OFF — owner flips the default) ─────────────────────────
-
 
 def is_enabled() -> bool:
     """``SFU_SEARCH_SPECULATE=1`` enables. Default OFF — unlike the wave-7
@@ -112,14 +110,6 @@ def min_ratio() -> float:
     except ValueError:
         return 0.35
 
-
-# ── candidate query pool (predictor source — term 2) ─────────────────────────
-# The same collection the wave-7 primer uses (landing examples from the JSX
-# SOURCE + demo_seed_queries.txt), PLUS distinct historical queries read from
-# the serve query log (only when raw-text capture was on at log time — see
-# serve_query_log._staging_default; raw is OFF by default so this is usually
-# empty unless SFU_SERVE_QUERY_LOG_RAW=1 was set). Deterministic string
-# matching + recency/frequency tiebreak; NO ML.
 
 _pool_cache: list[str] | None = None
 _pool_lock = threading.Lock()
@@ -165,14 +155,7 @@ def _historical_queries(limit: int = 200) -> list[str]:
     this stays PII-free."""
     from pathlib import Path as _Path
     out: list[str] = []
-    # 1. The serve query log (real traffic, when raw-text capture was on).
     out.extend(_serve_log_queries(limit=limit))
-    # 2. The bench query pool (data/eval_results/speculation_bench_queries.txt):
-    #    realistic academic queries the predictor treats as "historical" so it
-    #    can engage on non-seeded text (term 7 trial hygiene: these are NOT
-    #    pre-seeded by the primer, which only plants demo_seed_queries.txt +
-    #    the landing examples — so a bench query is cache-COLD on a freshly
-    #    primed serve, and a speculation that primes it is a real win).
     out.extend(_bench_pool_queries())
     return out
 
@@ -261,9 +244,6 @@ def reset_pool_for_test() -> None:
         _pool_cache = None
 
 
-# ── predictor: partial text → full predicted query (term 2) ──────────────────
-
-
 class Prediction:
     """One predictor decision for a partial-typed text.
 
@@ -331,48 +311,30 @@ def predict(typed: str, *, force_literal: bool = False) -> Prediction:
     for cand in pool:
         nq_cand = result_cache._norm_query(cand)
         if not nq_cand or nq_cand == nq:
-            # typed text IS a full candidate — nothing to predict (a real
-            # submit of this is already the candidate; no speculation added).
             continue
         is_prefix = nq_cand.startswith(nq)
-        # Word-boundary containment: the typed text appears in the candidate
-        # starting at a word boundary (preceded by space or start). Catches a
-        # user typing from the candidate's 2nd word onward.
         is_subword = False
         idx = nq_cand.find(" " + nq)
         if idx >= 0:
             after = nq_cand[idx + 1 + len(nq):idx + 1 + len(nq) + 1]
-            # only count if the match ends at a word boundary OR runs to the
-            # candidate's end (so "learn" matches "…learning…" but the
-            # min_ratio gate still requires the candidate to be meaningfully
-            # longer — see below).
             is_subword = after in (" ", "")
         if is_prefix or is_subword:
             matches.append(cand)
-    # Unambiguous: exactly one match that adds real information.
     if len(matches) == 1:
         cand = matches[0]
         nq_cand = result_cache._norm_query(cand)
         if len(nq_cand) >= len(nq) * (1.0 + min_ratio()):
             return Prediction(cand, "predicted", "unambiguous")
-        # A match too close to the typed text adds little info — treat as
-        # ambiguous-from-info-poverty (don't speculate a near-duplicate).
         return Prediction("", "none", "ambiguous")
     if len(matches) >= 2:
         return Prediction("", "none", "ambiguous")
-    # No pool match → literal fallback IF enabled (else suppress).
     if literal_fallback_enabled() and nq:
         return Prediction(nq, "literal", "literal-fallback")
     return Prediction("", "none", "no-match")
 
 
-# ── single-slot guard + async runner (terms 3, 4) ────────────────────────────
-
-# The slot holds the running asyncio Task for the one in-flight speculation.
-# Held as the loop the serve runs on; a speculation request arriving while the
-# slot is busy is DROPPED (never queued — term 4).
 _slot_task: asyncio.Task | None = None
-_slot_lock = threading.Lock()  # guards slot-task swap from concurrent requests
+_slot_lock = threading.Lock()
 _suppressed_by_guard: dict[str, int] = {
     "warming": 0, "degraded": 0, "cache-off": 0, "shed": 0, "short-input": 0,
 }
@@ -397,7 +359,7 @@ def _guards_ok(*, warm: bool, degraded: bool, shed: bool) -> tuple[bool, str]:
     """Term 3 guards. Returns (ok, reason). ok=False ⇒ the speculation is
     suppressed by guard (counter bumped), never fired."""
     if not is_enabled():
-        return False, "cache-off"  # gate OFF treated as a guard suppression for telemetry
+        return False, "cache-off"
     if not result_cache.is_enabled():
         return False, "cache-off"
     if not warm:
@@ -418,11 +380,6 @@ async def _speculate_search(pred: Prediction, *, limit: int) -> bool:
     speculation failure can never fail anything; it just doesn't prime)."""
     from lib.tools import search_academic_structured
     args = {"query": pred.query, "limit": limit}
-    # Mark this as a speculative execution in the wave-2 serve query log
-    # (term 5). read_through → search_academic_structured → its internal
-    # log_serve_query call already fires; we install the speculative flag via
-    # a contextvar the patched logger reads (mirror of the WI-17 cache-hit
-    # bridge). Non-fatal if the log isn't wired.
     _set_speculative(True)
     try:
         before = result_cache.counters()
@@ -461,18 +418,11 @@ def schedule(*, typed: str, limit: int, warm: bool, degraded: bool, shed: bool,
         return {"status": "suppressed", "reason": greason, "counters": counters()}
     pred = predict(typed, force_literal=force_literal)
     if pred.mode == "none":
-        # short-input / ambiguous / no-match: record under the matching reason
-        # so the bench can split suppression causes, but DON'T bump the
-        # "suppressed_by_guard" counter (that's for the term-3 guards only).
         return {"status": "no-speculation", "reason": pred.reason, "counters": counters()}
-    # Single-slot drop (term 4): a newer speculation while the slot is busy is
-    # DROPPED, not queued.
     if _busy():
         _counters["dropped_busy"] += 1
         return {"status": "dropped-busy", "reason": "slot-busy",
                 "predicted": pred.query, "mode": pred.mode, "counters": counters()}
-    # Fire-and-forget the speculative backend query on this loop. get_event_loop
-    # is fine here — /api/speculate runs on the serve's event loop thread.
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -480,13 +430,13 @@ def schedule(*, typed: str, limit: int, warm: bool, degraded: bool, shed: bool,
         asyncio.set_event_loop(loop)
     global _slot_task
     with _slot_lock:
-        if _busy():  # re-check under the lock (race between two concurrent requests)
+        if _busy():
             _counters["dropped_busy"] += 1
             return {"status": "dropped-busy", "reason": "slot-busy",
                     "predicted": pred.query, "mode": pred.mode, "counters": counters()}
         _slot_task = loop.create_task(_speculate_search(pred, limit=limit))
     _counters["fired"] += 1
-    _counters[pred.mode] += 1  # "predicted" | "literal"
+    _counters[pred.mode] += 1
     return {"status": "fired", "predicted": pred.query, "mode": pred.mode,
             "counters": counters()}
 
@@ -520,14 +470,6 @@ def reset_counters_for_test() -> None:
         _suppressed_by_guard[k] = 0
 
 
-# ── speculative flag → serve query log (term 5) ──────────────────────────────
-# Mirror of the WI-17 cache-hit contextvar bridge: a request-scoped flag the
-# patched serve-query-log logger stamps onto the entry so a speculative
-# execution is marked `speculative:true` and the wave-7 cache_hit field stays
-# uncontaminated (a speculation that's a cache HIT is still a cache_hit=true,
-# just ALSO speculative; a speculation that's a fresh store is cache_hit=false
-# + speculative=true).
-
 import contextvars as _contextvars
 _SPEC_VAR: _contextvars.ContextVar = _contextvars.ContextVar("sfu_speculative", default=None)
 
@@ -553,13 +495,10 @@ def wire_speculative_log() -> None:
     try:
         from lib import serve_query_log as _sql
         if getattr(_sql.QueryLogger.log, "_sfu_spec_wired", False):
-            return  # already patched (idempotent across re-imports)
+            return
         _orig_log = _sql.QueryLogger.log
 
         def _patched_log(self, *, speculative=None, **kw):
-            # Read the request's speculative flag from the contextvar when the
-            # caller didn't pass one explicitly. _orig_log now accepts the
-            # `speculative` kwarg natively (WI-18 schema extension).
             if speculative is None:
                 speculative = _speculative()
             return _orig_log(self, speculative=speculative, **kw)

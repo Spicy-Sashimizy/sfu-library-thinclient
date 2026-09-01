@@ -74,11 +74,10 @@ class TestRetryWithBackoff:
             return "ok"
 
         track_times()
-        # delays should be approximately 0.05, 0.1, 0.2
         if len(times) >= 3:
             delay1 = times[1] - times[0]
             delay2 = times[2] - times[1]
-            assert delay2 >= delay1 * 1.5  # exponential growth
+            assert delay2 >= delay1 * 1.5
 
     def test_rate_limit_429_longer_backoff(self):
         """Verify 429 errors trigger longer backoff."""
@@ -104,7 +103,7 @@ class TestRetryWithBackoff:
 
         with pytest.raises(RateLimitError):
             rate_limited()
-        assert call_count == 2  # initial + 1 retry
+        assert call_count == 2
 
 
 class TestCircuitBreaker:
@@ -162,9 +161,6 @@ class TestCircuitBreaker:
         def always_fail():
             raise ConnectionError("fail")
 
-        # Each logical request records exactly ONE failure (Item 1). With
-        # threshold=2 the breaker opens only after the SECOND failing request,
-        # regardless of how many retries each performs.
         with pytest.raises(ConnectionError):
             always_fail()
         assert cb.failure_count == 1
@@ -174,7 +170,6 @@ class TestCircuitBreaker:
             always_fail()
         assert cb.state == CircuitBreaker.OPEN
 
-        # Third call should now fail immediately with CircuitBreakerOpenError
         with pytest.raises(CircuitBreakerOpenError):
             always_fail()
 
@@ -199,7 +194,6 @@ class TestCircuitBreaker:
         with pytest.raises(ConnectionError):
             always_fail()
 
-        # One logical request → exactly one recorded failure, breaker still CLOSED.
         assert cb.failure_count == 1
         assert cb.state == CircuitBreaker.CLOSED
 

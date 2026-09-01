@@ -90,13 +90,6 @@ import numpy as np
 
 log = logging.getLogger("sharded_seismic_backend")
 
-# ── WI-10 (2026-07-17): shard-failure isolation gate envs ─────────────────────
-# All default OFF → the load loop + _fan_out are byte-identical to the pre-WI-10
-# behavior (a shard that fails to load raises RuntimeError; a search that throws
-# propagates). T1 bit-identity is unaffected by construction: a NON-faulted shard
-# set has zero behavioral change (the boundary only activates on a fault). The
-# fence around the load + search paths is what makes "one shard down, seven serve"
-# a property of the federation, not a happy-path accident.
 
 def _shard_fault_boundary_on() -> bool:
     """ON → a shard that fails to load OR fails to search (throws / times out) is
@@ -177,14 +170,13 @@ class _ShardFaultTracker:
     def on_fail(self, reason: str):
         with self._lock:
             if self.probe_pending:
-                # the re-probe failed → re-arm the cooldown (stay failed)
                 self.opened_at = time.monotonic()
                 self.probe_pending = False
                 self.last_reason = reason
                 return
             self.fails += 1
             self.last_reason = reason
-            self.opened_at = time.monotonic()  # any fail opens the cooldown gate
+            self.opened_at = time.monotonic()
 
 
 def _shard_name(idx, idx_path: str, position: int) -> str:
@@ -192,7 +184,6 @@ def _shard_name(idx, idx_path: str, position: int) -> str:
     Used in `degraded_shards` so the response names WHICH shard is down."""
     base = Path(idx_path).name
     if base:
-        # `shard_N.mmap` / `shard_N.index.seismic` → `shard_N`
         for suf in (".mmap", ".index.seismic"):
             if base.endswith(suf):
                 base = base[: -len(suf)]
@@ -201,18 +192,7 @@ def _shard_name(idx, idx_path: str, position: int) -> str:
     return f"shard_{position}"
 
 
-# Manifests record shard paths relative to the repo root (e.g.
-# `data/seismic_150m/index/plan01/...`); the serving process's cwd is not
-# guaranteed to be the repo root (MCP server launch), so relative paths that
-# don't resolve from cwd are anchored here.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-
-
-# ── shared pure helpers ──────────────────────────────────────────────────────
-# ONE copy each. Pure functions / stateless tools shared by BOTH serving classes.
-# Keeping them here (not duplicated, not on a base class) is the cascade design:
-# the score-merge cannot drift between the two methods, and no instance state
-# crosses the method boundary.
 
 
 class _EncoderShim:
@@ -281,16 +261,11 @@ def _load_manifest(manifest_path: str, load_mode: str = "stock") -> list[str]:
         if isinstance(data, dict):
             if "shards" in data and isinstance(data["shards"], list):
                 records = data["shards"]
-                # A partially-converted manifest must fail loudly, never serve a
-                # partial corpus (guard added 2026-07-06; same contract as the
-                # mmap no-silent-fallback rule).
                 expected = data.get("n_shards")
                 if expected is not None and len(records) != expected:
                     raise RuntimeError(
                         f"manifest {p} declares n_shards={expected} but carries "
                         f"{len(records)} shard records — refusing a partial corpus")
-                # C2.5 records carry BOTH index_path and mmap_dir; mmap_dir is the
-                # authoritative served path (persistent, post /tmp-wipe-safe).
                 if load_mode == "mmap":
                     out = [s.get("mmap_dir") for s in records if s.get("mmap_dir")]
                     if out:
@@ -302,7 +277,6 @@ def _load_manifest(manifest_path: str, load_mode: str = "stock") -> list[str]:
                                 f"records carry mmap_dir (shards {missing} lack it)"
                                 " — refusing to silently serve a partial corpus")
                         return out
-                # G7/stock shape: shard records carry `index_path`.
                 out = [s.get("index_path") for s in records if s.get("index_path")]
                 if out:
                     if len(out) != len(records):
@@ -342,7 +316,6 @@ def _load_one_shard(seismic_module, p: str, load_mode: str):
         if p.endswith(".mmap") and Path(p).is_dir():
             mmap_dir = p
         else:
-            # Stock `X.index.seismic` or stem → sibling `X.mmap/` dir.
             stem = p[:-len(".index.seismic")] if p.endswith(".index.seismic") else p
             mmap_dir = f"{stem}.mmap"
         if not Path(mmap_dir).is_dir():
@@ -354,7 +327,6 @@ def _load_one_shard(seismic_module, p: str, load_mode: str):
         idx = seismic_module.MmapSeismicIndex(mmap_dir)
         log.info("  mmap'd len=%d dim=%d nnz=%d", idx.len, idx.dim, idx.nnz)
         return idx
-    # stock Path-A (owned anon) — default, fine at persona scale.
     fp = p if p.endswith(".index.seismic") else f"{p}.index.seismic"
     if not fp or not Path(fp).exists():
         fp = p if Path(p).exists() else fp
@@ -406,28 +378,19 @@ def _mlock_floor_mode() -> str:
     return "off"
 
 
-# F4-rescoped (2026-08-17): the on-disk layout of `posting_lists.bin`, as the
-# Rust reader walks it (`mmap_io.rs::read_posting_lists`). Per posting list, in
-# order: (manifest key, element size, alignment, role). `read_pod` pads the
-# cursor up to the element alignment; `read_bytes` (values, align 1) does not.
-# NAV = the structural navigation metadata a list scan traverses to LOCATE
-# blocks/summaries (skip pointers + Elias-Fano offsets + DArray inventories);
-# DATA = the postings/summary payload the scorer reads. Verified exact: walking
-# this table over a shard manifest reproduces `posting_lists.bin`'s byte length
-# to the byte (shard0: 1,159,211,728 B, 2026-08-17).
 _PL_LAYOUT = (
-    ("packed_postings_words",        8, 8, "DATA"),  # packed postings (u64)
-    ("block_offsets_len",            8, 8, "NAV"),   # per-block skip offsets
-    ("ef_high_bits_n_words",         8, 8, "NAV"),   # EF offsets: high bits
-    ("inv_block_inventory_len",      8, 8, "NAV"),   # DArray inventories
+    ("packed_postings_words",        8, 8, "DATA"),
+    ("block_offsets_len",            8, 8, "NAV"),
+    ("ef_high_bits_n_words",         8, 8, "NAV"),
+    ("inv_block_inventory_len",      8, 8, "NAV"),
     ("inv_subblock_inventory_len",   2, 2, "NAV"),
     ("inv_overflow_positions_len",   8, 8, "NAV"),
-    ("ef_low_bits_n_words",          8, 8, "NAV"),   # EF offsets: low bits
-    ("summaries_ids_n_words",        8, 8, "DATA"),  # summary component ids
-    ("values_len",                   1, 1, "DATA"),  # summary u8 values
-    ("minimums_len",                 4, 4, "DATA"),  # per-summary f32
+    ("ef_low_bits_n_words",          8, 8, "NAV"),
+    ("summaries_ids_n_words",        8, 8, "DATA"),
+    ("values_len",                   1, 1, "DATA"),
+    ("minimums_len",                 4, 4, "DATA"),
     ("quants_len",                   4, 4, "DATA"),
-    ("component_ids_len",            2, 2, "DATA"),  # optional (has_component_ids)
+    ("component_ids_len",            2, 2, "DATA"),
 )
 
 
@@ -538,7 +501,7 @@ def _memavailable_gb() -> float:
         with open("/proc/meminfo") as f:
             for ln in f:
                 if ln.startswith("MemAvailable:"):
-                    return int(ln.split()[1]) / (1024 ** 2)  # KiB → GB
+                    return int(ln.split()[1]) / (1024 ** 2)
     except OSError:
         pass
     return float("inf")
@@ -613,9 +576,6 @@ def _merge_topk(per_shard_results: list, top_k: int) -> list[tuple[str, float]]:
     return out
 
 
-# ── the two distinct serving classes ─────────────────────────────────────────
-
-
 class _SeismicBackendBase:
     """NOT a serving method — the shared CONSTRUCTION + thin-wrapper shell for
     the two concrete serving classes. This is a private base that holds only
@@ -629,7 +589,7 @@ class _SeismicBackendBase:
     class, so a subclass cannot silently violate a merge invariant it doesn't
     own. The shared merge is the pure module fn `_merge_topk`, not a method here.)"""
 
-    federation: str = ""          # set by each concrete subclass
+    federation: str = ""
 
     def __init__(self, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fused",
                  load_mode: str = "stock"):
@@ -639,33 +599,18 @@ class _SeismicBackendBase:
             raise ValueError(f"load_mode must be 'stock' or 'mmap', got {load_mode!r}")
         self._seismic = seismic
         self._string_dtype = seismic.get_seismic_string()
-        self._backend_proto = SeismicBackend  # for encode_query (shared encoder)
+        self._backend_proto = SeismicBackend
         self.splade_model_path = splade_model_path
         self.load_mode = load_mode
-        # Cheap shared encoder object just for encode_query (its __init__ loads a
-        # SEISMIC index we DON'T want); so we don't instantiate it — we borrow the
-        # method via a thin stand-in below.
         self._encoder = _EncoderShim(splade_model_path)
         self.shards = []
-        # F3 (2026-07-14): record each shard's mmap_dir alongside idx so the
-        # hot-set sidecar loader can find `<shard>.mmap/hotset_*.json` without
-        # re-deriving the path (and without poking attributes onto the pyo3
-        # index object, which doesn't accept dynamic attrs).
         self._shard_mmap_dirs = []
-        # WI-10 (2026-07-17): per-shard fault trackers + the manifest paths (for
-        # naming degraded shards). When the fault boundary is OFF these are
-        # unused (the load loop raises on a bad shard before reaching them).
         self._shard_faults: list[_ShardFaultTracker] = []
         self._shard_names: list[str] = []
         self._shard_paths = list(index_paths)
         self._fault_boundary = _shard_fault_boundary_on()
         for i, p in enumerate(index_paths):
             if self._fault_boundary:
-                # LOAD BOUNDARY: a shard that fails to load is MARKED FAILED + a
-                # None placeholder takes its slot (a faulted shard's search is
-                # short-circuited to []). The federation still loads the other 7.
-                # This is the owner-ask property: one shard's bad file does NOT
-                # stop the other seven from serving.
                 tr = _ShardFaultTracker()
                 self._shard_faults.append(tr)
                 self._shard_names.append(_shard_name(None, p, i))
@@ -677,73 +622,29 @@ class _SeismicBackendBase:
                     log.error("WI-10: shard %s FAILED to load (%s) — marking down, "
                               "federation continues with the surviving shards",
                               self._shard_names[-1], tr.last_reason)
-                    self.shards.append(None)  # placeholder; search short-circuits it
+                    self.shards.append(None)
                 self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
             else:
                 idx = _load_one_shard(self._seismic, p, self.load_mode)
                 self.shards.append(idx)
                 self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
 
-        # Q9 (2026-07-10): optional STARTUP FLOOR PREFAULT. At load, a foreground
-        # touch of each shard's small structural slabs (posting-lists + doc-mapping
-        # + forward_offsets, the ~1.52 GB / ~5,000-page constant floor Fix #4
-        # identified) so the first real query pays only forward-data faults. This is
-        # ONCE-AT-LOAD, NOT per-query — the distinction from the REFUTED per-range
-        # query-time WILLNEED (doc 10 Fix #3, which the kernel ignored + added
-        # syscall overhead); pre-register the distinction here (doc 12 §3 Q9).
-        # Uses the existing pyo3 `prefault_floor` hook (shipped E7 Fix #4, the
-        # slab-granularity MADV_WILLNEED|SEQUENTIAL + page-stride read). Env-gated
-        # OFF by default so the pre-registered footing is reproducible; ON for the
-        # Q9 cold-cell A/B. Composes with Q7 (a hybrid + prefault backend serves the
-        # floor warm from query 1 while the flip handles the forward-data regime).
         self._floor_prefaulted = False
         if load_mode == "mmap" and os.environ.get("SFU_SEISMIC_PREFLOOR_AT_LOAD", "0") == "1":
             self.prefault_floor(include_forward_offsets=True)
 
-        # ── F2/F3/F4 disk-streaming pin tier (2026-07-14) ───────────────────
-        # All residency-only: mlock pages into RAM / MADV_DONTNEED the rest;
-        # NONE touch scoring or record decode → T1 bit-identical by construction.
-        # Every gate env-gated OFF by default (=0 → today's behavior, byte-
-        # identical — the kill-switch discipline, doc 03 §5). The .so hooks
-        # (mlock_floor, mlock_ranges, release_pages_except) degrade to no-op if
-        # mlock is denied (no CAP_IPC_LOCK) so an unprivileged process never
-        # crashes, just pins 0. F4 floor-mlock + F3 hot-set pin are applied at
-        # LOAD (once), not per-query.
-        # ORDERING (2026-07-14): mlock wiring the floor + hot extents (~2.4 GB)
-        # BEFORE the SPLADE ONNX session loads triggers an onnxruntime .so dlopen
-        # failure ("failed to map segment from shared object") — the wired pages
-        # reduce the contiguous virtual span the large ORT .so needs. So when
-        # pinning is ON, eager-load the SPLADE model FIRST (it lazy-loads on
-        # first search otherwise); when pinning is OFF, keep the lazy-load
-        # behavior (no behavioral change for the default path).
         self._floor_mlocked = False
         self._floor_mlocked_bytes = 0
         self._hotset_pinned_gb = 0.0
-        # F6 prefault (PREFLOOR_HOTSET) triggers the same encoder interaction as
-        # the pin tier: the .so hook runs before the first lazy encode, and the
-        # ORT/tokenizer load fails afterwards (measured 2026-07-14: every query
-        # of the F6 bench raised ImportError and scored 0.0 ms — the invalid
-        # "cold p95 30 ms" cells). Eager-load for it too.
         _floor_mode = _mlock_floor_mode()
         _pin_on = (load_mode == "mmap" and (
             _floor_mode != "off"
             or os.environ.get("SFU_SEISMIC_PREFLOOR_HOTSET", "0") == "1"
             or float(os.environ.get("SFU_SEISMIC_PIN_BUDGET_GB", "0") or "0") > 0))
         if _pin_on:
-            # Eager-load + warm-run the SPLADE ONNX session/tokenizer BEFORE
-            # mlock: (1) the onnxruntime .so must map its large segments into a
-            # still-un_locked address space (post-mlock dlopen fails: "failed to
-            # map segment"); (2) the HF fast tokenizer's rayon thread pool
-            # initializes lazily on first encode_batch, and mlocking ~2.4 GB
-            # first starves `clone()` of thread-stack VM → ThreadPoolBuildError
-            # (WouldBlock). Running one real encode before mlock inits both.
             from lib.opensearch_retriever import encode_splade
             encode_splade("initialize thread pools", self.splade_model_path)
         if load_mode == "mmap":
-            # F4 — floor mlock. `SFU_SEISMIC_MLOCK_FLOOR=1` is the RESCOPED
-            # structural navigation floor (2026-08-17, budget-capped ~20 MB/
-            # shard); `=full` reproduces the 2026-07-14 over-scoped whole-slab
-            # pin (~13.4 GB across 8 shards — measurement reproduction only).
             if _floor_mode == "floor":
                 self.mlock_structural_floor()
             elif _floor_mode == "legacy":
@@ -751,7 +652,6 @@ class _SeismicBackendBase:
                             "whole-slab floor pin (~1.67 GB/shard); this is the "
                             "2026-07-14 reproduction path, NOT a min-RAM setting")
                 self.mlock_floor(include_forward_offsets=True)
-            # F3 — hot-set pin tier. Gated by SFU_SEISMIC_PIN_BUDGET_GB (>0).
             budget_env = os.environ.get("SFU_SEISMIC_PIN_BUDGET_GB", "0")
             try:
                 pin_budget_gb = float(budget_env)
@@ -761,13 +661,6 @@ class _SeismicBackendBase:
                 pin_budget_gb = 0.0
             if pin_budget_gb > 0:
                 self.load_hotset_and_pin(pin_budget_gb)
-            # F6 — cold-start prefault-hotset-at-load (Phase 6): PREFFAULT (not
-            # mlock) the F2 sidecar's hot extents into the page cache so the
-            # first queries hit a pre-warmed hot set (cold-p95 lever); pages stay
-            # kernel-reclaimable (no hard RAM commitment). Gated by
-            # SFU_SEISMIC_PREFLOOR_HOTSET=1; default off (=0 byte-identical). The
-            # hotset budget for prefault = the SFU_SEISMIC_PIN_BUDGET_GB dial if
-            # set (reuse the same sidecar), else a default 1.6 GB (hot-50).
             if os.environ.get("SFU_SEISMIC_PREFLOOR_HOTSET", "0") == "1":
                 pf_budget = pin_budget_gb if pin_budget_gb > 0 else 1.6
                 self.prefault_hotset(pf_budget)
@@ -846,7 +739,6 @@ class _SeismicBackendBase:
             except ValueError:
                 log.warning("SFU_SEISMIC_MLOCK_FLOOR_MB=%r not numeric — using 160", raw)
                 budget_mb = 160.0
-        # no-OOM guard (same discipline as the F3 pin budget).
         headroom_gb = 1.0
         avail_gb = _memavailable_gb()
         cap_mb = max(0.0, (avail_gb - headroom_gb) * 1000.0)
@@ -890,7 +782,6 @@ class _SeismicBackendBase:
                             "process (load_mode!=mmap or non-Linux) — shard skipped",
                             pl_path)
                 continue
-            # Largest nav runs first, page-aligned, until the per-shard budget.
             take: list[tuple[int, int]] = []
             acc = 0
             for off, length in sorted(runs, key=lambda r: -r[1]):
@@ -901,8 +792,6 @@ class _SeismicBackendBase:
                     break
                 take.append((pg_start, nbytes))
                 acc += nbytes
-            # Merge page ranges that touch/overlap (two adjacent lists can share
-            # a page), then honor the VMA-split cap by dropping the smallest.
             take.sort()
             merged: list[list[int]] = []
             for start, length in take:
@@ -975,16 +864,14 @@ class _SeismicBackendBase:
         mlock denied — the pin tier degrades to no-op, never a crash)."""
         import json as _json
         import time
-        # The F2 sidecar budget-name conventions the F1 generator emits.
         budget_aliases = {
             1.6: "hot50_1.6gb", 4.2: "hot80_4.2gb",
         }
         if budget_name is None:
             budget_name = budget_aliases.get(round(budget_gb, 1), "full_touched")
-        # The no-OOM budget check: never pin past MemAvailable − floor − headroom.
         avail_gb = _memavailable_gb()
-        floor_gb = 1.5      # structural floor (measured, Fix #4/Q9)
-        headroom_gb = 1.0   # anon serving floor + encoder + safety
+        floor_gb = 1.5
+        headroom_gb = 1.0
         cap_gb = max(0.0, avail_gb - floor_gb - headroom_gb)
         effective_budget_gb = min(budget_gb, cap_gb)
         log.info("mlock_ranges: budget %.2f GB (requested %.2f); MemAvailable %.1f GB "
@@ -1001,13 +888,7 @@ class _SeismicBackendBase:
         t0 = time.perf_counter()
         per_shard_budget_bytes = int(effective_budget_gb * 1e9 / max(1, len(self.shards)))
         total_bytes = 0
-        # TWO-PASS + COALESCE (2026-07-14): all sidecar/manifest reads BEFORE
-        # the first mlock, and ≤2048 locked ranges per shard — per-extent mlock
-        # (~33k/shard) split VMAs to vm.max_map_count saturation exactly like
-        # the F6 prefault did (shard4 pinned 0.00, shard5 manifest read raised
-        # at line 566 — measured in the R1 pin-ON 8G/6G cells). See
-        # _coalesce_extents.
-        plan = []  # (shard_name, mlock_fn, take)
+        plan = []
         for idx, shard_dir in zip(self.shards, self._shard_mmap_dirs):
             mlock_fn = getattr(idx, "mlock_ranges", None)
             if mlock_fn is None:
@@ -1026,7 +907,6 @@ class _SeismicBackendBase:
                 log.warning("mlock_ranges: %s schema %r != seismic.hotset.v1 — skipped",
                             sidecar_path, sc.get("schema"))
                 continue
-            # F2 version-key check — REFUSE on mismatch (fail loud, not pin garbage).
             vk = sc.get("version_keys", {})
             shard_man_path = Path(shard_dir) / "manifest.json"
             shard_man = _json.loads(shard_man_path.read_text())
@@ -1037,7 +917,6 @@ class _SeismicBackendBase:
                           "re-run f1_hotset_generator.py). Pin tier OFF for this shard.",
                           sidecar_path, miss)
                 continue
-            # Take extents (sorted by page_start) until the per-shard byte budget.
             extents = sc.get("extents", [])
             acc = 0
             take = []
@@ -1048,9 +927,6 @@ class _SeismicBackendBase:
                 take.append((page_start, page_len))
                 acc += nbytes
             take = _coalesce_extents(take)
-            # Gap fill can overshoot the byte budget — trim tail extents until
-            # within 10% (locked bytes are a hard commitment; keep the no-OOM
-            # promise honest).
             while take and sum(ln for _, ln in take) * 4096 > per_shard_budget_bytes * 1.1:
                 take = take[:-1]
             plan.append((Path(shard_dir).name, mlock_fn, take))
@@ -1084,13 +960,7 @@ class _SeismicBackendBase:
         t0 = time.perf_counter()
         per_shard_budget_bytes = int(budget_gb * 1e9 / max(1, len(self.shards)))
         total_bytes = 0
-        # TWO-PASS (2026-07-14): read+validate every sidecar/manifest BEFORE the
-        # first prefault_ranges call. The WILLNEED flood over ~33k extents/shard
-        # creates transient page-cache pressure (WSL2/drvfs) under which even a
-        # 21 MB manifest read_text() can raise MemoryError — measured twice
-        # (shard5 / shard7 crashes, 2026-07-14). All small allocations first,
-        # then the flood.
-        plan = []  # (shard_name, pf_fn, take, acc)
+        plan = []
         for idx, shard_dir in zip(self.shards, self._shard_mmap_dirs):
             pf_fn = getattr(idx, "prefault_ranges", None)
             if pf_fn is None or not shard_dir:
@@ -1103,7 +973,6 @@ class _SeismicBackendBase:
             sc = _json.loads(sidecar_path.read_text())
             if sc.get("schema") != "seismic.hotset.v1":
                 continue
-            # Same F2 version-key refuse-on-mismatch contract as the pin loader.
             shard_man = _json.loads((Path(shard_dir) / "manifest.json").read_text())
             miss = _hotset_version_mismatch(sc.get("version_keys", {}), shard_man)
             if miss:
@@ -1119,15 +988,9 @@ class _SeismicBackendBase:
                     break
                 take.append((page_start, page_len))
                 acc += nbytes
-            # VMA-split cap — see _coalesce_extents (module-level; shared with
-            # the F3 pin loader, which hit the same saturation 2026-07-14).
             take = _coalesce_extents(take)
             plan.append((Path(shard_dir).name, pf_fn, take, acc))
         for shard_name, pf_fn, take, acc in plan:
-            # NOTE: prefault_ranges returns touch_bytes' anti-DCE CHECKSUM, not
-            # a byte count (mmap_io.rs:1815 → touch_bytes:1147) — the original
-            # F6 run logged "touched 0.00 GB" from it. Report the submitted
-            # extent bytes (`acc`) instead; the checksum is discarded.
             pf_fn(take)
             total_bytes += acc
             log.info("prefault_hotset: %s prefaulted %.2f GB (%d extents)",
@@ -1158,7 +1021,6 @@ class _SeismicBackendBase:
         return cls(index_paths, splade_model_path=splade_model_path, load_mode=load_mode)
 
     def encode_query(self, query: str) -> dict[str, float]:
-        # Split out so the encoder path is testable / matchable independently.
         from lib.thinclient.seismic_backend import SPLADE_QUERY_TERMS
         sparse = self._encoder.encode_splade(query)
         if not sparse:
@@ -1212,11 +1074,7 @@ class _SeismicBackendBase:
         if not self._fault_boundary:
             per_shard = self._fan_out(_search_one)
             return _merge_topk(per_shard, top_k)
-        # WI-10 guarded path: `_fan_out` iterates self.shards; a faulted shard's
-        # slot is None (failed at load) or will throw at search → the guard turns
-        # either into a [] result + a recorded fault, keeping the federation alive.
         per_shard = self._fan_out(self._guarded_search_one(_search_one))
-        # tolerate the per-shard None placeholders from faulted-at-load shards
         return _merge_topk([r if r is not None else [] for r in per_shard], top_k)
 
     def _guarded_search_one(self, _search_one):
@@ -1229,22 +1087,16 @@ class _SeismicBackendBase:
         timeout = _shard_search_timeout_s()
 
         def _guarded(idx):
-            # the parallel _fan_out maps over self.shards; pair idx→tracker by
-            # position. (Both _fan_outs iterate self.shards in order, so the i-th
-            # call corresponds to the i-th tracker.)
             pos = id(idx)
-            # find the tracker for this shard index (None shards: tracker failed
-            # at load → short-circuit). Linear scan is fine (≤8 shards/query).
             tr = None
             for i, s in enumerate(self.shards):
                 if i < len(self._shard_faults) and s is idx:
                     tr = self._shard_faults[i]
                     break
             if idx is None or tr is None:
-                return []  # faulted at load — no contribution
+                return []
             if tr.is_failed():
-                return []  # still in reprobe cooldown — skip
-            # run the search; a throw OR a timeout → [] + recorded fault
+                return []
             try:
                 fut = self._probe_executor.submit(_search_one, idx)
                 res = fut.result(timeout=timeout)
@@ -1358,8 +1210,6 @@ class ParallelSeismicBackend(_SeismicBackendBase):
                  load_mode: str = "stock"):
         super().__init__(index_paths, splade_model_path=splade_model_path,
                          load_mode=load_mode)
-        # max(1, …): a zero-shard backend must stay constructible (the selector
-        # contract tests build one); ThreadPoolExecutor rejects max_workers=0.
         self._executor = cf.ThreadPoolExecutor(
             max_workers=max(1, len(self.shards)),
             thread_name_prefix="seismic-shard")
@@ -1399,12 +1249,6 @@ class SequentialSeismicBackend(_SeismicBackendBase):
         out = []
         for idx in self.shards:
             out.append(_search_one(idx))
-            # Mechanism (B): MADV_DONTNEED each shard's file-backed slabs right after
-            # its search so its resident pages are evicted before the next shard is
-            # faulted in → peak resident ~= 1 shard, hard-guaranteed (not kernel-
-            # reclaim timing). Guarded so stock shards / an older .so without the
-            # pyo3 hook degrade to a no-op + debug log, never a raise (the shard is
-            # still searched correctly; only the eager eviction is skipped).
             release = getattr(idx, "release_pages", None)
             if release is not None:
                 release()
@@ -1480,13 +1324,10 @@ class HybridSeismicBackend(_SeismicBackendBase):
                  load_mode: str = "stock"):
         super().__init__(index_paths, splade_model_path=splade_model_path,
                          load_mode=load_mode)
-        # max(1, …): a zero-shard backend must stay constructible (selector
-        # contract); ThreadPoolExecutor rejects max_workers=0.
         self._executor = cf.ThreadPoolExecutor(
             max_workers=max(1, len(self.shards)),
             thread_name_prefix="seismic-shard")
 
-        # ── flip state (all pre-registered defaults; env-overridable for A/B) ──
         env = os.environ.get
         self._signal = env("SFU_SEISMIC_HYBRID_SIGNAL", "adaptive").strip().lower()
         if self._signal not in ("adaptive", "count"):
@@ -1500,18 +1341,14 @@ class HybridSeismicBackend(_SeismicBackendBase):
         self._force_parallel = env("SFU_SEISMIC_HYBRID_DISABLE", "0") == "1"
 
         self._query_count = 0
-        self._flip_threshold = None          # derived from cold queries
-        self._cold_traverse_samples = []      # the warmup samples that seed it
+        self._flip_threshold = None
+        self._cold_traverse_samples = []
         self._consecutive_warm = 0
-        self._flipped = self._force_parallel  # disabled => starts flipped
-        self._lock = threading.Lock()         # guard the flip against torn reads
+        self._flipped = self._force_parallel
+        self._lock = threading.Lock()
         if self._force_parallel:
             log.info("hybrid: DISABLED (force_parallel from query 1)")
 
-    # ── the two fan-outs (identical to the two standalone classes) ────────────
-    # These are the SAME logic as Parallel/Sequential._fan_out, kept inline so
-    # the hybrid is self-contained (cascade: it owns its flip, the two concrete
-    # classes own theirs — no cross-method mutable state).
 
     def _fan_out_parallel(self, _search_one) -> list:
         return list(self._executor.map(_search_one, self.shards))
@@ -1537,14 +1374,10 @@ class HybridSeismicBackend(_SeismicBackendBase):
             return
         self._query_count += 1
 
-        # ── Signal A (adaptive): seed the threshold from the first cold queries.
         if (self._signal == "adaptive"
                 and len(self._cold_traverse_samples) < self._warmup_for_threshold):
             self._cold_traverse_samples.append(traverse_ms)
             if len(self._cold_traverse_samples) == self._warmup_for_threshold:
-                # Geometric mean of the cold samples × warm_frac = the warm bar.
-                # All samples are > 0 (a real query does nonzero traversal);
-                # guard a degenerate zero anyway so the threshold can't be 0.
                 product = 1.0
                 for s in self._cold_traverse_samples:
                     product *= max(s, 1e-6)
@@ -1556,7 +1389,6 @@ class HybridSeismicBackend(_SeismicBackendBase):
                          cold, self._warm_frac, self._flip_threshold,
                          self._consec_needed)
 
-        # ── Signal A: count consecutive warm queries below the threshold.
         if self._signal == "adaptive" and self._flip_threshold is not None:
             if traverse_ms < self._flip_threshold:
                 self._consecutive_warm += 1
@@ -1567,9 +1399,8 @@ class HybridSeismicBackend(_SeismicBackendBase):
                              self._query_count, self._consecutive_warm,
                              self._flip_threshold)
             else:
-                self._consecutive_warm = 0   # a cold query resets the streak
+                self._consecutive_warm = 0
 
-        # ── Signal B (the dumb control / backstop): flip after N queries.
         if self._query_count >= self._flip_after_n and not self._flipped:
             self._flipped = True
             log.info("hybrid(count-backstop): FLIP seq→par at query %d "
@@ -1578,11 +1409,6 @@ class HybridSeismicBackend(_SeismicBackendBase):
     def _fan_out(self, _search_one) -> list:
         if self._force_parallel:
             return self._fan_out_parallel(_search_one)
-        # Peek the current mode under the lock; the flip itself is decided in
-        # _maybe_flip (called by search_with_timing, which has the traverse_ms).
-        # A concurrent caller that arrives mid-flip simply sees whichever mode
-        # is current — both return the bit-identical merged top-k, so the flip
-        # is safe to observe torn.
         with self._lock:
             use_parallel = self._flipped
         if use_parallel:
@@ -1638,9 +1464,6 @@ class HybridSeismicBackend(_SeismicBackendBase):
         return out, encode_ms, traverse_ms
 
 
-# ── back-compat selector ─────────────────────────────────────────────────────
-
-
 class ShardedSeismicBackend(_SeismicBackendBase):
     """Back-compat selector — NOT a serving method. `__new__` returns the matching
     concrete serving class (`ParallelSeismicBackend` default |
@@ -1660,7 +1483,7 @@ class ShardedSeismicBackend(_SeismicBackendBase):
     their bit-identical G6/overlap results depend on the default staying `parallel`.
     """
 
-    federation = "parallel"   # selector default; the instance's real class sets its own
+    federation = "parallel"
 
     def __new__(cls, index_paths: list[str], splade_model_path: str = "models/splade_onnx_fused",
                 load_mode: str = "stock", federation: str = "parallel"):

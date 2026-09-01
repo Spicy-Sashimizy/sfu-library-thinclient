@@ -113,11 +113,6 @@ def rrf(lists: list[list[str]], k: int = 60, top: int = TOP_K) -> list[str]:
     return sorted(scores, key=lambda d: scores[d], reverse=True)[:top]
 
 
-# ── memory guard ───────────────────────────────────────────────────────────
-# The 150M build's OOM kills left "no traceback, no OOM event" (THIN_CLIENT_
-# SWAP.md). Sample MemAvailable and abort cleanly *before* the kernel killer
-# fires, flushing whatever was recorded so the run is resumable/diagnosable.
-
 def mem_available_gb() -> float | None:
     try:
         for line in Path("/proc/meminfo").read_text().splitlines():
@@ -140,8 +135,6 @@ def guard_memory(floor_gb: float, on_abort) -> None:
 def _ts_default(prefix: str) -> Path:
     return REPO_ROOT / f"data/eval_results/{prefix}_{time.strftime('%Y%m%d_%H%M')}.json"
 
-
-# ── phase A / B: record one engine's ranked id lists + latency ───────────────
 
 def _record(engine: str, retriever, queries: list[dict], floor_gb: float,
             out_path: Path, config: dict) -> None:
@@ -175,8 +168,6 @@ def _record(engine: str, retriever, queries: list[dict], floor_gb: float,
 
 
 def cmd_record_tc(args) -> None:
-    # The dense warm cache holds an up-to-500k-doc RAM delta; shed it for the
-    # eval unless the caller explicitly asked to keep it on.
     os.environ.setdefault("SFU_DENSE_WARMCACHE", "0")
     from lib.thinclient.retriever import ThinClientRetriever
     tc = ThinClientRetriever(index_root=args.index_root, remote_abstracts=False)
@@ -197,8 +188,6 @@ def cmd_record_os(args) -> None:
     _record("os", baseline, load_queries(args.queries), args.mem_floor_gb, out,
             {"baseline": f"{args.baseline_url}/{args.baseline_index}", "top_k": TOP_K})
 
-
-# ── phase C: offline join of the two records into the parity summary ─────────
 
 def _summarize(tc_rows: list[dict], os_rows: list[dict] | None,
                judge: dict, config: dict) -> dict:
@@ -283,16 +272,7 @@ def cmd_compare(args) -> None:
     logger.info("wrote %s", out_path)
 
 
-# ── legacy single-process mode (may OOM at 150M) ─────────────────────────────
-
 def cmd_combined(args) -> None:
-    # combined loads BOTH 150M engines in one process. The thin-client SPLADE
-    # leg alone is ~211 GB RESIDENT (bmp.Searcher loads each *.bmp into anon RAM
-    # at ~3.07x on disk; NOT mmap — see THIN_CLIENT_SWAP.md), so this OOMs and can
-    # take down the whole Docker/WSL2 VM on the 24 GB host — refuse by default
-    # unless the caller explicitly opts into that risk (or runs thin-client-only
-    # via --no-baseline). For 150M numbers on a small host use the section-shard-
-    # wave eval: scripts/eval_parity_section_waves.py run.
     if not args.no_baseline and not args.force_oom_risk:
         raise SystemExit(
             "REFUSED: combined mode loads BOTH 150M engines in one process and "

@@ -1,23 +1,4 @@
 #!/usr/bin/env bash
-# WI-12 (deployprep wave 3, 2026-07-17) — the repeatable reliability soak job.
-# THE PRE-LAUNCH RELIABILITY GATE. STAGING ONLY (127.0.0.1, no deploy, no spend).
-#
-# One runnable job the owner can run before any future demo launch: a ~40-min
-# soak at modest QPS with a SCHEDULED fault timeline injected mid-soak — a
-# WI-9 leg fault, a WI-11 overload burst (a WI-10 shard fault is the direct
-# Python proof wi10_shard_isolation.py, run separately since it reloads shards),
-# and a WI-3/6 watchdog SIGKILL/restart — emitting a single timeline report
-# JSON + markdown summary:
-#   availability %, error budget, per-phase p50/p95, every degradation/recovery
-#   event with timestamps, PASS/FAIL vs pre-registered bars.
-#
-# Bars (pre-registered in 11_EXPERIMENT_BACKLOG.md §WI-12):
-#   (a) availability >= 95% (5xx + timeouts <= 5% of accepted)
-#   (b) every injected fault produces a degradation event + a recovery event (both ts recorded)
-#   (c) worst-phase p95 <= ~5× the warm baseline (no cascade collapse)
-#
-# Usage: bash scripts/demo_dependability/reliability_soak.sh
-# Env: SFU_DEMO_SOAK_QPS (default 0.3), SFU_DEMO_SOAK_MIN (default 40)
 set -u
 cd /workspaces/sfu-library-thinclient
 
@@ -33,12 +14,6 @@ rm -f data/eval_results/_deployprep_watchdog_report.json
 
 echo "=== WI-12 reliability soak ($(date -u +%H:%M:%SZ)) port ${PORT} — ${SOAK_MIN}min @ ${QPS}qps ==="
 
-# Launch the serve under the watchdog WITH all the WI mechanisms ON:
-#  WI-6 warmup (so /health warm=true; recovery = warm, not just up)
-#  WI-9 leg breaker (leg faults degrade instead of 5xx)
-#  WI-11 overload gate (clean 429 past capacity)
-#  WI-10 fault boundary is a property of the SEISMIC backend loaded by the serve,
-#    so it is ON here too (a real shard fault during the soak would isolate).
 SFU_DEMO_WATCHDOG=1 SFU_DEMO_STAGING_PORT=$PORT SFU_SKIP_BMP=1 \
   SFU_DEMO_WARMUP=1 SFU_DEMO_WARMUP_N=24 SFU_DEMO_WARMUP_TOPK=10 \
   SFU_SEISMIC_PREFLOOR_HOTSET=1 \
@@ -53,7 +28,6 @@ SFU_DEMO_WATCHDOG=1 SFU_DEMO_STAGING_PORT=$PORT SFU_SKIP_BMP=1 \
 WD_PID=$!
 echo "watchdog pid $WD_PID (log $WLOG)"
 
-# Wait for warm=true
 READY=0
 for i in $(seq 1 600); do
   W=$(curl -s -m 5 http://127.0.0.1:$PORT/health 2>/dev/null \
@@ -71,10 +45,6 @@ SERVE_PID=$(pgrep -f "staging_serve.py" | head -1)
 echo "staging_serve pid: ${SERVE_PID:-NONE}"
 SOAK_START=$(date -u +%s)
 
-# A continuous soak driver: fires /search at ~QPS for the duration, recording
-# per-request ok/ms/HTTP-status into a JSONL so the timeline can bin p50/p95 +
-# availability per phase. Runs in the background; the fault timeline is injected
-# by the orchestrator below against the running serve.
 .venv/bin/python3 - <<PY &
 import json, time, urllib.request, os, sys, random
 PORT = $PORT
@@ -134,9 +104,6 @@ PY
 SOAK_DRV=$!
 echo "soak driver pid $SOAK_DRV"
 
-# ── the SCHEDULED FAULT TIMELINE (injected against the running warm serve) ────
-# Each phase timestamped; the orchestrator records the injected fault + the
-# observed recovery (degraded flag clearing) into the timeline JSON.
 .venv/bin/python3 - <<PY
 import json, time, urllib.request, os, signal, subprocess
 PORT = $PORT
@@ -216,14 +183,12 @@ PY
 ORCH_EXIT=$?
 echo "orchestrator exit=$ORCH_EXIT"
 
-# wait for the soak driver to finish its window
 wait $SOAK_DRV 2>/dev/null
 SOAK_END=$(date -u +%s)
 SERVE_PID_NEW=$(pgrep -f "staging_serve.py" | head -1)
 kill $WD_PID 2>/dev/null; wait $WD_PID 2>/dev/null
 echo "soak wall: $(( SOAK_END - SOAK_START ))s"
 
-# ── build the single timeline report JSON + markdown ─────────────────────────
 .venv/bin/python3 - <<PY
 import json, time, statistics
 TS="$TS"

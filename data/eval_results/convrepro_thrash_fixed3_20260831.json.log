@@ -1,0 +1,10 @@
+[cell thrash] preflight: mode=fixed3 scale=1.0 cap=3.75g R=5120M L=1792M early_sort=none
+[cell thrash] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=4026531840
+[cell thrash] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell thrash] post-evict residency: R=0.0000% L=0.0000%
+[cell thrash] load phase: sequential read of L then R (once)
+[cell thrash] load done: L=0.291s R=0.869s | residency after load R=74.8828% L=0.0000%
+[cell thrash] pass 1: wall=94.2231s majflt=571569 ms/fault=0.164850 residency R=74.4666%
+[cell thrash] pass 2: wall=97.7316s majflt=608080 ms/fault=0.160722 residency R=74.3607%
+[cell thrash] pass 3: wall=110.5802s majflt=702022 ms/fault=0.157517 residency R=74.3566%
+[cell thrash] cell complete: 3 passes, converged=false, swap_confounded=false

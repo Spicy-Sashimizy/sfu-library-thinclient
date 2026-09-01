@@ -68,7 +68,11 @@ BM25. `SeismicIndexLV` must be selected up front from a counted vocabulary
 
 `03_fidelity_gate.py`, variant A, 120 SFU eval queries, production serving
 params (`query_cut=10`, `heap_factor=0.8`).
-Result: `data/eval_results/bm25_seismic_spike_fidelity_idf_in_doc_20260801_2157.json`
+Result: `data/eval_results/bm25_seismic_spike_fidelity_idf_in_doc_20260801_2221.json`
+*(pointer corrected 2026-09-01: the originally cited `…_2157.json` is one of the
+retired `.INVALID` runs described in the harness-bug note below; the table's
+numbers are from the corrected rerun, which also exists as an identical
+`…_2233.json` repeat.)*
 
 | metric vs **exact** BM25F (brute force) | SEISMIC | tantivy |
 |---|---|---|

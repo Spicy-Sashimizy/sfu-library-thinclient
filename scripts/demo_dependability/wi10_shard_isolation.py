@@ -87,8 +87,6 @@ def _make_truncated_fixture() -> str:
     if fx.exists():
         shutil.rmtree(fx)
     fx.mkdir()
-    # copy a real shard's manifest.json (so the version-key check has something
-    # to read) but a TRUNCATED data blob (16 bytes of garbage, not a real index)
     src_manifest = REPO / "data" / "seismic_150m" / "index" / "plan01" \
         / "global_shard0of8.dotvbyte.e5.v2.mmap" / "manifest.json"
     if src_manifest.exists():
@@ -142,12 +140,10 @@ class _FaultyShard:
     attributed to the right shard's `degraded_shards` name."""
     def __init__(self, fault_fn, real_shard):
         self._fault_fn = fault_fn
-        self._real = real_shard  # kept so attributes other than .search proxy
+        self._real = real_shard
     def search(self, *a, **k):
         return self._fault_fn(*a, **k)
     def __getattr__(self, name):
-        # proxy any other attribute (release_pages, prefault_floor, len, dim, ...)
-        # to the real shard so the sequential _fan_out's release_pages call works.
         return getattr(self._real, name)
 
 
@@ -162,17 +158,13 @@ def _search_fault_cell(name, federation, build_fn, fault_idx, queries,
     print(f"\n=== {name} ({federation}) — {desc} ===", flush=True)
     backend = _build_backend(federation, boundary_on=True)
     shard_name = backend._shard_names[fault_idx]
-    # warm the backend (one query through all shards) so the fault latency isn't
-    # confounded by cold load
     _run_queries(backend, queries[:2], top_k=10)
-    # --- DURING: swap the one shard for a _FaultyShard ---
     real_shard = backend.shards[fault_idx]
     backend.shards[fault_idx] = _FaultyShard(build_fn(fault_idx), real_shard)
     fast_cooldown = 1.0
     os.environ["SFU_SEISMIC_SHARD_REPROBE_S"] = str(fast_cooldown)
     during_res, during_throws, during_p50 = _run_queries(backend, queries, top_k=10)
     during_degraded = backend.degraded_shards()
-    # recall retention vs the full-8-shard baseline (same federation, OFF)
     overlaps = [_overlap_at_k(baseline_results[i], during_res[i], 10)
                 for i in range(min(len(baseline_results), len(during_res)))]
     mean_overlap = sum(overlaps) / len(overlaps) if overlaps else 0.0
@@ -182,7 +174,6 @@ def _search_fault_cell(name, federation, build_fn, fault_idx, queries,
                      "per_query_overlap": [round(o, 3) for o in overlaps]}
     print(f"  DURING: throws={during_throws} degraded={during_degraded} "
           f"recall@10={mean_overlap:.3f} p50={during_p50:.0f}ms (expect ~0.875)", flush=True)
-    # bars: (a) 0 throws, (b) >0 results, (c) the shard named, (e) class isolates
     served = sum(1 for r in during_res if r) / len(during_res)
     out["bars"] = {
         "a_other_seven_serve_no_throw": during_throws == 0,
@@ -190,12 +181,10 @@ def _search_fault_cell(name, federation, build_fn, fault_idx, queries,
         "c_shard_named_in_degraded": shard_name in during_degraded,
         "e_class_isolates": during_throws == 0 and served > 0,
     }
-    # --- AFTER: swap the real shard back, wait cooldown, expect re-admission ---
     backend.shards[fault_idx] = real_shard
-    # reset the tracker so the probe runs clean
     tr = backend._shard_faults[fault_idx]
     with tr._lock:
-        tr.opened_at = time.monotonic()  # force the cooldown to start now
+        tr.opened_at = time.monotonic()
         tr.probe_pending = False
     time.sleep(fast_cooldown + 0.3)
     after_res, after_throws, after_p50 = _run_queries(backend, queries, top_k=10)
@@ -239,12 +228,10 @@ def _load_fault_cell(name, federation, manifest_override, fault_idx, queries,
         "c_shard_named_in_degraded": shard_name in during_degraded or
             any(fs["shard"] == shard_name and fs["failed"] for fs in fault_status),
         "e_class_isolates": loaded == 7 and served > 0,
-        # recall retention ≈ 7/8 (bounded; allow [0.80, 0.95] per the pre-reg bar)
         "recall_bounded_7_8": 0.80 <= mean_overlap <= 0.95,
     }
     print(f"  DURING: loaded={loaded}/8 throws={during_throws} degraded={during_degraded} "
           f"recall@10={mean_overlap:.3f} p50={during_p50:.0f}ms", flush=True)
-    # load-boundary re-admission: a re-load with the GOOD manifest recovers the shard
     good = _build_backend(federation, boundary_on=True)
     good_res, _, _ = _run_queries(good, queries[:3], top_k=10)
     out["after"] = {"degraded_shards": good.degraded_shards(),
@@ -256,7 +243,7 @@ def _load_fault_cell(name, federation, manifest_override, fault_idx, queries,
 
 
 def main():
-    os.environ["SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S"] = "3"   # tight for the hang fault
+    os.environ["SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S"] = "3"
     os.environ["SFU_SEISMIC_SHARD_REPROBE_S"] = "1"
     queries = _q(8)
     out = {"meta": {"date_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -274,9 +261,7 @@ def main():
     print(f"  baseline queries done: throws={base_throws} p50={base_p50:.0f}ms", flush=True)
 
     cells = out["cells"]
-    # ── SEARCH-boundary cells (reuse the warm 8-shard backend per class) ───────
-    fi = 0  # fault shard index
-    # (1) search exception
+    fi = 0
     def throw_fn(i):
         def _f(*a, **k):
             raise RuntimeError(f"INJECTED shard{i} search failure (WI-10)")
@@ -284,16 +269,14 @@ def main():
     cells.append(_search_fault_cell("search_exception_parallel", "parallel",
                                      throw_fn, fi, queries, base_res,
                                      "a shard's .search throws"))
-    # (2) search hang/timeout
     def hang_fn(i):
         def _f(*a, **k):
-            time.sleep(30)  # exceeds the 3s per-shard timeout
+            time.sleep(30)
             return []
         return _f
     cells.append(_search_fault_cell("search_hang_parallel", "parallel",
                                      hang_fn, fi, queries, base_res,
                                      "a shard's .search hangs (>timeout)"))
-    # (3) search exception in the SEQUENTIAL class (the cascade: both classes isolate)
     base_seq = _build_backend("sequential", boundary_on=False)
     base_seq_res, _, base_seq_p50 = _run_queries(base_seq, queries, top_k=10)
     out["baseline_sequential"] = {"n_shards": 8, "p50_ms": round(base_seq_p50, 1)}
@@ -301,8 +284,6 @@ def main():
                                      throw_fn, fi, queries, base_seq_res,
                                      "sequential class: a shard's .search throws"))
 
-    # ── LOAD-boundary cells (manifest override; one cold load per cell) ───────
-    # (4) absent file: point shard[fi] at a nonexistent path
     manifest_absent = json.loads(Path(MANIFEST).read_text())
     manifest_absent["shards"][fi]["mmap_dir"] = "data/seismic_150m/DOES_NOT_EXIST_WI10.mmap"
     mapath = REPO / "data" / "eval_results" / "_wi10_manifest_absent.json"
@@ -310,7 +291,6 @@ def main():
     cells.append(_load_fault_cell("load_absent_parallel", "parallel",
                                    str(mapath), fi, queries, base_res,
                                    "a shard's mmap_dir is absent (won't load)"))
-    # (5) truncated/corrupt fixture
     trunc = _make_truncated_fixture()
     manifest_trunc = json.loads(Path(MANIFEST).read_text())
     manifest_trunc["shards"][fi]["mmap_dir"] = trunc
@@ -320,7 +300,6 @@ def main():
                                    str(mtpath), fi, queries, base_res,
                                    "a shard's mmap_dir is a corrupt fixture"))
 
-    # ── verdict ────────────────────────────────────────────────────────────────
     all_bars = all(all(c["bars"].values()) for c in cells if "bars" in c)
     out["verdict"] = "PASS" if all_bars else "FAIL"
     out["verdict_bars"] = {c["cell"]["name"]: c["bars"] for c in cells if "bars" in c}

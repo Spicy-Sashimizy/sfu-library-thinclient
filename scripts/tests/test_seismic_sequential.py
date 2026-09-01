@@ -69,8 +69,6 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
-# Shared 10-token vocab; docs 0-9 carry boosted `receptor`/`kinase` so a query
-# on those two terms must return W1000000..W1000009 on top (score 6.0 = 3.0+3.0).
 _VOCAB = ["cell", "receptor", "membrane", "signal", "kinase", "phosphory",
           "transduc", "protein", "gene", "express"]
 _SHARD_DOCS = 200
@@ -119,19 +117,15 @@ def synth_shard(tmp_path):
                    for t in _VOCAB}
             f.write(json.dumps({"id": f"W{1000000 + i}", "vector": vec}) + "\n")
 
-    # In-process build (matches test_served_seismic_path.py: avoids build_persona's
-    # tail stat-crash, faster/leaner for a 200-doc fixture).
     import seismic
-    stem = tmp_path / "synth"                       # bare stem -> written as synth.index.seismic
+    stem = tmp_path / "synth"
     idx = seismic.SeismicIndex.build(
         str(jsonl), n_postings=3500, centroid_fraction=0.1, min_cluster_size=2,
         summary_energy=0.4, max_fraction=1.5, doc_cut=15, num_threads=2)
-    idx.save(str(stem))                              # appends .index.seismic
+    idx.save(str(stem))
     stock = tmp_path / "synth.index.seismic"
     assert stock.is_file(), "SeismicIndex.save() did not write the expected stock index"
 
-    # Convert stock -> mmap dir via the c1a bin (C2 flat layout: strings+offsets,
-    # the only layout MmapSeismicIndex loads with non-None doc_mapping).
     mmap_dir = tmp_path / "synth.mmap"
     env = {**os.environ, **_CARGO_ENV}
     proc = subprocess.run(
@@ -143,8 +137,6 @@ def synth_shard(tmp_path):
                     f"needs cargo/sudo env.\nstderr: {proc.stderr[:500]}")
     return stock
 
-
-# ── T1: result-equivalence — sequential ≡ parallel, bit-identical ────────────
 
 def test_sequential_identical_to_parallel(synth_shard):
     """THE keystone: sequential top-k is BIT-IDENTICAL to parallel top-k, across
@@ -163,23 +155,18 @@ def test_sequential_identical_to_parallel(synth_shard):
     seq = SequentialSeismicBackend([str(stock)], load_mode="mmap")
     assert par.federation == "parallel" and seq.federation == "sequential"
 
-    # Hand-built qvec (bypasses ONNX so the test is hermetic). receptor/kinase
-    # were boosted on docs 0-9 -> they MUST lead in both modes.
     q = {"receptor": 1.0, "kinase": 1.0}
     par_res = par.search_encoded(q, top_k=50, k_prime=200)
     seq_res = seq.search_encoded(q, top_k=50, k_prime=200)
 
     assert par_res and seq_res, "both modes must return results for a boosted query"
 
-    # Bit-identical: same oaids in the same order...
     assert [oaid for oaid, _ in seq_res] == [oaid for oaid, _ in par_res], (
         "sequential top-k must match parallel top-k ORDER exactly "
         f"(merge is order-independent)\n  seq={seq_res[:5]}\n  par={par_res[:5]}")
-    # ...and same scores (SEISMIC returns float(inner-product score)).
     assert all(abs(s - p) < 1e-6 for (_, s), (_, p) in zip(seq_res, par_res)), (
         f"sequential scores must match parallel within 1e-6\n"
         f"  seq={seq_res[:5]}\n  par={par_res[:5]}")
-    # Sanity: the boosted docs lead with the receptor+kinase dot product 6.0.
     assert seq_res[0][0] == "W1000000", f"top hit must be a boosted doc; got {seq_res[0]}"
     assert all(score == pytest.approx(6.0) for _, score in seq_res[:10]), (
         f"top-10 must be the receptor+kinase boost (3.0+3.0); got {seq_res[:10]}")
@@ -194,9 +181,6 @@ def test_sequential_identical_to_parallel_multi_shard(synth_shard, tmp_path):
     from lib.thinclient.sharded_seismic_backend import (
         ParallelSeismicBackend, SequentialSeismicBackend)
 
-    # Reuse the same converted shard twice (two index_paths, same mmap dir) so we
-    # get K=2 without a second build+convert. Scores are comparable across both
-    # because they share the same vocabulary + docs (de-dup keeps one copy).
     paths = [str(stock), str(stock)]
     par = ParallelSeismicBackend(paths, load_mode="mmap")
     seq = SequentialSeismicBackend(paths, load_mode="mmap")
@@ -211,8 +195,6 @@ def test_sequential_identical_to_parallel_multi_shard(synth_shard, tmp_path):
         "multi-shard sequential scores must match parallel within 1e-6")
 
 
-# ── T1 (hybrid): the cold-start flip CANNOT change results ──────────────────
-
 def test_hybrid_identical_to_parallel_and_sequential(synth_shard):
     """Q7 keystone (2026-07-10): `HybridSeismicBackend` returns bit-identical
     top-k to BOTH `ParallelSeismicBackend` and `SequentialSeismicBackend`.
@@ -226,14 +208,13 @@ def test_hybrid_identical_to_parallel_and_sequential(synth_shard):
     each matches the standalone methods."""
     stock = synth_shard
     import os as _os
-    # Snapshot env so the test can't leak HYBRID_* knobs to later tests.
     _saved = {k: _os.environ.pop(k, None) for k in list(_os.environ)
               if k.startswith("SFU_SEISMIC_HYBRID_")}
     try:
         from lib.thinclient.sharded_seismic_backend import (
             ParallelSeismicBackend, SequentialSeismicBackend, HybridSeismicBackend)
 
-        paths = [str(stock), str(stock)]   # K=2 (matches the multi-shard T1)
+        paths = [str(stock), str(stock)]
         par = ParallelSeismicBackend(paths, load_mode="mmap")
         seq = SequentialSeismicBackend(paths, load_mode="mmap")
 
@@ -242,10 +223,6 @@ def test_hybrid_identical_to_parallel_and_sequential(synth_shard):
         seq_res = seq.search_encoded(q, top_k=50, k_prime=200)
         assert par_res and seq_res
 
-        # Hybrid arm 1: adaptive flip ON. With a 200-doc synthetic shard there's
-        # no real cold/warm regime (everything is resident), so the count
-        # backstop (N=3) fires the flip after 3 queries. Run 4 queries so the
-        # flip definitely happens mid-stream, then assert parity on each.
         _os.environ.pop("SFU_SEISMIC_HYBRID_DISABLE", None)
         hyb_adaptive = HybridSeismicBackend(paths, load_mode="mmap")
         assert hyb_adaptive.federation == "hybrid"
@@ -262,14 +239,10 @@ def test_hybrid_identical_to_parallel_and_sequential(synth_shard):
                 f"(flip at query 3 must not change results)")
             assert all(abs(h - p) < 1e-6 for (_, h), (_, p) in zip(h_res, p_res)), (
                 f"hybrid(adaptive, q{i}) scores diverged from parallel")
-        # Confirm a flip actually happened at some point (else the test didn't
-        # exercise the flip boundary). After 4 queries the count backstop (N=3)
-        # guarantees it.
         assert hyb_adaptive._flipped, (
             "hybrid never flipped seq→par — the flip boundary wasn't exercised; "
             "bump the query count or lower SFU_SEISMIC_HYBRID_FLIP_N")
 
-        # Hybrid arm 2: DISABLED (force_parallel from query 1) = pure parallel.
         _os.environ["SFU_SEISMIC_HYBRID_DISABLE"] = "1"
         hyb_par = HybridSeismicBackend(paths, load_mode="mmap")
         assert hyb_par._flipped is True and hyb_par._force_parallel
@@ -300,8 +273,6 @@ def test_hybrid_invalid_signal_rejected():
             _os.environ["SFU_SEISMIC_HYBRID_SIGNAL"] = old
 
 
-# ── Cascade guard — distinct classes, no shared mutable instance state ───────
-
 def test_distinct_classes_share_no_mutable_state(synth_shard):
     """The cascade-safety property of Option 3 (two distinct classes): a parallel
     and a sequential backend are instances of DIFFERENT concrete classes and share
@@ -318,19 +289,16 @@ def test_distinct_classes_share_no_mutable_state(synth_shard):
     assert type(par) is not type(seq), \
         "parallel and sequential must be DIFFERENT concrete classes"
     assert type(par) is ParallelSeismicBackend and type(seq) is SequentialSeismicBackend
-    # No shared mutable instance state (each instance owns its own objects).
     assert par._encoder is not seq._encoder, "encoders must be per-instance"
     assert par.shards is not seq.shards, "shard lists must be per-instance"
     assert par is not seq
 
 
-# ── Mechanism (B) re-fault safety — release_pages keeps results identical ───
-
 def test_release_pages_present_on_mmap_index():
     """The pyo3 `MmapSeismicIndex` must expose `release_pages` (mechanism B). A
     stale .so without it makes the sequential resident bound a heuristic, not a
     guarantee — fail loudly so it's rebuilt (maturin develop)."""
-    stock = None  # no shard needed; just inspect the pyclass
+    stock = None
     if not _have_seismic():
         pytest.skip("`seismic` (pyo3) not importable in this venv")
     import seismic
@@ -349,18 +317,13 @@ def test_sequential_refault_after_release_pages_identical(synth_shard):
     from lib.thinclient.sharded_seismic_backend import SequentialSeismicBackend
 
     seq = SequentialSeismicBackend([str(stock)], load_mode="mmap")
-    # If the .so is stale (no release_pages hook), _fan_out degrades to a no-op
-    # + debug log — in which case this test is a tautology (no eviction happened).
-    # Detect that so the test reports honestly, not false-green.
     hook = hasattr(seq.shards[0], "release_pages")
     if not hook:
         pytest.skip("shard has no release_pages() (older .so); re-fault test n/a")
 
     q = {"receptor": 1.0, "kinase": 1.0, "signal": 0.5, "protein": 0.5}
     first = seq.search_encoded(q, top_k=50, k_prime=200)
-    # Touch the shard's pages again (they were DONTNEED'd), then search once more —
-    # the re-fault must return the same docs + scores, bit-for-bit.
-    seq.shards[0].touch_slab()  # re-fault resident (simulates a subsequent query)
+    seq.shards[0].touch_slab()
     second = seq.search_encoded(q, top_k=50, k_prime=200)
 
     assert first and second, "both searches must return results"
@@ -373,8 +336,6 @@ def test_sequential_refault_after_release_pages_identical(synth_shard):
         f"  1st={first[:5]}\n  2nd={second[:5]}")
 
 
-# ── T4: no silent fallback — sequential + mmap missing dir raises ────────────
-
 def test_sequential_mmap_missing_dir_raises_no_silent_fallback():
     """Sequential inherits the G3 guarantee: `SequentialSeismicBackend` +
     `load_mode="mmap"` with an absent `.mmap/` dir raises RuntimeError, NEVER a
@@ -385,8 +346,6 @@ def test_sequential_mmap_missing_dir_raises_no_silent_fallback():
     with pytest.raises(RuntimeError, match=r"mmap dir not found|load_mode=mmap"):
         SequentialSeismicBackend([bogus], load_mode="mmap")
 
-
-# ── T6: encode/traverse split — search_with_timing attributes sequential runs ─
 
 def test_sequential_search_with_timing_split(synth_shard):
     """`search_with_timing` in sequential mode returns
@@ -403,11 +362,8 @@ def test_sequential_search_with_timing_split(synth_shard):
     assert all(isinstance(t, tuple) and len(t) == 2 for t in res), \
         "must return [(oaid, score)] tuples"
     assert enc_ms >= 0.0 and trav_ms >= 0.0, "timing walls must be non-negative"
-    # A real query against real shards must do nonzero traversal work.
     assert trav_ms > 0.0, f"sequential traverse_ms should be >0; got {trav_ms}"
 
-
-# ── Back-compat selector validation ───────────────────────────────────────────
 
 def test_backcompat_selector_default_is_parallel():
     """`ShardedSeismicBackend(index_paths, load_mode="mmap")` with NO federation
@@ -447,8 +403,6 @@ def test_backcompat_selector_invalid_value_rejected():
     with pytest.raises(ValueError, match=r"federation"):
         ShardedSeismicBackend([], load_mode="stock", federation="bogus")
 
-
-# ── helpers ───────────────────────────────────────────────────────────────────
 
 def _stub_seismic():
     """Install throwaway `seismic` + `seismic_backend` modules so the ctor's

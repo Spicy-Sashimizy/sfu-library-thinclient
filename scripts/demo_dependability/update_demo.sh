@@ -1,47 +1,4 @@
 #!/usr/bin/env bash
-# WI-13 (deployprep wave 4, 2026-07-17) — versioned update + auto-rollback for
-# the demo host. STAGING ONLY (127.0.0.1, no public deploy, no spend, NO
-# served-default flip — exercises a STAGING serve + STAGING manifest, never the
-# promoted e5_v2 production default on the real port).
-#
-# The demo's update unit is the 4-tuple in deploy_versions.json (code rev, .so,
-# manifest, models). This script codifies the UPDATE FLOW around the manifest-
-# flip mechanism the repo ALREADY serves off (E5/E8 rollouts — retriever.py
-# `_seismic_backend` reads SFU_SEISMIC_SHARD_MANIFEST; the ladder e5_v2 → e5_v1
-# → plain dv is the one-env rollback). The flow:
-#
-#   1. git pull                                   (code rev — a real code update)
-#   2. verify artifact checksums vs deploy_versions.json   (abort BEFORE flip on mismatch)
-#   3. stage the NEW manifest BESIDE the old (never in-place — cp to _fixtures/)
-#   4. flip the staging serve's SFU_SEISMIC_SHARD_MANIFEST to the staged copy
-#   5. warm-restart via the WI-3/6 watchdog (wait-warm)   (the serve re-mmaps under the new manifest)
-#   6. health + smoke gate                              (a real /search must answer warm)
-#   7. AUTO-ROLLBACK on gate failure: flip back to prior manifest, warm-restart, verify the
-#      post-rollback gate PASSES (serve ends SERVING on the prior version — rollback is not itself a failure)
-#
-# What's PROVEN (two staging arms, fixture artifacts):
-#   success — one successful update: checksum-verify OK → flip → warm-restart →
-#             gate PASS → no rollback. Downtime = the warm-restart window (the
-#             shards stay resident for a manifest_flip_only / .so-rebuild class
-#             update → the gap is the re-mmap + warmup, not a full cold load).
-#   broken  — a deliberately-broken update (a fixture manifest pointing at a
-#             TRUNCATED shard mmap_dir, the WI-10 _make_truncated_fixture
-#             pattern): serve exits non-zero at startup → watchdog fail-fast →
-#             gate FAILS → AUTO-ROLLBACK to the prior (resident) manifest →
-#             post-rollback gate PASSES → serve ends SERVING.
-#
-# The success arm models the manifest_flip_only / .so-rebuild update class (the
-# cheapest real class — shards resident, ~2.7 MB / 7.5 KB delta). The real
-# CROSS-VERSION flip (e5_v2 ↔ e5_v1, different mmap_dirs = a full cold re-load)
-# is ALREADY proven by the E5/E8 rollouts (served 2026-07-09 / 2026-07-14, one-
-# env rollback) — WI-13's job is the UPDATE FLOW (stage, verify, flip, warm-
-# restart, gate, auto-rollback) around that mechanism, which the copy-flip does
-# faithfully + efficiently (one cold load per arm, not two).
-#
-# Owner constraints (2026-07-16): staging/prep only; no deploy, no spend, no
-# served-default flip. data/seismic_150m/ READ-ONLY — the truncated fixture is a
-# tiny COPY under data/eval_results/_fixtures/, NEVER a real shard. Output
-# timeline JSON → data/eval_results/wi13_update_{success,broken}_<ts>.json.
 set -u
 cd /workspaces/sfu-library-thinclient
 
@@ -54,17 +11,9 @@ FIXDIR=data/eval_results/_fixtures
 WATCHDOG_LOG=data/eval_results/_wi13_watchdog_${TS}.log
 VENV=.venv/bin/python3
 
-# The watchdog's cold-grace: long enough that a cold-loading serve (seismic +
-# ONNX, ~2 min on 9p) is NOT mistaken for a wedge. wait-warm is ON so the
-# watchdog declares recovery only at /health warm=true (WI-6).
 GRACE=600
 
-# ── timeline recorder: every step is timestamped so the two proof timelines ──
-# are machine-readable (the F6 deliverable: per-step timestamps + gate verdict).
 TIMELINE_FILE=""
-# smoke_gate writes its descriptive detail here (a subshell can't return a var
-# to its caller, so the detail goes to a file the caller reads alongside the
-# pass/fail echo).
 _SMOKE_DETAIL_F=/tmp/_wi13_smoke_detail_${TS}
 : > "$_SMOKE_DETAIL_F"
 init_timeline () {
@@ -94,7 +43,6 @@ finish_timeline () {  # finish_timeline <overall> <downtime_ms_or_null> <rolled_
   cp /tmp/_wi13_tl_${TS}_${ARM} "$TIMELINE_FILE"
 }
 
-# ── helpers ──────────────────────────────────────────────────────────────────
 health_json () { curl -s -m 5 http://127.0.0.1:$PORT/health 2>/dev/null \
   | $VENV -c "import sys,json;
 try:
@@ -128,13 +76,6 @@ wait_warm () {  # wait_warm <deadline_s>  → echoes "ok"/"timeout"
 }
 
 smoke_gate () {  # smoke_gate  → echoes "pass"/"fail"
-  # The gate has TWO parts: (1) /search returns 200 (the serve answers), AND
-  # (2) the SEISMIC backend actually LOADED on this version (the WI-13 finding:
-  # /health reports splade.configured="seismic" whether or not the shards loaded
-  # — the retriever silently falls back to BM25F on a broken shard; a 200 /search
-  # from BM25F would otherwise commit a silently-degraded update). The /verify
-  # endpoint forces the lazy seismic load + reports seismic_loaded; the gate
-  # asserts it. SFU_DEMO_UPDATE_VERIFY_SEISMIC=1 is set by launch_watchdog.
   local ok=0 fail=0 q
   for q in "climate change adaptation policy" "graph neural networks" \
            "political economy welfare states" "deep learning protein structure" \
@@ -145,7 +86,6 @@ smoke_gate () {  # smoke_gate  → echoes "pass"/"fail"
       -d "{\"query\":\"$q\",\"top_k\":5}" 2>/dev/null || echo 000)
     if [ "$code" = "200" ]; then ok=$((ok+1)); else fail=$((fail+1)); fi
   done
-  # the SEISMIC-served check (the part that catches a silently-degraded update)
   local SEIS; SEIS=$(curl -s -m 30 http://127.0.0.1:$PORT/verify 2>/dev/null \
     | $VENV -c "import sys,json;
 try: d=json.load(sys.stdin); print(d.get('seismic_loaded'))
@@ -165,7 +105,6 @@ except Exception: print('ERR')" 2>/dev/null || echo ERR)
 stop_watchdog () {  # stop_watchdog <wd_pid>
   local wd="$1"
   kill "$wd" 2>/dev/null || true
-  # the watchdog SIGTERMs its serve child (new process group); give it a moment
   sleep 2
   pkill -f "staging_serve.py" 2>/dev/null || true   # belt-and-suspenders, only the staging serve
   wait "$wd" 2>/dev/null || true
@@ -173,14 +112,11 @@ stop_watchdog () {  # stop_watchdog <wd_pid>
 
 sha256_file () { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
 
-# ── the shared update flow (parameterized by the NEW manifest + expectation) ──
-# run_update_arm <arm> <new_manifest> <expect_rollback:0|1>
 run_update_arm () {
   ARM="$1"; local NEW_MANIFEST="$2"; local EXPECT_RB="$3"
   init_timeline
   event setup started "arm=$ARM base=$(basename $BASE_MANIFEST) new=$(basename $NEW_MANIFEST) expect_rollback=$EXPECT_RB"
 
-  # ── 1. baseline: launch the serve on the BASE manifest, wait-warm, pre-gate ──
   local WD
   WD=$(launch_watchdog "$BASE_MANIFEST")
   event baseline_watchdog_launched running "wd_pid=$WD manifest=$(basename $BASE_MANIFEST)"
@@ -200,10 +136,6 @@ run_update_arm () {
     return 1
   fi
 
-  # ── 2. verify the NEW manifest checksum against deploy_versions.json ─────────
-  # (the contract: a checksum mismatch aborts BEFORE the flip. The broken arm's
-  # NEW manifest is a fixture; we verify the FILE exists + is the staged path —
-  # the real gate is the post-flip smoke, which is where a corrupt shard shows.)
   local NEW_SHA; NEW_SHA=$(sha256_file "$NEW_MANIFEST")
   if [ -z "$NEW_SHA" ]; then
     event checksum_verify FAILED "new manifest $NEW_MANIFEST absent — ABORT before flip"
@@ -213,14 +145,12 @@ run_update_arm () {
   fi
   event checksum_verify ok "new_manifest_sha256=${NEW_SHA:0:16} (stage-beside: the old manifest is untouched; flip is env-only)"
 
-  # ── 3+4+5: stop → flip env (point at staged new) → warm-restart ──────────────
   local FLIP_T0; FLIP_T0=$(date -u +%s%3N 2>/dev/null || python3 -c 'import time;print(int(time.time()*1000))')
   stop_watchdog "$WD"
   event flip_started running "stopped baseline serve; relaunching watchdog with SFU_SEISMIC_SHARD_MANIFEST=$(basename $NEW_MANIFEST)"
   WD=$(launch_watchdog "$NEW_MANIFEST")
   event new_watchdog_launched running "wd_pid=$WD (wait-warm ON, cold_grace=${GRACE}s)"
 
-  # ── 6. warm-restart window + health+smoke gate on the NEW version ────────────
   R=$(wait_warm 620)
   local FLIP_T1; FLIP_T1=$(date -u +%s%3N 2>/dev/null || python3 -c 'import time;print(int(time.time()*1000))')
   local DOWNTIME=$((FLIP_T1 - FLIP_T0))
@@ -228,7 +158,6 @@ run_update_arm () {
     local G; G=$(smoke_gate)
     event new_gate ok "post-flip wait_warm=ok smoke=$G ($(cat "$_SMOKE_DETAIL_F")) (downtime=${DOWNTIME}ms = the warm-restart + re-warm window)"
     if [ "$G" = "pass" ]; then
-      # ── SUCCESS: gate passed, no rollback ──
       event commit ok "gate PASS on new version — update committed, NO rollback"
       stop_watchdog "$WD"
       finish_timeline PASS "$DOWNTIME" false
@@ -240,7 +169,6 @@ run_update_arm () {
     event new_gate FAILED "post-flip wait_warm=$R (serve failed to warm on the new version — watchdog log: $(grep -E 'DIED|rc=|FAIL-FAST|FATAL' $WATCHDOG_LOG 2>/dev/null | tail -2 | tr '\n' ' ')) — triggering auto-rollback"
   fi
 
-  # ── 7. AUTO-ROLLBACK: flip back to prior (resident) manifest, warm-restart, verify ─
   if [ "${SFU_DEMO_UPDATE_NO_ROLLBACK:-0}" = "1" ]; then
     event rollback SKIPPED "SFU_DEMO_UPDATE_NO_ROLLBACK=1 — rollback disabled for debugging"
     stop_watchdog "$WD"
@@ -257,7 +185,6 @@ run_update_arm () {
     if [ "$RG" = "pass" ]; then
       event rollback_committed ok "serve re-serving on the PRIOR version (baseline restored) — rollback SUCCESSFUL, demo ends SERVING"
       stop_watchdog "$WD"
-      # A successful auto-rollback from a broken update = the bar (d) outcome.
       finish_timeline PASS_ROLLED_BACK "$DOWNTIME" true
       return 0
     else
@@ -274,16 +201,10 @@ run_update_arm () {
   fi
 }
 
-# ── build the two fixture manifests the arms use ──────────────────────────────
 mkdir -p "$FIXDIR"
 
-# SUCCESS arm "new version": a staged COPY of the base manifest (the manifest-
-# flip_only / .so-rebuild class — shards resident → fast re-warm). Checksum-
-# verified, never in-place. A real cross-version flip = point NEW at e5_v1 (the
-# ladder manifest); the mechanism is identical (cited from E5/E8 rollouts).
 SUCCESS_MANIFEST="$FIXDIR/wi13_staged_new_manifest_${TS}.json"
 cp "$BASE_MANIFEST" "$SUCCESS_MANIFEST"
-# the staged copy carries a provenance note so it's observably the "new" rev
 $VENV - "$SUCCESS_MANIFEST" "$TS" <<'PY'
 import json, sys
 p, ts = sys.argv[1], sys.argv[2]
@@ -292,10 +213,6 @@ d["wi13_staged_copy"] = f"staging fixture for WI-13 update_demo.sh ({ts}); a cop
 open(p, "w").write(json.dumps(d, indent=2))
 PY
 
-# BROKEN arm "new version": a fixture manifest whose shard0 mmap_dir is a
-# TRUNCATED fixture (the WI-10 _make_truncated_fixture pattern — a real shard's
-# manifest.json + a truncated data blob). The serve's _get_retriever() raises on
-# the truncated pyo3 load → exits non-zero → watchdog fail-fast → gate FAILS.
 BROKEN_MANIFEST="$FIXDIR/wi13_broken_manifest_${TS}.json"
 $VENV - "$BROKEN_MANIFEST" "$BASE_MANIFEST" "$TS" <<'PY'
 import json, os, sys, shutil
@@ -328,15 +245,11 @@ echo "   success arm: flip base → staged copy (manifest_flip_only class)"
 echo "   broken  arm: flip base → corrupt shard0 fixture (auto-rollback)"
 echo "============================================================"
 
-# ── the two arms ─────────────────────────────────────────────────────────────
 echo ""; echo "=== ARM 1: success (expect commit, no rollback) ==="
 run_update_arm success "$SUCCESS_MANIFEST" 0 \
   && echo "SUCCESS arm: PASS (committed, no rollback)" \
   || echo "SUCCESS arm: did NOT commit as expected (see timeline)"
 
-# cool the page cache between arms so each arm measures its OWN baseline warm,
-# not a residue (the same fadvise-DONTNEED the WI-6 orchestration uses — READ-
-# ONLY hint on the seismic shards, never a write).
 $VENV - "$BASE_MANIFEST" <<'PY' 2>/dev/null || true
 import json, os, ctypes
 m = json.load(open(__import__("sys").argv[1]))
@@ -364,7 +277,6 @@ run_update_arm broken "$BROKEN_MANIFEST" 1 \
   && echo "BROKEN arm: PASS (auto-rolled back to serving)" \
   || echo "BROKEN arm: rollback did NOT restore serving (see timeline)"
 
-# ── summary ───────────────────────────────────────────────────────────────────
 echo ""; echo "=== WI-13 summary ($(date -u +%H:%M:%SZ)) ==="
 for ARM in success broken; do
   F=$(ls -t data/eval_results/wi13_update_${ARM}_${TS}.json 2>/dev/null | head -1)

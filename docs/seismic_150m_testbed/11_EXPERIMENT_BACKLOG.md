@@ -259,7 +259,9 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
   NOT measurable here. Latency A/B requires the operator's constrained-host run.
 - **F5 `release_pages_except`**: hook built; NOT exercised (only relevant in
   the sequential-cold arm under memory pressure — host-gated). EFFICACY
-  UNMEASURED.
+  UNMEASURED. **2026-08-31: the hook's SCOPE BUG (forward slab only) is FIXED
+  IN CODE + synthetically verified (4.43× dv / 9.85× f16 more bytes covered);
+  real-stack efficacy still UNMEASURED — see the R1 F5 cell entry below.**
 - **Phase 5 T1 (correctness re-gate with pinning ON) — 20/20 BIT-IDENTICAL
   2026-07-14** (`_t1_pin_off.json` / `_t1_pin_on.json`):
   `ParallelSeismicBackend` (2 shards, E8 v2) with `SFU_SEISMIC_PIN_BUDGET_GB=1.6`
@@ -383,6 +385,56 @@ the structural slabs (posting lists, doc mapping, token maps) which
 (doc `session_2026-07-14.../04_CONVERGENCE_ARTIFACT.md` §5.3) is therefore
 UNTESTED, not refuted — a meaningful test needs whole-shard
 fadvise-DONTNEED-except-hot or extending the hook beyond the forward slab.
+
+> **2026-08-31 — SCOPE BUG FIXED IN CODE; EFFICACY STILL UNMEASURED ON THE
+> REAL STACK.** The hook now covers every slab the mmap reader maps, not just
+> the forward codec slab. Fork commit `2c4d863`; patches
+> `spike/seismic_upstream_fork.patch` (umbrella, regenerated from upstream base
+> `7782a13` — it had been stale since the E5 commit) +
+> `spike/seismic_upstream_f5_scope_fix.patch` (focused).
+>
+> Two defects were behind the null, both fixed:
+> 1. **Scope.** `release_pages_except` released only `_fwd_data_mmap`
+>    (dv) / `_forward_values_mmap` (f16). It now releases the same slab set as
+>    `release_pages()` — forward offsets, posting lists, doc-mapping
+>    strings/offsets — minus the hot extents. A new `keep_structural=True`
+>    argument gives an *intentional* floor-preserving arm for when F4's
+>    `mlock_floor` is on; that is **not** the 2026-07-14 scope, which also
+>    skipped `forward_offsets`.
+> 2. **Accounting.** `os_madvise` now returns the syscall status and
+>    `release_bytes` / `release_bytes_except` credit bytes **only when madvise
+>    returned 0**. `MADV_DONTNEED` EINVALs over `mlock`ed ranges; the pre-fix
+>    code counted those bytes regardless, which is precisely how "released
+>    16.45 GB" coexisted with an unchanged RssFile. New
+>    `release_pages_except_by_slab()` (Rust + pyo3) returns
+>    `[(slab_name, bytes_released)]` so the same failure mode cannot hide inside
+>    one aggregate again; `r1_ram_ladder.py` records it as
+>    `released_by_slab_gb` in the cell JSON and warns loudly if the loaded `.so`
+>    predates the fix.
+>
+> **Synthetic verification (no 150M index touched)** — Rust unit test
+> `release_pages_except_covers_all_slabs` in
+> `spike/seismic_upstream/src/mmap_io.rs` (600-doc index, both layouts, built
+> + converted in-test):
+>
+> | layout | BEFORE (forward slab only = pre-fix scope) | AFTER (all slabs) | ratio |
+> |---|---|---|---|
+> | dotvbyte (served) | 9,600 B | 42,554 B | **4.43×** |
+> | f16 (rollback) | 4,200 B | 41,354 B | **9.85×** |
+>
+> Per-slab, dotvbyte: `forward_data` 9,600 / `forward_offsets` 4,808 /
+> `postings` 19,848 / `doc_strings` 3,490 / `doc_offsets` 4,808 B. The test also
+> asserts pinned extents survive, that `keep_structural=True` narrows the scope
+> back to the forward slab, and that search still returns results after a full
+> release (residency-only, T1 unaffected). All 11 fork tests green
+> (`cargo test --no-default-features --lib -- --test-threads=1`); `cargo check
+> --lib` clean with the pyo3 default features.
+>
+> **NOT measured:** no `.so` was rebuilt and no real-stack cell was run — the
+> served production `.so` still carries the pre-fix hook until an operator
+> rebuilds the portable v3 target (doc 10 §7.7; never `-C target-cpu=native`
+> for a shippable build). Re-running the 16 GB F5 cell requires its own
+> pre-registration.
 
 **Quality under squeeze: 40/40 bit-identical (ids + scores) vs the uncapped
 reference in ALL THREE stressed cells** (8G-pin, 6G-pin, 16G-F5;

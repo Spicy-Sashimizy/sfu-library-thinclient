@@ -82,7 +82,7 @@ class TestValidateConfig:
             openalex_mailto="test@sfu.ca",
             unpaywall_email="test@sfu.ca",
             semantic_scholar_api_key="testkey",
-            openalex_tracker_path="/data/openalex_calls.json",  # non-/tmp so no persistence warning
+            openalex_tracker_path="/data/openalex_calls.json",
         )
         warnings = validate_config(config)
         assert len(warnings) == 0

@@ -22,10 +22,10 @@ logger = logging.getLogger("sfu_library_mcp")
 
 DEFAULT_MODEL = "prithivida/Splade_PP_en_v1"
 DEFAULT_BATCH_SIZE = 64
-SPARSE_TOP_K = 256            # keep top-K terms per doc (prune noise)
-MAX_DOC_LENGTH = 128          # Splade_PP_en_v1 card §6d: trained at doc=128
+SPARSE_TOP_K = 256
+MAX_DOC_LENGTH = 128
 SPARSE_WEIGHT_THRESHOLD = 0.01
-VOCAB_SIZE = 30522            # bert-base-uncased
+VOCAB_SIZE = 30522
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 ONNX_CACHE_DIR = _REPO_ROOT / "models" / "splade_onnx_fp16"
@@ -132,11 +132,10 @@ class SpladeDocEncoder:
         with torch.inference_mode():
             output = self.model(**tokens)
 
-        # SPLADE: log(1+ReLU(x)) * attention_mask, then max-pool over sequence.
         logits = output.logits.float()
         vecs = torch.log1p(torch.relu(logits))
         vecs = vecs * tokens["attention_mask"].unsqueeze(-1)
-        vecs = torch.max(vecs, dim=1).values  # (B, V)
+        vecs = torch.max(vecs, dim=1).values
 
         top_w, top_idx = torch.topk(vecs, SPARSE_TOP_K, dim=1)
         return self._build_sparse_dicts(top_w.cpu().numpy(), top_idx.cpu().numpy())
@@ -150,7 +149,7 @@ class SpladeDocEncoder:
             for j in range(top_w_np.shape[1]):
                 w = float(top_w_np[i, j])
                 if w <= SPARSE_WEIGHT_THRESHOLD:
-                    break  # sorted descending — remaining are below threshold too
+                    break
                 idx = int(top_idx_np[i, j])
                 if idx in skip:
                     continue
@@ -204,9 +203,6 @@ class SpladeDocEncoderTRT(SpladeDocEncoder):
         }
         sess_opts = ort.SessionOptions()
         sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-        # Keep ORT's CPU pool tiny and non-spinning — the TRT EP does the work
-        # on-GPU and a busy-spinning full-width pool starves the GPU (measured:
-        # 3.5k → 960 docs/s regression). Tune via SFU_ORT_INTRA_THREADS.
         sess_opts.intra_op_num_threads = int(os.environ.get("SFU_ORT_INTRA_THREADS", "2"))
         sess_opts.inter_op_num_threads = 1
         sess_opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
@@ -274,7 +270,7 @@ class SpladeDocEncoderTRT(SpladeDocEncoder):
 
         self.session.run_with_iobinding(self._iobinding)
 
-        logits = self._out_logits  # (B, S, V) FP32 on GPU
+        logits = self._out_logits
         vecs = torch.log1p(torch.relu(logits))
         vecs = vecs * self._in_attn_mask.unsqueeze(-1)
         vecs = torch.max(vecs, dim=1).values

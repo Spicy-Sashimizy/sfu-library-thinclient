@@ -44,8 +44,6 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
-# Shared 10-token vocab; docs 0-9 carry boosted `receptor`/`kinase` so a query
-# on those two terms must return W1000000..W1000009 on top (score 6.0 = 3.0+3.0).
 _VOCAB = ["cell", "receptor", "membrane", "signal", "kinase", "phosphory",
           "transduc", "protein", "gene", "express"]
 _SHARD_DOCS = 200
@@ -95,19 +93,15 @@ def synth_shard(tmp_path):
                    for t in _VOCAB}
             f.write(json.dumps({"id": f"W{1000000 + i}", "vector": vec}) + "\n")
 
-    # In-process build (avoids build_persona_seismic.py's tail stat-crash on the
-    # result-file size, and is faster/leaner for a 200-doc test fixture).
     import seismic
-    stem = tmp_path / "synth"                       # bare stem -> written as synth.index.seismic
+    stem = tmp_path / "synth"
     idx = seismic.SeismicIndex.build(
         str(jsonl), n_postings=3500, centroid_fraction=0.1, min_cluster_size=2,
         summary_energy=0.4, max_fraction=1.5, doc_cut=15, num_threads=2)
-    idx.save(str(stem))                              # appends .index.seismic
+    idx.save(str(stem))
     stock = tmp_path / "synth.index.seismic"
     assert stock.is_file(), "SeismicIndex.save() did not write the expected stock index"
 
-    # Convert stock -> mmap dir via the c1a bin (C2 flat layout: strings+offsets,
-    # the only layout MmapSeismicIndex loads with non-None doc_mapping).
     mmap_dir = tmp_path / "synth.mmap"
     env = {**os.environ, **_CARGO_ENV}
     proc = subprocess.run(
@@ -119,8 +113,6 @@ def synth_shard(tmp_path):
                     f"needs cargo/sudo env.\nstderr: {proc.stderr[:500]}")
     return stock
 
-
-# ── #1: happy path — federated mmap backend loads + returns [(oaid, score)] ──
 
 def test_federated_mmap_backend_returns_results(synth_shard):
     """`SFU_SEISMIC_SHARD_MANIFEST` + mmap → `_splade_leg_seismic` returns
@@ -135,17 +127,12 @@ def test_federated_mmap_backend_returns_results(synth_shard):
 
     with _env_patch(env):
         r = ThinClientRetriever(index_root="", remote_abstracts=False,
-                                splade_model_path="")  # no model: search drives the leg directly
-        # _seismic_backend() must take the manifest+mmap branch (load_mode defaults
-        # to "mmap" — the served 150M path, NOT stock Path-A).
+                                splade_model_path="")
         backend = r._seismic_backend()
         assert backend.load_mode == "mmap", \
             "served path must default to mmap, not stock Path-A"
         assert len(backend.shards) == 1
 
-    # Drive the leg's search step with a hand-built qvec (bypasses the ONNX
-    # encoder so the test is hermetic + ~instant, not gated on a 532MB model).
-    # `receptor`/`kinase` were boosted on docs 0-9 → they MUST be the top hits.
     res = backend.search_encoded({"receptor": 1.0, "kinase": 1.0}, top_k=5)
     assert isinstance(res, list) and len(res) == 5
     assert all(isinstance(t, tuple) and len(t) == 2 for t in res), \
@@ -157,8 +144,6 @@ def test_federated_mmap_backend_returns_results(synth_shard):
         f"scores must be the receptor+kinase dot product (3.0+3.0); got {res}"
 
 
-# ── #2: mmap-no-silent-fallback — missing .mmap/ raises, never Path-A ─────────
-
 def test_mmap_missing_dir_raises_no_silent_fallback():
     """THE load-bearing G3 guarantee: a missing `.mmap/` dir under
     load_mode=mmap raises RuntimeError — NEVER a silent Path-A fallback that
@@ -167,7 +152,6 @@ def test_mmap_missing_dir_raises_no_silent_fallback():
 
     bogus = "/nonexistent/absent_shard.index.seismic"
     with pytest.raises(RuntimeError, match=r"mmap dir not found|load_mode=mmap"):
-        # from_manifest isn't needed; the ctor's _load_one_shard is the gate.
         ShardedSeismicBackend([bogus], load_mode="mmap")
 
 
@@ -184,13 +168,9 @@ def test_load_mode_mmap_default_for_served_path(monkeypatch, tmp_path):
     from lib.thinclient.retriever import ThinClientRetriever
     r = ThinClientRetriever(index_root="", remote_abstracts=False, splade_model_path="")
 
-    # The gate fires at first load: must be the mmap RuntimeError (missing dir),
-    # NOT a Path-A stock deserialize of a nonexistent file (different exception).
     with pytest.raises(RuntimeError, match=r"mmap dir not found|load_mode=mmap"):
         r._seismic_backend()
 
-
-# ── #3: degrade-to-BM25F — backend failure falls back, RRF still fuses ────────
 
 def test_seismic_backend_failure_degrades_to_bm25f(tmp_path):
     """A backend failure inside `_splade_leg_seismic` degrades to the BM25F
@@ -199,9 +179,6 @@ def test_seismic_backend_failure_degrades_to_bm25f(tmp_path):
     from lib.thinclient.retriever import ThinClientRetriever
 
     r = ThinClientRetriever(index_root="", remote_abstracts=False, splade_model_path="")
-    # A not-yet-_load()ed thinclient has empty BM25F sections, so the BM25F leg
-    # legitimately returns [] for a bogus query — exactly the degrade shape we
-    # assert (no raise). Force the SEISMIC backend to blow up on search:
     class _BoomBackend:
         def search(self, query, top_k, **kw):
             raise RuntimeError("simulated seismic backend failure")
@@ -210,11 +187,7 @@ def test_seismic_backend_failure_degrades_to_bm25f(tmp_path):
     out = r._splade_leg_seismic("climate adaptation coastal", top_k=10, f=None)
     assert isinstance(out, list), \
         "leg failure must degrade to BM25F results, never raise out of the leg"
-    # BM25F leg on an unloaded index: [] is correct (no sections). The point is
-    # the exception was swallowed -> RRF fusion proceeds on the other legs.
 
-
-# ── helpers ───────────────────────────────────────────────────────────────────
 
 class _env_patch:
     """Temporarily overlay env vars (Popen-style os.environmutations are
@@ -237,10 +210,6 @@ class _env_patch:
                 os.environ[k] = old
 
 
-# ── 2026-07-06 promotion guards ───────────────────────────────────────────────
-# Added with the qdrant→seismic default flip + manifest hardening. One test per
-# new load-bearing behavior, same conventions as the three guards above.
-
 def test_default_splade_backend_is_seismic(monkeypatch):
     """The 2026-07-06 promotion: an UNSET SFU_SPLADE_BACKEND must select the
     SEISMIC leg (was `qdrant` 2026-06-24 → 2026-07-06). A regression here
@@ -260,20 +229,18 @@ def test_partial_manifest_refuses_partial_corpus(tmp_path):
     mixed = tmp_path / "mixed_manifest.json"
     mixed.write_text(json.dumps({"shards": [
         {"shard": 0, "mmap_dir": "a.mmap", "index_path": "a.index.seismic"},
-        {"shard": 1, "index_path": "b.index.seismic"},   # no mmap_dir
+        {"shard": 1, "index_path": "b.index.seismic"},
         {"shard": 2, "mmap_dir": "c.mmap", "index_path": "c.index.seismic"},
     ]}))
     with pytest.raises(RuntimeError, match="partial corpus"):
         _load_manifest(str(mixed), load_mode="mmap")
 
-    # declared n_shards must match the record count (aborted-conversion shape)
     short = tmp_path / "short_manifest.json"
     short.write_text(json.dumps({"n_shards": 8, "shards": [
         {"shard": 0, "mmap_dir": "a.mmap"}]}))
     with pytest.raises(RuntimeError, match="n_shards"):
         _load_manifest(str(short), load_mode="mmap")
 
-    # all-records-complete manifests keep working unchanged (both modes)
     ok = tmp_path / "ok_manifest.json"
     ok.write_text(json.dumps({"n_shards": 2, "shards": [
         {"shard": 0, "mmap_dir": "a.mmap", "index_path": "a.index.seismic"},

@@ -1,0 +1,12 @@
+[cell thrash] preflight: mode=fixed3 scale=0.2 cap=3.75g R=1024M L=358M early_sort=none load_order=interleaved
+[cell thrash] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=max
+[cell thrash] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell thrash] post-evict residency: R=0.0000% L=0.0000%
+[cell thrash] load phase: INTERLEAVED sweep, 64 MiB chunks, R=16 L=6 (total 22)
+[cell thrash] load schedule: RRRLRRRLRRLRRRLRRRLRRL
+[cell thrash] load done (order=interleaved, wall=0.404s; read-time L=0.083s R=0.229s)
+[cell thrash] post-load residency: R=100.0000% (262144/262144 pages)  L=100.0000% (91648/91648 pages)
+[cell thrash] pass 1: wall=0.4636s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell thrash] pass 2: wall=0.4613s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell thrash] pass 3: wall=0.4623s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell thrash] cell complete: 3 passes, converged=false, swap_confounded=false

@@ -34,14 +34,14 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 SOURCE_SPOOL = REPO_ROOT / "data/thinclient_index/spool_backup"
 TEST_ROOT = REPO_ROOT / "data/thinclient_test_resume"
-SECTIONS = ["social_sciences", "med_bio"]   # one hot (abstracts), one cold
+SECTIONS = ["social_sciences", "med_bio"]
 HOT_SUBS = ["social_sciences__recent"]
 DOCS_PER_SLICE = 12_000
 N_SLICES = 5
-BMP_SHARD_DOCS = 6_000          # forces mid-slice + boundary rotations
-KILL_FIRST = 8.0                # first kill lands early (tight crash windows)
-KILL_GROWTH = 1.3               # then escalate so the run must converge:
-KILL_CAP = 120.0                # a fixed window < cycle time livelocks
+BMP_SHARD_DOCS = 6_000
+KILL_FIRST = 8.0
+KILL_GROWTH = 1.3
+KILL_CAP = 120.0
 MAX_CHAOS_RUNS = 60
 
 

@@ -58,7 +58,7 @@ else is elastic.
 | F2 | **Hot-set persistence** (colibrì `.coli_usage`) | JSON sidecar per shard: `<shard>.mmap/hotset.json` = sorted list of `(page_start, page_len)` **extents** + the manifest's `forward_format_version` + `forward_reordered` + a generation date; refuse (and log) on key mismatch | E5's `block_walk_canonical` made hot pages contiguous → extents are few and large; version-keying makes E8 Stage-2 reconversion fail-loud instead of pinning garbage |
 | F3 | **Pin tier** (colibrì `pin`) | `mlock_ranges(extents)` pyo3 hook on `MmapSeismicIndex` + budget check: pin ≤ min(dial, `MemAvailable` − floor − headroom) at load, largest-coverage extents first (greedy by touch count — the Q12 counter is the ranking) | mlock-on-mmap keeps zero-copy and needs ~10% of the pread rewrite's code; budget-from-`MemAvailable` is colibrì's own discipline and the no-OOM guarantee |
 | F4 | **Floor prefault → floor pin** (Q9 upgrade) | ~~extend `prefault_floor` with an optional mlock flag (same slabs)~~ → **RESCOPED 2026-08-17**: lock only the posting-list *navigation* runs (block_offsets + EF offsets + inventories) inside `posting_lists.bin`, budget-capped (`SFU_SEISMIC_MLOCK_FLOOR_MB`, default 160 MB total) under the F3 no-OOM guard — §5 step 2 | the same-slabs form pins 1.67 GB/shard = 13.4 GB (min-RAM goal defeated); the navigation runs are the small always-traversed structural subset (153.1 MB/shard, 13.2% of the slab, measured 2026-08-17) and 20 MB/shard of them locks in 1.6 s, parity 5/5. **A/B RUN 2026-08-17: warm p50 1.019× (bar ≤1.05× PASS), parity 10/10 PASS, pressure-refault bar NOT MEASURED — default stays 0** — §5 step 2 |
-| F5 | **Eviction between shards** (mechanism B) | `release_pages_except(pinned_extents)` — range-split `MADV_DONTNEED` around pinned extents | plain DONTNEED **EINVALs on mlocked ranges** (doc 02 §4); the split keeps the sequential ~1-shard residency guarantee for the *unpinned* remainder |
+| F5 | **Eviction between shards** (mechanism B) | `release_pages_except(pinned_extents, keep_structural=False)` — range-split `MADV_DONTNEED` around pinned extents, over **every mapped slab** | plain DONTNEED **EINVALs on mlocked ranges** (doc 02 §4); the split keeps the sequential ~1-shard residency guarantee for the *unpinned* remainder. **SCOPE FIX 2026-08-31**: as built the hook covered only the forward codec slab, which made the 2026-07-14 16 GB cell a null (the residue is structural). Fixed in code + synthetically verified (dv 4.43× / f16 9.85× more bytes covered); real-stack efficacy still UNMEASURED — `11_EXPERIMENT_BACKLOG.md` R1 F5 entry |
 | F6 | **Serving method** | keep Q7 `HybridSeismicBackend` unchanged (sequential-cold → parallel-warm, adaptive flip) | flip threshold is self-derived from observed cold, so a pin tier that lowers cold traverse auto-tightens it — zero new code |
 | F7 | **Software LRU proper** (colibrì `ESlot`/`eclock`) | **omitted** from the combo | with F1–F5, the kernel LRU only manages Tier C, where its blindness is acceptable; a userspace LRU adds policy code for the low-value residual (rung 3 — only if F3 measurably plateaus) |
 | F8 | **PILOT prefetch** | **omitted** (parked, doc 02 §3.3) | cold path is channel-contended (sequential cold < parallel cold, measured 2026-07-09); 3 adjacent negative results |
@@ -294,7 +294,13 @@ bit-identical by construction (residency-only levers; T1 untouched).
    (host-gated)**: `release_pages_except(pinned_extents)` pyo3 hook; range-splits
    `MADV_DONTNEED` around mlocked extents (plain DONTNEED EINVALs on mlocked
    ranges, §4). Not exercised (relevant only under memory pressure on the
-   sequential cold arm — the constrained-host run).
+   sequential cold arm — the constrained-host run). **SCOPE FIX 2026-08-31 —
+   FIXED IN CODE, EFFICACY UNMEASURED ON THE REAL STACK**: the hook released
+   only the forward codec slab, so the one cell that did run it (2026-07-14,
+   16 GB) was a null; it now covers every mapped slab, byte accounting only
+   credits successful `madvise` calls, and `release_pages_except_by_slab()`
+   reports per-slab evidence. Fork commit `2c4d863`; synthetic numbers +
+   caveats in `11_EXPERIMENT_BACKLOG.md` (R1 F5 entry).
 5. Re-run T1 bit-identity + the G6 overlap harness with pinning ON. **DONE
    2026-07-14 — 20/20 BIT-IDENTICAL**: `ParallelSeismicBackend` (2 shards, E8 v2,
    F3 pin 1.6 GB dial = 0.4 GB pinned) produces bit-identical top-50 oaid-order

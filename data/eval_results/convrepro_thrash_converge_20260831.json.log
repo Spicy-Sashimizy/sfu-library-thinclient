@@ -1,0 +1,19 @@
+[cell thrash] preflight: mode=converge scale=1.0 cap=3.75g R=5120M L=1792M early_sort=none
+[cell thrash] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=4026531840
+[cell thrash] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell thrash] post-evict residency: R=0.0000% L=0.0000%
+[cell thrash] load phase: sequential read of L then R (once)
+[cell thrash] load done: L=0.326s R=1.200s | residency after load R=74.8828% L=0.0013%
+[cell thrash] pass 1: wall=97.4339s majflt=571567 ms/fault=0.170468 residency R=74.4665%
+[cell thrash] pass 2: wall=98.5401s majflt=608088 ms/fault=0.162049 residency R=74.3587%
+[cell thrash] pass 3: wall=113.4571s majflt=702117 ms/fault=0.161593 residency R=74.3594%
+[cell thrash] pass 4: wall=101.0238s majflt=608341 ms/fault=0.166064 residency R=74.3590%
+[cell thrash] pass 5: wall=113.5013s majflt=700894 ms/fault=0.161938 residency R=74.3592%
+[cell thrash] pass 6: wall=97.2809s majflt=605853 ms/fault=0.160568 residency R=74.3569%
+[cell thrash] pass 7: wall=116.8317s majflt=703739 ms/fault=0.166016 residency R=74.3569%
+[cell thrash] pass 8: wall=97.7232s majflt=606052 ms/fault=0.161246 residency R=74.3576%
+[cell thrash] pass 9: wall=114.0563s majflt=702321 ms/fault=0.162399 residency R=74.3568%
+[cell thrash] pass 10: wall=100.4191s majflt=606970 ms/fault=0.165443 residency R=74.3568%
+[cell thrash] pass 11: wall=115.2622s majflt=703496 ms/fault=0.163842 residency R=74.3554%
+[cell thrash] pass 12: wall=97.0455s majflt=604727 ms/fault=0.160478 residency R=74.3575%
+[cell thrash] cell complete: 12 passes, converged=false, swap_confounded=false

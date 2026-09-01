@@ -20,8 +20,6 @@ import sys
 
 def main() -> None:
     here = os.path.dirname(os.path.abspath(__file__))
-    # This file ships at <bundle>/regen_seismic_manifest.py (phase 5 copies it to
-    # the bundle root), so default root = its own dir. An explicit arg wins.
     root = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else here
     manifest = os.path.join(root, "seismic", "shards.e5.v2.json")
     if not os.path.isfile(manifest):

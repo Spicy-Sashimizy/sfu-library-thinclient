@@ -32,7 +32,6 @@ REPO = Path(__file__).resolve().parents[2]
 EVAL = REPO / "data" / "eval_results"
 VENV_PY = REPO / ".venv" / "bin" / "python3"
 
-# The serve path's own modules (first-party) — never third-party deps.
 FIRST_PARTY_PREFIX = ("lib.", "scripts.")
 
 

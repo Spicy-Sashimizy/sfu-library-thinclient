@@ -44,7 +44,6 @@ from lib.tools import (
     search_academic_structured,
 )
 
-# Static web GUI (the SFU Library Suite). Served read-only at /app.
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 config = load_config()
@@ -66,32 +65,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     return await handle_tool_call(name, arguments)
 
 
-# ── Startup warmup (WI-6 lesson: /health "up" ≠ /search warm) ────────────────
-# The retrieval stack lazy-loads on first /api/search: SEISMIC shard mmaps,
-# SPLADE ONNX, dense bi-encoder, cross-encoder — measured 2m24s cold
-# (2026-07-18). One background thread runs a real structured search at startup
-# so (a) every model loads sequentially (no concurrent-load meta-tensor race,
-# see lib/hf_load_lock.py) and (b) /health can report `warm`, which
-# web/lib/api.js already consumes for the Search UI's warming state.
-# Gate: SFU_HTTP_WARMUP=0 disables (then `warm` is reported true immediately,
-# matching the pre-warmup contract where the field was absent).
-_WARMUP_STATE = {"state": "disabled"}  # disabled | warming | warm | failed
+_WARMUP_STATE = {"state": "disabled"}
 
 
-# ── Result cache ↔ serve query log bridge (WI-17, contract term 5) ──────────
-# The cache-hit signal must reach the wave-2 serve query log. On a MISS the
-# real search runs inside search_academic_structured (which already calls
-# log_serve_query); that call doesn't know about the cache, so a context-local
-# default is installed and read there to stamp cache_hit=False. On a HIT the
-# search never runs, so api_search logs the hit entry itself below.
-#
-# HOST-NOTE-W7-1 fix (2026-07-18): MUST use contextvars.ContextVar, NOT
-# threading.local. All asyncio requests run on ONE event-loop thread, so a
-# threading.local is effectively a process-global — under concurrent requests,
-# request A's `finally: reset` could clear the value while request B is between
-# its set and its log_serve_query, mislabeling B's cache_hit. A ContextVar is
-# asyncio-task-scoped: each request's task has its own value, set on entry and
-# reset via the token on exit, so concurrent tasks never see each other's flag.
 import contextvars as _contextvars
 _CACHE_HIT_VAR: _contextvars.ContextVar = _contextvars.ContextVar("sfu_cache_hit", default=None)
 _CACHE_HIT_TOKEN: _contextvars.ContextVar = _contextvars.ContextVar("sfu_cache_hit_token", default=None)
@@ -120,7 +96,7 @@ def _wire_cache_hit_log() -> None:
 
         def _patched_log(self, *, cache_hit=None, **kw):
             if cache_hit is None:
-                cache_hit = _thread_cache_hit()  # stamp from the active request
+                cache_hit = _thread_cache_hit()
             return _orig_log(self, cache_hit=cache_hit, **kw)
 
         _sql.QueryLogger.log = _patched_log
@@ -131,13 +107,6 @@ def _wire_cache_hit_log() -> None:
 _wire_cache_hit_log()
 
 
-# A small subject-diverse battery (not one query): each distinct query faults a
-# different region of the SEISMIC forward index, so running several pre-warms a
-# broader slice of the hot working set into page cache. On a native FS those
-# pages STAY resident (measured 2026-07-18: warm p50 ~82 ms, holds across
-# passes), so real user queries increasingly hit warm instead of paying the
-# first-touch cold fault. On a slow 9p mount pages don't hold regardless, so
-# keep the battery small (bounded startup cost; SFU_HTTP_WARMUP=0 disables).
 _WARMUP_QUERIES = [
     "information retrieval evaluation methods",
     "deep learning neural network architecture",
@@ -158,22 +127,11 @@ def _run_warmup() -> None:
         _WARMUP_STATE["state"] = "warm"
         logger.info("Startup warmup complete in %.1fs", time.monotonic() - t0)
     except Exception:
-        # Serve anyway: first real query pays the cold load instead.
         _WARMUP_STATE["state"] = "failed"
         logger.exception("Startup warmup failed; first query will be cold")
 
 
-# ── Post-warmup result-cache pre-seed (deployprep WI-17b, 2026-07-18) ───────
-# Runs STRICTLY AFTER the warmup battery completes (contract term 6) and
-# sequentially (concurrency 1) — never a parallel burst on the single-GPU
-# cross-encoder (the same GPU the served search path uses). Plants the live-
-# review demo's own queries into the result cache so the first human keystroke
-# on each lands a cache HIT, not a cold retrieval. Idempotent: re-running (or
-# re-priming via scripts/prime_result_cache.py) primes MISSES ONLY — a resident
-# query returns from the cache (bump hit, zero retrieval work). Gate:
-# SFU_CACHE_PRESEED=0 disables (default ON — same staging-on posture as the
-# result cache itself; a no-op when SFU_RESULT_CACHE=0).
-_PRESEED_STATE = {"state": "disabled"}  # disabled | pending | primed | failed
+_PRESEED_STATE = {"state": "disabled"}
 
 
 def _collect_preseed_queries() -> list[str]:
@@ -225,10 +183,6 @@ def _run_cache_preseed() -> None:
                     "SFU_CACHE_PRESEED=%s)", cache_enabled, preseed_enabled)
         return
     _PRESEED_STATE["state"] = "pending"
-    # Wait for warmup to complete (strict ordering — term 6). The warmup thread
-    # is a daemon; if it failed, priming would run cold — still safe (the
-    # search path answers cold), but skip priming then to avoid a startup burst
-    # paying the cold load redundantly with the warmup battery.
     while _WARMUP_STATE["state"] == "warming":
         time.sleep(1.0)
     if _WARMUP_STATE["state"] == "failed":
@@ -241,11 +195,6 @@ def _run_cache_preseed() -> None:
     planted = 0
     logger.info("cache pre-seed: planting %d demo seed queries (sequential, "
                 "post-warmup) ...", len(seeds))
-    # Match the demo's default request shape (limit=50, no filters) so the
-    # planted cache key matches a real landing-screen click. Routed through
-    # result_cache.read_through — the SAME cache path api_search takes — so each
-    # prime populates the cache identically to a real first hit (NOT a bare
-    # search_academic_structured call, which would bypass the cache wrapper).
     limit = 50
     warm = _WARMUP_STATE["state"] != "warming"
     for q in seeds:
@@ -271,25 +220,11 @@ async def health_check(request: Request) -> JSONResponse:
     return JSONResponse({
         "status": "ok",
         "tools": len(TOOL_DEFINITIONS),
-        # warming → false (GUI shows its warming message); warm/failed/disabled
-        # → true (the server answers, possibly cold — same as before warmup).
         "warm": state != "warming",
         "warmup": state,
-        # Portable-bundle sequential mode (SFU_SEQUENTIAL_MODE=1, set by the
-        # Windows START.bat in Run-from-USB): the web UI defaults its one-at-a-
-        # time search queue ON from this. Absent/0 on normal installs.
         "sequential": os.environ.get("SFU_SEQUENTIAL_MODE", "0") not in ("", "0", "false", "False", "off", "OFF"),
-        # Result cache hit/miss/store/bypass + resident count (WI-17). The
-        # enabled flag reflects SFU_RESULT_CACHE so an operator can confirm the
-        # one-env rollback took.
         "result_cache": result_cache.counters(),
-        # Post-warmup pre-seed primer state (WI-17b): disabled | pending | primed
-        # | failed. pending = waiting for warmup to finish before planting.
         "cache_preseed": _PRESEED_STATE["state"],
-        # Searchbar keystroke speculation (WI-18): fired / dropped-busy /
-        # suppressed-by-guard / predicted-vs-literal / stores, following the
-        # result_cache counter shape. ``enabled`` reflects SFU_SEARCH_SPECULATE
-        # (default OFF — owner flips the default, not the build).
         "speculation": speculation.counters(),
     })
 
@@ -315,11 +250,6 @@ async def engagement(request: Request) -> JSONResponse:
     n = record_engagement(payload)
     return JSONResponse({"recorded": n})
 
-
-# ── GUI REST endpoints (consumed by web/lib/api.js) ──────────────────────────
-# Thin JSON wrappers so the browser never has to drive the MCP JSON-RPC
-# handshake. Each reuses the existing tool logic. The GUI degrades to mock data
-# on any non-2xx, so these stay simple and surface real errors as 5xx.
 
 def _tool_json(result) -> dict:
     """Parse the first TextContent of a tool result as JSON (tools that emit
@@ -378,30 +308,21 @@ async def api_search(request: Request) -> JSONResponse:
     cache = result_cache.get_cache() if cache_enabled else None
     key = result_cache.make_cache_key(args) if cache is not None else None
 
-    # ── read-through: cache hit? ─────────────────────────────────────────────
     if cache is not None and key is not None:
         try:
             cached = cache.get(key)
         except Exception:
-            # A cache read failure must never fail a search — fall through to a
-            # normal uncached run (and stop using the cache for this process).
             logger.exception("result cache get failed; bypassing cache")
             cached = None
-            cache = None  # NB: local only; process cache is left intact
+            cache = None
         if cached is not None:
             result_cache.bump("hit")
             result_cache.note_cache_hit(True)
-            # The search never ran, so the wave-2 log wouldn't record this query.
-            # Log the hit here so repeat-traffic analysis sees the cache-served
-            # requests too (cache_hit=True, no leg latencies — retrieval skipped).
             _log_cache_served_hit(args, cached)
             return JSONResponse(cached)
 
-    # ── cache miss: run the real search ──────────────────────────────────────
     if cache is not None:
         result_cache.bump("miss")
-        # Stash the miss flag on this thread so the in-search log_serve_query
-        # call (which doesn't know about the cache) records cache_hit=False.
         result_cache.note_cache_hit(False)
     try:
         data = await search_academic_structured(args)
@@ -409,19 +330,15 @@ async def api_search(request: Request) -> JSONResponse:
         logger.exception("GUI search failed")
         return JSONResponse({"error": str(e)}, status_code=500)
     finally:
-        _set_thread_cache_hit(None)  # don't leak across requests/threads
+        _set_thread_cache_hit(None)
 
-    # ── store only on a clean, non-degraded success ──────────────────────────
-    # The WI-9 leg-breaker flag (router.last_degraded) and the WI-13 BM25F
-    # silent-fallback both surface as a degraded note on the response; warmup
-    # must be complete so we don't freeze a half-loaded cold state for the TTL.
     degraded = False
     try:
         from lib.tools import _get_federated_router
         router = _get_federated_router()
         degraded = bool(getattr(router, "last_degraded", False))
     except Exception:
-        degraded = False  # router unavailable → treat as not-degraded (cache ok)
+        degraded = False
     warm = _WARMUP_STATE["state"] != "warming"
     cacheable = result_cache.is_cacheable_response(data, degraded=degraded, warm=warm)
     if cache is not None and cacheable and key is not None:
@@ -429,10 +346,9 @@ async def api_search(request: Request) -> JSONResponse:
             cache.put(key, data)
             result_cache.bump("store")
         except Exception:
-            # Store failure is non-fatal — the response is still returned fresh.
             logger.exception("result cache put failed; returning fresh result")
     elif cache is not None and not cacheable:
-        result_cache.bump("bypass")  # deliberately not cached (bad/degraded)
+        result_cache.bump("bypass")
     return JSONResponse(data)
 
 
@@ -462,12 +378,7 @@ async def api_speculate(request: Request) -> JSONResponse:
         return JSONResponse({"error": "missing 'query'"}, status_code=400)
     typed = args["query"]
     limit = max(1, min(int(args.get("limit", 50)), 50))
-    # WI-19b: request-level force_literal override (the novel-query arm-C leg).
-    # Default False = predictor path. Lets the bench measure predictor vs
-    # literal in ONE serve lifetime (no ~5-min re-warm restart to flip the
-    # SFU_SPECULATE_LITERAL env between legs on 9p).
     force_literal = bool(args.get("force_literal"))
-    # Term-3 guards: read the live serve state the cache path itself uses.
     warm = _WARMUP_STATE["state"] != "warming"
     degraded = False
     shed = False
@@ -475,8 +386,6 @@ async def api_speculate(request: Request) -> JSONResponse:
         from lib.tools import _get_federated_router
         router = _get_federated_router()
         degraded = bool(getattr(router, "last_degraded", False))
-        # WI-11 overload/shed: the same router exposes a shedding flag if the
-        # shed path armed. Absent ⇒ not shedding (the flag was added WI-11).
         shed = bool(getattr(router, "shedding", False))
     except Exception:
         degraded = False
@@ -542,9 +451,6 @@ async def lifespan(app: Starlette) -> AsyncIterator[None]:
             _WARMUP_STATE["state"] = "warming"
             threading.Thread(target=_run_warmup, name="startup-warmup",
                              daemon=True).start()
-        # Post-warmup result-cache pre-seed (WI-17b): the primer thread waits
-        # for warmup to complete internally, so it's safe to start alongside.
-        # SFU_CACHE_PRESEED=0 disables; no-op when SFU_RESULT_CACHE=0.
         if os.environ.get("SFU_CACHE_PRESEED", "1") != "0":
             threading.Thread(target=_run_cache_preseed,
                              name="cache-preseed", daemon=True).start()
@@ -563,8 +469,6 @@ _routes = [
     Route("/app", app_root, methods=["GET"]),
 ]
 
-# Serve the static web GUI only if the bundle is present (keeps the server
-# usable in headless/index-only deployments that don't ship the GUI).
 if WEB_DIR.is_dir():
     _routes.append(Mount("/app", app=StaticFiles(directory=str(WEB_DIR), html=True)))
     logger.info("Serving web GUI from %s at /app", WEB_DIR)

@@ -48,7 +48,6 @@ def seed_queries() -> list[str]:
             line = line.strip()
             if line and not line.startswith("#"):
                 out.append(line)
-    # de-dup preserving order
     seen, dedup = set(), []
     for q in out:
         nq = " ".join(q.split()).casefold()
@@ -91,11 +90,9 @@ def capture(base: str, tag: str):
     out = {"tag": tag, "cache_enabled": rc_enabled, "responses": []}
     for q in seeds:
         args = {"query": q, "limit": DEFAULT_LIMIT}
-        # OFF: one request, the fresh path. ON: TWO requests — the first primes
-        # (stores), the second is the cached value we compare against OFF.
         st1, d1 = http("POST", f"{base}/api/search", body=args)
         if rc_enabled:
-            st2, d2 = http("POST", f"{base}/api/search", body=args)  # the cache hit
+            st2, d2 = http("POST", f"{base}/api/search", body=args)
             payload = d2
         else:
             payload = d1
@@ -106,7 +103,6 @@ def capture(base: str, tag: str):
     path = REPO / "data" / "eval_results" / f"result_cache_parity_{tag}.json"
     path.write_text(json.dumps(out, indent=2, ensure_ascii=False))
     print(f"→ {path}")
-    # also stash the env state for the compare step
     out["_path"] = str(path)
     return out
 
@@ -130,7 +126,6 @@ def compare():
         d_off = off_map[q]["data"]
         d_on = on_map.get(q, {}).get("data")
         equal = d_off == d_on
-        # Detailed diff if mismatch (which top-level keys differ)
         diff = None
         if not equal:
             diff = {k: ("off=%r on=%r" % (d_off.get(k), d_on.get(k)))
@@ -139,7 +134,6 @@ def compare():
         all_pass = all_pass and equal
         print(f"  {q[:55]!r:58} {'PASS' if equal else 'FAIL'}"
               + (f"  diff={diff}" if diff else ""))
-    # Merge into the AB JSON as B2_off_vs_on
     ab = json.loads(AB_JSON.read_text())
     ab["B2_off_vs_on"] = {
         "method": "serve restart SFU_RESULT_CACHE=0 (fresh path) vs =1 (cache hit); "

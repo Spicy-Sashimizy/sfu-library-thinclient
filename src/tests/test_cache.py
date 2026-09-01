@@ -19,7 +19,7 @@ class TestResponseCache:
         assert cache.get("nonexistent") is None
 
     def test_ttl_expiry(self):
-        cache = ResponseCache(ttl=0)  # immediate expiry
+        cache = ResponseCache(ttl=0)
         cache.put("key1", "value")
         time.sleep(0.01)
         assert cache.get("key1") is None
@@ -29,7 +29,7 @@ class TestResponseCache:
         cache.put("k1", "v1")
         cache.put("k2", "v2")
         cache.put("k3", "v3")
-        cache.put("k4", "v4")  # should evict k1
+        cache.put("k4", "v4")
         assert cache.get("k1") is None
         assert cache.get("k4") == "v4"
         assert cache.size <= 3
@@ -39,19 +39,14 @@ class TestResponseCache:
         cache.put("k1", "v1")
         cache.put("k2", "v2")
         cache.put("k3", "v3")
-        # Access k1 to make it most recently used
         cache.get("k1")
-        cache.put("k4", "v4")  # should evict k2 (least recently used)
+        cache.put("k4", "v4")
         assert cache.get("k1") == "v1"
         assert cache.get("k2") is None
 
     def test_memory_bounds(self):
-        # Very small memory limit
         cache = ResponseCache(ttl=60, max_size=1000, max_memory_mb=0)
-        # max_memory_bytes = 0, so cache should evict immediately
         cache.put("k1", "x" * 100)
-        # The entry should still exist (it's the only one, added after eviction check)
-        # But subsequent puts should evict
         cache.put("k2", "y" * 100)
         assert cache.size <= 1
 

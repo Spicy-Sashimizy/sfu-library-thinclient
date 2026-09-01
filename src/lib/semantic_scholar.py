@@ -88,7 +88,6 @@ class SemanticScholarClient:
                     timeout=self.timeout,
                 )
                 if resp.status_code == 429:
-                    # S2 free tier: 100 req / 5 min — use a longer base delay on 429
                     delay = min(self._retry_base_delay * (4 ** attempt), 120.0)
                     logger.warning(
                         "Semantic Scholar rate limited (429), retry %d/%d after %.1fs",
@@ -109,10 +108,6 @@ class SemanticScholarClient:
                     "Semantic Scholar request timed out, retry %d/%d after %.1fs",
                     attempt + 1, self._max_retries, delay,
                 )
-                # Record the breaker failure ONCE per logical request — only on
-                # the final exhausted attempt. Recording per-attempt over-counts
-                # (max_retries=3 → 4 failures) and trips a threshold-5 breaker
-                # after a single failing request.
                 if attempt >= self._max_retries:
                     self._breaker.record_failure()
                 else:
@@ -120,9 +115,6 @@ class SemanticScholarClient:
             except requests.HTTPError as e:
                 last_exc = e
                 status = getattr(e.response, "status_code", None)
-                # A non-429 client error (4xx) reflects a bad input (e.g. unknown
-                # paper ID/DOI -> 404), not a service outage. Don't retry and don't
-                # count it against the circuit breaker — just return None.
                 if status is not None and 400 <= status < 500 and status != 429:
                     logger.warning(
                         "Semantic Scholar client error %s — not retrying: %s",

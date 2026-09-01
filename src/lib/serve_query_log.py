@@ -86,9 +86,6 @@ from pathlib import Path
 
 log = logging.getLogger("serve_query_log")
 
-# serve_query_log.py lives at src/lib/serve_query_log.py → parents[0]=lib,
-# parents[1]=src, parents[2]=repo root. (Compare sharded_seismic_backend.py at
-# src/lib/thinclient/, which needs parents[3] for one more dir level.)
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_PATH = "data/eval_results/serve_query_log.jsonl"
 
@@ -107,8 +104,6 @@ def _staging_default() -> bool:
         return True
     profile = os.environ.get("SFU_ACTIVE_PROFILE", "default")
     env = os.environ.get("SFU_ENV", "")
-    # default profile / unset env == staging-on; an explicit 'production' env
-    # is the only thing that defaults OFF (defense-in-depth: prod ops must opt in).
     return profile.lower() != "production" and env.lower() != "production"
 
 
@@ -176,7 +171,6 @@ class QueryLogger:
         if inst is not None:
             inst.close()
 
-    # ── hot path ───────────────────────────────────────────────────────────────
 
     def log(self, *, query: str, k: int, mode: str, backend: str = "",
              federation: str = "", leg_ms: dict | None = None,
@@ -204,7 +198,7 @@ class QueryLogger:
         entry = {
             "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "query_hash": qhash,
-            "query_norm": qnorm[:200] if self.store_raw else "",  # raw only if opted in
+            "query_norm": qnorm[:200] if self.store_raw else "",
             "k": k,
             "mode": mode,
             "backend": backend,
@@ -214,10 +208,7 @@ class QueryLogger:
             "result_fp": rfp,
             "filtered": bool(filtered),
             "session": self._session,
-            # WI-17: None (absent) when the result cache is off; True/False when on.
             "cache_hit": cache_hit,
-            # WI-18: True when this was a searchbar speculation (term 5). None
-            # (absent) for ordinary traffic so analytics stays uncontaminated.
             "speculative": speculative,
         }
         try:
@@ -229,11 +220,9 @@ class QueryLogger:
                             "(buffer=%d); logging can't keep up (slow disk?)",
                             self._dropped, self._q.maxsize)
 
-    # ── writer thread ──────────────────────────────────────────────────────────
 
     def _open(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        # Append mode so a restart resumes the existing file; track bytes for rotation.
         self._fh = open(self.path, "a", encoding="utf-8")
         try:
             self._bytes_written = self.path.stat().st_size
@@ -257,7 +246,7 @@ class QueryLogger:
         self._open()
         while True:
             entry = self._q.get()
-            if entry is None:  # shutdown sentinel
+            if entry is None:
                 break
             try:
                 line = json.dumps(entry, ensure_ascii=False) + "\n"
@@ -285,19 +274,16 @@ class QueryLogger:
         try:
             self._q.put_nowait(None)
         except queue.Full:
-            pass  # full queue: can't signal; the daemon thread exits with the process
+            pass
         if self._thread.is_alive() and self._thread is not threading.current_thread():
             self._thread.join(timeout=5.0)
 
-    # ── test/diagnostics surface ──────────────────────────────────────────────
 
     def stats(self) -> dict:
         return {"enabled": self.enabled, "path": str(self.path),
                 "max_bytes": self.max_bytes, "dropped": self._dropped,
                 "session": self._session, "store_raw": self.store_raw}
 
-
-# ── helpers ────────────────────────────────────────────────────────────────────
 
 def _normalize_query(q: str) -> str:
     """Lowercase + collapse whitespace + strip outer punctuation. The
@@ -326,8 +312,6 @@ def _int_env(name: str, default: int) -> int:
         log.warning("serve_query_log: %s=%r not int, using %d", name, v, default)
         return default
 
-
-# ── convenience: the one-call sink the retriever/tools path uses ───────────────
 
 def log_serve_query(*, query: str, k: int, mode: str, backend: str = "",
                     federation: str = "", leg_ms: dict | None = None,

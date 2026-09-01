@@ -1,0 +1,13 @@
+[cell boundary] preflight: mode=converge scale=0.2 cap=5.75g R=1024M L=358M early_sort=none load_order=interleaved
+[cell boundary] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=max
+[cell boundary] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell boundary] post-evict residency: R=0.0000% L=0.0000%
+[cell boundary] load phase: INTERLEAVED sweep, 64 MiB chunks, R=16 L=6 (total 22)
+[cell boundary] load schedule: RRRLRRRLRRLRRRLRRRLRRL
+[cell boundary] load done (order=interleaved, wall=0.569s; read-time L=0.127s R=0.351s)
+[cell boundary] post-load residency: R=100.0000% (262144/262144 pages)  L=100.0000% (91648/91648 pages)
+[cell boundary] pass 1: wall=0.4618s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] pass 2: wall=0.4512s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] pass 3: wall=0.4626s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell boundary] converged at pass 3 (plateau_within_10pct_x2_and_majflt_zero)
+[cell boundary] cell complete: 3 passes, converged=true, swap_confounded=false

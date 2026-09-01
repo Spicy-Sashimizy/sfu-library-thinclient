@@ -1,0 +1,16 @@
+[cell marginal] preflight: mode=converge scale=1.0 cap=6.25g R=5120M L=1792M early_sort=guided load_order=interleaved
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=6710886400
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase: INTERLEAVED sweep, 64 MiB chunks, R=80 L=28 (total 108)
+[cell marginal] load schedule: RRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLRRRLRRRLRRRLRRRLRRRLRRL
+[cell marginal] load done (order=interleaved, wall=3.059s; read-time L=0.692s R=1.970s)
+[cell marginal] post-load residency: R=91.9687% (1205452/1310720 pages)  L=93.7674% (430160/458752 pages)
+[cell marginal] early sort [guided]: vmtouch -e on L only
+[cell marginal] early sort [guided] done in 0.0349s: residency now R=91.9687% L=0.0000%
+[cell marginal] pass 1: wall=19.6341s majflt=105268 ms/fault=0.186515 residency R=100.0000%
+[cell marginal] pass 2: wall=1.2771s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 3: wall=1.3409s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 4: wall=1.4142s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] converged at pass 4 (plateau_within_10pct_x2_and_majflt_zero)
+[cell marginal] cell complete: 4 passes, converged=true, swap_confounded=false

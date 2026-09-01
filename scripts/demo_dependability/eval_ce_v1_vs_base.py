@@ -41,8 +41,8 @@ EVAL = REPO / "data" / "eval_results"
 QRELS = EVAL / "dense_ablation_qrels_20260817.json"
 POOL = EVAL / "dense_ablation_pool_20260817.json"
 DOCS = EVAL / "dense_ablation_pool_docs_20260817.json"
-RRF_K = 60          # retriever.RRF_K
-CE_POOL = 20        # reranker._CE_CANDIDATE_POOL
+RRF_K = 60
+CE_POOL = 20
 NDCG_K = 10
 BOOT = 10_000
 
@@ -107,7 +107,6 @@ def main() -> None:
         per_form.append(row)
     elapsed = time.perf_counter() - t0
 
-    # topic-level aggregation: a topic's value per arm = mean over its forms
     topics: dict[str, dict[str, list[float]]] = {}
     for row in per_form:
         t = topics.setdefault(row["judge_key"], {"none": [], "base": [], "v1": []})

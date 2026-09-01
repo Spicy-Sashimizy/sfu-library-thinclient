@@ -30,10 +30,6 @@ from lib.thinclient.abstracts import (  # noqa: E402
     AbstractLocator, AbstractLocatorMismatch, AbstractStore, AbstractStoreWriter,
     _encode_wid, build_flat_sidecar, build_ordinal_locator)
 
-# W-ids deliberately out of insertion order (the locator must sort them), plus
-# two ids the encoder rejects: "W0100" (leading zero -> docs_other class) and
-# "Wxyz" (non-numeric). Both exercise hazard 2 — the locator skips them and the
-# store must still return them via the SQLite `docs` path.
 DOCS = {
     "W300": "the third social science abstract, on network effects",
     "W100": "the first abstract concerns archival methods and provenance",
@@ -57,19 +53,17 @@ def store(tmp_path):
         w.add(doc_id, text)
     w.finish()
 
-    build_flat_sidecar(src)                         # writes flat_store.json
+    build_flat_sidecar(src)
     flat_dir = src.with_suffix(src.suffix + ".flat")
-    build_ordinal_locator(src, flat_dir)            # writes loc_*.npy + locator.json
+    build_ordinal_locator(src, flat_dir)
     return src, flat_dir
 
-
-# ── it serves, and it serves the same bytes as SQLite ────────────────────────
 
 def test_matching_pair_serves_every_document(store):
     src, flat_dir = store
     s = AbstractStore(src)
-    assert s._locator is not None                   # the locator attached
-    assert s.fetch(list(DOCS)) == DOCS              # byte-identical to input
+    assert s._locator is not None
+    assert s.fetch(list(DOCS)) == DOCS
 
 
 def test_locator_path_equals_the_sqlite_docs_path(store):
@@ -78,7 +72,7 @@ def test_locator_path_equals_the_sqlite_docs_path(store):
     src, flat_dir = store
     with_loc = AbstractStore(src).fetch(list(DOCS))
 
-    (flat_dir / LOCATOR_STAMP).unlink()             # -> serve via SQLite docs
+    (flat_dir / LOCATOR_STAMP).unlink()
     s = AbstractStore(src)
     assert s._locator is None
     assert s.fetch(list(DOCS)) == with_loc == DOCS
@@ -87,12 +81,10 @@ def test_locator_path_equals_the_sqlite_docs_path(store):
 def test_lookup_reports_hits_misses_and_non_wids(store):
     _, flat_dir = store
     loc = AbstractLocator(flat_dir)
-    ids = ["W200", "W999", "Wxyz", "W100"]          # hit, absent, non-wid, hit
+    ids = ["W200", "W999", "Wxyz", "W100"]
     _, found = loc.lookup(ids)
     assert list(found) == [True, False, False, True]
 
-
-# ── the identity gate: one test per broken pairing ───────────────────────────
 
 def test_matching_locator_loads(store):
     _, flat_dir = store
@@ -163,8 +155,6 @@ def test_a_mismatched_locator_takes_the_store_down(store):
         AbstractStore(src)
 
 
-# ── the miss contract (hazard 2) ─────────────────────────────────────────────
-
 def test_non_wid_documents_keep_the_sqlite_path(store):
     """The leading-zero and non-numeric ids are unaddressable by the ordinal
     locator, but they are real documents and must not vanish — the store falls
@@ -193,8 +183,6 @@ def test_skipped_non_wid_count_is_recorded(store):
     assert stamp["rows"] == len(WID_ONLY)
 
 
-# ── build-time guards ────────────────────────────────────────────────────────
-
 def test_build_requires_the_flat_sidecar_first(tmp_path):
     """The locator binds to the flat store's identity, which does not exist
     until the sidecar is built."""
@@ -211,15 +199,11 @@ def test_build_refuses_a_source_that_did_not_make_these_blocks(store):
     would certify a false pairing — the build refuses rather than certify it."""
     src, flat_dir = store
     flat = json.loads((flat_dir / FLAT_STAMP).read_text())
-    flat["source"]["bytes"] += 1                    # pretend a different source
+    flat["source"]["bytes"] += 1
     (flat_dir / FLAT_STAMP).write_text(json.dumps(flat))
     with pytest.raises(ValueError, match="not the source"):
         build_ordinal_locator(src, flat_dir)
 
-
-# ── the encoder pin (doc 18's first real bug) ────────────────────────────────
-
-# ── dict rehoming + SQLite-free serving (doc 18 §18) ─────────────────────────
 
 def test_dicts_are_rehomed_into_the_sidecar(store):
     """build_flat_sidecar copies the trained zstd dicts beside blocks.bin, so
@@ -228,10 +212,10 @@ def test_dicts_are_rehomed_into_the_sidecar(store):
     the manifest must reflect exactly that, zero dict files.)"""
     _, flat_dir = store
     meta = json.loads((flat_dir / DICTS_STAMP).read_text())
-    assert meta[FLAT_ID_KEY]                          # bound to these blocks
-    assert meta["names"]                              # positional dict ids exist
+    assert meta[FLAT_ID_KEY]
+    assert meta["names"]
     on_disk = {p.name for p in flat_dir.iterdir() if p.name.startswith("zdict")}
-    assert set(meta["files"]) == on_disk             # manifest matches reality
+    assert set(meta["files"]) == on_disk
 
 
 def test_trained_dicts_rehome_and_serve_identically(tmp_path):
@@ -242,7 +226,7 @@ def test_trained_dicts_rehome_and_serve_identically(tmp_path):
     rng = random.Random(3)
     vocab = [f"term{i}" for i in range(400)]
     docs = {f"W{1000 + i}": " ".join(rng.choice(vocab) for _ in range(60))
-            for i in range(600)}                     # > DICT_MIN_DOCS, real text
+            for i in range(600)}
 
     src = tmp_path / "abstracts.sqlite"
     w = AbstractStoreWriter(src)
@@ -252,13 +236,13 @@ def test_trained_dicts_rehome_and_serve_identically(tmp_path):
     build_flat_sidecar(src)
     flat_dir = src.with_suffix(src.suffix + ".flat")
     build_ordinal_locator(src, flat_dir)
-    assert (flat_dir / "zdict_latin").exists()       # a real trained dict rehomed
+    assert (flat_dir / "zdict_latin").exists()
 
     ids = list(docs)
     from_sidecar = AbstractStore(src).fetch(ids)
     (flat_dir / DICTS_STAMP).unlink()
     from_sqlite = AbstractStore(src).fetch(ids)
-    (flat_dir / DICTS_STAMP)  # restore below by rebuilding manifest
+    (flat_dir / DICTS_STAMP)
     from lib.thinclient.abstracts import dump_dict_sidecar
     dump_dict_sidecar(src, flat_dir)
     src.rename(src.with_suffix(".sqlite.deleted"))
@@ -272,7 +256,7 @@ def test_sqlite_dicts_and_sidecar_dicts_serve_identically(store):
     otherwise deletion silently corrupts every abstract."""
     src, flat_dir = store
     from_sidecar = AbstractStore(src).fetch(list(DOCS))
-    (flat_dir / DICTS_STAMP).unlink()                 # force the SQLite dict path
+    (flat_dir / DICTS_STAMP).unlink()
     from_sqlite = AbstractStore(src).fetch(list(DOCS))
     assert from_sidecar == from_sqlite == DOCS
 
@@ -281,10 +265,9 @@ def test_serves_with_abstracts_sqlite_deleted(store):
     """The end state: abstracts.sqlite gone, everything served from the flat
     sidecar (blocks + locator + dicts), no SQLite connection at all."""
     src, _ = store
-    src.rename(src.with_suffix(".sqlite.deleted"))     # abstracts.sqlite is gone
+    src.rename(src.with_suffix(".sqlite.deleted"))
     s = AbstractStore(src)
     assert s._sqlite_free is True and s._db is None
-    # Every addressable (W-number) doc is served byte-identically.
     assert s.fetch(list(WID_ONLY)) == WID_ONLY
 
 
@@ -296,7 +279,7 @@ def test_sqlite_free_drops_unaddressable_ids(store):
     src.rename(src.with_suffix(".sqlite.deleted"))
     s = AbstractStore(src)
     got = s.fetch(list(DOCS))
-    assert got == WID_ONLY                              # the NON_WID docs vanish
+    assert got == WID_ONLY
     assert set(got) & set(NON_WID) == set()
 
 
@@ -343,13 +326,6 @@ def test_encoder_agrees_with_the_builder_on_a_sweep():
         assert _encode_wid(p) == encode_meta_id(p), p
 
 
-# ── locator pre-fault, the §23 first-touch mitigation ────────────────────────
-# J1 (doc 18 §23) measured a freshly started process serving flat at 0.919x
-# sqlite until its 421 MB of mmap'd loc_*.npy are resident. SFU_ABSTRACTS_PREFAULT=1
-# touches them once at load instead. It is residency-only, so the contract these
-# tests hold is: OFF changes nothing, ON changes nothing a caller can observe
-# except the stats dict, and a pre-fault that fails still serves.
-
 @pytest.fixture
 def big_store(tmp_path):
     """A locator whose columns span many pages, so the strided page touch has
@@ -392,10 +368,10 @@ def test_prefault_touches_every_column_and_reports_what_it_did(store, monkeypatc
     s = AbstractStore(src)
     st = s.prefault_stats
     assert st is not None and st["error"] is None
-    assert st["columns"] == 4                        # wids + b + off + n
+    assert st["columns"] == 4
     expected = sum(np.load(flat_dir / f"loc_{c}.npy", mmap_mode="r").nbytes
                    for c in ("wids", "b", "off", "n"))
-    assert st["bytes"] == expected                   # every byte of the locator
+    assert st["bytes"] == expected
     assert st["ms"] >= 0.0
 
 
@@ -421,7 +397,7 @@ def test_prefault_walks_a_multipage_locator_byte_identically(big_store, monkeypa
     on = AbstractStore(src)
     st = on.prefault_stats
     assert st["error"] is None and st["columns"] == 4
-    assert st["bytes"] > 4096 * 4                    # genuinely multi-page
+    assert st["bytes"] > 4096 * 4
     ids = list(docs)
     assert on.fetch(ids) == off.fetch(ids) == docs
 
@@ -437,10 +413,10 @@ def test_prefault_failure_is_non_fatal(store, monkeypatch):
 
     monkeypatch.setattr(abstracts, "_touch_pages", boom)
     monkeypatch.setenv(PREFAULT_ENV, "1")
-    s = AbstractStore(src)                            # must NOT raise
+    s = AbstractStore(src)
     assert s.prefault_stats["error"].startswith("OSError")
     assert s.prefault_stats["bytes"] == 0
-    assert s.fetch(list(DOCS)) == DOCS                # serving is unaffected
+    assert s.fetch(list(DOCS)) == DOCS
 
 
 def test_prefault_applies_in_sqlite_free_mode(store, monkeypatch):
@@ -459,7 +435,7 @@ def test_prefault_without_a_locator_records_nothing(store, monkeypatch):
     """No locator attached => nothing to pre-fault; the gate must not invent a
     stats dict (or touch the SQLite `docs` path) just because it is set."""
     src, flat_dir = store
-    (flat_dir / LOCATOR_STAMP).unlink()               # serve via SQLite docs
+    (flat_dir / LOCATOR_STAMP).unlink()
     monkeypatch.setenv(PREFAULT_ENV, "1")
     s = AbstractStore(src)
     assert s._locator is None and s.prefault_stats is None

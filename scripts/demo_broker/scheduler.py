@@ -22,9 +22,9 @@ from datetime import datetime
 
 
 class DropletStatus(str, enum.Enum):
-    DOWN = "down"        # destroyed / never created
-    BOOTING = "booting"  # create issued, not yet /health-ready
-    UP = "up"            # /health-ready, serving
+    DOWN = "down"
+    BOOTING = "booting"
+    UP = "up"
 
 
 class Action(str, enum.Enum):
@@ -42,12 +42,8 @@ class Decision:
 @dataclass
 class BrokerState:
     status: DropletStatus = DropletStatus.DOWN
-    # minutes since the droplet last served a query (None => never / not up)
     idle_minutes: float | None = None
-    # cumulative droplet runtime accrued so far *today* (local-tz day), in hours
     runtime_hours_today: float = 0.0
-    # set by an after-hours /start click; lets the scheduler keep it up while a
-    # human session is live even though the business window is closed
     on_demand_session: bool = False
 
 
@@ -68,7 +64,6 @@ def in_business_window(now: datetime, *, start_hour: int, end_hour: int,
 
 def decide(now: datetime, state: BrokerState, cfg) -> Decision:
     """Return the action the scheduler tick should take. Pure function of inputs."""
-    # 1) Hard killswitch — budget backstop, overrides everything.
     if state.status in (DropletStatus.UP, DropletStatus.BOOTING):
         if state.runtime_hours_today >= cfg.max_runtime_hours_per_day:
             return Decision(Action.DESTROY,
@@ -83,14 +78,11 @@ def decide(now: datetime, state: BrokerState, cfg) -> Decision:
         prewarm_minutes=cfg.prewarm_minutes,
     )
 
-    # 2) Business hours: keep it hot. Boot if down; never reap on idle.
     if hot:
         if state.status == DropletStatus.DOWN:
             return Decision(Action.BOOT, "schedule: business-hours prewarm/keep-hot")
         return Decision(Action.NONE, "business hours: hot, idle reaper suppressed")
 
-    # 3) After hours: scale-to-zero. Only an on-demand session keeps it alive,
-    #    and only until it goes idle.
     if state.status in (DropletStatus.UP, DropletStatus.BOOTING):
         if not state.on_demand_session:
             return Decision(Action.DESTROY, "after-hours: no active on-demand session")
@@ -100,5 +92,4 @@ def decide(now: datetime, state: BrokerState, cfg) -> Decision:
                             f">= {cfg.idle_minutes}m")
         return Decision(Action.NONE, "after-hours: on-demand session active")
 
-    # 4) After hours, already down: do nothing (a /start click triggers wake out-of-band).
     return Decision(Action.NONE, "after-hours: down, awaiting on-demand wake")

@@ -11,8 +11,6 @@ import os
 
 import pytest
 
-# Wipe any staging-default env BEFORE importing result_cache, then (re)import a
-# clean module so is_enabled reflects the test env, not the shell.
 for _v in ("SFU_RESULT_CACHE", "SFU_ACTIVE_PROFILE", "SFU_ENV"):
     os.environ.pop(_v, None)
 os.environ["SFU_RESULT_CACHE"] = "1"
@@ -23,9 +21,6 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from lib import result_cache  # noqa: E402
 importlib.reload(result_cache)
-
-
-# ── term 2: normalized, versioned key ───────────────────────────────────────
 
 
 class TestCacheKey:
@@ -69,10 +64,6 @@ class TestCacheKey:
     def test_manifest_stamp_in_key(self):
         """An index/model swap (different stamp) rotates the key — never serves
         stale results (term 2). The stamp appears in the key string."""
-        # Without a thinclient retriever wired the stamp is the stable
-        # 'openalex-only' sentinel — but the recipe still embeds whatever stamp
-        # is in effect, so two calls with the same args collide (controlled
-        # below by injecting an explicit stamp).
         k = result_cache.make_cache_key({"query": "q", "limit": 10}, stamp="stamp-A")
         k2 = result_cache.make_cache_key({"query": "q", "limit": 10}, stamp="stamp-B")
         assert k != k2
@@ -83,9 +74,6 @@ class TestCacheKey:
         """The leading version tag is present (bump it if the recipe changes)."""
         k = result_cache.make_cache_key({"query": "q", "limit": 10}, stamp="x")
         assert k.startswith("v1|")
-
-
-# ── term 3: never cache a bad response ──────────────────────────────────────
 
 
 class TestCacheability:
@@ -133,14 +121,10 @@ class TestCacheability:
             {"results": [], "error": "something"}, degraded=False, warm=True)
 
 
-# ── term 1 + counters: cache-failure fall-through + observability ───────────
-
-
 class TestCacheOpsAndCounters:
     def test_env_gate_off_disables(self, monkeypatch):
         monkeypatch.setenv("SFU_RESULT_CACHE", "0")
         importlib.reload(result_cache)
-        # Force the cached cache instance to None when disabled
         result_cache._cache = None
         assert result_cache.is_enabled() is False
         assert result_cache.get_cache() is None
@@ -148,7 +132,7 @@ class TestCacheOpsAndCounters:
     def test_env_gate_on_enables(self, monkeypatch):
         monkeypatch.setenv("SFU_RESULT_CACHE", "1")
         importlib.reload(result_cache)
-        result_cache._cache = None  # rebuild under the gate
+        result_cache._cache = None
         assert result_cache.is_enabled() is True
         c = result_cache.get_cache()
         assert c is not None
@@ -178,13 +162,9 @@ class TestCacheOpsAndCounters:
             def put(self, key, value):
                 raise RuntimeError("simulated cache write failure")
 
-        # The serve path checks `cache.get(key)` inside try/except; verify a raw
-        # poisoned cache.get() raises (so the wrapper's except is what protects).
         pc = _PoisonedCache()
         with pytest.raises(RuntimeError):
             pc.get("k")
-        # And the module's counters reflect a bypass when store fails by
-        # incrementing nothing (the serve path returns fresh data regardless).
         before = result_cache.counters()
         result_cache.bump("bypass")
         after = result_cache.counters()
@@ -197,7 +177,7 @@ class TestCacheOpsAndCounters:
         cache = result_cache.get_cache()
         k = result_cache.make_cache_key({"query": "climate adaptation", "limit": 5},
                                         stamp="test-stamp")
-        assert cache.get(k) is None  # miss
+        assert cache.get(k) is None
         data = {"results": [{"id": "a"}], "meta": {"count": 1}}
         cache.put(k, data)
         got = cache.get(k)
@@ -211,14 +191,9 @@ class TestCacheOpsAndCounters:
         cache = result_cache.get_cache()
         k = result_cache.make_cache_key({"query": "q", "limit": 5}, stamp="t")
         bad = {"error": "down"}
-        # The serve path only calls cache.put when is_cacheable_response is True.
         cacheable = result_cache.is_cacheable_response(bad, degraded=True, warm=True)
         assert cacheable is False
-        # Therefore nothing is stored:
         assert cache.get(k) is None
-
-
-# ── WI-17b: pre-seed seed-list collection + read_through ---------------------
 
 
 class TestPreseedCollection:
@@ -232,8 +207,6 @@ class TestPreseedCollection:
                                        "scripts"))
         import prime_result_cache as p
         landing = p.landing_example_queries()
-        # The 4 landing examples are read from web/src/search.jsx (the SOURCE —
-        # authoritative over the compiled web/search.js artifact).
         assert "indigenous knowledge systems in climate adaptation" in landing
         assert "CRISPR gene editing in salmon, open access" in landing
         assert "climate change BC fisheries 2020–2025" in landing
@@ -256,7 +229,6 @@ class TestPreseedCollection:
                                        "scripts"))
         import prime_result_cache as p
         seeds = p.collect_seeds()
-        # landing (4) + file (6) with 4 overlapping → 6 unique
         assert len(seeds) == 6
         norms = [" ".join(s["query"].split()).casefold() for s in seeds]
         assert len(set(norms)) == len(norms), "must be de-duplicated"
@@ -267,7 +239,6 @@ class TestPreseedCollection:
         import sys, os
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
         import prime_result_cache as p_std
-        # Import the serve module's collector without booting uvicorn.
         os.environ.setdefault("SFU_HTTP_WARMUP", "0")
         import sfu_library_mcp_http as m
         serve_seeds = m._collect_preseed_queries()

@@ -1,0 +1,11 @@
+[cell marginal] preflight: mode=fixed3 scale=1.0 cap=6.25g R=5120M L=1792M early_sort=none load_order=r_then_l
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=6710886400
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase [EXPLORATORY ORDER ARM]: sequential read of R then L (once)
+[cell marginal] load done (order=r_then_l, wall=3.544s; read-time L=0.742s R=2.797s)
+[cell marginal] post-load residency: R=89.8828% (1178112/1310720 pages)  L=100.0000% (458752/458752 pages)
+[cell marginal] pass 1: wall=42.0806s majflt=233448 ms/fault=0.180257 residency R=89.6075%
+[cell marginal] pass 2: wall=47.9683s majflt=266095 ms/fault=0.180268 residency R=89.5184%
+[cell marginal] pass 3: wall=49.7932s majflt=275840 ms/fault=0.180515 residency R=89.4305%
+[cell marginal] cell complete: 3 passes, converged=false, swap_confounded=false

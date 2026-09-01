@@ -1,0 +1,10 @@
+[cell fits] preflight: mode=fixed3 scale=1.0 cap=10g R=5120M L=1792M early_sort=none
+[cell fits] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=10737418240
+[cell fits] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell fits] post-evict residency: R=0.0000% L=0.0000%
+[cell fits] load phase: sequential read of L then R (once)
+[cell fits] load done: L=0.288s R=1.836s | residency after load R=100.0000% L=100.0000%
+[cell fits] pass 1: wall=1.0766s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell fits] pass 2: wall=1.0719s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell fits] pass 3: wall=1.0312s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell fits] cell complete: 3 passes, converged=false, swap_confounded=false

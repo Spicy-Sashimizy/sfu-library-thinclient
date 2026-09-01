@@ -1,9 +1,7 @@
-// Stop the gui_testbed static_server (companion to static_server.mjs --detach).
 import net from 'node:net';
 
 const PORT = parseInt(process.env.GUITB_PORT || '8080', 10);
 
-// Best-effort kill: find a pid via /proc by matching the cmdline, else leave a note.
 import fs from 'node:fs';
 import path from 'node:path';
 

@@ -1,0 +1,414 @@
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 067743e..339806e 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -69,20 +69,31 @@ use num_traits::FromPrimitive;
+ enum Advice { WillNeed, Sequential, DontNeed, Random }
+ 
+ /// `madvise(2)` on a read-only mmap range; no-op on non-unix.
++///
++/// Returns the raw `madvise` status: `0` on success, non-zero on failure (the
++/// caller reads `errno` only for diagnostics; we never panic on it). F5 fix
++/// 2026-08-31: the return value is now *load-bearing* for the DONTNEED paths —
++/// `MADV_DONTNEED` EINVALs on `mlock`ed ranges (doc 02 §4), and the original F5
++/// hook counted the advised length unconditionally, which is how the 2026-07-14
++/// cell reported "released 16.45 GB" while RssFile did not move. Bytes are now
++/// only accounted when the syscall actually succeeded.
+ #[cfg(unix)]
+ #[inline]
+-unsafe fn os_madvise(ptr: *mut core::ffi::c_void, len: usize, advice: Advice) {
++unsafe fn os_madvise(ptr: *mut core::ffi::c_void, len: usize, advice: Advice) -> i32 {
+     let a = match advice {
+         Advice::WillNeed => libc::MADV_WILLNEED,
+         Advice::Sequential => libc::MADV_SEQUENTIAL,
+         Advice::DontNeed => libc::MADV_DONTNEED,
+         Advice::Random => libc::MADV_RANDOM,
+     };
+-    unsafe { libc::madvise(ptr, len, a); }
++    unsafe { libc::madvise(ptr, len, a) as i32 }
+ }
++/// Non-unix: nothing is advised, so report failure — callers then account 0
++/// bytes released (the residency tier degrades to a no-op, never a false
++/// "released" number).
+ #[cfg(not(unix))]
+ #[inline]
+-unsafe fn os_madvise(_ptr: *mut core::ffi::c_void, _len: usize, _advice: Advice) {}
++unsafe fn os_madvise(_ptr: *mut core::ffi::c_void, _len: usize, _advice: Advice) -> i32 { -1 }
+ 
+ /// `mlock(2)` on a read-only mmap range. Returns 0 on success (unix). On non-unix
+ /// returns -1 so callers record 0 bytes locked (the pin tier degrades to no-op).
+@@ -1141,13 +1152,45 @@ impl MmapSeismicIndex {
+         counter.load(std::sync::atomic::Ordering::Relaxed) as u64
+     }
+ 
+-    /// F5 (2026-07-14, disk-streaming Phase 4): f16 twin — DONTNEED the
+-    /// forward_values slab except the pinned extents. Sequential/cold arm only.
+-    /// T1-untouched (residency only).
+-    pub fn release_pages_except(&self, pinned_extents: &[(usize, usize)]) -> u64 {
++    /// F5 (2026-07-14, disk-streaming Phase 4): f16 twin — DONTNEED the mapped
++    /// slabs except the pinned extents. Sequential/cold arm only. T1-untouched
++    /// (residency only). SCOPE FIX 2026-08-31: see the dotvbyte twin's docstring
++    /// — as built this released only `_forward_values_mmap`, leaving the whole
++    /// structural residue resident.
++    ///
++    /// f16 note: `_forward_components_mmap` is forward-codec data, but f16's
++    /// `search_visited` returns component indices, not word offsets, so the F2
++    /// sidecar's page coords cannot name a page in it (see `mlock_ranges`). It
++    /// therefore rides with the (B) group and is released whole.
++    pub fn release_pages_except(&self, pinned_extents: &[(usize, usize)],
++                                keep_structural: bool) -> u64 {
++        self.release_pages_except_by_slab(pinned_extents, keep_structural)
++            .iter()
++            .map(|(_, n)| *n)
++            .sum()
++    }
++
++    /// F5 scope fix (2026-08-31): f16 twin of the per-slab breakdown.
++    pub fn release_pages_except_by_slab(&self, pinned_extents: &[(usize, usize)],
++                                        keep_structural: bool)
++                                        -> Vec<(&'static str, u64)> {
++        let mut out: Vec<(&'static str, u64)> = Vec::with_capacity(6);
+         let counter = AtomicUsize::new(0);
+-        release_bytes_except(self._forward_values_mmap, pinned_extents, &counter);
+-        counter.load(std::sync::atomic::Ordering::Relaxed) as u64
++        out.push(("forward_values",
++                  release_bytes_except(self._forward_values_mmap, pinned_extents, &counter)));
++        out.push(("forward_components",
++                  release_bytes(self._forward_components_mmap, &counter)));
++        if !keep_structural {
++            out.push(("forward_offsets", release_bytes(self._forward_offsets_mmap, &counter)));
++            out.push(("postings", release_bytes(self._postings_mmap, &counter)));
++            if let Some(s) = self._doc_strings_mmap {
++                out.push(("doc_strings", release_bytes(s, &counter)));
++            }
++            if let Some(o) = self._doc_offsets_mmap {
++                out.push(("doc_offsets", release_bytes(o, &counter)));
++            }
++        }
++        out
+     }
+ 
+     /// F3/F5 helper (2026-07-14): the f16 codec slab's byte length (analog of
+@@ -1199,8 +1242,8 @@ fn touch_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     // safe to call on the mapping base address.
+     unsafe {
+         let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
+-        os_madvise(ptr, bytes.len(), Advice::WillNeed);
+-        os_madvise(ptr, bytes.len(), Advice::Sequential);
++        let _ = os_madvise(ptr, bytes.len(), Advice::WillNeed);
++        let _ = os_madvise(ptr, bytes.len(), Advice::Sequential);
+     }
+     // Use an atomic to guarantee the reads happen; plain u64 accumulator was
+     // compiled out on the first C2 run (fault-in appeared instant, RssFile unchanged).
+@@ -1225,15 +1268,23 @@ fn cast_pod_bytes<T: Pod>(slice: &[T]) -> &[u8] {
+ /// Mirrors `touch_bytes` minus the fault-in read (DONTNEED evicts; it does not
+ /// need to touch pages). Adds the range length to the counter so callers can
+ /// confirm the call covered real ranges (checksum-style, like `touch_bytes`).
++///
++/// F5 fix 2026-08-31: the length is added **only if `madvise` returned 0**.
++/// `MADV_DONTNEED` fails with EINVAL over `mlock`ed ranges (doc 02 §4), and the
++/// pre-fix accounting credited those bytes anyway — producing "released N GB"
++/// logs that no RssFile drop corroborated.
+ fn release_bytes(bytes: &[u8], counter: &AtomicUsize) -> u64 {
+     if bytes.is_empty() {
+         return 0;
+     }
+     // SAFETY: `bytes` is a read-only mmap'd slice; madvise does not write and is
+     // safe to call on the mapping base address (same reasoning as `touch_bytes`).
+-    unsafe {
++    let rc = unsafe {
+         let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
+-        os_madvise(ptr, bytes.len(), Advice::DontNeed);
++        os_madvise(ptr, bytes.len(), Advice::DontNeed)
++    };
++    if rc != 0 {
++        return 0;
+     }
+     let n = bytes.len() as u64;
+     counter.fetch_add(n as usize, Ordering::Relaxed);
+@@ -1319,10 +1370,12 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+                 let off = (s * page) as usize;
+                 let len = (p - s) * page;
+                 if len > 0 {
+-                    unsafe {
+-                        os_madvise(base.add(off), len, Advice::DontNeed);
++                    // F5 fix 2026-08-31: only count what madvise accepted
++                    // (EINVAL over mlocked ranges ⇒ nothing was released).
++                    let rc = unsafe { os_madvise(base.add(off), len, Advice::DontNeed) };
++                    if rc == 0 {
++                        released += len as u64;
+                     }
+-                    released += len as u64;
+                 }
+                 gap_start = None;
+             }
+@@ -1335,10 +1388,10 @@ fn release_bytes_except(bytes: &[u8], keep_extents: &[(usize, usize)],
+         let len = (total_pages - s) * page;
+         let len = len.min(bytes.len() - off);
+         if len > 0 {
+-            unsafe {
+-                os_madvise(base.add(off), len, Advice::DontNeed);
++            let rc = unsafe { os_madvise(base.add(off), len, Advice::DontNeed) };
++            if rc == 0 {
++                released += len as u64;
+             }
+-            released += len as u64;
+         }
+     }
+     counter.fetch_add(released as usize, Ordering::Relaxed);
+@@ -1380,7 +1433,7 @@ fn leak_mmap_advise(path: std::path::PathBuf, random: bool) -> std::io::Result<&
+         // is safe on the mapping base address (same reasoning as `touch_bytes`).
+         unsafe {
+             let ptr = bytes.as_ptr() as *mut core::ffi::c_void;
+-            os_madvise(ptr, bytes.len(), Advice::Random);
++            let _ = os_madvise(ptr, bytes.len(), Advice::Random);
+         }
+     }
+     Ok(bytes)
+@@ -1828,16 +1881,67 @@ impl MmapSeismicIndexDotVByte {
+         counter.load(std::sync::atomic::Ordering::Relaxed) as u64
+     }
+ 
+-    /// F5 (2026-07-14, disk-streaming Phase 4): `MADV_DONTNEED` the forward_data
+-    /// slab EXCEPT the `pinned_extents` (the F3-pinned hot set). Plain DONTNEED
+-    /// EINVALs on mlocked ranges (doc 02 §4) — this range-splits around the
+-    /// pinned extents so they survive the eviction. Sequential/cold arm only;
+-    /// the parallel path never calls release_pages or this. Returns bytes
+-    /// released (the unpinned remainder). T1-untouched (residency only).
+-    pub fn release_pages_except(&self, pinned_extents: &[(usize, usize)]) -> u64 {
++    /// F5 (2026-07-14, disk-streaming Phase 4): `MADV_DONTNEED` the mapped slabs
++    /// EXCEPT the `pinned_extents` (the F3-pinned hot set, in `forward_data.bin`
++    /// page coords). Plain DONTNEED EINVALs on mlocked ranges (doc 02 §4) — the
++    /// forward slab is range-split around the pinned extents so they survive the
++    /// eviction. Sequential/cold arm only; the parallel path never calls
++    /// release_pages or this. T1-untouched (residency only).
++    ///
++    /// **SCOPE FIX 2026-08-31.** As built on 2026-07-14 this hook released ONLY
++    /// `_fwd_data_mmap`. The 2026-07-14 16 GB F5 cell was consequently a NULL
++    /// with the tell "post-release RssFile UNCHANGED (14.32 GB) despite
++    /// 'released 16.45 GB'" (`11_EXPERIMENT_BACKLOG.md`, R1 section): the load
++    /// residue that the parent claim
++    /// (`session_2026-07-14.../04_CONVERGENCE_ARTIFACT.md` §5.3, "the sorting can
++    /// be skipped entirely") wants evicted lives in the STRUCTURAL slabs —
++    /// posting lists, forward offsets, doc-mapping strings/offsets — which the
++    /// hook never touched, while the forward slab's pages were mostly
++    /// non-resident at that moment anyway. The hook now covers the same slab set
++    /// as `release_pages()`, minus the pinned extents.
++    ///
++    /// `keep_structural = true` restores a floor-preserving variant: the F4
++    /// `mlock_floor` / navigation-floor tier deliberately holds the structural
++    /// slabs resident, and releasing them would undo that pin. It is NOT the
++    /// 2026-07-14 behaviour restored (that also skipped `_fwd_offsets_mmap`);
++    /// it is the intentional "evict the forward residue, keep the floor" arm.
++    ///
++    /// Returns bytes actually released (see `release_bytes`: `madvise` failures
++    /// — e.g. EINVAL over mlocked ranges — now account 0, not the range length).
++    pub fn release_pages_except(&self, pinned_extents: &[(usize, usize)],
++                                keep_structural: bool) -> u64 {
++        self.release_pages_except_by_slab(pinned_extents, keep_structural)
++            .iter()
++            .map(|(_, n)| *n)
++            .sum()
++    }
++
++    /// F5 scope fix (2026-08-31): per-slab breakdown of `release_pages_except`.
++    /// Exists so a caller (and the eval harness) can SEE that every mapped slab
++    /// was covered — the 2026-07-14 null was only detectable by cross-checking
++    /// RssFile against a single aggregate number.
++    pub fn release_pages_except_by_slab(&self, pinned_extents: &[(usize, usize)],
++                                        keep_structural: bool)
++                                        -> Vec<(&'static str, u64)> {
++        let mut out: Vec<(&'static str, u64)> = Vec::with_capacity(5);
+         let counter = AtomicUsize::new(0);
+-        release_bytes_except(self._fwd_data_mmap, pinned_extents, &counter);
+-        counter.load(std::sync::atomic::Ordering::Relaxed) as u64
++        // (A) the codec slab the hot-set sidecar addresses — range-split.
++        out.push(("forward_data",
++                  release_bytes_except(self._fwd_data_mmap, pinned_extents, &counter)));
++        if !keep_structural {
++            // (B) everything else the reader maps. No extent in the sidecar's
++            // coordinate system can name a page in these, so they are released
++            // whole — this is the residue the parent claim is about.
++            out.push(("forward_offsets", release_bytes(self._fwd_offsets_mmap, &counter)));
++            out.push(("postings", release_bytes(self._postings_mmap, &counter)));
++            if let Some(s) = self._doc_strings_mmap {
++                out.push(("doc_strings", release_bytes(s, &counter)));
++            }
++            if let Some(o) = self._doc_offsets_mmap {
++                out.push(("doc_offsets", release_bytes(o, &counter)));
++            }
++        }
++        out
+     }
+ 
+     /// F3/F5 helper (2026-07-14): the forward_data slab's byte length — so the
+@@ -2629,6 +2733,99 @@ mod tests {
+             dv_results.len(), report["forward_bytes"]["ratio"]);
+     }
+ 
++    /// F5 SCOPE FIX (2026-08-31): `release_pages_except` must cover EVERY slab
++    /// the reader maps, not just the forward codec slab.
++    ///
++    /// Regression bar for the 2026-07-14 null (`11_EXPERIMENT_BACKLOG.md` R1:
++    /// "post-release RssFile UNCHANGED despite 'released 16.45 GB' — the hook
++    /// only covers the forward_data slab, [but] the actual load residue lives in
++    /// the structural slabs"). The pre-fix hook's number is exactly the
++    /// `forward_*` row of the breakdown, so the test can state before → after
++    /// on the same synthetic index without keeping the old code around.
++    ///
++    /// Asserts, for BOTH layouts: (1) more than one slab is covered; (2) every
++    /// covered slab reports a non-zero release; (3) the total strictly exceeds
++    /// the forward-slab-only total (the pre-fix scope); (4) `keep_structural`
++    /// still narrows the scope to the forward slabs; (5) pinned extents are
++    /// genuinely excluded from the released remainder.
++    #[test]
++    fn release_pages_except_covers_all_slabs() {
++        let base = std::path::PathBuf::from(
++            format!("/tmp/seismic_f5scope_test_{}", std::process::id()));
++        let f16_dir = base.join("f16");
++        let dv_dir = base.join("dv");
++        let _ = std::fs::remove_dir_all(&base);
++        std::fs::create_dir_all(&f16_dir).expect("create test dirs");
++
++        // 600 docs so every slab spans multiple pages (a 3-doc index would fit
++        // each slab in one page and hide per-slab differences).
++        let owned = build_fixed_block_index(16, 600);
++        write_mmap_index(&owned, &f16_dir).expect("write_mmap_index");
++        convert_f16_dir_to_dotvbyte(&f16_dir, &dv_dir, 16, false, ValueScale::PerDocLinear)
++            .expect("convert_f16_dir_to_dotvbyte");
++
++        // ── dotvbyte (the SERVED layout) ────────────────────────────────────
++        let dv = MmapSeismicIndexDotVByte::from_mmap(&dv_dir).expect("dv from_mmap");
++        let dv_rows = dv.release_pages_except_by_slab(&[], false);
++        let dv_total: u64 = dv_rows.iter().map(|(_, n)| *n).sum();
++        let dv_fwd_only = dv_rows[0].1;
++        eprintln!("F5 scope (dotvbyte): per-slab {:?}", dv_rows);
++        eprintln!("F5 scope (dotvbyte): BEFORE (forward slab only) = {} B, \
++                   AFTER (all slabs) = {} B, {:.2}x",
++                  dv_fwd_only, dv_total, dv_total as f64 / dv_fwd_only.max(1) as f64);
++        assert_eq!(dv_rows[0].0, "forward_data");
++        assert!(dv_rows.len() >= 4,
++                "dv release scope covers only {} slab(s): {:?}", dv_rows.len(), dv_rows);
++        for (name, n) in &dv_rows {
++            assert!(*n > 0, "dv slab {} released 0 bytes", name);
++        }
++        assert!(dv_total > dv_fwd_only,
++                "dv total {} did not exceed the pre-fix forward-only scope {}",
++                dv_total, dv_fwd_only);
++        // The structural residue the 2026-07-14 cell left resident:
++        let dv_structural: u64 = dv_rows[1..].iter().map(|(_, n)| *n).sum();
++        assert!(dv_structural > 0, "no structural bytes released");
++
++        // (4) keep_structural narrows back to the forward slab.
++        let dv_keep = dv.release_pages_except_by_slab(&[], true);
++        assert_eq!(dv_keep.len(), 1, "keep_structural should cover only the forward slab");
++        assert_eq!(dv_keep[0].0, "forward_data");
++
++        // (5) pinned extents are excluded from the released remainder.
++        let dv_pinned = dv.release_pages_except_by_slab(&[(0, 1)], false);
++        assert!(dv_pinned[0].1 + 4096 <= dv_fwd_only.max(4096),
++                "pinning page 0 did not reduce the released forward bytes \
++                 (pinned={}, unpinned={})", dv_pinned[0].1, dv_fwd_only);
++
++        // ── f16 (rollback/quality layout) ───────────────────────────────────
++        let f16 = MmapSeismicIndex::from_mmap(&f16_dir).expect("f16 from_mmap");
++        let f_rows = f16.release_pages_except_by_slab(&[], false);
++        let f_total: u64 = f_rows.iter().map(|(_, n)| *n).sum();
++        let f_fwd_only = f_rows[0].1;
++        eprintln!("F5 scope (f16): per-slab {:?}", f_rows);
++        eprintln!("F5 scope (f16): BEFORE (forward slab only) = {} B, \
++                   AFTER (all slabs) = {} B, {:.2}x",
++                  f_fwd_only, f_total, f_total as f64 / f_fwd_only.max(1) as f64);
++        assert_eq!(f_rows[0].0, "forward_values");
++        assert!(f_rows.len() >= 5,
++                "f16 release scope covers only {} slab(s): {:?}", f_rows.len(), f_rows);
++        for (name, n) in &f_rows {
++            assert!(*n > 0, "f16 slab {} released 0 bytes", name);
++        }
++        assert!(f_total > f_fwd_only,
++                "f16 total {} did not exceed the pre-fix forward-only scope {}",
++                f_total, f_fwd_only);
++
++        // The eviction is residency-only: the index must still search correctly
++        // after everything has been DONTNEED'd (pages re-fault from file).
++        let toks: Vec<String> = vec!["t0".to_string(), "t1".to_string()];
++        let vals: Vec<f32> = vec![1.0, 0.5];
++        let after = dv.search_raw(&toks, &vals, 10, 2, 0.8, true);
++        assert!(!after.is_empty(), "search after full release returned nothing");
++
++        let _ = std::fs::remove_dir_all(&base);
++    }
++
+     /// Q1 E8 (2026-07-10): v2 (per-doc scale) converter round trip — owned tiny
+     /// index → f16 mmap dir → dv-v2 dir → search parity. Also proves the
+     /// version plumbing: manifest carries forward_format_version 2, the loaded
+diff --git a/src/pylib/mmap_index.rs b/src/pylib/mmap_index.rs
+index 99ea63b..591868c 100644
+--- a/src/pylib/mmap_index.rs
++++ b/src/pylib/mmap_index.rs
+@@ -194,22 +194,57 @@ impl PyMmapIndex {
+         }
+     }
+ 
+-    /// F5 (2026-07-14, disk-streaming Phase 4): `MADV_DONTNEED` the forward
+-    /// slab EXCEPT the `pinned_extents` (the F3-pinned hot set). Range-splits
+-    /// around pinned extents — plain DONTNEED EINVALs on mlocked ranges
+-    /// (doc 02 §4). Sequential/cold arm only; parallel path never calls this.
+-    /// Returns bytes released. T1-untouched (residency only).
+-    pub fn release_pages_except(&self, pinned_extents: Vec<(u64, u64)>) -> u64 {
++    /// F5 (2026-07-14, disk-streaming Phase 4): `MADV_DONTNEED` the index's
++    /// mapped slabs EXCEPT the `pinned_extents` (the F3-pinned hot set, in
++    /// forward-slab page coords). Range-splits around pinned extents — plain
++    /// DONTNEED EINVALs on mlocked ranges (doc 02 §4). Sequential/cold arm only;
++    /// parallel path never calls this. Returns bytes actually released
++    /// (madvise failures now account 0). T1-untouched (residency only).
++    ///
++    /// SCOPE FIX 2026-08-31: previously covered ONLY the forward codec slab,
++    /// which made the 2026-07-14 16 GB F5 cell a null (RssFile unchanged after
++    /// a reported 16.45 GB "release" — the residue is structural). Now covers
++    /// the same slab set as `release_pages()`.
++    ///
++    /// Args:
++    ///     pinned_extents: [(page_start, page_len), …] in forward-slab 4 KiB
++    ///         page coords — kept resident.
++    ///     keep_structural (bool, default False): skip the structural slabs
++    ///         (posting lists, forward offsets, doc-mapping). Use when the F4
++    ///         floor pin is ON and the floor must survive the eviction.
++    #[pyo3(signature = (pinned_extents, keep_structural=false))]
++    pub fn release_pages_except(&self, pinned_extents: Vec<(u64, u64)>,
++                                keep_structural: bool) -> u64 {
+         let ext: Vec<(usize, usize)> = pinned_extents
+             .iter()
+             .map(|(s, l)| (*s as usize, *l as usize))
+             .collect();
+         match &self.idx {
+-            AnyMmapIndex::F16(i) => i.release_pages_except(&ext),
+-            AnyMmapIndex::DotVByte(i) => i.release_pages_except(&ext),
++            AnyMmapIndex::F16(i) => i.release_pages_except(&ext, keep_structural),
++            AnyMmapIndex::DotVByte(i) => i.release_pages_except(&ext, keep_structural),
+         }
+     }
+ 
++    /// F5 scope fix (2026-08-31): the same eviction as `release_pages_except`,
++    /// returning a `[(slab_name, bytes_released), …]` breakdown instead of one
++    /// aggregate. The 2026-07-14 null was invisible in the aggregate — a caller
++    /// could log "released 16.45 GB" while every structural slab stayed
++    /// resident. Harnesses should record this list, not just the total.
++    #[pyo3(signature = (pinned_extents, keep_structural=false))]
++    pub fn release_pages_except_by_slab(&self, pinned_extents: Vec<(u64, u64)>,
++                                        keep_structural: bool)
++                                        -> Vec<(String, u64)> {
++        let ext: Vec<(usize, usize)> = pinned_extents
++            .iter()
++            .map(|(s, l)| (*s as usize, *l as usize))
++            .collect();
++        let rows = match &self.idx {
++            AnyMmapIndex::F16(i) => i.release_pages_except_by_slab(&ext, keep_structural),
++            AnyMmapIndex::DotVByte(i) => i.release_pages_except_by_slab(&ext, keep_structural),
++        };
++        rows.into_iter().map(|(k, v)| (k.to_string(), v)).collect()
++    }
++
+     /// F3/F5 helper (2026-07-14): the forward codec slab's byte length, so the
+     /// Python sidecar loader can clamp extents against the actual slab before
+     /// calling `mlock_ranges`. (In-memory confirmation of manifest

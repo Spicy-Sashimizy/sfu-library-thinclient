@@ -27,7 +27,6 @@ def setup_logging(
     """
     logger = logging.getLogger(name)
 
-    # Prevent duplicate handlers on repeated calls
     if logger.handlers:
         return logger
 
@@ -39,18 +38,16 @@ def setup_logging(
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    # Stderr handler — respects configured level
     stderr_handler = logging.StreamHandler(sys.stderr)
     stderr_handler.setLevel(log_level)
     stderr_handler.setFormatter(formatter)
     logger.addHandler(stderr_handler)
 
-    # Persistent file handler — always DEBUG for full diagnostics
     if log_file:
         try:
             file_handler = RotatingFileHandler(
                 log_file,
-                maxBytes=5 * 1024 * 1024,  # 5 MB
+                maxBytes=5 * 1024 * 1024,
                 backupCount=3,
                 encoding="utf-8",
             )

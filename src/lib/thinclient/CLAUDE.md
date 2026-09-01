@@ -19,6 +19,10 @@ only literal `1` enables, per the ablation DROP verdict)
 
 Run anything with the venv: `/workspaces/sfu-library-thinclient/.venv/bin/python3`.
 
+Code is comment-free (policy 2026-09-01): the full constraints/invariants
+ledger for this package is `docs/CODE_INVARIANTS.md`; gates are in
+`docs/ENV_GATES.md`.
+
 BMP 0.2.6 hard-won quirks (do not "simplify" these away):
 - `QUANT_SCALE = 70` — u8 impacts saturate at 255; scale 100 clips, 1000
   collapses recall to 0.28.

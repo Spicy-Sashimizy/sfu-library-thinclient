@@ -1,0 +1,13 @@
+[cell deep] preflight: mode=converge scale=0.2 cap=2.75g R=1024M L=358M early_sort=none load_order=interleaved
+[cell deep] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=max
+[cell deep] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell deep] post-evict residency: R=0.0000% L=0.0000%
+[cell deep] load phase SKIPPED (SKIP_LOAD=1, validation-only — NOT the protocol)
+[cell deep] load done (order=interleaved, wall=0.002s; read-time L=0.000s R=0.000s)
+[cell deep] post-load residency: R=0.0000% (0/262144 pages)  L=0.0000% (0/91648 pages)
+[cell deep] pass 1: wall=43.8307s majflt=262144 ms/fault=0.167201 residency R=100.0000%
+[cell deep] pass 2: wall=0.5643s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell deep] pass 3: wall=0.5622s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell deep] pass 4: wall=0.5686s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell deep] converged at pass 4 (plateau_within_10pct_x2_and_majflt_zero)
+[cell deep] cell complete: 4 passes, converged=true, swap_confounded=false

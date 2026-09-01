@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ── SFU Library MCP — Log Access from Dev Container ──
-# Usage:
-#   ./deploy/logs.sh tail [N]       Last N lines of app log (default 50)
-#   ./deploy/logs.sh follow         Real-time stream (tail -f)
-#   ./deploy/logs.sh errors [N]     Last N ERROR/WARNING lines (default 20)
-#   ./deploy/logs.sh docker [N]     Docker container logs (default 100)
-#   ./deploy/logs.sh health         Run health check
 
 SSH_ALIAS="truenas"
 CONTAINER="sfu-library-mcp"

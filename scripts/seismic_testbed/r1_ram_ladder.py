@@ -78,6 +78,13 @@ def main():
                          "release_pages_except(hot extents) per shard — drop "
                          "the load residue so the cache starts pre-sorted "
                          "(skips the kernel's observation passes)")
+    ap.add_argument("--release-keep-structural", action="store_true",
+                    help="F5 variant: keep the structural slabs (posting "
+                         "lists, forward offsets, doc mapping) resident and "
+                         "release only the forward residue. Use when the F4 "
+                         "floor pin is ON. NOTE: this is NOT the 2026-07-14 "
+                         "scope — that cell ALSO skipped forward_offsets and "
+                         "was a null for exactly that reason.")
     args = ap.parse_args()
 
     from lib.thinclient.sharded_seismic_backend import HybridSeismicBackend
@@ -93,9 +100,19 @@ def main():
     log.info("loaded in %.1fs  vm=%s", load_s, read_vm())
 
     released_gb = 0.0
+    released_by_slab: dict = {}
     if args.release_except_hotset:
         # F5: keep the hot-50 extents (gap-coalesced, same discipline as the
-        # F6 prefault), DONTNEED the rest of each shard's forward_data.
+        # F6 prefault), DONTNEED everything else the shard maps.
+        #
+        # SCOPE FIX 2026-08-31 (.so `release_pages_except`): before this fix the
+        # hook covered ONLY the forward codec slab, so the 2026-07-14 16 GB cell
+        # (`r1_cap16g_f5rel_20260714.json`) was a NULL — RssFile unchanged after
+        # a reported 16.45 GB "release", because the load residue lives in the
+        # structural slabs. The hook now covers every mapped slab, and the
+        # per-slab breakdown below is recorded so that failure mode cannot hide
+        # inside one aggregate number again.
+        keep_structural = bool(args.release_keep_structural)
         budget_bytes = int(1.6e9 / max(1, len(sb.shards)))
         for idx, shard_dir in zip(sb.shards, sb._shard_mmap_dirs):
             rel_fn = getattr(idx, "release_pages_except", None)
@@ -123,10 +140,30 @@ def main():
                 if len(merged) <= 2048 or gap > 4096:
                     break
                 gap *= 4
-            freed = int(rel_fn([tuple(e) for e in merged]))
+            ext = [tuple(e) for e in merged]
+            # Prefer the per-slab reporting hook (added with the 2026-08-31
+            # scope fix); fall back to the aggregate on an older .so, in which
+            # case the scope is the pre-fix forward-slab-only one and the cell
+            # is NOT a valid test of the parent claim.
+            by_slab_fn = getattr(idx, "release_pages_except_by_slab", None)
+            if by_slab_fn is not None:
+                rows = by_slab_fn(ext, keep_structural)
+                for name, nbytes in rows:
+                    released_by_slab[name] = (released_by_slab.get(name, 0)
+                                              + int(nbytes))
+                freed = sum(int(n) for _, n in rows)
+            else:
+                log.warning("the loaded seismic .so predates the 2026-08-31 F5 "
+                            "scope fix (no release_pages_except_by_slab) — this "
+                            "cell reproduces the NULL scope, not the fixed one")
+                freed = int(rel_fn(ext))
             released_gb += freed / 1e9
         log.info("F5 release_pages_except done: released %.2f GB of load "
-                 "residue (hot extents kept)", released_gb)
+                 "residue (hot extents kept, keep_structural=%s)",
+                 released_gb, keep_structural)
+        if released_by_slab:
+            log.info("F5 per-slab released (GB): %s",
+                     {k: round(v / 1e9, 3) for k, v in released_by_slab.items()})
         log.info("post-release vm=%s", read_vm())
 
     passes = []
@@ -182,7 +219,13 @@ def main():
                "SFU_SEISMIC_PIN_BUDGET_GB", "0"),
            "hotset_pinned_gb": round(getattr(sb, "_hotset_pinned_gb", 0.0), 3),
            "release_except_hotset": args.release_except_hotset,
+           "release_keep_structural": args.release_keep_structural,
            "released_gb": round(released_gb, 3),
+           # 2026-08-31 scope fix: per-slab so a "released N GB" claim can be
+           # audited slab-by-slab (an empty dict on a pre-fix .so ⇒ the cell ran
+           # the NULL forward-slab-only scope).
+           "released_by_slab_gb": {k: round(v / 1e9, 4)
+                                   for k, v in sorted(released_by_slab.items())},
            "swap_confounded": swap_kb > 0,
            "vmswap_kb_max": swap_kb}
     Path(args.result_file).write_text(json.dumps(out, indent=2))

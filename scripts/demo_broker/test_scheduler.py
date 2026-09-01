@@ -17,7 +17,7 @@ def cfg(**over):
     base = dict(
         business_start_hour=9,
         business_end_hour=17,
-        business_days=frozenset({0, 1, 2, 3, 4}),  # Mon-Fri
+        business_days=frozenset({0, 1, 2, 3, 4}),
         prewarm_minutes=5,
         idle_minutes=20,
         max_runtime_hours_per_day=10.0,
@@ -26,11 +26,10 @@ def cfg(**over):
     return SimpleNamespace(**base)
 
 
-# A known weekday and weekend (2026-06-15 is a Monday, 2026-06-20 a Saturday).
 MON_10AM = datetime(2026, 6, 15, 10, 0)
-MON_0856 = datetime(2026, 6, 15, 8, 56)   # inside 5-min prewarm of the 09:00 open
-MON_0850 = datetime(2026, 6, 15, 8, 50)   # before prewarm
-MON_1701 = datetime(2026, 6, 15, 17, 1)   # just after close
+MON_0856 = datetime(2026, 6, 15, 8, 56)
+MON_0850 = datetime(2026, 6, 15, 8, 50)
+MON_1701 = datetime(2026, 6, 15, 17, 1)
 SAT_NOON = datetime(2026, 6, 20, 12, 0)
 
 
@@ -63,7 +62,6 @@ class TestDecide(unittest.TestCase):
         self.assertEqual(d.action, Action.BOOT)
 
     def test_business_hours_idle_does_not_reap(self):
-        # Idle for an hour during business hours -> stay hot.
         st = BrokerState(status=DropletStatus.UP, idle_minutes=60)
         d = decide(MON_10AM, st, cfg())
         self.assertEqual(d.action, Action.NONE)
@@ -88,7 +86,6 @@ class TestDecide(unittest.TestCase):
         self.assertEqual(d.action, Action.NONE)
 
     def test_killswitch_overrides_business_hours(self):
-        # Even at peak business hours, the daily cap forces a destroy.
         st = BrokerState(status=DropletStatus.UP, idle_minutes=0, runtime_hours_today=10.5)
         d = decide(MON_10AM, st, cfg())
         self.assertEqual(d.action, Action.DESTROY)

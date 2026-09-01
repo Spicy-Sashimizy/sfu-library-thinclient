@@ -1,14 +1,3 @@
-// L-F (stretch, WI-16f) — vendored axe-core a11y scan per screen, as an
-// invariant-oracle EXTENSION (not a gate layer; the plan §2 oracle is the
-// gate; this records a11y violations honestly for future remediation).
-//
-// axe-core 4.10.1 vendored (sha256
-// 3815dfdf753d9fea828f4988f4c2e4895c82d670b369b0e79a8a63caebf5819e), same
-// no-CDN rule as gremlins + React. Run per screen (search/analytics/
-// index_manager, + the search sub-screens saved/history/databases/settings/
-// admin where reachable); record every violation: id, impact, count, node
-// selectors + a snippet. Fix NOTHING outside web/ defect rules — this is
-// measurement only (the drive-prompt WI-16f rule).
 import { loadPlaywright, makeLog, arm, check, mockApi, openApp, sleep, BASE, DATE_TAG, ROOT, TESTBED } from './lib.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,10 +5,8 @@ import path from 'node:path';
 const AXE = path.join(TESTBED, 'vendor', 'axe.min.js');
 const APPS = ['search.html', 'analytics.html', 'index_manager.html'];
 
-// Sub-screens to walk on the search app (the ones reachable by default or via
-// a single toggle). Each is a distinct a11y context.
 const SEARCH_SCREENS = [
-  { name: 'landing',    go: async p => {} }, // default
+  { name: 'landing',    go: async p => {} },
   { name: 'settings',   go: async p => { await p.locator('aside button', { hasText: 'Settings' }).first().click({ timeout: 3000 }).catch(() => {}); await sleep(200); } },
   { name: 'interface',  go: async p => { await p.locator('aside button', { hasText: 'Settings' }).first().click({ timeout: 3000 }).catch(() => {}); await sleep(150); await p.getByText('Interface', { exact: false }).first().click({ timeout: 3000 }).catch(() => {}); await sleep(200); } },
 ];
@@ -62,10 +49,8 @@ for (const app of APPS) {
     chromium: browser, app, log, ctxLabel: `a11y:${app}`,
     setup: async (p) => { await mockApi(p, 'live'); },
   });
-  // 1. landing scan
   perScreen.push(await scanPage(page, context, `${app}:landing`));
   log.act(`${app} landing: ${perScreen[perScreen.length-1].violations?.length ?? 0} violations`);
-  // 2. search sub-screens (only for search.html — analytics/index_manager are single-screen-ish)
   if (app === 'search.html') {
     for (const s of SEARCH_SCREENS.slice(1)) {
       await s.go(page);
@@ -81,7 +66,6 @@ for (const app of APPS) {
 await browser.close();
 const wall = Date.now() - t0;
 
-// Roll up violations across screens.
 const allVios = [];
 for (const s of perScreen) if (s.violations) for (const v of s.violations) allVios.push({ screen: s.label, ...v });
 const byImpact = { critical: 0, serious: 0, moderate: 0, minor: 0 };

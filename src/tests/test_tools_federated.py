@@ -74,7 +74,6 @@ class TestFederatedHandler:
                 "open_access_only": True,
                 "limit": 5,
             })
-        # router.search(query, filters, ...) — filters is the 2nd positional arg.
         filters = router.search.call_args.args[1]
         assert filters["publication_year"] == "2015-2020"
         assert filters["type"] == "article"

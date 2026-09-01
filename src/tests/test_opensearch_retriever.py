@@ -61,7 +61,6 @@ class TestOpenSearchRetrieverBM25F:
             doc = r.search("quantum entanglement", top_k=5)[0]
         assert doc["publication_year"] == 2022
         assert doc["date"] == "2022"
-        # back-compat key retained
         assert doc["year"] == 2022
 
 
@@ -125,7 +124,6 @@ class TestOpenSearchRetrieverFilters:
         r = self._retriever()
         body = r._build_bm25f_query("machine learning", 10)
         assert body["size"] == 10
-        # multi_match is now wrapped in bool.must so filters can be attached.
         mm = body["query"]["bool"]["must"][0]["multi_match"]
         assert any("title" in f for f in mm["fields"])
         assert mm["type"] == "most_fields"
@@ -185,7 +183,6 @@ class TestOpenSearchRetrieverSPLADE:
         r = self._retriever()
         with patch("lib.opensearch_retriever.encode_splade", return_value={}):
             body = r._build_splade_query("anything", 5)
-        # Fallback is the BM25F query (multi_match wrapped in bool.must).
         assert "multi_match" in body["query"]["bool"]["must"][0]
 
     def test_splade_search_returns_normalized_dicts(self):
@@ -243,6 +240,5 @@ class TestSpladeOnnxLoading:
         if not (onnx_dir / "model.onnx").is_file():
             pytest.skip("local SPLADE ONNX export not present")
         assert _resolve_onnx_path(str(onnx_dir)).name == "model.onnx"
-        # tokenizer falls back to an SFU embed model dir (bert-base-uncased vocab)
         tok = _resolve_tokenizer_dir(str(onnx_dir))
         assert (tok / "tokenizer.json").is_file() or (tok / "tokenizer_config.json").is_file()

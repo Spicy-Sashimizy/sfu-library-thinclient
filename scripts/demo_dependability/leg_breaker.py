@@ -53,7 +53,6 @@ import os
 import threading
 import time
 
-# ── env gates (all default OFF = wave-1 behavior) ────────────────────────────
 
 def breaker_enabled() -> bool:
     return os.environ.get("SFU_DEMO_LEG_BREAKER", "0") == "1"
@@ -105,11 +104,11 @@ class _LegState:
             if self.opened_at is None:
                 return False
             if self.probe_pending:
-                return True  # a probe is mid-flight; skip until it resolves
+                return True
             elapsed = time.monotonic() - self.opened_at
             if elapsed >= COOLDOWN_S():
                 self.probe_pending = True
-                return False  # HALF-OPEN: let THIS call through as the probe
+                return False
             return True
 
     def is_degraded_report(self) -> bool:
@@ -124,7 +123,7 @@ class _LegState:
             if self.opened_at is None:
                 return False
             if self.probe_pending:
-                return False  # probe in flight = re-admission in progress
+                return False
             return (time.monotonic() - self.opened_at) < COOLDOWN_S()
 
     def on_success(self):
@@ -137,7 +136,6 @@ class _LegState:
     def on_fail(self, reason: str):
         with self._lock:
             if self.probe_pending:
-                # the probe failed → re-arm the cooldown (stay OPEN)
                 self.opened_at = time.monotonic()
                 self.probe_pending = False
                 self.last_fail_reason = reason
@@ -158,15 +156,7 @@ class LegGuardian:
     def __init__(self, retriever):
         self.r = retriever
         self._states = {leg: _LegState(leg) for leg in ("bm25f", "splade", "dense")}
-        # NOTE: a SHARED executor was the WI-9 first-attempt bug — a hung SPLADE
-        # leg's abandoned worker (still sleeping past its timeout) starved the
-        # pool so BM25F/dense queued behind it + ALSO timed out (all 3 degraded).
-        # Each leg call now runs in its OWN daemon thread (isolated: a leaked hung
-        # thread never blocks another leg's worker). The abandoned thread dies on
-        # process exit (daemon). Cheap at 3 threads/query (the staging serve is
-        # low-QPS); the load driver's concurrency provides the real parallelism.
 
-    # ── public surface ─────────────────────────────────────────────────────────
 
     def states_snapshot(self) -> dict:
         return {leg: st.snapshot() for leg, st in self._states.items()}
@@ -192,16 +182,10 @@ class LegGuardian:
         from lib.thinclient.retriever import RRF_K
         leg_results: dict[str, list] = {}
         failed_this_query: list[str] = []
-        # run each leg under the guardian (BM25F + SPLADE always; dense if asked)
         legs = [("bm25f", lambda: self.r.search(query, top_k, mode="bm25f", filters=filters)),
                 ("splade", lambda: self.r.search(query, top_k, mode="splade", filters=filters))]
         if include_dense and getattr(self.r, "_dense", None):
             legs.append(("dense", lambda: self.r.dense_search(query, top_k, filters=filters)))
-        # run the legs CONCURRENTLY via dedicated daemon threads (one per leg), so
-        # a slow/hung leg doesn't serialize behind the others. `_run_leg` itself
-        # spawns ANOTHER daemon thread for the leg's timeout — so each leg =
-        # one orchestrator thread (here) + one worker thread (inside _run_leg).
-        # The orchestrator threads join immediately (the work IS _run_leg).
         holders: dict[str, dict] = {leg: {} for leg, _ in legs}
         def _run_into(leg, fn, h):
             h["res"] = self._run_leg(leg, fn)
@@ -211,17 +195,14 @@ class LegGuardian:
                                  name=f"leg-orch-{leg}", daemon=True)
             t.start(); orch.append((leg, t))
         for leg, t in orch:
-            t.join()  # _run_leg returns within its own timeout; the orchestrator
-                      # thread always completes (the worker may be abandoned)
+            t.join()
             ok, payload = holders[leg].get("res", (False, "no-result"))
             if ok:
                 leg_results[leg] = payload
             else:
                 failed_this_query.append(leg)
-                leg_results[leg] = []  # no RRF vote from a failed leg
-        # the OPEN legs (skipped before any call) also count as degraded
+                leg_results[leg] = []
         degraded = sorted(set(failed_this_query) | set(self.degraded_legs()))
-        # RRF fuse over whatever legs produced results (dropped legs just don't vote)
         scores: dict[str, float] = {}
         by_id: dict[str, dict] = {}
         for leg, res in leg_results.items():
@@ -237,7 +218,6 @@ class LegGuardian:
             out.append(doc)
         return {"results": out, "degraded": degraded}
 
-    # ── internals ─────────────────────────────────────────────────────────────
 
     def _run_leg(self, leg: str, fn) -> tuple[bool, object]:
         """Run one leg under the breaker + timeout. Returns (ok, results) or
@@ -255,7 +235,7 @@ class LegGuardian:
         def _worker():
             try:
                 holder["res"] = fn()
-            except BaseException as exc:  # pyo3 PanicException is BaseException
+            except BaseException as exc:
                 if isinstance(exc, (KeyboardInterrupt, SystemExit)):
                     holder["exc"] = exc; return
                 holder["exc"] = exc
@@ -263,8 +243,6 @@ class LegGuardian:
         th.start()
         th.join(timeout=leg_timeout_s(leg))
         if th.is_alive():
-            # still running past the budget → HUNG. The thread is abandoned (it
-            # dies on process exit as a daemon). Mark failed.
             st.on_fail("timeout")
             return False, "timeout"
         if "exc" in holder:
@@ -274,8 +252,6 @@ class LegGuardian:
         st.on_success()
         return True, holder.get("res")
 
-
-# ── module-singleton accessor (the staging serve holds one guardian) ─────────
 
 _GUARDIAN: LegGuardian | None = None
 _GUARDIAN_LOCK = threading.Lock()

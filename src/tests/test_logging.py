@@ -59,7 +59,6 @@ class TestFileHandler:
         logger.debug("This is a debug message for file only")
         logger.info("This is an info message")
 
-        # Flush handlers
         for h in logger.handlers:
             h.flush()
 
@@ -83,7 +82,6 @@ class TestFileHandler:
     def test_file_handler_graceful_on_bad_path(self, tmp_path):
         """Bad log file path should not crash, just warn."""
         logger = setup_logging(name="test_bad_path", log_file="/nonexistent/dir/test.log")
-        # Should still have stderr handler at minimum
         assert len(logger.handlers) >= 1
 
     def test_stderr_handler_still_present_with_file(self, tmp_path):

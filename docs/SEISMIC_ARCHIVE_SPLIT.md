@@ -122,8 +122,8 @@ Env matrix after the flip (all optional in this container):
 | `SFU_SPLADE_BACKEND` | `seismic` | `qdrant` = rollback, `bmp` = forensics |
 | `SFU_SEISMIC_SHARD_MANIFEST` | dv manifest (code default) | any C2.5-shape manifest |
 | `SFU_SEISMIC_LOAD_MODE` | `mmap` | `stock` = Path-A (persona scale only) |
-| `SFU_SEISMIC_FEDERATION` | `parallel` | `sequential` = ~1-shard resident bound |
-| `SFU_SEISMIC_K_PRIME` / `_QUERY_CUT` / `_HEAP_FACTOR` | 4×k / all / 0.8 | over-fetch knobs |
+| `SFU_SEISMIC_FEDERATION` | FS-aware since 2026-07-18 (sequential on 9p/NFS, parallel on local disk); was `parallel` | `sequential` = ~1-shard resident bound; set env always wins |
+| `SFU_SEISMIC_K_PRIME` / `_QUERY_CUT` / `_HEAP_FACTOR` | max(2×k, 100) / all / 0.8 | over-fetch knobs (k′ cell corrected 2026-09-01 to match `retriever.py`; was listed 4×k) |
 | `SFU_SPLADE_QDRANT_URL` | `http://localhost:6333` | the cut-back line post-split |
 
 **Rollback at any point:** `SFU_SPLADE_BACKEND=qdrant` (+ the URL env once

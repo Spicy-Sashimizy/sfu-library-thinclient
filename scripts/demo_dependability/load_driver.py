@@ -119,19 +119,12 @@ def induce_failure(port: int, queries: list[str], top_k: int, concurrency: int,
     qi = 0
 
     with cf.ThreadPoolExecutor(max_workers=concurrency) as pool:
-        # Keep `concurrency` requests in flight at all times (back-pressure: a
-        # new request is submitted only as one completes). This holds steady
-        # concurrency throughout — including across the kill/restart dead window.
         in_flight = set()
-        # prime the pump
         for _ in range(concurrency):
             in_flight.add(pool.submit(_post_search, port, queries[qi % len(queries)],
                                       top_k, timeout)); qi += 1
         while True:
             now = time.perf_counter()
-            # Kill at the deadline (once). Killing the pgid reaches the serve
-            # subprocess even though the watchdog is the parent — we targeted the
-            # SERVE pid passed in, not the watchdog's.
             if not killed and now >= kill_deadline and kill_pid is not None:
                 try:
                     os.killpg(os.getpgid(kill_pid), signal.SIGKILL)
@@ -142,7 +135,6 @@ def induce_failure(port: int, queries: list[str], top_k: int, concurrency: int,
                         pass
                 killed = True
                 killed_at = now
-            # drain completed futures
             done_now = {f for f in in_flight if f.done()}
             in_flight -= done_now
             for f in done_now:
@@ -155,15 +147,13 @@ def induce_failure(port: int, queries: list[str], top_k: int, concurrency: int,
                     errors += 1
                     if killed and recovered_at is None:
                         dead_window_errors += 1
-            # refill to hold concurrency while running; stop submitting after end
             while len(in_flight) < concurrency and time.perf_counter() < end:
                 in_flight.add(pool.submit(_post_search, port, queries[qi % len(queries)],
                                           top_k, timeout)); qi += 1
-            # terminate when the run window has passed AND everything drained
             if time.perf_counter() >= end and not in_flight:
                 break
             if not done_now:
-                time.sleep(0.01)  # nothing completed this tick — brief yield
+                time.sleep(0.01)
 
     recovery_ms = round((recovered_at - killed_at) * 1000, 0) if (killed and recovered_at and killed_at) else None
     return {
@@ -182,7 +172,6 @@ def induce_failure(port: int, queries: list[str], top_k: int, concurrency: int,
             "n": len(latencies),
         },
     }
-
 
 
 def load_queries(n, qpath):

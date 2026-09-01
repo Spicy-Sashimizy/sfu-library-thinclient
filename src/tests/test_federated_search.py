@@ -14,8 +14,6 @@ from lib.federated_search import (
 )
 
 
-# ── DOI normalization ─────────────────────────────────────────────────────────
-
 def test_normalize_doi_strips_https():
     assert _normalize_doi("https://doi.org/10.1234/test") == "10.1234/test"
 
@@ -31,8 +29,6 @@ def test_normalize_doi_bare():
 def test_normalize_doi_empty():
     assert _normalize_doi("") == ""
 
-
-# ── RRF merge ─────────────────────────────────────────────────────────────────
 
 def _doc(doi, title):
     return {"doi": doi, "title": title}
@@ -67,8 +63,6 @@ def test_rrf_merge_k_param_affects_score():
     secondary = [doc]
     merged_k20 = _rrf_merge(primary, secondary, top_k=1)
     merged_k60 = _rrf_merge(primary, secondary, top_k=1)
-    # Both should give the same absolute value since _rrf_merge uses module-level _RRF_K=60
-    # This test documents the expected score formula: 2 * 1/(60+1)
     expected = 2.0 / (60 + 1)
     assert abs(merged_k20[0]["rrf_score"] - expected) < 1e-9
     assert abs(merged_k60[0]["rrf_score"] - expected) < 1e-9
@@ -78,12 +72,9 @@ def test_rrf_merge_higher_rank_wins():
     primary = [_doc("10.1/a", "A"), _doc("10.1/b", "B")]
     secondary = [_doc("10.1/b", "B")]
     merged = _rrf_merge(primary, secondary, top_k=10)
-    # "B" appears in both lists so should score higher than "A"
     dois = [d["doi"] for d in merged]
     assert dois[0] == "10.1/b"
 
-
-# ── Routing logic ─────────────────────────────────────────────────────────────
 
 def _make_router(recency_days=30, local_rrf_enabled=True):
     oa = MagicMock()
@@ -130,8 +121,6 @@ def test_route_no_filters_goes_to_local_rrf():
     router = _make_router()
     assert router.route("Indigenous land rights", {}) == SearchSource.LOCAL_RRF
 
-
-# ── Search dispatch ───────────────────────────────────────────────────────────
 
 def _make_full_router():
     oa = MagicMock()
@@ -197,7 +186,7 @@ def test_search_local_rrf_calls_both_modes_and_merges():
     assert set(modes) == {"bm25f", "splade"}
     dois = [d["doi"] for d in results]
     assert dois.count("10.1/shared") == 1
-    assert dois[0] == "10.1/shared"  # appears in both → highest RRF score
+    assert dois[0] == "10.1/shared"
 
 
 def test_search_local_rrf_resilient_to_one_mode_failing():
@@ -227,8 +216,6 @@ def test_search_doi_dedup_in_both_mode():
     assert dois.count("10.1/shared") == 1
     assert len(dois) == 3
 
-
-# ── Q2.1 — zero-coverage subject fallback ───────────────────────────────────────
 
 def test_always_live_subjects_has_expected_15():
     """The zero-coverage set must contain exactly the 15 subjects from the roadmap."""
@@ -269,7 +256,6 @@ def test_route_zero_coverage_overrides_prefer_local():
 
 def test_route_covered_subject_goes_local_rrf():
     router = _make_router()
-    # A subject not in either special set follows the default historical path.
     assert (
         router.route("Indigenous land rights", {}, subject_hint="Indigenous Studies")
         == SearchSource.LOCAL_RRF
@@ -290,8 +276,6 @@ def test_search_zero_coverage_subject_calls_only_openalex():
     os_.search.assert_not_called()
     assert results[0]["doi"] == "10.1/a"
 
-
-# ── Q2.2 — Anthropology soft-route ──────────────────────────────────────────────
 
 def test_anthropology_is_soft_live():
     assert "Anthropology" in SOFT_LIVE_SUBJECTS
@@ -339,8 +323,6 @@ def test_search_anthropology_default_calls_only_openalex():
     assert results[0]["doi"] == "10.1/a"
 
 
-# ── Item #1 — filters forwarded to local OpenSearch legs ────────────────────────
-
 FILT = {"publication_year": "2010-2020", "type": "article"}
 
 
@@ -366,8 +348,6 @@ def test_search_both_forwards_filters_to_local():
     router.search("q", FILT, top_k=10, force_source=SearchSource.BOTH)
     assert os_.search.call_args.kwargs["filters"] == FILT
 
-
-# ── Item #6 — degradation flag when local cluster fails ─────────────────────────
 
 def test_local_index_failure_sets_degraded_flag():
     router, oa, os_ = _make_full_router()
@@ -405,8 +385,6 @@ def test_healthy_search_leaves_degraded_false():
     router.search("q", {}, top_k=10, force_source=SearchSource.LOCAL_INDEX)
     assert router.last_degraded is False
 
-
-# ── Item #2 — subject detector heuristic ────────────────────────────────────────
 
 def test_detect_subject_theatre():
     from lib.federated_search import detect_subject

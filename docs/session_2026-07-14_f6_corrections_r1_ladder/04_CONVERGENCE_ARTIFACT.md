@@ -85,6 +85,18 @@ entirely in the transient, which the stack property does not constrain.
   describe mechanisms, not this measurement. Treat the R1 observation as a
   potentially novel (small) empirical note.
 
+> **Prior-art re-check 2026-08-31** (web sweep: kernel docs/LKML/LWN, cache
+> literature, HN/StackExchange/forums): still no source found reporting the
+> composite observable ("smaller cap converges first" as a fixed-window
+> latency/majflt inversion on the Linux page cache). Closest new adjacent
+> find: Zhang & Yang, *"When is the Cache Warm? Manufacturing a Rule of
+> Thumb"* (USENIX HotCloud '20,
+> https://www.usenix.org/system/files/hotcloud20_paper_zhang-lei.pdf ) —
+> warmup *time as a function of cache size* for application caches
+> (larger caches take longer to warm), but at the hit-ratio/app-cache
+> level, with no kernel pressure-scaled-aging clock and no fixed-window
+> inversion. The §1 observation remains unclaimed as such.
+
 ## §4b Addendum (same day): what the F3 pin refutation adds
 
 The pin-ON cells (`r1_cap{8,6}g_pin16_20260714.json`) landed after this note
@@ -125,6 +137,41 @@ was first written and bear on it two ways:
    `release_pages_except` evicts the residue by name at load — jumping
    straight to the sorted state without any pressure or observation passes
    (the F5 16 GB cell tests exactly this claim).
+
+   > **STATUS 2026-08-31 (b) — SUPPORTED ON THE SYNTHETIC, still UNTESTED on
+   > the real stack.** The Tier-1b early-sort arm finally had a real baseline
+   > transient to remove, and the map-guided lever removed **all of the
+   > removable part**: at the marginal rung fault work to convergence fell
+   > 423,700 -> 105,268 majflt (**-75.2%**, 10 passes to zero -> 2), at
+   > boundary 785,176 -> 198,656 (**-74.7%**, 8 -> 2). Both land exactly on
+   > the irreducible floor — the pages that were never loaded must be read
+   > once — so ~75% is the mechanism's physical ceiling, not a shortfall.
+   > The pre-registered ES-2 bar asked for >=80% and is therefore
+   > **unreachable by construction**; the ES arm is scored OVERALL FAIL and
+   > that FAIL does **not** refute this section. Judged on p95 the arm is
+   > blind to the effect (see the Tier-1b addendum). Evidence:
+   > `spike/convergence_repro/RESULTS.md` Tier-1b section 12; cells
+   > `data/eval_results/convrepro_t1b_es_guided_*_20260831.json`.
+   >
+   > **STATUS 2026-08-31 (a) — this claim is still UNTESTED on the real stack.**
+   > The 2026-07-14 F5 16 GB cell that was supposed to test it was a NULL with
+   > a diagnosed scope bug: the hook released only the forward codec slab,
+   > while the load residue this section is about lives in the structural
+   > slabs. **The scope bug is now FIXED IN CODE, EFFICACY UNMEASURED ON THE
+   > REAL STACK** (pending its own pre-registration). Fork commit `2c4d863`;
+   > `spike/seismic_upstream/src/mmap_io.rs` +
+   > `src/pylib/mmap_index.rs`; patches `spike/seismic_upstream_fork.patch` and
+   > `spike/seismic_upstream_f5_scope_fix.patch`. Synthetic verification (Rust
+   > test `release_pages_except_covers_all_slabs`, 600-doc index, no 150M index
+   > touched): released-byte coverage went from the forward slab only to all
+   > mapped slabs — dotvbyte 9,600 B → 42,554 B (4.43×), f16 4,200 B →
+   > 41,354 B (9.85×). The byte accounting was also corrected (madvise failures
+   > now count 0, which is why the old cell could report "released 16.45 GB"
+   > with RssFile unchanged). **No `.so` was rebuilt** — the served binary
+   > still carries the pre-fix hook. Full record:
+   > `docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md`, R1 "F5 release-except
+   > cell" entry. The synthetic early-sort arm testing the same claim under a
+   > controlled residue is `spike/convergence_repro/PREREGISTRATION_EARLYSORT.md`.
 4. On the operator question "can we trigger the forced reclaim manually to
    get the benefit without scaling the host": yes — that is F5 (map-guided,
    this repo), or map-blind equivalents documented in production elsewhere
@@ -318,3 +365,178 @@ half stays inferred). Result files: `data/eval_results/r3_cap{12,16}g_instr_*.js
 + `_r3_query_extent_map.json` + `_r3_inode_map.json`; join +
 verdicts in `data/eval_results/_r3_join_analysis.json` and
 `data/eval_results/_r3_ledger_summary.md`.
+
+---
+
+## Addendum 2026-08-31 — Tier-1 synthetic repro: FAIL (negative result, recorded)
+
+> **SUPERSEDED the same day by the Tier-1b addendum below.** Tier-1's failure
+> was a protocol artifact (the load pre-sorted the data). Tier-1b fixed that
+> and reached a substantive negative result. Read both; act on Tier-1b.
+
+The pre-registered index-independent synthetic repro
+(`spike/convergence_repro/PREREGISTRATION.md`, publication-gate item 1) ran
+at SCALE=1 on the WSL2 host 2026-08-31 and **FAILED its bars** (1/3/4 FAIL,
+2/5 PASS; the early-sort arm's ES-2 came back NO DATA because no baseline
+transient existed, so the §5.3 claim remains UNTESTED — not refuted).
+Mechanism: the harness loads L then R sequentially, so R is always fully
+resident at pass 1 under any cap > R — the load itself performs the "sort,"
+leaving three zero-fault rungs and two hard-thrash rungs with no converging
+regime to invert. This is the pre-declared access-structure-dependence
+discrepancy class, recorded per protocol. The ES-5 exploratory datum
+(inactive-list order protecting R: 100%→97.7%→79.9%→39.8% survival as caps
+descend; blind `memory.reclaim` cost ~8 ms ≈ guided's ~5 ms, overturning the
+"far larger" cost prediction) is the run's keeper. Full verdicts, calibration
+trail (marginal TUNED 7g→6.64g, flat), harness defects, and the Tier-1b
+redesign requirement: **`spike/convergence_repro/RESULTS.md`**. Raw cells:
+`data/eval_results/convrepro_*_20260831.json` (commit `6ee8a982`).
+Publication gate stays closed; spin-off blocked pending Tier-1b.
+
+---
+
+## Addendum 2026-08-31 (b) — Tier-1b synthetic repro: FAIL, and this one is substantive
+
+Tier-1b (`spike/convergence_repro/PREREGISTRATION_TIER1B.md`) rebuilt the
+harness around an **interleaved** L/R load and re-positioned the rungs below
+total demand D. It worked: post-load residency of R was strictly below 100% at
+every rung under the cap (92.34 / 84.84 / 54.96 / 40.00% for marginal /
+boundary / thrash / deep), so the convergence transient the artifact needs
+**existed** this time, and the pre-authorized calibration gate was never used —
+the frozen 6.25g marginal cap produced it on the first try.
+
+**The inversion still did not appear.** At the pass-3 window boundary p95 =
+0.157 ms vs marginal p95 = 0.006 ms, an inversion ratio of **0.04x** against a
+predicted 2–20x: the *smaller*-deficit rung converges faster, not slower.
+Marginal and boundary majflt trajectories are self-similar, scaled by their
+initial deficits (ratio 1.92 / 1.86 / 2.04 / 1.92 over passes 1–4, vs a load
+deficit ratio of 1.98). Pressure-scaled aging is real but second-order:
+boundary's per-pass geometric decay is 0.582 vs marginal's 0.646 (~10% faster,
+enough to reach zero faults at pass 8 vs pass 10 with twice the deficit — not
+enough to invert a 2x head start inside three passes). **Verdict: on this WSL2
+classic-LRU host, with a naive two-population interleaved load and
+uniform-random repeat, the fixed-window convergence outcome is
+deficit-dominated.** Bars 1b/2b/3b FAIL, 4b/5 PASS, OVERALL FAIL. The
+publication gate stays closed and the spin-off stays blocked.
+
+The conclusion is **robust to the metric** (on `clat` mean, pass-3 boundary is
+still 1.98x slower than marginal), but two of the three failing bars are not
+about the hypothesis at all — Tier-1b's bars moved p50 -> p95 to see faults,
+and p95 turns out to be a *threshold detector*: a percentile p_X reads fault
+latency only while the fault fraction exceeds (100-X)%, so at 1,310,720 ops per
+pass p95 flips hard at 65,536 faults. Bars 2b and ES-3 then fail on ~100 ns
+differences inside a +/-16% cache-hit noise floor. Recorded in
+`spike/convergence_repro/RESULTS.md` sections 11 and 15 as bar-design findings;
+no verdict was re-scored.
+
+**Two results worth carrying forward regardless of the gate:**
+
+1. **Load order is the initial-state selector** (exploratory order arm, plus
+   the two baselines). Same cap, same working set, same access pattern, three
+   load orders, three qualitatively different regimes: L->R (Tier-1) leaves R
+   100% resident and produces **no transient**; interleaved (Tier-1b) gives a
+   **decaying** one (159,641 -> 61,130 majflt); R->L gives a **rising** one
+   (233,448 -> 275,840, p95 pinned at 185–189 us). This upgrades the Tier-1
+   load-order explanation into a measured three-point finding, and it is why
+   the next experiment should measure the *real* stack's post-load residency
+   profile rather than guessing at another synthetic load order.
+2. **The map-blind lever (section 5.4) looks bad here.** Tier-1's apparent
+   inactive-list order-protection of R (100 -> 39.8% survival) was a
+   **load-order artifact** and does not survive the interleaved load: blind
+   `memory.reclaim` cuts R and L proportionally (R survival 73.9 / 66.2 / 58.7
+   / 28.7% descending caps, always within ~3 points of L). Scored on total
+   3-pass fault work it is worse than doing nothing at every rung — including
+   +342,016 faults at `fits`, where the working set already fits and guided
+   costs 61. What it does buy is speed to steady state (one pass instead of
+   ~10 at marginal, roughly break-even on total work over that horizon).
+   Map-guided dominates it everywhere.
+
+Raw cells: `data/eval_results/convrepro_t1b_*_20260831.json` (commit
+`3729df30`, 21 cells + logs); verbatim tool output
+`data/eval_results/HOST_ANALYZE_t1b_20260831.txt`; verdict tool
+`spike/convergence_repro/analyze.py` at `73ec114c`. Full bar-by-bar reading,
+harness-soundness checks and defect D4:
+**`spike/convergence_repro/RESULTS.md`, Tier-1b sections 8–17.**
+
+## Addendum 2026-09-01 — publication-gate items 2–3: pre-registered, phase A in flight
+
+Items 2–3 (native-Linux + MGLRU real-stack repro) are no longer "pending,
+unstarted": **`spike/convergence_repro/PREREGISTRATION_TIER23.md`** (DRAFT,
+commits `28a00215`/`0b3c7e2d`) targets the OCI demo serve box (E5.Flex
+x86_64, Ubuntu 24.04 kernel 6.17.0-1018-oracle, 62 GiB, MGLRU present and
+runtime-toggleable — one box runs both tiers as a toggle A/B). Harness:
+`scripts/seismic_testbed/t23_convergence_ladder.py` + orchestrator (commit
+`3a8f2722`; adapted from the R2 driver, which remains untouched at its
+judged commits). **IMPLEMENTED, EFFICACY UNMEASURED — phase A (exploratory
+calibration ladder, both arms) launched 2026-09-01 00:00 UTC**; results will
+land in `data/eval_results/t23a_*.json` with verdict bars frozen only after
+phase A per the pre-registration. Until then the item-2/3 status here is:
+in measurement, no numbers yet.
+
+## Addendum 2026-09-01 (b) — Tier-2/3 phase A MEASURED: the artifact's dynamic exists on native Linux; MGLRU displaces the cliff upward
+
+Phase A (exploratory calibration, 14 cells, raw commit `29d58b89`) on the
+OCI serve box (x86_64, kernel 6.17, real stack + real 40-query workload,
+prefault protocol matched to R1/R2):
+
+- **Classic LRU (item 2): the convergence transient and the fixed-window
+  inversion are PRESENT.** Transient band 26–28 GB (repeat set ≈27.5 GB on
+  the deployed dotvbyte index): both rungs converge to the same ~19–20 ms
+  steady state through multi-pass sorts, and at the fixed pass-2 window
+  the smaller cap wins — 26 GB p50 64.3 ms vs 28 GB 262.8 ms (4.1×) —
+  pressure-dominated convergence with pass-1 pgscan monotone in pressure
+  (0 → 1.0M → 5.2M). The dynamic the Tier-1b synthetic could not produce
+  reproduces on the real stack outside WSL2.
+- **MGLRU (item 3): does NOT eliminate the artifact by converging faster —
+  it replaces the transient with sustained thrash.** Same box, same index,
+  toggle-controlled: at 28 GB MGLRU plateaus at 44–49k faults/pass (p50
+  4–5 s, never converges); at 26 GB ~160k faults/pass, p50 ~24.5 s
+  (~1000× classic's 19.4 ms at the same cap). Cliff: classic < 26 GB,
+  MGLRU ≈ 29–30 GB. Above 30 GB the arms are indistinguishable.
+
+Single cells, no replicates — signals, not verdicts. Confirmatory bars
+(B1–B5) are drafted in `spike/convergence_repro/PREREGISTRATION_TIER23.md`
+§7 and freeze before phase B runs.
+
+## Addendum 2026-09-01 (c) — Tier-2/3 phase B JUDGED: item 2 CONFIRMED under frozen bars (B2/B3 PASS); item 3 one cell short
+
+Phase B (confirmatory, 16/17 pre-registered cells with replicates, valid
+run 2 after the quarantined no-prefault run 1) judged against the B1–B5
+bars frozen at `1a87aac3`:
+
+- **Item 2 (native-Linux classic repro): CONFIRMED.** B2 PASS — the
+  multi-pass convergence transient replicates (classic 26 GB:
+  `31,642→5,072→0` and `31,523→5,100→0` majflt/pass). B3 PASS — the
+  fixed-window inversion, the artifact this whole line of work is about,
+  replicates on the real stack: at the pass-2 window the 26 GB cap is
+  5.8×/5.6× faster than the 28 GB cap (p50 63.9/62.4 ms vs 372.6/352.3
+  ms) with fewer faults, both converging to the same ~19.5 ms steady
+  state. Phase-B trajectories reproduce phase A's single cells to ~1%.
+- **Item 3 (MGLRU A/B): still open, one cell short.** The deadline cut
+  `mglru:28:1` (phase A's plateau-thrash rung), and B1/B4/B5 all name it,
+  so they stay open per the frozen rules. Recorded for the resumption:
+  no phase-B rung plateaus in either arm, so the frozen cliff definition
+  binds to no cell (classic's cliff sits below the 25 GB ladder floor),
+  and B5's displacement can only be lower-bounded (~≥4 GB if 28 GB
+  plateaus as in phase A) without a pre-registered ladder amendment.
+
+Verdict detail + bar inputs: `spike/convergence_repro/RESULTS.md` §§18–20;
+raw cells `data/eval_results/t23b_*_20260901.json`.
+
+## Addendum 2026-09-01 (d) — phase B COMPLETE (17/17): item 3 MEASURED — MGLRU displaces the cliff upward ≥ ~4 GB and replaces the transient with sustained thrash
+
+The final cell (`mglru:28:1`, 21:46–22:06 UTC resume window) plateaus in 5
+passes (41–49k majflt/pass, p50 4.3–5.4 s), replicating phase A at the rung
+where classic converges to ~21 ms in both replicates (~220× at equal cap).
+Full-set judgment: **B2/B3 PASS (item 2 confirmed); B1/B5 not passed on
+uncomputable-as-frozen components** (no classic rung plateaus above the
+25 GB ladder floor, so the frozen cliff/displacement definitions bind to
+nothing on the classic side — MGLRU's cliff measures cleanly at 28.5 GB,
+displacement lower-bounded ≥ ~4 GB upward); **B4 FAIL on bar arithmetic**
+(zero-ties defeat "strictly monotone"; the ≥10× active_file clause assumed
+classic activation semantics) while the mechanism it targeted is directly
+observed: classic re-sorts the polluted cache via refault-activation
+(ws_activate ≈ ws_refault), MGLRU never re-promotes refaulting pages
+(ws_activate → 0 while ws_refault holds ~4.5–5.9M/pass) so the load-time
+promotion mistake persists indefinitely. Exploratory mechanism reading
+with the full reclaim anatomy: `spike/convergence_repro/RESULTS.md` §22;
+judgment detail §21; pre-reg s7 final tally.

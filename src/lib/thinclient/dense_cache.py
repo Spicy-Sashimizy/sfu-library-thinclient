@@ -22,10 +22,10 @@ import numpy as np
 
 logger = logging.getLogger("sfu_library_mcp")
 
-DELTA_KEY_BASE = 1 << 40        # disjoint from seed keys (0..len(seed)-1)
-ENCODE_BATCH = 32               # measured ~87 docs/s CPU at this batch size
-QUEUE_MAX_DOCS = 2_000          # enqueue is drop-newest beyond this
-DEFAULT_MAX_DOCS = 500_000      # brute-force stays cheap (~24 MB codes)
+DELTA_KEY_BASE = 1 << 40
+ENCODE_BATCH = 32
+QUEUE_MAX_DOCS = 2_000
+DEFAULT_MAX_DOCS = 500_000
 _POPCNT = np.unpackbits(np.arange(256, dtype=np.uint8)[:, None],
                         axis=1).sum(1).astype(np.uint8)
 
@@ -49,13 +49,13 @@ class DenseWarmCache:
         self.model_path = model_path
         self.dim = dim
         self.max_docs = max_docs
-        self._encoder = encoder          # injectable for tests
+        self._encoder = encoder
         self._db = sqlite3.connect(str(self.dir / "delta.sqlite"),
                                    check_same_thread=False)
         self._db.executescript(_SCHEMA)
         self._db_lock = threading.Lock()
 
-        self._lock = threading.Lock()    # guards the RAM arrays below
+        self._lock = threading.Lock()
         self._n = 0
         cap = 4096
         self._codes = np.zeros((cap, dim // 8), dtype=np.uint8)
@@ -67,7 +67,6 @@ class DenseWarmCache:
         self._closed = False
         self.stats = {"enqueued": 0, "encoded": 0, "dropped": 0, "errors": 0}
 
-        # Rebuild the RAM tier from SQLite (durable truth) at startup.
         rows = self._db.execute(
             "SELECT id, vec FROM delta ORDER BY key").fetchall()
         for doc_id, blob in rows:
@@ -79,7 +78,6 @@ class DenseWarmCache:
             logger.info("dense warm cache: restored %d docs from delta.sqlite",
                         self._n)
 
-    # ── ingest ───────────────────────────────────────────────────────────────
 
     def enqueue(self, docs: list[dict]) -> None:
         """Fire-and-forget: queue surfaced docs for background encoding.
@@ -140,7 +138,6 @@ class DenseWarmCache:
                 texts = [f"{d['title']} {d.get('abstract') or ''}"[:2000]
                          for d in batch]
                 X = self._encode(texts)
-                # Byte-identical quantization to builder.build_dense_leg.
                 int8 = np.clip(np.round(X * 127.0), -127, 127).astype(np.int8)
                 now = time.time()
                 with self._db_lock:
@@ -163,14 +160,13 @@ class DenseWarmCache:
                     logger.error("dense warm cache disabled (encoder unusable)")
                     self._closed = True
 
-    # ── RAM tier ─────────────────────────────────────────────────────────────
 
     def _append_row(self, doc_id: str, int8_vec: np.ndarray) -> None:
         with self._lock:
             self._append_row_locked(doc_id, int8_vec)
 
     def _append_row_locked(self, doc_id: str, int8_vec: np.ndarray) -> None:
-        if self._n >= self._codes.shape[0]:        # capacity doubling
+        if self._n >= self._codes.shape[0]:
             self._codes = np.vstack([self._codes, np.zeros_like(self._codes)])
             self._int8 = np.vstack([self._int8, np.zeros_like(self._int8)])
         self._codes[self._n] = np.packbits(int8_vec > 0)
@@ -179,7 +175,6 @@ class DenseWarmCache:
         self._known.add(doc_id)
         self._n += 1
 
-    # ── search / hydration ───────────────────────────────────────────────────
 
     def search(self, qbits: np.ndarray, q: np.ndarray,
                fetch: int) -> list[tuple[str, float]]:

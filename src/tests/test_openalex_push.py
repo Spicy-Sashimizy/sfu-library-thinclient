@@ -83,7 +83,6 @@ class TestPushSkippedForSpladeIndex:
         mock_post.assert_not_called()
 
     def test_default_is_splade_served(self):
-        # Default must be the safe behavior: skip (index is openalex_works).
         client = _make_client()
         assert client._opensearch_splade_served is True
         with patch("requests.post") as mock_post:

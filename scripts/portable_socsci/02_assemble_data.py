@@ -80,7 +80,7 @@ def unpack_archive():
                           mode="r|") as tar:
             try:
                 tar.extractall(BSECTIONS, filter="data")
-            except TypeError:  # py < 3.11.4
+            except TypeError:
                 tar.extractall(BSECTIONS)
     log(f"  done ({_du(dst)/2**30:.1f} GiB)")
 
@@ -104,8 +104,8 @@ def write_manifest():
     for name in (RECENT, ARCHIVE):
         e = dict(src.get("sections", {}).get(name, {}))
         e["state"] = "live"
-        e["hot"] = True          # both eras ship offline in this bundle
-        e.pop("archive", None)   # packed copy is not shipped
+        e["hot"] = True
+        e.pop("archive", None)
         kept[name] = e
     n_docs = sum(kept[n].get("docs", 0) for n in kept)
     manifest = {

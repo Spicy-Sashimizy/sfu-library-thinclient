@@ -92,7 +92,7 @@ class TestPersistMetric:
         from lib.config import ServerConfig
         cfg = ServerConfig(metrics_log_path="/proc/cannot-write-here/metrics.jsonl")
         with patch("lib.tools._get_config", return_value=cfg):
-            _persist_metric("tool_y", 0.01, True)  # must not raise
+            _persist_metric("tool_y", 0.01, True)
 
     def test_entry_contains_required_fields(self, tmp_path):
         log_file = tmp_path / "metrics.jsonl"

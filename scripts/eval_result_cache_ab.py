@@ -44,7 +44,7 @@ REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "data" / "eval_results" / "result_cache_ab_2026-07-18.json"
 SEED_FILE = REPO / "data" / "eval_results" / "demo_seed_queries.txt"
 DEFAULT_LIMIT = 50
-N_REPEAT = 20  # n≥20 per the drive prompt
+N_REPEAT = 20
 
 
 def seed_queries() -> list[str]:
@@ -54,7 +54,7 @@ def seed_queries() -> list[str]:
             line = line.strip()
             if line and not line.startswith("#"):
                 out.append(line)
-    return out[:6]  # the de-duped seed set
+    return out[:6]
 
 
 def http(method: str, url: str, body=None, timeout=120.0):
@@ -110,18 +110,13 @@ def measure_A(base, seeds):
     results = []
     for q in seeds:
         hit_args = {"query": q, "limit": DEFAULT_LIMIT}
-        # Genuine cold miss: a fresh-per-run nonce variant the cache has never
-        # seen (a different cache key + different result set, same warm-
-        # retrieval+re-rank cost). n=N_REPEAT distinct variants, averaged for a
-        # stable cold baseline.
         cold_latencies = []
         for i in range(N_REPEAT):
-            fresh_q = f"{q} {secrets.token_hex(4)}"  # fresh nonce → genuine miss
+            fresh_q = f"{q} {secrets.token_hex(4)}"
             st, data, ms = http("POST", f"{base}/api/search",
                                 body={"query": fresh_q, "limit": DEFAULT_LIMIT})
             if st == 200:
                 cold_latencies.append(ms)
-        # Cache-hit leg: the seeded query, n=N_REPEAT reps (resident → hits).
         hit_latencies = []
         for _ in range(N_REPEAT):
             st, data, ms = http("POST", f"{base}/api/search", body=hit_args)
@@ -132,9 +127,6 @@ def measure_A(base, seeds):
             continue
         cold_p50 = pctl(cold_latencies, 50)
         hit_p50 = pctl(hit_latencies, 50)
-        # F6 (host NOTE-W7-2): speedup MUST be reproducible from the stored p50
-        # fields — compute from cold_p50/hit_p50 directly, NOT a separate raw
-        # median sample. Round the speedup consistently (1 dp).
         speedup = round(cold_p50 / max(hit_p50, 0.001), 1) if hit_p50 else None
         row = {
             "query": q, "n_cold": len(cold_latencies), "n_hit": len(hit_latencies),
@@ -143,9 +135,6 @@ def measure_A(base, seeds):
             "hit_p50_ms": hit_p50,
             "hit_p95_ms": pctl(hit_latencies, 95),
             "speedup_p50x": speedup,
-            # Store the raw per-sample arrays so the doc is fully reproducible
-            # from the file (host NOTE-W7-2 finding 1: stored p50s must imply
-            # the speedup; raw arrays let any percentile be rechecked).
             "cold_samples_ms": [round(x, 2) for x in cold_latencies],
             "hit_samples_ms": [round(x, 2) for x in hit_latencies],
         }
@@ -169,9 +158,7 @@ def measure_B(base, seeds):
     results = []
     for q in seeds:
         args = {"query": q, "limit": DEFAULT_LIMIT}
-        # First call: miss → stores the response, returns it.
         st1, d1, _ = http("POST", f"{base}/api/search", body=args)
-        # Second call: hit → returns the STORED first response.
         st2, d2, _ = http("POST", f"{base}/api/search", body=args)
         equal = (st1 == st2 == 200) and (d1 == d2)
         results.append({"query": q, "parity": equal, "status_1": st1, "status_2": st2})
@@ -196,7 +183,6 @@ def measure_C(base, seeds):
     print(f"[C] miss-path stability (fresh-nonce queries = genuine misses)")
     lats = []
     for q in seeds:
-        # A per-run nonce guarantees a cache key never seen before → genuine miss.
         nonce = secrets.token_hex(4)
         fresh_q = f"{q} {nonce}"
         st, _, ms = http("POST", f"{base}/api/search",
@@ -232,7 +218,6 @@ def main():
     A = measure_A(base, seeds)
     B = measure_B(base, seeds)
     C = measure_C(base, seeds)
-    # Final counters snapshot
     _, h2, _ = http("GET", f"{base}/health")
     counters = h2.get("result_cache", {})
     out = {

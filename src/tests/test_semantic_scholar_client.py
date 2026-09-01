@@ -138,7 +138,7 @@ class TestS2CircuitBreakerWithRetries:
         with patch("requests.get", side_effect=requests.Timeout()) as mock_get:
             result = client._get("/paper/abc", {})
         assert result is None
-        assert mock_get.call_count == 4  # 1 original + 3 retries
+        assert mock_get.call_count == 4
         assert client._breaker.failure_count == 1
         assert client._breaker.state == CircuitBreaker.CLOSED
 

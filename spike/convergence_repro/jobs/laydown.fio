@@ -1,0 +1,39 @@
+# Deterministic creation of the two populations in the docker named volume.
+#
+#   R = repeat set   (5 GiB at SCALE=1)  — mmap random-read every pass
+#   L = load residue (1.75 GiB at SCALE=1) — sequential-read ONCE per cell
+#
+# Env:
+#   R_FILE R_SIZE L_FILE L_SIZE FIO_RANDSEED
+#
+# fallocate=none + real 1 MiB writes => fully allocated, NON-SPARSE files.
+# (A sparse file would fault from the shared zero page and never touch the
+# disk, which would make the whole experiment vacuous.)
+# refill_buffers=1 draws payload from fio's PRNG seeded by randseed, so the
+# byte content is reproducible run-to-run; buffer_compress_percentage=0 keeps
+# it incompressible in case the backing store ever compresses.
+
+[global]
+ioengine=psync
+rw=write
+bs=1M
+direct=0
+randrepeat=1
+randseed=${FIO_RANDSEED}
+refill_buffers=1
+buffer_compress_percentage=0
+fallocate=none
+create_on_open=1
+end_fsync=1
+thread=1
+numjobs=1
+group_reporting=1
+
+[laydown_R]
+filename=${R_FILE}
+size=${R_SIZE}
+
+[laydown_L]
+stonewall
+filename=${L_FILE}
+size=${L_SIZE}

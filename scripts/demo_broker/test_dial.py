@@ -153,8 +153,6 @@ class TestDialEndpoint(unittest.TestCase):
         cls.app = app
         cls.c = TestClient(app.app)
         cls.adm = {"x-admin-token": os.environ.get("DEMO_ADMIN_TOKEN", "adm")}
-        # test_app.py may have imported app first with a different token env;
-        # read the live one off the imported CONFIG so both orders pass.
         cls.adm = {"x-admin-token": app.CONFIG.admin_token}
 
     def setUp(self):

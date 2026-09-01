@@ -1,7 +1,11 @@
 # OCI free-tier RESIDENT demo — "scale-to-free" + visitor-triggered RAM boost + a live cgroup dial
 
-**Date:** 2026-08-17 · **Status:** **DESIGN / RESEARCHED 2026-08-17 — NOTHING
-BUILT, NOTHING MEASURED ON OCI. No OCI resource has been provisioned.**
+**Date:** 2026-08-17 · **Status:** **SHELVED by operator decision 2026-08-18**
+(the canonical x86 plan in `OCI_DEMO_DEPLOYMENT.md` was adopted; the WI-1/WI-2
+aarch64 ports are NOT pursued). One component WAS built and adopted
+independently: the §3 cgroup `MemoryHigh` dial (`scripts/demo_broker/dial.py`
++ `sfu-serve.service`), live-verified on the deployed E5 box 2026-08-20.
+Original status: DESIGN / RESEARCHED 2026-08-17, nothing built on OCI.
 
 This is a **variant** of `OCI_DEMO_DEPLOYMENT.md` (2026-08-06), which remains the
 canonical plan. It does not replace it. It answers one question the canonical

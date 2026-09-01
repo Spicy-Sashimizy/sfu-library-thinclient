@@ -27,9 +27,6 @@ TOPICS = {
 }
 
 
-# BMP returns empty results below ~500 docs/shard and panics on heavy score
-# ties (measured quirks) — the fixture stays above both: 3000 docs, 1000-doc
-# shards, near-unique weights.
 def make_docs(n: int = 3000) -> list[dict]:
     docs = []
     for i in range(n):
@@ -40,7 +37,7 @@ def make_docs(n: int = 3000) -> list[dict]:
             "abstract": f"A paper about {words}. Sample {i} with details on {extra}.",
             "publication_year": 2015 + (i % 10),
             "type": "article" if i % 3 else "review",
-            "is_oa": bool((i // 2) % 2),  # varies WITHIN each section
+            "is_oa": bool((i // 2) % 2),
             "doi": f"10.1/{i}",
             "sparse_field": {w: 1.0 + ((i * 7 + j * 13) % 199) * 0.01
                              for j, w in enumerate(words.split()[:4])},
@@ -58,7 +55,7 @@ def index_root(tmp_path_factory):
         sec = classify_doc(d["title"], d["abstract"])
         if sec not in builders:
             builders[sec] = SectionBuilder(root, sec, hot=True, meta_db=meta,
-                                           bmp_shard_docs=1000)  # force shard rotation
+                                           bmp_shard_docs=1000)
         builders[sec].add(d)
         counts[sec] = counts.get(sec, 0) + 1
     infos = {s: b.finish() for s, b in builders.items()}
@@ -80,7 +77,7 @@ def test_sections_disjoint_and_complete(index_root):
 
 def test_bmp_shards_rotated(index_root):
     shards = list((index_root / "sections").glob("*/splade_*.bmp"))
-    assert len(shards) > 1  # 1000-doc shard cap on ~1500-doc sections rotates
+    assert len(shards) > 1
 
 
 def test_bm25f_search_and_filters(index_root):
@@ -101,11 +98,8 @@ def test_bm25f_search_and_filters(index_root):
 
 
 def test_splade_leg_via_bmp(index_root):
-    # Query BMP through the leg internals with a pre-encoded sparse vector
-    # (avoids the ONNX model dependency in unit tests).
     r = ThinClientRetriever(index_root=str(index_root), remote_abstracts=False)
     r._load()
-    # vocab sidecars must exist (BMP panics on zero-overlap queries without them)
     assert list((index_root / "sections").glob("*/splade_*.vocab.zst"))
     qvec = {"cancer": 200, "therapy": 100}
     out = []
@@ -115,7 +109,7 @@ def test_splade_leg_via_bmp(index_root):
             if shard["vocab"] is not None:
                 q_here = {t: w for t, w in qvec.items() if t in shard["vocab"]}
                 if not q_here:
-                    continue  # the skip path that prevents the panic
+                    continue
             ids, scores = shard["searcher"].search(q_here, k=10, alpha=1.0, beta=1.0)
             out.extend(zip(ids, scores))
     assert out
@@ -137,13 +131,12 @@ def test_abstract_sidecar_roundtrip(index_root):
 def test_hydrate_fills_abstracts_locally(index_root):
     r = ThinClientRetriever(index_root=str(index_root), remote_abstracts=False)
     hits = r.search("graph optimization algorithm", top_k=5, mode="bm25f")
-    assert hits and all(h["abstract"] for h in hits)  # hot section => local
+    assert hits and all(h["abstract"] for h in hits)
 
 
 def test_rrf_fusion_shape(index_root):
     r = ThinClientRetriever(index_root=str(index_root), remote_abstracts=False)
     r._load()
-    # monkeypatch the splade leg to avoid the ONNX dependency
     r._splade_leg = lambda q, k, f: [(h["openalex_id"], 1.0) for h in
                                      r.search(q, k, mode="bm25f")][::-1]
     fused = r.search_rrf("machine learning network model", top_k=10)
@@ -162,12 +155,12 @@ def test_pack_unpack_parity(index_root):
     assert not (index_root / "sections" / section).exists()
 
     out = unpack_section(index_root, section)
-    assert out["parity_checksum_ok"] is True  # bit-identical artifacts
+    assert out["parity_checksum_ok"] is True
 
     r2 = ThinClientRetriever(index_root=str(index_root), remote_abstracts=False)
     after = [(h["openalex_id"], round(h["score"], 6))
              for h in r2.search("cancer therapy clinical", top_k=10, mode="bm25f")]
-    assert before == after  # exact result parity, scores included
+    assert before == after
 
 
 def test_filter_normalization():

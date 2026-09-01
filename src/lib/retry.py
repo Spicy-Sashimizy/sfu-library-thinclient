@@ -68,7 +68,6 @@ class CircuitBreaker:
                     return True
                 return False
 
-            # HALF_OPEN: allow only a single test request through.
             if not self._probe_in_flight:
                 self._probe_in_flight = True
                 return True
@@ -123,14 +122,12 @@ def retry_with_backoff(
                         circuit_breaker.record_success()
                     return result
                 except no_retry_on:
-                    # Never retry these
                     raise
                 except retry_on as e:
                     last_exception = e
 
                     if attempt < max_retries:
                         delay = min(base_delay * (2 ** attempt), max_delay)
-                        # Check for rate limiting (429)
                         status_code = getattr(e, "status_code", None)
                         if hasattr(e, "response"):
                             status_code = getattr(e.response, "status_code", status_code)
@@ -150,10 +147,6 @@ def retry_with_backoff(
                         )
                         time.sleep(delay)
 
-            # Record at most ONE failure per logical request: only after all
-            # retries are exhausted. Recording per-attempt would over-count and
-            # trip the breaker after a single failing request (e.g. max_retries=3
-            # would log 4 failures, opening a threshold-5 breaker prematurely).
             if circuit_breaker:
                 circuit_breaker.record_failure()
             raise last_exception  # type: ignore[misc]
@@ -195,7 +188,6 @@ def retry_with_backoff(
                         )
                         await asyncio.sleep(delay)
 
-            # Record at most ONE failure per logical request (see sync_wrapper).
             if circuit_breaker:
                 circuit_breaker.record_failure()
             raise last_exception  # type: ignore[misc]

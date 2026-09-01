@@ -1,0 +1,97 @@
+[04:55:04] phase B start: deadline 6000s, cell timeout 2700s, cells=[classic:26:1 classic:28:1 classic:30:1 classic:26:2 classic:28:2 classic:30:2 mglru:30:1 mglru:31:1 mglru:29:1 mglru:30:2 mglru:31:2 mglru:29:2 classic:27:1 classic:25:1 classic:29:1 mglru:32:1 mglru:28:1]
+[04:55:04] sfu-serve stopped for the window
+[04:55:09] cell classic/cap26g_rep1 starting (elapsed 0s, lru_gen 0x0000)
+[05:00:42] cell classic/cap26g_rep1 DONE
+[05:00:45] cell classic/cap28g_rep1 starting (elapsed 338s, lru_gen 0x0000)
+[05:05:47] cell classic/cap28g_rep1 DONE
+[05:05:50] cell classic/cap30g_rep1 starting (elapsed 643s, lru_gen 0x0000)
+[05:10:52] cell classic/cap30g_rep1 DONE
+[05:10:55] cell classic/cap26g_rep2 starting (elapsed 948s, lru_gen 0x0000)
+[05:16:28] cell classic/cap26g_rep2 DONE
+[05:16:31] cell classic/cap28g_rep2 starting (elapsed 1284s, lru_gen 0x0000)
+[05:21:32] cell classic/cap28g_rep2 DONE
+[05:21:36] cell classic/cap30g_rep2 starting (elapsed 1588s, lru_gen 0x0000)
+[05:26:38] cell classic/cap30g_rep2 DONE
+[05:26:41] cell mglru/cap30g_rep1 starting (elapsed 1894s, lru_gen 0x0007)
+[05:31:43] cell mglru/cap30g_rep1 DONE
+[05:31:46] cell mglru/cap31g_rep1 starting (elapsed 2199s, lru_gen 0x0007)
+[05:36:48] cell mglru/cap31g_rep1 DONE
+[05:36:51] cell mglru/cap29g_rep1 starting (elapsed 2504s, lru_gen 0x0007)
+[05:41:53] cell mglru/cap29g_rep1 DONE
+[05:41:56] cell mglru/cap30g_rep2 starting (elapsed 2809s, lru_gen 0x0007)
+[05:46:58] cell mglru/cap30g_rep2 DONE
+[05:47:01] cell mglru/cap31g_rep2 starting (elapsed 3114s, lru_gen 0x0007)
+[05:52:03] cell mglru/cap31g_rep2 DONE
+[05:52:06] cell mglru/cap29g_rep2 starting (elapsed 3419s, lru_gen 0x0007)
+[05:57:08] cell mglru/cap29g_rep2 DONE
+[05:57:12] cell classic/cap27g_rep1 starting (elapsed 3724s, lru_gen 0x0000)
+[06:02:23] cell classic/cap27g_rep1 DONE
+[06:02:26] cell classic/cap25g_rep1 starting (elapsed 4039s, lru_gen 0x0000)
+[06:08:33] cell classic/cap25g_rep1 DONE
+[06:08:36] cell classic/cap29g_rep1 starting (elapsed 4409s, lru_gen 0x0000)
+[06:13:38] cell classic/cap29g_rep1 DONE
+[06:13:42] cell mglru/cap32g_rep1 starting (elapsed 4714s, lru_gen 0x0007)
+[06:18:44] cell mglru/cap32g_rep1 DONE
+[06:18:47] cell mglru/cap28g_rep1 starting (elapsed 5020s, lru_gen 0x0007)
+[06:23:49] cell mglru/cap28g_rep1 DONE
+[06:23:49] phase B window complete
+[06:23:49] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)
+[19:47:26] phase B start: deadline 6000s, cell timeout 2700s, cells=[classic:26:1 classic:28:1 classic:30:1 classic:26:2 classic:28:2 classic:30:2 mglru:30:1 mglru:31:1 mglru:29:1 mglru:30:2 mglru:31:2 mglru:29:2 classic:27:1 classic:25:1 classic:29:1 mglru:32:1 mglru:28:1]
+[19:47:26] sfu-serve stopped for the window
+[19:47:31] cell classic/cap26g_rep1 starting (elapsed 0s, lru_gen 0x0000)
+[19:55:41] cell classic/cap26g_rep1 DONE
+[19:55:44] cell classic/cap28g_rep1 starting (elapsed 495s, lru_gen 0x0000)
+[20:03:28] cell classic/cap28g_rep1 DONE
+[20:03:31] cell classic/cap30g_rep1 starting (elapsed 962s, lru_gen 0x0000)
+[20:08:42] cell classic/cap30g_rep1 DONE
+[20:08:45] cell classic/cap26g_rep2 starting (elapsed 1276s, lru_gen 0x0000)
+[20:16:58] cell classic/cap26g_rep2 DONE
+[20:17:01] cell classic/cap28g_rep2 starting (elapsed 1772s, lru_gen 0x0000)
+[20:24:45] cell classic/cap28g_rep2 DONE
+[20:24:49] cell classic/cap30g_rep2 starting (elapsed 2239s, lru_gen 0x0000)
+[20:29:59] cell classic/cap30g_rep2 DONE
+[20:30:03] cell mglru/cap30g_rep1 starting (elapsed 2553s, lru_gen 0x0007)
+[20:35:15] cell mglru/cap30g_rep1 DONE
+[20:35:18] cell mglru/cap31g_rep1 starting (elapsed 2869s, lru_gen 0x0007)
+[20:40:28] cell mglru/cap31g_rep1 DONE
+[20:40:31] cell mglru/cap29g_rep1 starting (elapsed 3182s, lru_gen 0x0007)
+[20:45:41] cell mglru/cap29g_rep1 DONE
+[20:45:45] cell mglru/cap30g_rep2 starting (elapsed 3495s, lru_gen 0x0007)
+[20:50:55] cell mglru/cap30g_rep2 DONE
+[20:50:58] cell mglru/cap31g_rep2 starting (elapsed 3809s, lru_gen 0x0007)
+[20:56:08] cell mglru/cap31g_rep2 DONE
+[20:56:11] cell mglru/cap29g_rep2 starting (elapsed 4122s, lru_gen 0x0007)
+[21:01:21] cell mglru/cap29g_rep2 DONE
+[21:01:25] cell classic/cap27g_rep1 starting (elapsed 4435s, lru_gen 0x0000)
+[21:09:12] cell classic/cap27g_rep1 DONE
+[21:09:15] cell classic/cap25g_rep1 starting (elapsed 4906s, lru_gen 0x0000)
+[21:17:39] cell classic/cap25g_rep1 DONE
+[21:17:42] cell classic/cap29g_rep1 starting (elapsed 5413s, lru_gen 0x0000)
+[21:22:52] cell classic/cap29g_rep1 DONE
+[21:22:56] cell mglru/cap32g_rep1 starting (elapsed 5726s, lru_gen 0x0007)
+[21:28:07] cell mglru/cap32g_rep1 DONE
+[21:28:07] DEADLINE: 6041s elapsed — not starting mglru:28:1 (or anything after); resume in a later window
+[21:28:07] phase B window complete
+[21:28:07] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)
+[21:46:25] phase B start: deadline 6000s, cell timeout 2700s, cells=[classic:26:1 classic:28:1 classic:30:1 classic:26:2 classic:28:2 classic:30:2 mglru:30:1 mglru:31:1 mglru:29:1 mglru:30:2 mglru:31:2 mglru:29:2 classic:27:1 classic:25:1 classic:29:1 mglru:32:1 mglru:28:1]
+[21:46:25] sfu-serve stopped for the window
+[21:46:25] SKIP classic/cap26g_rep1 — result exists (t23b_classic_cap26g_rep1_20260901.json)
+[21:46:25] SKIP classic/cap28g_rep1 — result exists (t23b_classic_cap28g_rep1_20260901.json)
+[21:46:25] SKIP classic/cap30g_rep1 — result exists (t23b_classic_cap30g_rep1_20260901.json)
+[21:46:25] SKIP classic/cap26g_rep2 — result exists (t23b_classic_cap26g_rep2_20260901.json)
+[21:46:25] SKIP classic/cap28g_rep2 — result exists (t23b_classic_cap28g_rep2_20260901.json)
+[21:46:25] SKIP classic/cap30g_rep2 — result exists (t23b_classic_cap30g_rep2_20260901.json)
+[21:46:25] SKIP mglru/cap30g_rep1 — result exists (t23b_mglru_cap30g_rep1_20260901.json)
+[21:46:25] SKIP mglru/cap31g_rep1 — result exists (t23b_mglru_cap31g_rep1_20260901.json)
+[21:46:25] SKIP mglru/cap29g_rep1 — result exists (t23b_mglru_cap29g_rep1_20260901.json)
+[21:46:25] SKIP mglru/cap30g_rep2 — result exists (t23b_mglru_cap30g_rep2_20260901.json)
+[21:46:25] SKIP mglru/cap31g_rep2 — result exists (t23b_mglru_cap31g_rep2_20260901.json)
+[21:46:25] SKIP mglru/cap29g_rep2 — result exists (t23b_mglru_cap29g_rep2_20260901.json)
+[21:46:25] SKIP classic/cap27g_rep1 — result exists (t23b_classic_cap27g_rep1_20260901.json)
+[21:46:25] SKIP classic/cap25g_rep1 — result exists (t23b_classic_cap25g_rep1_20260901.json)
+[21:46:25] SKIP classic/cap29g_rep1 — result exists (t23b_classic_cap29g_rep1_20260901.json)
+[21:46:25] SKIP mglru/cap32g_rep1 — result exists (t23b_mglru_cap32g_rep1_20260901.json)
+[21:46:29] cell mglru/cap28g_rep1 starting (elapsed 0s, lru_gen 0x0007)
+[22:06:02] cell mglru/cap28g_rep1 DONE
+[22:06:02] phase B window complete
+[22:06:02] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)

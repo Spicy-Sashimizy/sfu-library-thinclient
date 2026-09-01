@@ -31,7 +31,6 @@ ARXIV_CACHE = REPO_ROOT / "data/arxiv_cache.json"
 ARXIV_API = "https://export.arxiv.org/api/query"
 NS = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
-# SFU subject → arXiv category codes (primary mapping)
 SUBJECT_TO_ARXIV: dict[str, list[str]] = {
     "Computer Science": ["cs.LG", "cs.AI", "cs.CV", "cs.NLP", "cs.IR", "cs.SE"],
     "Mathematics": ["math.NA", "math.ST", "math.CO", "math.PR", "math.OC"],
@@ -91,7 +90,7 @@ def fetch_arxiv(category: str, max_results: int = 100, start: int = 0) -> list[d
     params = urllib.parse.urlencode({
         "search_query": f"cat:{category}",
         "start": start,
-        "max_results": min(max_results, 100),  # arXiv caps at 100 per request
+        "max_results": min(max_results, 100),
         "sortBy": "submittedDate",
         "sortOrder": "descending",
     })
@@ -161,7 +160,7 @@ def fetch_subject_papers(subject: str, categories: list[str], max_per_subject: i
             logger.info("  Fetching arXiv %s (%d papers)", cat, per_category)
             cat_papers = fetch_arxiv(cat, max_results=per_category)
             cache[cat_key] = cat_papers
-            time.sleep(3)  # polite-use delay
+            time.sleep(3)
 
         for p in cat_papers:
             p["subject"] = subject
@@ -220,12 +219,10 @@ def generate_triplets(
         if not queries:
             continue
 
-        # Positive: another paper from the same subject
         same_papers = [p for p in subject_papers.get(subject, []) if p is not paper]
         if not same_papers:
             continue
 
-        # Negative: a paper from a different subject
         other_subjects = [s for s in subjects if s != subject]
         if not other_subjects:
             continue

@@ -1,0 +1,12 @@
+[cell marginal] preflight: mode=fixed3 scale=1.0 cap=6.64g R=5120M L=1792M early_sort=blind
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=7129268224
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase: sequential read of L then R (once)
+[cell marginal] load done: L=0.474s R=1.880s | residency after load R=100.0000% L=93.4152%
+[cell marginal] early sort [blind]: writing 1879048192 to /sys/fs/cgroup/memory.reclaim
+[cell marginal] early sort [blind] done in 0.0085s: residency now R=97.6562% L=0.0000%
+[cell marginal] pass 1: wall=6.6629s majflt=30720 ms/fault=0.216891 residency R=100.0000%
+[cell marginal] pass 2: wall=1.0662s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 3: wall=1.0268s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] cell complete: 3 passes, converged=false, swap_confounded=false

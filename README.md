@@ -13,7 +13,7 @@ record, and measurement campaign).
 | Dir | What |
 |---|---|
 | `src/` | serving code (MCP server, retriever, thinclient package) |
-| `web/` | the SFU Library Suite GUI (`/app`; vendored React, no build step) |
+| `web/` | the search suite GUI (`/app`; visible branding "Duck Library", identifiers keep sfu naming; JSX in `web/src/` compiled by `scripts/build_web.mjs`) |
 | `scripts/` | family-organized tooling — see `scripts/CLAUDE.md` for the map |
 | `docs/` | indexed documentation; measurements + decision records |
 | `data/` | runtime artifacts (indexes, eval evidence) — mostly not in git |
@@ -22,5 +22,7 @@ record, and measurement campaign).
 | `scaffold/` | founding seed for the portable-client split repo |
 
 House rules for contributors (human or agent): `.claude/CLAUDE.md` — the
-git workflow, doc-freshness discipline, and venv rules are mandatory.
+git workflow, doc-freshness discipline, venv rules, and the 2026-09-01
+no-internal-code-comments policy (constraints live in
+`docs/CODE_INVARIANTS*.md` / `docs/ENV_GATES.md`) are mandatory.
 Measured-claims-only in docs; unmeasured is marked *est.*

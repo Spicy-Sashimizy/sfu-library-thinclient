@@ -16,9 +16,6 @@ import os
 
 import pytest
 
-# Wipe staging-default envs BEFORE importing, then set the gate ON so the
-# guard + predictor tests exercise the live path. (Same reload pattern as
-# test_result_cache.py — a clean module so is_enabled reflects the test env.)
 for _v in ("SFU_SEARCH_SPECULATE", "SFU_RESULT_CACHE", "SFU_ACTIVE_PROFILE",
            "SFU_ENV", "SFU_SPECULATE_LITERAL", "SFU_SPECULATE_MIN_LEN",
            "SFU_SPECULATE_MIN_RATIO"):
@@ -49,9 +46,6 @@ def _clean_state():
     speculation._set_speculative(None)
 
 
-# ── term 2: predictor before literal ────────────────────────────────────────
-
-
 class TestPredictor:
     def config_pool(self, monkeypatch, pool):
         """Override the candidate pool with a fixed test set (so the predictor
@@ -66,7 +60,6 @@ class TestPredictor:
         p = speculation.predict("machine learning for molecular")
         assert p.mode == "predicted"
         assert p.reason == "unambiguous"
-        # predicted the FULL candidate (the real-submit query), not the prefix
         assert result_cache._norm_query(p.query) == \
             result_cache._norm_query("machine learning for molecular property prediction")
 
@@ -104,7 +97,6 @@ class TestPredictor:
         p = speculation.predict("quantum entanglement theory")
         assert p.mode == "literal"
         assert p.reason == "literal-fallback"
-        # speculates the normalized literal typed text
         assert p.query == result_cache._norm_query("quantum entanglement theory")
 
     def test_force_literal_overrides_predictor(self, monkeypatch):
@@ -113,12 +105,10 @@ class TestPredictor:
         matched a pool candidate (predictor mode). Lets the bench measure the
         novel-query (literal) leg without an env/restart flip between legs."""
         self.config_pool(monkeypatch, ["machine learning for drug discovery"])
-        monkeypatch.setenv("SFU_SPECULATE_LITERAL", "0")  # env fallback OFF
+        monkeypatch.setenv("SFU_SPECULATE_LITERAL", "0")
         speculation.reset_pool_for_test()
-        # predictor mode → would match the pool candidate
         p_pred = speculation.predict("machine learning for")
         assert p_pred.mode == "predicted"
-        # force_literal → speculates the literal text, NOT the prediction
         p_lit = speculation.predict("machine learning for", force_literal=True)
         assert p_lit.mode == "literal"
         assert p_lit.reason == "literal-forced"
@@ -130,7 +120,7 @@ class TestPredictor:
         self.config_pool(monkeypatch, ["machine learning for drug discovery"])
         monkeypatch.setenv("SFU_SPECULATE_MIN_LEN", "8")
         speculation.reset_pool_for_test()
-        p = speculation.predict("machi", force_literal=True)  # 5 chars
+        p = speculation.predict("machi", force_literal=True)
         assert p.mode == "none"
         assert p.reason == "short-input"
 
@@ -139,7 +129,7 @@ class TestPredictor:
         self.config_pool(monkeypatch, ["machine learning for drug discovery"])
         monkeypatch.setenv("SFU_SPECULATE_MIN_LEN", "8")
         speculation.reset_pool_for_test()
-        p = speculation.predict("machi")  # 5 chars
+        p = speculation.predict("machi")
         assert p.mode == "none"
         assert p.reason == "short-input"
 
@@ -148,7 +138,6 @@ class TestPredictor:
         (predicting it adds no information; min_ratio gate excludes it)."""
         self.config_pool(monkeypatch, ["machine learning for drug discovery"])
         p = speculation.predict("machine learning for drug discovery")
-        # exactly the candidate → skipped; no other match → no-match (literal off)
         assert p.mode == "none"
 
     def test_min_len_env_override(self, monkeypatch):
@@ -170,15 +159,11 @@ class TestPredictor:
         assert all(r.reason == results[0].reason for r in results)
 
 
-# ── term 3: guards suppress speculation ─────────────────────────────────────
-
-
 class TestGuards:
     def test_warming_suppresses(self, monkeypatch):
         monkeypatch.setenv("SFU_SEARCH_SPECULATE", "1")
         monkeypatch.setenv("SFU_RESULT_CACHE", "1")
         speculation.reset_pool_for_test()
-        # a long enough partial that WOULD predict under the pool — but warm=false
         r = speculation.schedule(
             typed="machine learning for molecular", limit=50,
             warm=False, degraded=False, shed=False)
@@ -231,13 +216,9 @@ class TestGuards:
             speculation.reset_pool_for_test()
 
 
-# ── term 4: single-slot drop + exception safety ──────────────────────────────
-
-
 class TestSingleSlot:
     def test_busy_slot_drops_newer_speculation(self, monkeypatch):
         """A newer speculation while the slot is busy is DROPPED, not queued."""
-        # Make the backend query block so the slot stays busy.
         started = asyncio.Event()
         release = asyncio.Event()
 
@@ -256,14 +237,12 @@ class TestSingleSlot:
             r1 = speculation.schedule(typed="machine learning for drug", limit=50,
                                        warm=True, degraded=False, shed=False)
             assert r1["status"] == "fired"
-            # wait until the slow backend is actually running (slot is busy)
             await asyncio.wait_for(started.wait(), timeout=2.0)
             r2 = speculation.schedule(typed="climate change BC", limit=50,
                                       warm=True, degraded=False, shed=False)
             assert r2["status"] == "dropped-busy"
             assert r2["reason"] == "slot-busy"
             release.set()
-            # let the first finish so the task completes cleanly
             await asyncio.sleep(0.05)
 
         asyncio.run(run())
@@ -285,14 +264,10 @@ class TestSingleSlot:
             r = speculation.schedule(typed="machine learning for drug", limit=50,
                                      warm=True, degraded=False, shed=False)
             assert r["status"] == "fired"
-            # the task ran on this loop and raised — must NOT surface anywhere
             await asyncio.sleep(0.05)
 
-        asyncio.run(run())  # no exception raised out of schedule
+        asyncio.run(run())
         assert speculation.counters()["fired"] == 1
-
-
-# ── term 5: speculative flag reaches the serve query log ─────────────────────
 
 
 class TestLogMarking:
@@ -311,29 +286,24 @@ class TestLogMarking:
         serve-query-log entry (term 5). Verifies against a REAL QueryLogger
         instance (the patched .log lives on the QueryLogger class, so the test
         instance must be a QueryLogger for the patch to run)."""
-        speculation.wire_speculative_log()  # idempotent
+        speculation.wire_speculative_log()
         from lib import serve_query_log as _sql
         _sql.QueryLogger.reset_for_test()
-        # A real QueryLogger (enabled, small buffer) whose writer thread we
-        # don't need to drain — we intercept the queue directly to read entries.
         lg = _sql.QueryLogger(path="data/eval_results/_test_speculation_log.jsonl",
                               max_bytes=1024 * 1024, buffer=8192,
                               store_raw=False, enabled=True)
         monkeypatch.setattr(_sql.QueryLogger, "get", classmethod(lambda cls: lg))
         try:
-            # With the speculative flag set → the entry is marked speculative=True.
             speculation._set_speculative(True)
             try:
                 _sql.log_serve_query(query="q", k=10, mode="federated")
             finally:
                 _reset_var()
-            # Without the flag → unpolluted (None).
             speculation._set_speculative(None)
             try:
                 _sql.log_serve_query(query="q2", k=10, mode="federated")
             finally:
                 _reset_var()
-            # Drain the two queued entries (non-blocking) + read their flags.
             e1 = lg._q.get_nowait()
             e2 = lg._q.get_nowait()
             assert e1["speculative"] is True
@@ -347,18 +317,8 @@ def _reset_var():
     """Reset the speculative contextvar to None (tests can't reach the token
     from _set_speculative's return easily here; this clears it)."""
     from lib import speculation as _s
-    # _SPEC_VAR is module-private; reset via the Var's own set(default).
     _s._SPEC_VAR.set(None)
 
-
-# ── route-level: api_search returns 200 on every path (HOST-NOTE-W8-2 #2) ────
-# The WI-18a collapse-edit regression dropped api_search's final return, so
-# every non-hit /api/search 500'd (cache-OFF AND cache-ON miss). The 45 tests
-# that passed pre-fix all missed this class because they tested the modules
-# (result_cache, speculation) in isolation, not the wired route. These route-
-# level tests pin the contract: a cache-ON miss AND a cache-OFF request both
-# return 200 with a result body. Uses Starlette TestClient against the real
-# app with the search fn mocked so the test doesn't need the 24 GB index.
 
 class TestApiSearchRouteReturns:
     def _app(self, monkeypatch, *, cache_on):
@@ -367,20 +327,17 @@ class TestApiSearchRouteReturns:
         the retrieval stack. The cache env is set per the cache_on flag."""
         monkeypatch.setenv("SFU_RESULT_CACHE", "1" if cache_on else "0")
         monkeypatch.setenv("SFU_SEARCH_SPECULATE", "0")
-        monkeypatch.setenv("SFU_HTTP_WARMUP", "0")  # no warmup thread
+        monkeypatch.setenv("SFU_HTTP_WARMUP", "0")
         importlib.reload(result_cache)
         importlib.reload(speculation)
         import sfu_library_mcp_http as http_mod
         importlib.reload(http_mod)
-        # Mark warm so is_cacheable_response passes its warm check.
         http_mod._WARMUP_STATE["state"] = "warm"
-        # Mock the search fn api_search awaits — returns a clean result dict.
         async def _mock_search(args):
             return {"results": [{"id": "R1", "title": "mock result",
                                   "authors": ["A"], "year": 2024}],
                     "notes": [], "meta": {"count": 1}}
         monkeypatch.setattr(http_mod, "search_academic_structured", _mock_search)
-        # Also patch the tools module's symbol the import grabbed.
         from lib import tools
         monkeypatch.setattr(tools, "search_academic_structured", _mock_search)
         return http_mod
@@ -415,7 +372,6 @@ class TestApiSearchRouteReturns:
         http_mod = self._app(monkeypatch, cache_on=True)
         from starlette.testclient import TestClient
         client = TestClient(http_mod._starlette)
-        # First request: miss → stores; second: hit → returns cached.
         client.post("/api/search", json={"query": "hit-probe query", "limit": 10})
         r = client.post("/api/search", json={"query": "hit-probe query", "limit": 10})
         assert r.status_code == 200

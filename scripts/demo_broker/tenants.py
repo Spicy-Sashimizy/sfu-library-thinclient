@@ -55,7 +55,6 @@ class TenantStore:
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.executescript(_SCHEMA)
 
-    # --- invites ---
     def mint_invite(self, name: str, max_sessions: int = 0) -> str:
         token = "inv_" + secrets.token_urlsafe(18)
         self._db.execute("INSERT INTO invites(token,name,created_at,max_sessions,revoked) VALUES(?,?,?,?,0)",
@@ -71,7 +70,6 @@ class TenantStore:
     def list_invites(self) -> list[sqlite3.Row]:
         return self._db.execute("SELECT * FROM invites ORDER BY created_at").fetchall()
 
-    # --- sessions ---
     def _sessions_for(self, token: str) -> int:
         return self._db.execute("SELECT COUNT(*) FROM sessions WHERE invite_token=?", (token,)).fetchone()[0]
 
@@ -115,7 +113,6 @@ class TenantStore:
             "blocked_count=blocked_count+?, last_seen=? WHERE session_id=?",
             (query, error, blocked, time.time(), session_id))
 
-    # --- rate caps (sliding window + daily, from the durable events log) ---
     def rate_ok(self, session_id: str, window_s: int, max_in_window: int, daily_max: int) -> tuple[bool, str]:
         now = time.time()
         win = self._db.execute(
@@ -130,14 +127,12 @@ class TenantStore:
             return False, f"daily: {day} reqs/24h >= {daily_max}"
         return True, ""
 
-    # --- events ---
     def record(self, session_id: str | None, name: str, kind: str,
                status: int = 0, latency_ms: float = 0.0, detail: str = "") -> None:
         self._db.execute(
             "INSERT INTO events(ts,session_id,name,kind,status,latency_ms,detail) VALUES(?,?,?,?,?,?,?)",
             (time.time(), session_id, name, kind, status, latency_ms, detail[:2000]))
 
-    # --- report ---
     def report(self, since_s: float | None = None) -> dict:
         where, args = "", []
         if since_s:

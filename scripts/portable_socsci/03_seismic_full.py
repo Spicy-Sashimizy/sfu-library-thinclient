@@ -84,8 +84,6 @@ def copy_shard(src_dir, dst_dir):
     log(f"  copying {os.path.basename(src_dir)} "
         f"({_du(src_dir) / 2**30:.2f} GiB)...")
     os.makedirs(BSEISMIC, exist_ok=True)
-    # cp -a preserves mode/mtime, copies contents (not ownership) as this user.
-    # Trailing '/.' copies dir *contents* into an explicit dst dir.
     os.makedirs(dst_dir, exist_ok=True)
     subprocess.run(
         ["cp", "-a", "--reflink=auto", f"{src_dir}/.", dst_dir],
@@ -102,7 +100,7 @@ def write_manifest(src_man, records, seismic_root):
         mmap_dir = os.path.join(seismic_root, base)
         new = dict(rec)
         new["mmap_dir"] = mmap_dir
-        new["index_path"] = mmap_dir  # fallback stem; mmap_dir wins in mmap mode
+        new["index_path"] = mmap_dir
         new["source_mmap_dir"] = rec["mmap_dir"]
         out_records.append(new)
     manifest = {

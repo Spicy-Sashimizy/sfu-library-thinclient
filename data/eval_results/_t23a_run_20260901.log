@@ -1,0 +1,119 @@
+[00:00:20] phase A start: arms=[mglru classic] rungs=[free 24 16 12 10 8] lru_gen baseline=0x0007 sfu-serve=active
+[00:00:21] sfu-serve stopped for the window
+[00:00:21] arm=mglru lru_gen now 0x0007
+[00:00:23] cell mglru/free starting (timeout 6000s)
+[00:05:25] cell mglru/free DONE
+[00:05:28] cell mglru/cap24g starting (timeout 6000s)
+[00:37:55] cell mglru/cap24g DONE
+[00:37:58] cell mglru/cap16g starting (timeout 6000s)
+[01:22:01] phase A start: arms=[mglru classic] rungs=[free 48 36 32 30 28 26] lru_gen baseline=0x0007 sfu-serve=active
+[01:22:02] sfu-serve stopped for the window
+[01:22:02] arm=mglru lru_gen now 0x0007
+[01:22:05] cell mglru/free starting (timeout 6000s)
+[01:22:14] cell mglru/free FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_free_20260901.log)
+[01:22:14] cell mglru/cap48g starting (timeout 6000s)
+[01:22:23] cell mglru/cap48g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap48g_20260901.log)
+[01:22:23] cell mglru/cap36g starting (timeout 6000s)
+[01:22:32] cell mglru/cap36g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap36g_20260901.log)
+[01:22:32] cell mglru/cap32g starting (timeout 6000s)
+[01:22:41] cell mglru/cap32g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap32g_20260901.log)
+[01:22:42] cell mglru/cap30g starting (timeout 6000s)
+[01:22:51] cell mglru/cap30g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap30g_20260901.log)
+[01:22:51] cell mglru/cap28g starting (timeout 6000s)
+[01:23:00] cell mglru/cap28g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap28g_20260901.log)
+[01:23:00] cell mglru/cap26g starting (timeout 6000s)
+[01:23:09] cell mglru/cap26g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap26g_20260901.log)
+[01:23:09] arm=classic lru_gen now 0x0000
+[01:23:09] cell classic/free starting (timeout 6000s)
+[01:23:18] cell classic/free FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_free_20260901.log)
+[01:23:18] cell classic/cap48g starting (timeout 6000s)
+[01:23:27] cell classic/cap48g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap48g_20260901.log)
+[01:23:27] cell classic/cap36g starting (timeout 6000s)
+[01:23:36] cell classic/cap36g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap36g_20260901.log)
+[01:23:37] cell classic/cap32g starting (timeout 6000s)
+[01:23:46] cell classic/cap32g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap32g_20260901.log)
+[01:23:46] cell classic/cap30g starting (timeout 6000s)
+[01:23:55] cell classic/cap30g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap30g_20260901.log)
+[01:23:55] cell classic/cap28g starting (timeout 6000s)
+[01:24:04] cell classic/cap28g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap28g_20260901.log)
+[01:24:04] cell classic/cap26g starting (timeout 6000s)
+[01:24:13] cell classic/cap26g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap26g_20260901.log)
+[01:24:13] phase A cells complete
+[01:24:13] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)
+[01:33:15] phase A start: arms=[mglru classic] rungs=[free 48 36 32 30 28 26] lru_gen baseline=0x0007 sfu-serve=active
+[01:33:15] sfu-serve stopped for the window
+[01:33:15] arm=mglru lru_gen now 0x0007
+[01:33:16] cell mglru/free starting (timeout 6000s)
+[01:33:26] cell mglru/free FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_free_20260901.log)
+[01:33:26] cell mglru/cap48g starting (timeout 6000s)
+[01:33:35] cell mglru/cap48g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap48g_20260901.log)
+[01:33:36] cell mglru/cap36g starting (timeout 6000s)
+[01:33:45] cell mglru/cap36g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap36g_20260901.log)
+[01:33:45] cell mglru/cap32g starting (timeout 6000s)
+[01:33:54] cell mglru/cap32g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap32g_20260901.log)
+[01:33:54] cell mglru/cap30g starting (timeout 6000s)
+[01:34:03] cell mglru/cap30g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap30g_20260901.log)
+[01:34:04] cell mglru/cap28g starting (timeout 6000s)
+[01:34:12] cell mglru/cap28g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap28g_20260901.log)
+[01:34:13] cell mglru/cap26g starting (timeout 6000s)
+[01:34:22] cell mglru/cap26g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap26g_20260901.log)
+[01:34:22] arm=classic lru_gen now 0x0000
+[01:34:22] cell classic/free starting (timeout 6000s)
+[01:34:31] cell classic/free FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_free_20260901.log)
+[01:34:31] cell classic/cap48g starting (timeout 6000s)
+[01:34:40] cell classic/cap48g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap48g_20260901.log)
+[01:34:40] cell classic/cap36g starting (timeout 6000s)
+[01:34:49] cell classic/cap36g FAIL rc=1 (see /mnt/idxvol/data/eval_results/_t23a_classic_cap36g_20260901.log)
+[01:34:50] cell classic/cap32g starting (timeout 6000s)
+[01:36:59] phase A start: arms=[mglru classic] rungs=[free 48 36 32 30 28 26] lru_gen baseline=0x0000 sfu-serve=inactive
+[01:36:59] sfu-serve stopped for the window
+[01:36:59] arm=mglru lru_gen now 0x0000
+[01:37:00] cell mglru/free starting (timeout 6000s)
+[01:37:00] cell mglru/free FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_free_20260901.log)
+[01:37:00] cell mglru/cap48g starting (timeout 6000s)
+[01:37:00] cell mglru/cap48g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap48g_20260901.log)
+[01:37:01] cell mglru/cap36g starting (timeout 6000s)
+[01:37:01] cell mglru/cap36g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap36g_20260901.log)
+[01:37:01] cell mglru/cap32g starting (timeout 6000s)
+[01:37:01] cell mglru/cap32g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap32g_20260901.log)
+[01:37:02] cell mglru/cap30g starting (timeout 6000s)
+[01:37:02] cell mglru/cap30g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap30g_20260901.log)
+[01:37:02] cell mglru/cap28g starting (timeout 6000s)
+[01:37:02] cell mglru/cap28g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap28g_20260901.log)
+[01:37:03] cell mglru/cap26g starting (timeout 6000s)
+[01:37:03] cell mglru/cap26g FAIL rc=4 (see /mnt/idxvol/data/eval_results/_t23a_mglru_cap26g_20260901.log)
+[01:37:03] arm=classic lru_gen now 0x0000
+[01:37:03] cell classic/free starting (timeout 6000s)
+[01:40:14] cell classic/free DONE
+[01:40:17] cell classic/cap48g starting (timeout 6000s)
+[01:45:27] cell classic/cap48g DONE
+[01:45:31] cell classic/cap36g starting (timeout 6000s)
+[01:50:41] cell classic/cap36g DONE
+[01:50:41] SKIP classic/cap32g — result exists
+[01:50:44] cell classic/cap30g starting (timeout 6000s)
+[01:55:54] cell classic/cap30g DONE
+[01:55:58] cell classic/cap28g starting (timeout 6000s)
+[02:03:42] cell classic/cap28g DONE
+[02:03:45] cell classic/cap26g starting (timeout 6000s)
+[02:11:53] cell classic/cap26g DONE
+[02:11:53] phase A cells complete
+[02:11:54] RESTORED: lru_gen=0x0000 sfu-serve=active (exit rc=0)
+[02:21:46] phase A start: arms=[mglru] rungs=[free 48 36 32 30 28 26] lru_gen baseline=0x0007 sfu-serve=active
+[02:21:47] sfu-serve stopped for the window
+[02:21:47] arm=mglru lru_gen now 0x0007
+[02:21:51] cell mglru/free starting (timeout 6000s)
+[02:27:01] cell mglru/free DONE
+[02:27:05] cell mglru/cap48g starting (timeout 6000s)
+[02:32:15] cell mglru/cap48g DONE
+[02:32:18] cell mglru/cap36g starting (timeout 6000s)
+[02:37:28] cell mglru/cap36g DONE
+[02:37:32] cell mglru/cap32g starting (timeout 6000s)
+[02:42:42] cell mglru/cap32g DONE
+[02:42:45] cell mglru/cap30g starting (timeout 6000s)
+[02:47:55] cell mglru/cap30g DONE
+[02:47:59] cell mglru/cap28g starting (timeout 6000s)
+[03:04:43] cell mglru/cap28g DONE
+[03:04:46] cell mglru/cap26g starting (timeout 6000s)
+[04:06:28] cell mglru/cap26g DONE
+[04:06:28] phase A cells complete
+[04:06:28] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)

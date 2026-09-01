@@ -1,0 +1,10 @@
+[cell marginal] preflight: mode=fixed3 scale=1.0 cap=6.64g R=5120M L=1792M early_sort=none
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=7129268224
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase: sequential read of L then R (once)
+[cell marginal] load done: L=0.522s R=1.817s | residency after load R=100.0000% L=93.4152%
+[cell marginal] pass 1: wall=1.0686s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 2: wall=1.0628s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 3: wall=1.0091s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] cell complete: 3 passes, converged=false, swap_confounded=false

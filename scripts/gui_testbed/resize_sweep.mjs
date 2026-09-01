@@ -1,12 +1,3 @@
-// L-D continuous resize / zoom / DPR — not 4 static viewports; a sweep.
-// Plan §3 L-D contract.
-//
-//   1. width sweep 320 → 1920 by +16 (simulated drag-resize), oracle each step
-//   2. text-zoom sweep 0.5/0.75/1/1.5/2 (base.css text-zoom bar via root font-size)
-//   3. DPR contexts 1/2/3 (new context per DPR — deviceScaleFactor can't change mid-run)
-//   4. mid-skeleton resize: fire a slow search, resize DURING skeleton state,
-//      assert no layout shift (the 2026-06-19 skeleton→results no-shift bar,
-//      now under a resize mid-flight)
 import { loadPlaywright, makeLog, arm, check, captureArtifacts, openApp, sleep, mockApi, overflow, BASE, DATE_TAG, ROOT } from './lib.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,7 +11,6 @@ log.act(`resize_sweep start @ ${BASE} (date ${DATE_TAG})`);
 let actions = 0, widths = 0, zooms = 0, dprs = 0;
 let midSkeletonNoShift = false;
 
-// ---- 1) width sweep on search.html (the densest app) ----
 {
   const { page, context } = await openApp({
     chromium: browser, app: 'search.html', log, ctxLabel: 'resize:width-sweep',
@@ -30,7 +20,6 @@ let midSkeletonNoShift = false;
   try {
     for (let w = 320; w <= 1920; w += 16) {
       await page.setViewportSize({ width: w, height: 900 });
-      // web-first: wait for the layout to settle (rAF) before asserting.
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
       await check(page, log, `width=${w}`);
       actions++; widths++;
@@ -42,7 +31,6 @@ let midSkeletonNoShift = false;
   }
 }
 
-// ---- 2) text-zoom sweep (root font-size, base.css discipline) ----
 {
   const { page, context } = await openApp({
     chromium: browser, app: 'search.html', log, ctxLabel: 'resize:zoom-sweep',
@@ -63,7 +51,6 @@ let midSkeletonNoShift = false;
   }
 }
 
-// ---- 3) DPR contexts 1/2/3 (a new context per DPR) ----
 for (const dpr of [1, 2, 3]) {
   const { page, context } = await openApp({
     chromium: browser, app: 'search.html', log, ctxLabel: `resize:dpr=${dpr}`,
@@ -71,7 +58,6 @@ for (const dpr of [1, 2, 3]) {
     deviceScaleFactor: dpr,
   });
   try {
-    // Walk the 6 screens quickly at this DPR (each is a layout context).
     for (const s of ['Settings', 'Saved', 'History', 'Databases', 'Admin', 'Search']) {
       await page.getByText(s, { exact: true }).first().click({ timeout: 3000 }).catch(() => {});
       await sleep(80);
@@ -85,7 +71,6 @@ for (const dpr of [1, 2, 3]) {
   }
 }
 
-// ---- 4) mid-skeleton resize: fire a slow search, resize DURING skeleton ----
 {
   const { page, context } = await openApp({
     chromium: browser, app: 'search.html', log, ctxLabel: 'resize:mid-skeleton',
@@ -97,12 +82,10 @@ for (const dpr of [1, 2, 3]) {
     const inp = page.locator('input').first();
     await inp.fill('graph neural networks');
     await inp.press('Enter');
-    await sleep(330); // past the 300ms gate → skeletons showing
+    await sleep(330);
     const skel = await page.locator('[data-skeleton-card]').count();
     log.act(`mid-skeleton: ${skel} skeleton cards showing during resize`);
-    // Capture results-column width WHILE skeletons are up.
     const w1 = await page.evaluate(() => { const m = document.querySelector('main'); return m ? m.getBoundingClientRect().width : -1; });
-    // Drag-resize across a span while skeletons are still resolving.
     for (const w of [900, 1100, 1400, 760, 1280]) {
       await page.setViewportSize({ width: w, height: 900 });
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));

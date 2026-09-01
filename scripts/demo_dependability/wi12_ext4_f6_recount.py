@@ -26,7 +26,6 @@ def main():
     print(f"sheds (429, clean): {len(sheds)}")
     print(f"accepted: {len(accepted)}  accepted_ok: {len(acc_ok)}  accepted_fail: {len(acc_fail)}")
     print(f"F6 RECOMPUTED availability = accepted_ok/accepted = {avail:.4f} ({avail*100:.2f}%)")
-    # breakdown of fail reasons/status codes
     from collections import Counter
     status_hist = Counter(r.get("status") for r in reqs)
     err_hist = Counter(r.get("error", "").split(":")[0] for r in acc_fail if r.get("error"))

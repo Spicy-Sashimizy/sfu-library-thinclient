@@ -1,0 +1,12 @@
+[cell thrash] preflight: mode=fixed3 scale=1.0 cap=3.75g R=5120M L=1792M early_sort=blind
+[cell thrash] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=4026531840
+[cell thrash] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell thrash] post-evict residency: R=0.0000% L=0.0000%
+[cell thrash] load phase: sequential read of L then R (once)
+[cell thrash] load done: L=0.404s R=0.898s | residency after load R=74.8828% L=0.0000%
+[cell thrash] early sort [blind]: writing 1879048192 to /sys/fs/cgroup/memory.reclaim
+[cell thrash] early sort [blind] done in 0.0076s: residency now R=39.8438% L=0.0000%
+[cell thrash] pass 1: wall=143.4813s majflt=871020 ms/fault=0.164728 residency R=74.3442%
+[cell thrash] pass 2: wall=69.6183s majflt=427798 ms/fault=0.162736 residency R=74.3559%
+[cell thrash] pass 3: wall=142.3282s majflt=882029 ms/fault=0.161365 residency R=74.3548%
+[cell thrash] cell complete: 3 passes, converged=false, swap_confounded=false

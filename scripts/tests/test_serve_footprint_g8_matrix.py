@@ -45,8 +45,6 @@ def sfb():
     return mod
 
 
-# ── detect_memcompression precedence ──────────────────────────────────────────
-
 def test_regime_env_assertion_trumps_proc(sfb, monkeypatch):
     """SFU_MEMCOMPRESSION_REGIME wins over whatever /proc says (needed for Windows
     host compression, invisible from WSL2 /proc)."""
@@ -59,7 +57,7 @@ def test_regime_env_assertion_trumps_proc(sfb, monkeypatch):
 def test_regime_env_invalid_rejected(sfb, monkeypatch):
     """A typo in the override must raise, not silently fall through to 'unknown'
     (an unknown regime makes the gate conservatively mislabel the zram cell)."""
-    monkeypatch.setenv("SFU_MEMCOMPRESSION_REGIME", "zram2")  # typo
+    monkeypatch.setenv("SFU_MEMCOMPRESSION_REGIME", "zram2")
     with pytest.raises(ValueError, match="SFU_MEMCOMPRESSION_REGIME"):
         sfb.detect_memcompression()
 
@@ -76,14 +74,12 @@ def test_compressed_in_ram_classification(sfb, regime, compressed):
     assert sfb._regime_is_compressed_in_ram(regime) is compressed
 
 
-# ── _latency_caveat regime-aware gate (the G8 bug fix) ────────────────────────
-
 def _ram(vmswap_gb):
     return {"vmswap_gb": vmswap_gb}
 
 
-_WARM_LT_COLD = {"warm": {"p50_ms": 600}, "cold": {"p50_ms": 4000}}      # cache helped
-_WARM_GTE_COLD = {"warm": {"p50_ms": 18000}, "cold": {"p50_ms": 15000}}  # mmap > cache, >1s
+_WARM_LT_COLD = {"warm": {"p50_ms": 600}, "cold": {"p50_ms": 4000}}
+_WARM_GTE_COLD = {"warm": {"p50_ms": 18000}, "cold": {"p50_ms": 15000}}
 _ZRAM = {"regime": "zram", "sources": []}
 _DISK = {"regime": "disk_swap", "sources": []}
 _UNK = {"regime": "unknown", "sources": []}
@@ -131,11 +127,10 @@ def test_stock_warm_gte_cold_no_mmap_symptom(sfb):
     exceed). Under zram with VmSwap>0 it's the compressed-verdict path; under
     unknown it's conservatively the disk.Confound via VmSwap only if VmSwap>0."""
     out_zram = sfb._latency_caveat(_ram(0.5), _WARM_GTE_COLD, "stock", _ZRAM)
-    assert "page cache" not in out_zram  # mmap symptom correctly suppressed for stock
-    assert "VERDICT" in out_zram  # zram + warm>=cold (no mmap symptom) + compressed → verdict
-    # and with no swap at all + stock, it's the clean path
+    assert "page cache" not in out_zram
+    assert "VERDICT" in out_zram
     out_clean = sfb._latency_caveat(_ram(0.0), _WARM_GTE_COLD, "stock", _UNK)
-    assert "CAVEAT" not in out_clean  # no swap, no mmap symptom → not confounded
+    assert "CAVEAT" not in out_clean
 
 
 def test_unknown_regime_is_conservative(sfb):

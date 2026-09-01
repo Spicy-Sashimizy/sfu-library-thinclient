@@ -1,0 +1,13 @@
+[cell marginal] preflight: mode=fixed3 scale=0.2 cap=6.25g R=1024M L=358M early_sort=blind load_order=interleaved
+[cell marginal] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=max
+[cell marginal] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell marginal] post-evict residency: R=0.0000% L=0.0000%
+[cell marginal] load phase: INTERLEAVED sweep, 64 MiB chunks, R=16 L=6 (total 22)
+[cell marginal] load schedule: RRRLRRRLRRLRRRLRRRLRRL
+[cell marginal] load done (order=interleaved, wall=0.398s; read-time L=0.082s R=0.226s)
+[cell marginal] post-load residency: R=100.0000% (262144/262144 pages)  L=100.0000% (91648/91648 pages)
+[cell marginal] early sort [blind] BLOCKED: memory.reclaim not writable at /sys/fs/cgroup/memory.reclaim (cgroup mount opts: ro,nosuid,nodev,noexec,relatime) — cell continues with NO early-sort action (behaves as a 'none' cell); blocked state is recorded
+[cell marginal] pass 1: wall=0.4616s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 2: wall=0.4516s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] pass 3: wall=0.4632s majflt=0 ms/fault=0.000000 residency R=100.0000%
+[cell marginal] cell complete: 3 passes, converged=false, swap_confounded=false

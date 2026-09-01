@@ -1,0 +1,12 @@
+[cell deep] preflight: mode=converge scale=1.0 cap=2.75g R=5120M L=1792M early_sort=none
+[cell deep] kernel=6.18.33.2-microsoft-standard-WSL2 lru_gen=absent cgroup=v2 readable=true memory.max=2952790016
+[cell deep] evicting R and L from the page cache (vmtouch -e; no global drop_caches)
+[cell deep] post-evict residency: R=0.0000% L=0.0000%
+[cell deep] load phase: sequential read of L then R (once)
+[cell deep] load done: L=0.854s R=1.207s | residency after load R=54.8828% L=0.0000%
+[cell deep] pass 1: wall=163.2578s majflt=992981 ms/fault=0.164412 residency R=54.3573%
+[cell deep] pass 2: wall=211.0653s majflt=1309852 ms/fault=0.161137 residency R=54.3598%
+[cell deep] pass 3: wall=211.2851s majflt=1310577 ms/fault=0.161215 residency R=54.3566%
+[cell deep] pass 4: wall=212.7995s majflt=1309238 ms/fault=0.162537 residency R=54.3562%
+[cell deep] converged at pass 4 (plateau_within_10pct_x2)
+[cell deep] cell complete: 4 passes, converged=true, swap_confounded=false

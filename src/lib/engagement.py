@@ -26,7 +26,6 @@ from pathlib import Path
 
 logger = logging.getLogger("sfu_library_mcp")
 
-# Event taxonomy — mirrors the design's ACTION_STYLE / session-replay kinds.
 KINDS = {"query", "impression", "result_click", "action"}
 ACTION_TYPES = {"abstract", "tldr", "pdf", "citation", "zotero"}
 

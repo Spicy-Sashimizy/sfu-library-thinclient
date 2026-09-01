@@ -1,6 +1,6 @@
 
 
-// ─── ICONS ───────────────────────────────────────────────────────────────────
+
 const Icon = ({ name, size = 16, style = {} }) => {
   const I = {
     search: <svg width={size} height={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="9" r="6"></circle><path d="m16 16-3.5-3.5"></path></svg>,
@@ -29,9 +29,7 @@ const Icon = ({ name, size = 16, style = {} }) => {
   return <span style={{ display: "inline-flex", alignItems: "center", ...style }}>{I[name] || null}</span>;
 };
 
-// ─── SIDEBAR (matches SFU Library Search / Research Analytics) ───────────────
 
-// ─── PRIMITIVES ──────────────────────────────────────────────────────────────
 const Badge = ({ tone = "muted", children, style = {} }) => {
   const tones = {
     hot:    { bg: "var(--c-red-soft)",    color: "oklch(44% 0.13 25)" },
@@ -60,11 +58,7 @@ const StatCard = ({ label, value, sub, icon, color = "var(--c-teal)" }) => (
   </div>
 );
 
-// deployprep WI-17d (2026-07-18): live result-cache state in the Index Manager
-// (hit ratio + resident count + primer state, from /health result_cache). The
-// Warm Cache tab is the operator panel, so this fetches LIVE data (not demo).
-// Polls every 10s while mounted; degrades to "—" when the backend is reachable
-// but has no result_cache field (a pre-WI-17 or cache-disabled serve).
+
 const ResultCacheCard = () => {
   const [rc, setRc] = React.useState(null);
   const [src, setSrc] = React.useState("loading");
@@ -151,9 +145,7 @@ const Toggle = ({ on, setOn, label }) => (
   </button>
 );
 
-// ─── DATA: sections + personas (THIN_CLIENT_SWAP / STACK_RESEARCH / BUDGET) ──
-// Post-lever lexical artifacts (tantivy 44.8 + BMP b256 76.7 = 121.5 GB total),
-// split by measured section shares; packed = live / 2.10 (measured artifact ratio).
+
 const IM_SECTIONS = [
   { id: "social_sciences__recent",  base: "social_sciences", era: "recent",  docsM: 27.4, live: 20.5, packed: 9.8,  ratio: "2.1×" },
   { id: "social_sciences__archive", base: "social_sciences", era: "archive", docsM: 7.8,  live: 7.9,  packed: 3.8,  ratio: "2.1×" },
@@ -178,11 +170,11 @@ const IM_PERSONAS = [
   { id: "all_hot",                      hot: IM_SECTIONS.map(s => s.id), kind: "Testbed · everything live", testbed: true },
 ];
 
-const META_GB = 10.2;   // meta.sqlite v2 (measured ~10 GB at 150M)
-const DENSE_GB = 7.2;   // b1 binary codes at 150M
-const sidecarGB = (docsM) => docsM * 0.352; // abstracts v3: 52.9 GB / 150.4M ≈ 0.35 KB/doc
+const META_GB = 10.2;   
+const DENSE_GB = 7.2;   
+const sidecarGB = (docsM) => docsM * 0.352; 
 
-// ─── SCREEN 1: PERSONAS & SECTIONS ───────────────────────────────────────────
+
 const PersonasScreen = () => {
   const [personaId, setPersonaId] = React.useState("political_science");
   const [unpacked, setUnpacked] = React.useState({});
@@ -193,8 +185,8 @@ const PersonasScreen = () => {
 
   const startUnpack = (id) => {
     if (unpacking[id] != null) return;
-    // Fire the real backend unpack (MCP request_section_unpack); the progress
-    // animation below is local feedback. No-op in demo mode.
+    
+    
     if (window.SFUApi) window.SFUApi.unpack(id);
     setUnpacking(u => ({ ...u, [id]: 0 }));
     const t = setInterval(() => {
@@ -358,7 +350,7 @@ const PersonasScreen = () => {
   );
 };
 
-// ─── SCREEN 2: DENSE WARM CACHE ──────────────────────────────────────────────
+
 const HIT_SERIES = [0, 2, 5, 9, 14, 21, 26, 33, 38, 44, 48, 51, 55, 57, 58, 60, 61, 61, 62, 63];
 
 const WarmCacheScreen = () => {
@@ -375,7 +367,7 @@ const WarmCacheScreen = () => {
     { t: "14:38:51", id: "W4221056733", leg: "SPLADE", action: "encoded", batch: "27/32 · 344 ms" },
   ];
 
-  // hit-rate chart geometry
+  
   const W = 520, H = 150, PAD = 28;
   const pts = HIT_SERIES.map((v, i) => {
     const x = PAD + (i / (HIT_SERIES.length - 1)) * (W - PAD - 10);
@@ -406,7 +398,7 @@ const WarmCacheScreen = () => {
           <StatCard label="p95 search_rrf" value="+0 ms" sub="cache on vs off" icon="check" color="var(--c-green)" />
         </div>
 
-        {/* WI-17d: live result-cache state (hit ratio + resident) from /health. */}
+        {}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 14 }}>
           <ResultCacheCard />
         </div>
@@ -510,7 +502,7 @@ const WarmCacheScreen = () => {
   );
 };
 
-// ─── SCREEN 3: STORAGE BUDGET ────────────────────────────────────────────────
+
 const StorageScreen = () => {
   const levers = [
     { comp: "BMP SPLADE shards", before: 167.6, after: 76.7, lever: "bsize 256 + clustered (section, top-SPLADE-term) insertion", note: "−54.2% · recall@50 0.967 vs 0.966 · −61% latency", status: { tone: "ok", label: "shipped af09836" } },
@@ -626,7 +618,7 @@ const StorageScreen = () => {
   );
 };
 
-// ─── APP ─────────────────────────────────────────────────────────────────────
+
 const TABS = [
   { id: "personas", label: "Personas & Sections" },
   { id: "warmcache", label: "Warm Cache" },
@@ -635,12 +627,12 @@ const TABS = [
 
 const App = () => {
   const [tab, setTab] = React.useState(() => localStorage.getItem("im-tab") || "personas");
-  const [live, setLive] = React.useState(null); // null=unknown, true=live, false=demo
+  const [live, setLive] = React.useState(null); 
   const pick = (t) => { setTab(t); localStorage.setItem("im-tab", t); };
 
-  // Header badge tracks the SAME suite-wide demo state as everything else: the
-  // shell broadcasts {suiteDemo} (from /health); standalone we self-probe. (We
-  // deliberately do NOT call the heavy /api/index_status just to flip a badge.)
+  
+  
+  
   React.useEffect(() => {
     const onMsg = (e) => { if (e.data && typeof e.data.suiteDemo === "boolean") setLive(!e.data.suiteDemo); };
     window.addEventListener("message", onMsg);
@@ -682,9 +674,7 @@ const App = () => {
         {tab === "warmcache" && <WarmCacheScreen />}
         {tab === "storage" && <StorageScreen />}
       </main>
-      {/* Responsiveness: stack the persona/section two-column layout on smaller
-          laptops, and let any wide data table scroll locally instead of pushing
-          the page (keeps the layout clean down to ~1280px). */}
+      {}
       <style>{`
         @media (max-width: 1400px) {
           .im-personas-grid { grid-template-columns: 1fr !important; }

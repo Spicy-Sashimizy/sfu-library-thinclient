@@ -32,7 +32,6 @@ def list_versions() -> list[dict]:
     for component, versions in (data.get("components") or {}).items():
         for v in versions:
             row = {"component": component, **v}
-            # Reflect on-disk reality: a model file that isn't present can't be active.
             path = v.get("path")
             if path:
                 row["available"] = (_REPO_ROOT / path).exists()

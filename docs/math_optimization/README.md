@@ -10,14 +10,9 @@
 
 This section documents the **mmap/SEISMIC matrix-math optimization arc**: what
 the per-candidate dot-product actually is, the measured corpus quirks that
-justify restructuring it (vs. the generic engine), the full interaction map of
-what a math change touches, the **x86→ARM (aarch64 / Apple Silicon / iPhone)
-ISA-portability discipline**, and the staged, pre-registered testing protocol.
-
-It exists because the research decisions are non-obvious and span Rust kernel
-internals, corpus statistics, LLVM SIMD lowering, and cross-target CI — too much
-to re-derive each session, and exactly the kind of thing that drifts if left
-only in conversation.
+justify restructuring it, the interaction map of what a math change touches,
+the **x86→ARM (aarch64 / Apple Silicon / iPhone) ISA-portability discipline**,
+and the staged, pre-registered testing protocol.
 
 ## Documents
 

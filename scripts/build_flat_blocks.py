@@ -91,8 +91,6 @@ ABSTRACTS = "abstracts.sqlite"
 FLAT_SUFFIX = ".flat"
 STAGING_SUFFIX = ".flat.building"
 
-# Files this script is allowed to see inside a staging directory. Anything else
-# and it refuses to touch the directory rather than delete an operator's data.
 KNOWN_ARTIFACTS = {
     "blocks.bin", "blocks.bin.partial", "block_offsets.npy",
     "block_lengths.npy", "block_dictids.npy", FLAT_STAMP, LOCATOR_STAMP,
@@ -100,20 +98,10 @@ KNOWN_ARTIFACTS = {
 }
 KNOWN_PREFIXES = ("zdict_",)
 
-# MEASURED rates, used only for the `plan` estimate (never for a claim):
-#   flat stage, source 13.47 GB -> 114.9 s on local disk (overlay),
-#     data/eval_results/c8_abs_locator_20260803_0649.json (2026-08-03)
-#   flat stage, same source     -> 878 s on the 9p passthrough mount,
-#     data/eval_results/n5_flat_blocks_20260802_0741.json (2026-08-02)
-# The index tree lives on the 9p mount, so the slow rate is the one to budget.
-RATE_LOCAL_MB_S = 13470433280 / 114.9 / 1e6      # ~117 MB/s of SOURCE consumed
-RATE_9P_MB_S = 13470433280 / 878.0 / 1e6         # ~15.3 MB/s of SOURCE consumed
-# blocks.bin + loc_*.npy vs the source sqlite, measured on the one built section
-# (13.47 GB -> 11.13 + 0.421 GB): 0.857. Rounded up for the preflight.
+RATE_LOCAL_MB_S = 13470433280 / 114.9 / 1e6
+RATE_9P_MB_S = 13470433280 / 878.0 / 1e6
 SIDECAR_SIZE_RATIO = 0.90
 
-
-# ── discovery / planning ─────────────────────────────────────────────────────
 
 def section_dirs(index_root: Path) -> list[Path]:
     root = Path(index_root) / "sections"
@@ -132,7 +120,7 @@ def survey(index_root: Path) -> list[dict]:
         flat = sdir / (ABSTRACTS + FLAT_SUFFIX)
         stage = sdir / (ABSTRACTS + STAGING_SUFFIX)
         if not src.exists() and not flat.is_dir():
-            continue                      # cold section: no abstracts at all
+            continue
         size = src.stat().st_size if src.exists() else 0
         rows.append({
             "section": sdir.name,
@@ -180,8 +168,6 @@ def cmd_plan(args) -> int:
     return 0
 
 
-# ── stage state (a stage is done iff the stamp it writes LAST proves it) ─────
-
 def _load_json(p: Path) -> dict | None:
     try:
         return json.loads(p.read_text())
@@ -213,8 +199,6 @@ def flat_stage_state(stage: Path, src: Path) -> tuple[bool, str]:
         except (OSError, ValueError) as exc:
             return False, f"{name}.npy unreadable ({exc})"
         if len(arr) != slots:
-            # doc 18 §12: an interrupted copy leaves one column short and the
-            # tail then addresses whatever the shorter array holds.
             return False, f"{name}.npy holds {len(arr)}, stamp declares {slots}"
     return True, "ok"
 
@@ -266,8 +250,6 @@ def _guard_staging(stage: Path) -> None:
             f"refusing to touch it. Move it aside and rerun.")
 
 
-# ── id sampling (contiguous windows — doc 18 §16's bias lesson) ──────────────
-
 def sample_ids(src: Path, n: int, windows: int = 20, seed: int = 17) -> list[str]:
     """`n` ids drawn as `windows` contiguous rowid runs spread across the table.
 
@@ -282,9 +264,6 @@ def sample_ids(src: Path, n: int, windows: int = 20, seed: int = 17) -> list[str
             return []
         per = max(1, n // max(1, windows))
         rng = random.Random(seed)
-        # dict, not list: on a small table the random windows overlap, and a
-        # duplicated id would inflate `ids_checked` into a gate that looks
-        # stronger than it is.
         out: dict[str, None] = {}
         for _ in range(windows):
             start = rng.randint(1, max(1, mx - per))
@@ -325,8 +304,6 @@ def sample_block_ids(src: Path, n: int, seed: int = 23) -> list[int]:
         db.close()
 
 
-# ── verification ─────────────────────────────────────────────────────────────
-
 @contextmanager
 def reader_views(src: Path, flat_dir: Path, tmp_root: Path):
     """Four `AbstractStore`s over the same bytes, built from symlink views.
@@ -344,7 +321,6 @@ def reader_views(src: Path, flat_dir: Path, tmp_root: Path):
     os.symlink(src, v3 / ABSTRACTS)
     views["v3"] = AbstractStore(v3 / ABSTRACTS)
 
-    # flat + SQLite `docs`: every sidecar file EXCEPT the locator.
     fd_dir = tmp_root / "flat_docs"
     (fd_dir / (ABSTRACTS + FLAT_SUFFIX)).mkdir(parents=True)
     os.symlink(src, fd_dir / ABSTRACTS)
@@ -360,7 +336,6 @@ def reader_views(src: Path, flat_dir: Path, tmp_root: Path):
     os.symlink(flat_dir, fo_dir / (ABSTRACTS + FLAT_SUFFIX))
     views["flat_ordinal"] = AbstractStore(fo_dir / ABSTRACTS)
 
-    # SQLite-free (doc 18 §18): the sidecar alone, no abstracts.sqlite present.
     free = tmp_root / "sqlite_free"
     free.mkdir()
     os.symlink(flat_dir, free / (ABSTRACTS + FLAT_SUFFIX))
@@ -407,18 +382,12 @@ def verify_reads(src: Path, flat_dir: Path, tmp_root: Path, n_ids: int,
             for name, store in views.items():
                 if name == "v3":
                     continue
-                # sqlite_free has no fallback for non-W-number ids by design
-                # (hazard 2): it is compared on what it is contracted to serve.
                 want_ids = part_addr if name == "sqlite_free" else part
                 want = {i: truth[i] for i in want_ids if i in truth}
                 st = stats[name]
                 try:
                     got = store.fetch(want_ids)
                 except Exception as exc:       # noqa: BLE001 — any raise is a FAIL
-                    # A corrupt index can make the reader raise (a bad offset
-                    # feeds zstd a torn frame) instead of returning wrong bytes.
-                    # Both are verification failures; neither may abort the run
-                    # and leave the operator without a report.
                     st["errors"] = st.get("errors", 0) + len(want_ids)
                     if len(st["examples"]) < 3:
                         st["examples"].append({"id": want_ids[0] if want_ids else None,
@@ -491,8 +460,6 @@ def verify_blocks(src: Path, flat_dir: Path, n: int, seed: int = 23) -> dict:
     return rep
 
 
-# ── build ────────────────────────────────────────────────────────────────────
-
 def resolve_src(args) -> tuple[str, Path]:
     if args.src:
         src = Path(args.src)
@@ -563,7 +530,6 @@ def build_section(src: Path, *, verify_ids: int = 20_000, verify_blocks_n: int =
                  partial.name, partial.stat().st_size / 1e9)
         partial.unlink()
 
-    # ── stage 1: payloads ───────────────────────────────────────────────────
     ok, why = flat_stage_state(stage, src)
     t0 = time.perf_counter()
     if ok:
@@ -581,8 +547,6 @@ def build_section(src: Path, *, verify_ids: int = 20_000, verify_blocks_n: int =
     flat_stamp = _load_json(stage / FLAT_STAMP) or {}
     flat_id = flat_stamp.get(FLAT_ID_KEY)
 
-    # ── stage 2: rehomed dicts (build_flat_sidecar already does this; this is
-    # the repair path for a sidecar whose dict dump was interrupted) ─────────
     ok, why = dicts_stage_state(stage, flat_id)
     if ok:
         log.info("stage dicts: SKIP (already complete)")
@@ -598,7 +562,6 @@ def build_section(src: Path, *, verify_ids: int = 20_000, verify_blocks_n: int =
         if not ok:
             raise SystemExit(f"dict stage finished but does not validate: {why}")
 
-    # ── stage 3: ordinal locator ────────────────────────────────────────────
     ok, why = locator_stage_state(stage, flat_id)
     if ok:
         log.info("stage locator: SKIP (already complete)")
@@ -616,17 +579,11 @@ def build_section(src: Path, *, verify_ids: int = 20_000, verify_blocks_n: int =
     loc_stamp = _load_json(stage / LOCATOR_STAMP) or {}
 
     rep["sizes"] = _sizes(src, stage)
-    # abstracts.sqlite may be deleted ONLY when every id is ordinal-addressable
-    # (no `docs` fallback exists once the file is gone) and the dicts are rehomed.
     rep["skipped_non_wid"] = loc_stamp.get("skipped_non_wid")
     rep["sqlite_deletable"] = (loc_stamp.get("skipped_non_wid") == 0
                                and (stage / DICTS_STAMP).exists())
 
-    # ── verification, BEFORE the sidecar takes the served name ──────────────
     if do_verify:
-        # Symlink views only (a few hundred bytes) — deliberately NOT inside the
-        # section directory, which must never gain files this script could
-        # forget to remove.
         tmp = Path(tmp_root or tempfile.mkdtemp(prefix="flatverify_")) / "views"
         if tmp.exists():
             shutil.rmtree(tmp)
@@ -650,7 +607,6 @@ def build_section(src: Path, *, verify_ids: int = 20_000, verify_blocks_n: int =
         rep["pass"] = None
         log.warning("verification SKIPPED (--no-verify) — publishing unverified")
 
-    # ── publish: one atomic rename ─────────────────────────────────────────
     os.rename(stage, final)
     rep["published"] = True
     log.info("published %s — the section now serves flat (delete the directory "

@@ -34,12 +34,6 @@ DEFAULT_PORT = 8159
 HEALTH_TIMEOUT = float(os.environ.get("SFU_DEMO_WATCHDOG_HEALTH_TIMEOUT", "8"))
 WEDGE_RESTART_AFTER = int(os.environ.get("SFU_DEMO_WATCHDOG_WEDGE_N", "3"))
 POLL_INTERVAL = float(os.environ.get("SFU_DEMO_WATCHDOG_POLL", "1.0"))
-# Cold-start grace: for this many seconds after a launch, a failing health probe
-# does NOT count toward a wedge-restart (the serve is cold-loading seismic shards
-# + the ONNX encoder — ~2 min on the 9p mount — NOT wedged). This is the
-# supervisor grace a real demo's systemd StartLimitIntervalSec provides. Set
-# explicitly by the WI-6 orchestration (longer when wait-warm is on, since the
-# warmup phase adds time beyond the cold load).
 COLD_GRACE_S = float(os.environ.get("SFU_DEMO_WATCHDOG_COLD_GRACE_S", "150"))
 
 
@@ -88,7 +82,7 @@ def warm_probe(port: int, timeout: float = HEALTH_TIMEOUT) -> tuple[bool, bool, 
             try:
                 warm = bool(json.loads(body).get("warm"))
             except Exception:
-                warm = ok  # legacy serve without the warm field: treat up as warm
+                warm = ok
             return ok, warm, ms, f"HTTP {resp.status} warm={warm} {body[:60]}"
     except Exception as e:
         return False, False, (time.perf_counter() - t0) * 1000, \
@@ -112,7 +106,7 @@ def _launch(port: int, log_fh, env_overrides: dict | None = None) -> subprocess.
     p = subprocess.Popen(
         [py, str(SERVE)],
         stdout=log_fh, stderr=subprocess.STDOUT, cwd=str(REPO), env=env,
-        start_new_session=True)  # new process group so SIGTERM reaches only it
+        start_new_session=True)
     return p
 
 
@@ -124,8 +118,6 @@ def _wait_healthy(port: int, deadline_s: float = 120.0) -> tuple[bool, float]:
     only once /health reports warm=true (the startup warmup completed) — so a
     stranger's first post-restart /search answers warm, not at the cold floor."""
     wait_warm = _wait_warm_enabled()
-    # warmup can take ~tens of seconds (24 queries × cold seismic load); give it
-    # room beyond the up-only deadline when waiting for warm.
     if wait_warm:
         deadline_s = max(deadline_s, 600.0)
     t0 = time.perf_counter()
@@ -142,10 +134,8 @@ def _wait_healthy(port: int, deadline_s: float = 120.0) -> tuple[bool, float]:
             if ok:
                 return True, (time.perf_counter() - t0) * 1000
         time.sleep(0.5)
-    # timed out: if we saw "up but not warm", report that (warmup hung) — else
-    # the process never came up at all.
     if wait_warm and became_ok_at is not None:
-        return False, became_ok_at  # caller sees ok=False but with the up-time
+        return False, became_ok_at
     return False, (time.perf_counter() - t0) * 1000
 
 
@@ -172,15 +162,11 @@ def run_watchdog(port: int, max_restarts: int, fail_fast: bool) -> dict:
     launch_time = time.monotonic()
     wedge_streak = 0
     restart_count = 0
-    # SIGTERM (from the orchestration's `kill $WD_PID`) → clean teardown + write
-    # the report (the harness reads recovery_ms from it). Without this the
-    # orchestration's SIGTERM would skip the report-write in main().
     def _term(signum, frame):
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, _term)
     try:
         while True:
-            # (a) process death — the subprocess exited (crash / OOM-kill / SIGKILL)
             ret = p.poll()
             if ret is not None:
                 if fail_fast and restart_count >= max_restarts:
@@ -203,18 +189,12 @@ def run_watchdog(port: int, max_restarts: int, fail_fast: bool) -> dict:
                 if fail_fast and restart_count >= max_restarts:
                     break
                 continue
-            # (b) wedged — process alive but health probe fails WEDGE_RESTART_AFTER
-            # consecutive times (timeout or non-2xx). SIGKILL + restart. BUT a
-            # fresh launch gets COLD_GRACE_S seconds before wedge counting starts
-            # (the serve cold-loads seismic + ONNX — alive but not answering YET,
-            # which is NOT a wedge). Skip the streak increment in that window.
             in_cold_grace = (time.monotonic() - launch_time) < COLD_GRACE_S
             ok, ms, status = health_probe(port)
             if ok:
                 wedge_streak = 0
             else:
                 if in_cold_grace:
-                    # cold-loading, not wedged — don't count toward a restart
                     wedge_streak = 0
                     print(f"watchdog: health not-up yet (cold grace, "
                           f"{COLD_GRACE_S - (time.monotonic() - launch_time):.0f}s "
@@ -263,7 +243,7 @@ def run_watchdog(port: int, max_restarts: int, fail_fast: bool) -> dict:
         log_fh.close()
         report["restart_count"] = restart_count
         report["stopped"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        _write_report(report)  # always persist, so the harness reads recovery_ms
+        _write_report(report)
     return report
 
 

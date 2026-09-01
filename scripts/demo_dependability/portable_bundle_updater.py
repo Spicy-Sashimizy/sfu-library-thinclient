@@ -59,9 +59,6 @@ EVAL = REPO / "data" / "eval_results"
 FIXDIR = REPO / "data" / "eval_results" / "_fixtures"
 MANIFEST_OUT = EVAL / "portable_bundle_versions.json"
 
-# The artifact GROUPS a bundle ships (mirrors WI-8's artifact_inventory, but
-# versioned + shard-granular). Each group emits one or more versioned entries.
-# A real bundle = the 150M paths; a fixture bundle = _fixtures/ copies.
 SEISMIC_MANIFEST_LADDER = [
     "seismic_c25_shards_150m_mmap_e5_v2.json",
     "seismic_c25_shards_150m_mmap_e5.json",
@@ -120,8 +117,6 @@ def _sha256_dir_dir(path: Path, data_sha256: bool = False) -> str:
     for f in sorted(p.rglob("*")):
         if f.is_file():
             if not data_sha256 and f.name not in ("manifest.json",):
-                # the versioned POINTER only — skip the data blobs for the cheap
-                # dir-version (the manifest.json is what a re-conversion rewrites)
                 continue
             fe = _sha256(f)
             rows.append((str(f.relative_to(p)), fe["sha256"], fe["bytes"]))
@@ -194,33 +189,27 @@ def _sha256_dir_entries(path: Path, group: str, data_sha256: bool = True) -> lis
     return out
 
 
-# ── manifest ─────────────────────────────────────────────────────────────────
 def cmd_manifest(args):
     """Emit a VERSIONED bundle manifest. `--bundle-dir` scopes to a fixture
     bundle for the proof; unset = the real 150M paths (the shipped manifest)."""
     FIXDIR.mkdir(parents=True, exist_ok=True)
-    so_version = "v3-portable-2026-07-16"   # WI-4's build rev (bumped on a .so rebuild)
+    so_version = "v3-portable-2026-07-16"
     model_version_splade = "onnx-fused-2026-06-19"
     model_version_dense = "v5-2026-06-19"
-    shard_version = "e8-dvv2-e5-reorder-2026-07-14"  # the served shard build rev
+    shard_version = "e8-dvv2-e5-reorder-2026-07-14"
     bundle_dir = Path(args.bundle_dir) if args.bundle_dir else REPO
 
     manifest = {
         "probe": "wi14_portable_bundle_versions",
         "generated_utc": _now_utc(),
         "bundle_dir": str(bundle_dir),
-        "channel": "stable",   # the versioning channel (stable / staging / canary)
-        "bundle_version": "1.0.0",  # bumped on any shipped update (semver-ish)
+        "channel": "stable",
+        "bundle_version": "1.0.0",
         "artifacts": [],
     }
-    # 1. seismic shards (shard-granular; the immutable-shard update contract)
-    if not args.bundle_dir:  # real 150M paths
+    if not args.bundle_dir:
         manifest["artifacts"] += _seismic_entries(SEISMIC_MANIFEST_LADDER[0], shard_version)
     else:
-        # fixture bundle: the apply proof stages shard fixtures under bundle_dir.
-        # Fixture shards are TINY → full data sha256 (data_sha256=True) so a
-        # changed data.bin is detected (the real-150M corpus uses pointer-mode
-        # above — the GB-scale data is NOT re-checksummed, only the manifest.json pointer).
         shard_root = bundle_dir / "seismic_shards"
         if shard_root.exists():
             for sd in sorted(shard_root.iterdir()):
@@ -232,7 +221,6 @@ def cmd_manifest(args):
                         "dir_version": _sha256_dir_dir(sd, data_sha256=True),
                         "files": _sha256_dir_entries(sd, "seismic_shard", data_sha256=True),
                     })
-    # 2. the .so (one file, ~2.7 MB — the cheapest update class; full sha256)
     so_path = bundle_dir / "portable_so" / "seismic.cpython-311-x86_64-linux-gnu.so"
     if not args.bundle_dir:
         so_path = REPO / "spike/seismic_upstream/target/portable_so/v3/seismic/" \
@@ -240,10 +228,6 @@ def cmd_manifest(args):
     soe = _sha256(so_path)
     soe.update({"group": "portable_so", "version": so_version})
     manifest["artifacts"].append(soe)
-    # 3. models (per-file so a distill = the weight-file entry only). The model
-    # weight files are small enough (splade ~0.5 GB, dense safetensors ~3.3 GB)
-    # to full-sha256 on the real corpus — and they're the FILES an encoder
-    # distill changes, so the contract must checksum their bytes, not a pointer.
     for name, sub, ver in [
         ("splade_model", "models/splade_onnx_fused", model_version_splade),
         ("dense_model", "models/sfu-academic-embed-v5", model_version_dense),
@@ -253,11 +237,6 @@ def cmd_manifest(args):
         for e in entries:
             e["version"] = ver
         manifest["artifacts"] += entries
-    # 4. tantivy BM25F legs + dense usearch. The tantivy index is 114 GB —
-    # pointer-mode only (dir-version from filenames+sizes, NOT a full data
-    # checksum — the GB-scale data is the immutable artifact; the dir-version
-    # detects a rebuild via the file set, which is the versioned signal). For
-    # the fixture bundle (small), full sha256 is fine.
     for name, sub in [("tantivy_bm25f", "thinclient_index"),
                       ("dense_usearch", "thinclient_index/dense")]:
         d = bundle_dir / sub if args.bundle_dir else REPO / "data" / sub
@@ -265,9 +244,6 @@ def cmd_manifest(args):
             if args.bundle_dir:
                 entries = _sha256_dir_entries(d, name, data_sha256=True)
             else:
-                # real corpus: dir-version + a file-set entry (names+sizes), not
-                # a multi-GB full sha256 (avoids contending with the live serve
-                # on the 9p mount — the same reason _seismic_entries is pointer-mode)
                 entries = [{"group": name, "dir_version": _sha256_dir_dir(d, data_sha256=False),
                             "file_count": sum(1 for f in d.rglob("*") if f.is_file()),
                             "bytes": sum(f.stat().st_size for f in d.rglob("*") if f.is_file()),
@@ -282,7 +258,6 @@ def cmd_manifest(args):
     out.write_text(json.dumps(manifest, indent=2))
     print(f"wrote {out} ({manifest['artifact_count']} artifacts, "
           f"{manifest['total_bytes']} bytes, channel={manifest['channel']})")
-    # per-class summary (the doc cites these byte expectations)
     groups = {}
     for a in manifest["artifacts"]:
         g = a.get("group", "?")
@@ -292,7 +267,6 @@ def cmd_manifest(args):
     print(json.dumps(groups, indent=2))
 
 
-# ── check (delta plan) ───────────────────────────────────────────────────────
 def _artkey(a: dict, bundle_dir: str = "") -> str:
     """Stable identity for an artifact across local/remote manifests: the GROUP
     + the path RELATIVE to its bundle dir (so v1's model.onnx and v2's model.onnx
@@ -301,12 +275,9 @@ def _artkey(a: dict, bundle_dir: str = "") -> str:
     if a.get("group") == "seismic_shards":
         return f"seismic_shards/{a.get('shard')}"
     p = a.get("path", a.get("shard", ""))
-    # strip the bundle dir prefix → relpath (the matching identity across versions)
     if bundle_dir and p.startswith(bundle_dir):
         p = p[len(bundle_dir):].lstrip("/")
     else:
-        # fall back to the basename when no bundle_dir is known (a single file's
-        # identity is its name within the group — /abs/.../model.onnx → model.onnx)
         p = Path(p).name if p else ""
     return f"{a.get('group')}/{p}"
 
@@ -316,8 +287,6 @@ def cmd_check(args):
     network). Emits fetch list, total bytes, unchanged, crash-safe apply order."""
     local = json.loads(Path(args.local).read_text())
     remote = json.loads(Path(args.remote).read_text())
-    # the bundle_dir prefix to strip so v1/v2 artifacts match by RELPATH (the
-    # absolute bundle path differs across versions; the relpath is the identity)
     local_dir = local.get("bundle_dir", "")
     remote_dir = remote.get("bundle_dir", "")
     local_by = {_artkey(a, local_dir): a for a in local.get("artifacts", [])}
@@ -331,11 +300,6 @@ def cmd_check(args):
             missing_local.append(key)
         elif (la.get("sha256") != ra.get("sha256")
               or la.get("dir_version") != ra.get("dir_version")):
-            # the per-file check: if the entry has `files` (a dir), diff them;
-            # if it's a single sha256 entry, the whole file changed. For shard
-            # dirs, list the changed FILES (immutable shards = per-file delta).
-            # Match local vs remote files by BASENAME (the absolute bundle path
-            # differs across versions; the filename is the identity).
             changed_files = []
             if "files" in ra and "files" in la:
                 lf = {Path(f["path"]).name: f for f in la["files"]}
@@ -352,11 +316,6 @@ def cmd_check(args):
         else:
             unchanged.append(key)
     total_bytes = sum(f["bytes"] for f in fetch)
-    # crash-safe apply order: (1) fetch changed/new ARTIFACTS beside the old
-    # (never in-place), (2) verify each fetched file's sha256, (3) FLIP the
-    # bundle manifest LAST (the atomic pointer swap), (4) keep old files until
-    # post-flip verify succeeds (then GC-eligible, deleted only on a confirmed
-    # healthy run — the manifest-flip-last + keep-old is the rollback safety).
     plan = {
         "probe": "wi14_delta_plan",
         "generated_utc": _now_utc(),
@@ -380,8 +339,6 @@ def cmd_check(args):
                     "old artifact files were kept (step 4) so no re-fetch needed — "
                     "crash-safe: a crash mid-apply leaves the old manifest pointing "
                     "at old files (the flip is the only atomic step, and it's last).",
-        # the per-class expectation the doc records (the key insight: costs vary
-        # wildly by update class — mapped to the known pending upgrades).
         "delta_class_expectation": {
             "so_rebuild": "~2.7 MB (1 file, the .so)",
             "encoder_distill": "~1 GB (models only — the weight files)",
@@ -403,7 +360,6 @@ def cmd_check(args):
     }, indent=2))
 
 
-# ── apply (staging proof) ───────────────────────────────────────────────────
 def _make_fixture_bundle(version_tag: str, changed_files: set | None = None) -> Path:
     """A tiny FIXTURE bundle: 2 seismic shard fixtures + 1 .so fixture + 1
     splade model fixture + 1 dense model fixture — small enough that the apply
@@ -422,8 +378,6 @@ def _make_fixture_bundle(version_tag: str, changed_files: set | None = None) -> 
         shutil.rmtree(b)
     changed = changed_files or set()
     def content(group: str, relpath: str, size: int = 256) -> bytes:
-        # deterministic per (group, relpath) so unchanged files are identical
-        # across v1/v2; changed files get a version-tag suffix to differ.
         h = hashlib.sha256(f"{group}/{relpath}".encode()).digest()
         base = (h * (size // len(h) + 1))[:size]
         if (group, relpath) in changed:
@@ -456,9 +410,6 @@ def cmd_apply(args):
     prove rollback (re-flip to v1, old files present). NO network: the 'remote'
     files are staged locally by the proof (simulated fetch)."""
     ts = _now_utc().replace("-", "")
-    # v2 differs from v1 in EXACTLY 2 files: shard1/data.bin + splade model.onnx
-    # (the per-file delta precision the proof demonstrates: an update names the
-    # changed FILES, not the whole bundle).
     v2_changed = {("seismic_shards", "shard1/data.bin"),
                   ("splade_model", "model.onnx")}
     b1 = _make_fixture_bundle(f"v1_{ts}")
@@ -487,12 +438,9 @@ def cmd_apply(args):
         result["steps"].append({"step": name, "status": status, "detail": detail})
         print(f"[{name}] {status} — {detail}")
 
-    # ── apply the delta crash-safely ──
     step("apply_start", "running", f"v1→v2: {len(plan['fetch'])} changed artifacts (expected 2: shard1 data.bin + splade model.onnx)")
-    served_manifest = m1   # the 'live' bundle manifest pointer
-    live_bundle = b1       # the bundle dir the manifest points at
-    # 1. 'fetch' = stage the v2 changed files BESIDE the v1 files (never in-place).
-    #    The proof stages them under live_bundle/.staging/<key>/ so old stays put.
+    served_manifest = m1
+    live_bundle = b1
     staged = {}
     verify_ok = True
     for f in plan["fetch"]:
@@ -501,7 +449,6 @@ def cmd_apply(args):
         staging_dir = live_bundle / ".staging" / key.replace("/", "_")
         staging_dir.mkdir(parents=True, exist_ok=True)
         if "changed_files" in f and f["changed_files"]:
-            # a dir artifact (shard/model): copy the changed FILES from v2
             for cf in f["changed_files"]:
                 rf = _resolve_fixture_file(b2, cf)
                 if rf:
@@ -515,7 +462,6 @@ def cmd_apply(args):
                 shutil.copy(rf, dst)
                 staged.setdefault(key, []).append((dst, ra))
     step("fetch_stage", "ok", f"{sum(len(v) for v in staged.values())} files staged beside old (old untouched)")
-    # 2. verify staged sha256 vs the remote manifest entries (the trust gate)
     bad = 0
     verified = 0
     for key, files in staged.items():
@@ -530,13 +476,11 @@ def cmd_apply(args):
         verify_ok = False
     else:
         step("verify_sha256", "ok", f"{verified} staged files match remote manifest sha256")
-    # 3. FLIP the manifest LAST (atomic) — only if verify passed
     old_shard0_present = False
     old_model_present = False
     if verify_ok:
         served_manifest = m2
         step("flip_manifest", "ok", f"bundle manifest flipped v1→v2 (served={m2.name}); old files retained")
-        # 4. prove rollback: re-flip to v1, old files STILL present
         served_manifest = m1
         old_shard0_present = (live_bundle / "seismic_shards" / "shard0").exists()
         old_model_present = (live_bundle / "models" / "splade_onnx_fused" / "model.onnx").exists()
@@ -547,12 +491,7 @@ def cmd_apply(args):
              f"old shard0 dir present={old_shard0_present}, old shard1/data.bin present={old_shard1_data}, old splade weight present={old_model_present} (keep-old-until-verify → no re-fetch)")
     else:
         step("flip_manifest", "skipped", "verify failed — no flip (crash-safe)")
-    # bars: (b) the delta names exactly the 2 changed files; (c) applied +
-    # verified; (d) rollback keeps old files present.
     fetch_keys = {f["key"] for f in plan["fetch"]}
-    # the 2 expected changed artifacts (the proof's controlled delta): shard1's
-    # changed data.bin (keyed by shard) + the splade model.onnx (keyed by relpath).
-    # The model key is group + the relpath within the bundle (models/splade_onnx_fused/model.onnx).
     expected_keys = {"seismic_shards/shard1",
                      "splade_model/models/splade_onnx_fused/model.onnx"}
     result["bars"] = {
@@ -575,7 +514,6 @@ def _resolve_fixture_file(bundle_v2: Path, cf: dict) -> Path:
     basename search must disambiguate by sha256 when a name appears in multiple
     dirs — e.g. shard0/data.bin vs shard1/data.bin)."""
     p = Path(cf["path"])
-    # absolute path under bundle_v2 → resolve directly (the common case)
     if p.is_absolute():
         rel = None
         try:
@@ -584,7 +522,6 @@ def _resolve_fixture_file(bundle_v2: Path, cf: dict) -> Path:
             pass
         if rel and (bundle_v2 / rel).is_file():
             return bundle_v2 / rel
-    # basename fallback WITH sha256 disambiguation (data.bin lives in 2 shard dirs)
     name = p.name
     want_sha = cf.get("sha256")
     cands = [c for c in bundle_v2.rglob(name) if c.is_file()]

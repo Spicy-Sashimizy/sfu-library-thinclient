@@ -34,7 +34,6 @@ import numpy as np
 
 log = logging.getLogger("seismic_backend")
 
-# Match the serving retriever's query-shape constant (src/lib/thinclient/retriever.py)
 SPLADE_QUERY_TERMS = 64
 
 
@@ -48,13 +47,10 @@ class SeismicBackend:
     def __init__(self, index_path: str, splade_model_path: str = "models/splade_onnx_fused"):
         import seismic
         self._seismic = seismic
-        # seismic.save() appends '.index.seismic' to the path it's given, so the
-        # on-disk file is <index_path>.index.seismic (see build_persona_seismic.py).
         fp = index_path
         if not fp.endswith(".index.seismic"):
             fp = f"{index_path}.index.seismic"
         if not os.path.exists(fp):
-            # allow passing the full .index.seismic path directly
             fp = index_path if os.path.exists(index_path) else fp
         log.info("seismic: loading index %s", fp)
         self.index = seismic.SeismicIndex.load(fp)
@@ -68,7 +64,6 @@ class SeismicBackend:
         sparse = encode_splade(query, self.splade_model_path)
         if not sparse:
             return {}
-        # Same top-N shaping as the serving retriever's _encode_splade_top.
         return dict(sorted(sparse.items(), key=lambda x: -x[1])[:SPLADE_QUERY_TERMS])
 
     def search(self, query: str, top_k: int,
@@ -83,7 +78,7 @@ class SeismicBackend:
         `k_prime` is a no-op here (single index, no federation over-fetch) —
         accepted only so `_splade_leg_seismic` can call `.search(..., k_prime=)`
         uniformly across this backend and the federated `ShardedSeismicBackend`."""
-        del k_prime  # federated-only; unused on the single index.
+        del k_prime
         q = self.encode_query(query)
         if not q:
             return []
@@ -95,5 +90,4 @@ class SeismicBackend:
         res = self.index.search(
             query_id="q", query_components=qcomp, query_values=qvals,
             k=top_k, query_cut=qc, heap_factor=heap_factor)
-        # search returns [(query_id, distance, doc_id), ...]
         return [(doc_id, float(dist)) for (_qid, dist, doc_id) in res]

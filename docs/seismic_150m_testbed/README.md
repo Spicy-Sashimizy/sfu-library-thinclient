@@ -3,8 +3,11 @@
 > **Executing (not researching)? Start at `12_EXECUTION_ROADMAP.md`**
 > (2026-07-05) — the ordered, pre-registered queue with recipes and bars.
 
-**Status:** OPEN (created 2026-06-26). Gate-zero (literature + repo fact-find)
-**MEASURED**; all serving gates OPEN. · **Owner:** TBD · **Lineage:** this is the
+**Status (2026-09-01):** the track's major results are in — dv forward
+compression promoted for RAM-capped deploys (doc 10), E5 reorder served by
+default since 2026-07-09 (doc 13), G8d parity accepted (0.9906), doc 17
+NOT-ADOPTED, doc 18 re-attributed to consolidation. Open queue + binding rules:
+`12_EXECUTION_ROADMAP.md`. Created 2026-06-26. · **Lineage:** this is the
 successor the prior project named — `sparse_engine_project/07_INTEGRATION_PLAN.md` §8
 said *"if 150M-single-collection ever becomes a hard requirement, pivot to SEISMIC,
 not more BMP."* That condition has now materialized (below).

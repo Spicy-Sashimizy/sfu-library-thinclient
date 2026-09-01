@@ -56,16 +56,11 @@ REPO = Path(__file__).resolve().parents[2]
 EVAL = REPO / "data" / "eval_results"
 OUT = EVAL / "deploy_versions.json"
 
-# The served manifest ladder (retriever.py `_seismic_backend` promotion default
-# + the one-env rollback targets). The PROMOTION DEFAULT (unset env) is e5_v2;
-# order = newest → oldest so a diff vs an older snapshot shows the ladder grew.
 SERVED_MANIFEST_LADDER = [
     "seismic_c25_shards_150m_mmap_e5_v2.json",
     "seismic_c25_shards_150m_mmap_e5.json",
     "seismic_c25_shards_150m_mmap_dotvbyte.json",
 ]
-# The two .so variants a demo host might serve: the portable v3 (WI-4, SHIPS)
-# and the native dev .so (the fallback). Probed by import attempt.
 SO_VARIANTS = {
     "portable_v3": REPO / "spike" / "seismic_upstream" / "target" / \
                     "portable_so" / "v3" / "seismic" /
@@ -75,13 +70,10 @@ SO_VARIANTS = {
     "native_dev": REPO / "spike" / "seismic_upstream" / "target" /
                   "release" / "libseismic.so",
 }
-# The query-encoder models on the serve path (encoder distill touches ONLY these).
 MODEL_DIRS = {
     "splade_onnx_fused": REPO / "models" / "splade_onnx_fused",
     "dense_v5": REPO / "models" / "sfu-academic-embed-v5",
 }
-# The actual model weight files (config/tokenizer are stable; the WEIGHT files
-# are what a distill/retrain changes → the versioned checksums).
 MODEL_WEIGHT_FILES = {
     "splade_onnx_fused": "model.onnx",
     "dense_v5": "model.safetensors",
@@ -124,8 +116,6 @@ def _code_rev() -> dict:
     head = _git("rev-parse", "HEAD")
     branch = _git("rev-parse", "--abbrev-ref", "HEAD")
     dirty = _git("status", "--porcelain")
-    # The serve-path envs that SELECT a version (a flip = changing these). Only
-    # the SET ones that override the promotion default — an unset env = default.
     version_envs = {}
     for k in ("SFU_SPLADE_BACKEND", "SFU_SEISMIC_SHARD_MANIFEST",
               "SFU_SEISMIC_FEDERATION", "SFU_SEISMIC_LOAD_MODE",
@@ -151,9 +141,6 @@ def _seismic_so() -> dict:
     `served_file`). A .so rebuild (native rebuild) is a sha256 change on the
     served file — the cheapest update class."""
     variants = {name: _sha256(p) for name, p in SO_VARIANTS.items()}
-    # Which .so does the live `import seismic` actually load as its extension?
-    # `seismic.__file__` is the __init__.py; the EXTENSION .so is the C extension
-    # the package imports. Probe it via the package's own path + the .so name.
     served = None
     served_file = None
     venv_py = REPO / ".venv" / "bin" / "python3"
@@ -161,7 +148,6 @@ def _seismic_so() -> dict:
         probe = (
             "import seismic, os, pathlib;"
             "d=pathlib.Path(seismic.__file__).parent;"
-            # the extension .so the package ships: seismic.cpython-...so
             "sos=[p for p in d.glob('seismic.*.so')];"
             "print(sos[0] if sos else '')"
         )
@@ -169,9 +155,6 @@ def _seismic_so() -> dict:
                            capture_output=True, text=True, timeout=30)
         if r.returncode == 0 and r.stdout.strip():
             served_path = Path(r.stdout.strip())
-            # Match it to a known variant (e.g. the venv site-packages .so is the
-            # portable v3 installed into the venv per WI-4). Otherwise record it
-            # as 'venv_installed' (a copy installed into the venv).
             served = "venv_installed (portable v3 installed into venv per WI-4)"
             for name, p in SO_VARIANTS.items():
                 if Path(p).resolve() == served_path.resolve():
@@ -208,13 +191,11 @@ def _index_manifest() -> dict:
     for name in SERVED_MANIFEST_LADDER:
         mp = EVAL / name
         entry = _sha256(mp)
-        # The per-shard mmap_dir manifest.json checksums (the immutable-shard
-        # versioned pointers). READ-ONLY: opened O_RDONLY.
         shard_manifests = []
-        if "sha256" in entry:  # manifest exists
+        if "sha256" in entry:
             try:
                 m = json.loads(mp.read_text())
-                served_default = served_default or name  # first existing = default
+                served_default = served_default or name
                 for s in m.get("shards", []):
                     d = s.get("mmap_dir")
                     if not d:
@@ -231,7 +212,7 @@ def _index_manifest() -> dict:
                     })
             except Exception as e:
                 entry["parse_error"] = str(e)
-        entry["rank"] = len(ladder)  # 0 = newest (promotion default)
+        entry["rank"] = len(ladder)
         entry["shard_manifests"] = shard_manifests
         ladder.append(entry)
     return {
@@ -284,9 +265,6 @@ def main():
             "index_manifest": _index_manifest(),
             "models": _models(),
         },
-        # The update-CLASS delta-size expectations (WI-14's doc cites these; the
-        # updater_check byte math is the same). Recorded here so the contract
-        # and the doc agree (same-commit doc rule).
         "update_class_delta_expectation": {
             "so_rebuild": {"changes": "1 .so variant", "bytes_est": 2_700_288,
                            "note": "the cheapest class — one file"},
@@ -302,7 +280,6 @@ def main():
     }
     OUT.write_text(json.dumps(record, indent=2))
     print(f"wrote {OUT.relative_to(REPO)}")
-    # Console summary (the 4 component headers) for the updater's pre-flight log.
     print(json.dumps({
         "generated_utc": record["generated_utc"],
         "code_head": record["components"]["code_rev"]["head_short"],

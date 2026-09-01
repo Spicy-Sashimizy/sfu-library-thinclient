@@ -40,7 +40,6 @@ def _spearman(a: list[float], b: list[float]) -> float:
         order = np.argsort(x)
         ranks = np.empty_like(x)
         ranks[order] = np.arange(len(x), dtype=np.float64)
-        # average ties
         for v in np.unique(x):
             m = x == v
             if m.sum() > 1:
@@ -97,10 +96,6 @@ def main() -> None:
         rhos.append(_spearman(s_v1, s_base))
     elapsed = time.perf_counter() - t0
 
-    # Junk-promotion audit: inject real docs from UNRELATED pools (near-certain
-    # irrelevant, in-distribution text) and count how often each backend ranks
-    # one into the top-5 of an 8-own + 4-injected pool. This is the failure
-    # mode that matters in serving: a brittle CE promotes off-topic docs.
     import random
     rng = random.Random(42)
     inj_pools = [(q, c) for q, c in pools if len(c) >= 8][:40]
@@ -120,13 +115,11 @@ def main() -> None:
     v1_prom, inj_total = junk_rate(lambda p: v1.predict(p).tolist())
     base_prom, _ = junk_rate(lambda p: base.predict(p, show_progress_bar=False).tolist())
 
-    # Serve-shape latency: one _CE_CANDIDATE_POOL-sized batch (20 pairs), the
-    # exact call rerank_with_crossencoder makes per query.
     import statistics
     bench_pairs = [(pools[0][0], t) for t in (pools[0][1] * 4)[:20]]
 
     def bench(scorer, iters=15):
-        scorer(bench_pairs)  # warmup
+        scorer(bench_pairs)
         lat = []
         for _ in range(iters):
             t1 = time.perf_counter()

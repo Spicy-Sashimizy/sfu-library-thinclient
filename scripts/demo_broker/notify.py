@@ -24,7 +24,6 @@ def build_payload(kind: str, title: str, message: str, token: str = "") -> tuple
     """
     kind = (kind or "json").lower()
     if kind == "ntfy":
-        # ntfy: body is the message, metadata via headers.
         h = {"Title": title, "Priority": "default", "Tags": "books"}
         if token:
             h["Authorization"] = f"Bearer {token}"
@@ -33,7 +32,6 @@ def build_payload(kind: str, title: str, message: str, token: str = "") -> tuple
         return json.dumps({"text": f"*{title}*\n{message}"}).encode(), {"Content-Type": "application/json"}
     if kind == "discord":
         return json.dumps({"content": f"**{title}**\n{message}"}).encode(), {"Content-Type": "application/json"}
-    # generic JSON (Pushover-ish / custom)
     h = {"Content-Type": "application/json"}
     if token:
         h["Authorization"] = f"Bearer {token}"
@@ -42,8 +40,6 @@ def build_payload(kind: str, title: str, message: str, token: str = "") -> tuple
 
 def _post(url: str, body: bytes, headers: dict) -> None:
     req = urllib.request.Request(url, data=body, method="POST")
-    # Cloudflare Browser Integrity Check 403s urllib's default UA (error 1010);
-    # the ntfy sink sits behind the CF proxy since 2026-08-21.
     req.add_header("User-Agent", "Mozilla/5.0 (compatible; DuckLibraryBroker/1.0)")
     for k, v in headers.items():
         req.add_header(k, v)
@@ -51,7 +47,7 @@ def _post(url: str, body: bytes, headers: dict) -> None:
         with urllib.request.urlopen(req, timeout=8) as r:
             if r.status >= 300:
                 log.warning("notify webhook returned %s", r.status)
-    except Exception as e:  # never propagate into the request path
+    except Exception as e:
         log.warning("notify webhook failed: %s", e)
 
 
@@ -66,9 +62,6 @@ def notify(cfg, title: str, message: str) -> None:
 
 
 if __name__ == "__main__":
-    # Manual test push (blocking, so you see the result):
-    #   DEMO_NOTIFY_WEBHOOK=... DEMO_NOTIFY_KIND=ntfy DEMO_NOTIFY_TOKEN=... \
-    #     python3 notify.py "hello from the demo broker"
     import sys
     from config import CONFIG
     logging.basicConfig(level=logging.INFO)

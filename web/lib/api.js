@@ -1,25 +1,11 @@
-/* SFU Library Suite — shared API client.
- * Plain JS (no JSX); loaded before each app's babel script so window.SFUApi is
- * available. Every method tries the live backend first and falls back to
- * window.SFUMock when the backend is unreachable or errors. The returned object
- * always carries `source: "live" | "mock"` so the UI can surface a demo banner.
- *
- * Endpoints (served by src/sfu_library_mcp_http.py):
- *   POST /api/search        -> { results:[...], meta:{count}, notes:[...] }
- *   GET  /analytics[?panel] -> { panels:{...} } | { panel, data }
- *   GET  /api/index_status  -> { metrics, pack, unpack_jobs }
- *   GET  /api/personas      -> { personas, sections, live_sections, ... }
- *   POST /api/unpack        -> { ok, message }
- *   POST /engagement        -> { recorded }
- *   GET  /health            -> { status:"ok", tools:N }
- */
+
 (function () {
-  const BASE = ""; // same origin as the served page
-  // Measured live 2026-07-18 (warm server, all legs healthy): /api/search
-  // p50 ~10 s, worst 14.8 s (earlier same-day runs up to 20.6 s). The old
-  // 12 s timeout silently dropped slow-but-live searches to demo data —
-  // exactly the "still in demo mode" symptom. 30 s clears the observed worst
-  // case; the Search UI's skeleton + elapsed counter cover the wait honestly.
+  const BASE = ""; 
+  
+  
+  
+  
+  
   const TIMEOUT_MS = 30000;
 
   function withTimeout(promise, ms) {
@@ -31,11 +17,11 @@
   async function req(path, opts) {
     const res = await withTimeout(fetch(BASE + path, opts), TIMEOUT_MS);
     if (!res.ok) {
-      // WI-11 overload: a 429 carries a Retry-After header. Surface it as a
-      // structured "retry" result instead of a thrown error so the Search UI
-      // can show a determinate countdown and auto-retry (spec §1 row 4).
-      // Retry-After may be seconds OR an HTTP-date; we accept the integer-seconds
-      // form (what the server emits). Anything else degrades to a 3s backoff.
+      
+      
+      
+      
+      
       if (res.status === 429) {
         const ra = res.headers.get("Retry-After");
         let secs = 3;
@@ -50,7 +36,7 @@
     return res.json();
   }
 
-  // OpenAlex/retriever dict -> the card shape the Search prototype renders.
+  
   function normalizeResult(w, i) {
     const date = w.date || w.publication_date || "";
     const year = w.year || w.publication_year ||
@@ -85,10 +71,37 @@
     };
   }
 
-  // Map the prototype's filter UI values to search_academic args.
-  function buildSearchArgs(query, filters) {
+  
+  
+  const PAGE_SIZE = 10;
+  const MAX_PAGES = 5;
+  const MAX_RESULTS = PAGE_SIZE * MAX_PAGES;
+
+  function clampPage(page) {
+    const n = Math.floor(Number(page));
+    if (!Number.isFinite(n) || n < 1) return 1;
+    return Math.min(MAX_PAGES, n);
+  }
+
+  function pageLimit(page) {
+    return Math.min(MAX_RESULTS, clampPage(page) * PAGE_SIZE);
+  }
+
+  function mergePages(prev, next) {
+    const out = Array.isArray(prev) ? prev.slice() : [];
+    const seen = new Set(out.map(r => r && r.id));
+    (next || []).forEach(r => {
+      if (!r || seen.has(r.id)) return;
+      seen.add(r.id);
+      out.push(r);
+    });
+    return out;
+  }
+
+  
+  function buildSearchArgs(query, filters, page) {
     filters = filters || {};
-    const args = { query: query, limit: 50 };
+    const args = { query: query, limit: pageLimit(page) };
     const t = filters.type;
     if (t && t !== "All") args.type = t.toLowerCase();
     const a = filters.access;
@@ -102,7 +115,7 @@
   }
 
   const SFUApi = {
-    _online: null, // last known backend reachability (null=unknown)
+    _online: null, 
 
     isOnline() { return this._online; },
 
@@ -110,11 +123,11 @@
       try {
         const data = await req("/health", { method: "GET" });
         this._online = true;
-        // Forward-compatible warm flag: WI-6 found up≠warm (the index can answer
-        // /health=ok while still cold-warming). The endpoint today returns only
-        // {status, tools}; if/when it adds `warm`, the Search UI's >10s warming
-        // message (spec §1 row 3) keys off it. No serving-path change is made
-        // here — we only READ a field that may be absent.
+        
+        
+        
+        
+        
         return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true, sequential: !!(data && data.sequential) };
       } catch (e) {
         this._online = false;
@@ -122,34 +135,48 @@
       }
     },
 
-    async search(query, filters) {
+    async search(query, filters, page) {
+      const p = clampPage(page);
+      const limit = pageLimit(p);
       try {
         const data = await req("/api/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(buildSearchArgs(query, filters)),
+          body: JSON.stringify(buildSearchArgs(query, filters, p)),
         });
         this._online = true;
         const raw = (data && data.results) || [];
         return {
           results: raw.map(normalizeResult),
+          page: p,
+          pageSize: PAGE_SIZE,
+          hasMore: p < MAX_PAGES && raw.length >= limit,
           notes: (data && data.notes) || [],
           meta: (data && data.meta) || { count: raw.length },
-          // WI-9/10 degraded legs surface a degraded/degraded_shards flag on the
-          // response; the Search UI renders a one-line notice (spec §1 row 5).
+          
+          
           degraded: !!(data && data.degraded),
           degradedShards: (data && data.degraded_shards) || null,
           source: "live",
         };
       } catch (e) {
-        // 429 overload → structured retry signal, NOT a generic failure: the UI
-        // shows a determinate "retrying in Ns" countdown and auto-retries.
+        
+        
         if (e && e.status === 429 && Number.isFinite(e.retryAfter)) {
-          return { source: "retry", retryAfter: e.retryAfter, results: [], notes: [], meta: { count: 0 } };
+          return { source: "retry", retryAfter: e.retryAfter, page: p, pageSize: PAGE_SIZE, hasMore: false, results: [], notes: [], meta: { count: 0 } };
         }
         this._online = false;
-        const mock = (window.SFUMock && window.SFUMock.results) || [];
-        return { results: mock, notes: [], meta: { count: mock.length }, source: "mock" };
+        const all = (window.SFUMock && window.SFUMock.results) || [];
+        const mock = all.slice(0, limit);
+        return {
+          results: mock,
+          page: p,
+          pageSize: PAGE_SIZE,
+          hasMore: p < MAX_PAGES && all.length > mock.length,
+          notes: [],
+          meta: { count: all.length },
+          source: "mock",
+        };
       }
     },
 
@@ -213,14 +240,14 @@
       }
     },
 
-    // ── Searchbar keystroke speculation (deployprep WI-18, 2026-07-18) ───────
-    // Fire the partial typed text to /api/speculate (the server runs the term-3
-    // guards + predictor and, if unambiguous, fire-and-forgets ONE speculative
-    // backend query through the SAME read-through cache a real submit uses).
-    // The client never blocks on the response; a real Enter never waits on
-    // speculation bookkeeping (term 4). Default OFF server-side
-    // (SFU_SEARCH_SPECULATE); the endpoint is a harmless no-op when the gate is
-    // off (returns suppressed/cache-off). Non-fatal on any error.
+    
+    
+    
+    
+    
+    
+    
+    
     async speculate(query, filters) {
       try {
         const data = await req("/api/speculate", {
@@ -235,17 +262,17 @@
     },
   };
 
-  // createSpeculationController — the debounced typing→speculation helper the
-  // SearchBar uses (term 6). Exposed as a small exported function (NOT inline in
-  // the component closure) so it's testable headlessly with jsdom (wave-5
-  // style). Contract: fires speculation only after ≥ DEBOUNCE_MS typing idle AND
-  // the typed text ≥ MIN_LEN; a real submit cancels any pending speculation
-  // timer. The controller is a plain object with .onType(text) and .cancel()
-  // so a component can wire it without coupling to the debounce internals.
-  //
-  // params: speculate (the SFUApi.speculate fn), filters (filter snapshot),
-  // opts { debounceMs (400), minLen (8), now (test clock), setTimeout,
-  // clearTimeout (test injectables) }. Returns { onType, cancel, _pending }.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   SFUApi.createSpeculationController = function (speculate, filters, opts) {
     opts = opts || {};
     const debounceMs = opts.debounceMs != null ? opts.debounceMs : 400;
@@ -262,21 +289,21 @@
 
     function onType(text) {
       lastText = text == null ? "" : String(text);
-      // Always cancel a pending speculation on new typing (term 6: a real
-      // search cancels pending client speculation timers — and so does a new
-      // keystroke, since the prediction target changed).
+      
+      
+      
       cancel();
       const norm = String(lastText).trim();
       if (!norm || norm.length < minLen) return { fired: false, reason: "short-input" };
       const t0 = _now();
       timer = _setTimeout(function () {
         timer = null;
-        // Re-check length at fire time (the text may have been the same); only
-        // fire if still over threshold. Non-blocking — never await in the timer.
+        
+        
         try {
           const p = speculate(lastText, filters);
-          if (p && typeof p.catch === "function") p.catch(function () { /* swallow */ });
-        } catch (e) { /* a speculation fire failure must never break typing */ }
+          if (p && typeof p.catch === "function") p.catch(function () {  });
+        } catch (e) {  }
         return { t0: t0, firedAt: _now() };
       }, debounceMs);
       return { fired: false, scheduled: true, debounceMs: debounceMs };
@@ -289,6 +316,12 @@
       get _lastText() { return lastText; },
     };
   };
+
+  SFUApi.PAGE_SIZE = PAGE_SIZE;
+  SFUApi.MAX_PAGES = MAX_PAGES;
+  SFUApi.MAX_RESULTS = MAX_RESULTS;
+  SFUApi.pageLimit = pageLimit;
+  SFUApi.mergePages = mergePages;
 
   window.SFUApi = SFUApi;
   window.SFUApi.normalizeResult = normalizeResult;

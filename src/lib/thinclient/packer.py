@@ -35,7 +35,7 @@ import zstandard
 logger = logging.getLogger("sfu_library_mcp")
 
 ZSTD_LEVEL = 19
-ZSTD_WINDOW_LOG = 27  # 128 MB long-distance matching window
+ZSTD_WINDOW_LOG = 27
 
 
 def _cctx() -> zstandard.ZstdCompressor:
@@ -131,8 +131,8 @@ def unpack_section(index_root: Path, section: str, verify: bool = True) -> dict:
                           mode="r|") as tar:
             try:
                 tar.extractall(live_parent, filter="data")
-            except TypeError:  # Python < 3.11.4: no extraction filters;
-                tar.extractall(live_parent)  # archives are self-produced
+            except TypeError:
+                tar.extractall(live_parent)
     secs = time.perf_counter() - t0
 
     manifest = _load_manifest(index_root)

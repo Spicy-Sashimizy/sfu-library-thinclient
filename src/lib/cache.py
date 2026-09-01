@@ -50,24 +50,20 @@ class ResponseCache:
 
             timestamp, value = self._cache[key]
             if time.time() - timestamp > self.ttl:
-                # Expired — remove it
                 self._evict(key)
                 return None
 
-            # Move to end (most recently used)
             self._cache.move_to_end(key)
             return value
 
     def put(self, key: str, value: Any) -> None:
         """Store a value in the cache."""
         with self._lock:
-            # If key exists, remove old entry first
             if key in self._cache:
                 self._evict(key)
 
             entry_size = self._estimate_size(value)
 
-            # Evict until we have room
             while (
                 len(self._cache) >= self.max_size
                 or (self._current_memory + entry_size > self.max_memory_bytes and self._cache)

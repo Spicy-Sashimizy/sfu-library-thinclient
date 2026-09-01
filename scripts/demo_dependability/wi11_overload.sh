@@ -1,20 +1,4 @@
 #!/usr/bin/env bash
-# WI-11 (deployprep wave 3, 2026-07-17) — overload-protection PROOF: shed, don't collapse.
-# STAGING ONLY (127.0.0.1, no deploy, no spend). NUMBERS ONLY.
-#
-# The serve's WI-7 warm knee is ~2.9 qps (0% errors at c=32). WI-11 drives load at
-# 2-4× that knee with the overload gate ON (SFU_DEMO_OVERLOAD_SHED=1, bounded
-# in-flight + accept queue, clean 429+Retry-After on shed) and asserts the three
-# bars (pre-registered in 11_EXPERIMENT_BACKLOG.md §WI-11):
-#   (a) accepted-request p95 during overload <= ~3× the WI-7 warm p95 (bounded tail)
-#   (b) shed requests get clean 429s (no socket.timeout / ConnectionResetError)
-#   (c) post-overload p50 returns to within ~1.5× the pre-overload baseline.
-#
-# Method: launch the serve under the watchdog WITH the WI-6 warmup + WI-11 gate
-# ON, wait for warm, then: (1) a pre-overload baseline cell at c=4 (the steady
-# state), (2) an OVERLOAD cell at c=128 (4× the c=32 knee workers) hitting the
-# gate hard, (3) a POST-overload cell at c=4 again (recovery). The load_driver's
-# error attribution separates 429s (clean sheds) from timeouts/resets (collapses).
 set -u
 cd /workspaces/sfu-library-thinclient
 
@@ -25,10 +9,6 @@ WLOG=data/eval_results/_wi11_watchdog.log
 rm -f data/eval_results/_deployprep_watchdog_report.json
 
 echo "=== WI-11 overload-shed proof ($(date -u +%H:%M:%SZ)) port ${PORT} ==="
-# Launch watchdog + staging serve WITH warmup (WI-6) + overload gate (WI-11) ON.
-# Tight gate so the overload cell actually sheds: max_inflight=16, accept_queue=16
-# (the gate sheds cleanly past 16+16 in-flight; the WI-7 knee was c=32, so c=128
-# drives 4× past it). Leg breaker OFF (this is the overload test, not the leg test).
 SFU_DEMO_WATCHDOG=1 SFU_DEMO_STAGING_PORT=$PORT SFU_SKIP_BMP=1 \
   SFU_DEMO_WARMUP=1 SFU_DEMO_WARMUP_N=24 SFU_DEMO_WARMUP_TOPK=10 \
   SFU_SEISMIC_PREFLOOR_HOTSET=1 \
@@ -41,7 +21,6 @@ SFU_DEMO_WATCHDOG=1 SFU_DEMO_STAGING_PORT=$PORT SFU_SKIP_BMP=1 \
 WD_PID=$!
 echo "watchdog pid $WD_PID (log $WLOG)"
 
-# Wait for warm=true (the WI-6 hook completed).
 READY=0
 for i in $(seq 1 600); do
   W=$(curl -s -m 5 http://127.0.0.1:$PORT/health 2>/dev/null \
@@ -58,11 +37,6 @@ fi
 echo "--- /health (gate config) ---"
 curl -s -m 5 http://127.0.0.1:$PORT/health | .venv/bin/python3 -m json.tool 2>/dev/null | grep -E "status|overload|warm|inflight" | head
 
-# The three-phase proof: baseline c=4 → OVERLOAD c=128 (4× the c=32 knee) → recovery c=4.
-# A CUSTOM driver records per-request HTTP STATUS (not just ok/err) so bar (b)
-# distinguishes a clean 429 shed (the gate working) from a timeout/ConnectionReset
-# (a collapse). The load_driver.py only keeps counts; this inline driver keeps
-# the status histogram.
 python3 - <<PY
 import json, time, os, concurrent.futures as cf, urllib.request, urllib.error, statistics
 PORT = $PORT

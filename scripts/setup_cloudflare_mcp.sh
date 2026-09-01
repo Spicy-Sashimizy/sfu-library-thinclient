@@ -1,14 +1,4 @@
 #!/usr/bin/env bash
-# Idempotently expose the NAS-hosted SFU Library MCP server to Claude's remote
-# connectors via the EXISTING Cloudflare tunnel, locked to Anthropic's IPs.
-#
-# Reads everything from .env (gitignored — no secrets in this file):
-#   CLOUDFLARE_API_TOKEN  (scopes: Cloudflare Tunnel:Edit, DNS:Edit, WAF:Edit, Account:Read)
-#   CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_TUNNEL_ID
-#   MCP_PUBLIC_HOSTNAME   MCP_TUNNEL_ORIGIN   ANTHROPIC_ALLOW_CIDR
-#
-# Safe to re-run: WAF rule create-or-append, tunnel ingress is MERGED (existing
-# hostnames preserved), DNS create-or-skip. Connector URL = https://$HOST/mcp
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

@@ -26,49 +26,16 @@ from pathlib import Path
 
 logger = logging.getLogger("sfu_library_mcp")
 
-# BMP stores impacts as u8 and SATURATES above 255 (measured: scale 1000
-# collapses recall to 0.28; scale 100 clips weights > 2.55). Scale 70 keeps
-# every SPLADE log1p weight <= 3.64 saturation-free: measured recall@50 vs
-# float-exact 0.968-0.970, identical index size. Scores are scale-invariant
-# for ranking, so retriever/index scale mismatch only rescales scores.
 QUANT_SCALE = 70
 BMP_IMPACT_MAX = 255
-DEFAULT_BMP_SHARD_DOCS = 2_000_000   # RAM ceiling per BMP build shard
-# BMP returns empty results below ~500 docs (and panics on heavy score ties);
-# never leave a tail shard smaller than this — absorb it into the previous.
+DEFAULT_BMP_SHARD_DOCS = 2_000_000
 MIN_BMP_TAIL_DOCS = 5_000
-# bsize=256 + clustered insertion: measured −54.2% size and −61% latency at
-# EQUAL recall vs the paper's bsize=32 (eval_storage_levers.py, §9 of
-# docs/LEXICAL_STORAGE_RESEARCH.md).
 BMP_BLOCK_SIZE = 256
-# Docs are buffered and sorted by top SPLADE term in chunks before BMP
-# insertion (bounded-RAM approximation of global clustering; the win comes
-# from term locality within 256-doc blocks, which chunk-local sorting keeps).
-# Halved from 500k/1GB on 2026-06-12: the era split runs TWO builders per
-# section worker (recent+archive), and 3 workers x 2 builders OOM-killed the
-# 150M build on the 31 GB host (BrokenProcessPool ~1 min into BUILD). Chunk
-# size only bounds the clustering window — the measured win comes from
-# 256-doc-block locality, which 250k chunks preserve.
 BMP_CLUSTER_CHUNK_DOCS = 250_000
 TANTIVY_WRITER_HEAP = 512_000_000
-# Commit + TRUNCATE the meta -wal every this many docs WITHIN a slice. The
-# per-slice truncate alone was insufficient (measured 2026-06-13): a section's
-# ~2h slices let the uncommitted meta -wal grow to GB before the slice-boundary
-# commit (other 5.8G, social_sciences 5.3G), re-creating the 31G-host swap
-# pressure. Mid-slice commits are safe because meta rows are INSERT OR REPLACE
-# (idempotent on the whole-slice re-feed resume performs) and only the meta db
-# is touched — tantivy/BMP still commit/rotate at the slice boundary, so the
-# atomic-slice resume model is unchanged. Env-overridable so the resume parity
-# test can force frequent mid-slice truncates on tiny slices.
 META_WAL_TRUNCATE_DOCS = int(os.environ.get("SFU_META_WAL_TRUNCATE_DOCS", "250000"))
 
 
-# v2 meta schema: W-ids stored as INTEGER PRIMARY KEY (rowid alias, varint on
-# disk) — measured 166.8 -> 99.4 B/doc vs TEXT ids (storage_levers_eval, ~10 GB
-# at 150M). Ids that don't round-trip W<digits> go to the docs_other TEXT table.
-# WAL (not OFF): per-slice resume needs the db to survive a SIGKILL intact —
-# WAL+synchronous=OFF is crash-consistent to the last commit (not power-safe,
-# which is fine: every failure so far has been a process kill, 2026-06-12).
 META_SCHEMA = (
     "PRAGMA journal_mode=WAL; PRAGMA synchronous=OFF;"
     "CREATE TABLE IF NOT EXISTS docs ("
@@ -116,8 +83,6 @@ class SectionBuilder:
         self._meta_batch_other: list[tuple] = []
         self._bmp_shard_docs = bmp_shard_docs
 
-        # Resume: shards below next_shard are durable (rotated at a slice
-        # checkpoint); anything at/after it is a partial from the crashed run.
         start_shard = (resume_state or {}).get("next_shard", 0)
         for f in self.dir.glob("splade_*"):
             if int(f.name.split("_")[1].split(".")[0]) >= start_shard:
@@ -141,15 +106,12 @@ class SectionBuilder:
         self._bmp_shard_idx = start_shard
         self._bmp_in_shard = 0
         self._bmp_vocab: set[str] = set()
-        self._bmp_chunk: list[tuple[str, str, dict]] = []  # (top_term, id, vec)
+        self._bmp_chunk: list[tuple[str, str, dict]] = []
 
         self._abstracts = (AbstractStoreWriter(self.dir / "abstracts.sqlite")
                            if hot else None)
         self.count = (resume_state or {}).get("count", 0)
         self._last_wal_truncate = self.count
-        # A crash between the tantivy commit and the progress-file write means
-        # the first re-fed slice may already be committed; the first add() of
-        # that slice probes for its doc and skips tantivy adds if found.
         self._probe_tantivy = False
         self._skip_tantivy_slice = False
 
@@ -164,9 +126,6 @@ class SectionBuilder:
     def _rotate_bmp(self) -> None:
         if self._bmp is not None:
             self._bmp.finish()
-            # Per-shard term vocabulary sidecar: BMP panics on queries whose
-            # terms are ALL absent from a shard — the retriever uses this to
-            # skip non-overlapping shards.
             import zstandard
             vocab_path = self.dir / f"splade_{self._bmp_shard_idx:03d}.vocab.zst"
             vocab_path.write_bytes(zstandard.ZstdCompressor(level=9).compress(
@@ -228,9 +187,6 @@ class SectionBuilder:
         if len(self._meta_batch) + len(self._meta_batch_other) >= 5_000:
             self._flush_meta()
         self.count += 1
-        # Bound the meta -wal mid-slice (see META_WAL_TRUNCATE_DOCS): commit the
-        # rows so far and TRUNCATE the now-checkpointable frames. Idempotent on
-        # resume (INSERT OR REPLACE), and tantivy/BMP are untouched here.
         if self.count - self._last_wal_truncate >= META_WAL_TRUNCATE_DOCS:
             self._flush_meta()
             self._meta.commit()
@@ -251,7 +207,7 @@ class SectionBuilder:
             if self._bmp_in_shard >= self._bmp_shard_docs:
                 remaining = n - pos - 1
                 if final and remaining < MIN_BMP_TAIL_DOCS:
-                    continue  # absorb the tail into this shard
+                    continue
                 self._rotate_bmp()
         self._bmp_chunk.clear()
 
@@ -289,13 +245,6 @@ class SectionBuilder:
             self._abstracts.checkpoint()
         self._flush_meta()
         self._meta.commit()
-        # TRUNCATE the WAL back to zero each slice: a plain commit only does a
-        # PASSIVE checkpoint, leaving the -wal file at its high-water mark
-        # (measured 2026-06-13: other=5.8G, social_sciences=3.3G, cs_math=1.9G —
-        # ~11G across 3 workers, which evicted the page cache and drove the
-        # 31G host into swap-thrash). No concurrent readers here, so TRUNCATE
-        # always fully checkpoints; data is already durable from the commit
-        # above, so a kill mid-truncate is still crash-consistent.
         self._meta.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         self._writer.commit()
         self._skip_tantivy_slice = False
@@ -350,7 +299,6 @@ def build_dense_leg(index_root: Path, vectors_npy: Path, ids_json: Path) -> dict
     index.add(np.arange(len(X), dtype=np.uint64), bits)
     index.save(str(dense_dir / "b1.usearch"))
 
-    # int8 rescore matrix: symmetric scale, vectors are L2-normalized (|x|<=1).
     np.save(dense_dir / "rescore_int8.npy",
             np.clip(np.round(X * 127.0), -127, 127).astype(np.int8))
     (dense_dir / "ids.json").write_text(json.dumps(ids))

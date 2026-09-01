@@ -1,0 +1,24 @@
+05:41:56 INFO T23 cell arm=mglru lru_gen=0x0007 cap=cap30g (cgroup=/sys/fs/cgroup/system.slice/run-r76b8dd055ca24393a6bfb0d23dcb2c34.scope memory.max=32212254720): min 3 / max 12 passes, near-zero 2500, plateau <10% x2
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap
+05:41:57 INFO   mmap'd len=18799322 dim=28702 nnz=1647141424
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap
+05:41:57 INFO   mmap'd len=18812242 dim=28725 nnz=1648544675
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap
+05:41:57 INFO   mmap'd len=18797227 dim=28714 nnz=1647226210
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap
+05:41:57 INFO   mmap'd len=18801448 dim=28700 nnz=1647660174
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap
+05:41:57 INFO   mmap'd len=18807611 dim=28709 nnz=1648113221
+05:41:57 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap
+05:41:58 INFO   mmap'd len=18801216 dim=28719 nnz=1647323769
+05:41:58 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap
+05:41:58 INFO   mmap'd len=18796836 dim=28707 nnz=1647102673
+05:41:58 INFO federated: loading shard (mmap) data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap
+05:41:58 INFO   mmap'd len=18797196 dim=28712 nnz=1647241536
+05:41:58 INFO loaded in 1.4s  vm={'vmrss_kb': 236408, 'rssanon_kb': 220144, 'rssfile_kb': 16264, 'vmswap_kb': 0}
+05:45:32 INFO hybrid(adaptive): cold geomean 58331.7 ms × 0.25 = flip_threshold 14582.9 ms (flip after 2 consec warm)
+05:45:39 INFO hybrid(count-backstop): FLIP seq→par at query 3 (>= 3)
+05:46:56 INFO pass 1: p50 1317 ms majflt 19038 (15.652 ms/flt) pgscan 0 ws_refault 0 wall 298s
+05:46:57 INFO pass 2: p50 19 ms majflt 0 (0.000 ms/flt) pgscan 0 ws_refault 0 wall 1s
+05:46:58 INFO pass 3: p50 19 ms majflt 0 (0.000 ms/flt) pgscan 0 ws_refault 0 wall 1s
+05:46:58 INFO wrote /mnt/idxvol/data/eval_results/t23b_mglru_cap30g_rep2_20260901.json  converged=True(near_zero) in 3 passes  final p50 19 ms

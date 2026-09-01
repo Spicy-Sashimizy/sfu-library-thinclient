@@ -27,7 +27,6 @@ _LM_IMPORTANCE = _REPO_ROOT / "models/lambdamart_v1.feature_importance.json"
 _JUDGE_CACHE = _REPO_ROOT / "data/eval_results/llm_judge_cache.json"
 _LM_EVAL = _REPO_ROOT / "data/eval_results/lambdamart_eval.json"
 
-# Minimum clicks before the propensity curve is considered usable rather than noise.
 _MIN_CLICKS_FOR_PROPENSITY = 20
 
 
@@ -38,14 +37,11 @@ def _read_json(path: Path):
         return None
 
 
-# ── Panels ──────────────────────────────────────────────────────────────────────
-
 def _panel_ndcg_by_subject() -> dict:
     bench = _read_json(_BENCHMARK)
     if not bench:
         return {"status": "stub", "reason": "benchmark file missing"}
     breakdown = bench.get("subject_breakdown") or {}
-    # Surface the production fusion (rrf) as the primary, plus all methods for compare.
     primary = breakdown.get("rrf") or {}
     subjects = sorted(
         ({"subject": s, "ndcg": v} for s, v in primary.items()),
@@ -70,7 +66,6 @@ def _panel_reranker_signal() -> dict:
         ]
         return {"status": "ok", "source": "lambdamart_importance",
                 "embed_model_path": imp.get("embed_model_path"), "axes": axes}
-    # Fallback: the heuristic Stage-1 weights (always available).
     try:
         from lib.reranker import _WEIGHTS_WITH_EMBEDDING
         axes = [{"signal": k, "weight": v} for k, v in _WEIGHTS_WITH_EMBEDDING.items()]
@@ -103,7 +98,6 @@ def _panel_position_bias(events: list[dict]) -> dict:
             "clicks": clk,
             "click": round(clk / imp, 4) if imp else 0.0,
         })
-    # Propensity (rank-based examination): normalise click-rate to rank 1 == 1.0.
     base = next((c["click"] for c in curve if c["rank"] == 1 and c["click"] > 0), 0.0)
     for c in curve:
         c["propensity"] = round(c["click"] / base, 4) if base else None
@@ -155,7 +149,6 @@ def _panel_session_replay(events: list[dict]) -> dict:
             rnode["actions"].append(e.get("action_type"))
             sess["n_actions"] += 1
 
-    # Materialize dict trees into ordered lists.
     out = []
     for sess in sessions.values():
         queries = []
@@ -187,11 +180,9 @@ def _panel_kpis() -> dict:
         "ndcg_mean_best": best,
         "eval_queries": n_queries,
         "judged_pairs": n_pairs,
-        "lambdamart_eval": lm_eval,  # null until training is run
+        "lambdamart_eval": lm_eval,
     }
 
-
-# ── Bundle ──────────────────────────────────────────────────────────────────────
 
 _PANELS = {
     "ndcg_by_subject": lambda ev: _panel_ndcg_by_subject(),
@@ -200,7 +191,6 @@ _PANELS = {
     "model_versions": lambda ev: _panel_model_versions(),
     "session_replay": _panel_session_replay,
     "kpis": lambda ev: _panel_kpis(),
-    # Not part of the LambdaMART tracking layer — declared explicitly as stubs.
     "embedding_drift": lambda ev: {"status": "stub", "reason": "UMAP export not wired"},
     "access_funnel": lambda ev: {"status": "stub", "reason": "access-resolver logging not wired"},
     "oa_equity": lambda ev: {"status": "stub", "reason": "OA-by-subject export not wired"},

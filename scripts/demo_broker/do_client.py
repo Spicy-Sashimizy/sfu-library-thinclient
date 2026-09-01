@@ -26,7 +26,6 @@ class DOClient:
     def __init__(self, cfg):
         self.cfg = cfg
 
-    # --- HTTP ---
     def _req(self, method: str, path: str, body: dict | None = None) -> dict:
         url = f"{_API}{path}"
         data = json.dumps(body).encode() if body is not None else None
@@ -42,7 +41,6 @@ class DOClient:
         except urllib.error.URLError as e:
             raise DOError(f"DO {method} {path} unreachable: {e}") from e
 
-    # --- lifecycle ---
     def create_droplet(self) -> str:
         """Create the demo droplet from the pre-baked snapshot. Returns droplet id."""
         body = {
@@ -70,7 +68,6 @@ class DOClient:
         if not self.cfg.live:
             log.warning("[DRY-RUN] destroy_droplet %s (volume kept)", droplet_id)
             return
-        # Detaching is implicit on destroy; the volume persists (not deleted).
         self._req("DELETE", f"/droplets/{droplet_id}")
         log.info("destroyed droplet %s (volume %s kept)", droplet_id, self.cfg.do_volume_id)
 
@@ -90,9 +87,6 @@ class DOClient:
         res = self._req("GET", f"/droplets/{droplet_id}")
         return res.get("droplet", {}).get("status") == "active"
 
-    # --- provider-neutral protocol (see cloud.make_cloud_client) ---
-    # DO wake/sleep are create/destroy; OCI's are START/STOP on a persistent
-    # instance. The broker only ever calls these four names.
     def wake(self) -> str:
         return self.create_droplet()
 

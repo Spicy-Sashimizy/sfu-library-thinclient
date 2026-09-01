@@ -30,8 +30,6 @@ BINDEX = BUNDLE / "thinclient_index"
 MANIFEST = BUNDLE / "seismic" / "shards.e5.v2.json"
 ENCODER = BUNDLE / "models" / "splade_onnx_fused"
 
-# Serve entirely from the bundle: SEISMIC over the bundle's own shards, dense
-# stripped, no staging (data is already local), abstracts offline.
 os.environ["SFU_SPLADE_BACKEND"] = "seismic"
 os.environ["SFU_SEISMIC_SHARD_MANIFEST"] = str(MANIFEST)
 os.environ.pop("SFU_SEISMIC_STAGE_DIR", None)
@@ -39,10 +37,10 @@ os.environ["SFU_DENSE_WARMCACHE"] = "0"
 os.environ.setdefault("SFU_SEISMIC_LOAD_MODE", "mmap")
 
 QUERIES = [
-    "kinship structures in stateless societies",          # anthropology
-    "electoral systems and coalition government",          # political science
-    "causes of the industrial revolution",                # history
-    "social capital and civic participation",              # sociology
+    "kinship structures in stateless societies",
+    "electoral systems and coalition government",
+    "causes of the industrial revolution",
+    "social capital and civic participation",
 ]
 
 
@@ -76,7 +74,7 @@ def main() -> None:
     r = ThinClientRetriever(
         index_root=str(BINDEX),
         splade_model_path=str(ENCODER),
-        remote_abstracts=False,   # offline: abstracts must come from local sidecars
+        remote_abstracts=False,
     )
     r._load()
     if not r._sections:
@@ -90,7 +88,7 @@ def main() -> None:
         t0 = time.perf_counter()
         try:
             hits = r.search_rrf(q, top_k=10)
-        except Exception as exc:  # a serving fault is a FAIL, not a degrade
+        except Exception as exc:
             fail(f"query {q!r} raised: {type(exc).__name__}: {exc}")
         ms = (time.perf_counter() - t0) * 1000
         n = len(hits)

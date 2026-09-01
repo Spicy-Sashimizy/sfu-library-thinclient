@@ -46,7 +46,6 @@ class TestTrackerLoadCorruptFile:
         p = tmp_path / "tracker.json"
         p.write_text(json.dumps({"date": "2099-01-01", "count": "not-an-int"}))
         t = _tracker(tmp_path)
-        # ValueError from int("not-an-int") → treated as corrupt
         assert t._count == 0
 
 
@@ -56,7 +55,6 @@ class TestTrackerLoadValidFile:
         t = DailyCallTracker(limit=900, path=str(p))
         today = t._today()
         p.write_text(json.dumps({"date": today, "count": 42}))
-        # Re-load by constructing a new instance pointing at same file
         t2 = DailyCallTracker(limit=900, path=str(p))
         assert t2._count == 42
 
@@ -71,7 +69,6 @@ class TestTrackerLoadValidFile:
         p.write_text(json.dumps({"date": "2000-01-01", "count": 500}))
         with caplog.at_level(logging.WARNING, logger="sfu_library_mcp"):
             _tracker(tmp_path)
-        # Previous-day reset is expected — should not emit a warning
         warning_msgs = [r.message for r in caplog.records if r.levelno >= logging.WARNING]
         assert not any("corrupt" in m.lower() for m in warning_msgs)
         assert not any("not found" in m.lower() for m in warning_msgs)
@@ -80,7 +77,6 @@ class TestTrackerLoadValidFile:
 class TestTrackerSaveFailure:
     def test_save_failure_logs_warning(self, tmp_path, caplog):
         t = _tracker(tmp_path)
-        # Make the path a directory so write fails
         p = tmp_path / "tracker.json"
         p.mkdir()
         with caplog.at_level(logging.WARNING, logger="sfu_library_mcp"):

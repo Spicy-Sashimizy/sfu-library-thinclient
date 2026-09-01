@@ -56,7 +56,6 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-# Written next to the arrays by the build; binds them to one meta.sqlite.
 STAMP_FILE = "ordinal_space.json"
 MANIFEST_KEY = "ordinal_space_id"
 
@@ -91,7 +90,6 @@ class OrdinalSpace:
         self.stamp = json.loads(stamp_path.read_text())
         self.space_id = self.stamp.get(MANIFEST_KEY)
 
-        # ── hazard 1: fail closed ────────────────────────────────────────────
         want = (manifest or {}).get(MANIFEST_KEY)
         if not self.space_id:
             raise OrdinalSpaceMismatch(
@@ -112,12 +110,6 @@ class OrdinalSpace:
         self.rows = int(self.stamp["rows"])
         for name in _ARRAYS:
             arr = np.load(self.path / f"{name}.npy", mmap_mode="r")
-            # EVERY array must be full length, not just wids. A short column
-            # is not a loud failure: `wids` can be complete while `year` is
-            # truncated (e.g. an interrupted copy), and then every ordinal past
-            # the truncation either raises deep in a query or, worse, filters
-            # against whatever the shorter array holds. Checking only wids
-            # missed exactly this case in practice on 2026-08-02.
             if len(arr) != self.rows:
                 raise OrdinalSpaceMismatch(
                     f"{name}.npy holds {len(arr)} entries but the stamp "
@@ -129,7 +121,6 @@ class OrdinalSpace:
         logger.info("ordinal space %s loaded: %d docs from %s",
                     self.space_id, self.rows, self.path)
 
-    # ── lookup ───────────────────────────────────────────────────────────────
 
     def lookup(self, ids: list[str]):
         """`W-id -> (ordinals, found)`. `found` is the verification read that
@@ -139,13 +130,6 @@ class OrdinalSpace:
         nums = np.empty(len(ids), dtype=np.int64)
         valid = np.zeros(len(ids), dtype=bool)
         for i, s in enumerate(ids):
-            # Must mirror builder.encode_meta_id EXACTLY, including its
-            # leading-zero rejection. Those ids live in docs_other and have no
-            # ordinal; accepting one would map "W0123" onto the ordinal of the
-            # DIFFERENT document "W123", pass the `found` check (the stored
-            # W-id really is 123), and filter on the wrong document's metadata.
-            # That is the silent-wrong-answer class this module exists to
-            # prevent, so the two encoders must not be allowed to drift.
             if len(s) > 1 and s[0] == "W":
                 digits = s[1:]
                 if digits.isdigit() and digits[0] != "0":
@@ -177,12 +161,8 @@ class OrdinalSpace:
         if f.get("year_range"):
             lo, hi = f["year_range"]
             y = self.year[pos]
-            # `y != 0` reproduces the production `if not (year and ...)`:
-            # a NULL year is stored as the 0 sentinel and must not pass.
             ok &= (y >= lo) & (y <= hi) & (y != 0)
         if f.get("type"):
-            # An unknown type code can never equal a stored code, so an
-            # unseen filter value correctly keeps nothing.
             ok &= self.dtype[pos] == self.type_codes.get(f["type"], -999)
         if f.get("is_oa"):
             ok &= self.is_oa[pos] != 0

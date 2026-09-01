@@ -7,7 +7,9 @@
 RAM-efficient) — sharing pure module-level helpers, with no inheritance coupling
 of per-query behavior and no shared mutable instance state (lowest cascade risk;
 a parallel thread bug can't reach a sequential instance). `SFU_SEISMIC_FEDERATION`
-picks the class (default `parallel`). T1 result-equivalence verified bit-identical
+picks the class (since 2026-07-18 the unset default is FS-aware — sequential
+on 9p/virtiofs/NFS, parallel on native local disk; env always overrides —
+`docs/CODE_INVARIANTS.md` retriever section). T1 result-equivalence verified bit-identical
 on a synthetic shard. Mechanism (A) serial loop + mechanism (B) `MADV_DONTNEED`
 `release_pages` (after each shard's search → hard ~1-shard resident guarantee) are
 **both shipped** for the sequential class only (parallel never calls (B); the `.so`

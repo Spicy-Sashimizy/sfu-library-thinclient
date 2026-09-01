@@ -1,5 +1,11 @@
 # Qdrant vs Lucene/OpenSearch — Sparse-Leg Assessment (2026-06-25)
 
+> **Status note 2026-09-01:** this assessment predates the SEISMIC promotion —
+> since 2026-07-06 the served SPLADE backend is SEISMIC federated mmap
+> (`docs/SEISMIC_ARCHIVE_SPLIT.md`), with Qdrant as the env-gated rollback
+> slated for the archival container. The RAM analysis and OOM findings below
+> remain the recorded evidence base for that move.
+
 Commissioned question (paraphrased): *given the sparse-vector storage/calling
 issues we keep hitting with Qdrant at 150M, would swapping off Qdrant — e.g. back
 to OpenSearch/Lucene — provide any benefit? Direct Qdrant-vs-Lucene RAM

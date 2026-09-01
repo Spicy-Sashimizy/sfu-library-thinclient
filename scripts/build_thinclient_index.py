@@ -43,7 +43,7 @@ from pathlib import Path
 import requests
 import zstandard
 
-try:  # ~6x faster JSON for the 150M-doc stream
+try:
     import orjson
     _loads = orjson.loads
     def _dumps(o) -> str:
@@ -75,8 +75,6 @@ DENSE_VECS = REPO_ROOT / "data/dense_compression/vectors_600k.npy"
 DENSE_IDS = REPO_ROOT / "data/dense_compression/ids_600k.json"
 
 
-# ── status / checkpointing ────────────────────────────────────────────────────
-
 def load_status(root: Path) -> dict:
     p = root / "build_status.json"
     if p.exists():
@@ -92,8 +90,6 @@ def save_status(root: Path, status: dict) -> None:
     tmp.write_text(json.dumps(status, indent=2))
     os.replace(tmp, root / "build_status.json")
 
-
-# ── phase 1: export ───────────────────────────────────────────────────────────
 
 class SectionSpool:
     """Per-slice writer set: spool/<section>/slice_NNN.jsonl.zst"""
@@ -183,27 +179,21 @@ def phase_export(root: Path, status: dict, slices: int, workers: int,
         return
     logger.info("EXPORT: %d/%d slices to go (source %s/%s)",
                 len(todo), slices, SOURCE_URL, SOURCE_INDEX)
-    # On resume, budget only what's left of the limit, or the rerun slices
-    # re-export a full share each and the total overshoots.
     remaining = (max(limit - status["docs_exported"], 0) if limit else None)
     per_slice_limit = (remaining // max(len(todo), 1)) if remaining else None
-    # Processes, not threads: orjson parse + classify + spool write are
-    # GIL-bound (measured: 4 threads aggregate ~1.6k docs/s, same as 1).
     pool_cls = ThreadPoolExecutor if (limit and slices == 1) else ProcessPoolExecutor
     with pool_cls(max_workers=workers) as pool:
         futs = {pool.submit(export_slice, spool_dir, s, slices, per_slice_limit): s
                 for s in todo}
         for fut in as_completed(futs):
             s = futs[fut]
-            n = fut.result()  # raises on slice failure -> rerun resumes cleanly
+            n = fut.result()
             status["slices_done"].append(s)
             status["docs_exported"] += n
             save_status(root, status)
     status["phase"] = "build"
     save_status(root, status)
 
-
-# ── phase 2: build sections ──────────────────────────────────────────────────
 
 def iter_slice(path: Path):
     dctx = zstandard.ZstdDecompressor()
@@ -254,7 +244,6 @@ def _build_section(root_str: str, section: str, hot_subs: list[str],
     resuming = progress_path.exists()
     if resuming:
         progress = json.loads(progress_path.read_text())
-        # Era dirs that never reached a checkpoint are uncommitted garbage.
         for era in ERAS:
             if era not in progress["eras"]:
                 live = root / "sections" / f"{section}__{era}"
@@ -290,7 +279,7 @@ def _build_section(root_str: str, section: str, hot_subs: list[str],
 
     slice_paths = sorted((spool_dir / section).glob("slice_*.jsonl.zst"))
     pending = [p for p in slice_paths if p.name not in progress["slices_done"]]
-    probe = resuming   # first re-fed slice may already be in tantivy
+    probe = resuming
     for path in pending:
         for b in builders.values():
             b.begin_slice(probe_tantivy=probe)
@@ -317,8 +306,6 @@ def _build_section(root_str: str, section: str, hot_subs: list[str],
     secs = round(time.perf_counter() - t0, 1)
     for info in infos.values():
         info["build_secs"] = secs
-    # Spool first, progress file second: a kill between the two resumes into
-    # a cheap finish-only pass; the reverse order would rebuild from scratch.
     if not keep_spool:
         shutil.rmtree(spool_dir / section, ignore_errors=True)
     progress_path.unlink(missing_ok=True)
@@ -352,8 +339,6 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
             continue
         if not (spool_dir / section).is_dir():
             if (root / f"build_progress_{section}.json").exists():
-                # Crashed between the spool delete and the progress-file
-                # cleanup: all slices are durable, run the finish-only pass.
                 todo.append(section)
                 continue
             logger.info("BUILD: section %s has no spool (0 docs) — skipping", section)
@@ -362,14 +347,10 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
             continue
         todo.append(section)
     if todo:
-        # Largest sections first so the long pole starts immediately.
         todo.sort(key=lambda s: -sum(f.stat().st_size
                                      for f in (spool_dir / s).glob("*")))
         logger.info("BUILD: %s with %d workers", todo, build_workers)
         failures: list[str] = []
-        # Fresh process per section: worker RSS accumulates ~0.35 GB/h across
-        # slice commits (measured 2026-06-13, tantivy segment churn) and pool
-        # processes are otherwise reused, so late sections would inherit it.
         with ProcessPoolExecutor(max_workers=build_workers,
                                  max_tasks_per_child=1) as pool:
             futs = {pool.submit(build_section_worker, str(root), s,
@@ -378,12 +359,8 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
             for fut in as_completed(futs):
                 section = futs[fut]
                 try:
-                    infos = fut.result()   # {sub_section: info} (per era)
+                    infos = fut.result()
                 except Exception:
-                    # Log NOW and keep the other sections building; raising
-                    # here would strand them (the with-block still waits for
-                    # them) and hide the failure until the pool drains. The
-                    # supervisord restart retries failures from checkpoints.
                     logger.exception("BUILD %s: FAILED — continuing others, "
                                      "restart will retry it", section)
                     failures.append(section)
@@ -394,15 +371,10 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
         if failures:
             raise RuntimeError(f"BUILD failed for {sorted(failures)} — "
                                "see tracebacks above; restarting retries them")
-    # Over ALL sections, not just this run's: a crash between a section build
-    # and the merge leaves its meta_<section>.sqlite orphaned on resume
-    # (merge skips files that no longer exist, so this stays idempotent).
     merge_section_meta(root, list(SECTION_NAMES))
     status["phase"] = "pack"
     save_status(root, status)
 
-
-# ── phase 2b: flat abstract sidecars (OPT-IN, --flat-sidecar) ────────────────
 
 def _flat_report_path(section: str, report_dir: Path | None) -> Path:
     d = Path(report_dir) if report_dir else REPO_ROOT / "data" / "eval_results"
@@ -431,10 +403,10 @@ def phase_flat_sidecar(root: Path, status: dict, verify_ids: int,
     left alone (the sub-script refuses to overwrite one), so a rerun resumes.
     """
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
-    import build_flat_blocks as flat        # local: pulls numpy + the reader
+    import build_flat_blocks as flat
 
     done = status.setdefault("flat_sections", [])
-    rows = [r for r in flat.survey(root) if r["src"]]   # smallest-first
+    rows = [r for r in flat.survey(root) if r["src"]]
     todo = [r for r in rows if not r["published"] and r["section"] not in done]
     if not todo:
         logger.info("FLAT: nothing to do (%d section(s) with abstracts, all "
@@ -483,8 +455,6 @@ def phase_flat_sidecar(root: Path, status: dict, verify_ids: int,
             f"published); see the reports and tracebacks above")
 
 
-# ── phase 3: pack cold sections ──────────────────────────────────────────────
-
 def phase_pack(root: Path, status: dict, hot_sections: list[str]) -> None:
     for section in SUBSECTION_NAMES:
         if section in hot_sections or section in status["sections_packed"]:
@@ -499,8 +469,6 @@ def phase_pack(root: Path, status: dict, hot_sections: list[str]) -> None:
     status["phase"] = "dense"
     save_status(root, status)
 
-
-# ── phase 4: dense leg ───────────────────────────────────────────────────────
 
 def phase_dense(root: Path, status: dict) -> None:
     if status["dense_done"]:
@@ -583,8 +551,6 @@ def main() -> None:
     phase_build(root, status, hot, args.keep_spool, args.bmp_shard_docs,
                 args.build_workers)
     if args.flat_sidecar:
-        # Before PACK: packing removes a cold section's live directory, and the
-        # sidecar is derived from the on-disk abstracts.sqlite.
         phase_flat_sidecar(root, status, args.flat_verify_ids,
                            args.flat_verify_blocks)
     phase_pack(root, status, hot)

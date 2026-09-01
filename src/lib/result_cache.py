@@ -45,20 +45,10 @@ from lib.cache import ResponseCache
 
 log = logging.getLogger("result_cache")
 
-# Tunables (env-overridable). The index is STATIC between updates, so a long
-# TTL (hours) is correct — a cached entry will only go stale on an index/model
-# swap, which the versioned key handles by construction (new stamp → new key).
-_DEFAULT_TTL = int(os.environ.get("SFU_RESULT_CACHE_TTL", str(6 * 3600)))   # 6h
-# ≥ 200 entries (contract term 4); the landing demo + owner seed set is tiny,
-# so 256 comfortably holds it with headroom for natural repeat traffic while
-# staying inside the measured memory bound (see WI-17c).
+_DEFAULT_TTL = int(os.environ.get("SFU_RESULT_CACHE_TTL", str(6 * 3600)))
 _DEFAULT_MAX_SIZE = int(os.environ.get("SFU_RESULT_CACHE_MAX_SIZE", "256"))
-# Memory bound: a measured typical response (WI-17c) is ~tens of KiB; 256
-# such entries ≈ low single-digit MiB. The cap is a backstop, not the sizing
-# lever — size is bounded by max_size for this workload.
 _DEFAULT_MAX_MEM_MB = int(os.environ.get("SFU_RESULT_CACHE_MAX_MEM_MB", "64"))
 
-# ── manifest identity stamp (contract term 2) ────────────────────────────────
 
 _stamp_cache: tuple[str, str] | None = None
 
@@ -76,8 +66,6 @@ def _manifest_stamp() -> str:
     """
     global _stamp_cache
     try:
-        # Imported lazily so this module is safe to import from tests without
-        # the full retriever stack initialized.
         from lib.tools import _get_thinclient_retriever
         tc = _get_thinclient_retriever()
         if tc is None:
@@ -87,12 +75,8 @@ def _manifest_stamp() -> str:
         engines = str(manifest.get("engines", "?"))
         return f"{built}@{engines}"
     except Exception:
-        # Non-fatal: a non-thinclient or not-yet-loaded serve still caches
-        # under a stable "unknown" stamp (better than failing the search).
         return "unknown"
 
-
-# ── env gate ────────────────────────────────────────────────────────────────
 
 def is_enabled() -> bool:
     """``SFU_RESULT_CACHE=0`` fully disables (one-env rollback). Default ON in
@@ -107,8 +91,6 @@ def is_enabled() -> bool:
     env = os.environ.get("SFU_ENV", "")
     return profile.lower() != "production" and env.lower() != "production"
 
-
-# ── process-wide cache + counters ───────────────────────────────────────────
 
 _cache: ResponseCache | None = None
 _counters: dict[str, int] = {"hit": 0, "miss": 0, "store": 0, "bypass": 0}
@@ -150,10 +132,6 @@ def counters() -> dict:
     }
 
 
-# ── key recipe (contract term 2) ────────────────────────────────────────────
-
-# Field order is FIXED — never reorder without bumping the leading version tag,
-# or keys computed under the old order would silently collide with new ones.
 _KEY_FIELDS = ("limit", "page", "year_from", "year_to",
                "open_access_only", "type", "prefer_local")
 
@@ -180,11 +158,8 @@ def make_cache_key(args: dict[str, Any], stamp: str | None = None) -> str:
     for fld in _KEY_FIELDS:
         parts.append(f"{fld}={args.get(fld, '')}")
     parts.append(f"stamp={stamp or _manifest_stamp()}")
-    # Leading version tag: bump if the recipe or field set ever changes.
     return "v1|" + "|".join(parts)
 
-
-# ── the read-through guard (contract terms 1, 3) ────────────────────────────
 
 def is_cacheable_response(data: dict, *, degraded: bool, warm: bool) -> bool:
     """True only for a clean, non-degraded success — contract term 3.
@@ -203,8 +178,6 @@ def is_cacheable_response(data: dict, *, degraded: bool, warm: bool) -> bool:
         return False
     if data.get("error"):
         return False
-    # Empty error-shaped payload (no results AND a notice that the index is
-    # unavailable) — don't freeze "looks broken" across the TTL.
     notes = data.get("notes") or []
     if (not data.get("results")
             and any("unavailable" in str(n).lower() or "degraded" in str(n).lower()
@@ -213,11 +186,6 @@ def is_cacheable_response(data: dict, *, degraded: bool, warm: bool) -> bool:
     return True
 
 
-# ── observability hooks (caller-controlled; no hot-path imports here) ───────
-
-# Callable set by the serve wiring: cache_hit bool → appended to the wave-2
-# serve query log entry. Defaults to a no-op so this module stays import-safe
-# in unit tests that don't wire the log.
 _log_cache_hit = lambda hit: None  # noqa: E731
 
 
@@ -252,7 +220,7 @@ async def read_through(args: dict, search_fn, *, warm: bool, degraded: bool = Fa
             cached = cache.get(key)
         except Exception:
             cached = None
-            cache = None  # local-only bypass; process cache left intact
+            cache = None
         if cached is not None:
             bump("hit")
             note_cache_hit(True)
@@ -267,7 +235,7 @@ async def read_through(args: dict, search_fn, *, warm: bool, degraded: bool = Fa
             cache.put(key, data)
             bump("store")
         except Exception:
-            pass  # non-fatal — fresh result still returned
+            pass
     elif cache is not None and not cacheable:
         bump("bypass")
     return data, False

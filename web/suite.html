@@ -53,14 +53,14 @@
      default set. The shell reads it to gate which app iframes are allowed to
      mount (hidden apps stay unmounted), and listens for suiteInterfacePrefs
      broadcasts so a toggle change inside an iframe propagates immediately. -->
-<script src="lib/interface_prefs.js?v=duck4"></script>
+<script src="lib/interface_prefs.js?v=duck5"></script>
 <script>
 (function () {
   var container = document.querySelector("main.suite-frame");
   var loader = document.getElementById("loader");
   var loaderLbl = loader.querySelector(".lbl");
 
-  var PAGES = { search: "search.html?v=duck4", analytics: "analytics.html?v=duck4", index: "index_manager.html?v=duck4" };
+  var PAGES = { search: "search.html?v=duck5", analytics: "analytics.html?v=duck5", index: "index_manager.html?v=duck5" };
   var LABELS = { search: "Search", analytics: "About this index", index: "Index Manager" };
   // Sub-screens that live INSIDE the Search app.
   var SEARCH_SCREENS = ["search", "saved", "history", "databases", "settings", "admin"];

@@ -1,6 +1,4 @@
-/* SFU Library Suite — shared UI helpers (plain JS, no JSX).
- * Demo-data indicator: a compact FIXED pill (top-right) that overlays the UI
- * WITHOUT reflowing it — so toggling demo mode never shifts the layout. */
+
 (function () {
   const PILL_ID = "sfu-demo-pill";
   const STYLE_ID = "sfu-demo-pill-style";
@@ -26,7 +24,7 @@
     document.head.appendChild(s);
   }
 
-  // show=true renders the pill; show=false removes it. Idempotent. No reflow.
+  
   function setMockBanner(show, message) {
     ensureStyle();
     const existing = document.getElementById(PILL_ID);
@@ -36,7 +34,7 @@
     const pill = document.createElement("div");
     pill.id = PILL_ID;
     pill.setAttribute("role", "status");
-    pill.title = full; // full explanation on hover
+    pill.title = full; 
     pill.innerHTML = '<span class="sfu-dot"></span><b>Demo data</b>';
     document.body.appendChild(pill);
   }
@@ -49,9 +47,9 @@
 
   window.SFUUI = { setMockBanner: setMockBanner, reflectSource: reflectSource };
 
-  // Suite-wide demo state: the shell broadcasts {suiteDemo:bool} (after probing
-  // /health) so the pill is IDENTICAL across every app. Standalone (opened
-  // directly, not in the shell), self-probe /health once.
+  
+  
+  
   window.addEventListener("message", function (e) {
     if (e.data && typeof e.data.suiteDemo === "boolean") setMockBanner(e.data.suiteDemo);
   });
