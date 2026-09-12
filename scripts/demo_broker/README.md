@@ -48,6 +48,7 @@ python3 scripts/demo_broker/test_scheduler.py   # 13 tests, no deps
 | `mint_invite.py` | CLI to mint/list/revoke per-person invite links |
 | `app.py` | FastAPI: `/start` (invite+access info), `/status`, `/mcp` (per-session proxy), `/admin/report`, `/admin/dial`, `/health`, scheduler thread |
 | `dial.py` | **WI-3 memory dial** (`OCI_FREE_TIER_RESIDENT_DEMO.md` §3): live `MemoryHigh` rungs on the serve cgroup — systemd (`set-property --runtime`) or raw cgroup-v2 backend + CLI |
+| `watchdog.py` + `systemd/sfu-watchdog.{service,timer}` | read-only liveness watchdog → ntfy (see Watchdog section) |
 | `systemd/sfu-serve.service` | serve unit the dial targets: `MemorySwapMax=0` pinned (the ladder was measured swap-forbidden), rungs applied at runtime |
 | `test_scheduler.py` / `test_tenants.py` / `test_app.py` / `test_dial.py` / `test_oci_client.py` | decision core / tenancy / end-to-end wiring / dial backends + endpoint / OCI signing + START-STOP + factory (all HTTP mocked) |
 
@@ -81,6 +82,20 @@ DEMO_LINK_TOKEN=test uvicorn app:app --host 0.0.0.0 --port 8088
   on demand; the idle reaper destroys it after `DEMO_IDLE_MINUTES` (20).
 - **Hard daily killswitch**: `DEMO_MAX_RUNTIME_HOURS_PER_DAY` (10) force-destroys
   regardless of state — the budget backstop (≤ ~$124 worst case on the 64 GB tier).
+- **`DEMO_PIN_RUNNING=1`** turns both of the above into log-only decisions. Use it
+  when a stop would be irreversible (post-trial grace period, paid-shape limit 0).
+
+## Watchdog (read-only, ntfy)
+
+`watchdog.py` runs from `systemd/sfu-watchdog.timer` every 5 min on the broker
+Micro. It probes the instance's OCI lifecycleState, the serve box's `/health`,
+and the broker's own `/health`, and pushes to `DEMO_NOTIFY_WEBHOOK` only on
+change: RUNNING → anything (urgent), `DEMO_WATCHDOG_FAIL_THRESHOLD` (2)
+consecutive health failures (high), recovery, and one heartbeat per local day
+after `DEMO_WATCHDOG_HEARTBEAT_HOUR` (9; `-1` disables). It never issues an
+instance action. State: `DEMO_WATCHDOG_STATE_PATH` (default `watchdog.json`
+beside the state db). Deployed live 2026-09-07. Limit: if the Micro itself is
+reclaimed nothing fires — the heartbeat going missing is the signal.
 
 ## Env vars (all optional; safe defaults)
 
@@ -108,7 +123,11 @@ DEMO_LINK_TOKEN=test uvicorn app:app --host 0.0.0.0 --port 8088
 | `DEMO_PREWARM_MINUTES` | `5` | boot lead before window open |
 | `DEMO_IDLE_MINUTES` | `20` | after-hours idle reaper threshold |
 | `DEMO_MAX_RUNTIME_HOURS_PER_DAY` | `10` | hard killswitch cap |
+| `DEMO_PIN_RUNNING` | `0` | `1` = the broker never issues a stop: reaper and killswitch decisions are logged (`reap_suppressed`) but not actuated. Set 2026-09-07 on the live broker: the trial expired 2026-09-04 and the tenancy's E5 limit is now 0, so a stopped box could never be started again |
 | `DEMO_POLL_SECONDS` | `60` | scheduler tick interval |
+| `DEMO_WATCHDOG_HEARTBEAT_HOUR` | `9` | watchdog daily heartbeat hour (local `DEMO_TZ`); `-1` disables |
+| `DEMO_WATCHDOG_FAIL_THRESHOLD` | `2` | consecutive failed probes before a health alert |
+| `DEMO_WATCHDOG_STATE_PATH` | `<state dir>/watchdog.json` | watchdog transition state |
 | `DEMO_PUBLIC_BASE` | `https://demo.example.org` | public base URL for minted invite links |
 | `DEMO_ADMIN_TOKEN` | — | token gating `GET /admin/report` |
 | `DEMO_NOTIFY_WEBHOOK` | — | push URL (ntfy/Slack/Discord/Pushover/generic) |

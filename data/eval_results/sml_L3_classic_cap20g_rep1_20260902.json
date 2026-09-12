@@ -1,0 +1,225 @@
+{
+  "probe": "t23_convergence_ladder",
+  "phase": "A",
+  "date": "2026-09-02",
+  "arm": "classic",
+  "lru_gen_enabled": "0x0000",
+  "uname": "Linux sfu-thin-serverhosted-150m 6.17.0-1018-oracle #18~24.04.1-Ubuntu SMP Mon Jun 22 18:35:24 UTC 2026 x86_64",
+  "cap": "cap20g",
+  "cgroup_memory_max": "21474836480",
+  "cgroup_dir": "/sys/fs/cgroup/system.slice/run-rdcc9088d56034b028e233ac86a6ccd07.scope",
+  "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+  "queries": 40,
+  "top_k": 50,
+  "load_s": 165.1,
+  "prefault_gate": "1",
+  "convergence": {
+    "converged": true,
+    "kind": "plateau",
+    "passes_to_converge": 3,
+    "rule": {
+      "min_passes": 3,
+      "max_passes": 12,
+      "near_zero_majflt": 2500,
+      "plateau_rel": 0.1
+    }
+  },
+  "converged_state": {
+    "p50_ms": 23194.31,
+    "p95_ms": 46181.31,
+    "majflt": 133278,
+    "ms_per_fault": 7.2188
+  },
+  "cg_load_delta": {
+    "pgfault": 692903,
+    "pgmajfault": 4099,
+    "pgscan": 0,
+    "pgsteal": 0,
+    "pgscan_kswapd": 0,
+    "pgscan_direct": 0,
+    "pgsteal_kswapd": 0,
+    "pgsteal_direct": 0,
+    "workingset_refault_file": 0,
+    "workingset_activate_file": 0,
+    "workingset_restore_file": 0,
+    "workingset_nodereclaim": 0
+  },
+  "cg_postload_gauges": {
+    "anon": 1065046016,
+    "file": 16256823296,
+    "file_mapped": 14556844032,
+    "active_file": 239374336,
+    "inactive_file": 16017281024,
+    "unevictable": 0
+  },
+  "per_pass": [
+    {
+      "pass": 1,
+      "p50_ms": 20432.91,
+      "p95_ms": 57980.22,
+      "mean_ms": 25735.76,
+      "max_ms": 173930.14,
+      "majflt": 121284,
+      "ms_per_fault": 8.4878,
+      "wall_s": 1029.5,
+      "vm": {
+        "vmrss_kb": 7949920,
+        "rssanon_kb": 1114952,
+        "rssfile_kb": 6834968,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 613784,
+        "pgmajfault": 121285,
+        "pgscan": 20452029,
+        "pgsteal": 20102908,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 20451850,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 20102729,
+        "workingset_refault_file": 21084991,
+        "workingset_activate_file": 14878309,
+        "workingset_restore_file": 8210325,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1141825536,
+        "file": 20184645632,
+        "file_mapped": 6990245888,
+        "active_file": 18731188224,
+        "inactive_file": 1453182976,
+        "unevictable": 0
+      },
+      "memory_current": 21474836480,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 121318,
+        "workingset_refault_file": 21085229,
+        "workingset_activate_file": 14878233
+      }
+    },
+    {
+      "pass": 2,
+      "p50_ms": 23962.85,
+      "p95_ms": 44121.06,
+      "mean_ms": 24119.38,
+      "max_ms": 57927.85,
+      "majflt": 130791,
+      "ms_per_fault": 7.3765,
+      "wall_s": 964.8,
+      "vm": {
+        "vmrss_kb": 7378632,
+        "rssanon_kb": 1114952,
+        "rssfile_kb": 6263680,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 515411,
+        "pgmajfault": 130793,
+        "pgscan": 23415311,
+        "pgsteal": 23154648,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 23415311,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 23154648,
+        "workingset_refault_file": 23134162,
+        "workingset_activate_file": 18084731,
+        "workingset_restore_file": 15321028,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1141825536,
+        "file": 20184047616,
+        "file_mapped": 6405246976,
+        "active_file": 18680233984,
+        "inactive_file": 1503604736,
+        "unevictable": 0
+      },
+      "memory_current": 21474709504,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 130805,
+        "workingset_refault_file": 23134294,
+        "workingset_activate_file": 18084829
+      }
+    },
+    {
+      "pass": 3,
+      "p50_ms": 23194.31,
+      "p95_ms": 46181.31,
+      "mean_ms": 24052.61,
+      "max_ms": 51274.56,
+      "majflt": 133278,
+      "ms_per_fault": 7.2188,
+      "wall_s": 962.1,
+      "vm": {
+        "vmrss_kb": 7623928,
+        "rssanon_kb": 1114952,
+        "rssfile_kb": 6508976,
+        "vmswap_kb": 0
+      },
+      "cg_delta": {
+        "pgfault": 520110,
+        "pgmajfault": 133280,
+        "pgscan": 23333911,
+        "pgsteal": 23085356,
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 23333911,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 23085356,
+        "workingset_refault_file": 23081996,
+        "workingset_activate_file": 17986047,
+        "workingset_restore_file": 15160534,
+        "workingset_nodereclaim": 0
+      },
+      "cg_gauges": {
+        "anon": 1141825536,
+        "file": 20184104960,
+        "file_mapped": 6656430080,
+        "active_file": 18763841536,
+        "inactive_file": 1419874304,
+        "unevictable": 0
+      },
+      "memory_current": 21474783232,
+      "vmstat_global_delta": {
+        "pgscan_kswapd": 0,
+        "pgscan_direct": 0,
+        "pgsteal_kswapd": 0,
+        "pgsteal_direct": 0,
+        "pgmajfault": 133283,
+        "workingset_refault_file": 23082012,
+        "workingset_activate_file": 17985960
+      }
+    }
+  ],
+  "swap_confounded": false,
+  "vmswap_kb_max": 0,
+  "postload_reclaim": {
+    "requested_bytes": 15032385536,
+    "freed_bytes": 15038558208,
+    "write_status": "ok",
+    "pre_gauges": {
+      "anon": 1065046016,
+      "file": 16256823296,
+      "file_mapped": 14556844032,
+      "active_file": 239374336,
+      "inactive_file": 16017281024,
+      "unevictable": 0
+    },
+    "post_gauges": {
+      "anon": 1065046016,
+      "file": 1225121792,
+      "file_mapped": 958066688,
+      "active_file": 363773952,
+      "inactive_file": 861282304,
+      "unevictable": 0
+    },
+    "elapsed_s": 2.9
+  }
+}

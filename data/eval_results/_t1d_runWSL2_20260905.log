@@ -1,0 +1,216 @@
+[13:07:23] tier1d(WSL2) start: deadline 1800s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:8:1729:hotset:0.20:0.80 mglru:92:8:1729:hotset:0.20:0.80]
+[13:07:23] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[13:07:23] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 14.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[13:07:38] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=143)
+[13:11:36] tier1d(WSL2) start: deadline 1800s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:8:1729:hotset:0.20:0.80 mglru:92:8:1729:hotset:0.20:0.80]
+[13:11:36] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[13:11:36] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.8s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[13:11:53] cell classic/hotset-0.20-0.80_frac92_cap8g_seed1729 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=8G skew=hotset:0.20:0.80)
+[13:15:28] cell classic/hotset-0.20-0.80_frac92_cap8g_seed1729 DONE
+[13:15:29] cell mglru/hotset-0.20-0.80_frac92_cap8g_seed1729 starting (elapsed 232s, lru_gen 0x0007, frac=0.9200 cap=8G skew=hotset:0.20:0.80)
+[13:19:00] cell mglru/hotset-0.20-0.80_frac92_cap8g_seed1729 DONE
+[13:19:00] tier1d(WSL2) window complete
+[13:19:01] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[13:20:44] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:2.5:1729:hotset:0.20:0.80 mglru:92:2.5:1729:hotset:0.20:0.80 classic:92:4:1729:hotset:0.20:0.80 mglru:92:4:1729:hotset:0.20:0.80 classic:92:1.5:1729:hotset:0.20:0.80 mglru:92:1.5:1729:hotset:0.20:0.80]
+[13:20:44] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[13:20:44] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.8s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[13:21:01] cell classic/hotset-0.20-0.80_frac92_cap2.5g_seed1729 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=2.5G skew=hotset:0.20:0.80)
+[13:31:10] cell classic/hotset-0.20-0.80_frac92_cap2.5g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[13:31:10] cell classic/hotset-0.20-0.80_frac92_cap2.5g_seed1729 DONE
+[13:31:10] cell mglru/hotset-0.20-0.80_frac92_cap2.5g_seed1729 starting (elapsed 626s, lru_gen 0x0007, frac=0.9200 cap=2.5G skew=hotset:0.20:0.80)
+[13:42:31] cell mglru/hotset-0.20-0.80_frac92_cap2.5g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[13:42:31] cell mglru/hotset-0.20-0.80_frac92_cap2.5g_seed1729 DONE
+[13:42:32] cell classic/hotset-0.20-0.80_frac92_cap4g_seed1729 starting (elapsed 1307s, lru_gen 0x0000, frac=0.9200 cap=4G skew=hotset:0.20:0.80)
+[13:48:32] cell classic/hotset-0.20-0.80_frac92_cap4g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[13:48:32] cell classic/hotset-0.20-0.80_frac92_cap4g_seed1729 DONE
+[13:48:33] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed1729 starting (elapsed 1668s, lru_gen 0x0007, frac=0.9200 cap=4G skew=hotset:0.20:0.80)
+[13:54:37] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[13:54:37] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed1729 DONE
+[13:54:38] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed1729 starting (elapsed 2033s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[14:08:40] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[14:08:40] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed1729 DONE
+[14:08:41] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed1729 starting (elapsed 2876s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[14:26:35] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed1729 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[14:26:35] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed1729 DONE
+[14:26:35] tier1d(WSL2) window complete
+[14:26:35] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[15:11:47] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:1.5:2027:hotset:0.20:0.80 mglru:92:1.5:2027:hotset:0.20:0.80 classic:92:1.5:8128:hotset:0.20:0.80 mglru:92:1.5:8128:hotset:0.20:0.80]
+[15:11:47] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[15:11:47] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.8s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[15:12:05] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 17s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[15:27:32] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[15:27:32] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed2027 DONE
+[15:27:33] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 945s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[15:47:25] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[15:47:25] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027 DONE
+[15:47:26] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed8128 starting (elapsed 2138s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[16:02:40] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed8128 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[16:02:40] cell classic/hotset-0.20-0.80_frac92_cap1.5g_seed8128 DONE
+[16:02:40] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed8128 starting (elapsed 3053s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[16:22:11] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed8128 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[16:22:11] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed8128 DONE
+[16:22:11] tier1d(WSL2) window complete
+[16:22:12] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[16:22:21] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:8:2027:hotset:0.20:0.80 mglru:92:8:2027:hotset:0.20:0.80]
+[16:22:21] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[16:22:21] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[16:22:38] cell classic/hotset-0.20-0.80_frac92_cap8g_seed2027 starting (elapsed 17s, lru_gen 0x0000, frac=0.9200 cap=8G skew=hotset:0.20:0.80)
+[16:26:06] cell classic/hotset-0.20-0.80_frac92_cap8g_seed2027 DONE
+[16:26:08] cell mglru/hotset-0.20-0.80_frac92_cap8g_seed2027 starting (elapsed 225s, lru_gen 0x0007, frac=0.9200 cap=8G skew=hotset:0.20:0.80)
+[16:29:29] cell mglru/hotset-0.20-0.80_frac92_cap8g_seed2027 DONE
+[16:29:29] tier1d(WSL2) window complete
+[16:29:30] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[16:29:37] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:4:2027:hotset:0.20:0.80 mglru:92:4:2027:hotset:0.20:0.80]
+[16:29:37] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[16:29:37] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[16:29:53] cell classic/hotset-0.20-0.80_frac92_cap4g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=4G skew=hotset:0.20:0.80)
+[16:36:05] cell classic/hotset-0.20-0.80_frac92_cap4g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[16:36:05] cell classic/hotset-0.20-0.80_frac92_cap4g_seed2027 DONE
+[16:36:06] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed2027 starting (elapsed 388s, lru_gen 0x0007, frac=0.9200 cap=4G skew=hotset:0.20:0.80)
+[16:42:15] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[16:42:15] cell mglru/hotset-0.20-0.80_frac92_cap4g_seed2027 DONE
+[16:42:15] tier1d(WSL2) window complete
+[16:42:16] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[17:07:44] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:70:1.5:2027:hotset:0.20:0.80 classic:92:1.5:2027:fa:hotset:0.20:0.80 mglru:92:1.5:2027:fa:hotset:0.20:0.80]
+[17:07:44] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[17:07:44] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 14.8s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[17:07:59] cell classic/hotset-0.20-0.80_frac70_cap1.5g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.7000 cap=1.5G skew=hotset:0.20:0.80)
+[17:22:05] cell classic/hotset-0.20-0.80_frac70_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[17:22:05] cell classic/hotset-0.20-0.80_frac70_cap1.5g_seed2027 DONE
+[17:22:06] cell classic/fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 862s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80 fault-around=ON)
+[17:52:06] cell classic/fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_classic_fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027_20260905.log)
+[17:52:06] cell mglru/fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 2663s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80 fault-around=ON)
+[18:22:06] cell mglru/fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_mglru_fa-hotset-0.20-0.80_frac92_cap1.5g_seed2027_20260905.log)
+[18:22:06] tier1d(WSL2) window complete
+[18:22:07] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[18:24:08] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:1.5:2027:hotset:0.10:0.80 mglru:92:1.5:2027:hotset:0.10:0.80 classic:92:1.5:2027:hotset:0.05:0.80 mglru:92:1.5:2027:hotset:0.05:0.80]
+[18:24:08] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[18:24:08] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 14.6s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[18:24:23] cell classic/hotset-0.10-0.80_frac92_cap1.5g_seed2027 starting (elapsed 15s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.10:0.80)
+[18:35:06] cell classic/hotset-0.10-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[18:35:06] cell classic/hotset-0.10-0.80_frac92_cap1.5g_seed2027 DONE
+[18:35:06] cell mglru/hotset-0.10-0.80_frac92_cap1.5g_seed2027 starting (elapsed 658s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.10:0.80)
+[18:47:41] cell mglru/hotset-0.10-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[18:47:41] cell mglru/hotset-0.10-0.80_frac92_cap1.5g_seed2027 DONE
+[18:47:42] cell classic/hotset-0.05-0.80_frac92_cap1.5g_seed2027 starting (elapsed 1413s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.05:0.80)
+[18:57:09] cell classic/hotset-0.05-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[18:57:09] cell classic/hotset-0.05-0.80_frac92_cap1.5g_seed2027 DONE
+[18:57:10] cell mglru/hotset-0.05-0.80_frac92_cap1.5g_seed2027 starting (elapsed 1981s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.05:0.80)
+[19:08:17] cell mglru/hotset-0.05-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[19:08:17] cell mglru/hotset-0.05-0.80_frac92_cap1.5g_seed2027 DONE
+[19:08:17] tier1d(WSL2) window complete
+[19:08:17] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[19:09:02] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:1.5:2027:hotset:0.40:0.80 mglru:92:1.5:2027:hotset:0.40:0.80 classic:92:0.75:2027:hotset:0.20:0.80 mglru:92:0.75:2027:hotset:0.20:0.80]
+[19:09:02] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[19:09:02] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.1s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[19:09:19] cell classic/hotset-0.40-0.80_frac92_cap1.5g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotset:0.40:0.80)
+[19:33:56] cell classic/hotset-0.40-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[19:33:56] cell classic/hotset-0.40-0.80_frac92_cap1.5g_seed2027 DONE
+[19:33:57] cell mglru/hotset-0.40-0.80_frac92_cap1.5g_seed2027 starting (elapsed 1494s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.40:0.80)
+[20:00:36] cell mglru/hotset-0.40-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[20:00:36] cell mglru/hotset-0.40-0.80_frac92_cap1.5g_seed2027 DONE
+[20:00:37] cell classic/hotset-0.20-0.80_frac92_cap0.75g_seed2027 starting (elapsed 3094s, lru_gen 0x0000, frac=0.9200 cap=0.75G skew=hotset:0.20:0.80)
+[20:27:19] cell classic/hotset-0.20-0.80_frac92_cap0.75g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[20:27:19] cell classic/hotset-0.20-0.80_frac92_cap0.75g_seed2027 DONE
+[20:27:20] cell mglru/hotset-0.20-0.80_frac92_cap0.75g_seed2027 starting (elapsed 4697s, lru_gen 0x0007, frac=0.9200 cap=0.75G skew=hotset:0.20:0.80)
+[20:56:12] cell mglru/hotset-0.20-0.80_frac92_cap0.75g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[20:56:12] cell mglru/hotset-0.20-0.80_frac92_cap0.75g_seed2027 DONE
+[20:56:12] tier1d(WSL2) window complete
+[20:56:12] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[20:57:39] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:6.5:2027:hotset:0.20:0.80 classic:92:7.5:2027:hotset:0.20:0.80 classic:92:7:2027:hotset:0.20:0.80]
+[20:57:39] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[20:57:39] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.4s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[20:57:56] cell classic/hotset-0.20-0.80_frac92_cap6.5g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=6.5G skew=hotset:0.20:0.80)
+[21:01:28] cell classic/hotset-0.20-0.80_frac92_cap6.5g_seed2027 DONE
+[21:01:29] cell classic/hotset-0.20-0.80_frac92_cap7.5g_seed2027 starting (elapsed 229s, lru_gen 0x0000, frac=0.9200 cap=7.5G skew=hotset:0.20:0.80)
+[21:04:59] cell classic/hotset-0.20-0.80_frac92_cap7.5g_seed2027 DONE
+[21:05:00] cell classic/hotset-0.20-0.80_frac92_cap7g_seed2027 starting (elapsed 440s, lru_gen 0x0000, frac=0.9200 cap=7G skew=hotset:0.20:0.80)
+[21:08:35] cell classic/hotset-0.20-0.80_frac92_cap7g_seed2027 DONE
+[21:08:35] tier1d(WSL2) window complete
+[21:08:36] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[21:09:40] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:0:1.5:2027:fa:hotset:0.20:0.80 mglru:0:1.5:2027:fa:hotset:0.20:0.80]
+[21:09:40] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[21:09:40] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[21:09:57] cell classic/fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027 starting (elapsed 17s, lru_gen 0x0000, frac=0.0000 cap=1.5G skew=hotset:0.20:0.80 fault-around=ON)
+[21:39:57] cell classic/fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_classic_fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027_20260905.log)
+[21:39:58] cell mglru/fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027 starting (elapsed 1818s, lru_gen 0x0007, frac=0.0000 cap=1.5G skew=hotset:0.20:0.80 fault-around=ON)
+[22:09:58] cell mglru/fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_mglru_fa-hotset-0.20-0.80_frac0_cap1.5g_seed2027_20260905.log)
+[22:09:58] tier1d(WSL2) window complete
+[22:09:58] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[22:11:39] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:0:2.5:2027:fa:hotset:0.20:0.80 mglru:0:2.5:2027:fa:hotset:0.20:0.80]
+[22:11:39] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[22:11:39] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.3s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[22:11:56] cell classic/fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027 starting (elapsed 17s, lru_gen 0x0000, frac=0.0000 cap=2.5G skew=hotset:0.20:0.80 fault-around=ON)
+[22:41:56] cell classic/fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_classic_fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027_20260905.log)
+[22:41:57] cell mglru/fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027 starting (elapsed 1817s, lru_gen 0x0007, frac=0.0000 cap=2.5G skew=hotset:0.20:0.80 fault-around=ON)
+[23:11:57] cell mglru/fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_mglru_fa-hotset-0.20-0.80_frac0_cap2.5g_seed2027_20260905.log)
+[23:11:57] tier1d(WSL2) window complete
+[23:11:57] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[23:12:20] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:6.5:2027:wl:hotset:0.20:0.80 classic:92:5.5:2027:wl:hotset:0.20:0.80 classic:92:6:2027:wl:hotset:0.20:0.80 mglru:92:6.5:2027:wl:hotset:0.20:0.80 mglru:92:5.5:2027:wl:hotset:0.20:0.80 classic:92:8:2027:wl:hotset:0.20:0.80]
+[23:12:20] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[23:12:20] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.3s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[23:12:37] cell classic/wl-hotset-0.20-0.80_frac92_cap6.5g_seed2027 starting (elapsed 17s, lru_gen 0x0000, frac=0.9200 cap=6.5G skew=hotset:0.20:0.80 warm-l=ON)
+[23:16:56] cell classic/wl-hotset-0.20-0.80_frac92_cap6.5g_seed2027 DONE
+[23:16:57] cell classic/wl-hotset-0.20-0.80_frac92_cap5.5g_seed2027 starting (elapsed 276s, lru_gen 0x0000, frac=0.9200 cap=5.5G skew=hotset:0.20:0.80 warm-l=ON)
+[23:21:22] cell classic/wl-hotset-0.20-0.80_frac92_cap5.5g_seed2027 DONE
+[23:21:23] cell classic/wl-hotset-0.20-0.80_frac92_cap6g_seed2027 starting (elapsed 542s, lru_gen 0x0000, frac=0.9200 cap=6G skew=hotset:0.20:0.80 warm-l=ON)
+[23:25:45] cell classic/wl-hotset-0.20-0.80_frac92_cap6g_seed2027 DONE
+[23:25:46] cell mglru/wl-hotset-0.20-0.80_frac92_cap6.5g_seed2027 starting (elapsed 805s, lru_gen 0x0007, frac=0.9200 cap=6.5G skew=hotset:0.20:0.80 warm-l=ON)
+[23:30:13] cell mglru/wl-hotset-0.20-0.80_frac92_cap6.5g_seed2027 DONE
+[23:30:14] cell mglru/wl-hotset-0.20-0.80_frac92_cap5.5g_seed2027 starting (elapsed 1073s, lru_gen 0x0007, frac=0.9200 cap=5.5G skew=hotset:0.20:0.80 warm-l=ON)
+[23:34:33] cell mglru/wl-hotset-0.20-0.80_frac92_cap5.5g_seed2027 DONE
+[23:34:35] cell classic/wl-hotset-0.20-0.80_frac92_cap8g_seed2027 starting (elapsed 1333s, lru_gen 0x0000, frac=0.9200 cap=8G skew=hotset:0.20:0.80 warm-l=ON)
+[23:38:51] cell classic/wl-hotset-0.20-0.80_frac92_cap8g_seed2027 DONE
+[23:38:51] tier1d(WSL2) window complete
+[23:38:53] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[23:40:25] min_ttl_ms=1000 for this window (boot value 0, restored on exit)
+[23:40:25] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), min_ttl_ms=1000, cells=[mglru:92:1.5:2027:hotset:0.20:0.80]
+[23:40:25] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[23:40:25] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 16.9s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[23:40:42] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl1000 starting (elapsed 17s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[23:59:16] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl1000 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[23:59:16] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl1000 DONE
+[23:59:16] tier1d(WSL2) window complete
+[23:59:17] RESTORED: lru_gen=0x0007 min_ttl_ms=0 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)

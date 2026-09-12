@@ -540,3 +540,57 @@ observed: classic re-sorts the polluted cache via refault-activation
 promotion mistake persists indefinitely. Exploratory mechanism reading
 with the full reclaim anatomy: `spike/convergence_repro/RESULTS.md` §22;
 judgment detail §21; pre-reg s7 final tally.
+
+## Addendum 2026-09-12 — item 1 PASSED by Tier-1d (2026-09-05); the synthetic line is SETTLED (2026-09-06)
+
+> Supersedes the "publication gate stays closed / spin-off blocked" lines in
+> the 2026-08-31 addenda above. Recorded 2026-09-12 from
+> `spike/convergence_repro/RESULTS.md` §23–31 (Tier-1d, WSL2 local, both
+> LRU arms available since the 2026-09-05 kernel work in `HOST_RUN.md`).
+
+Tier-1b's negative result identified the missing variable: **access skew**.
+Tier-1d (`PREREGISTRATION_TIER1D.md`, bars frozen `5f55fb32`) replaced the
+uniform-random repeat with a hot-set draw (`hotset:0.20:0.80`, frac92) over
+a pressured mapping and judged 2026-09-05:
+
+- **T1d-1 PASS** — the real stack's MGLRU/classic arm asymmetry reproduces
+  index-independently: steady-floor ratio **1.443** in both seeds (2027,
+  8128) at cap 1.5 GiB (`hot-set < cap < |R|`) against the frozen bar
+  ≥1.30. **Publication-gate item 1 is PASSED.** No seismic index, no real
+  workload — skewed access over a pressured mapping is sufficient.
+- **T1d-1b PASS** — mechanism shape: classic descends (floor/pass-1 ≈ 0.64,
+  bar ≤0.75), MGLRU pins (≤1.1% pass-2–12 deviation, bar ≤5%).
+- **T1d-3 PASS** — regime specificity: 8 GiB control ratio 1.000, 4 GiB
+  band ratio 1.038; the divergence exists only where skew creates the
+  third regime.
+- **T1d-5 PASSED (validity)** — both strict-soundness control cells exact.
+
+Verdicts T1d-1/1b/3 sit within the ±16% margin and cite the §4
+pageReporting caveat as frozen. Characterization windows T1d-11 through
+T1d-17 (2026-09-05/06, recorded-only, RESULTS.md §26–31) then closed the
+remaining questions on the synthetic: the divergence is a peaked curve in
+cap (§26); the **synthetic fixed-window inversion itself closed NEGATIVE in
+every form the driver can express** — cap-pair, warm-residue, cold-start,
+and cold-start+residue-in-window (§27, §30) — reclaim never victimizes the
+re-touched population, so the residue sort costs the measured workload
+nothing; readahead under a binding cap thrashes before measurement begins
+(§28, 8-for-8 sheds); stock MGLRU is not rescued by `min_ttl_ms` (§29);
+reclaim is layout-blind under `MADV_RANDOM` at the divergence rung (§31).
+**Tier-1d line declared SETTLED 2026-09-06**; nothing queued.
+
+Where the artifact stands across the three gate items:
+
+| item | status | evidence |
+|---|---|---|
+| 1 — index-independent synthetic repro | **PASSED** (arm asymmetry); the inversion form is real-stack-only so far | RESULTS.md §23–25, §30 |
+| 2 — native Linux, real stack | **CONFIRMED** (B2/B3 PASS, 5.8×/5.6× at 26-vs-28 GB) | addendum 2026-09-01 (c)/(d) |
+| 3 — MGLRU arm | **MEASURED**: cliff displaced ≥ ~4 GB upward, transient replaced by sustained thrash (~220× at 28 GB); B1/B5 not-passed on uncomputable-as-frozen components, B4 FAIL on bar arithmetic | addendum 2026-09-01 (d), RESULTS.md §21–22 |
+
+Open, non-gating: a synthetic reproduction of the *inversion* (as opposed
+to the arm asymmetry) needs ingredients beyond the current driver
+(plausibly the real stack's re-touched residue) and a fresh Tier-1e
+pre-registration; S-realprofile stays severed behind §6 gap 3; the
+MGLRU-FG RFC test (`PREREGISTRATION_T1D_FG.md`) and the access-histogram
+probe (`PREREGISTRATION_T1D_PROBE.md`) are drafted, not run. The spin-off
+decision (standalone public repo on item-1 PASS, recorded 2026-08-31) is
+now unblocked and awaits the owner.

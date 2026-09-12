@@ -1,0 +1,18 @@
+[t1d] cell arm=mglru cap=cap0.75g resident_frac=0.9200 passes=12 seed=2027 R=5120MiB L=1792MiB skew=hotset:0.20:0.80
+[t1d] R mapped with MADV_RANDOM (fault-around OFF)
+[t1d] seeded: warmed 1205862 target-resident, R resident 173315/1310720 pages (13.2229%), deficit=1137405
+[t1d] skew hotset:0.20:0.80: hot set 262144/1310720 pages (20.0000% of R, 1024.0 MiB)
+[t1d] hot-set residency after seed: 34846/262144 pages (13.2927%)
+[t1d] pass 1: majflt 852872  wall 130.573s  R_resident 12.66%  hot_resident 44.34%  hot_touch_frac 0.8002
+[t1d] pass 2: majflt 835336  wall 126.450s  R_resident 12.63%  hot_resident 44.26%  hot_touch_frac 0.7996
+[t1d] pass 3: majflt 833945  wall 125.408s  R_resident 12.63%  hot_resident 44.30%  hot_touch_frac 0.8003
+[t1d] pass 4: majflt 834304  wall 122.097s  R_resident 12.63%  hot_resident 44.21%  hot_touch_frac 0.7998
+[t1d] pass 5: majflt 834094  wall 125.557s  R_resident 12.63%  hot_resident 44.28%  hot_touch_frac 0.8001
+[t1d] pass 6: majflt 833774  wall 126.174s  R_resident 12.63%  hot_resident 44.29%  hot_touch_frac 0.8001
+[t1d] pass 7: majflt 834871  wall 126.743s  R_resident 12.63%  hot_resident 44.23%  hot_touch_frac 0.7994
+[t1d] pass 8: majflt 833490  wall 128.020s  R_resident 12.63%  hot_resident 44.39%  hot_touch_frac 0.8004
+[t1d] pass 9: majflt 833908  wall 132.258s  R_resident 12.63%  hot_resident 44.24%  hot_touch_frac 0.7999
+[t1d] pass 10: majflt 834344  wall 132.948s  R_resident 12.63%  hot_resident 44.30%  hot_touch_frac 0.7997
+[t1d] pass 11: majflt 834461  wall 131.806s  R_resident 12.63%  hot_resident 44.27%  hot_touch_frac 0.7997
+[t1d] pass 12: majflt 834860  wall 132.535s  R_resident 12.63%  hot_resident 44.30%  hot_touch_frac 0.8000
+[t1d] wrote /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/t1d_mglru_hotset-0.20-0.80_frac92_cap0.75g_seed2027_20260905.json  converged=False (first pass None)  soundness=False (reachable deficit 424159 of 1137405 missing)

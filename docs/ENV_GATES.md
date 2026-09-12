@@ -88,6 +88,8 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `DEMO_BROKER_LIVE` | `0` | **the dry-run/spend gate** |
 | `DEMO_CLOUD` | `do` | `oci` = the live OCI deploy |
 | `OCI_STOP_ACTION` | SOFTSTOP | ACPI shutdown; `STOP` = hard power-off fallback |
+| `DEMO_WATCHDOG_HEARTBEAT_HOUR` / `_FAIL_THRESHOLD` / `_STATE_PATH` | `9` / `2` / `watchdog.json` | `watchdog.py` (systemd timer, read-only): ntfy on instance-state change, health failures, recovery, daily heartbeat. Live since 2026-09-07 |
+| `DEMO_PIN_RUNNING` | `0` | `1` = `_destroy` is a no-op (reaper + killswitch log `reap_suppressed`, never stop). Live since 2026-09-07 (trial grace period, E5 limit 0) |
 | `OCI_INSTANCE_IP` | set | private-IP proxy path, no control-plane call per request |
 | `DEMO_MCP_RESERVED_SLOTS` | 2 | MCP-priority slots of the 6 global billable slots |
 | `DEMO_DIAL_BACKEND` | off | `systemd` / `cgroup`; off ⇒ /admin/dial 404s |

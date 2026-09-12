@@ -1,0 +1,9 @@
+[22:22:32] phase A' start: deadline 7200s, cell timeout 3600s, L3 reclaim 15032385536B, cells=[L1:mglru:16:1 L1:classic:16:1 L3:classic:20:1 L0:mglru:20:1 L0:classic:18:1 L0:mglru:16:1 L0:classic:14:1]
+[22:22:32] sfu-serve stopped for the window
+[22:22:37] cell L1/mglru/cap16g_rep1 starting (elapsed 0s, lru_gen 0x0007, prefloor=0)
+[23:22:37] cell L1/mglru/cap16g_rep1 FAIL rc=124 (see /mnt/idxvol/data/eval_results/_sml_L1_mglru_cap16g_rep1_20260901.log)
+[23:22:40] cell L1/classic/cap16g_rep1 starting (elapsed 3605s, lru_gen 0x0000, prefloor=0)
+[00:22:40] cell L1/classic/cap16g_rep1 FAIL rc=124 (see /mnt/idxvol/data/eval_results/_sml_L1_classic_cap16g_rep1_20260901.log)
+[00:22:40] DEADLINE: 7208s elapsed — not starting L3:classic:20:1 (or anything after); resume in a later window
+[00:22:40] phase A' window complete
+[00:22:41] RESTORED: lru_gen=0x0007 sfu-serve=active (exit rc=0)

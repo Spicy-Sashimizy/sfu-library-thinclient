@@ -1,0 +1,170 @@
+{
+  "protocol": "tier1d",
+  "arm": "mglru",
+  "cap_label": "cap8g",
+  "resident_frac_target": 0.92,
+  "resident_frac_actual": 0.92,
+  "seed": 1729,
+  "r_size_mib": 5120,
+  "l_size_mib": 1792,
+  "r_pages": 1310720,
+  "madvise": "MADV_RANDOM",
+  "fault_around": false,
+  "skew": {
+    "spec": "hotset:0.20:0.80",
+    "kind": "hotset",
+    "h": 0.2,
+    "m": 0.8,
+    "s": null,
+    "hot_set_pages": 262144,
+    "hot_set_bytes": 1073741824,
+    "hot_set_mib": 1024.0,
+    "hot_mass_definition": null,
+    "touches_per_pass": 1310720,
+    "draw_with_replacement": true,
+    "draw_per_pass_seeded": true,
+    "ranking_seed": 6204892
+  },
+  "seed_deficit_pages": 104858,
+  "pass1_reachable_deficit_pages": 39031,
+  "near_zero": 2500,
+  "converged_first_pass": 10,
+  "converged": true,
+  "soundness_identity_kind": "skew_reachable_deficit",
+  "soundness_identity_applicable": true,
+  "soundness_pass1_majflt_eq_deficit": true,
+  "soundness_pass1_majflt_eq_full_deficit": false,
+  "passes": [
+    {
+      "pass": 1,
+      "majflt": 39031,
+      "wall_s": 6.484,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799633,
+      "resident_pages": 1244893,
+      "resident_pct": 94.9778,
+      "distinct_pages_touched": 489531,
+      "touch_count_histogram": {
+        "0": 821189,
+        "1": 223481,
+        "2": 64000,
+        "3": 53476,
+        "4": 51386,
+        "5": 41056,
+        "6": 27195,
+        "7": 15522,
+        "8": 7808,
+        "9": 3488,
+        "10": 1360,
+        "11": 515,
+        "12": 163,
+        "13": 55,
+        "14": 20,
+        "15": 5,
+        "16+": 1
+      },
+      "hot_mean_touches_per_page": 3.9981651306152344,
+      "cold_mean_touches_per_page": 0.2504587173461914,
+      "hot_distinct_pages_touched": 257297
+    },
+    {
+      "pass": 2,
+      "majflt": 14993,
+      "wall_s": 2.361,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799137,
+      "resident_pages": 1259886,
+      "resident_pct": 96.1217
+    },
+    {
+      "pass": 3,
+      "majflt": 11156,
+      "wall_s": 1.804,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79976,
+      "resident_pages": 1271042,
+      "resident_pct": 96.9728
+    },
+    {
+      "pass": 4,
+      "majflt": 8804,
+      "wall_s": 1.486,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799965,
+      "resident_pages": 1279846,
+      "resident_pct": 97.6445
+    },
+    {
+      "pass": 5,
+      "majflt": 6842,
+      "wall_s": 1.186,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79933,
+      "resident_pages": 1286688,
+      "resident_pct": 98.1665
+    },
+    {
+      "pass": 6,
+      "majflt": 5268,
+      "wall_s": 0.876,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79996,
+      "resident_pages": 1291956,
+      "resident_pct": 98.5684
+    },
+    {
+      "pass": 7,
+      "majflt": 4206,
+      "wall_s": 0.736,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800149,
+      "resident_pages": 1296162,
+      "resident_pct": 98.8893
+    },
+    {
+      "pass": 8,
+      "majflt": 3204,
+      "wall_s": 0.601,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799693,
+      "resident_pages": 1299366,
+      "resident_pct": 99.1338
+    },
+    {
+      "pass": 9,
+      "majflt": 2525,
+      "wall_s": 0.42,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799675,
+      "resident_pages": 1301891,
+      "resident_pct": 99.3264
+    },
+    {
+      "pass": 10,
+      "majflt": 1938,
+      "wall_s": 0.338,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800043,
+      "resident_pages": 1303829,
+      "resident_pct": 99.4743
+    },
+    {
+      "pass": 11,
+      "majflt": 1547,
+      "wall_s": 0.266,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800092,
+      "resident_pages": 1305376,
+      "resident_pct": 99.5923
+    },
+    {
+      "pass": 12,
+      "majflt": 1206,
+      "wall_s": 0.215,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800233,
+      "resident_pages": 1306582,
+      "resident_pct": 99.6843
+    }
+  ]
+}

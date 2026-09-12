@@ -1,0 +1,19 @@
+[t1d] cell arm=classic cap=cap5.5g resident_frac=0.9200 passes=12 seed=2027 R=5120MiB L=1792MiB skew=hotset:0.20:0.80
+[t1d] R mapped with MADV_RANDOM (fault-around OFF)
+[t1d] L warmed as residue: 458752/458752 pages resident (100.0000%)
+[t1d] seeded: warmed 1205862 target-resident, R resident 1205862/1310720 pages (92.0000%), deficit=104858
+[t1d] skew hotset:0.20:0.80: hot set 262144/1310720 pages (20.0000% of R, 1024.0 MiB)
+[t1d] hot-set residency after seed: 241307/262144 pages (92.0513%)
+[t1d] pass 1: majflt 39160  wall 6.536s  R_resident 94.99%  hot_resident 99.84%  hot_touch_frac 0.8002  L_resident 36.58%
+[t1d] pass 2: majflt 14859  wall 2.589s  R_resident 96.12%  hot_resident 100.00%  hot_touch_frac 0.7996  L_resident 33.27%
+[t1d] pass 3: majflt 11085  wall 1.908s  R_resident 96.97%  hot_resident 100.00%  hot_touch_frac 0.8003  L_resident 30.86%
+[t1d] pass 4: majflt 8758  wall 1.553s  R_resident 97.64%  hot_resident 100.00%  hot_touch_frac 0.7998  L_resident 28.94%
+[t1d] pass 5: majflt 6810  wall 1.229s  R_resident 98.15%  hot_resident 100.00%  hot_touch_frac 0.8001  L_resident 27.35%
+[t1d] pass 6: majflt 5397  wall 0.949s  R_resident 98.57%  hot_resident 100.00%  hot_touch_frac 0.8001  L_resident 26.28%
+[t1d] pass 7: majflt 4091  wall 0.694s  R_resident 98.88%  hot_resident 100.00%  hot_touch_frac 0.7994  L_resident 25.39%
+[t1d] pass 8: majflt 3239  wall 0.557s  R_resident 99.13%  hot_resident 100.00%  hot_touch_frac 0.8004  L_resident 24.68%
+[t1d] pass 9: majflt 2520  wall 0.447s  R_resident 99.32%  hot_resident 100.00%  hot_touch_frac 0.7999  L_resident 24.13%
+[t1d] pass 10: majflt 2042  wall 0.337s  R_resident 99.47%  hot_resident 100.00%  hot_touch_frac 0.7997  L_resident 23.69%
+[t1d] pass 11: majflt 1539  wall 0.298s  R_resident 99.59%  hot_resident 100.00%  hot_touch_frac 0.7997  L_resident 23.35%
+[t1d] pass 12: majflt 1163  wall 0.230s  R_resident 99.68%  hot_resident 100.00%  hot_touch_frac 0.8000  L_resident 23.10%
+[t1d] wrote /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/t1d_classic_wl-hotset-0.20-0.80_frac92_cap5.5g_seed2027_20260905.json  converged=True (first pass 10)  soundness=True (reachable deficit 39160 of 104858 missing)

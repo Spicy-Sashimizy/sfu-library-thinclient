@@ -1,0 +1,46 @@
+Wire hotset_protect into the upstream cache_ext policy build
+
+The cache_ext clone at spike/ebpf_pagecache/cache_ext_upstream/ is kept
+pristine (gitignored nested repo, same convention as spike/seismic_upstream).
+This is the only change the hotset_protect spike needs inside their tree.
+
+Their policies/Makefile already carries generic pattern rules that cover any
+new policy:
+
+    %.bpf.o : %.bpf.c $(VMLINUX_H) dir_watcher.bpf.h
+    %.skel.h: %.bpf.o  $(VMLINUX_H)
+    %.out   : %.c      %.skel.h
+
+so the only edit required is adding hotset_protect.out to the `all` target.
+
+APPLY (on the cache_ext kernel, after `./install_kernel.sh` and a reboot):
+
+    SPIKE=/path/to/sfu-library-thinclient/spike/ebpf_pagecache
+    cd "$SPIKE/cache_ext_upstream"
+    cp "$SPIKE/hotset_protect.bpf.c" "$SPIKE/hotset_protect.c" policies/
+    git apply "$SPIKE/cache_ext_hotset.patch"
+    ./build_policies.sh          # -> policies/hotset_protect.out
+
+REVERT:
+
+    cd "$SPIKE/cache_ext_upstream"
+    git apply -R "$SPIKE/cache_ext_hotset.patch"
+    rm -f policies/hotset_protect.bpf.c policies/hotset_protect.c \
+          policies/hotset_protect.bpf.o policies/hotset_protect.skel.h \
+          policies/hotset_protect.out
+
+(The copied sources and all build products are already covered by
+policies/.gitignore for *.o/*.out/*.skel.h; the two .c files are not, so
+remove them explicitly if you want `git status` clean in the nested repo.)
+
+--- a/policies/Makefile
++++ b/policies/Makefile
+@@ -35,7 +35,7 @@
+
+ all: 	cache_ext_mru.out cache_ext_mglru.out cache_ext_fifo.out \
+ 		cache_ext_sampling.out cache_ext_get_scan.out cache_ext_s3fifo.out \
+-		cache_ext_lhd.out   \
++		cache_ext_lhd.out hotset_protect.out  \
+ 		# cache_ext_debug.out cache_ext_simple.out
+
+ $(VMLINUX_H):

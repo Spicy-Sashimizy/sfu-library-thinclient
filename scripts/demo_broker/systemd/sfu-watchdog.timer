@@ -1,0 +1,11 @@
+[Unit]
+Description=Run sfu-watchdog every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=sfu-watchdog.service
+
+[Install]
+WantedBy=timers.target

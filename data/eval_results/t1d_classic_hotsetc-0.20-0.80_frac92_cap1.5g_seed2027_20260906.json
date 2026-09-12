@@ -1,0 +1,260 @@
+{
+  "protocol": "tier1d",
+  "arm": "classic",
+  "cap_label": "cap1.5g",
+  "resident_frac_target": 0.92,
+  "resident_frac_actual": 0.28546,
+  "seed": 2027,
+  "r_size_mib": 5120,
+  "l_size_mib": 1792,
+  "r_pages": 1310720,
+  "madvise": "MADV_RANDOM",
+  "fault_around": false,
+  "skew": {
+    "spec": "hotsetc:0.20:0.80",
+    "kind": "hotsetc",
+    "h": 0.2,
+    "m": 0.8,
+    "s": null,
+    "hot_set_pages": 262144,
+    "hot_set_bytes": 1073741824,
+    "hot_set_mib": 1024.0,
+    "hot_mass_definition": null,
+    "hot_layout": "clustered",
+    "extents": 8,
+    "hot_extents": [
+      [
+        17558,
+        32768
+      ],
+      [
+        113406,
+        32768
+      ],
+      [
+        218817,
+        32768
+      ],
+      [
+        458585,
+        32768
+      ],
+      [
+        743895,
+        32768
+      ],
+      [
+        804662,
+        32768
+      ],
+      [
+        1015510,
+        32768
+      ],
+      [
+        1205320,
+        32768
+      ]
+    ],
+    "touches_per_pass": 1310720,
+    "draw_with_replacement": true,
+    "draw_per_pass_seeded": true,
+    "ranking_seed": 6204662
+  },
+  "seed_deficit_pages": 936562,
+  "warm_l": false,
+  "l_pages": null,
+  "l_resident_after_warm_pages": null,
+  "l_resident_after_warm_pct": null,
+  "hot_resident_pages_after_seed": 75162,
+  "hot_resident_pct_after_seed": 28.672,
+  "pass1_reachable_deficit_pages": 348898,
+  "near_zero": 2500,
+  "converged_first_pass": null,
+  "converged": false,
+  "soundness_identity_kind": "skew_reachable_deficit",
+  "soundness_identity_applicable": true,
+  "soundness_pass1_majflt_eq_deficit": false,
+  "soundness_pass1_majflt_eq_full_deficit": false,
+  "passes": [
+    {
+      "pass": 1,
+      "majflt": 524354,
+      "wall_s": 80.306,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800186,
+      "resident_pages": 367485,
+      "resident_pct": 28.0369,
+      "hot_resident_pages": 192059,
+      "hot_resident_pct": 73.2647,
+      "l_resident_pages": null,
+      "l_resident_pct": null,
+      "distinct_pages_touched": 488890,
+      "touch_count_histogram": {
+        "0": 821830,
+        "1": 222851,
+        "2": 63813,
+        "3": 53256,
+        "4": 51556,
+        "5": 41019,
+        "6": 27565,
+        "7": 15494,
+        "8": 7790,
+        "9": 3439,
+        "10": 1429,
+        "11": 472,
+        "12": 146,
+        "13": 43,
+        "14": 13,
+        "15": 2,
+        "16+": 2
+      },
+      "hot_mean_touches_per_page": 4.0009307861328125,
+      "cold_mean_touches_per_page": 0.24976730346679688,
+      "hot_distinct_pages_touched": 257257
+    },
+    {
+      "pass": 2,
+      "majflt": 478044,
+      "wall_s": 75.661,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799613,
+      "resident_pages": 367572,
+      "resident_pct": 28.0435,
+      "hot_resident_pages": 200099,
+      "hot_resident_pct": 76.3317,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 3,
+      "majflt": 440798,
+      "wall_s": 67.227,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800336,
+      "resident_pages": 368014,
+      "resident_pct": 28.0772,
+      "hot_resident_pages": 217638,
+      "hot_resident_pct": 83.0223,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 4,
+      "majflt": 342882,
+      "wall_s": 53.18,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79976,
+      "resident_pages": 369100,
+      "resident_pct": 28.1601,
+      "hot_resident_pages": 249266,
+      "hot_resident_pct": 95.0874,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 5,
+      "majflt": 304413,
+      "wall_s": 46.175,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800091,
+      "resident_pages": 369352,
+      "resident_pct": 28.1793,
+      "hot_resident_pages": 233830,
+      "hot_resident_pct": 89.1991,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 6,
+      "majflt": 352692,
+      "wall_s": 55.162,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800104,
+      "resident_pages": 369369,
+      "resident_pct": 28.1806,
+      "hot_resident_pages": 228512,
+      "hot_resident_pct": 87.1704,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 7,
+      "majflt": 336284,
+      "wall_s": 52.55,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799412,
+      "resident_pages": 368030,
+      "resident_pct": 28.0785,
+      "hot_resident_pages": 241361,
+      "hot_resident_pct": 92.0719,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 8,
+      "majflt": 327481,
+      "wall_s": 52.982,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800397,
+      "resident_pages": 369380,
+      "resident_pct": 28.1815,
+      "hot_resident_pages": 235938,
+      "hot_resident_pct": 90.0032,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 9,
+      "majflt": 339717,
+      "wall_s": 51.867,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799931,
+      "resident_pages": 369382,
+      "resident_pct": 28.1816,
+      "hot_resident_pages": 236491,
+      "hot_resident_pct": 90.2142,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 10,
+      "majflt": 333267,
+      "wall_s": 51.316,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799668,
+      "resident_pages": 368065,
+      "resident_pct": 28.0811,
+      "hot_resident_pages": 234008,
+      "hot_resident_pct": 89.267,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 11,
+      "majflt": 334445,
+      "wall_s": 52.206,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799744,
+      "resident_pages": 368031,
+      "resident_pct": 28.0785,
+      "hot_resident_pages": 231975,
+      "hot_resident_pct": 88.4914,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    },
+    {
+      "pass": 12,
+      "majflt": 336653,
+      "wall_s": 51.762,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79996,
+      "resident_pages": 369288,
+      "resident_pct": 28.1744,
+      "hot_resident_pages": 236362,
+      "hot_resident_pct": 90.1649,
+      "l_resident_pages": null,
+      "l_resident_pct": null
+    }
+  ]
+}

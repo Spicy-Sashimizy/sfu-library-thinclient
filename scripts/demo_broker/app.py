@@ -101,6 +101,10 @@ def _boot(reason: str, on_demand: bool) -> None:
 
 
 def _destroy(reason: str) -> None:
+    if CONFIG.pin_running:
+        log.warning("SLEEP suppressed by DEMO_PIN_RUNNING (%s)", reason)
+        jlog(event="reap_suppressed", reason=reason)
+        return
     did = store.droplet_id()
     log.info("SLEEP (%s) compute=%s", reason, did)
     cloud.sleep(did or "")

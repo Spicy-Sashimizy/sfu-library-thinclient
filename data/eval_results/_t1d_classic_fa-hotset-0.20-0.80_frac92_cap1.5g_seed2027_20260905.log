@@ -1,0 +1,2 @@
+[t1d] cell arm=classic cap=cap1.5g resident_frac=0.9200 passes=12 seed=2027 R=5120MiB L=1792MiB skew=hotset:0.20:0.80
+[t1d] R mapped with MADV_NORMAL (fault-around ON)

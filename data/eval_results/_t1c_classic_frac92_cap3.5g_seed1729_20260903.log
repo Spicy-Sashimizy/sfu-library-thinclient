@@ -1,0 +1,4 @@
+[t1c] cell arm=classic cap=cap3.5g resident_frac=0.9200 passes=12 seed=1729 R=5120MiB L=1792MiB
+[t1c] seeded: warmed 1205862 target-resident, R resident 898204/1310720 pages (68.5275%), deficit=412516
+[t1c] pass 1: majflt 712771  wall 250.431s  R_resident 68.17%
+[t1c] pass 2: majflt 575633  wall 201.119s  R_resident 68.24%

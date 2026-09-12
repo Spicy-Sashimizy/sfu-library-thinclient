@@ -1,0 +1,40 @@
+[23:36:13] query log: 1000 draws, 49 subjects, 118 distinct, max repeat 59, sha256 3521432158b0
+[23:36:16] loaded 8 shards (mmap, E8 dv-v2)
+[23:37:51]   q   0/1000: 14446 pages, elapsed 92s
+[23:40:14]   q  50/1000: 28018 pages, elapsed 236s
+[23:40:32]   q 100/1000: 94336 pages, elapsed 254s
+[23:40:45]   q 150/1000: 40178 pages, elapsed 267s
+[23:40:53]   q 200/1000: 32418 pages, elapsed 275s
+[23:41:00]   q 250/1000: 48762 pages, elapsed 282s
+[23:41:07]   q 300/1000: 35787 pages, elapsed 288s
+[23:41:12]   q 350/1000: 25188 pages, elapsed 294s
+[23:41:18]   q 400/1000: 44908 pages, elapsed 300s
+[23:41:22]   q 450/1000: 62916 pages, elapsed 304s
+[23:41:26]   q 500/1000: 63024 pages, elapsed 307s
+[23:41:30]   q 550/1000: 48762 pages, elapsed 312s
+[23:41:35]   q 600/1000: 31113 pages, elapsed 316s
+[23:41:39]   q 650/1000: 31113 pages, elapsed 321s
+[23:41:43]   q 700/1000: 33422 pages, elapsed 325s
+[23:41:47]   q 750/1000: 43939 pages, elapsed 329s
+[23:41:51]   q 800/1000: 48762 pages, elapsed 333s
+[23:41:55]   q 850/1000: 60473 pages, elapsed 337s
+[23:41:59]   q 900/1000: 23182 pages, elapsed 341s
+[23:42:02]   q 950/1000: 48762 pages, elapsed 344s
+[23:42:05]   q 999/1000: 67262 pages, elapsed 347s
+[23:42:05] counts fingerprint sha256 fa311872fa569c4e (347s)
+[23:42:05] wrote /workspaces/sfu-library-thinclient/data/eval_results/t1dprobe_hist_20260912_run2.json
+[23:42:05]   n_queries_executed: 1000
+[23:42:05]   pages_per_query_p50: 40112.0
+[23:42:05]   distinct_pages_touched: 2017232
+[23:42:05]   touched_frac_of_forward: 0.267948
+[23:42:05]   repeat_touch_frac: 0.9977
+[23:42:05]   gini_touched_pages: 0.5681
+[23:42:05]   hotset_50_gb: 1.1031
+[23:42:05]   hotset_80_gb: 3.2108
+[23:42:05]   hotset_90_gb: 4.6799
+[23:42:05]   counts_sha256: fa311872fa569c4eceb0a6b4fd74f0f34168e55d02b9b7410452e8bec96f0603
+[23:42:05]   elapsed_s: 347.0
+[23:42:05]   h at 0.80 mass: 0.104122 of forward / 0.388591 of touched
+[23:42:05]   mass at synthetic h: {'0.05': {'mass_top_h_of_forward': 0.589435, 'mass_top_h_of_touched': 0.286284}, '0.10': {'mass_top_h_of_forward': 0.788546, 'mass_top_h_of_touched': 0.42817}, '0.20': {'mass_top_h_of_forward': 0.961109, 'mass_top_h_of_touched': 0.608774}}
+[23:42:05]   clustering hot80: extents 446508, run p50 1, p90 3, max 266
+rc=0

@@ -116,6 +116,30 @@ class TestBrokerWiring(unittest.TestCase):
         self.assertEqual(app._active_kind, {"gui": 0, "mcp": 0})
         self.assertEqual(app._active_searches, {})
 
+    def test_pin_running_suppresses_destroy(self):
+        import dataclasses
+        app = self.app
+        calls = []
+
+        class _Cloud:
+            def sleep(self, did=""):
+                calls.append(did)
+
+        orig_cloud, orig_cfg = app.cloud, app.CONFIG
+        app.cloud = _Cloud()
+        try:
+            app.store.mark_up("pinned-box")
+            app.CONFIG = dataclasses.replace(orig_cfg, pin_running=True)
+            app._destroy("killswitch test")
+            self.assertEqual(calls, [])
+            self.assertEqual(app.store.snapshot(app._now()).status, app.DropletStatus.UP)
+            app.CONFIG = orig_cfg
+            app._destroy("killswitch test")
+            self.assertEqual(calls, ["pinned-box"])
+            self.assertEqual(app.store.snapshot(app._now()).status, app.DropletStatus.DOWN)
+        finally:
+            app.cloud, app.CONFIG = orig_cloud, orig_cfg
+
     def test_rpc_info_classification(self):
         app = self.app
         self.assertEqual(app._rpc_info(b'{"method":"tools/call","params":{"name":"search"}}'), (True, None))

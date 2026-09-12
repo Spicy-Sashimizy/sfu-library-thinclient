@@ -78,6 +78,7 @@ class Config:
         default_factory=lambda: os.environ.get("OCI_STOP_ACTION", "SOFTSTOP").strip().upper())
 
     live: bool = field(default_factory=lambda: _b("DEMO_BROKER_LIVE", False))
+    pin_running: bool = field(default_factory=lambda: _b("DEMO_PIN_RUNNING", False))
     link_token: str = field(default_factory=lambda: os.environ.get("DEMO_LINK_TOKEN", ""))
     bearer_token: str = field(default_factory=lambda: os.environ.get("DEMO_BEARER_TOKEN", ""))
     admin_token: str = field(default_factory=lambda: os.environ.get("DEMO_ADMIN_TOKEN", ""))

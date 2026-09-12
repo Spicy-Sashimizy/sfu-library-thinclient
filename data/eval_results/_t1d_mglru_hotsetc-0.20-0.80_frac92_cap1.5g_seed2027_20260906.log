@@ -1,0 +1,19 @@
+[t1d] cell arm=mglru cap=cap1.5g resident_frac=0.9200 passes=12 seed=2027 R=5120MiB L=1792MiB skew=hotsetc:0.20:0.80
+[t1d] R mapped with MADV_RANDOM (fault-around OFF)
+[t1d] seeded: warmed 1205862 target-resident, R resident 369854/1310720 pages (28.2176%), deficit=940866
+[t1d] skew hotsetc:0.20:0.80: hot set 262144/1310720 pages (20.0000% of R, 1024.0 MiB)
+[t1d] hot layout CLUSTERED: 8 extents @17558+32768 @113406+32768 @218817+32768 @458585+32768 @743895+32768 @804662+32768 @1015510+32768 @1205320+32768
+[t1d] hot-set residency after seed: 74298/262144 pages (28.3424%)
+[t1d] pass 1: majflt 527815  wall 83.572s  R_resident 27.63%  hot_resident 72.07%  hot_touch_frac 0.8002
+[t1d] pass 2: majflt 489357  wall 76.683s  R_resident 27.62%  hot_resident 74.35%  hot_touch_frac 0.7996
+[t1d] pass 3: majflt 483610  wall 77.790s  R_resident 27.62%  hot_resident 74.84%  hot_touch_frac 0.8003
+[t1d] pass 4: majflt 484381  wall 76.430s  R_resident 27.62%  hot_resident 75.04%  hot_touch_frac 0.7998
+[t1d] pass 5: majflt 482308  wall 75.621s  R_resident 27.62%  hot_resident 75.02%  hot_touch_frac 0.8001
+[t1d] pass 6: majflt 483141  wall 75.713s  R_resident 27.62%  hot_resident 75.05%  hot_touch_frac 0.8001
+[t1d] pass 7: majflt 483931  wall 77.274s  R_resident 27.63%  hot_resident 74.93%  hot_touch_frac 0.7994
+[t1d] pass 8: majflt 482884  wall 76.441s  R_resident 27.62%  hot_resident 75.01%  hot_touch_frac 0.8004
+[t1d] pass 9: majflt 483548  wall 77.355s  R_resident 27.62%  hot_resident 74.91%  hot_touch_frac 0.7999
+[t1d] pass 10: majflt 483198  wall 77.763s  R_resident 27.63%  hot_resident 74.99%  hot_touch_frac 0.7997
+[t1d] pass 11: majflt 482905  wall 76.837s  R_resident 27.62%  hot_resident 74.97%  hot_touch_frac 0.7997
+[t1d] pass 12: majflt 482786  wall 76.181s  R_resident 27.62%  hot_resident 74.99%  hot_touch_frac 0.8000
+[t1d] wrote /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/t1d_mglru_hotsetc-0.20-0.80_frac92_cap1.5g_seed2027_20260906.json  converged=False (first pass None)  soundness=False (reachable deficit 350557 of 940866 missing)

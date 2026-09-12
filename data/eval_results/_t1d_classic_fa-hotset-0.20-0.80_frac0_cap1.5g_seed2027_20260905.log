@@ -1,0 +1,5 @@
+[t1d] cell arm=classic cap=cap1.5g resident_frac=0.0000 passes=12 seed=2027 R=5120MiB L=1792MiB skew=hotset:0.20:0.80
+[t1d] R mapped with MADV_NORMAL (fault-around ON)
+[t1d] seeded: warmed 0 target-resident, R resident 0/1310720 pages (0.0000%), deficit=1310720
+[t1d] skew hotset:0.20:0.80: hot set 262144/1310720 pages (20.0000% of R, 1024.0 MiB)
+[t1d] hot-set residency after seed: 0/262144 pages (0.0000%)

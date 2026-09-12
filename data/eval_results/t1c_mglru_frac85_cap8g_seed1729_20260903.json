@@ -1,0 +1,102 @@
+{
+  "protocol": "tier1c",
+  "arm": "mglru",
+  "cap_label": "cap8g",
+  "resident_frac_target": 0.85,
+  "resident_frac_actual": 0.85,
+  "seed": 1729,
+  "r_size_mib": 5120,
+  "l_size_mib": 1792,
+  "r_pages": 1310720,
+  "seed_deficit_pages": 196608,
+  "near_zero": 2500,
+  "converged_first_pass": 2,
+  "converged": true,
+  "soundness_pass1_majflt_eq_deficit": true,
+  "passes": [
+    {
+      "pass": 1,
+      "majflt": 196608,
+      "wall_s": 70.08,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 2,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 3,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 4,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 5,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 6,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 7,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 8,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 9,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 10,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 11,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    },
+    {
+      "pass": 12,
+      "majflt": 0,
+      "wall_s": 0.025,
+      "resident_pages": 1310720,
+      "resident_pct": 100.0
+    }
+  ]
+}

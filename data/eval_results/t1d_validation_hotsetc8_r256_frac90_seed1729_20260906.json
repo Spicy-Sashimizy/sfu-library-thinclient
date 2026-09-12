@@ -1,0 +1,164 @@
+{
+  "protocol": "tier1d",
+  "arm": "unset",
+  "cap_label": "uncapped",
+  "resident_frac_target": 0.9,
+  "resident_frac_actual": 0.899994,
+  "seed": 1729,
+  "r_size_mib": 256,
+  "l_size_mib": 64,
+  "r_pages": 65536,
+  "madvise": "MADV_RANDOM",
+  "fault_around": false,
+  "skew": {
+    "spec": "hotsetc:0.20:0.80",
+    "kind": "hotsetc",
+    "h": 0.2,
+    "m": 0.8,
+    "s": null,
+    "hot_set_pages": 13107,
+    "hot_set_bytes": 53686272,
+    "hot_set_mib": 51.199,
+    "hot_mass_definition": null,
+    "hot_layout": "clustered",
+    "extents": 8,
+    "hot_extents": [
+      [
+        1102,
+        1639
+      ],
+      [
+        3618,
+        1639
+      ],
+      [
+        12375,
+        1639
+      ],
+      [
+        14716,
+        1638
+      ],
+      [
+        20920,
+        1638
+      ],
+      [
+        32865,
+        1638
+      ],
+      [
+        38688,
+        1638
+      ],
+      [
+        57216,
+        1638
+      ]
+    ],
+    "touches_per_pass": 65536,
+    "draw_with_replacement": true,
+    "draw_per_pass_seeded": true,
+    "ranking_seed": 6204892
+  },
+  "seed_deficit_pages": 6554,
+  "hot_resident_pages_after_seed": 11790,
+  "hot_resident_pct_after_seed": 89.9519,
+  "pass1_reachable_deficit_pages": 2466,
+  "near_zero": 2500,
+  "converged_first_pass": 1,
+  "converged": true,
+  "soundness_identity_kind": "skew_reachable_deficit",
+  "soundness_identity_applicable": true,
+  "soundness_pass1_majflt_eq_deficit": true,
+  "soundness_pass1_majflt_eq_full_deficit": false,
+  "passes": [
+    {
+      "pass": 1,
+      "majflt": 2466,
+      "wall_s": 0.444,
+      "touches": 65536,
+      "hot_touch_frac": 0.800446,
+      "resident_pages": 61448,
+      "resident_pct": 93.7622,
+      "hot_resident_pages": 13077,
+      "hot_resident_pct": 99.7711,
+      "distinct_pages_touched": 24437,
+      "touch_count_histogram": {
+        "0": 41099,
+        "1": 11162,
+        "2": 3172,
+        "3": 2708,
+        "4": 2537,
+        "5": 2018,
+        "6": 1387,
+        "7": 754,
+        "8": 394,
+        "9": 197,
+        "10": 64,
+        "11": 31,
+        "12": 8,
+        "13": 4,
+        "14": 1
+      },
+      "hot_mean_touches_per_page": 4.0022888532845045,
+      "cold_mean_touches_per_page": 0.24944210265311184,
+      "hot_distinct_pages_touched": 12844
+    },
+    {
+      "pass": 2,
+      "majflt": 924,
+      "wall_s": 0.171,
+      "touches": 65536,
+      "hot_touch_frac": 0.797867,
+      "resident_pages": 62372,
+      "resident_pct": 95.1721,
+      "hot_resident_pages": 13106,
+      "hot_resident_pct": 99.9924
+    },
+    {
+      "pass": 3,
+      "majflt": 714,
+      "wall_s": 0.135,
+      "touches": 65536,
+      "hot_touch_frac": 0.798096,
+      "resident_pages": 63086,
+      "resident_pct": 96.2616,
+      "hot_resident_pages": 13107,
+      "hot_resident_pct": 100.0
+    },
+    {
+      "pass": 4,
+      "majflt": 517,
+      "wall_s": 0.09,
+      "touches": 65536,
+      "hot_touch_frac": 0.800385,
+      "resident_pages": 63603,
+      "resident_pct": 97.0505,
+      "hot_resident_pages": 13107,
+      "hot_resident_pct": 100.0
+    },
+    {
+      "pass": 5,
+      "majflt": 441,
+      "wall_s": 0.081,
+      "touches": 65536,
+      "hot_touch_frac": 0.796982,
+      "resident_pages": 64044,
+      "resident_pct": 97.7234,
+      "hot_resident_pages": 13107,
+      "hot_resident_pct": 100.0
+    },
+    {
+      "pass": 6,
+      "majflt": 346,
+      "wall_s": 0.084,
+      "touches": 65536,
+      "hot_touch_frac": 0.799683,
+      "resident_pages": 64390,
+      "resident_pct": 98.2513,
+      "hot_resident_pages": 13107,
+      "hot_resident_pct": 100.0
+    }
+  ]
+}

@@ -390,6 +390,10 @@ the strongest result of the Tier-1b run.
 
 ## 16. Where this leaves the publication gate
 
+> **Update 2026-09-05:** superseded on item 1 — the index-independent
+> synthetic reproduction is now **PASSED** by Tier-1d (access skew was the
+> missing variable). See the Tier-1d section, §23–25.
+
 Item 1 (index-independent synthetic repro) is **not passed, and this is now
 a substantive negative result rather than a harness failure.** Tier-1 failed
 because the protocol prevented the phenomenon from appearing; Tier-1b built
@@ -559,3 +563,327 @@ t23a/t23b cells. Recorded 2026-09-01; exploratory, no bars.
   (measured — every converged cell from pass 3); one-shot
   `memory.reclaim`/`MADV_PAGEOUT` of the residue at startup (*est.*,
   unmeasured — candidate for the §5.3/5.4-style follow-up).
+
+---
+
+# Tier-1d (synthetic ACCESS SKEW, WSL2 local) — RESULTS (2026-09-05 judged window)
+
+**Verdicts recorded 2026-09-05 by the session lead (dev container), from the
+8 judged cells `data/eval_results/t1d_*_seed{2027,8128}_20260905.json`
+(user's WSL2 box, kernel 6.18.33.2+, `.wslconfig` 56 GB fixed experiment
+profile, windows W1–W3 15:11:47–16:42:16 local; evidence package committed
+`47f0a7c3`, incl. `_t1d_JUDGED_report_20260905.md`). Judged strictly against
+the §5 bars frozen at `5f55fb32` (`PREREGISTRATION_TIER1D.md`; calibration
+recorded `db11dc44`). Bar inputs: `.venv/bin/python3
+spike/convergence_repro/t1d_bar_inputs.py 20260905` (extractor pinned
+pre-data at `6e9e5612`). Judged seeds 2027/8128 only; calibration seed 1729
+is burned and appears as corroboration.**
+
+## 23. Headline verdicts (Tier-1d)
+
+- **T1d-1 PASS** — the real stack's LRU-arm asymmetry is **reproduced
+  index-independently**: at cap 1.5 GiB (`hot-set < cap < |R|`,
+  `hotset:0.20:0.80`, frac92) the MGLRU/classic steady-floor ratio is
+  **1.443 (seed 2027) and 1.443 (seed 8128)** against the frozen bar ≥1.30.
+  **Publication-gate item 1 is PASSED**: the artifact's arm asymmetry needs
+  only skewed access over a pressured mapping — no seismic index, no real
+  workload. *Citation per the frozen ±16% rule: 1.443/1.30 = +11%, within
+  the margin, so this verdict cites the §4 pageReporting caveat — the
+  control cell (ratio 1.000, identity exact, bit-identical arms) and the
+  in-band 4 GiB cell bound any balloon interference below the noise floor.*
+- **T1d-1b PASS** — mechanism shape confirmed in both replicates: classic
+  descends (floor/pass-1 = 0.643 / 0.644, bar ≤0.75 — cites the caveat,
+  within margin) while MGLRU pins (max pass-2–12 deviation 1.1% / 0.7%,
+  bar ≤5%).
+- **T1d-3 PASS** — regime specificity: 8 GiB control ratio **1.000** (band
+  [0.84, 1.16]), both arms converged (floors 1,581.3 ≤ 2,500, converged
+  pass 10, trajectories bit-identical); 4 GiB band ratio **1.038** (bar
+  ≤1.20, inside Tier-1c's uniform 1.013–1.034). Both cite the caveat per
+  the ±16% arithmetic as frozen. The divergence exists only where skew
+  creates the third regime.
+- **T1d-5 PASSED (validity)** — both `STRICT_SOUNDNESS=1` control cells:
+  reachable identity exact (pass-1 majflt 39,160 == reachable deficit).
+  The window is valid in toto.
+- **T1d-2 recorded:** only h=0.20 ran (the optional cells 9+ were not run —
+  the verdict set consumed the window budget). The skew-threshold sweep
+  stays open, non-gating: at h=0.20 the ratio clause holds in both seeds.
+- **T1d-4 recorded:** S-inversion cells not run (cells 9+). Trajectory
+  shape recorded: classic shows a majflt **minimum at pass 5** (~305–306k,
+  coinciding with the hot-residency transient peak ~95% at pass 4) before
+  settling at ~335k — non-monotone, same shape as calibration.
+
+## 24. The numbers + the first hot-set-residency capture
+
+Steady floor = mean majflt of last 3 of 12 passes:
+
+| cap | seed | classic floor | mglru floor | MGLRU/classic |
+|---|---|---|---|---|
+| 1.5 GiB | 2027 | 334,678 | 482,884 | **1.443** |
+| 1.5 GiB | 8128 | 334,868 | 483,204 | **1.443** |
+| 8 GiB (control) | 2027 | 1,581 | 1,581 | 1.000 |
+| 4 GiB | 2027 | 105,628 | 109,591 | 1.038 |
+
+Replication is tight everywhere: classic 1.5 GiB floors within 0.06% across
+seeds, MGLRU within 0.07%, and all four rungs land within 0.1% of the
+calibration values (1.442 / 1.000 / 1.037 at seed 1729).
+
+Per-pass `hot_resident_pct` (T1d-7 readout 4, first capture — the field
+landed in `b3a9377a` after the calibration window): **classic climbs
+~73% → ~90%** (transient peak ~95% at pass 4, the majflt minimum following
+at pass 5) while **MGLRU pins at 75.0% flat from pass 2**, identically in
+both seeds (after-seed hot residency ~28%, matching whole-R — the seed is
+skew-independent as designed). This is the Tier-2/3 §22 mechanism
+photographed in the synthetic: classic re-promotes refaulting hot pages
+(ws_activate ≈ ws_refault on the real stack), MGLRU never does.
+
+Deviations (full list in `_t1d_JUDGED_report_20260905.md`): the three-window
+`systemd-run` split for `STRICT_SOUNDNESS` scoping (structural, pre-flagged);
+the 4 GiB pass-11/12 uptick **recurred both arms in the calibration's shape**
+(passes 3–10 plateau ~89k/~90k; the last-3 floor definition includes the
+uptick, inflating both floors together — the ratio bar is insensitive to it,
+but any future *absolute*-floor use of the 4 GiB cells must exclude passes
+11–12); environment matched calibration (all containers running); no reboot
+(boot verified carrying the profile); dmesg pageReporting line still present
+(the §4 standing caveat, cited above where the ±16% rule requires).
+
+## 25. Result files (Tier-1d)
+
+Judged cells (committed `47f0a7c3`): 8 × `t1d_{classic,mglru}_hotset-0.20-0.80_frac92_cap{1.5g,8g,4g}_seed{2027,8128}_20260905.json`
++ 16 `.log`/`.status` + runlog `_t1d_runWSL2_20260905.log` + evidence report
+`_t1d_JUDGED_report_20260905.md`. Calibration (seed 1729, exploratory):
+committed `9ac830a3`/`3cf39d7c`, recorded in the pre-reg §4 (`db11dc44`).
+Verdict tool: `spike/convergence_repro/t1d_bar_inputs.py` at `6e9e5612`
+(committed before any judged cell existed). Bars: `PREREGISTRATION_TIER1D.md`
+§5 frozen at `5f55fb32`. Still open in the Tier-1d line, non-gating:
+S-realprofile (§3.6, severed pending §6 gap 3 + the OCI billing decision) and
+the recorded-only cells 9+ (T1d-2 sweep, sub-hot-set rung, fault-around pair,
+S-inversion) — available to a later window, none gates a verdict above.
+
+> **Update 2026-09-06:** the recorded-only cells 9+ have now run
+> (characterization windows T1d-11/13/14/15/16, 2026-09-05/06) — readouts
+> recorded in §26–29 below. T1d-12 (clustered × readahead) remains the one
+> deferred window. S-realprofile unchanged, still severed.
+> **Update 2026-09-06 (later):** T1d-12 and T1d-17 have now also run —
+> readouts §30–31; **the Tier-1d line is settled** (§31), no window queued.
+
+---
+
+# Tier-1d CHARACTERIZATION windows (recorded-only) — readouts recorded 2026-09-06
+
+**Recorded 2026-09-06 by the session lead (dev container), from the evidence
+package committed `226adecc` (host-ops session, user's WSL2 box, same 12:50
+boot and 56 GB experiment profile as the judged window; windows W1–W7b,
+17:07 2026-09-05 → 00:19 2026-09-06 local; seed 2027 only). Everything in
+§26–29 is recorded-only under the frozen §5 — no bar verdict in §23 changes.
+Full per-window detail, freshness tokens, wall times and the complete
+deviation list: `data/eval_results/_t1d_CHAR_report_20260905.md`. 20 of 26
+attempted cells completed with JSONs; the 6 sheds are all six fault-around
+cells, rc=124 at exactly `CELL_TIMEOUT=1800 s`, and that uniform shed is
+itself the S-faultaround readout (§28).**
+
+## 26. T1d-2 sweep + sub-hot-set rung: the divergence is a peaked curve
+
+Steady floors (mean majflt, last 3 of 12 passes), frac92, m=0.80, seed 2027:
+
+| h (hot set) | cap | classic floor | mglru floor | MGLRU/classic |
+|---|---|---|---|---|
+| 0.05 (256 MiB) | 1.5G | 212,056.3 | 242,654.7 | 1.144 |
+| 0.10 (512 MiB) | 1.5G | 220,041.0 | 310,562.7 | 1.411 |
+| 0.20 (1 GiB) — judged §24 | 1.5G | 334,678.3 | 482,884.0 | 1.443 |
+| 0.40 (2 GiB > cap) | 1.5G | 678,079.0 | 765,387.3 | 1.129 |
+| 0.20 (1 GiB > cap) | 0.75G | 747,213.0 | 834,555.0 | 1.117 |
+
+The arm asymmetry needs a hot set **big enough to be contested, small enough
+to fit**. `hot_resident_pct` carries the mechanism: classic climbs to
+~90–100% wherever the hot set fits (h ≤ 0.20) while MGLRU churns lower;
+where the hot set exceeds the cap (h=0.40, or cap 0.75G) both arms sit at
+~44–58% residency and the ratio collapses into the ±16% noise band. On the
+skew-threshold question this brackets the rise between h=0.05 (1.144,
+borderline vs ±16%) and h=0.10 (1.411, clearly out) at this cap —
+narrowed, not closed. Caveat from the CHAR report: the h=0.05 pair is the
+least stable measurement in the sweep (end-of-run upticks, classic pass-12
+238,128 against a ~198k plateau; mglru noisy 210k–259k with no plateau), so
+1.144 is soft in a way the other rows are not.
+
+## 27. S-inversion: closed NEGATIVE in all three forms attempted
+
+The synthetic inversion gap was chased through three successive forms in one
+night, each triggered by the previous readout, and every form came back
+negative:
+
+1. **Deficit form (T1d-11 pri 1):** `classic:70:1.5` ≡ the judged
+   `classic:92:1.5` — floor 334,564.7 vs 334,678.3, fixed-pass trajectories
+   identical within noise. Under a binding cap both frac settings seed to
+   the same cap-determined ~28.6% residency; the deficit-size manipulation
+   is **inoperative**.
+2. **Cap-pair form, no residue (T1d-13):** classic at 6.5/7/7.5 GiB all
+   bit-identical to the 8 GiB control (floor 1,581.3, converged pass 10) —
+   at any cap > |R| with L cold there is **no transient at all**; the cap
+   never binds.
+3. **Residue form (T1d-15, `--warm-l`, the closest analog to B3):** L warmed
+   to 100% as a 1.75 GiB residue before R's seed. The residue IS displaced,
+   in a clean cap ladder (end-of-run `l_resident_pct` ~23.1% @5.5G, ~51.7%
+   @6G, ~80.2% @6.5G, 100% @8G control) — but the displacement is
+   **costless to R**: majflt trajectories and per-pass walls bit-identical
+   to the control at every cap. No B3 signature; the tighter cap neither
+   sorts earlier nor converges faster at the fixed window. Arm contrast
+   near-nil, and slightly *contra* the §22 expectation: MGLRU holds
+   ~0.9–1.0 points **less** of the residue than classic at both caps.
+
+Mechanistic reading (recorded, not judged): in this synthetic the residue
+sort lands **during R's seed** — pass-1 `l_resident_pct` is already at the
+cap-determined level — so the sort's work is finished before the first
+measured pass, and L, never re-touched, refaults nothing. B3 on the real
+stack is the opposite arrangement: §22 measured the sort landing **inside
+the fixed window** (28 G: pass-2 scan 3.3M / refault 3.0M), which is what
+made the smaller cap faster. Reproducing the inversion synthetically would
+require a form in which the displacement work is deferred into the measured
+passes (e.g. a residue that is itself re-referenced, or a seed that leaves
+the sort incomplete) — a new driver design, for a future pre-registration if
+ever; no current form supports it.
+
+## 28. S-faultaround + the amplification chain: the first factor is ≳30× per-fault cost
+
+All six fault-around cells (frac92 seeded 1.5G, cold-start 1.5G, cold-start
+2.5G fallback; both arms) failed rc=124 at exactly 1800 s with **zero
+completed passes** — the seeded pair hung in the seed loop, the cold pairs
+seeded cleanly and never finished pass 1. The same cells under
+`MADV_RANDOM` run ~40–75 s/pass. Recorded readout: **with readahead on,
+under a binding cap, per-pass wall is amplified >30× before any arm
+asymmetry enters.** This is the night's principal input to the 1.44×→220×
+amplification-chain gap: the real stack's ~220× (§21) has the shape
+(fault-count ratio ~1.44×) × (per-fault cost amplification of this order),
+and the second factor is now measured to exist at the right magnitude in
+the synthetic. Per the T1d-14 rule the timeout was never raised; the branch
+closed at the fallback rung with `.log`/`.status` as the evidence (no JSONs
+exist for any fa cell). The remaining piece of the chain is the T1d-12
+clustered-hot-set 2×2 (does clustering alone move the 1.44×; does
+clustered+readahead compound), deferred — its driver prerequisite
+(`7bc29b30`, `hotsetc`) is already in this checkout.
+
+## 29. T1d-16: stock MGLRU is not rescuable by `min_ttl_ms` at the divergence rung
+
+`mglru:92:1.5:2027` re-run under window-level `MIN_TTL_MS` 1000 and 4000
+(sysfs boot value 0 restored and echoed after each window): floors 483,013.7
+and 483,021.7 vs the judged 482,884.0 baseline — no effect, either
+direction, and the 75.0% `hot_resident_pct` pin is untouched (71.98% pass 1
+→ 75.0 flat, both values). The knob neither rescues nor backfires at this
+rung: the divergence is not a configuration artifact of generation
+lifetimes, consistent with the §22/§24 mechanism (the missing
+refault-activation is what pins the hot set, and `min_ttl_ms` does not
+touch promotion). Run under the user's explicit no-time-cap instruction,
+superseding HOST_RUN.md T1d-16's 3-hour-budget line (deviation recorded in
+the CHAR report).
+
+**Where this leaves the Tier-1d line (recorded 2026-09-06):** all §23
+verdicts stand unchanged. Of the three characterization gaps: the
+**skew threshold** is narrowed to a measured peaked curve (§26); the
+**synthetic inversion** is closed negative in every form the current driver
+supports (§27); the **amplification chain** has its first factor measured
+(§28) with the T1d-12 corners as the one remaining queued window.
+S-realprofile stays severed behind §6 gap 3 (real-access-histogram probe,
+OCI billing decision). Host note: the user's `.wslconfig` still carries the
+56 GB experiment profile; the revert to the everyday 32 GB block is pending
+until the Tier-1d window is declared settled (T1d-12 would reuse the same
+profile).
+
+Result files (all committed `226adecc`): 21 cell JSONs
+(`..._20260905.json` × 20 + `..._ttl4000_20260906.json` — the ttl4000
+window crossed midnight, so its files carry the 20260906 stamp),
+`.log`/`.status` pairs for all 26 attempted cells (the six fa logs are the
+fa evidence), runlogs `_t1d_runWSL2_20260905.log` (appended) and
+`_t1d_runWSL2_20260906.log`, and the evidence report
+`data/eval_results/_t1d_CHAR_report_20260905.md`.
+
+## 30. T1d-17: the synthetic inversion is closed NEGATIVE in its final form — the in-window, pressure-proportional sort costs R nothing
+
+**Recorded 2026-09-06 by the session lead (dev container), from the evidence
+package committed `00a528ea` (host-ops session, windows W1/W2,
+12:08–14:09 local 2026-09-06, same 56 GB experiment-profile boot; seed 2027
+only; recorded-only under the frozen §5 — no §23 verdict changes). Full
+detail: `data/eval_results/_t1d_CHAR_report_20260906.md`.**
+
+T1d-17 ran the corrected cold-start residue form (`frac0` + `wl:` — R 5 GiB
+laid down cold through the skewed draw, L 1.75 GiB pre-warmed to 100% as
+residue, displacement scheduled by pressure inside the measured window):
+6/6 cells DONE, walls 255–276 s, no sheds. The §27 defect is fixed **and
+observably so**: `l_resident_pct` now declines in-window and
+pressure-proportionally (8 GiB control flat at 100%; 6.5 GiB → 90.7%;
+6 GiB → 62.5%; 5.5 GiB → ~33% by pass 12) — the sort happens where the
+fixed window can see it. And still no inversion: the majflt trajectories
+are **bit-identical across all four caps and both arms** (pass 1→12:
+488,890 / 185,803 / 140,584 / … / 14,938; walls identical within noise), so
+at the fixed pass-2/pass-3 window the tighter cap looks neither better nor
+worse. Mechanism: reclaim — classic AND mglru — victimizes the
+never-retouched L pages exclusively and never evicts R, so the residue sort
+has zero majflt/wall cost to the measured workload. The arm contrast on
+residue sorting is null too (~1 pp; mglru DOES demote the residue here,
+unlike the real stack's §22 behavior — the missing-refault-activation
+asymmetry needs re-touched pages to bite, and a pure residue never
+re-touches).
+
+**Where this leaves the inversion:** closed negative in every form the
+current driver can express — cap-pair (§26/T1d-13), warm-residue (§27
+/T1d-15), cold-start (T1d-14), and now cold-start+residue with the sort
+in-window (this section). The B3 real-stack observation (§1) stands as an
+observation; a synthetic reproduction, if pursued at all, requires
+ingredients beyond this harness (plausibly the real stack's re-touched
+residue) and a fresh pre-registration (Tier-1e) per HOST_RUN.md T1d-17.
+Nothing judged.
+
+## 31. T1d-12: clustering alone moves nothing — the four-corner table closes, and the Tier-1d line is SETTLED
+
+Same evidence package (`00a528ea`, W2). The two clustered/no-readahead
+corners: floors classic **334,788.3** / mglru **482,963.0** → ratio
+**1.443**, replicating the scattered judged floors (334,678.3 / 482,884.0 →
+1.443) to **0.03%** in both arms; fixed-pass values and end-state hot
+residency match likewise (classic ~90%, mglru pinned 75.0%). **Reclaim on
+this kernel is layout-blind at this rung under MADV_RANDOM** — clustering
+contributes nothing to the 1.44×→~220× amplification chain on its own.
+
+The compounding corner (clustered + readahead) is **unmeasurable in this
+harness at this rung**: both `fa:hotsetc` cells shed rc=124 at exactly
+1800 s inside the seeding loop, zero pass lines — the identical signature
+as all six 20260905 fa sheds. Fault-around sheds are now **8-for-8 uniform
+across layouts (scattered/clustered), frac forms (92/0), and caps
+(1.5/2.5 G)**, and that uniformity is itself the S-faultaround readout
+(§28): readahead under a binding cap thrashes before measurement can begin,
+dominating any layout effect.
+
+Four-corner table (rung 1.5 GiB, frac92, h=0.20 m=0.80, seed 2027):
+
+| layout \ readahead | MADV_RANDOM | fault-around |
+|---|---|---|
+| scattered | 1.443 (judged T1d-10) | SHED ×2 (20260905) |
+| clustered | 1.443 (this window) | SHED ×2 (20260906) |
+
+**Tier-1d line declared SETTLED (2026-09-06).** All §23 verdicts stand
+unchanged; every queued window (T1d-11 through T1d-17) has run and its
+readout is recorded (§26–31); no window remains queued. Still open,
+non-gating, outside the line: S-realprofile (severed behind §6 gap 3 + the
+OCI billing decision) and any Tier-1e pre-registration a future inversion
+pursuit would need. Host follow-up now unblocked: the `.wslconfig` revert
+from the 56 GB experiment profile to the everyday 32 GB block (needs a
+`wsl --shutdown` hygiene-reboot slot; user timing).
+
+Result files (all committed `00a528ea`): 8 cell JSONs + `.log`/`.status`
+for all 10 attempted cells (the two fa sheds have `.log`/`.status` only),
+runlog `_t1d_runWSL2_20260906.log` (appended), and the evidence report
+`data/eval_results/_t1d_CHAR_report_20260906.md`.
+
+## 32. T1d-probe (2026-09-12): the real index's access histogram — gap 3 CLOSED, real skew is `hotset:0.10:0.80` on forward pages, hot set barely clustered
+
+Recorded 2026-09-12 from `PREREGISTRATION_T1D_PROBE.md` §7 (frozen) / §8
+(results); raw `data/eval_results/t1dprobe_*_20260912.*` (commit
+`14ceea4d`); chart
+https://claude.ai/code/artifact/e0be4531-9061-43bc-8c5b-95cfe1d62eaa.
+Counting probe, local, no OCI cost; two 1,000-draw replays byte-identical
+(determinism PASS). Readouts: hot-80 = **10.4%** of forward pages / 3.21 GB
+(Q12b 2026-07-14: 3.07 GB); mass at synthetic h = 0.05/0.10/0.20 →
+0.589/0.789/0.961 — the judged `hotset:0.20:0.80` cells drew a *softer*
+skew than the real index shows on the forward-page denominator (real ≈
+`0.10:0.80`, the T1d-11 sweep rung); hot-80 clustering 446,508 extents,
+run p50 1 / p90 3 / max 266, only 1.57× tighter than random placement, so
+the T1d-12 `hotsetc` E=8 arm over-models contiguity. No verdict moves;
+S-realprofile stays severed only on the driver import mode and the
+initial-residency profile (§8.3 there).

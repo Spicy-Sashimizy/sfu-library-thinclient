@@ -139,6 +139,35 @@ did not take, `exit 4` fio failed. All three were exercised (§4).
 | swap device present on host | yes, 16 GiB (`/dev/sdc`), unused (0) |
 | RAM | 56 GiB total, ~53 GiB free during the runs |
 
+> **AMENDMENT 2026-09-05 — the kernel row above is now HISTORICAL.** The table
+> records the box as it was on 2026-08-31 and is correct as history; two rows
+> no longer describe the running system. The WSL2 VM now boots a **custom
+> kernel**: `uname -r` = `6.18.33.2-microsoft-standard-WSL2+` (trailing `+`;
+> the 2026-08-31 stock kernel had none), built with `CONFIG_LRU_GEN=y`,
+> `CONFIG_LRU_GEN_ENABLED=y`, `CONFIG_LRU_GEN_WALKS_MMU=y`. Therefore
+> `/sys/kernel/mm/lru_gen/enabled` is **present and reads `0x0007`** — MGLRU is
+> compiled in *and* default-ON, i.e. this box's everyday reclaim policy is now
+> MGLRU, not the classic two-list LRU this spike was originally scoped to.
+> Measured 2026-09-05 from the dev container. VM memory is 56 GB fixed with
+> ~54 GB available.
+>
+> What this does and does not change:
+> * **Nothing about the committed Tier-1 / Tier-1b / ES cells.** They ran on
+>   2026-08-31 under the stock classic-LRU kernel, exactly as their JSONs and
+>   §6's "WSL2 / classic-LRU only" limitation record. They are not invalidated
+>   and must not be re-judged against the new kernel.
+> * **§6's limitation is lifted for NEW work only:** the MGLRU arm
+>   (publication-gate item 3) is now available locally, which is what unblocks
+>   the Tier-1d windows.
+> * **The dev container still cannot run capped cells** — re-verified
+>   2026-09-05: `/sys/fs/cgroup` is still `ro`, `/sys` is mounted read-only so
+>   `lru_gen/enabled` is readable but **not writable** from here, and
+>   `/proc/sys/vm/drop_caches` is root-only (container uid 1000, `CapEff: 0`).
+>   Tier-1d windows run as root **in the Ubuntu WSL2 distro** via
+>   `t1d_wsl2_orchestrator.sh`; see the Tier-1d section of `HOST_RUN.md`.
+> * The console capture in §4.3 below (`kernel : …WSL2`, `lru_gen : absent`) is
+>   a verbatim 2026-08-31 artefact and is left untouched for the same reason.
+
 ### Why docker could not be used here (the failed-environment-fact detail)
 
 Reproducible chain of evidence:

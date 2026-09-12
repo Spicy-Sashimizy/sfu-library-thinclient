@@ -1,0 +1,50 @@
+[00:00:16] min_ttl_ms=4000 for this window (boot value 0, restored on exit)
+[00:00:16] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), min_ttl_ms=4000, cells=[mglru:92:1.5:2027:hotset:0.20:0.80]
+[00:00:16] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[00:00:16] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[00:00:32] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl4000 starting (elapsed 16s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotset:0.20:0.80)
+[00:19:29] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl4000 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[00:19:29] cell mglru/hotset-0.20-0.80_frac92_cap1.5g_seed2027_ttl4000 DONE
+[00:19:29] tier1d(WSL2) window complete
+[00:19:30] RESTORED: lru_gen=0x0007 min_ttl_ms=0 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[12:08:41] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:0:6.5:2027:wl:hotset:0.20:0.80 classic:0:5.5:2027:wl:hotset:0.20:0.80 classic:0:8:2027:wl:hotset:0.20:0.80 classic:0:6:2027:wl:hotset:0.20:0.80 mglru:0:6.5:2027:wl:hotset:0.20:0.80 mglru:0:5.5:2027:wl:hotset:0.20:0.80]
+[12:08:41] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[12:08:41] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.3s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[12:08:58] cell classic/wl-hotset-0.20-0.80_frac0_cap6.5g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.0000 cap=6.5G skew=hotset:0.20:0.80 warm-l=ON)
+[12:13:17] cell classic/wl-hotset-0.20-0.80_frac0_cap6.5g_seed2027 DONE
+[12:13:18] cell classic/wl-hotset-0.20-0.80_frac0_cap5.5g_seed2027 starting (elapsed 276s, lru_gen 0x0000, frac=0.0000 cap=5.5G skew=hotset:0.20:0.80 warm-l=ON)
+[12:17:32] cell classic/wl-hotset-0.20-0.80_frac0_cap5.5g_seed2027 DONE
+[12:17:33] cell classic/wl-hotset-0.20-0.80_frac0_cap8g_seed2027 starting (elapsed 531s, lru_gen 0x0000, frac=0.0000 cap=8G skew=hotset:0.20:0.80 warm-l=ON)
+[12:21:51] cell classic/wl-hotset-0.20-0.80_frac0_cap8g_seed2027 DONE
+[12:21:52] cell classic/wl-hotset-0.20-0.80_frac0_cap6g_seed2027 starting (elapsed 790s, lru_gen 0x0000, frac=0.0000 cap=6G skew=hotset:0.20:0.80 warm-l=ON)
+[12:26:08] cell classic/wl-hotset-0.20-0.80_frac0_cap6g_seed2027 DONE
+[12:26:09] cell mglru/wl-hotset-0.20-0.80_frac0_cap6.5g_seed2027 starting (elapsed 1047s, lru_gen 0x0007, frac=0.0000 cap=6.5G skew=hotset:0.20:0.80 warm-l=ON)
+[12:30:24] cell mglru/wl-hotset-0.20-0.80_frac0_cap6.5g_seed2027 DONE
+[12:30:25] cell mglru/wl-hotset-0.20-0.80_frac0_cap5.5g_seed2027 starting (elapsed 1303s, lru_gen 0x0007, frac=0.0000 cap=5.5G skew=hotset:0.20:0.80 warm-l=ON)
+[12:34:45] cell mglru/wl-hotset-0.20-0.80_frac0_cap5.5g_seed2027 DONE
+[12:34:45] tier1d(WSL2) window complete
+[12:34:46] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)
+[12:36:02] tier1d(WSL2) start: deadline 5400s, cell timeout 1800s, R=5120MiB L=1792MiB passes=12, driver=t1d_cell.py protocol=tier1d, boot lru_gen=0x0007 (restore target 0x0007), cells=[classic:92:1.5:2027:hotsetc:0.20:0.80 mglru:92:1.5:2027:hotsetc:0.20:0.80 classic:92:1.5:2027:fa:hotsetc:0.20:0.80 mglru:92:1.5:2027:fa:hotsetc:0.20:0.80]
+[12:36:02] NOTE: lru_gen + drop_caches are VM-GLOBAL (docker-desktop shares this kernel); run windows at a quiet time
+[12:36:02] laydown: R=5120MiB L=1792MiB in /var/tmp/t1d_scratch (ext4 rootfs)
+[t1d] cell arm=unset cap=uncapped resident_frac=1.0000 passes=12 seed=1729 R=5120MiB L=1792MiB skew=uniform
+[t1d] laydown done in 15.7s (R=5120MiB L=1792MiB, non-sparse)
+[t1d] laydown-only: R/L created, exiting
+[12:36:18] cell classic/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 16s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotsetc:0.20:0.80)
+[12:51:02] cell classic/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[12:51:02] cell classic/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 DONE
+[12:51:02] cell mglru/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 900s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotsetc:0.20:0.80)
+[13:09:42] cell mglru/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 soundness identity false (expected when the cap binds during seeding) — kept, judged on floor per T1d-5
+[13:09:42] cell mglru/hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 DONE
+[13:09:43] cell classic/fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 2020s, lru_gen 0x0000, frac=0.9200 cap=1.5G skew=hotsetc:0.20:0.80 fault-around=ON)
+[13:39:43] cell classic/fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_classic_fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027_20260906.log)
+[13:39:43] cell mglru/fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 starting (elapsed 3821s, lru_gen 0x0007, frac=0.9200 cap=1.5G skew=hotsetc:0.20:0.80 fault-around=ON)
+[14:09:43] cell mglru/fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027 FAIL rc=124 (see /mnt/c/Users/<user>/claudebox-projects/sfu-library-thinclient/data/eval_results/_t1d_mglru_fa-hotsetc-0.20-0.80_frac92_cap1.5g_seed2027_20260906.log)
+[14:09:43] tier1d(WSL2) window complete
+[14:09:44] RESTORED: lru_gen=0x0007 apt-timers=[ apt-daily.timer apt-daily-upgrade.timer] scratch-removed (exit rc=0)

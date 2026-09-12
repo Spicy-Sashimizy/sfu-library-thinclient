@@ -75,10 +75,14 @@ a Cloudflare tunnel (pattern already proven for ntfy). Cost ≈ 0.
   exactly the levers — no-residue load + warmup — that shrink the serving
   need toward the 13.8 GB hot set + ~1 GB anon. If S1 passes, ~16–20 GB
   of free NAS RAM serves the full 150M index (*est.* until phase B).
-- **Decision inputs needed from user:** NAS CPU (x86-64-v3 capable?),
-  total/free RAM, free disk (need ~130 GB), upload bandwidth (query
-  responses are small — JSON — so residential uplink is likely fine;
-  page/asset serving could stay on the OCI landing box or CF cache).
+- **NAS specs (measured over SSH 2026-09-02):** x86_64, 4 cores, 23 GiB
+  RAM with only ~6 GiB available (apps resident), ~1.9 TB free on MAIN
+  (existing `MAIN/sfu-library-mcp` dataset). Consequence: parallel
+  serving (needs ≥25 GB cold) is OUT; option C is viable ONLY in
+  sequential-federation mode (WI-1 measured peak RssFile 0.023× parallel
+  ≈ sub-GB; warm p50 5.29×) — decided by the phase A″ L4/L41 cells.
+  Still needed from user: uplink bandwidth, and whether ~6 GiB may be
+  reserved for a serving container.
 - Broker fit: `DEMO_CLOUD` abstraction exists (do|oci); a "local/NAS"
   driver (wake = nothing or container start) is new but small code.
 - Role if adopted: default tier for casual visits (free, always-warm),

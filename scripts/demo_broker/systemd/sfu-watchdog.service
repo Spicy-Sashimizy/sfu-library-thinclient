@@ -1,0 +1,21 @@
+# Read-only demo watchdog (watchdog.py): OCI instance state + serve/broker
+# /health -> ntfy on change, daily heartbeat. Never issues an instance action.
+# Fired by sfu-watchdog.timer every 5 min; same EnvironmentFile as the broker.
+#
+# Install (on the broker box):
+#   sudo cp sfu-watchdog.service sfu-watchdog.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-watchdog.timer
+
+[Unit]
+Description=SFU demo watchdog (read-only liveness probe -> ntfy)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/demo_broker
+EnvironmentFile=/home/ubuntu/demo_broker/demo.env
+ExecStart=/home/ubuntu/broker-venv/bin/python3 watchdog.py
+NoNewPrivileges=true
+MemoryMax=128M

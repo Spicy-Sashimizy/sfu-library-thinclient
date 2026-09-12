@@ -1,0 +1,6 @@
+[t1c] cell arm=mglru cap=cap4.5g resident_frac=0.9200 passes=12 seed=1729 R=5120MiB L=1792MiB
+[t1c] seeded: warmed 1205862 target-resident, R resident 1155062/1310720 pages (88.1242%), deficit=155658
+[t1c] pass 1: majflt 272193  wall 100.560s  R_resident 87.71%
+[t1c] pass 2: majflt 313015  wall 111.015s  R_resident 87.72%
+[t1c] pass 3: majflt 320907  wall 112.580s  R_resident 87.72%
+[t1c] pass 4: majflt 312155  wall 108.911s  R_resident 87.73%

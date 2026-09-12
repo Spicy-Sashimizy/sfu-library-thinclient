@@ -1,0 +1,170 @@
+{
+  "protocol": "tier1d",
+  "arm": "mglru",
+  "cap_label": "cap2.5g",
+  "resident_frac_target": 0.92,
+  "resident_frac_actual": 0.482126,
+  "seed": 1729,
+  "r_size_mib": 5120,
+  "l_size_mib": 1792,
+  "r_pages": 1310720,
+  "madvise": "MADV_RANDOM",
+  "fault_around": false,
+  "skew": {
+    "spec": "hotset:0.20:0.80",
+    "kind": "hotset",
+    "h": 0.2,
+    "m": 0.8,
+    "s": null,
+    "hot_set_pages": 262144,
+    "hot_set_bytes": 1073741824,
+    "hot_set_mib": 1024.0,
+    "hot_mass_definition": null,
+    "touches_per_pass": 1310720,
+    "draw_with_replacement": true,
+    "draw_per_pass_seeded": true,
+    "ranking_seed": 6204892
+  },
+  "seed_deficit_pages": 678788,
+  "pass1_reachable_deficit_pages": 254134,
+  "near_zero": 2500,
+  "converged_first_pass": null,
+  "converged": false,
+  "soundness_identity_kind": "skew_reachable_deficit",
+  "soundness_identity_applicable": true,
+  "soundness_pass1_majflt_eq_deficit": false,
+  "soundness_pass1_majflt_eq_full_deficit": false,
+  "passes": [
+    {
+      "pass": 1,
+      "majflt": 352328,
+      "wall_s": 53.562,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799633,
+      "resident_pages": 624516,
+      "resident_pct": 47.6468,
+      "distinct_pages_touched": 489531,
+      "touch_count_histogram": {
+        "0": 821189,
+        "1": 223481,
+        "2": 64000,
+        "3": 53476,
+        "4": 51386,
+        "5": 41056,
+        "6": 27195,
+        "7": 15522,
+        "8": 7808,
+        "9": 3488,
+        "10": 1360,
+        "11": 515,
+        "12": 163,
+        "13": 55,
+        "14": 20,
+        "15": 5,
+        "16+": 1
+      },
+      "hot_mean_touches_per_page": 3.9981651306152344,
+      "cold_mean_touches_per_page": 0.2504587173461914,
+      "hot_distinct_pages_touched": 257297
+    },
+    {
+      "pass": 2,
+      "majflt": 218009,
+      "wall_s": 34.659,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799137,
+      "resident_pages": 624093,
+      "resident_pct": 47.6145
+    },
+    {
+      "pass": 3,
+      "majflt": 291975,
+      "wall_s": 45.345,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79976,
+      "resident_pages": 624228,
+      "resident_pct": 47.6248
+    },
+    {
+      "pass": 4,
+      "majflt": 272323,
+      "wall_s": 41.603,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799965,
+      "resident_pages": 624295,
+      "resident_pct": 47.6299
+    },
+    {
+      "pass": 5,
+      "majflt": 229239,
+      "wall_s": 34.67,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79933,
+      "resident_pages": 624286,
+      "resident_pct": 47.6292
+    },
+    {
+      "pass": 6,
+      "majflt": 306763,
+      "wall_s": 46.86,
+      "touches": 1310720,
+      "hot_touch_frac": 0.79996,
+      "resident_pages": 624233,
+      "resident_pct": 47.6252
+    },
+    {
+      "pass": 7,
+      "majflt": 246574,
+      "wall_s": 37.266,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800149,
+      "resident_pages": 624279,
+      "resident_pct": 47.6287
+    },
+    {
+      "pass": 8,
+      "majflt": 258792,
+      "wall_s": 39.211,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799693,
+      "resident_pages": 624063,
+      "resident_pct": 47.6122
+    },
+    {
+      "pass": 9,
+      "majflt": 289756,
+      "wall_s": 43.199,
+      "touches": 1310720,
+      "hot_touch_frac": 0.799675,
+      "resident_pages": 624091,
+      "resident_pct": 47.6144
+    },
+    {
+      "pass": 10,
+      "majflt": 243052,
+      "wall_s": 36.868,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800043,
+      "resident_pages": 624263,
+      "resident_pct": 47.6275
+    },
+    {
+      "pass": 11,
+      "majflt": 277906,
+      "wall_s": 40.938,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800092,
+      "resident_pages": 624153,
+      "resident_pct": 47.6191
+    },
+    {
+      "pass": 12,
+      "majflt": 268990,
+      "wall_s": 41.281,
+      "touches": 1310720,
+      "hot_touch_frac": 0.800233,
+      "resident_pages": 624151,
+      "resident_pct": 47.6189
+    }
+  ]
+}
