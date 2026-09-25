@@ -11,6 +11,7 @@ Endpoints:
   GET  /analytics  — Research-analytics dashboard data bundle (Phase N GUI tracking).
                      Optional ?panel=<name> for a single panel.
   POST /engagement — Record click-through / engagement events (one or a batch).
+  POST /api/search_stream — SSE draft → final search (SFU_SEARCH_DRAFT_STREAM).
 """
 
 import asyncio
@@ -41,7 +42,9 @@ from lib.tools import (
     TOOL_DEFINITIONS,
     get_tool_definitions,
     handle_tool_call,
+    reset_metric_session,
     search_academic_structured,
+    set_metric_session,
 )
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
@@ -62,7 +65,29 @@ async def list_tools() -> list[Tool]:
 
 @mcp_server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
-    return await handle_tool_call(name, arguments)
+    token = set_metric_session(_mcp_http_session_id())
+    try:
+        return await handle_tool_call(name, arguments)
+    finally:
+        reset_metric_session(token)
+
+
+def _mcp_http_session_id() -> str | None:
+    """The ``mcp-session-id`` header of the current MCP HTTP request, if any.
+
+    Never raises: outside a request, or when the client sent no header
+    (this server runs the session manager stateless), returns None so the
+    metrics log falls back to the per-process session id.
+    """
+    try:
+        request = mcp_server.request_context.request
+        headers = getattr(request, "headers", None)
+        if headers is None:
+            return None
+        value = headers.get("mcp-session-id")
+        return str(value)[:64] if value else None
+    except Exception:
+        return None
 
 
 _WARMUP_STATE = {"state": "disabled"}
@@ -222,7 +247,8 @@ async def health_check(request: Request) -> JSONResponse:
         "tools": len(TOOL_DEFINITIONS),
         "warm": state != "warming",
         "warmup": state,
-        "sequential": os.environ.get("SFU_SEQUENTIAL_MODE", "0") not in ("", "0", "false", "False", "off", "OFF"),
+        "sequential": _sequential_mode(),
+        "search_draft_stream": _draft_stream_enabled(),
         "result_cache": result_cache.counters(),
         "cache_preseed": _PRESEED_STATE["state"],
         "speculation": speculation.counters(),
@@ -304,6 +330,18 @@ async def api_search(request: Request) -> JSONResponse:
     if not isinstance(args, dict) or not args.get("query"):
         return JSONResponse({"error": "missing 'query'"}, status_code=400)
 
+    cache, key, cached = _search_cache_lookup(args)
+    if cached is not None:
+        return JSONResponse(cached)
+    return await _search_cache_miss(args, cache, key)
+
+
+def _search_cache_lookup(args: dict):
+    """The read-through cache probe shared by ``api_search`` and
+    ``api_search_stream``: returns ``(cache, key, cached)``. On a hit the hit
+    counters, the cache-hit context flag and the serve-log row are recorded
+    here, exactly once; ``cache`` is ``None`` when the cache is off or a get
+    failed."""
     cache_enabled = result_cache.is_enabled()
     cache = result_cache.get_cache() if cache_enabled else None
     key = result_cache.make_cache_key(args) if cache is not None else None
@@ -319,8 +357,14 @@ async def api_search(request: Request) -> JSONResponse:
             result_cache.bump("hit")
             result_cache.note_cache_hit(True)
             _log_cache_served_hit(args, cached)
-            return JSONResponse(cached)
+            return cache, key, cached
+    return cache, key, None
 
+
+async def _search_cache_miss(args: dict, cache, key) -> JSONResponse:
+    """The miss half of the read-through: run ``search_academic_structured``,
+    store the result iff cacheable, and return the exact response
+    ``api_search`` sends."""
     if cache is not None:
         result_cache.bump("miss")
         result_cache.note_cache_hit(False)
@@ -350,6 +394,128 @@ async def api_search(request: Request) -> JSONResponse:
     elif cache is not None and not cacheable:
         result_cache.bump("bypass")
     return JSONResponse(data)
+
+
+_FALSY_ENV = ("", "0", "false", "False", "off", "OFF")
+
+
+def _sequential_mode() -> bool:
+    return os.environ.get("SFU_SEQUENTIAL_MODE", "0") not in _FALSY_ENV
+
+
+def _draft_stream_enabled() -> bool:
+    """``SFU_SEARCH_DRAFT_STREAM`` (default OFF) and never under
+    ``SFU_SEQUENTIAL_MODE``."""
+    on = os.environ.get("SFU_SEARCH_DRAFT_STREAM", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+    return on and not _sequential_mode()
+
+
+def _draft_filters(args: dict) -> dict:
+    """The OpenAlex-style filter dict ``search_academic_structured`` builds
+    from the same args, so the draft leg sees the final path's filters."""
+    filters: dict[str, str] = {}
+    year_from = args.get("year_from")
+    year_to = args.get("year_to")
+    if year_from and year_to:
+        filters["publication_year"] = f"{year_from}-{year_to}"
+    elif year_from:
+        filters["from_publication_date"] = f"{year_from}-01-01"
+    elif year_to:
+        filters["to_publication_date"] = f"{year_to}-12-31"
+    if args.get("open_access_only"):
+        filters["open_access.is_oa"] = "true"
+    if args.get("type"):
+        filters["type"] = args["type"]
+    return filters
+
+
+def _draft_payload(args: dict) -> dict | None:
+    """The BM25F-leg draft (lever #2 of docs/SPECULATIVE_RETRIEVAL_UPGRADES.md):
+    the thin-client retriever's public ``search(mode="bm25f")``, hydrated by
+    the retriever itself, labelled preliminary. ``None`` when there is no
+    thin-client retriever or the federated path is off (the final would not
+    be a local fusion). Never cached."""
+    from lib import tools as _tools
+    from lib.validators import sanitize_search_query
+    if not _tools._get_features().get("federated_search_enabled"):
+        return None
+    tc = _tools._get_thinclient_retriever()
+    if tc is None:
+        return None
+    query = sanitize_search_query(args.get("query", ""))
+    if not query:
+        return None
+    try:
+        limit = max(1, min(int(args.get("limit", 10)), 50))
+    except (TypeError, ValueError):
+        limit = 10
+    results = tc.search(query, top_k=limit, mode="bm25f",
+                        filters=_draft_filters(args) or None)
+    return {"results": list(results)[:limit], "meta": {"count": len(results)},
+            "notes": [], "preliminary": True}
+
+
+def _sse(event: str, data: str) -> bytes:
+    return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
+
+
+async def api_search_stream(request: Request):
+    """Draft → final search stream for the GUI (lever #2, gate
+    ``SFU_SEARCH_DRAFT_STREAM``, default OFF; 404 when off or under
+    ``SFU_SEQUENTIAL_MODE``).
+
+    Server-sent events on a POST: ``event: draft`` carries the BM25F-leg
+    results (``preliminary: true``) as soon as that leg has hydrated;
+    ``event: final`` carries bytes identical to the ``POST /api/search`` body
+    for the same args, produced by the same cache read-through
+    (``_search_cache_lookup`` / ``_search_cache_miss``). A cache hit emits
+    only ``final``. A draft that would arrive after the final is dropped.
+    A failed final is sent as ``event: error`` with the ``/api/search`` error
+    body. The draft never touches the result cache.
+    """
+    if not _draft_stream_enabled():
+        return JSONResponse({"error": "search draft stream disabled"}, status_code=404)
+    try:
+        args = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+    if not isinstance(args, dict) or not args.get("query"):
+        return JSONResponse({"error": "missing 'query'"}, status_code=400)
+
+    from starlette.responses import StreamingResponse
+
+    cache, key, cached = _search_cache_lookup(args)
+
+    async def _events():
+        if cached is not None:
+            yield _sse("final", JSONResponse(cached).body.decode("utf-8"))
+            return
+        final_task = asyncio.ensure_future(_search_cache_miss(args, cache, key))
+        loop = asyncio.get_event_loop()
+        draft_future = loop.run_in_executor(None, _draft_payload, args)
+        draft_future.add_done_callback(
+            lambda f: f.cancelled() or f.exception())
+        done, _ = await asyncio.wait({final_task, draft_future},
+                                     return_when=asyncio.FIRST_COMPLETED)
+        if draft_future in done and not final_task.done():
+            try:
+                draft = draft_future.result()
+            except Exception:
+                logger.debug("search draft leg failed (non-fatal)", exc_info=True)
+                draft = None
+            if draft is not None:
+                try:
+                    yield _sse("draft", JSONResponse(draft).body.decode("utf-8"))
+                except Exception:
+                    logger.debug("search draft encode failed (non-fatal)", exc_info=True)
+        resp = await final_task
+        event = "final" if resp.status_code == 200 else "error"
+        yield _sse(event, resp.body.decode("utf-8"))
+
+    return StreamingResponse(
+        _events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 async def api_speculate(request: Request) -> JSONResponse:
@@ -463,6 +629,7 @@ _routes = [
     Route("/engagement", engagement, methods=["POST"]),
     Route("/api/search", api_search, methods=["POST"]),
     Route("/api/speculate", api_speculate, methods=["POST"]),
+    Route("/api/search_stream", api_search_stream, methods=["POST"]),
     Route("/api/index_status", api_index_status, methods=["GET"]),
     Route("/api/personas", api_personas, methods=["GET"]),
     Route("/api/unpack", api_unpack, methods=["POST"]),

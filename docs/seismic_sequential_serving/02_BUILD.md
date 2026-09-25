@@ -1,5 +1,7 @@
 # 02 · Build & Artifacts — INDEPENDENT of the parallel path
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, implemented 2026-06-30 (mechanisms A + B).** This doc is
 **self-contained**: you can follow the sequential track from here without reading
 the parallel federation build docs. The mode flag + the `release_pages` hook are

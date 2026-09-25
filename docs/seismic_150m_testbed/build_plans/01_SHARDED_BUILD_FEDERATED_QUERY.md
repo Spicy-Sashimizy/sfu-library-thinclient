@@ -1,6 +1,6 @@
 # Build Plan 01 — Sharded build + federated query (OpenSearch segment-model → pure Rust)
 
-**Status:** BUILD COMPLETE (2026-06-28); serve half — C2.5 mmap binding GREEN + persona-validated (2026-06-28); the 150M shard-to-mmap conversion is the turnkey next step (driver shipped, run not started). **Solves:** the 150M build-RAM wall, *losslessly*, on a 32 GB host, with **no JVM**.
+**Status:** ACTIVE — BUILD COMPLETE (2026-06-28); serve half — C2.5 mmap binding GREEN + persona-validated (2026-06-28); the 150M shard-to-mmap conversion is the turnkey next step (driver shipped, run not started). **Solves:** the 150M build-RAM wall, *losslessly*, on a 32 GB host, with **no JVM**.
 
 - **Federation gate PASSED 2026-06-28** (the one quality variable this plan
   introduces). 2-shard federated vs 1-shard single over the same 929k med_bio docs:

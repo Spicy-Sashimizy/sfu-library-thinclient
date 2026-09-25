@@ -1,5 +1,7 @@
 # 13 · E5 forward-reorder converter — design, ordering research, ingest impact
 
+**Status:** ACTIVE
+
 > Status 2026-07-09: **SHIPPED + SERVED.** Ordering research MEASURED
 > (Q6/Q6b/Q6c); converter IMPLEMENTED (fork a0c17d4); all 8 shards converted
 > + parity-verified; shards 1,2 full gates PASS (cold majflt 0.53–0.54×, cold
@@ -8,7 +10,7 @@
 > (`retriever.py`; one-env rollback to the plain-dv manifest). Served
 > federated top-10 A/B exact-order vs dv (§5). Parent experiment:
 > `09_CROSS_SHARD_MMAP_AUDIT.md` §3.4 (E5) gated by
-> `12_EXECUTION_ROADMAP.md` Q6 (**GO 2026-07-09**, sim 0.376–0.400, bar ≤0.45).
+> `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q6 (**GO 2026-07-09**, sim 0.376–0.400, bar ≤0.45).
 
 ## 0. Why (one paragraph)
 

@@ -1,5 +1,7 @@
 # Lexical Storage Research: Shrinking the 150M-Doc Abstract Sidecar and Postings Beyond Codec Compression
 
+**Status:** ACTIVE
+
 **Date:** 2026-06-11
 **Scope:** Web research on storage/compression alternatives for the OpenAlex 150M-work lexical tier (tantivy BM25F + BMP SPLADE + usearch dense), with hard constraint: **fetch + decode ~100 abstracts (~1 KB each) in < 300 ms** for the cross-encoder reranker (worth +0.12 NDCG@10 — must not be degraded).
 **Baseline:** Lucene index 274 GB → 142 GB (zstd-6 codec, no SPLADE weights in _source, no positions, no dup field) → ~105 GB with externalized abstract sidecar.

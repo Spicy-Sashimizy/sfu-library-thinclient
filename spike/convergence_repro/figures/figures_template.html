@@ -1,0 +1,470 @@
+<title>Convergence Artifact Figures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#f4f6f9;--surface:#ffffff;--ink:#141a22;--ink-2:#4b5563;--muted:#7a8391;
+  --grid:#e2e6ec;--axis:#c3c9d2;--ring:rgba(20,26,34,.10);
+  --classic:#2a78d6;--mglru:#eb6834;--classic-wash:rgba(42,120,214,.10);--mglru-wash:rgba(235,104,52,.10);
+  --r1:#86b6ef;--r2:#6da7ec;--r3:#5598e7;--r4:#2a78d6;--r5:#1c5cab;--r6:#104281;--r7:#0d366b;
+  --band:rgba(20,26,34,.045);--tip-bg:#141a22;--tip-ink:#f4f6f9;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0f1216;--surface:#15181d;--ink:#f1f4f8;--ink-2:#b7bfca;--muted:#7f8894;
+    --grid:#242a32;--axis:#3a4250;--ring:rgba(255,255,255,.10);
+    --classic:#4b93e8;--mglru:#e8683a;--classic-wash:rgba(75,147,232,.14);--mglru-wash:rgba(232,104,58,.14);
+    --r1:#cde2fb;--r2:#b7d3f6;--r3:#9ec5f4;--r4:#6da7ec;--r5:#3987e5;--r6:#256abf;--r7:#184f95;
+    --band:rgba(255,255,255,.05);--tip-bg:#f1f4f8;--tip-ink:#0f1216;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0f1216;--surface:#15181d;--ink:#f1f4f8;--ink-2:#b7bfca;--muted:#7f8894;
+  --grid:#242a32;--axis:#3a4250;--ring:rgba(255,255,255,.10);
+  --classic:#4b93e8;--mglru:#e8683a;--classic-wash:rgba(75,147,232,.14);--mglru-wash:rgba(232,104,58,.14);
+  --r1:#cde2fb;--r2:#b7d3f6;--r3:#9ec5f4;--r4:#6da7ec;--r5:#3987e5;--r6:#256abf;--r7:#184f95;
+  --band:rgba(255,255,255,.05);--tip-bg:#f1f4f8;--tip-ink:#0f1216;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.55;padding-inline:20px;padding-block:40px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:34px}
+h1,h2{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5vw,52px);font-weight:700;line-height:1.02;letter-spacing:-.02em;font-variation-settings:"opsz" 96}
+h2{font-size:21px;font-weight:700;letter-spacing:-.01em}
+p{margin:0;max-width:70ch}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{display:grid;gap:14px}
+header .lede{font-size:17px;color:var(--ink-2);max-width:64ch}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em;background:var(--surface);border:1px solid var(--ring);border-radius:4px;padding:1px 5px}
+.toc{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13.5px}
+.toc a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--axis)}
+.toc a:hover,.toc a:focus-visible{color:var(--ink);border-color:var(--ink)}
+.fig{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:20px 22px;display:grid;gap:12px}
+.fig-head{display:grid;gap:4px}
+.fignum{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.sub{color:var(--ink-2);font-size:14px;max-width:76ch}
+.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.panels.one{grid-template-columns:1fr}
+.panel{display:grid;gap:6px}
+.ptitle{font-size:13px;font-weight:600;color:var(--ink-2)}
+.plot{position:relative;width:100%}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.plot text{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.plot .tl{fill:var(--ink-2);font-family:"IBM Plex Sans",sans-serif;font-size:11.5px}
+.plot .dl{fill:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:11.5px;font-weight:500}
+.plot .an{fill:var(--ink-2);font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-style:italic}
+.grid line{stroke:var(--grid);stroke-width:1}
+.axis line{stroke:var(--axis);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.key{display:inline-block;width:22px;height:0;border-top:2.5px solid var(--ink);border-radius:2px}
+.key.d{border-top-style:dashed;border-top-width:2px}
+.key.t{border-top-style:dotted;border-top-width:2px}
+.key.g{border-top:1.5px solid var(--axis)}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:2px}
+.tip{position:absolute;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);border-radius:6px;padding:8px 10px;font-size:12px;line-height:1.45;min-width:150px;max-width:260px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:2}
+.tip[hidden]{display:none}
+.tip .h{font-family:"IBM Plex Mono",ui-monospace,monospace;opacity:.8;margin-bottom:4px}
+.tip .r{display:flex;justify-content:space-between;gap:12px}
+.tip .r b{font-variant-numeric:tabular-nums}
+.tip .k{display:inline-block;width:12px;border-top:2px solid currentColor;vertical-align:middle;margin-right:5px}
+.note{font-size:13.5px;color:var(--ink-2);max-width:78ch}
+.src{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.prov{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 18px;font-size:13px}
+.prov dt{color:var(--muted);font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px}
+.prov dd{margin:0;overflow-wrap:anywhere}
+@media (max-width:820px){.panels{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Convergence artifact · figure set · generated <span id="gen">date</span> from committed cells</div>
+  <h1>Convergence Artifact Figures</h1>
+  <p class="lede">Eight figures for the write-up of the non-monotonic convergence artifact: the observation, the fixed-window versus steady-state split, the sort seen per page, the real stack on both kernel LRUs, why MGLRU thrashes, the index-independent reproduction, its regime curve, and the regime map that places every measured cell on one normalized axis. Every mark is a field of a recorded result file; nothing here was re-measured.</p>
+  <nav class="toc" id="toc"></nav>
+</header>
+
+<div class="fig" id="fig1">
+  <div class="fig-head"><div class="fignum">FIGURE 1 · R1 RAM LADDER · 2026-07-14</div><h2>The observation: at a fixed window, a smaller cap looks faster</h2><div class="sub">Three passes of the same 40-query workload over the served 150M SEISMIC index, one cell per cgroup memory cap. The shaded band is pass 3, the fixed window the original ladder reported.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">p50 latency per pass (log scale)</div><div class="plot" id="f1a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">major faults per pass</div><div class="plot" id="f1b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend" id="f1-legend"></div>
+  <p class="note" id="f1-note"></p>
+  <div class="src">data/eval_results/r1_cap{6,8,12,16,24,32,48}g_20260714.json</div>
+</div>
+
+<div class="fig" id="fig2">
+  <div class="fig-head"><div class="fignum">FIGURE 2 · R2 FINE LADDER · 2026-07-14</div><h2>Fixed window versus steady state</h2><div class="sub">The same measurement read two ways. At pass 3 latency is non-monotone in cap; run to convergence it is monotone. The inversion lives entirely in the transient, which is why it is not Belady's anomaly.</div></div>
+  <div class="panels one">
+    <div class="panel"><div class="ptitle">p50 latency versus memory cap (log scale)</div><div class="plot" id="f2a"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key" style="border-color:var(--mglru)"></i>at pass 3 (fixed window)</span><span><i class="key" style="border-color:var(--classic)"></i>converged (near-zero faults or plateau)</span><span><i class="swatch" style="background:transparent;border:2px solid var(--muted)"></i>second replicate</span></div>
+  <p class="note" id="f2-note"></p>
+  <div class="src">data/eval_results/r2_cap*_20260714.json</div>
+</div>
+
+<div class="fig" id="fig3">
+  <div class="fig-head"><div class="fignum">FIGURE 3 · R3 KERNEL LEDGER · 2026-07-15</div><h2>The sort, watched per page</h2><div class="sub">Between-pass cachestat maps of the eight shard files. At 16 GB the kernel has evicted nothing after load; at 12 GB it is already shedding. Both are heading for the repeat set the workload actually needs.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">shard pages resident in the page cache at each pass boundary</div><div class="plot" id="f3a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">cgroup active_file after each pass</div><div class="plot" id="f3b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key" style="border-color:var(--classic)"></i>12 GB cap</span><span><i class="key" style="border-color:var(--mglru)"></i>16 GB cap</span><span><i class="swatch" style="background:var(--band);border:1px solid var(--axis)"></i>repeat set, ~10 to 11 GB</span></div>
+  <p class="note" id="f3-note"></p>
+  <div class="src">data/eval_results/_r3_join_analysis.json · _r3_cachestat_cap{12,16}g_instr_*_pass*.json</div>
+</div>
+
+<div class="fig" id="fig4">
+  <div class="fig-head"><div class="fignum">FIGURE 4 · TIER-2/3 · OCI SERVE BOX, KERNEL 6.17, 2026-09-01</div><h2>The real stack on both kernel LRUs</h2><div class="sub">Classic LRU converges at every cap down to 25 GB, with the fixed-window inversion visible as the pass-2 spike at 28 GB. MGLRU plateaus in sustained thrash at 26 and 28 GB and only converges from 29 GB: the cliff moves up by at least 4 GB.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">p50 latency per pass, selected caps (log scale)</div><div class="plot" id="f4a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">converged p50 latency versus cap, every cell (log scale)</div><div class="plot" id="f4b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key" style="border-color:var(--classic)"></i>classic LRU</span><span><i class="key" style="border-color:var(--mglru)"></i>MGLRU</span><span><i class="key d"></i>26 GB</span><span><i class="key"></i>28 GB</span><span><i class="key t"></i>30 GB</span></div>
+  <p class="note" id="f4-note"></p>
+  <div class="src">data/eval_results/t23a_*_20260901.json · t23b_*_rep{1,2}_20260901.json</div>
+</div>
+
+<div class="fig" id="fig5">
+  <div class="fig-head"><div class="fignum">FIGURE 5 · TIER-2/3 RECLAIM ANATOMY · 28 GB CAP</div><h2>Why MGLRU thrashes: refaulting pages are never re-promoted</h2><div class="sub">Per-pass cgroup counters at the same cap. Classic activates almost every refaulting page (activate tracks refault one to one) and is clean by pass 3. MGLRU refaults five million pages a pass and activates none of them; the load-time promotion mistake persists indefinitely.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">classic LRU, 28 GB (replicate 1)</div><div class="plot" id="f5a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">MGLRU, 28 GB (replicate 1)</div><div class="plot" id="f5b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key"></i>workingset refaults</span><span><i class="key d"></i>workingset activations</span><span><i class="key t"></i>pages scanned</span></div>
+  <p class="note" id="f5-note"></p>
+  <div class="src">data/eval_results/t23b_classic_cap28g_rep1_20260901.json · t23b_mglru_cap28g_rep1_20260901.json</div>
+</div>
+
+<div class="fig" id="fig6">
+  <div class="fig-head"><div class="fignum">FIGURE 6 · TIER-1D · WSL2 6.18, BOTH LRU ARMS, 2026-09-05</div><h2>Index-independent reproduction: the hot set climbs under classic and pins under MGLRU</h2><div class="sub">No search engine, no index: a 5 GiB file with a 1.75 GiB residue, a seeded hot-set draw (20% of pages take 80% of touches), a 1.5 GiB cap. Twelve passes, two fresh seeds per arm, plus the uncapped 8 GiB control where both arms are bit-identical.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">hot-set pages resident after each pass</div><div class="plot" id="f6a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">major faults per pass</div><div class="plot" id="f6b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key" style="border-color:var(--classic)"></i>classic, seed 2027</span><span><i class="key d" style="border-color:var(--classic)"></i>classic, seed 8128</span><span><i class="key" style="border-color:var(--mglru)"></i>MGLRU, seed 2027</span><span><i class="key d" style="border-color:var(--mglru)"></i>MGLRU, seed 8128</span><span><i class="key g"></i>8 GiB control, both arms</span></div>
+  <p class="note" id="f6-note"></p>
+  <div class="src">data/eval_results/t1d_{classic,mglru}_hotset-0.20-0.80_frac92_cap{1.5,8}g_seed{2027,8128}_20260905.json</div>
+</div>
+
+<div class="fig" id="fig7">
+  <div class="fig-head"><div class="fignum">FIGURE 7 · TIER-1D CHARACTERIZATION · 2026-09-05/06</div><h2>The divergence is a peaked curve: the hot set must be contested but must fit</h2><div class="sub">Steady major-fault floor of MGLRU over classic, sweeping the hot-set size at a fixed 1.5 GiB cap and sweeping the cap at a fixed 20% hot set. The frozen bar was 1.30; the shaded band is the pre-registered ±16% noise margin.</div></div>
+  <div class="panels">
+    <div class="panel"><div class="ptitle">floor ratio versus hot-set fraction h, cap 1.5 GiB, seed 2027</div><div class="plot" id="f7a"><div class="tip" hidden></div></div></div>
+    <div class="panel"><div class="ptitle">floor ratio versus cap, h = 0.20</div><div class="plot" id="f7b"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend"><span><i class="key" style="border-color:var(--mglru)"></i>MGLRU floor ÷ classic floor</span><span><i class="key d"></i>frozen bar, 1.30</span><span><i class="swatch" style="background:var(--band);border:1px solid var(--axis)"></i>noise band, 0.84 to 1.16</span></div>
+  <p class="note" id="f7-note"></p>
+  <div class="src">data/eval_results/t1d_*_hotset-{0.05,0.10,0.20,0.40}-0.80_frac92_cap{0.75,1.5,2.5,4,8}g_*.json · floor = mean majflt of the last 3 of 12 passes</div>
+</div>
+
+<div class="fig" id="fig8">
+  <div class="fig-head"><div class="fignum">FIGURE 8 · REGIME MAP · DRAWN 2026-09-13 FROM FIGURES 1 TO 7</div><h2>Regime map: where the artifact lives, on every host measured</h2><div class="sub">Every cell of the seven figures above, placed by its memory cap divided by that host's own measured hot set, so three machines with nothing else in common share one axis. Below the lower boundary the hot set cannot fit and nothing converges; above the upper boundary the whole footprint fits and there is nothing left to sort; the shaded band between them is the only region where the fixed-window inversion and the MGLRU asymmetry can exist at all.</div></div>
+  <div class="panels one">
+    <div class="panel"><div class="ptitle">memory cap ÷ measured hot set, by host (log scale)</div><div class="plot" id="f8a"><div class="tip" hidden></div></div></div>
+  </div>
+  <div class="legend" id="f8-legend"></div>
+  <p class="note" id="f8-note"></p>
+  <div class="src">data/eval_results/r1_cap*g_20260714.json · r2_cap*_20260714.json · t23{a,b}_*_20260901.json · t1d_*_hotset-0.20-0.80_frac92_cap{0.75,1.5,2.5,4,8}g_*_20260905.json · boundaries and outcome rule: spike/convergence_repro/figures/extract.py (FIG8_HOSTS, classify)</div>
+</div>
+
+<div class="fig" id="prov-card">
+  <div class="fig-head"><h2>Provenance</h2></div>
+  <dl class="prov" id="prov"></dl>
+</div>
+</div>
+
+<script id="fig-data" type="application/json">__DATA__</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('fig-data').textContent);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, parent) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (parent) parent.appendChild(e); return e; };
+const txt = (x, y, s, a, parent) => { const t = el('text', Object.assign({x, y}, a), parent); t.textContent = s; return t; };
+const fmtInt = n => Math.round(n).toLocaleString('en-US');
+const fmtMs = v => v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + ' s' : v >= 100 ? Math.round(v) + ' ms' : v.toFixed(1) + ' ms';
+const fmtK = v => v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? Math.round(v / 1e3) + 'K' : String(Math.round(v));
+document.getElementById('gen').textContent = D.generated;
+const toc = document.getElementById('toc');
+document.querySelectorAll('.fig[id^="fig"]').forEach(f => { const a = document.createElement('a'); a.href = '#' + f.id; a.textContent = f.querySelector('.fignum').textContent.split('·')[0].trim().replace('FIGURE ', 'Fig. ') + ' ' + f.querySelector('h2').textContent; toc.appendChild(a); });
+
+function chart(hostId, cfg){
+  const host = document.getElementById(hostId), tip = host.querySelector('.tip');
+  const W = cfg.w || 540, H = cfg.h || 320, L = cfg.l || 58, R = cfg.r || 16, T = cfg.t || 14, B = cfg.b || 44;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': cfg.aria || ''});
+  host.insertBefore(svg, tip);
+  const xs = cfg.x, ys = cfg.y;
+  const X = v => {
+    if (xs.type === 'cat') return L + (xs.cats.indexOf(v) + .5) / xs.cats.length * (W - L - R);
+    if (xs.type === 'log') return L + (Math.log10(v) - Math.log10(xs.min)) / (Math.log10(xs.max) - Math.log10(xs.min)) * (W - L - R);
+    return L + (v - xs.min) / (xs.max - xs.min) * (W - L - R);
+  };
+  const Y = v => {
+    if (ys.type === 'log') { v = Math.max(v, ys.min); return T + (1 - (Math.log10(v) - Math.log10(ys.min)) / (Math.log10(ys.max) - Math.log10(ys.min))) * (H - T - B); }
+    return T + (1 - (v - ys.min) / (ys.max - ys.min)) * (H - T - B);
+  };
+  (cfg.hbands || []).forEach(b => { el('rect', {x: L, y: Y(b.y1), width: W - L - R, height: Y(b.y0) - Y(b.y1), fill: css('--band')}, svg); if (b.label) txt(W - R - 4, Y(b.y1) + 12, b.label, {class: 'an', 'text-anchor': 'end'}, svg); });
+  (cfg.xbands || []).forEach(b => { const x0 = xs.type === 'cat' ? X(b.x0) - (W - L - R) / xs.cats.length / 2 : X(b.x0), x1 = xs.type === 'cat' ? X(b.x1) + (W - L - R) / xs.cats.length / 2 : X(b.x1); el('rect', {x: x0, y: T, width: x1 - x0, height: H - T - B, fill: css('--band')}, svg); if (b.label) txt((x0 + x1) / 2, T + 12, b.label, {class: 'an', 'text-anchor': 'middle'}, svg); });
+  const g = el('g', {class: 'grid'}, svg);
+  ys.ticks.forEach(t => { const y = Y(t.v); el('line', {x1: L, x2: W - R, y1: y, y2: y}, g); txt(L - 8, y + 4, t.l, {'text-anchor': 'end'}, svg); });
+  const xt = xs.type === 'cat' ? xs.cats.map(c => ({v: c, l: xs.fmt ? xs.fmt(c) : String(c)})) : xs.ticks;
+  xt.forEach(t => { const x = X(t.v); if (xs.type !== 'cat') el('line', {x1: x, x2: x, y1: T, y2: H - B}, g); txt(x, H - B + 16, t.l, {'text-anchor': 'middle'}, svg); });
+  el('line', {x1: L, x2: W - R, y1: H - B, y2: H - B}, el('g', {class: 'axis'}, svg));
+  if (xs.label) txt(W - R, H - 6, xs.label, {'text-anchor': 'end', class: 'tl'}, svg);
+  if (ys.label) txt(L, T - 4, ys.label, {class: 'tl'}, svg);
+  (cfg.hlines || []).forEach(h => { el('line', {x1: L, x2: W - R, y1: Y(h.y), y2: Y(h.y), stroke: h.color || css('--ink-2'), 'stroke-width': 1.5, 'stroke-dasharray': h.dash || '6 4'}, svg); if (h.label) txt(L + 6, Y(h.y) - 5, h.label, {class: 'an'}, svg); });
+  const ends = [];
+  cfg.series.forEach(s => {
+    const pts = s.points.filter(p => p.y != null);
+    if (!pts.length) return;
+    if (s.line !== false){
+      let d = ''; pts.forEach((p, i) => { d += (i ? 'L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p.y).toFixed(1); });
+      el('path', {d, fill: 'none', stroke: s.color, 'stroke-width': s.width || 2, 'stroke-dasharray': s.dash || 'none', 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: s.opacity == null ? 1 : s.opacity}, svg);
+    }
+    if (s.marker !== false) pts.forEach(p => el('circle', {cx: X(p.x), cy: Y(p.y), r: s.r || 3.5, fill: s.hollow ? css('--surface') : s.color, stroke: s.hollow ? s.color : css('--surface'), 'stroke-width': s.hollow ? 2 : 1.5, opacity: s.opacity == null ? 1 : s.opacity}, svg));
+    if (s.label){ const last = pts[pts.length - 1]; ends.push({x: X(last.x), y: Y(last.y), label: s.label, color: s.color}); }
+  });
+  ends.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
+  const lim = H - B - 4;
+  if (ends.length && ends[ends.length - 1].y > lim){ ends[ends.length - 1].y = lim; for (let i = ends.length - 2; i >= 0; i--) if (ends[i + 1].y - ends[i].y < 13) ends[i].y = ends[i + 1].y - 13; }
+  for (let i = 0; i < ends.length; i++) if (ends[i].y < T + 6) ends[i].y = T + 6 + i * 13;
+  ends.forEach(e => { txt(e.x + 8, e.y + 4, e.label, {class: 'dl'}, svg); });
+  (cfg.annotations || []).forEach(a => { txt(X(a.x) + (a.dx || 0), Y(a.y) + (a.dy || 0), a.text, {class: 'an', 'text-anchor': a.anchor || 'start'}, svg); });
+  const xvals = [...new Set(cfg.series.flatMap(s => s.points.map(p => p.x)))].sort((a, b) => xs.type === 'cat' ? xs.cats.indexOf(a) - xs.cats.indexOf(b) : a - b);
+  const cross = el('line', {x1: 0, x2: 0, y1: T, y2: H - B, stroke: css('--ink-2'), 'stroke-width': 1, opacity: 0}, svg);
+  const hit = el('rect', {x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent'}, svg);
+  hit.addEventListener('pointermove', ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    let best = xvals[0], bd = Infinity; xvals.forEach(v => { const d = Math.abs(X(v) - p.x); if (d < bd){ bd = d; best = v; } });
+    cross.setAttribute('x1', X(best)); cross.setAttribute('x2', X(best)); cross.setAttribute('opacity', 1);
+    tip.replaceChildren();
+    const h = document.createElement('div'); h.className = 'h'; h.textContent = (xs.tipLabel || '') + (xs.fmt ? xs.fmt(best) : best); tip.appendChild(h);
+    cfg.series.forEach(s => { const q = s.points.find(pp => pp.x === best && pp.y != null); if (!q) return; const r = document.createElement('div'); r.className = 'r'; const k = document.createElement('span'); const ki = document.createElement('i'); ki.className = 'k'; ki.style.color = s.color; k.appendChild(ki); k.appendChild(document.createTextNode(s.name)); const b = document.createElement('b'); b.textContent = (cfg.fmtY || String)(q.y) + (q.extra ? ' · ' + q.extra : ''); r.appendChild(k); r.appendChild(b); tip.appendChild(r); });
+    tip.hidden = false;
+    const rect = host.getBoundingClientRect(); const sx = rect.width / W;
+    let tx = X(best) * sx + 14; if (tx + 230 > rect.width) tx = X(best) * sx - 244; tip.style.left = Math.max(0, tx) + 'px'; tip.style.top = Math.max(0, p.y * sx - 24) + 'px';
+  });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; cross.setAttribute('opacity', 0); });
+}
+const logTicks = (lo, hi) => { const out = []; for (let e = Math.ceil(Math.log10(lo)); e <= Math.floor(Math.log10(hi)); e++) out.push({v: Math.pow(10, e), l: fmtMs(Math.pow(10, e))}); return out; };
+const passTicks = n => Array.from({length: n}, (_, i) => ({v: i + 1, l: String(i + 1)}));
+const ramp = ['--r1', '--r2', '--r3', '--r4', '--r5', '--r6', '--r7'].map(css);
+
+// Figure 1
+{
+  const caps = D.fig1_r1;
+  const col = i => ramp[Math.min(i, ramp.length - 1)];
+  const lab = c => c.cap_gb === 24 ? '24 to 48 GB' : c.cap_gb > 24 ? null : c.cap_gb + ' GB';
+  const ser = key => caps.map((c, i) => ({name: c.cap_gb + ' GB', color: col(i), points: c.passes.map(p => ({x: p.pass, y: p[key]})), label: lab(c), width: 2}));
+  chart('f1a', {aria: 'p50 latency per pass by cap', x: {type: 'lin', min: 1, max: 3, ticks: passTicks(3), label: 'pass', tipLabel: 'pass '}, y: {type: 'log', min: 10, max: 10000, ticks: logTicks(10, 10000), label: 'p50'}, xbands: [{x0: 2.85, x1: 3.15, label: 'fixed window'}], series: ser('p50_ms'), fmtY: fmtMs, r: 56});
+  chart('f1b', {aria: 'major faults per pass by cap', x: {type: 'lin', min: 1, max: 3, ticks: passTicks(3), label: 'pass', tipLabel: 'pass '}, y: {type: 'lin', min: 0, max: 600000, ticks: [0, 100000, 200000, 300000, 400000, 500000, 600000].map(v => ({v, l: fmtK(v)})), label: 'majflt'}, xbands: [{x0: 2.85, x1: 3.15, label: 'fixed window'}], series: ser('majflt'), fmtY: fmtInt, r: 56});
+  const lg = document.getElementById('f1-legend'); caps.forEach((c, i) => { const s = document.createElement('span'); const k = document.createElement('i'); k.className = 'key'; k.style.borderColor = col(i); s.appendChild(k); s.appendChild(document.createTextNode(c.cap_gb + ' GB cap')); lg.appendChild(s); });
+  const c12 = caps.find(c => c.cap_gb === 12), c16 = caps.find(c => c.cap_gb === 16);
+  document.getElementById('f1-note').textContent = 'At pass 3 the 12 GB cell reads ' + fmtMs(c12.passes[2].p50_ms) + ' with ' + fmtInt(c12.passes[2].majflt) + ' faults while 16 GB reads ' + fmtMs(c16.passes[2].p50_ms) + ' with ' + fmtInt(c16.passes[2].majflt) + ': the smaller cap is ' + (c16.passes[2].p50_ms / c12.passes[2].p50_ms).toFixed(1) + '× faster at the window. Caps of 24 GB and above sit at 18 to 22 ms from pass 2; 6 and 8 GB never improve, since the repeat set does not fit. Single cell per cap.';
+}
+
+// Figure 2
+{
+  const cells = D.fig2_r2;
+  const r1 = cells.filter(c => c.rep === 1), r2 = cells.filter(c => c.rep === 2);
+  const xt = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24].map(v => ({v, l: String(v)}));
+  chart('f2a', {w: 1080, h: 380, aria: 'pass-3 and converged p50 versus cap', x: {type: 'lin', min: 5.5, max: 24.5, ticks: xt, label: 'memory cap, GB', tipLabel: 'cap ', fmt: v => v + ' GB'}, y: {type: 'log', min: 10, max: 10000, ticks: logTicks(10, 10000), label: 'p50'}, series: [
+    {name: 'at pass 3', color: css('--mglru'), points: r1.map(c => ({x: c.cap_gb, y: c.pass3_p50_ms, extra: fmtInt(c.pass3_majflt) + ' faults'})), label: 'pass 3', width: 2.5},
+    {name: 'converged', color: css('--classic'), points: r1.map(c => ({x: c.cap_gb, y: c.conv_p50_ms, extra: c.kind === 'plateau' ? 'plateau' : 'near-zero faults, ' + c.passes_to_converge + ' passes'})), label: 'converged', width: 2.5},
+    {name: 'at pass 3, rep 2', color: css('--mglru'), points: r2.map(c => ({x: c.cap_gb, y: c.pass3_p50_ms})), line: false, hollow: true, r: 4.5},
+    {name: 'converged, rep 2', color: css('--classic'), points: r2.map(c => ({x: c.cap_gb, y: c.conv_p50_ms})), line: false, hollow: true, r: 4.5},
+  ], fmtY: fmtMs, r: 70, annotations: [{x: 13, y: 1092, dx: 8, dy: -6, text: '13 GB rep 1 caught mid-sort; rep 2 at 119 ms'}, {x: 10, y: 1415, dx: -10, dy: 16, text: 'plateau: repeat set does not fit', anchor: 'end'}]});
+  const c12 = r1.find(c => c.cap_gb === 12), c16 = r1.find(c => c.cap_gb === 16), c11 = r1.find(c => c.cap_gb === 11);
+  document.getElementById('f2-note').textContent = 'Between 11 and 17 GB every cell converges to the same 18 to 36 ms floor, but the pass-3 reading swings from ' + fmtMs(c12.pass3_p50_ms) + ' at 12 GB up to ' + fmtMs(c16.pass3_p50_ms) + ' at 16 GB and ' + fmtMs(c11.pass3_p50_ms) + ' at 11 GB. Below 11 GB the converged state is a plateau, not a floor: the phenomenon is gone and capacity arithmetic takes over. The three replicated caps show where the pass-3 reading is itself unstable (13 GB: 1.09 s versus 119 ms).';
+}
+
+// Figure 3
+{
+  const c = D.fig3_r3.cells;
+  const rm = k => c[k].residue_maps.map(m => ({x: m.pass_boundary, y: m.cache_gb, extra: 'evicted ' + m.evicted_gb.toFixed(2) + ' GB'}));
+  chart('f3a', {aria: 'resident cache GB at pass boundaries', x: {type: 'lin', min: 0, max: 5, ticks: [0, 1, 2, 3, 4, 5].map(v => ({v, l: v === 0 ? 'load' : String(v)})), label: 'pass boundary', tipLabel: 'boundary '}, y: {type: 'lin', min: 8, max: 16, ticks: [8, 10, 12, 14, 16].map(v => ({v, l: v + ' GB'})), label: 'resident'}, hbands: [{y0: 10, y1: 11, label: 'repeat set'}], series: [
+    {name: '12 GB', color: css('--classic'), points: rm('12g_instr'), label: '12 GB', width: 2.5},
+    {name: '16 GB', color: css('--mglru'), points: rm('16g_instr'), label: '16 GB', width: 2.5},
+  ], fmtY: v => v.toFixed(2) + ' GB', annotations: [{x: 0, y: 14.53, dx: 8, dy: -8, text: 'evicted 0.0 GB after load'}, {x: 0, y: 11.36, dx: 8, dy: 16, text: 'already shed 3.17 GB'}, {x: 2.2, y: 13.43, dx: 0, dy: 16, text: 'live tracer perturbed the drain; dead-tracer cell reached 10.93 GB'}]});
+  const af = k => c[k].active_file_by_pass_gb.map((v, i) => ({x: i + 1, y: v}));
+  chart('f3b', {aria: 'active_file GB after each pass', x: {type: 'lin', min: 1, max: 5, ticks: passTicks(5), label: 'pass', tipLabel: 'pass '}, y: {type: 'lin', min: 0, max: 12, ticks: [0, 2, 4, 6, 8, 10, 12].map(v => ({v, l: v + ' GB'})), label: 'active_file'}, series: [
+    {name: '12 GB', color: css('--classic'), points: af('12g_instr'), label: '12 GB', width: 2.5},
+    {name: '16 GB', color: css('--mglru'), points: af('16g_instr'), label: '16 GB', width: 2.5},
+  ], fmtY: v => v.toFixed(2) + ' GB'});
+  document.getElementById('f3-note').textContent = 'The kernel only sorts residue from repeat set while it reclaims, and it reclaims in proportion to pressure. At 12 GB the active list grows to 9.6 GB by pass 4, the repeat set promoted; at 16 GB it reaches 3.9 GB in the same passes. Residual faults at pass 3 are spread uniformly across all 40 queries in both cells (max over mean 1.14 and 1.32), so the inversion is carried by trajectory position alone, not by where faults land. Latency in the R3 cells is quoted only from uninstrumented controls.';
+}
+
+// Figure 4
+{
+  const cells = D.fig45_t23;
+  const pick = (arm, cap) => cells.find(c => c.arm === arm && c.cap_gb === cap && c.phase === 'B' && c.rep === 1) || cells.find(c => c.arm === arm && c.cap_gb === cap);
+  const dash = cap => cap === 26 ? '7 5' : cap === 30 ? '2 5' : 'none';
+  const s = (arm, cap) => { const c = pick(arm, cap); return {name: (arm === 'mglru' ? 'MGLRU ' : 'classic ') + cap + ' GB', color: css(arm === 'mglru' ? '--mglru' : '--classic'), dash: dash(cap), points: c.passes.map(p => ({x: p.pass, y: p.p50_ms, extra: fmtInt(p.majflt) + ' faults'})), label: (arm === 'mglru' ? 'MGLRU ' : 'classic ') + cap, width: 2.2}; };
+  chart('f4a', {aria: 'p50 per pass by arm and cap', x: {type: 'lin', min: 1, max: 5, ticks: passTicks(5), label: 'pass', tipLabel: 'pass '}, y: {type: 'log', min: 10, max: 100000, ticks: logTicks(10, 100000), label: 'p50'}, series: [s('classic', 26), s('classic', 28), s('classic', 30), s('mglru', 26), s('mglru', 28), s('mglru', 30)], fmtY: fmtMs, r: 96});
+  const byArm = arm => cells.filter(c => c.arm === arm).map(c => ({x: c.cap_gb, y: c.conv_p50_ms, extra: c.kind === 'plateau' ? 'plateau, ' + fmtInt(c.conv_majflt) + ' faults/pass' : 'near-zero, ' + c.passes_to_converge + ' passes'}));
+  const meanByCap = arm => { const m = {}; byArm(arm).forEach(p => { (m[p.x] = m[p.x] || []).push(p.y); }); return Object.keys(m).map(Number).sort((a, b) => a - b).map(x => ({x, y: m[x].reduce((a, b) => a + b, 0) / m[x].length})); };
+  const xt = [24, 26, 28, 30, 32, 36, 40, 44, 48].map(v => ({v, l: String(v)}));
+  chart('f4b', {aria: 'converged p50 versus cap by arm', x: {type: 'lin', min: 24, max: 49, ticks: xt, label: 'memory cap, GB', tipLabel: 'cap ', fmt: v => v + ' GB'}, y: {type: 'log', min: 10, max: 100000, ticks: logTicks(10, 100000), label: 'converged p50'}, series: [
+    {name: 'classic, mean', color: css('--classic'), points: meanByCap('classic'), marker: false, width: 1.5, opacity: .7},
+    {name: 'MGLRU, mean', color: css('--mglru'), points: meanByCap('mglru'), marker: false, width: 1.5, opacity: .7},
+    {name: 'classic cell', color: css('--classic'), points: byArm('classic'), line: false, r: 4.5},
+    {name: 'MGLRU cell', color: css('--mglru'), points: byArm('mglru'), line: false, r: 4.5},
+  ], fmtY: fmtMs, annotations: [{x: 28, y: 4500, dx: 10, dy: 4, text: '~220× classic at the same cap'}, {x: 26, y: 24464, dx: 10, dy: 4, text: 'MGLRU cliff: 28.5 GB'}]});
+  const c28 = pick('classic', 28), c26 = pick('classic', 26), m28 = pick('mglru', 28);
+  document.getElementById('f4-note').textContent = 'Classic at 28 GB shows the artifact on the real stack: pass 2 reads ' + fmtMs(c28.passes[1].p50_ms) + ' against ' + fmtMs(c26.passes[1].p50_ms) + ' at 26 GB (bar B3, 5.8× and 5.6× in the two replicates), then both converge to ~20 ms. MGLRU at the same 28 GB plateaus at ' + fmtMs(m28.conv_p50_ms) + ' with ' + fmtInt(m28.conv_majflt) + ' faults every pass. Every cell at 29 GB and above converges near-zero in 3 passes on both arms. Bars B1 and B5 could not be computed as frozen because no classic rung plateaus above the 25 GB ladder floor.';
+}
+
+// Figure 5
+{
+  const cells = D.fig45_t23;
+  const pick = arm => cells.find(c => c.arm === arm && c.cap_gb === 28 && c.phase === 'B' && c.rep === 1);
+  const mk = (arm, id) => { const c = pick(arm); const col = css(arm === 'mglru' ? '--mglru' : '--classic'); chart(id, {aria: arm + ' reclaim counters per pass at 28 GB', x: {type: 'lin', min: 1, max: 5, ticks: passTicks(5), label: 'pass', tipLabel: 'pass '}, y: {type: 'lin', min: 0, max: 7e6, ticks: [0, 1e6, 2e6, 3e6, 4e6, 5e6, 6e6, 7e6].map(v => ({v, l: fmtK(v)})), label: 'pages per pass'}, series: [
+    {name: 'refaults', color: col, points: c.passes.map(p => ({x: p.pass, y: p.ws_refault})), width: 2.5, label: 'refault'},
+    {name: 'activations', color: col, dash: '7 5', points: c.passes.map(p => ({x: p.pass, y: p.ws_activate})), width: 2.5, label: 'activate'},
+    {name: 'scanned', color: col, dash: '2 5', points: c.passes.map(p => ({x: p.pass, y: p.pgscan})), width: 1.8, opacity: .8, label: 'scan'},
+  ], fmtY: fmtInt, r: 70}); return c; };
+  const c = mk('classic', 'f5a'), m = mk('mglru', 'f5b');
+  document.getElementById('f5-note').textContent = 'Classic pass 2: ' + fmtK(c.passes[1].ws_refault) + ' refaults and ' + fmtK(c.passes[1].ws_activate) + ' activations, the sort completing inside the window; pass 3: ' + fmtK(c.passes[2].ws_refault) + ' refaults, converged. MGLRU: ' + fmtK(m.passes[1].ws_refault) + ' refaults in pass 2 with ' + fmtK(m.passes[1].ws_activate) + ' activations, falling to zero activations by pass 4 while refaults hold at ' + fmtK(m.passes[4].ws_refault) + '. Scan, steal, and refault converge on the same number: each pass evicts and re-reads the same pages. At zero pressure MGLRU holds 13.4 GB active where classic holds 0.4 GB, harmless when memory fits, fatal when the initial promotion is wrong under a cap.';
+}
+
+// Figure 6
+{
+  const J = D.fig6_t1d.judged, C = D.fig6_t1d.control;
+  const col = arm => css(arm === 'mglru' ? '--mglru' : '--classic');
+  const nm = j => (j.arm === 'mglru' ? 'MGLRU' : 'classic') + ' ' + j.seed;
+  const sA = J.map(j => ({name: nm(j), color: col(j.arm), dash: j.seed === 8128 ? '7 5' : 'none', points: j.passes.map(p => ({x: p.pass, y: p.hot_resident_pct})), width: 2.2, label: j.seed === 2027 ? (j.arm === 'mglru' ? 'MGLRU' : 'classic') : null, marker: false}));
+  const cA = C.map(c => ({name: 'control ' + c.arm, color: css('--axis'), points: c.passes.map(p => ({x: p.pass, y: p.hot_resident_pct})), width: 1.5, marker: false, label: c.arm === 'classic' ? '8 GiB control' : null}));
+  chart('f6a', {aria: 'hot-set residency per pass', x: {type: 'lin', min: 1, max: 12, ticks: passTicks(12), label: 'pass', tipLabel: 'pass '}, y: {type: 'lin', min: 60, max: 100, ticks: [60, 70, 80, 90, 100].map(v => ({v, l: v + '%'})), label: 'hot pages resident'}, series: [...cA, ...sA], fmtY: v => v.toFixed(1) + '%', r: 92});
+  const sB = J.map(j => ({name: nm(j), color: col(j.arm), dash: j.seed === 8128 ? '7 5' : 'none', points: j.passes.map(p => ({x: p.pass, y: p.majflt})), width: 2.2, label: j.seed === 2027 ? (j.arm === 'mglru' ? 'MGLRU' : 'classic') : null, marker: false}));
+  const cB = C.map(c => ({name: 'control ' + c.arm, color: css('--axis'), points: c.passes.map(p => ({x: p.pass, y: p.majflt})), width: 1.5, marker: false, label: c.arm === 'classic' ? 'control' : null}));
+  chart('f6b', {aria: 'major faults per pass', x: {type: 'lin', min: 1, max: 12, ticks: passTicks(12), label: 'pass', tipLabel: 'pass '}, y: {type: 'lin', min: 0, max: 600000, ticks: [0, 100000, 200000, 300000, 400000, 500000, 600000].map(v => ({v, l: fmtK(v)})), label: 'majflt'}, series: [...cB, ...sB], fmtY: fmtInt, r: 70});
+  const cl = J.filter(j => j.arm === 'classic'), mg = J.filter(j => j.arm === 'mglru');
+  document.getElementById('f6-note').textContent = 'Classic descends: floor ÷ pass-1 faults = ' + (cl[0].floor / cl[0].passes[0].majflt).toFixed(3) + ' and ' + (cl[1].floor / cl[1].passes[0].majflt).toFixed(3) + ' (bar ≤ 0.75) as hot residency climbs from ~73% to ~90%. MGLRU pins at 75.0% from pass 2. Steady floors ' + fmtInt(cl[0].floor) + ' versus ' + fmtInt(mg[0].floor) + ' (seed 2027) and ' + fmtInt(cl[1].floor) + ' versus ' + fmtInt(mg[1].floor) + ' (seed 8128): ratio ' + (mg[0].floor / cl[0].floor).toFixed(3) + ' and ' + (mg[1].floor / cl[1].floor).toFixed(3) + ' against the frozen bar of 1.30. The uncapped control converges to ' + fmtInt(C[0].floor) + ' faults with bit-identical trajectories on both arms.';
+}
+
+// Figure 7
+{
+  const F = D.fig7_t1d_char;
+  const yt = [0.8, 1.0, 1.2, 1.4, 1.6].map(v => ({v, l: v.toFixed(2) + '×'}));
+  chart('f7a', {aria: 'floor ratio versus hot-set fraction', x: {type: 'cat', cats: F.vs_h.map(r => r.h), fmt: v => 'h = ' + v.toFixed(2), label: 'hot-set fraction of R', tipLabel: ''}, y: {type: 'lin', min: 0.8, max: 1.6, ticks: yt, label: 'MGLRU ÷ classic'}, hbands: [{y0: 1 - F.noise_band, y1: 1 + F.noise_band, label: 'noise band'}], hlines: [{y: F.bar, label: 'frozen bar 1.30'}], series: [{name: 'ratio', color: css('--mglru'), points: F.vs_h.map(r => ({x: r.h, y: r.ratio, extra: fmtInt(r.classic_floor) + ' / ' + fmtInt(r.mglru_floor)})), width: 2.5, r: 5}], fmtY: v => v.toFixed(3) + '×', annotations: [{x: 0.4, y: 1.129, dx: 0, dy: -12, text: 'hot set 2 GiB > cap', anchor: 'middle'}, {x: 0.05, y: 1.144, dx: 0, dy: 18, text: 'least stable pair', anchor: 'middle'}]});
+  chart('f7b', {aria: 'floor ratio versus cap', x: {type: 'cat', cats: F.vs_cap.map(r => r.cap_gib), fmt: v => v + ' GiB', label: 'cap', tipLabel: 'cap '}, y: {type: 'lin', min: 0.8, max: 1.6, ticks: yt, label: 'MGLRU ÷ classic'}, hbands: [{y0: 1 - F.noise_band, y1: 1 + F.noise_band, label: 'noise band'}], hlines: [{y: F.bar, label: 'frozen bar 1.30'}], series: [{name: 'ratio', color: css('--mglru'), points: F.vs_cap.map(r => ({x: r.cap_gib, y: r.ratio, extra: fmtInt(r.classic_floor) + ' / ' + fmtInt(r.mglru_floor)})), width: 2.5, r: 5}], fmtY: v => v.toFixed(3) + '×', annotations: [{x: 0.75, y: 1.117, dx: 0, dy: -12, text: 'hot set 1 GiB > cap', anchor: 'middle'}, {x: 8, y: 1.0, dx: 0, dy: -12, text: 'uncapped: identical arms', anchor: 'middle'}]});
+  document.getElementById('f7-note').textContent = 'The asymmetry needs a hot set big enough to be contested and small enough to fit. Where the hot set exceeds the cap (h = 0.40 at 1.5 GiB, or h = 0.20 at 0.75 GiB) both arms sit at 44 to 58% hot residency and the ratio collapses into the noise band; where memory is loose (4 GiB, 8 GiB) the arms agree. The real 150M index measured on 2026-09-12 sits at about h = 0.10 on the forward-page denominator, the rung that reads 1.411 here. Floors are ' + F.floor_rule + '.';
+}
+
+// Figure 8 — drawn schematic, not a data plot: one lane per host, cells placed
+// on cap / that host's measured hot set.
+{
+  const F = D.fig8_regime;
+  const host = document.getElementById('f8a'), tip = host.querySelector('.tip');
+  const W = 1080, H = 420, L = 182, R = 30, T = 46, B = 62;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'regime map: every measured cell placed on cap over measured hot set, three host lanes'});
+  host.insertBefore(svg, tip);
+  const lx = Math.log10(F.x_min), hx = Math.log10(F.x_max);
+  const X = v => L + (Math.log10(v) - lx) / (hx - lx) * (W - L - R);
+  const laneH = (H - T - B) / F.hosts.length;
+  const laneTop = i => T + i * laneH;
+  const armCol = a => css(a === 'mglru' ? '--mglru' : '--classic');
+  const armName = a => a === 'mglru' ? 'MGLRU' : 'classic LRU';
+  const OUTCOME = {fits: 'fits (converged, no sort in the window)', transient: 'transient (converged through a visible sort)', plateau: 'plateau (sustained thrash)', divergent: 'divergent (MGLRU floor clears the noise band)', pressured: 'pressured (no divergence: too tight or too loose)'};
+
+  function mkShape(parent, outcome, x, y, color){
+    const surf = css('--surface');
+    if (outcome === 'fits') return el('circle', {cx: x, cy: y, r: 5, fill: color, stroke: surf, 'stroke-width': 1.5}, parent);
+    if (outcome === 'transient'){ el('circle', {cx: x, cy: y, r: 5.5, fill: surf, stroke: color, 'stroke-width': 2}, parent); return el('circle', {cx: x, cy: y, r: 2, fill: color}, parent); }
+    if (outcome === 'plateau') return el('rect', {x: x - 4.5, y: y - 4.5, width: 9, height: 9, fill: color, stroke: surf, 'stroke-width': 1.5}, parent);
+    const d = `M${x} ${y - 6}L${x + 5.5} ${y}L${x} ${y + 6}L${x - 5.5} ${y}Z`;
+    if (outcome === 'divergent') return el('path', {d, fill: color, stroke: surf, 'stroke-width': 1.5}, parent);
+    return el('path', {d, fill: surf, stroke: color, 'stroke-width': 2}, parent);
+  }
+
+  const xticks = [0.5, 0.75, 1, 1.5, 2, 3, 5, 10];
+  const g = el('g', {class: 'grid'}, svg);
+  xticks.forEach(v => { el('line', {x1: X(v), x2: X(v), y1: T, y2: H - B}, g); txt(X(v), H - B + 16, v + '×', {'text-anchor': 'middle'}, svg); });
+  const sep = el('g', {class: 'grid'}, svg);
+  F.hosts.forEach((h, i) => { if (i) el('line', {x1: L, x2: W - R, y1: laneTop(i), y2: laneTop(i)}, sep); });
+
+  // the three regimes, named once, over representative x positions
+  txt(X(0.7), T - 20, 'hot set does not fit', {class: 'an', 'text-anchor': 'middle'}, svg);
+  txt(X(1.5), T - 20, 'artifact band', {class: 'an', 'text-anchor': 'middle'}, svg);
+  txt(X(4), T - 20, 'whole footprint fits', {class: 'an', 'text-anchor': 'middle'}, svg);
+
+  F.hosts.forEach((h, i) => {
+    const t0 = laneTop(i), y0 = t0 + 20, y1 = t0 + 84, cy = t0 + 52;
+    const above = t0 + 12, below = t0 + 98;
+    const lo = X(h.lower / h.hot_set), hi = X(h.upper / h.hot_set);
+    el('rect', {x: lo, y: y0, width: hi - lo, height: y1 - y0, fill: css('--band')}, svg);
+    [[lo, h.lower_measured], [hi, h.upper_measured]].forEach(([x, meas]) => {
+      el('line', {x1: x, x2: x, y1: y0 - 7, y2: y1 + 7, stroke: css('--ink-2'), 'stroke-width': 1.5, 'stroke-dasharray': meas ? 'none' : '6 4'}, svg);
+    });
+    txt(lo - 6, above, h.lower_label, {class: 'an', 'text-anchor': 'end'}, svg);
+    txt(hi + 6, below, h.upper_label, {class: 'an'}, svg);
+    if (h.cliff != null){
+      const cx = X(h.cliff / h.hot_set);
+      el('line', {x1: cx, x2: cx, y1: y0, y2: y1, stroke: css('--mglru'), 'stroke-width': 2}, svg);
+      txt(cx - 6, below, h.cliff_label, {class: 'an', 'text-anchor': 'end'}, svg);
+    }
+    (h.refs || []).forEach(rf => { const rx = X(rf.x / h.hot_set); el('line', {x1: rx, x2: rx, y1: y0, y2: y1, stroke: css('--axis'), 'stroke-width': 1.5, 'stroke-dasharray': '2 4'}, svg); txt(rx + 6, above, rf.label, {class: 'an'}, svg); });
+    (h.ticks || []).forEach(tk => { const tx = X(tk.x / h.hot_set); el('line', {x1: tx, x2: tx, y1: y0 - 8, y2: y0 + 6, stroke: css('--muted'), 'stroke-width': 1, 'stroke-dasharray': '2 3'}, svg); txt(tx + 6, above, tk.label, {class: 'an'}, svg); });
+    txt(L - 14, cy - 4, h.title, {class: 'dl', 'text-anchor': 'end'}, svg);
+    txt(L - 14, cy + 11, h.sub, {'text-anchor': 'end'}, svg);
+
+    F.points.filter(p => p.lane === h.lane).forEach(p => {
+      const x = X(p.norm), y = cy + p.row * 12 + p.jit * 7, col = armCol(p.arm);
+      const gp = el('g', {}, svg);
+      mkShape(gp, p.outcome, x, y, col);
+      const hit = el('circle', {cx: x, cy: y, r: 9, fill: 'transparent'}, gp);
+      hit.addEventListener('pointerenter', () => {
+        tip.replaceChildren();
+        const hd = document.createElement('div'); hd.className = 'h';
+        hd.textContent = h.title + ' · ' + h.sub; tip.appendChild(hd);
+        const row = (k, v) => { const r = document.createElement('div'); r.className = 'r'; const a = document.createElement('span'); a.textContent = k; const b = document.createElement('b'); b.textContent = v; r.appendChild(a); r.appendChild(b); tip.appendChild(r); };
+        row('cell', p.label);
+        row('cap', p.cap_gb + ' ' + h.unit);
+        row('cap ÷ hot set', p.norm.toFixed(2) + '×');
+        row('arm', armName(p.arm));
+        row('outcome', p.outcome);
+        const sf = document.createElement('div'); sf.className = 'h'; sf.textContent = p.source; tip.appendChild(sf);
+        tip.hidden = false;
+        const rect = host.getBoundingClientRect(), sx = rect.width / W;
+        let tX = x * sx + 14; if (tX + 250 > rect.width) tX = x * sx - 264;
+        tip.style.left = Math.max(0, tX) + 'px'; tip.style.top = Math.max(0, y * sx - 30) + 'px';
+      });
+      hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+    });
+  });
+
+  el('line', {x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: css('--axis'), 'stroke-width': 1}, svg);
+  txt(W - R, H - 28, 'memory cap ÷ measured hot set', {'text-anchor': 'end', class: 'tl'}, svg);
+  txt(L, H - 10, 'x = cap ÷ measured hot set; the band is a footprint property, its width differs per host; the MGLRU cliff exists only on that arm', {class: 'an'}, svg);
+
+  const lg = document.getElementById('f8-legend');
+  const addL = (node, label) => { const s = document.createElement('span'); s.appendChild(node); s.appendChild(document.createTextNode(label)); lg.appendChild(s); };
+  const glyph = outcome => { const gs = el('svg', {viewBox: '0 0 16 16', width: 16, height: 16}); mkShape(gs, outcome, 8, 8, css('--ink-2')); return gs; };
+  Object.keys(OUTCOME).forEach(k => addL(glyph(k), k));
+  ['classic', 'mglru'].forEach(a => { const sw = document.createElement('i'); sw.className = 'swatch'; sw.style.background = armCol(a); addL(sw, armName(a)); });
+  const kd = document.createElement('i'); kd.className = 'key d'; addL(kd, 'boundary not measured');
+  const bw = document.createElement('i'); bw.className = 'swatch'; bw.style.background = css('--band'); bw.style.border = '1px solid ' + css('--axis'); addL(bw, 'artifact band');
+
+  const nOut = {}; F.points.forEach(p => { nOut[p.outcome] = (nOut[p.outcome] || 0) + 1; });
+  const perLane = F.hosts.map(h => { const n = F.points.filter(p => p.lane === h.lane).length; return n + ' on ' + h.title + ' (hot set ' + h.hot_set + ' ' + h.unit + ', band ' + h.lower + ' to ' + h.upper + ' ' + h.unit + ')'; });
+  document.getElementById('f8-note').textContent = F.points.length + ' recorded cells placed: ' + perLane.join('; ') + '. By outcome: ' + Object.keys(OUTCOME).map(k => nOut[k] + ' ' + k).join(', ') + '. Lower boundary = hot set + anon (11.3 GB, 14.8 GB, 1.0 GiB); upper boundary = the whole footprint (19.4 GB, 29.1 GB, 6.75 GiB). Two boundaries are dashed because no cell brackets them tightly: the WSL2 upper edge is bracketed only between 17 and 24 GB, and the OCI lower edge is predicted, never measured, because that ladder floors at 25 GB. Outcomes come from classify() in extract.py: near-zero is ' + fmtInt(F.near_zero) + ' faults per pass, a visible sort is a pass ≥ 2 above ' + F.spike + '× the converged p50, and Tier-1d divergence is a floor ratio above the pre-registered ' + F.noise + '× noise margin.';
+}
+
+const prov = document.getElementById('prov');
+const addP = (k, v) => { const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v; prov.appendChild(dt); prov.appendChild(dd); };
+addP('generated', D.generated + ' by spike/convergence_repro/figures/extract.py from committed result files; page built by build.py');
+addP('write-up', 'docs/session_2026-07-14_f6_corrections_r1_ladder/04_CONVERGENCE_ARTIFACT.md (observation, mechanism, dated addenda) · spike/convergence_repro/RESULTS.md (judged records, sections 1 to 32)');
+addP('workload', 'figures 1 to 5: the served 150M SEISMIC index (E8 dv-v2, 8 mmap shards), 40-query real workload, cgroup memory caps, no swap; figures 6 and 7: fio-free Python driver t1d_cell.py over a 5 GiB file, MADV_RANDOM, seeded hot-set draw');
+addP('hosts', 'R1 to R3: WSL2 6.18.33 classic LRU, 2026-07-14 to 16 · Tier-2/3: OCI VM.Standard.E5, 62 GiB, Ubuntu kernel 6.17.0-1018-oracle, 2026-09-01 · Tier-1d: WSL2 6.18.33 custom kernel with lru_gen, 2026-09-05 and 06');
+addP('replicates', 'R1 and R2: one cell per cap (R2 repeats 11, 13, 16 GB) · Tier-2/3 phase B: two replicates per judged cell · Tier-1d: two fresh seeds per judged cell, seed 2027 only in the characterization sweeps');
+addP('regime map', 'figure 8 boundaries are pinned in extract.py FIG8_HOSTS: WSL2 hot set 10.1 GB + anon 1.2 GB, footprint 19.4 GB · OCI hot set 13.76 GB + anon 1.0 GB, footprint 29.1 GB, MGLRU cliff 28.5 GB · Tier-1d hot set 1.0 GiB (h = 0.20 of R = 5 GiB), footprint 6.75 GiB');
+addP('companion', 'Hot Pages of the 150M Index (2026-09-12 access-histogram probe): https://claude.ai/code/artifact/e0be4531-9061-43bc-8c5b-95cfe1d62eaa');
+})();
+</script>

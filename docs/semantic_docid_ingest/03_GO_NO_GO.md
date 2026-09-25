@@ -1,6 +1,6 @@
 # 03 — Should we consider this? (the decision page)
 
-**Status: RECOMMENDATION, DESIGN-ONLY EVIDENCE (2026-06-30).**
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **RECOMMENDATION, DESIGN-ONLY EVIDENCE (2026-06-30).**
 
 ## Simplified: what the idea actually is
 

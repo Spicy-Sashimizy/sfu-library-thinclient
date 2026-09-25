@@ -27,7 +27,7 @@ WHAT IS LOGGED (privacy-sane — never the true raw query text):
   - leg_ms          {bm25f, splade, dense, rrf, total} — per-leg latency in ms
                     (None when a leg didn't run; total = wall end-to-end)
   - n_results       result-set size (the federated top-k returned)
-  - result_fp       sha1 of the sorted top-k oaid list [:16] — the result-set
+  - result_fp       sha1 of the rank-ordered top-k oaid list [:16] — the result-set
                     fingerprint (repeat/replay detection: same fingerprint across
                     queries ⟹ same answer set ⟹ cacheable; distribution of
                     distinct fingerprints ⟹ the working-set shape the LRU/pin

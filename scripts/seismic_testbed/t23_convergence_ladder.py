@@ -109,7 +109,7 @@ def read_vmstat() -> dict:
 def postload_reclaim(nbytes: int) -> dict:
     """L3 one-shot nudge: write nbytes to this scope's memory.reclaim.
 
-    PREREGISTRATION.md (smallmachine_levers) §2 L3 / §5 gap 1. A short write
+    spike/archive/smallmachine_levers/PREREGISTRATION.md §2 L3 / §5 gap 1. A short write
     or EAGAIN/EBUSY is memory.reclaim's normal way of saying the kernel could
     not free the whole request — that is data, not a failure, so it is
     recorded in write_status and never raised.

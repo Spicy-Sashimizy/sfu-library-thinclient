@@ -1,5 +1,7 @@
 # 10 · Compressed Forward Record for Mmap Serving (SFR1 design → DotVByte implementation)
 
+**Status:** ACTIVE
+
 **Created 2026-07-02. Status (2026-07-03, E7b host run): IMPLEMENTED (E7) —
 converter + reader SHIPPED and gated on the real 18.8M shard0. Parity PASSED
 on shard0 (0.995 — but this was the best-case shard; full-corpus is marginal,
@@ -668,7 +670,7 @@ A distinct quality-*recovery* lever (a format improvement, not the declined
 diagnosis) is pre-registered as **E8**: graft SFR1's per-doc value scale
 (§2.4) into the dv container as format v2 — predicted (*est.*) to lift
 shards 1–2 above 0.99 at zero serve-time cost. Row:
-`11_EXPERIMENT_BACKLOG.md` Tier 3; recipe: `12_EXECUTION_ROADMAP.md` Q1. G8d
+`11_EXPERIMENT_BACKLOG.md` Tier 3; recipe: `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1. G8d
 also produced a binding protocol change: quality gates now run on shards 1–2
 (the measured worst case), never shard0-only
 (`math_optimization/05_TESTING_PROTOCOL.md`, 2026-07-05 amendment).
@@ -679,7 +681,7 @@ also produced a binding protocol change: quality gates now run on shards 1–2
 > survives ranking, and the FixedU8Q arm reproduces G8d's 0.985 (method
 > validation). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`,
 > `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. Next: Stage 1
-> (dv-v2 encoder/loader, shards 1–2 only) per `12_EXECUTION_ROADMAP.md` Q1.
+> (dv-v2 encoder/loader, shards 1–2 only) per `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1.
 
 ### 7.7 WI-4 — portable-CPU build gate reclear (2026-07-16, deployprep) — v3 SHIPS, v2 too slow
 

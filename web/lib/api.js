@@ -114,6 +114,76 @@
     return args;
   }
 
+  function shapeLive(data, p, limit) {
+    const raw = (data && data.results) || [];
+    return {
+      results: raw.map(normalizeResult),
+      page: p,
+      pageSize: PAGE_SIZE,
+      hasMore: p < MAX_PAGES && raw.length >= limit,
+      notes: (data && data.notes) || [],
+      meta: (data && data.meta) || { count: raw.length },
+      degraded: !!(data && data.degraded),
+      degradedShards: (data && data.degraded_shards) || null,
+      preliminary: !!(data && data.preliminary),
+      source: "live",
+    };
+  }
+
+  function mockPage(p, limit) {
+    const all = (window.SFUMock && window.SFUMock.results) || [];
+    const mock = all.slice(0, limit);
+    return {
+      results: mock,
+      page: p,
+      pageSize: PAGE_SIZE,
+      hasMore: p < MAX_PAGES && all.length > mock.length,
+      notes: [],
+      meta: { count: all.length },
+      source: "mock",
+    };
+  }
+
+  function parseSSE(buffer) {
+    const events = [];
+    let rest = String(buffer || "").replace(/\r\n/g, "\n");
+    let idx;
+    while ((idx = rest.indexOf("\n\n")) >= 0) {
+      const block = rest.slice(0, idx);
+      rest = rest.slice(idx + 2);
+      let event = "message";
+      const data = [];
+      block.split("\n").forEach(function (line) {
+        if (line.indexOf("event:") === 0) event = line.slice(6).trim();
+        else if (line.indexOf("data:") === 0) data.push(line.slice(5).replace(/^ /, ""));
+      });
+      if (data.length) events.push({ event: event, data: data.join("\n") });
+    }
+    return { events: events, rest: rest };
+  }
+
+  function topIds(list, k) {
+    return (list || []).slice(0, k).map(function (r) { return r && r.id; }).filter(function (x) { return x != null; });
+  }
+
+  function reshuffleRate(draft, final, k) {
+    k = k || 10;
+    const d = topIds(draft, k);
+    if (!d.length) return 0;
+    const f = new Set(topIds(final, k));
+    let missing = 0;
+    d.forEach(function (id) { if (!f.has(id)) missing++; });
+    return missing / d.length;
+  }
+
+  const draftStats = { streams: 0, drafts: 0, finalOnly: 0, fallbacks: 0, swaps: 0, pinnedSwaps: 0, reshuffleN: 0, reshuffleSum: 0, lastReshuffle: null };
+
+  function recordReshuffle(rate) {
+    draftStats.reshuffleN++;
+    draftStats.reshuffleSum += rate;
+    draftStats.lastReshuffle = rate;
+  }
+
   const SFUApi = {
     _online: null, 
 
@@ -128,10 +198,10 @@
         
         
         
-        return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true, sequential: !!(data && data.sequential) };
+        return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true, sequential: !!(data && data.sequential), draftStream: !!(data && data.search_draft_stream) && !(data && data.sequential) };
       } catch (e) {
         this._online = false;
-        return { data: { status: "offline" }, source: "mock", warm: false, sequential: false };
+        return { data: { status: "offline" }, source: "mock", warm: false, sequential: false, draftStream: false };
       }
     },
 
@@ -145,20 +215,7 @@
           body: JSON.stringify(buildSearchArgs(query, filters, p)),
         });
         this._online = true;
-        const raw = (data && data.results) || [];
-        return {
-          results: raw.map(normalizeResult),
-          page: p,
-          pageSize: PAGE_SIZE,
-          hasMore: p < MAX_PAGES && raw.length >= limit,
-          notes: (data && data.notes) || [],
-          meta: (data && data.meta) || { count: raw.length },
-          
-          
-          degraded: !!(data && data.degraded),
-          degradedShards: (data && data.degraded_shards) || null,
-          source: "live",
-        };
+        return shapeLive(data, p, limit);
       } catch (e) {
         
         
@@ -166,17 +223,77 @@
           return { source: "retry", retryAfter: e.retryAfter, page: p, pageSize: PAGE_SIZE, hasMore: false, results: [], notes: [], meta: { count: 0 } };
         }
         this._online = false;
-        const all = (window.SFUMock && window.SFUMock.results) || [];
-        const mock = all.slice(0, limit);
-        return {
-          results: mock,
-          page: p,
-          pageSize: PAGE_SIZE,
-          hasMore: p < MAX_PAGES && all.length > mock.length,
-          notes: [],
-          meta: { count: all.length },
-          source: "mock",
-        };
+        return mockPage(p, limit);
+      }
+    },
+
+    async searchStream(query, filters, page, onDraft) {
+      const p = clampPage(page);
+      const limit = pageLimit(p);
+      draftStats.streams++;
+      let res;
+      try {
+        res = await withTimeout(fetch(BASE + "/api/search_stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+          body: JSON.stringify(buildSearchArgs(query, filters, p)),
+        }), TIMEOUT_MS);
+      } catch (e) {
+        res = null;
+      }
+      if (res && res.status === 429) {
+        const ra = res.headers && res.headers.get ? res.headers.get("Retry-After") : null;
+        let secs = 3;
+        if (ra) { const n = parseInt(ra, 10); if (Number.isFinite(n)) secs = Math.max(1, Math.min(60, n)); }
+        return { source: "retry", retryAfter: secs, page: p, pageSize: PAGE_SIZE, hasMore: false, results: [], notes: [], meta: { count: 0 } };
+      }
+      if (!res || !res.ok || !res.body || typeof res.body.getReader !== "function") {
+        draftStats.fallbacks++;
+        return this.search(query, filters, p);
+      }
+      const self = this;
+      let sawDraft = false;
+      const run = async function () {
+        const reader = res.body.getReader();
+        const dec = typeof TextDecoder !== "undefined" ? new TextDecoder() : null;
+        let buf = "";
+        for (;;) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          const v = chunk.value;
+          buf += typeof v === "string" ? v : (dec ? dec.decode(v, { stream: true }) : String(v));
+          const parsed = parseSSE(buf);
+          buf = parsed.rest;
+          for (let i = 0; i < parsed.events.length; i++) {
+            const ev = parsed.events[i];
+            if (ev.event === "draft") {
+              sawDraft = true;
+              draftStats.drafts++;
+              if (typeof onDraft === "function") {
+                try { onDraft(shapeLive(JSON.parse(ev.data), p, limit)); } catch (e) {  }
+              }
+            } else if (ev.event === "final") {
+              try { reader.cancel && reader.cancel(); } catch (e) {  }
+              return JSON.parse(ev.data);
+            } else if (ev.event === "error") {
+              throw new Error("stream error");
+            }
+          }
+        }
+        throw new Error("stream ended without final");
+      };
+      try {
+        const data = await withTimeout(run(), TIMEOUT_MS);
+        self._online = true;
+        if (!sawDraft) draftStats.finalOnly++;
+        const out = shapeLive(data, p, limit);
+        out.hadDraft = sawDraft;
+        return out;
+      } catch (e) {
+        self._online = false;
+        const out = mockPage(p, limit);
+        out.hadDraft = sawDraft;
+        return out;
       }
     },
 
@@ -316,6 +433,108 @@
       get _lastText() { return lastText; },
     };
   };
+
+  SFUApi.createDraftSwapController = function (opts) {
+    opts = opts || {};
+    const idleMs = opts.idleMs != null ? opts.idleMs : 1200;
+    const apply = typeof opts.apply === "function" ? opts.apply : function () {};
+    const isSelecting = typeof opts.isSelecting === "function" ? opts.isSelecting : function () { return false; };
+    const _setTimeout = opts.setTimeout || function (fn, ms) { return setTimeout(fn, ms); };
+    const _clearTimeout = opts.clearTimeout || function (id) { return clearTimeout(id); };
+    const _now = opts.now || (function () { return Date.now(); });
+    let displayed = [];
+    let draftList = null;
+    let finalList = null;
+    let hovered = null;
+    let lastActivity = -Infinity;
+    let timer = null;
+    let state = "idle";
+    let reshuffle = null;
+
+    function clear() { if (timer != null) { _clearTimeout(timer); timer = null; } }
+    function schedule(ms) {
+      clear();
+      timer = _setTimeout(function () { timer = null; trySwap(); }, Math.max(0, ms));
+    }
+    function indexOfId(list, id) {
+      for (let i = 0; i < list.length; i++) if (list[i] && list[i].id === id) return i;
+      return -1;
+    }
+    function trySwap() {
+      if (!finalList || (state !== "draft" && state !== "pinned")) return;
+      const quiet = _now() - lastActivity;
+      if (quiet < idleMs) { schedule(idleMs - quiet); return; }
+      if (isSelecting()) { lastActivity = _now(); schedule(idleMs); return; }
+      let next = finalList;
+      let pinned = null;
+      if (hovered != null) {
+        const cur = indexOfId(displayed, hovered);
+        if (cur >= 0) {
+          const fi = indexOfId(finalList, hovered);
+          if (fi < 0) return;
+          if (fi !== cur) {
+            next = finalList.filter(function (_, i) { return i !== fi; });
+            next.splice(Math.min(cur, next.length), 0, finalList[fi]);
+            pinned = hovered;
+          }
+        }
+      }
+      const fromDraft = state === "draft";
+      displayed = next;
+      state = pinned != null ? "pinned" : "final";
+      if (fromDraft) { draftStats.swaps++; if (pinned != null) draftStats.pinnedSwaps++; }
+      apply(next.slice(), { state: state, pinned: pinned, reshuffle: reshuffle });
+    }
+
+    return {
+      showDraft: function (list) {
+        clear();
+        draftList = (list || []).slice();
+        displayed = draftList;
+        finalList = null;
+        reshuffle = null;
+        state = "draft";
+        apply(displayed.slice(), { state: "draft", pinned: null, reshuffle: null });
+      },
+      offerFinal: function (list) {
+        finalList = (list || []).slice();
+        if (state === "idle" || state === "final") {
+          clear();
+          displayed = finalList;
+          state = "final";
+          apply(finalList.slice(), { state: "final", pinned: null, reshuffle: null });
+          return;
+        }
+        if (reshuffle == null && draftList) {
+          reshuffle = reshuffleRate(draftList, finalList, 10);
+          recordReshuffle(reshuffle);
+        }
+        trySwap();
+      },
+      noteActivity: function () {
+        lastActivity = _now();
+        if (finalList && (state === "draft" || state === "pinned")) schedule(idleMs);
+      },
+      setHovered: function (id) {
+        hovered = id == null ? null : id;
+        lastActivity = _now();
+        if (finalList && (state === "draft" || state === "pinned")) schedule(idleMs);
+      },
+      cancel: function () { clear(); state = "idle"; finalList = null; draftList = null; },
+      get state() { return state; },
+      get reshuffle() { return reshuffle; },
+      get _pending() { return timer != null; },
+    };
+  };
+
+  SFUApi.draftStreamStats = function () {
+    const out = {};
+    Object.keys(draftStats).forEach(function (k) { out[k] = draftStats[k]; });
+    out.reshuffleMean = draftStats.reshuffleN ? draftStats.reshuffleSum / draftStats.reshuffleN : null;
+    return out;
+  };
+  SFUApi.reshuffleRate = reshuffleRate;
+  SFUApi.parseSSE = parseSSE;
 
   SFUApi.PAGE_SIZE = PAGE_SIZE;
   SFUApi.MAX_PAGES = MAX_PAGES;

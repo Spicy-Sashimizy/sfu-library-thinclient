@@ -1,5 +1,7 @@
 # disk_streaming_research/ — cross-project study of disk-streaming serving
 
+**Status:** DEFERRED 2026-09-25 (F1-F6 hooks built and env-gated OFF; no promotion decision taken)
+
 **Created 2026-07-13. Status: RESEARCH + BUILT (2026-07-14) — F1–F6 hooks
 shipped, env-gated OFF by default (kill-switch, not on the served path unless
 an operator sets the dial). Doc 03 §5 carries the per-phase MEASURED status.**

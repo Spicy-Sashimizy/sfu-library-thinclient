@@ -13,8 +13,8 @@ What it does:
      (idempotent: re-running with the same result files updates, not duplicates).
   3. Renders:
        - data/eval_results/presentation_metrics_<date>.json (machine-readable), and
-       - docs/bmp_decommission_plan/PRESENTATION_METRICS.md (tables + narrative).
-       - docs/bmp_decommission_plan/METRICS_CATALOG.md (human-readable catalog).
+       - docs/archive/bmp_decommission_plan/PRESENTATION_METRICS.md (tables + narrative).
+       - docs/archive/bmp_decommission_plan/METRICS_CATALOG.md (human-readable catalog).
 
 Metric definitions are kept identical to training (PLAN.md "Cataloging" §5):
 NDCG@10 (gain 2^g-1, full-judged-pool IDCG), MRR@10/P@10 (grade≥2 relevant),
@@ -42,8 +42,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 EVAL = REPO_ROOT / "data" / "eval_results"
 CATALOG_JSON = EVAL / "METRICS_CATALOG.json"
 PRESENTATION_JSON_TMPL = "presentation_metrics_{date}.json"
-PRESENTATION_MD = REPO_ROOT / "docs" / "bmp_decommission_plan" / "PRESENTATION_METRICS.md"
-CATALOG_MD = REPO_ROOT / "docs" / "bmp_decommission_plan" / "METRICS_CATALOG.md"
+PRESENTATION_MD = REPO_ROOT / "docs" / "archive" / "bmp_decommission_plan" / "PRESENTATION_METRICS.md"
+CATALOG_MD = REPO_ROOT / "docs" / "archive" / "bmp_decommission_plan" / "METRICS_CATALOG.md"
 
 
 def _git_commit() -> str | None:

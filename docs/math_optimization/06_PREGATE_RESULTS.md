@@ -1,5 +1,7 @@
 # 06 — Pre-gate results (MEASURED 2026-07-03)
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 > **UPDATE 2026-07-03 (same day, post-implementation):** the borderline-pass
 > caveat below was vindicated. The M2 Rust kernel was implemented and the
 > larger-n re-run **refuted the 0.99**: at n=100 (same footing, same-session

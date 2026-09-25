@@ -1,5 +1,7 @@
 # 03 · Testing — INDEPENDENT test plan
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, implemented 2026-06-30.** The test file
 `scripts/tests/test_seismic_sequential.py` is **shipped** (10/10 pass; T1
 result-equivalence verified bit-identical single- + multi-shard against the real

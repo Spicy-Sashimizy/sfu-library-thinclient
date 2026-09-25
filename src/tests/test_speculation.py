@@ -281,7 +281,7 @@ class TestLogMarking:
         finally:
             _reset_var()
 
-    def test_wire_marks_log_entries_speculative(self, monkeypatch):
+    def test_wire_marks_log_entries_speculative(self, monkeypatch, tmp_path):
         """The patched logger stamps the request's speculative flag onto each
         serve-query-log entry (term 5). Verifies against a REAL QueryLogger
         instance (the patched .log lives on the QueryLogger class, so the test
@@ -289,7 +289,7 @@ class TestLogMarking:
         speculation.wire_speculative_log()
         from lib import serve_query_log as _sql
         _sql.QueryLogger.reset_for_test()
-        lg = _sql.QueryLogger(path="data/eval_results/_test_speculation_log.jsonl",
+        lg = _sql.QueryLogger(path=str(tmp_path / "speculation_log.jsonl"),
                               max_bytes=1024 * 1024, buffer=8192,
                               store_raw=False, enabled=True)
         monkeypatch.setattr(_sql.QueryLogger, "get", classmethod(lambda cls: lg))

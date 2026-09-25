@@ -1,0 +1,1248 @@
+{
+ "what": "dense warm cache \u2014 the four pre-registered success metrics",
+ "date": "2026-09-25",
+ "script": "scripts/experiments/eval_warmcache_replay.py",
+ "pre_registration": "docs/DENSE_WARMCACHE_RESEARCH.md",
+ "index_root": "/workspaces/sfu-library-thinclient/data/thinclient_index",
+ "top_k": 50,
+ "seed": 20260925,
+ "served_query_log_audit": {
+  "exists": true,
+  "path": "/workspaces/sfu-library-thinclient/data/eval_results/serve_query_log.jsonl",
+  "entries": 2255,
+  "entries_with_empty_query_norm": 2255,
+  "distinct_query_hashes": 733,
+  "replayable": false
+ },
+ "loadavg_at_start": {
+  "load1": 3.83,
+  "load5": 3.71,
+  "load15": 5.54,
+  "running": "1/2222",
+  "t": "2026-09-25T01:26:03"
+ },
+ "other_python_at_start": [
+  ".venv/bin/python3 -m pytest scripts/tests -q",
+  "timeout 600 .venv/bin/python3 -m pytest scripts/tests/test_seismic_sequential.py::test_sequential_search_with_timing_split scripts/tests/test_snapshot_downloade",
+  ".venv/bin/python3 -m pytest scripts/tests/test_seismic_sequential.py::test_sequential_search_with_timing_split scripts/tests/test_snapshot_downloader_durability"
+ ],
+ "metric2_delta_vs_exact": {
+  "definition": "DenseWarmCache.search (Hamming prefilter, fetch=200) vs exact int8 top-k over the same 17316-doc delta",
+  "bar": 0.97,
+  "delta_docs": 17316,
+  "n_queries": 240,
+  "mean_recall_at_k": 0.99775,
+  "min_recall_at_k": 0.94,
+  "frac_queries_below_bar_at_k": 0.0125,
+  "n_queries_below_bar_at_k": 3,
+  "frac_queries_exact_at_k": 0.9042,
+  "mean_recall_at_10": 0.997917,
+  "min_recall_at_10": 0.9,
+  "n_queries_below_bar_at_10": 5,
+  "mean_pass": true,
+  "worst_case_pass": false,
+  "per_query": [
+   {
+    "query": "What is the evidence and policy debate around universal pharmacare in Canada?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "migrant agricultural workers temporary foreign worker program conditions",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does bail reform change pretrial detention and remand populations?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does waste heat recovery improve the efficiency of a district heating network?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "free will moral responsibility determinism compatibilism",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do gift economies and ritual exchange structure kinship in Melanesia?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How can PFAS forever chemicals be removed or degraded during water treatment?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Spanish influenza 1918 pandemic public health response cities",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "socially engaged art practice participation community collaboration",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "migration transnational families remittances belonging ethnography",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do defects and microstructure affect fatigue life in metal 3D printed parts?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "modernist poetry fragmentation form early twentieth century",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Do implicit bias measures actually predict discriminatory behaviour?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What happens to water quality after a tailings dam failure and how is it remediated?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do optimizing compilers vectorize loops into SIMD code?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "refugee resettlement burden sharing international protection regime",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did agrarian reform and peasant movements reshape land tenure in the Andes?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does upgrading informal settlements improve tenure security in global south cities?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "data physicalization tangible data representation public engagement",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "code switching bilingual speakers sociolinguistic variation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "podcast audiences intimacy parasocial relationship listeners",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Metis identity scrip land dispossession prairie history",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Can government purchasing be used as an innovation policy lever?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "corporate bond liquidity credit spread market microstructure",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "cycling infrastructure bike lanes mode shift urban mobility",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Why do podcast listeners form intimate, parasocial relationships with hosts?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "federal provincial fiscal transfers equalization intergovernmental relations",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Does building bike lanes actually shift people onto bicycles?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "conservation of contemporary art materials degradation museum practice",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do family businesses plan succession and govern the handover to the next generation?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What drives childhood vaccination coverage and uptake in school immunization programs?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "community land trust affordable housing stewardship models",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does extreme value theory model tail risk for catastrophe insurance?",
+    "recall_at_10": 0.9,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are textiles and wearable computing used to design embodied interaction?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What are the employment effects of minimum wage increases on small business labour demand?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "neighbourhood effects concentrated disadvantage child outcomes",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "implicit bias measurement predictive validity discrimination behaviour",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Do non-audit service fees compromise auditor independence and audit quality?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Why do teachers burn out and leave rural schools?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does the gut microbiome signal to the host immune system through metabolites?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "wearable device physical activity monitoring chronic disease self management",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are preprints and open science reforming peer review and scholarly communication?",
+    "recall_at_10": 0.9,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does forensic entomology use insect succession to estimate the postmortem interval?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does Cuba use medical diplomacy and health system exports as foreign policy?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How would a carbon border adjustment mechanism affect trade competitiveness and carbon leakage?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do puppetry and object theatre use materiality to engage an audience?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "teacher retention burnout attrition rural schools workforce",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "bail reform pretrial detention remand population Canada",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do autonomous vehicles fuse lidar and camera data for perception?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "interprovincial trade barriers Canadian economic union regulation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "jazz improvisation performance analysis interaction ensemble",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "neglected tropical disease mass drug administration elimination",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "prosody intonation speech perception listener comprehension",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "foreign election interference disinformation state actors democracy",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "serious games health behaviour change gamification design",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How effective is phonics instruction as an early reading intervention in the primary grades?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did the scrip system and land dispossession shape Metis identity on the prairies?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Andean agrarian reform peasant movements land tenure",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do community land trusts steward permanently affordable housing?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "economic sanctions effectiveness compliance target state behaviour",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Can physical, tangible representations of data improve public engagement and understanding?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "forensic entomology postmortem interval insect succession estimation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Why do solar photovoltaic modules degrade, and how reliable are they in the field?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "corporate social responsibility greenwashing stakeholder perception",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "women's suffrage movement provincial franchise campaigns Canada",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What are Indigenous data sovereignty principles and how do they govern research?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do foreign state actors interfere in elections through disinformation?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Does social prescribing to community programs improve older adults' wellbeing?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.96
+   },
+   {
+    "query": "district heating waste heat recovery thermal network efficiency",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does supervision and mentorship affect doctoral completion and attrition?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "topological data analysis persistent homology point clouds",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do approximate nearest neighbour indexes scale to billions of vectors?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "childcare policy universal early learning affordability workforce",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "wearable computing textile interfaces embodied interaction design",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "remote work hybrid arrangements productivity employee wellbeing",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "lithium ion battery electrolyte degradation cathode interface",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "participatory budgeting civic engagement municipal decision making",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How have mortgage stress tests affected household debt and housing finance in Canada?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "cryptocurrency market volatility bitcoin price contagion spillover",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What degrades the electrolyte and the cathode interface in a lithium-ion battery?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does haptic feedback in a tangible interface change what the user perceives?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does sleep deprivation impair memory consolidation and cognitive performance?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "thermoregulation heat strain occupational workers hydration",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is audiobook production and narration reshaping the publishing industry?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "soft robotics pneumatic actuator compliant gripper design",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "childhood vaccination coverage school immunization programs uptake",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "informal settlements upgrading tenure security global south cities",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "maternal mortality skilled birth attendance low resource settings",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did adopting IFRS 15 change revenue recognition in financial reporting?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What drives corporate bond liquidity and credit spreads at the market microstructure level?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What prevents falls in older adults - balance training, or removing home hazards?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "ritual kinship exchange gift economies ethnography Melanesia",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do jazz musicians interact with each other during ensemble improvisation?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does emergency department overcrowding affect patient wait times and outcomes?",
+    "recall_at_10": 0.9,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "minimum wage employment effects small business labour demand",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is propensity score matching used for causal inference in observational studies?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How well do risk assessment tools and protective orders prevent intimate partner violence?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What role did Indigenous labour and exchange networks play in the fur trade?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "solar photovoltaic degradation module reliability field performance",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "public procurement innovation policy government purchasing outcomes",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How has secularization changed religious participation and belonging across generations?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does festival programming and curation shape what counts as world cinema?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "psychological safety team performance speaking up organizations",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "religious participation secularization generational change belonging",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "social prescribing older adults community programs wellbeing",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "coastal erosion sea level rise shoreline retreat adaptation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does universal early learning and childcare policy affect affordability and workforce participation?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Quebec language policy Bill 101 French minority rights",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does glacier retreat, measured through mass balance, affect mountain water supply?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Can moral responsibility survive determinism, as compatibilists claim?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "palliative care access rural communities end of life symptom management",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does human ventilation acclimatize to hypoxia at high altitude?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "graduate student supervision mentorship doctoral completion attrition",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do return-to-play protocols after concussion in youth sport work, and do they help recovery?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does harvesting traditional country foods support Indigenous food sovereignty and nutrition?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do interprovincial trade barriers affect the Canadian economic union?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "compiler optimization loop vectorization SIMD code generation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.96
+   },
+   {
+    "query": "caribou herd decline habitat disturbance boreal recovery planning",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "dramaturgy new play development workshop process",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "electoral turnout youth voter mobilization campaign contact",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "immigration labour market wages native workers displacement",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "What barriers do transgender people face getting access to gender-affirming health care?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "wildlife crime illegal trafficking enforcement conservation criminology",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Why are boreal caribou herds declining and what recovery planning addresses habitat disturbance?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "extreme value theory tail risk catastrophe insurance modelling",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What interventions reduce loneliness and social isolation among older adults?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did early twentieth-century modernist poets use fragmentation of poetic form?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "falls prevention older adults balance training home hazards",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What role do urban friendship centres play in supporting Indigenous community and identity?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.94
+   },
+   {
+    "query": "Cuban revolution health system export medical diplomacy",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is responsibility for refugee resettlement shared under the international protection regime?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "access to justice self represented litigants legal aid funding",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is Bayesian modelling used with radiocarbon dates to build site chronologies?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are communities adapting to shoreline retreat from coastal erosion and sea level rise?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "film festival circuit curation programming world cinema",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does a prosthetic limb change an amputee's gait and the energy cost of walking?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What are the edge states of a topological insulator and how does spin-orbit coupling create them?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "high altitude hypoxia ventilatory acclimatization physiology",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What working conditions do migrant agricultural workers face under temporary foreign worker programs?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What does socially engaged art practice mean for participation and community collaboration?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "carbon border adjustment mechanism trade competitiveness leakage",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "early literacy phonics instruction reading intervention primary grades",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "audiobook market growth narration production publishing industry",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "marine protected area network design fisheries spillover effects",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does growing up in a concentrated-disadvantage neighbourhood affect children's outcomes?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "How do stakeholders tell real corporate social responsibility from greenwashing?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "glacier retreat mass balance monitoring mountain water supply",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "gut microbiome host immune interaction metabolite signalling",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "influencer marketing disclosure sponsored content consumer trust",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "puppetry object theatre performance materiality audience",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are stochastic partial differential equations approximated numerically, and do the schemes converge?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "environmental litigation climate lawsuits state liability courts",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "recall_at_10": 0.9,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "mine tailings dam failure water quality remediation monitoring",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Does immigration displace native-born workers or push down their wages?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "approximate nearest neighbour search vector index billion scale",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does psychological safety affect whether people speak up and how teams perform?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Indigenous data sovereignty OCAP principles research governance",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "concussion return to play protocol youth sport recovery",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Does participatory budgeting actually increase civic engagement in municipal decisions?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What programs actually help young people leave gangs and street involvement behind?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does dramaturgy shape the development of a new play through workshops?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do comics and graphic novels tell stories through visual narrative?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do interferometers detect gravitational waves from black hole mergers?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Can wearable activity monitors help people self-manage a chronic disease?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "urban Indigenous friendship centres community services identity",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do hybrid and remote work arrangements affect productivity and employee wellbeing?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "PFAS forever chemicals water treatment removal degradation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What is the explanatory gap between physical processes and conscious experience?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does static analysis detect memory safety vulnerabilities in C programs?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "family business succession planning governance next generation",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "loneliness social isolation mental health older adults intervention",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are millimetre-wave antenna arrays designed for 5G beamforming?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "haptic feedback tangible interface design user perception",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "static analysis memory safety vulnerability detection C programs",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "unpaid care work gender division household labour time use",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do self-represented litigants and legal aid funding shape access to justice?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do workers thermoregulate under occupational heat strain, and what does hydration do?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "news deserts local journalism decline community information",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Do serious games and gamified designs really change health behaviour?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "auditor independence non-audit services fee dependence quality",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "What happens to a community's information supply when local journalism collapses?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Canadian universal pharmacare drug coverage policy debate",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How has Quebec's language legislation shaped French and minority language rights?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How can rural communities improve access to palliative and end-of-life symptom care?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "autonomous vehicle sensor fusion lidar camera perception",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does persistent homology extract structure from point cloud data?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is unpaid care work divided by gender within households?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "revenue recognition standard IFRS 15 adoption financial reporting",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do streaming platform economics determine what artists earn in royalties?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does cryptocurrency volatility spill over into other financial markets?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How effective is eelgrass restoration for coastal habitat and carbon sequestration?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did cities respond to the 1918 Spanish influenza pandemic?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "transgender healthcare access gender affirming care barriers",
+    "recall_at_10": 1.0,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Why do bilingual speakers code-switch, and how does it vary socially?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do lipid nanoparticles deliver mRNA vaccines, and what governs their stability?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What kinds of campaign contact actually raise youth voter turnout?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "stochastic partial differential equations numerical approximation convergence",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "gait analysis prosthetic limb amputee walking energetics",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "intimate partner violence risk assessment protective orders",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What lifestyle interventions delivered in primary care actually prevent type 2 diabetes?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How effective is mass drug administration at eliminating neglected tropical diseases?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do prosody and intonation shape the way listeners comprehend speech?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are soft pneumatic actuators designed into compliant robotic grippers?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How should marine protected area networks be designed, and do they produce fisheries spillover?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "Do economic sanctions actually change the behaviour of the states they target?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What does ancient DNA reveal about prehistoric population migration in Europe?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "graphic novels comics studies narrative visual storytelling",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "sound design film music affect audience emotional response",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "peer review reform preprints open science scholarly communication",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How did provincial campaigns win women the vote in Canada?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do museums conserve contemporary artworks whose materials are degrading?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "causal inference propensity score matching observational studies",
+    "recall_at_10": 0.9,
+    "recall_at_50": 0.98
+   },
+   {
+    "query": "Does disclosing sponsored content change how much consumers trust influencer marketing?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "hospital emergency department overcrowding wait times patient outcomes",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do equalization and fiscal transfers shape federal-provincial relations?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "topological insulator edge states spin orbit coupling materials",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "What are the sovereignty and governance disputes over shipping in the Northwest Passage?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "sleep deprivation memory consolidation cognitive performance",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "philosophy of mind consciousness qualia explanatory gap",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How does workplace automation displace jobs, and what reskilling helps workers adjust?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "household debt mortgage stress test housing finance Canada",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do sound design and film music shape an audience's emotional response?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How do transnational families sustain belonging across migration and remittances?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How much does skilled birth attendance reduce maternal mortality in low-resource settings?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How are courts handling climate lawsuits and state liability for emissions?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "workplace automation job displacement reskilling worker adjustment",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "5G millimeter wave antenna array beamforming design",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "gang desistance youth intervention programs street involvement",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "gravitational wave detection black hole merger interferometer",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "music streaming royalties artist income platform economics",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "How is illegal wildlife trafficking enforced against, and what does conservation criminology say?",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   },
+   {
+    "query": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "recall_at_10": 1.0,
+    "recall_at_50": 1.0
+   }
+  ]
+ },
+ "total_wall_s": 97.1
+}

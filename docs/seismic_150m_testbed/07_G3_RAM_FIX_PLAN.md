@@ -1,5 +1,7 @@
 # 07 · G3 RAM-Fix Plan — getting SEISMIC off the anonymous heap
 
+**Status:** ACTIVE
+
 > **Status:** PLAN, executing (2026-06-27). G3 measured ❌ FAIL on Path A
 > (RAM-resident, 912 B/doc → 137 GB @150M). This doc is the worklist to cure it.
 > Numbers below are MEASURED unless marked `est.`. Cross-referenced against

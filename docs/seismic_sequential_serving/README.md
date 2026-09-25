@@ -1,5 +1,7 @@
 # SEISMIC Sequential Serving — one index, a second serving method
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, efficacy measured 2026-07-16.** Status: **IMPLEMENTED
 (mechanisms A + B) + EFFICACY MEASURED (deployprep WI-1, 2026-07-16 — see
 `04_BENCHMARKING.md` "MEASURED 2026-07-16")**. The two methods are separate classes —

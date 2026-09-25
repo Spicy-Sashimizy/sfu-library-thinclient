@@ -1,5 +1,7 @@
 # 02 — Measured DB quirks that justify a math change
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 The generic SEISMIC engine's dot math knows nothing about our corpus. Our
 corpus has measured properties the engine ignores. The math-change options
 (M1–M5, see `03_INTERACTION_MAP.md`) are justified by — and gated on — these

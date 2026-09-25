@@ -1,5 +1,7 @@
 # docs/math_optimization/ — SEISMIC dot-kernel math & ISA-portability
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 > **Status (2026-07-03):** research/pre-gate track. The native rebuild
 > (E7 Arm E1) already closed the math gate (gate b). The work in this section
 > investigates **deeper math restructuring** for the SEISMIC per-candidate
@@ -38,7 +40,7 @@ and the staged, pre-registered testing protocol.
   order is now E8 Stage-1 → M8 → M2b → M6** (08 §Recommended-order).
 
 - **Execution entry point for everything below:**
-  `../seismic_150m_testbed/12_EXECUTION_ROADMAP.md` (2026-07-05) — ordered
+  `../archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` (2026-07-05) — ordered
   queue, recipes, pre-registered bars.
 - **G8d (2026-07-05) reshapes the M-track.** Full-corpus dv-vs-f16 parity:
   corpus mean 0.9906, shards 1–2 = 0.985 (accepted as marginal, doc 10 §7.6).

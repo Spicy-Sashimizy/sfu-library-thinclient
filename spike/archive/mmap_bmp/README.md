@@ -4,8 +4,8 @@ The ~1–2 day feasibility spike that gates the whole "immutable no-JVM unified
 sparse engine" idea. **Question: does an mmap'd BMP keep RssAnon ~0 (cure the
 floor) and return identical results, with an acceptable cold-p95?**
 
-Full rationale: `docs/qdrant_vs_lucene_assessment/ARCHITECTURE_EXPLAINER.md` §6 and
-`MMAP_BMP_SPIKE.md`. Engine project: `docs/sparse_engine_project/`.
+Full rationale: `docs/archive/qdrant_vs_lucene_assessment/ARCHITECTURE_EXPLAINER.md` §6 and
+`MMAP_BMP_SPIKE.md`. Engine project: `docs/archive/sparse_engine_project/`.
 
 ## Files
 | File | What |

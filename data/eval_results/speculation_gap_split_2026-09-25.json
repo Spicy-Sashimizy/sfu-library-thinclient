@@ -1,0 +1,355 @@
+{
+ "what": "Step 2 of docs/SPECULATIVE_RETRIEVAL_UPGRADES.md: the serve-log gap (total - bm25f leg - splade leg) split into stages on the served path replayed offline, 120 natural-language topics, 2 back-to-back runs each.",
+ "date": "2026-09-25",
+ "script": "scripts/experiments/speculation_gap_split.py",
+ "raw": "data/eval_results/speculation_pass_raw_2026-09-25.jsonl",
+ "producer": "scripts/experiments/speculation_acceptance_rate.py",
+ "warm_run2_primary": {
+  "n": 120,
+  "stage_ms": {
+   "hydrate_bm25f": {
+    "p50": 85.4,
+    "p95": 98.8,
+    "mean": 85.8
+   },
+   "hydrate_bm25f_meta_rows": {
+    "p50": 0.7,
+    "p95": 1.1,
+    "mean": 0.8
+   },
+   "hydrate_bm25f_abstracts_local": {
+    "p50": 2.0,
+    "p95": 3.8,
+    "mean": 2.2
+   },
+   "hydrate_bm25f_remote": {
+    "p50": 82.2,
+    "p95": 93.1,
+    "mean": 82.8
+   },
+   "leg_residual_bm25f": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.0
+   },
+   "hydrate_splade": {
+    "p50": 84.7,
+    "p95": 102.9,
+    "mean": 85.1
+   },
+   "hydrate_splade_meta_rows": {
+    "p50": 0.7,
+    "p95": 1.0,
+    "mean": 0.7
+   },
+   "hydrate_splade_abstracts_local": {
+    "p50": 1.6,
+    "p95": 2.4,
+    "mean": 1.7
+   },
+   "hydrate_splade_remote": {
+    "p50": 82.3,
+    "p95": 100.1,
+    "mean": 82.5
+   },
+   "leg_residual_splade": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.0
+   },
+   "rrf_merge": {
+    "p50": 0.0,
+    "p95": 0.1,
+    "mean": 0.1
+   },
+   "cache_works": {
+    "p50": 0.0,
+    "p95": 0.3,
+    "mean": 0.0
+   },
+   "stage1_embed": {
+    "p50": 63.3,
+    "p95": 204.7,
+    "mean": 87.7
+   },
+   "stage1_rest": {
+    "p50": 0.4,
+    "p95": 0.6,
+    "mean": 0.5
+   },
+   "ce": {
+    "p50": 36.0,
+    "p95": 86.1,
+    "mean": 41.8
+   },
+   "lambdamart": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.0
+   },
+   "unattributed": {
+    "p50": 0.0,
+    "p95": 0.1,
+    "mean": 0.0
+   },
+   "hydrate_total": {
+    "p50": 170.9,
+    "p95": 197.7,
+    "mean": 170.9
+   },
+   "hydrate_remote_total": {
+    "p50": 165.4,
+    "p95": 188.4,
+    "mean": 165.3
+   },
+   "gap": {
+    "p50": 276.4,
+    "p95": 452.9,
+    "mean": 301.0
+   },
+   "legs": {
+    "p50": 2579.6,
+    "p95": 4132.5,
+    "mean": 2671.6
+   },
+   "total": {
+    "p50": 2875.9,
+    "p95": 4460.4,
+    "mean": 2972.6
+   },
+   "leg_bm25f": {
+    "p50": 2195.1,
+    "p95": 3360.1,
+    "mean": 2216.1
+   },
+   "leg_splade": {
+    "p50": 354.7,
+    "p95": 1130.4,
+    "mean": 455.5
+   }
+  },
+  "share_of_gap_aggregate": {
+   "hydrate_bm25f": 0.2852,
+   "hydrate_splade": 0.2825,
+   "leg_residual_bm25f": 0.0001,
+   "leg_residual_splade": 0.0001,
+   "rrf_merge": 0.0002,
+   "cache_works": 0.0001,
+   "stage1_embed": 0.2913,
+   "stage1_rest": 0.0015,
+   "ce": 0.1389,
+   "lambdamart": 0.0,
+   "unattributed": 0.0002,
+   "hydrate_total": 0.5677,
+   "hydrate_remote_total": 0.5492
+  },
+  "share_of_gap_median_per_query": {
+   "hydrate_bm25f": 0.3124,
+   "hydrate_splade": 0.3043,
+   "leg_residual_bm25f": 0.0001,
+   "leg_residual_splade": 0.0001,
+   "rrf_merge": 0.0002,
+   "cache_works": 0.0001,
+   "stage1_embed": 0.2372,
+   "stage1_rest": 0.0016,
+   "ce": 0.1316,
+   "lambdamart": 0.0,
+   "unattributed": 0.0001,
+   "hydrate_total": 0.6188
+  },
+  "duplicate_hydrate": {
+   "hydrated_ids_total": 4800,
+   "hydrated_twice_total": 191,
+   "dup_share_of_hydrated": 0.0398,
+   "dup_per_query": {
+    "p50": 1,
+    "p95": 5,
+    "mean": 1.6
+   },
+   "queries_with_any_dup": 75
+  },
+  "remote_abstracts": {
+   "ids_requested_total": 2929,
+   "ids_returned_total": 0,
+   "ids_requested_per_query": {
+    "p50": 26,
+    "p95": 37,
+    "mean": 24.4
+   }
+  }
+ },
+ "first_run1": {
+  "n": 120,
+  "stage_ms": {
+   "hydrate_bm25f": {
+    "p50": 180.1,
+    "p95": 219.9,
+    "mean": 182.2
+   },
+   "hydrate_bm25f_meta_rows": {
+    "p50": 13.9,
+    "p95": 20.2,
+    "mean": 14.6
+   },
+   "hydrate_bm25f_abstracts_local": {
+    "p50": 80.1,
+    "p95": 115.6,
+    "mean": 83.3
+   },
+   "hydrate_bm25f_remote": {
+    "p50": 83.8,
+    "p95": 98.0,
+    "mean": 84.2
+   },
+   "leg_residual_bm25f": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.0
+   },
+   "hydrate_splade": {
+    "p50": 180.2,
+    "p95": 237.9,
+    "mean": 192.6
+   },
+   "hydrate_splade_meta_rows": {
+    "p50": 13.2,
+    "p95": 23.8,
+    "mean": 14.4
+   },
+   "hydrate_splade_abstracts_local": {
+    "p50": 86.1,
+    "p95": 118.1,
+    "mean": 88.4
+   },
+   "hydrate_splade_remote": {
+    "p50": 84.1,
+    "p95": 113.0,
+    "mean": 89.6
+   },
+   "leg_residual_splade": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.1
+   },
+   "rrf_merge": {
+    "p50": 0.1,
+    "p95": 0.4,
+    "mean": 0.1
+   },
+   "cache_works": {
+    "p50": 0.6,
+    "p95": 2.1,
+    "mean": 0.8
+   },
+   "stage1_embed": {
+    "p50": 123.3,
+    "p95": 369.7,
+    "mean": 162.7
+   },
+   "stage1_rest": {
+    "p50": 0.2,
+    "p95": 0.7,
+    "mean": 0.3
+   },
+   "ce": {
+    "p50": 31.3,
+    "p95": 75.5,
+    "mean": 34.1
+   },
+   "lambdamart": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0.0
+   },
+   "unattributed": {
+    "p50": 0.0,
+    "p95": 0.1,
+    "mean": 0.1
+   },
+   "hydrate_total": {
+    "p50": 361.2,
+    "p95": 439.5,
+    "mean": 374.7
+   },
+   "hydrate_remote_total": {
+    "p50": 168.2,
+    "p95": 200.3,
+    "mean": 173.8
+   },
+   "gap": {
+    "p50": 524.8,
+    "p95": 822.8,
+    "mean": 573.0
+   },
+   "legs": {
+    "p50": 5722.2,
+    "p95": 8313.9,
+    "mean": 5769.4
+   },
+   "total": {
+    "p50": 6264.6,
+    "p95": 9019.2,
+    "mean": 6342.4
+   },
+   "leg_bm25f": {
+    "p50": 3488.9,
+    "p95": 5492.6,
+    "mean": 3643.4
+   },
+   "leg_splade": {
+    "p50": 2014.5,
+    "p95": 3691.9,
+    "mean": 2126.0
+   }
+  },
+  "share_of_gap_aggregate": {
+   "hydrate_bm25f": 0.3179,
+   "hydrate_splade": 0.336,
+   "leg_residual_bm25f": 0.0,
+   "leg_residual_splade": 0.0002,
+   "rrf_merge": 0.0002,
+   "cache_works": 0.0014,
+   "stage1_embed": 0.284,
+   "stage1_rest": 0.0006,
+   "ce": 0.0594,
+   "lambdamart": 0.0,
+   "unattributed": 0.0002,
+   "hydrate_total": 0.6539,
+   "hydrate_remote_total": 0.3034
+  },
+  "share_of_gap_median_per_query": {
+   "hydrate_bm25f": 0.328,
+   "hydrate_splade": 0.3451,
+   "leg_residual_bm25f": 0.0,
+   "leg_residual_splade": 0.0,
+   "rrf_merge": 0.0001,
+   "cache_works": 0.001,
+   "stage1_embed": 0.2279,
+   "stage1_rest": 0.0004,
+   "ce": 0.0599,
+   "lambdamart": 0.0,
+   "unattributed": 0.0001,
+   "hydrate_total": 0.687
+  },
+  "duplicate_hydrate": {
+   "hydrated_ids_total": 4800,
+   "hydrated_twice_total": 191,
+   "dup_share_of_hydrated": 0.0398,
+   "dup_per_query": {
+    "p50": 1,
+    "p95": 5,
+    "mean": 1.6
+   },
+   "queries_with_any_dup": 75
+  },
+  "remote_abstracts": {
+   "ids_requested_total": 2929,
+   "ids_returned_total": 0,
+   "ids_requested_per_query": {
+    "p50": 26,
+    "p95": 37,
+    "mean": 24.4
+   }
+  }
+ }
+}

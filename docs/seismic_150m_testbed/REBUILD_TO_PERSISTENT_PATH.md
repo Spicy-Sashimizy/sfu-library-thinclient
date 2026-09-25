@@ -1,5 +1,7 @@
 # SEISMIC 150M shard rebuild — persistent path (Tier 2 #4)
 
+**Status:** ACTIVE
+
 > Created 2026-06-30. Runbook for rematerializing the 8 served mmap shards after
 > the `/tmp` wipe, to a path that survives container/host restarts.
 > **BUILT 2026-06-30/07-01 — COMPLETE & VERIFIED.** The served path loads

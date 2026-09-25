@@ -1,0 +1,155 @@
+{
+ "what": "dense warm cache \u2014 the four pre-registered success metrics",
+ "date": "2026-09-25",
+ "script": "scripts/experiments/eval_warmcache_replay.py",
+ "pre_registration": "docs/DENSE_WARMCACHE_RESEARCH.md",
+ "index_root": "/workspaces/sfu-library-thinclient/data/thinclient_index",
+ "top_k": 50,
+ "seed": 20260925,
+ "served_query_log_audit": {
+  "exists": true,
+  "path": "/workspaces/sfu-library-thinclient/data/eval_results/serve_query_log.jsonl",
+  "entries": 2256,
+  "entries_with_empty_query_norm": 2256,
+  "distinct_query_hashes": 733,
+  "replayable": false
+ },
+ "loadavg_at_start": {
+  "load1": 2.29,
+  "load5": 4.52,
+  "load15": 5.53,
+  "running": "1/2158",
+  "t": "2026-09-25T01:33:22"
+ },
+ "other_python_at_start": [],
+ "remote_abstracts": false,
+ "phase": "latency-only (metric 3 re-run in isolation)",
+ "delta_docs_restored": 17316,
+ "quiet_gate": {
+  "quiet": true,
+  "waited_s": 0.0,
+  "loadavg": {
+   "load1": 2.35,
+   "load5": 4.49,
+   "load15": 5.52,
+   "running": "3/2182",
+   "t": "2026-09-25T01:33:25"
+  },
+  "other_python": []
+ },
+ "metric3_latency": {
+  "definition": "p95 search_rrf(include_dense=True) wall ms, cache attached vs detached, arms interleaved per query with the order flipped every rep",
+  "reps": 2,
+  "queries": 80,
+  "subsampled_from": 80,
+  "delta_docs_before": 17316,
+  "delta_docs_after": 17316,
+  "loadavg_samples": [
+   {
+    "load1": 2.35,
+    "load5": 4.49,
+    "load15": 5.52,
+    "running": "1/2182",
+    "t": "2026-09-25T01:33:25"
+   },
+   {
+    "load1": 4.12,
+    "load5": 4.13,
+    "load15": 5.17,
+    "running": "3/2250",
+    "t": "2026-09-25T01:36:25"
+   },
+   {
+    "load1": 4.41,
+    "load5": 4.25,
+    "load15": 5.04,
+    "running": "1/2274",
+    "t": "2026-09-25T01:39:21"
+   },
+   {
+    "load1": 4.92,
+    "load5": 4.78,
+    "load15": 5.14,
+    "running": "2/2288",
+    "t": "2026-09-25T01:41:36"
+   },
+   {
+    "load1": 3.02,
+    "load5": 4.02,
+    "load15": 4.79,
+    "running": "1/2290",
+    "t": "2026-09-25T01:44:18"
+   },
+   {
+    "load1": 3.73,
+    "load5": 4.04,
+    "load15": 4.68,
+    "running": "2/2308",
+    "t": "2026-09-25T01:46:53"
+   },
+   {
+    "load1": 2.85,
+    "load5": 3.57,
+    "load15": 4.41,
+    "running": "2/2309",
+    "t": "2026-09-25T01:49:21"
+   },
+   {
+    "load1": 3.91,
+    "load5": 3.78,
+    "load15": 4.37,
+    "running": "2/2277",
+    "t": "2026-09-25T01:51:36"
+   },
+   {
+    "load1": 3.67,
+    "load5": 3.96,
+    "load15": 4.35,
+    "running": "1/2287",
+    "t": "2026-09-25T01:54:26"
+   },
+   {
+    "load1": 3.46,
+    "load5": 3.76,
+    "load15": 4.22,
+    "running": "1/2311",
+    "t": "2026-09-25T01:56:44"
+   }
+  ],
+  "loadavg_max_load1": 4.92,
+  "first_arm_on_fraction": 0.5,
+  "on": {
+   "n": 160,
+   "p50": 3592.01,
+   "p95": 8287.83,
+   "p99": 10655.0,
+   "mean": 3876.85,
+   "min": 413.77,
+   "max": 13063.55
+  },
+  "off": {
+   "n": 160,
+   "p50": 3560.47,
+   "p95": 8890.19,
+   "p99": 10130.26,
+   "mean": 3831.31,
+   "min": 372.31,
+   "max": 10866.79
+  },
+  "p95_delta_ms": -602.36,
+  "p95_ratio": 0.9322,
+  "p50_delta_ms": 31.54,
+  "wall_s": 1399.4
+ },
+ "loadavg_at_end": {
+  "load1": 3.46,
+  "load5": 3.76,
+  "load15": 4.22,
+  "running": "1/2311",
+  "t": "2026-09-25T01:56:44"
+ },
+ "other_python_at_end": [
+  ".venv/bin/python3 -m pytest scripts/tests -q"
+ ],
+ "total_wall_s": 1401.9
+}

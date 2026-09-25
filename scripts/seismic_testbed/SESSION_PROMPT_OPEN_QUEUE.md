@@ -2,7 +2,7 @@
 
 Paste everything below the `---` into a Claude Code session in the dev
 container (`/workspaces/sfu-library-thinclient`). It walks the open items of
-`docs/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` §3 (Q7 first, per the
+`docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` §3 (Q7 first, per the
 2026-07-10 queue extension). **Doc 12 is the source of truth** — if this file
 and doc 12 disagree, doc 12 wins; update whichever is stale in the same
 commit you notice it.

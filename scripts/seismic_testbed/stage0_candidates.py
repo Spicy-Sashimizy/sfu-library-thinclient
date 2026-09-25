@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared Stage-0 candidate gathering for the 12_EXECUTION_ROADMAP.md queue.
+"""Shared Stage-0 candidate gathering for the docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md queue.
 
 Runs the real engine (f16 mmap shard) top-k' search for n queries and resolves
 each returned doc string to its forward-index row — the exact e6b lineage

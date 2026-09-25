@@ -1,5 +1,7 @@
 # 01 · Cross-project disk-streaming research — colibrì, sluice, KTransformers, VibeBlade
 
+**Status:** DEFERRED 2026-09-25 (F1-F6 hooks built and env-gated OFF; no promotion decision taken)
+
 **Created 2026-07-13. Status: RESEARCH / LITERATURE — not on served path.** This
 doc records findings from studying external projects that stream
 parameters/experts from disk, mapped onto our own mmap-based SEISMIC sparse-index

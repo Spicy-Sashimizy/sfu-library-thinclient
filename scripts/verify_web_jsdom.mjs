@@ -312,6 +312,189 @@ try {
   assertNoErrors('scroll fallback — console errors', errors);
 } catch (e) { record('scroll fallback — threw', false, String(e).slice(0, 300)); }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const mkRes = (id) => ({ id, openalex_id: id, title: 'T ' + id, authors: ['A'], year: 2024, source: 'J', doi: '10.0/' + id, abstract: 'a', type: 'article' });
+const sseBody = (chunks) => {
+  let i = 0;
+  return { getReader: () => ({
+    read: () => new Promise((resolve) => {
+      if (i >= chunks.length) return resolve({ done: true, value: undefined });
+      const c = chunks[i++];
+      setTimeout(() => resolve({ done: false, value: c.text }), c.delay || 0);
+    }),
+    cancel() {},
+  }) };
+};
+const sseEvent = (ev, obj) => `event: ${ev}\ndata: ${JSON.stringify(obj)}\n\n`;
+
+try {
+  const { window, errors } = makeDom({ online: true });
+  const queue = [];
+  let clock = 10000;
+  const fakeSetTimeout = (fn, ms) => { const id = { fn, at: clock + (ms || 0) }; queue.push(id); return id; };
+  const fakeClearTimeout = (id) => { const i = queue.indexOf(id); if (i >= 0) queue.splice(i, 1); };
+  const advance = (ms) => { const end = clock + ms; for (;;) { const due = queue.filter((x) => x.at <= end).sort((a, b) => a.at - b.at)[0]; if (!due) break; clock = Math.max(clock, due.at); queue.splice(queue.indexOf(due), 1); due.fn(); } clock = end; };
+  let selecting = false;
+  const applied = [];
+  const mk = () => window.SFUApi.createDraftSwapController({ idleMs: 1200, setTimeout: fakeSetTimeout, clearTimeout: fakeClearTimeout, now: () => clock, isSelecting: () => selecting, apply: (list, info) => applied.push({ ids: list.map((r) => r.id).join(','), state: info.state, pinned: info.pinned }) });
+  const L = (ids) => ids.split(',').map((id) => ({ id }));
+  const before = window.SFUApi.draftStreamStats();
+
+  let c = mk();
+  c.showDraft(L('a,b,c,d'));
+  record('draft swap: showDraft paints the draft as preliminary', applied.length === 1 && applied[0].state === 'draft' && applied[0].ids === 'a,b,c,d', JSON.stringify(applied[0]));
+  c.noteActivity();
+  c.offerFinal(L('b,e,a,f'));
+  record('draft swap: final while user active → NOT swapped', applied.length === 1 && c.state === 'draft', 'state=' + c.state);
+  advance(600); c.noteActivity(); advance(1100);
+  record('draft swap: continued activity keeps deferring the swap', applied.length === 1 && c.state === 'draft', 'state=' + c.state + ' applied=' + applied.length);
+  advance(100);
+  record('draft swap: ≥ idleMs quiet → swaps to the exact final order', applied.length === 2 && applied[1].state === 'final' && applied[1].ids === 'b,e,a,f', JSON.stringify(applied[1]));
+  record('draft swap: reshuffle = |draft top10 \\ final top10| / |draft top10|', c.reshuffle === 0.5, 'reshuffle=' + c.reshuffle);
+
+  applied.length = 0;
+  c = mk();
+  c.showDraft(L('a,b,c,d'));
+  c.setHovered('c');
+  c.offerFinal(L('c,a,d,b'));
+  advance(1200);
+  record('draft swap: hovered card pinned at its on-screen index', applied.length === 2 && applied[1].state === 'pinned' && applied[1].ids === 'a,d,c,b' && applied[1].pinned === 'c', JSON.stringify(applied[1]));
+  c.setHovered(null);
+  advance(1199);
+  record('draft swap: pinned order held until the next quiet window', applied.length === 2, 'applied=' + applied.length);
+  advance(1);
+  record('draft swap: after hover leaves + idle → exact final order', applied.length === 3 && applied[2].state === 'final' && applied[2].ids === 'c,a,d,b', JSON.stringify(applied[2]));
+
+  applied.length = 0;
+  c = mk();
+  c.showDraft(L('a,b,x'));
+  c.setHovered('x');
+  c.offerFinal(L('a,b,c'));
+  advance(5000);
+  record('draft swap: hovered card absent from final → swap waits (never yanked from under cursor)', applied.length === 1 && c.state === 'draft', 'state=' + c.state);
+  c.setHovered(null);
+  advance(1200);
+  record('draft swap: …then swaps once the hover leaves and the user is idle', applied.length === 2 && applied[1].ids === 'a,b,c', JSON.stringify(applied[1] || null));
+
+  applied.length = 0;
+  c = mk();
+  c.showDraft(L('a,b'));
+  selecting = true;
+  c.offerFinal(L('b,a'));
+  advance(4000);
+  record('draft swap: active text selection blocks the swap', applied.length === 1 && c.state === 'draft', 'state=' + c.state);
+  selecting = false;
+  advance(1200);
+  record('draft swap: selection cleared → swap', applied.length === 2 && applied[1].ids === 'b,a', JSON.stringify(applied[1] || null));
+
+  applied.length = 0;
+  c = mk();
+  c.offerFinal(L('z,y'));
+  record('draft swap: final with no draft (cache hit) paints immediately', applied.length === 1 && applied[0].state === 'final' && applied[0].ids === 'z,y', JSON.stringify(applied[0] || null));
+
+  const after = window.SFUApi.draftStreamStats();
+  record('draft swap: client counter records reshuffle + swaps', after.reshuffleN - before.reshuffleN === 4 && after.swaps - before.swaps === 4 && after.pinnedSwaps - before.pinnedSwaps === 1 && after.reshuffleMean != null, JSON.stringify({ n: after.reshuffleN, swaps: after.swaps, pinned: after.pinnedSwaps, mean: after.reshuffleMean }));
+  record('reshuffleRate: top-10 only, empty draft → 0', window.SFUApi.reshuffleRate([], L('a')) === 0 && window.SFUApi.reshuffleRate(L('a,b,c,d,e,f,g,h,i,j,k'), L('a,b,c,d,e,f,g,h,i,k')) === 0.1, 'ok');
+  const p = window.SFUApi.parseSSE('event: draft\ndata: {"a":1}\n\nevent: final\ndata: {"b"');
+  record('parseSSE: complete events parsed, partial tail kept', p.events.length === 1 && p.events[0].event === 'draft' && p.events[0].data === '{"a":1}' && p.rest === 'event: final\ndata: {"b"', JSON.stringify(p));
+  assertNoErrors('draft swap controller — console errors', errors);
+} catch (e) { record('draft swap controller — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors } = makeDom({ online: true });
+  const hits = [];
+  const draftData = { results: [mkRes('D1'), mkRes('D2')], notes: [], meta: { count: 2 }, preliminary: true };
+  const finalData = { results: [mkRes('F1'), mkRes('D1')], notes: [], meta: { count: 2 } };
+  window.fetch = (url, opts) => {
+    hits.push(String(url));
+    return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, body: sseBody([
+      { text: sseEvent('draft', draftData).slice(0, 25) }, { text: sseEvent('draft', draftData).slice(25) },
+      { text: sseEvent('final', finalData), delay: 5 }]) });
+  };
+  const drafts = [];
+  const r = await window.SFUApi.searchStream('q', {}, 1, (d) => drafts.push(d));
+  record('searchStream: POSTs /api/search_stream, draft (split chunks) then final', hits[0].includes('/api/search_stream') && drafts.length === 1 && drafts[0].preliminary === true && drafts[0].results[0].id === 'D1' && r.results.map((x) => x.id).join(',') === 'F1,D1' && r.hadDraft === true && r.source === 'live', JSON.stringify({ drafts: drafts.length, final: r.results.map((x) => x.id), hadDraft: r.hadDraft }));
+
+  window.fetch = () => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, body: sseBody([{ text: sseEvent('final', finalData) }]) });
+  const before = window.SFUApi.draftStreamStats().finalOnly;
+  const drafts2 = [];
+  const r2 = await window.SFUApi.searchStream('q', {}, 1, (d) => drafts2.push(d));
+  record('searchStream: cache-hit stream (final only) → no draft callback', drafts2.length === 0 && r2.hadDraft === false && window.SFUApi.draftStreamStats().finalOnly === before + 1, 'drafts=' + drafts2.length);
+
+  const urls = [];
+  window.fetch = (url) => {
+    urls.push(String(url));
+    if (String(url).includes('/api/search_stream')) return Promise.resolve({ ok: false, status: 404, headers: { get: () => null }, json: () => Promise.resolve({}) });
+    return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(finalData) });
+  };
+  const r3 = await window.SFUApi.searchStream('q', {}, 1, () => {});
+  record('searchStream: gate off (404) → falls back to /api/search', urls.length === 2 && urls[1].endsWith('/api/search') && r3.source === 'live' && r3.results.length === 2, JSON.stringify(urls));
+
+  window.fetch = () => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, body: sseBody([{ text: sseEvent('draft', draftData) }, { text: 'event: error\ndata: {"error":"boom"}\n\n' }]) });
+  const r4 = await window.SFUApi.searchStream('q', {}, 1, () => {});
+  record('searchStream: error event → mock fallback (demo pill path)', r4.source === 'mock', 'source=' + r4.source);
+
+  window.fetch = () => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({ status: 'ok', tools: 12, search_draft_stream: true, sequential: true }) });
+  const h = await window.SFUApi.health();
+  window.fetch = () => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({ status: 'ok', tools: 12, search_draft_stream: true }) });
+  const h2 = await window.SFUApi.health();
+  record('health: draftStream advertised, forced off when sequential', h.draftStream === false && h2.draftStream === true, JSON.stringify({ seq: h.draftStream, plain: h2.draftStream }));
+  assertNoErrors('searchStream api-layer — console errors', errors);
+} catch (e) { record('searchStream api-layer — threw', false, String(e).slice(0, 300)); }
+
+async function mountStream({ health, finalDelay }) {
+  const harness = makeDom({ online: true });
+  const { window } = harness;
+  const calls = [];
+  const draftData = { results: [mkRes('D1'), mkRes('D2'), mkRes('D3')], notes: [], meta: { count: 3 }, preliminary: true };
+  const finalData = { results: [mkRes('F1'), mkRes('D2'), mkRes('F3')], notes: [], meta: { count: 3 } };
+  window.fetch = (url, opts) => {
+    const u = String(url);
+    calls.push(u);
+    if (u.includes('/health')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(health) });
+    if (u.includes('/api/search_stream')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, body: sseBody([{ text: sseEvent('draft', draftData), delay: 5 }, { text: sseEvent('final', finalData), delay: finalDelay }]) });
+    if (u.includes('/api/search')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(finalData) });
+    return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({}) });
+  };
+  harness.evalIn(read('search.js'), 'search.js');
+  await sleep(150);
+  return { ...harness, calls };
+}
+const titles = (w) => Array.from(w.document.querySelectorAll('h3')).map((h) => h.textContent.replace('Preliminary', '').trim()).join('|');
+
+try {
+  const { window, errors, calls } = await mountStream({ health: { status: 'ok', tools: 12, search_draft_stream: true }, finalDelay: 150 });
+  submitQuery(window, 'draft stream query');
+  await sleep(80);
+  const badges = window.document.querySelectorAll('[data-testid="sfu-preliminary-badge"]').length;
+  record('GUI stream: draft cards render labelled Preliminary', calls.some((u) => u.includes('/api/search_stream')) && badges === 3 && titles(window) === 'T D1|T D2|T D3' && !!window.document.querySelector('[data-testid="sfu-preliminary-note"]'), `badges=${badges} titles=${titles(window)}`);
+  const iv = setInterval(() => window.document.dispatchEvent(new window.MouseEvent('mousemove', { bubbles: true })), 200);
+  await sleep(1700);
+  record('GUI stream: final arrived but user moving → draft kept (no shuffle)', titles(window) === 'T D1|T D2|T D3', titles(window));
+  clearInterval(iv);
+  await sleep(1400);
+  const badgesAfter = window.document.querySelectorAll('[data-testid="sfu-preliminary-badge"]').length;
+  record('GUI stream: idle → swapped to final, label removed', titles(window) === 'T F1|T D2|T F3' && badgesAfter === 0 && !window.document.querySelector('[data-testid="sfu-preliminary-note"]'), `titles=${titles(window)} badges=${badgesAfter}`);
+  record('GUI stream: no /api/search call when the gate is on', !calls.some((u) => /\/api\/search$/.test(u)), calls.filter((u) => u.includes('/api/')).join(','));
+  assertNoErrors('GUI stream — console errors', errors);
+} catch (e) { record('GUI stream — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors, calls } = await mountStream({ health: { status: 'ok', tools: 12, search_draft_stream: false }, finalDelay: 10 });
+  submitQuery(window, 'gate off query');
+  await sleep(120);
+  record('GUI stream: gate off → /api/search, no draft, no label', calls.some((u) => /\/api\/search$/.test(u)) && !calls.some((u) => u.includes('search_stream')) && titles(window) === 'T F1|T D2|T F3' && !window.document.querySelector('[data-testid="sfu-preliminary-badge"]'), calls.filter((u) => u.includes('/api/')).join(','));
+  assertNoErrors('GUI stream gate off — console errors', errors);
+} catch (e) { record('GUI stream gate off — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors, calls } = await mountStream({ health: { status: 'ok', tools: 12, search_draft_stream: true, sequential: true }, finalDelay: 10 });
+  submitQuery(window, 'sequential query');
+  await sleep(200);
+  record('GUI stream: sequential mode → stream never used', !calls.some((u) => u.includes('search_stream')), calls.filter((u) => u.includes('/api/')).join(','));
+  assertNoErrors('GUI stream sequential — console errors', errors);
+} catch (e) { record('GUI stream sequential — threw', false, String(e).slice(0, 300)); }
+
 console.log('\n================ jsdom GUI verification ================');
 let pass = 0, fail = 0;
 for (const r of results) {

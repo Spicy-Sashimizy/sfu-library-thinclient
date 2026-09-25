@@ -177,7 +177,8 @@ def fetch_opensearch_results(
     (requires P.3 index). For now this path validates the BM25F pilot (P.4).
 
     Returns dicts compatible with the existing eval pipeline; ``cited_by_count``
-    is set to 0 since the current index doesn't store it (P.3 TODO). Use
+    is set to 0 because the OpenSearch index never stored it (OpenSearch path
+    deprecated for this container 2026-06-11, see docs/deprecated/). Use
     ``_score`` (0-1 normalized) as a proxy relevance signal instead.
     """
     body = {

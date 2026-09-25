@@ -1,5 +1,7 @@
 # Session record — 2026-07-13/14: E8 status → GLM drive → F6 corrections → R1 RAM-ladder
 
+**Status:** ACTIVE
+
 **Created 2026-07-14.** Verbatim-fidelity record of the overnight operator
 session (2026-07-13 ~21:00 UTC → 2026-07-14 ~08:00 UTC): the questions asked,
 the answers given, every defect found, every number measured, and the external

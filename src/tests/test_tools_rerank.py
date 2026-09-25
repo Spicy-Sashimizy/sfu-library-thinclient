@@ -105,8 +105,11 @@ class TestMaybeRerank:
             with patch("lib.tools.rerank_results", side_effect=lambda d, q, l, **k: d[:l]):
                 with patch.object(reranker, "_get_cross_encoder", return_value=fake_ce):
                     _maybe_rerank(docs, "query", 5)
-        pairs = fake_ce.predict.call_args.args[0]
+        pairs = [p for call in fake_ce.predict.call_args_list for p in call.args[0]
+                 if p != reranker._CE_PAD_PAIR]
         assert len(pairs) >= 20
+        assert all(len(call.args[0]) == reranker._CE_BATCH
+                   for call in fake_ce.predict.call_args_list)
 
     def test_no_pool_widening_without_crossencoder(self):
         """When CE is off, Stage-1 limit stays at the caller's limit (no widening)."""

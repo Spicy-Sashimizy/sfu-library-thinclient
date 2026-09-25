@@ -17,13 +17,18 @@ legs over-fetch and post-filter against meta.sqlite (the sidecar-mask pattern
 from docs/THIN_CLIENT_STACK_RESEARCH.md).
 
 Abstract policy: hot sections answer locally from the zstd-dict sidecar; ids
-missing locally are batch-fetched from the OpenAlex API (inverted-abstract
-parser in lib.openalex) when remote_abstracts=True — BEFORE rerank, never
-display-only.
+missing locally are batch-fetched from the OpenAlex API when
+remote_abstracts=True — BEFORE rerank, never display-only. On the serving path
+the fetch is the injected `remote_abstract_fetcher` (lib.tools passes the shared
+OpenAlexClient's `fetch_abstracts_by_ids`, so api_key, daily budget, circuit
+breaker and cache apply); the direct `requests` path is only the fallback for
+offline callers that inject nothing.
 """
 
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import json
 import logging
 import os
@@ -31,7 +36,7 @@ import sqlite3
 import threading
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from lib.thinclient.sections import ERA_BOUNDARY_YEAR, ERAS, classify_query
 
@@ -39,6 +44,26 @@ logger = logging.getLogger("sfu_library_mcp")
 
 _leg_metrics: dict[str, dict] = {}
 _metrics_lock = threading.Lock()
+
+_HYDRATE_MEMO: contextvars.ContextVar = contextvars.ContextVar(
+    "thinclient_hydrate_memo", default=None)
+
+
+class _HydrateMemo:
+    """Per-request memo of `_meta_rows` / `fetch_abstracts` answers, keyed by
+    openalex_id. Lives only inside one `ThinClientRetriever.hydrate_scope()`;
+    `rows_seen` / `abs_seen` record ids already asked for (hit or miss), so a
+    miss is not re-asked within the same request."""
+
+    __slots__ = ("owner", "rows", "rows_seen", "abstracts", "abs_seen", "lock")
+
+    def __init__(self, owner: Any):
+        self.owner = owner
+        self.rows: dict[str, tuple] = {}
+        self.rows_seen: set[str] = set()
+        self.abstracts: dict[str, str] = {}
+        self.abs_seen: set[str] = set()
+        self.lock = threading.Lock()
 
 
 def _mem_available_gb() -> float | None:
@@ -449,6 +474,8 @@ class ThinClientRetriever:
         remote_abstracts: bool = True,
         openalex_mailto: str = "",
         query_log_path: str = "",
+        openalex_api_key: str = "",
+        remote_abstract_fetcher: Callable[[list[str]], dict[str, str]] | None = None,
     ):
         repo_root = Path(__file__).resolve().parents[3]
         self.root = Path(index_root or repo_root / "data" / "thinclient_index")
@@ -457,6 +484,8 @@ class ThinClientRetriever:
         self.dense_model_path = dense_model_path or str(repo_root / "models" / "sfu-academic-embed-v5")
         self.remote_abstracts = remote_abstracts
         self.openalex_mailto = openalex_mailto
+        self.openalex_api_key = openalex_api_key
+        self.remote_abstract_fetcher = remote_abstract_fetcher
         self.query_log_path = query_log_path
         self._qlog_lock = threading.Lock()
 
@@ -844,17 +873,40 @@ class ThinClientRetriever:
         `_load()` by the time it is evaluated)."""
         legs: dict[str, list[dict]] = {}
         lat: dict[str, float] = {}
-        t0 = time.perf_counter()
-        legs["bm25f"] = self.search(query, top_k, mode="bm25f", filters=filters)
-        lat["bm25f"] = (time.perf_counter() - t0) * 1000
-        t0 = time.perf_counter()
-        legs["splade"] = self.search(query, top_k, mode="splade", filters=filters)
-        lat["splade"] = (time.perf_counter() - t0) * 1000
-        if include_dense and self._dense:
+        with self.hydrate_scope():
             t0 = time.perf_counter()
-            legs["dense"] = self.dense_search(query, top_k, filters=filters)
-            lat["dense"] = (time.perf_counter() - t0) * 1000
+            legs["bm25f"] = self.search(query, top_k, mode="bm25f", filters=filters)
+            lat["bm25f"] = (time.perf_counter() - t0) * 1000
+            t0 = time.perf_counter()
+            legs["splade"] = self.search(query, top_k, mode="splade", filters=filters)
+            lat["splade"] = (time.perf_counter() - t0) * 1000
+            if include_dense and self._dense:
+                t0 = time.perf_counter()
+                legs["dense"] = self.dense_search(query, top_k, filters=filters)
+                lat["dense"] = (time.perf_counter() - t0) * 1000
         return legs, lat
+
+    @contextlib.contextmanager
+    def hydrate_scope(self):
+        """Hydrate-once-per-request scope (lever #0,
+        docs/SPECULATIVE_RETRIEVAL_UPGRADES.md). Inside it, every `_hydrate`
+        on THIS retriever asks `_meta_rows` / `fetch_abstracts` only for ids
+        not already asked for in the scope, so a candidate surfaced by
+        several legs costs one meta lookup and at most one OpenAlex
+        round-trip. The memo is dropped on exit (no cross-request cache).
+        Re-entrant: a nested scope on the same retriever reuses the outer
+        memo. `_rrf_legs` opens one; any caller that fans one request out
+        over several `search()` calls (e.g. the router's LOCAL_RRF branch)
+        may wrap them in it."""
+        cur = _HYDRATE_MEMO.get()
+        if cur is not None and cur.owner is self:
+            yield cur
+            return
+        token = _HYDRATE_MEMO.set(_HydrateMemo(self))
+        try:
+            yield _HYDRATE_MEMO.get()
+        finally:
+            _HYDRATE_MEMO.reset(token)
 
     @staticmethod
     def _rrf_fuse(legs: dict[str, list[dict]], top_k: int,
@@ -1236,10 +1288,29 @@ class ThinClientRetriever:
             keep.append((did, score))
         return keep
 
+    def _hydrate_lookup(self, ids: list[str]) -> tuple[dict[str, tuple], dict[str, str]]:
+        """(meta rows, abstracts) for `ids`, through the active
+        `hydrate_scope` memo when one is open on this retriever, else the
+        direct unmemoised path."""
+        memo = _HYDRATE_MEMO.get()
+        if memo is None or memo.owner is not self:
+            return self._meta_rows(ids), self.fetch_abstracts(ids)
+        with memo.lock:
+            need_rows = list(dict.fromkeys(i for i in ids if i not in memo.rows_seen))
+            if need_rows:
+                memo.rows.update(self._meta_rows(need_rows))
+                memo.rows_seen.update(need_rows)
+            need_abs = list(dict.fromkeys(i for i in ids if i not in memo.abs_seen))
+            if need_abs:
+                memo.abstracts.update(self.fetch_abstracts(need_abs))
+                memo.abs_seen.update(need_abs)
+            rows = {i: memo.rows[i] for i in ids if i in memo.rows}
+            abstracts = {i: memo.abstracts[i] for i in ids if i in memo.abstracts}
+        return rows, abstracts
+
     def _hydrate(self, ranked: list[tuple[str, float]], source: str) -> list[dict]:
         ids = [d for d, _ in ranked]
-        rows = self._meta_rows(ids)
-        abstracts = self.fetch_abstracts(ids)
+        rows, abstracts = self._hydrate_lookup(ids)
         results = []
         for did, score in ranked:
             row = rows.get(did)
@@ -1278,7 +1349,25 @@ class ThinClientRetriever:
         return out
 
     def _fetch_remote_abstracts(self, ids: list[str]) -> dict[str, str]:
+        """Remote abstracts for `ids`: the injected `remote_abstract_fetcher`
+        when set (any exception from it degrades to no abstracts), else the
+        direct OpenAlex fallback."""
+        if self.remote_abstract_fetcher is not None:
+            try:
+                return dict(self.remote_abstract_fetcher(list(ids)) or {})
+            except Exception as exc:
+                logger.warning("remote abstract fetcher failed (%d ids): %s",
+                               len(ids), type(exc).__name__)
+                return {}
+        return self._fetch_remote_abstracts_direct(ids)
+
+    def _fetch_remote_abstracts_direct(self, ids: list[str]) -> dict[str, str]:
+        """Unbudgeted direct `requests.get` fallback for offline callers with
+        no injected fetcher. Sends `api_key` when given one, else `mailto`
+        (same precedence as OpenAlexClient._params)."""
         import requests
+
+        from lib.openalex import redact_api_key
         out: dict[str, str] = {}
         try:
             for start in range(0, len(ids), 50):
@@ -1288,7 +1377,9 @@ class ThinClientRetriever:
                     "per-page": str(len(chunk)),
                     "select": "id,abstract_inverted_index",
                 }
-                if self.openalex_mailto:
+                if self.openalex_api_key:
+                    params["api_key"] = self.openalex_api_key
+                elif self.openalex_mailto:
                     params["mailto"] = self.openalex_mailto
                 r = requests.get("https://api.openalex.org/works", params=params,
                                  timeout=15)
@@ -1299,7 +1390,8 @@ class ThinClientRetriever:
                     if wid and inv:
                         out[wid] = _invert_abstract(inv)
         except requests.RequestException as exc:
-            logger.warning("remote abstract fetch failed (%d ids): %s", len(ids), exc)
+            logger.warning("remote abstract fetch failed (%d ids): %s", len(ids),
+                           redact_api_key(exc))
         return out
 
 

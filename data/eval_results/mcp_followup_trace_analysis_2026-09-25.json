@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-25",
+  "script": "scripts/experiments/mcp_followup_trace_analysis.py",
+  "sources": {
+    "serve_query_log": {
+      "path": "data/eval_results/serve_query_log.jsonl",
+      "exists": true,
+      "rows": 2267,
+      "fields": [
+        "backend",
+        "cache_hit",
+        "federation",
+        "filtered",
+        "k",
+        "leg_ms",
+        "mode",
+        "n_results",
+        "query_hash",
+        "query_norm",
+        "result_fp",
+        "session",
+        "speculative",
+        "ts"
+      ],
+      "has_tool_name": false,
+      "has_result_ids": false,
+      "has_result_fingerprint": true,
+      "has_session": true,
+      "modes": {
+        "federated": 2267
+      },
+      "sessions": 35,
+      "date_range": [
+        "2026-07-18T07:00:22Z",
+        "2026-09-25T06:00:12Z"
+      ],
+      "emitters": [
+        "src/lib/tools.py search_academic_structured (GUI /api/search only)",
+        "src/sfu_library_mcp_http.py _log_cache_served_hit (GUI result-cache hits)"
+      ],
+      "mcp_tool_rows": 0,
+      "note": "Written only by the GUI structured search path and its result-cache hit path. The MCP text handlers (_handle_search_academic et al.) never call log_serve_query, so no MCP tool call can appear here. result_oaids is an argument to log(), not a logged field: only its sha1 (result_fp, over the ranked list as given, not sorted) is written."
+    },
+    "metrics_log": {
+      "path": "logs/mcp_metrics.jsonl",
+      "exists": true,
+      "rows": 3,
+      "fields": [
+        "latency_ms",
+        "server_version",
+        "success",
+        "tool",
+        "ts"
+      ],
+      "tools": {
+        "search_academic": 3
+      },
+      "followup_rows": 0,
+      "has_session": false,
+      "has_doc_ids": false,
+      "date_range": [
+        "2026-06-08T01:00:25.645414Z",
+        "2026-06-08T01:01:12.683889Z"
+      ],
+      "note": "The only log with a per-call tool name (tools.handle_tool_call -> _record_metric -> _persist_metric). No arguments, no result ids, no session."
+    },
+    "engagement_log": {
+      "path": "/workspaces/sfu-library-thinclient/logs/engagement_log.jsonl",
+      "exists": false,
+      "rows": 0,
+      "kinds": {},
+      "note": "Backs web/src/analytics.jsx (lib/analytics.py position_bias and session_replay panels). Has session_id + doc_id + action_type (abstract|tldr|pdf|citation|zotero) but is client-posted GUI engagement, not MCP tool calls."
+    },
+    "tools_query_log": {
+      "path": "(SFU_QUERY_LOG_PATH unset)",
+      "exists": false,
+      "rows": 0,
+      "note": "tools._log_query: searches only (handler, top-10 doi); no session, no follow-up tools. Off unless SFU_FEATURE_QUERY_LOG_ENABLED."
+    },
+    "eval_results_mentioning_followup_tools": []
+  },
+  "q1_followup_hits_prev_top10": {
+    "question": "follow-up call references a doc in the previous search's top-10",
+    "n_followup_calls_with_doc_id": 0,
+    "n_followup_calls_any": 0,
+    "hit_rate": null,
+    "status": "UNMEASURABLE",
+    "missing": "No trace records a follow-up MCP tool call together with its doc id and a session. The metrics log has the tool name but no arguments/results; the serve log has sessions but only GUI searches; the engagement log is GUI click events.",
+    "one_field_fix": "Add `ids` to the _persist_metric line (logs/mcp_metrics.jsonl): for search_* tools the ranked top-10 openalex_id/doi list, for get_paper_summary/get_references/get_full_text_link the normalize_doi() of the argument. Under stdio transport one server process is one client conversation, so a per-process `session` (as serve_query_log already mints) closes the join for HTTP."
+  },
+  "q2_second_search": {
+    "source": "data/eval_results/serve_query_log.jsonl",
+    "rows_total": 2267,
+    "rows_speculative_excluded": 309,
+    "rows_submitted": 1958,
+    "sessions": 35,
+    "sessions_with_ge2_searches": 14,
+    "consecutive_pairs": 1923,
+    "windows": {
+      "le_30s": {
+        "pairs": 1911,
+        "share_of_pairs": 0.9938,
+        "different_query": 1424,
+        "different_query_identical_result_fp": 2,
+        "same_query_repeat": 487
+      },
+      "le_60s": {
+        "pairs": 1916,
+        "share_of_pairs": 0.9964,
+        "different_query": 1429,
+        "different_query_identical_result_fp": 2,
+        "same_query_repeat": 487
+      },
+      "le_300s": {
+        "pairs": 1921,
+        "share_of_pairs": 0.999,
+        "different_query": 1434,
+        "different_query_identical_result_fp": 2,
+        "same_query_repeat": 487
+      }
+    },
+    "jaccard": null,
+    "jaccard_status": "UNMEASURABLE: only result_fp (sha1 of the ranked id list) is logged; equal fp => Jaccard 1, unequal fp => any value in [0,1)",
+    "session_size_histogram": {
+      "1": 21,
+      "3": 2,
+      "23": 4,
+      "47": 1,
+      "91": 1,
+      "148": 1,
+      "189": 1,
+      "208": 1,
+      "210": 1,
+      "276": 1,
+      "670": 1
+    },
+    "rows_by_date": {
+      "2026-07-18": 1514,
+      "2026-07-28": 735,
+      "2026-08-24": 1,
+      "2026-09-01": 4,
+      "2026-09-25": 13
+    },
+    "provenance": "The session field is a per-server-process random id. The multi-search sessions (2026-07-18, 2026-07-28) are each one server process driven by the speculation A/B benchmark (speculation_ab_2026-07-18.json / _2026-07-28.json) through the GUI /api/search path: replayed topic lists, not agent sessions. Inter-search gaps are the driver's pacing, and query order is the topic list's, so the pair counts characterise the harness, not agent refinement behaviour. Later rows (2026-08 onward) are 1-3-row sessions from smoke/test processes. No MCP search session exists in any trace."
+  },
+  "q3_works_cache_serves_followups": {
+    "handlers": {
+      "get_paper_summary": {
+        "handler": "_handle_get_paper_summary",
+        "line": 1477,
+        "reads_work_cache": false,
+        "remote_calls": [
+          "get_tldr"
+        ]
+      },
+      "get_references": {
+        "handler": "_handle_get_references",
+        "line": 1460,
+        "reads_work_cache": false,
+        "remote_calls": [
+          "get_references"
+        ]
+      },
+      "get_full_text_link": {
+        "handler": "_handle_get_full_text_link",
+        "line": 1539,
+        "reads_work_cache": true,
+        "remote_calls": [
+          "get_work_by_doi"
+        ]
+      },
+      "find_open_access": {
+        "handler": "_handle_find_open_access",
+        "line": 1493,
+        "reads_work_cache": true,
+        "remote_calls": [
+          "_check_unpaywall"
+        ]
+      }
+    },
+    "cache_works_callers": [
+      "_fetch_work_metadata",
+      "_handle_export_search",
+      "_handle_get_full_text_link",
+      "_handle_search_academic",
+      "_handle_search_by_author",
+      "_handle_search_by_doi",
+      "_handle_search_by_topic",
+      "search_academic_structured"
+    ],
+    "work_cache_capacity_keys": 500,
+    "verdict": "get_full_text_link already reads _work_cache first (_lookup_work) and every search handler calls _cache_works on the full fetch_k list BEFORE rerank, so a top-10 follow-up is already a cache hit with no remote call: #5 is moot for it (and for find_open_access's OpenAlex fallback). get_paper_summary does NOT read the works cache or any abstract: it always calls Semantic Scholar get_tldr; get_references always calls S2 get_references. Neither payload is in any cache, so #5 is not moot for them, but the only thing to warm is remote S2 calls (10 per search), which share the S2 client's circuit breaker and 429 backoff with user calls."
+  }
+}

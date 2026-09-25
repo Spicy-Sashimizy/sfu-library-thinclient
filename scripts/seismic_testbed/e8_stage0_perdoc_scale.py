@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """E8 Stage-0 pre-gate: per-doc linear u8 value scale vs FixedU8Q, shards 1-2, n=100.
 
-Roadmap: docs/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q1 (Stage 0, zero
+Roadmap: docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q1 (Stage 0, zero
 Rust). Lineage: e6b_fixedu8_quality.py / e6_forward_codec_proto.phase_c_quality
 — real engine top-k' candidates on the f16 mmap shard, re-scored in Python
 under each value quantizer, overlap@10 of the re-ranked lists vs exact f16.
@@ -85,7 +85,7 @@ def main():
                     "n_queries": N_QUERIES, "k_prime": K_PRIME,
                     "shards": SHARDS,
                     "bars": "perdoc ov@10 >= fixedu8 AND >= 0.99 on both shards -> GO; "
-                            "below fixedu8 -> KILL (12_EXECUTION_ROADMAP.md Q1)"},
+                            "below fixedu8 -> KILL (docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q1)"},
            "shards": {}}
     for name in SHARDS:
         res["shards"][name] = run_shard(name)

@@ -1,6 +1,6 @@
 # 15 — R3 kernel-ledger spike: per-page eviction/refault attribution
 
-**Status: MEASURED (2026-07-16).** Pre-registered bars live in
+**Status:** ACTIVE — **MEASURED (2026-07-16).** Pre-registered bars live in
 `11_EXPERIMENT_BACKLOG.md` §R3; design + execution delegated to the drive
 session per §6. Results in §7 below (verdicts: #1 REFUTED, #2 UNCLEAR-downdr,
 #3 CONFIRMED, #4 CONFIRMED-qualifying); the per-page-attribution write-up in

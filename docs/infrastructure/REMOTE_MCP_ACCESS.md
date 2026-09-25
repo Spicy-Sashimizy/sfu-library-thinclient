@@ -1,5 +1,7 @@
 # Connecting Claude to the SFU Library MCP server
 
+**Status:** ACTIVE
+
 Two access paths, both pointing at the **same MCP toolset** (`sfu-library`,
 Streamable HTTP transport, `/mcp` endpoint):
 

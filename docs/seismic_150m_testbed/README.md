@@ -1,14 +1,16 @@
 # SEISMIC 150M Testbed — go/no-go for a no-JVM, RAM-cured sparse leg at full scale
 
-> **Executing (not researching)? Start at `12_EXECUTION_ROADMAP.md`**
-> (2026-07-05) — the ordered, pre-registered queue with recipes and bars.
+> **Executing (not researching)? Start at `docs/README.md` §"Still open —
+> Active backlog"** — the only index of open work (closed-tracks policy,
+> 2026-09-25). The 2026-07-05 queue that used to live here is CLOSED: `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md`
+> is a historical decision ledger, not an entry point.
 
-**Status (2026-09-01):** the track's major results are in — dv forward
+**Status:** ACTIVE — as of 2026-09-01, the track's major results are in — dv forward
 compression promoted for RAM-capped deploys (doc 10), E5 reorder served by
 default since 2026-07-09 (doc 13), G8d parity accepted (0.9906), doc 17
-NOT-ADOPTED, doc 18 re-attributed to consolidation. Open queue + binding rules:
-`12_EXECUTION_ROADMAP.md`. Created 2026-06-26. · **Lineage:** this is the
-successor the prior project named — `sparse_engine_project/07_INTEGRATION_PLAN.md` §8
+NOT-ADOPTED, doc 18 re-attributed to consolidation. Open queue: `docs/README.md` §"Still open — Active backlog".
+Historical queue + binding gate rules: `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` (CLOSED SUPERSEDED 2026-09-25). Created 2026-06-26. · **Lineage:** this is the
+successor the prior project named — `archive/sparse_engine_project/07_INTEGRATION_PLAN.md` §8
 said *"if 150M-single-collection ever becomes a hard requirement, pivot to SEISMIC,
 not more BMP."* That condition has now materialized (below).
 
@@ -19,7 +21,7 @@ p50 ~66 ms). That decision is unchanged for the product. What changed is the
 **full-150M-single-collection** path:
 
 - Qdrant at 150M needs **≥64 GB RAM** to leave the disk-bound regime
-  (`docs/bmp_decommission_plan/DO_SIZING.md` — 205 GB on disk, 6.55 GB rising anon
+  (`docs/archive/bmp_decommission_plan/DO_SIZING.md` — 205 GB on disk, 6.55 GB rising anon
   floor, p50 545–861 ms / p95 3.4–4.5 s when RAM-bound).
 - The host we have is **31.6 GB**. Measured live (this session): 150m resting
   RssAnon ~17.4 GB, MemAvailable ~8.8 GB, projected force-optimize peak ~38 GB >
@@ -47,7 +49,7 @@ or buy a bigger box."
 |---|---|---|
 | Algorithm validated at scale | ✅ **YES — 138M MS MARCO v2** (≈ our 150M target). SEISMIC *prunes* (geometric blocks + summary vectors) — the exact gap that killed BMP (row-6 linear pruning). | ECIR 2025, [arXiv:2501.11628](https://arxiv.org/abs/2501.11628) |
 | No-JVM / embeddable | ✅ **YES** — pure Rust, MIT, `cargo add seismic` + `pyseismic-lsr` Python bindings. Clears the two gates OpenSearch+SEISMIC fails. | [github.com/TusKANNy/seismic](https://github.com/TusKANNy/seismic) |
-| RAM cure out-of-the-box | ❌ **NO — RAM-resident, no mmap/on-disk/out-of-core mode** in the public repo as of 2026-06-26. Inherits BMP's row-4 disease: ~8 GB/9M docs → **~133 GB @150M resident** (est., to be measured). | repo README + `qdrant_vs_lucene_assessment/STACK_COST_MATRIX.md` ("Seismic standalone … RAM-resident … not viable @150M") |
+| RAM cure out-of-the-box | ❌ **NO — RAM-resident, no mmap/on-disk/out-of-core mode** in the public repo as of 2026-06-26. Inherits BMP's row-4 disease: ~8 GB/9M docs → **~133 GB @150M resident** (est., to be measured). | repo README + `archive/qdrant_vs_lucene_assessment/STACK_COST_MATRIX.md` ("Seismic standalone … RAM-resident … not viable @150M") |
 
 **Plain reading:** SEISMIC fixes BMP's *fatal* axis (pruning) and keeps no-JVM —
 but ships with BMP's *other* axis (RAM-resident) unfixed. So this is **not** a "wire
@@ -72,7 +74,7 @@ maintenance trap. That is what the gates below decide.
 | `10_FORWARD_COMPRESSION_DESIGN.md` | **The dv (dotvbyte) compressed-forward track** — E6 codec design → E6b reuse decision → E7 shipped converter/reader + gates → §7.5 E7b/G8b promotion (−40% RSS, latency-neutral, fits where f16 thrashes) → §7.6 G8d full-corpus parity (corpus 0.9906, shards 1–2 = 0.985 marginal, **accepted 2026-07-05**) + the E8 quality-recovery pre-registration |
 | `11_EXPERIMENT_BACKLOG.md` | Pre-registered hypothesis registry (Tier 1/2 host cells — G8c executed 2026-07-04; Tier 3 container queue: E5, E8, M2b, M6, M7, M8) — rows stay until measured |
 | `15_R3_KERNEL_LEDGER_SPIKE.md` | **R3 spike — MEASURED 2026-07-16** — per-page eviction/refault attribution of the R2 convergence inversion (bpftrace filemap ledger + `workingset_refault` probe + between-pass `cachestat()` maps × per-query extent maps). Verdicts (§7): attribution REFUTED (repeat-set extents are shared — 19.6% touched by all 40 queries — so residual faults spread ~uniformly; the inversion is trajectory position, not per-query placement); decision-site UNCLEAR (distance not BTF-extractable; probe validated ±2% vs cgroup counter); the-sort-pictured CONFIRMED (12g evicts 3.17 GB by pass 0 vs 16g 0.0; drains to the 10.1 GB repeat set); observer-effect bars met on the final probes. GLM-drive-session-executed (§6); artifact §8 has the write-up |
-| `12_EXECUTION_ROADMAP.md` | **START HERE TO EXECUTE (2026-07-05)** — state snapshot, binding gate rules (worst-case-shard, n≥100, quality-free-first), the ordered queue with recipes + pre-registered bars (Q1 E8 dv-v2 → Q2 M7 sim → Q3 M8 instrument → Q4 M2b → Q5 M6 → Q6 E5), host-tier batch list, decision ledger, asset map |
+| `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` | **CLOSED SUPERSEDED 2026-09-25 — archived, historical** (was "START HERE TO EXECUTE", 2026-07-05) — state snapshot, binding gate rules (worst-case-shard, n≥100, quality-free-first), the ordered queue with recipes + pre-registered bars (Q1 E8 dv-v2 → Q2 M7 sim → Q3 M8 instrument → Q4 M2b → Q5 M6 → Q6 E5), host-tier batch list, decision ledger, asset map |
 | `build_plans/` | **RAM-escape build plans (2026-06-28)** — how to build+serve a 150M SEISMIC leg on the 32 GB WSL2 box, no JVM, so G6 can be measured: **01** sharded build + federated query (OpenSearch segment-model ported to pure Rust; lossless, fits 32 GB), **02** build-once on a ≥56 GB host + serve mmap, **03** compression/nnz-reduction (adjunct), **04** cross-engine metadata dedup. Index + per-plan dirs in `build_plans/README.md`. Note: this session's forward-floor analysis refines the G7 build-RAM estimate to **~55–63 GB** (the 25 GB lower end of the old 25–60 band is not credible — it ignored the linear 4.10 bytes/nnz forward floor). |
 | `REBUILD_TO_PERSISTENT_PATH.md` | **Shard-rematerialization runbook (2026-06-30)** — after the `/tmp` wipe (host reboot) lost all 8 served mmap shards + G7 sources + section spool. The upstream 150M corpus survives at `data/thinclient_index/spool_backup` (123 GB) → rebuild feasible. Final mmap shards land persistent at `data/seismic_150m/index/plan01/` (NOT `/tmp`); G7 sources + scratch stay on `/tmp`. Chain smoke-verified end-to-end before the full run. Unblocks `SequentialSeismicBackend` efficacy measurement (Tier 1 #3). |
 
@@ -80,7 +82,7 @@ maintenance trap. That is what the gates below decide.
 
 This testbed is **scoped to the 150M-single-collection server problem only.** At
 persona scale Qdrant is GREEN and nothing here is needed — the prior STOP
-(`sparse_engine_project/`) stands for the product we ship. Do not let this re-open
+(`archive/sparse_engine_project/`) stands for the product we ship. Do not let this re-open
 the bespoke-engine question for the laptop tier.
 
 ## 17 — BM25-through-SEISMIC spike (MEASURED & NOT ADOPTED, 2026-08-01)

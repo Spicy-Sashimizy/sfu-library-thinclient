@@ -12,7 +12,7 @@ WHY THIS BENCH IS THE GATE (not assumed from BMP)
 -------------------------------------------------
 The project already proved zero-decode cures the wall once — on BMP's forward
 index: `memmap2` + `bytemuck::cast_slice` over `#[repr(C)]` POD flipped
-696 ms → 25.63 ms (`docs/sparse_engine_project` G1 / `R3v2_delta.patch`,
+696 ms → 25.63 ms (`docs/archive/sparse_engine_project` G1 / `R3v2_delta.patch`,
 re-expressed in `01_ARCHITECTURE.md:82-133`). But SEISMIC's summary structure
 is NOT a flat POD blob the way BMP's forward block was. Upstream
 `QuantizedSummary<C>` (`spike/seismic_upstream/src/quantized_summary.rs:14`)

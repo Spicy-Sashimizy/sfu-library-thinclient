@@ -1,5 +1,7 @@
 # 05 · Risk Register
 
+**Status:** ACTIVE
+
 Each risk lists the **cheapest experiment that retires it** and the **gate** that
 catches it. Ordered by kill-probability × cost.
 

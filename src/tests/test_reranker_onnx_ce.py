@@ -5,7 +5,7 @@ torch v1 measured 11.8 ms vs int8 ONNX 52 ms, so torch stays the default —
 see data/eval_results/ce_v1_inversion_check_20260819_*.json. These tests
 assert WIRING invariants (backend selection, fallback, faithful export), not
 model semantics: the fine-tuned v1's relevance behavior is a model question,
-measured separately (scripts/demo_dependability/check_ce_direction.py).
+measured separately (scripts/archive/demo_dependability/check_ce_direction.py).
 """
 
 import pytest

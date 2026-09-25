@@ -1,5 +1,7 @@
 # 02 · Method verification, integration map, and worth-it analysis
 
+**Status:** DEFERRED 2026-09-25 (F1-F6 hooks built and env-gated OFF; no promotion decision taken)
+
 **Created 2026-07-13. Status: RESEARCH + one measured probe (Q12) — not on the
 served path.** This doc does three things doc 01 explicitly did not:
 

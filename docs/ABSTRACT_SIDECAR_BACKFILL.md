@@ -1,5 +1,7 @@
 # Abstract sidecar backfill — cold sections from the offloaded snapshot
 
+**Status:** DEFERRED 2026-08-18 (operator decision: the OpenAlex polite-pool live fetch is sufficient; design only, nothing built)
+
 **Date:** 2026-08-18 · **Status: DESIGN ONLY, NOTHING BUILT — DEFERRED by
 operator decision 2026-08-18: the OpenAlex polite-pool live-fetch is sufficient
 for the demo's purposes.** This doc exists so the idea isn't re-derived from
@@ -91,5 +93,5 @@ most of the ratio win on small records (ru −40% … zh −32% vs an English di
 
 - **2026-08-18 — DEFERRED.** Operator: the OpenAlex polite pool is enough for
   the demo's purposes. The live-fetch path stays the documented, accepted
-  behavior (`OCI_DEMO_DEPLOYMENT.md` §8 gotcha); this doc is the pickup point
+  behavior (`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §8 gotcha); this doc is the pickup point
   if latency/offline-robustness ever justify the ~2–4 h build + ~70 GB payload.

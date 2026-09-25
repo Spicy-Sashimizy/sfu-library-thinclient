@@ -4,7 +4,7 @@ Goal: make `bmp.Searcher` read its `.bmp` file via `mmap` instead of
 `load_into_memory`, so `RssAnon` stays ~0 and the OS pages the index in/out as
 reclaimable page cache. **Source-checked layout (`src/index/posting_list.rs`):
 block-max is TERM-MAJOR and contiguous per term, so this is a buffer-source swap,
-not an algorithm change** (see `docs/qdrant_vs_lucene_assessment/ARCHITECTURE_EXPLAINER.md` §6).
+not an algorithm change** (see `docs/archive/qdrant_vs_lucene_assessment/ARCHITECTURE_EXPLAINER.md` §6).
 
 ## Isolation (do not break the serving MCP)
 - Build into a **throwaway venv**, NEVER the project `.venv` (that one IS the MCP

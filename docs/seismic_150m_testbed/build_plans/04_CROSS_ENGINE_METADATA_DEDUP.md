@@ -1,6 +1,6 @@
 # Build Plan 04 — Cross-engine metadata externalization (store-once, hydrate-by-id)
 
-**Status:** DESIGN (created 2026-06-28, unbuilt). **Solves:** serving RAM / storage
+**Status:** DEFERRED 2026-09-25 (DESIGN, unbuilt since 2026-06-28) — DESIGN (created 2026-06-28, unbuilt). **Solves:** serving RAM / storage
 duplication across the lexical (BM25F) and sparse engines. **Orthogonal** to the
 SEISMIC build wall — but a real win that applies even to the *current live Qdrant
 deployment*, so it's worth doing regardless of the SEISMIC verdict.

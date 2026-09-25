@@ -1,5 +1,7 @@
 # 00 — Context and corrections to earlier framing
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 ## What this arc is
 
 The **SEISMIC dot-kernel math optimization arc**: a research track asking
@@ -76,7 +78,7 @@ Earlier framing asserted "~7% query/doc overlap" and "~90% zero FMA lanes."
   → `phase_a_stats`.
 - "~7% overlap" is **not a code/repo-cited figure.** The "~7%" string in the
   repo refers to Qdrant index *page-cacheability*
-  (`docs/bmp_decommission_plan/DO_SIZING.md:17`, `docs/THIN_CLIENT_SWAP.md:506`),
+  (`docs/archive/bmp_decommission_plan/DO_SIZING.md:17`, `docs/THIN_CLIENT_SWAP.md:506`),
   not query/doc term overlap. Marked `*est.*`.
 - "~90% zero FMA lanes" was **not measured anywhere** — a conceptual
   derivation from "doc has ~88 terms, query has ≤64, so most gather lanes are

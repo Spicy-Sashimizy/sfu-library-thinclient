@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-25T00:21:22Z",
+  "what": "v5 dense encoder (CLS pool + L2 norm): torch fp32 CPU vs dynamic-int8 ONNX \u2014 encode latency + embedding parity",
+  "model": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+  "out": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5-onnx-int8",
+  "host": {
+    "cpu_count": 16,
+    "intra_op_threads": 16,
+    "torch_threads": 16,
+    "isa": "avx2",
+    "quant": "dynamic int8 per-channel"
+  },
+  "n_texts": 64,
+  "max_len": 256,
+  "size_mb": {
+    "torch_safetensors": 133.5,
+    "onnx_fp32": 133.0,
+    "onnx_int8": 34.0
+  },
+  "embedding_parity": {
+    "cosine_torch_vs_int8": {
+      "mean": 0.994925,
+      "min": 0.990617
+    },
+    "cosine_st_vs_torch": {
+      "mean": 1.0,
+      "min": 1.0
+    },
+    "cosine_st_vs_int8": {
+      "mean": 0.994926,
+      "min": 0.990617
+    },
+    "neighbour_top5_agreement": 0.7656
+  },
+  "latency": {
+    "batch_1": {
+      "torch_fp32": {
+        "batch": 1,
+        "n": 640,
+        "p50_ms": 18.73,
+        "p95_ms": 136.034,
+        "mean_ms": 47.498,
+        "docs_per_s": 21.1
+      },
+      "onnx_int8": {
+        "batch": 1,
+        "n": 640,
+        "p50_ms": 5.254,
+        "p95_ms": 13.98,
+        "mean_ms": 6.66,
+        "docs_per_s": 150.2
+      },
+      "speedup_mean": 7.13,
+      "speedup_p50": 3.56
+    },
+    "batch_32": {
+      "torch_fp32": {
+        "batch": 32,
+        "n": 20,
+        "p50_ms": 192.005,
+        "p95_ms": 567.288,
+        "mean_ms": 223.871,
+        "docs_per_s": 142.9
+      },
+      "onnx_int8": {
+        "batch": 32,
+        "n": 20,
+        "p50_ms": 116.313,
+        "p95_ms": 184.106,
+        "mean_ms": 124.635,
+        "docs_per_s": 256.7
+      },
+      "speedup_mean": 1.8,
+      "speedup_p50": 1.65
+    }
+  },
+  "note": "Latency + embedding parity only. Retrieval-quality parity (nDCG) is NOT measured here; the dense leg is default OFF (SFU_DENSE_LEG, ablation DROP 2026-08-18)."
+}

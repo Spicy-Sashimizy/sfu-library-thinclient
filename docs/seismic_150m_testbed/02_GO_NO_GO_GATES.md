@@ -1,5 +1,7 @@
 # 02 · Go / No-Go Gates
 
+**Status:** ACTIVE
+
 HARD = a fail kills/blocks that path. SIGNAL = informs, doesn't auto-kill.
 Thresholds are the decision numbers; record the actual value next to each when run.
 Phases: **P0** desk/fact-find → **P1** persona-scale standalone (Path A) →

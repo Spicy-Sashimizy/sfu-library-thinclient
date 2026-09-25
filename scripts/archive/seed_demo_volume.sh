@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# ── SUPERSEDED 2026-08-19 by scripts/demo_dependability/seed_oci_volume.sh ────
+# ── SUPERSEDED 2026-08-19 by scripts/archive/demo_dependability/seed_oci_volume.sh ────
 # Qdrant/DO era. This script rsyncs `data/qdrant_spike/storage` (~205 GB est.)
 # to a DigitalOcean droplet and can trigger a Qdrant collection snapshot first.
 # The stack no longer serves Qdrant (SEISMIC + tantivy BM25F thin client — see
 # docs/THIN_CLIENT_SWAP.md), and the demo target moved DO → OCI, so BOTH the
 # source payload and the destination are wrong.
 #
-# Replacement: `scripts/demo_dependability/seed_oci_volume.sh`, driven by
-# `scripts/demo_dependability/build_demo_payload_manifest.py` (the curated
+# Replacement: `scripts/archive/demo_dependability/seed_oci_volume.sh`, driven by
+# `scripts/archive/demo_dependability/build_demo_payload_manifest.py` (the curated
 # served set — measured 126.33 GB / 872 files on 2026-08-19). The rsync
 # resumability shape below (--partial --append-verify --inplace + an outer
 # retry loop + a checksum verify pass) was carried over verbatim; that part
@@ -16,7 +16,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Resumable seed of the Qdrant on_disk storage dir onto the DO demo volume.
 #
-# WHY this shape: the build/source host is NOT always-on (HYBRID_DEMO_DEPLOYMENT.md
+# WHY this shape: the build/source host is NOT always-on (docs/deprecated/oci_demo/HYBRID_DEMO_DEPLOYMENT.md
 # risk #1), so the ~205 GB (est.) one-time transfer cannot assume a single
 # continuous run. This wrapper is RE-ENTRANT: rsync --partial --append-verify
 # --inplace picks up exactly where it left off, and the outer retry loop survives

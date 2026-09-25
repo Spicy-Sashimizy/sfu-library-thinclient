@@ -148,6 +148,23 @@ def _stream_spool(n: int):
                     return
 
 
+SPARSE_DATATYPES = ("float32", "float16", "uint8")
+
+
+def _sparse_index_params(models, datatype: str | None):
+    """SparseIndexParams(on_disk=True) plus the optional `datatype` quantization
+    knob (docs/archive/qdrant_uint8_sparse/): float32 (default, 4 B/value) | float16
+    (2 B) | uint8 (1 B). Qdrant quantizes sparse values in-flight, so SPLADE
+    weights need no manual rescale; the full-precision copy stays on disk and
+    only the searchable representation shrinks."""
+    if not datatype or datatype == "float32":
+        return models.SparseIndexParams(on_disk=True)
+    if datatype not in SPARSE_DATATYPES:
+        raise SystemExit("--sparse-datatype must be one of %s" % (SPARSE_DATATYPES,))
+    return models.SparseIndexParams(on_disk=True,
+                                    datatype=models.Datatype(datatype))
+
+
 def cmd_build_spool(args):
     """GPU-free build: reuse precomputed sparse_field from spool_backup."""
     from qdrant_client import QdrantClient, models
@@ -159,9 +176,10 @@ def cmd_build_spool(args):
         client.create_collection(
             collection_name=name, vectors_config={},
             sparse_vectors_config={"splade": models.SparseVectorParams(
-                index=models.SparseIndexParams(on_disk=True))},
+                index=_sparse_index_params(models, getattr(args, "sparse_datatype", None)))},
             on_disk_payload=True)
-        logger.info("created collection %s (sparse on_disk=True)", name)
+        logger.info("created collection %s (sparse on_disk=True, datatype=%s)",
+                    name, getattr(args, "sparse_datatype", None) or "float32")
     vocab = _vocab()
     rss0 = qdrant_rss_mb()
     logger.info("qdrant RSS before ingest: %.0f MB", rss0)
@@ -370,13 +388,15 @@ def cmd_build_spool_parallel(args):
         client.create_collection(
             collection_name=name, vectors_config={},
             sparse_vectors_config={"splade": models.SparseVectorParams(
-                index=models.SparseIndexParams(on_disk=True))},
+                index=_sparse_index_params(models, getattr(args, "sparse_datatype", None)))},
             on_disk_payload=True,
             optimizers_config=models.OptimizersConfigDiff(
                 default_segment_number=args.segments,
                 max_optimization_threads=args.opt_threads))
-        logger.info("created %s (sparse on_disk, segments=%d, opt_threads=%d)",
-                    name, args.segments, args.opt_threads)
+        logger.info("created %s (sparse on_disk, datatype=%s, segments=%d, "
+                    "opt_threads=%d)", name,
+                    getattr(args, "sparse_datatype", None) or "float32",
+                    args.segments, args.opt_threads)
     else:
         logger.info("RESUME into existing collection %s (have_ckpt=%s)", name, have_ckpt)
     slices = sorted(glob.glob(str(REPO_ROOT / "data/thinclient_index/spool_backup"
@@ -430,10 +450,12 @@ def cmd_build(args):
             vectors_config={},  # no dense vectors in this spike
             sparse_vectors_config={
                 "splade": models.SparseVectorParams(
-                    index=models.SparseIndexParams(on_disk=True))},
+                    index=_sparse_index_params(
+                        models, getattr(args, "sparse_datatype", None)))},
             on_disk_payload=True,
         )
-        logger.info("created collection %s (sparse on_disk=True)", name)
+        logger.info("created collection %s (sparse on_disk=True, datatype=%s)",
+                    name, getattr(args, "sparse_datatype", None) or "float32")
 
     vocab = _vocab()
     logger.info("loading GPU SPLADE doc encoder (TensorRT)...")
@@ -536,12 +558,20 @@ def main():
     b.add_argument("--batch", type=int, default=256)
     b.add_argument("--start-id", type=int, default=0)
     b.add_argument("--append", action="store_true")
+    b.add_argument("--sparse-datatype", choices=SPARSE_DATATYPES,
+                       default="float32",
+                       help="sparse index value datatype "
+                            "(docs/archive/qdrant_uint8_sparse/)")
     b.set_defaults(func=cmd_build)
     bs = sub.add_parser("build-spool")
     bs.add_argument("--n", type=int, default=5_000_000)
     bs.add_argument("--collection", default="splade_spool")
     bs.add_argument("--start-id", type=int, default=0)
     bs.add_argument("--append", action="store_true")
+    bs.add_argument("--sparse-datatype", choices=SPARSE_DATATYPES,
+                       default="float32",
+                       help="sparse index value datatype "
+                            "(docs/archive/qdrant_uint8_sparse/)")
     bs.set_defaults(func=cmd_build_spool)
     bp = sub.add_parser("build-spool-par")
     bp.add_argument("--n", type=int, default=30_000_000)
@@ -551,6 +581,10 @@ def main():
     bp.add_argument("--segments", type=int, default=16)
     bp.add_argument("--opt-threads", type=int, default=8)
     bp.add_argument("--append", action="store_true")
+    bp.add_argument("--sparse-datatype", choices=SPARSE_DATATYPES,
+                       default="float32",
+                       help="sparse index value datatype "
+                            "(docs/archive/qdrant_uint8_sparse/)")
     bp.set_defaults(func=cmd_build_spool_parallel)
     m = sub.add_parser("measure")
     m.add_argument("--collection", default="splade_spike")

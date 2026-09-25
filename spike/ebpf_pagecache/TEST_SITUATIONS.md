@@ -1,7 +1,10 @@
 # eBPF policy test situations — the uplift battery
 
-**Status 2026-09-06: DESIGN. Nothing here is measured; every prediction is
-*est.* until a cache_ext kernel exists to run on.** Companion to
+**Status 2026-09-25: DESIGN. Nothing here is measured; every prediction is
+*est.* until a cache_ext kernel exists to run on. EVERY policy-arm row below
+is BLOCKED on the only host that exists — see "Runnable vs blocked on this
+host" at the foot of this file.** (2026-09-06 status text otherwise
+unchanged.) Companion to
 `README.md` (findings + files). Arms marked *(upstream)* reuse policies
 shipped in `cache_ext_upstream/policies/` at zero new code; arms marked
 *(ours)* use `hotset_protect`. Baseline in every situation = the same cell
@@ -115,3 +118,45 @@ this file with absolute dates when run; unrun rows stay *est.*
    --mixture-seed`; realized mixture logged per replay; convergence
    early-stop disabled under a schedule; pre-encoded lists required by
    design so the encoder never enters the capped cgroup).
+
+## Runnable vs blocked on this host — 2026-09-25
+
+The only machine left is the WSL2 box (kernel
+`6.18.33.2-microsoft-standard-WSL2+`, Debian 12 container, 16 cores, 31 GB).
+No cloud host exists any more. The spike now **compiles** there
+(`README.md` §7), which changes nothing about what can be *run*.
+
+**Two independent walls, either one sufficient:**
+
+- **W1 — no cache_ext kernel.** Zero hits for `cache_ext_ops` /
+  `cache_ext_list_node` / `cache_ext_eviction_ctx` / `cache_ext_iterate_opts`
+  / `sampling_options` in this kernel's BTF; zero `bpf_cache_ext_*` symbols in
+  `/proc/kallsyms`; the only struct_ops type this kernel registers is
+  `tcp_congestion_ops`. Clearing W1 means booting WSL2 on a hand-built
+  `-cache-ext` bzImage (README §4 — and README §4's WSL2 risk list is still
+  unverified). MGLRU is also `=y` here and cache_ext needs it off (§1b).
+- **W2 — no `CAP_BPF` in the container.** `CapBnd 0x00000000a80425fb` clears
+  CAP_BPF, CAP_SYS_ADMIN and CAP_PERFMON; `sudo` inherits the same bounding
+  set, so uid 0 buys nothing, and `kernel.unprivileged_bpf_disabled=2`.
+  `bpf(2)` returns `-EPERM` for libbpf's *trivial* probe program, before our
+  object is ever offered to the kernel. Clearing W2 means recreating the
+  container with `--cap-add=BPF,PERFMON,SYS_ADMIN` (host-side, outside this
+  spike).
+
+| Row | Runnable here? | Why |
+|---|---|---|
+| **E1–E8** (phase 1, every policy arm incl. the upstream fifo/s3fifo/sampling/lhd/mru/mglru arms and the empty-table control) | **BLOCKED** | W1 + W2. `bench_mmap_visibility.sh` and `bench_matrix.sh` both guard on a `-cache-ext` kernel and exit; that guard is correct, not a bug. |
+| **S1–S6** (phase 2, every policy arm) | **BLOCKED** | W1 + W2, plus the phase-2 rig needs `data/thinclient_index` at scale, which this spike must not touch (page-cache measurements there are owned elsewhere). |
+| E1/E2/E3/E5/E7 **no-policy baseline arms** (`t1d_cell.py`, synthetic, no BPF) | mechanically runnable | needs no BPF at all — but these are the *already-frozen* Tier-1d baselines, so re-running buys nothing except a host-comparability check, and each cell costs 3–20 min. Not scheduled. |
+| S1–S6 **baseline arms** | **do not run** | they drive the real index; benching `data/thinclient_index` is another owner's territory. |
+| `load_hotset.py chunks` / `stack-chunks` / `--limit-mib` / `--corrupt-frac` / `--epoch 1` | **RUNNABLE** (and exercised 2026-09-06 against real sidecars + a real t1d result) | pure userspace table generation; no kernel involvement. |
+| `load_hotset.py attach` / `stats` / `refresh` | **BLOCKED** | all three need a loaded, pinned policy. |
+| `bench_matrix.sh` parser dry-run, `bash -n` on every script, `stack_replay.py` offline scheduler exercise | **RUNNABLE** (done 2026-09-06) | no kernel involvement. |
+| `offline_build/build_offline.sh` (compile + link + load attempt) | **RUNNABLE** (done 2026-09-25) | the load attempt is expected to fail; that failure is the recorded result, not a measurement of the policy. |
+
+**Consequence for the battery's ordering.** "E7 first, then E1" still stands,
+but the gating item ahead of all of it is now a kernel, not code: nothing in
+this file can produce a number until a `-cache-ext` boot exists. The
+2026-09-25 build result removes the *code* risk from that plan (the policy
+compiles as authored; the two portability `#define`s live in the harness, not
+in the policy) and leaves the kernel risk untouched.

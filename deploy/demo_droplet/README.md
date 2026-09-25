@@ -1,8 +1,8 @@
 # DO demo droplet — boot stack (Qdrant on_disk + thin-client MCP, off-BMP)
 
 What the on-demand DigitalOcean droplet runs once the NAS broker wakes it. Companion
-to `docs/infrastructure/HYBRID_DEMO_DEPLOYMENT.md` (Phase 1/2) and the broker in
-`scripts/demo_broker/`.
+to `docs/deprecated/oci_demo/HYBRID_DEMO_DEPLOYMENT.md` (Phase 1/2) and the broker in
+`scripts/archive/demo_broker/`.
 
 ## Files
 | File | Role |

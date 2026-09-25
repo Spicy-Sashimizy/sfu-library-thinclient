@@ -1,0 +1,173 @@
+{
+ "base": "data/eval_results/ce_batch_invariance_fixed_cpu_t1_2026-09-25.json",
+ "rows": [
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "alone",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "full",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "mixed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "reversed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "remainder",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "shuffled",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "alone",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "full",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "mixed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "reversed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "remainder",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t8_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "shuffled",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "alone",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "full",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "mixed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "reversed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "remainder",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "cross_encoder",
+   "arm": "shuffled",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "alone",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "full",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "mixed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "reversed",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "remainder",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  },
+  {
+   "vs": "data/eval_results/ce_batch_invariance_fixed_cpu_t16_2026-09-25.json",
+   "model": "stage1_embedding",
+   "arm": "shuffled",
+   "bit_identical": true,
+   "max_abs_diff": 0.0
+  }
+ ]
+}

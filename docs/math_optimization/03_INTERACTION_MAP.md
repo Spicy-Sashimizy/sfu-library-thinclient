@@ -1,5 +1,7 @@
 # 03 — Interaction map: what a math change touches
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 The options, from drop-in to architectural. Each row is grounded in the file
 map of `01_KERNEL_AND_MATH_MAP.md`. **The load-bearing isolation fact** (see
 `00_CONTEXT_AND_CORRECTIONS.md`): to change the per-candidate dot math you need

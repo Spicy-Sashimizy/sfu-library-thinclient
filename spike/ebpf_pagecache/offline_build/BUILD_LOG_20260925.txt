@@ -1,0 +1,56 @@
+==================================================================
+hotset_protect offline build + load attempt
+date:  2026-09-25
+host:  WSL2, 16 cores, 31 GB
+cmd:   ./build_offline.sh --load
+==================================================================
+== host ==
+6.18.33.2-microsoft-standard-WSL2+
+Debian clang version 14.0.6
+bpftool v7.6.0
+using libbpf v1.6
+features: llvm, skeletons
+vmlinux.h lines: 184425
+== cache_ext presence in the RUNNING kernel ==
+  vmlinux.h: cache_ext_ops            0 hits
+  vmlinux.h: cache_ext_list_node      0 hits
+  vmlinux.h: cache_ext_eviction_ctx   0 hits
+  vmlinux.h: cache_ext_iterate_opts   0 hits
+  vmlinux.h: sampling_options         0 hits
+  kallsyms:  bpf_cache_ext_*          0 hits
+== clang -target bpf ==
+In file included from hotset_protect.bpf.c:57:
+./cache_ext_lib.bpf.h:128:9: warning: incompatible pointer types returning 'memdesc_flags_t *' from a function with result type 'unsigned long *' [-Wincompatible-pointer-types]
+        return &page[n].flags;
+               ^~~~~~~~~~~~~~
+1 warning generated.
+== bpftool gen skeleton ==
+== clang (userspace loader) ==
+== BUILD OK ==
+-rw-r--r-- 1 vscode vscode  880864 Sep 25 00:14 hotset_protect.bpf.o
+-rwxr-xr-x 1 vscode vscode 2348736 Sep 25 00:14 hotset_protect.out
+-rw-r--r-- 1 vscode vscode 2965643 Sep 25 00:14 hotset_protect.skel.h
+== load attempt ==
+-- capabilities --
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	00000000a80425fb
+unprivileged_bpf_disabled=2
+-- unprivileged --
+   libbpf: Error in bpf_object__probe_loading(): -EPERM. Couldn't load trivial BPF program. Make sure your kernel supports BPF (CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is set to big enough value.
+   libbpf: failed to load BPF skeleton 'hotset_protect_bpf': -EPERM
+   Failed to load BPF skeleton: Operation not permitted
+-- root --
+   libbpf: Error in bpf_object__probe_loading(): -EPERM. Couldn't load trivial BPF program. Make sure your kernel supports BPF (CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is set to big enough value.
+   libbpf: failed to load BPF skeleton 'hotset_protect_bpf': -EPERM
+   Failed to load BPF skeleton: Operation not permitted
+
+==================================================================
+capability bounding set decode (CapBnd 0x00000000a80425fb)
+  bit 21 CAP_SYS_ADMIN  CLEAR
+  bit 38 CAP_PERFMON    CLEAR
+  bit 39 CAP_BPF        CLEAR
+=> bpf(2) is unreachable for uid 0 in this container; libbpf's
+   bpf_object__probe_loading() trivial program is what returns -EPERM,
+   so the refusal is the container's, not hotset_protect's.
+==================================================================

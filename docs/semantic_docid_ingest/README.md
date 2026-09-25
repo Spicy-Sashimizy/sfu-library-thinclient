@@ -1,6 +1,6 @@
 # Semantic Doc-ID at Ingest — research + spike trail
 
-**Status: DESIGN ONLY / UNMEASURED. Nothing here is implemented.** This folder
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **DESIGN ONLY / UNMEASURED. Nothing here is implemented.** This folder
 captures a hypothesis explored on 2026-06-30: assigning **autoregressive,
 hierarchical, semantic document IDs at ingest time on the host**, and using
 those IDs as the routing key for an LSM-style stack of **immutable** sparse

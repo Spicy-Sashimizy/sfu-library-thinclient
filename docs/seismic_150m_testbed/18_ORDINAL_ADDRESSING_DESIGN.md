@@ -1,5 +1,12 @@
 # 18 — Ordinal addressing: the thin client's storage problem is an ADDRESSING problem
 
+**Status:** ACTIVE
+
+*(The 2026-08-02 header line immediately below is the creation-time state and is
+itself superseded: §22–§23 BUILT and PUBLISHED the flat abstract sidecar for
+`social_sciences__recent` on 2026-08-17, so production code did change; the
+ordinal `_post_filter` path remains gated off behind `SFU_THINCLIENT_ORDINALS`.)*
+
 **Status:** DESIGN + MEASURED PRIMITIVES (2026-08-02). **Not implemented, not
 adopted.** No production code changed.
 **Parent:** `17_BM25_THROUGH_SEISMIC_SPIKE.md` §10–§13 (the consolidation spikes
@@ -234,6 +241,14 @@ Ordered by how much they should worry you.
 
 ## 7. Next steps
 
+> **Reconciled 2026-09-25** — 5 items (N1–N5): 4 DONE, 0 CLOSED, 0 SUPERSEDED, 1 STILL OPEN.
+> STILL OPEN: **N2** (MPHF viability), deferred on this section's own quantified
+> reasoning and listed as open work nowhere — not in `docs/README.md`, not in this
+> folder's `README.md`. Read every "DONE" here together with **§14 (2026-08-03)**,
+> which re-attributed the headline multiples to the 9p filesystem rather than to
+> addressing, and with §20–§21 (2026-08-04), which closed the meta-store route
+> ("no store holds the speed gate; meta.sqlite stays").
+
 Staged so each gate can kill the design before the expensive work starts.
 
 **N1 — SEISMIC ordinal-nativeness (BLOCKING, cheap) — ✅ ANSWERED 2026-08-02: PASS.**
@@ -255,6 +270,8 @@ makes SEISMIC return ordinals directly.
 The blocking gate is cleared. Verified by code inspection, not by a build —
 an actual ordinal-keyed SEISMIC build is folded into N3.
 
+— **DONE 2026-08-02 (answered in place above; PASS by code inspection, folded into N3/§11).**
+
 **N2 — MPHF viability (cheap, but DEFERRED — it is a RAM lever, not a latency
 lever).** Build a PtrHash/RecSplit MPHF over the real 150,413,098 W-ids; measure
 construction time, on-disk size, and lookup latency including the verification
@@ -270,10 +287,25 @@ before N4 would repeat this investigation's recurring error — optimising a sta
 that is not on the critical path (cf. §11, where C3's locator turned out to be
 1.3% of abstract fetch).
 
+— **STILL OPEN 2026-09-25** — never built or measured; no MPHF/PtrHash/RecSplit
+result file exists under `data/eval_results/`. The deferral reasoning still holds
+and §14 (2026-08-03) strengthens it — ordinals are a **residency** lever, and
+§12's measured sorted-array space (1.96 GB for the full 150M ordinal space, vs
+`meta.sqlite`'s 24.91 GB) already works. Listed as open work in no Active table
+(`docs/README.md`, `docs/seismic_150m_testbed/README.md`).
+
 **N3 — build-time ordinal assignment (medium).** One pass over all 10 sections
 assigning global ordinals; write the ordinal fast field into a rebuilt tantivy
 section. Measure build cost on ONE section before committing to ten. *Bar:* does
 not materially extend the existing build.
+
+— **DONE 2026-08-02 (§11 + §12)** — ordinal artifacts built at 97,063 docs/s on
+the pilot and the full 150M space at 98,867 docs/s (1.96 GB), plus the
+stale-ordinal guard (§12) and the `SFU_THINCLIENT_ORDINALS` retriever gate
+(default off). Results `data/eval_results/n3_*`, `n4_*`. **§10 restaged the
+tantivy rebuild itself as deferred indefinitely** (it buys ~2% and would cost
+~127M re-fetched OpenAlex abstracts) — so the fast-field half of this item is
+deliberately not done.
 
 **N4 — end-to-end prototype on one section (the real test).** Rewrite
 `_post_filter` and `_hydrate` against ordinal arrays for
@@ -282,12 +314,35 @@ latency — not primitives. *Bar:* a **record-tc byte-parity gate** against the
 current retriever, the same bar `eval_parity_section_waves.py` holds. Parity is
 non-negotiable; speed without it is meaningless.
 
+— **DONE 2026-08-02 (§11 + §13; RE-ATTRIBUTED §14, 2026-08-03)** — the
+`_post_filter` swap passed a 360-trial parity gate (ids, scores AND rank order)
+at 120–211× on the stage and 3.20× whole-query at `top_k=50` (§13, parity PASS
+216/216). **§14 then showed that win was the filesystem, not the addressing**:
+staging `meta.sqlite` to local disk gets 2.83× with no code change, and against a
+production-realistic baseline the whole ordinal win is 4.0 → 1.5 ms ≈ 2.0% of the
+query, inside the ±4% noise floor. `_hydrate` was NOT rewritten (rejected on
+measurement, then reopened in §15 under a consolidation goal). Nothing is
+enabled — `SFU_THINCLIENT_ORDINALS` stays default off.
+
 **N5 — C3 block file (independent, do it regardless).** The flat zstd block file
 is worth ~3.4× on abstract hydration and ~2.2 GB *on its own*, and does not
 depend on ordinals. It is the highest value-per-unit-risk item in this whole
 investigation. Ship it separately.
 
-**Explicitly NOT next:** migrating to Lance (§12), or any engine substitution.
+— **DONE 2026-08-17 (§9 spike 2026-08-02 → §22 production build → §23 serving
+efficacy)** — the flat block store passed a byte-parity gate on 20,000 abstracts
+at 2.89× end-to-end (§9, correcting §11's 3.4× projection), then was **BUILT AND
+PUBLISHED** for `social_sciences__recent` (§22: gate PASS, 11.57 GB, 19 min 33 s)
+— that section serves flat today. Serving efficacy measured against the published
+directory (§23): byte-parity PASS, local disk **1.091× warm / 2.546× cold**, 9p
+2.876×, −1,897,229,898 B, and **0.919× (slower) on a freshly started process**
+until its 421 MB locator is resident. Harness
+`scripts/seismic_testbed/j1_flat_sidecar_serving_ab.py`, results
+`data/eval_results/j1_flat_*_20260817.json`.
+
+**Explicitly NOT next (still binding as of 2026-09-25 — not counted as an item
+above; nothing since has re-opened it, and §20–§21 of 2026-08-04 closed the
+meta-store bake-off with "meta.sqlite stays"):** migrating to Lance (§12), or any engine substitution.
 §12's Lance result (1.15–1.72× on lookup) is *worse* than ordinal addressing on
 the same axis, and Lance cannot host the SPLADE leg while lancedb#1930 is open.
 Lance stays a documented alternative, not a plan.

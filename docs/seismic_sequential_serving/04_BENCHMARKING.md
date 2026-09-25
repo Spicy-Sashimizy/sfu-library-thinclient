@@ -1,5 +1,7 @@
 # 04 · Benchmarking — sequential vs parallel, head-to-head
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, updated 2026-06-30.** The `--federation {parallel,sequential}`
 flag on `serve_footprint_bench.py` is **shipped** (recorded in the result JSON);
 the bench already captures VmSwap + cold/warm passes + the encode/traverse split.

@@ -1,0 +1,986 @@
+{
+ "what": "ordinals residency cliff \u2014 filter stage under a page-cache ladder",
+ "date": "2026-09-25",
+ "script": "scripts/experiments/eval_ordinals_cliff.py",
+ "pre_registration": "docs/ORDINALS_RESIDENCY_CLIFF.md",
+ "candidates_file": "data/eval_results/ordinals_cliff_candidates_20260925.json",
+ "n_queries": 40,
+ "candidates_per_query": 500,
+ "filters": {
+  "year_range": [
+   2010,
+   2025
+  ],
+  "type": "article"
+ },
+ "passes_per_arm": 3,
+ "caps_gib": [
+  24.0,
+  16.0,
+  10.0,
+  6.0,
+  3.0,
+  1.5
+ ],
+ "staged": {
+  "meta": {
+   "path": "/var/tmp/cliff_stage/meta.sqlite",
+   "bytes": 24908001280,
+   "copied": false
+  },
+  "ordinals": {
+   "wids.npy": {
+    "path": "/var/tmp/cliff_stage/ordinals/wids.npy",
+    "bytes": 1203304912,
+    "copied": false
+   },
+   "year.npy": {
+    "path": "/var/tmp/cliff_stage/ordinals/year.npy",
+    "bytes": 300826324,
+    "copied": false
+   },
+   "dtype.npy": {
+    "path": "/var/tmp/cliff_stage/ordinals/dtype.npy",
+    "bytes": 150413226,
+    "copied": false
+   },
+   "is_oa.npy": {
+    "path": "/var/tmp/cliff_stage/ordinals/is_oa.npy",
+    "bytes": 150413226,
+    "copied": false
+   },
+   "section.npy": {
+    "path": "/var/tmp/cliff_stage/ordinals/section.npy",
+    "bytes": 150413226,
+    "copied": false
+   },
+   "ordinal_space.json": {
+    "path": "/var/tmp/cliff_stage/ordinals/ordinal_space.json",
+    "bytes": 1410,
+    "copied": false
+   }
+  }
+ },
+ "ordinal_pairing": {
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "stamp_source_bytes": 24908001280,
+  "stamp_source_mtime_ns": 1781573592207934800,
+  "meta_bytes": 24908001280,
+  "meta_mtime_ns": 1781573592207934800,
+  "bytes_match": true,
+  "mtime_match": true,
+  "manifest_has_stamp": false
+ },
+ "cap_mechanism": "mlock'd anonymous balloon in a child process; no cgroup memory.max is reachable from this container (cgroup ro, no CAP_SYS_ADMIN, no docker, no systemd-run) and no other host exists as of 2026-09-25",
+ "host": {
+  "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+  "mem_total_bytes": 33651965952,
+  "mem_available_at_start": 30126518272,
+  "swap_total_bytes": 17179869184,
+  "mglru": "0x0007",
+  "cgroup_version": "v2",
+  "meta_staged_fstype": "overlay",
+  "ordinals_staged_fstype": "overlay",
+  "meta_src_fstype": "9p"
+ },
+ "quiet_gate_max_load1": 3.0,
+ "loadavg_at_start": {
+  "load1": 1.61,
+  "load5": 1.68,
+  "load15": 2.08,
+  "running": "1/2218",
+  "t": "2026-09-25T02:31:51"
+ },
+ "other_python_at_start": [],
+ "rungs": [
+  {
+   "cap_gib": 24.0,
+   "balloon": {
+    "requested_bytes": 4350070784,
+    "ready": "READY rc=0 pid=599821"
+   },
+   "mem_available_after_balloon": 25751019520,
+   "cap_effective_gib": 23.98,
+   "mlocked_bytes": 4350070784,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 119.582,
+       "p95_ms": 162.628,
+       "mean_ms": 125.321,
+       "max_ms": 189.1,
+       "wall_ms": 5014.9,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.952,
+       "p95_ms": 3.163,
+       "mean_ms": 2.948,
+       "max_ms": 3.263,
+       "wall_ms": 119.7,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.928,
+       "p95_ms": 3.054,
+       "mean_ms": 2.931,
+       "max_ms": 3.123,
+       "wall_ms": 119.0,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.41,
+      "load5": 1.63,
+      "load15": 2.06,
+      "running": "1/2238",
+      "t": "2026-09-25T02:32:05"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 122654720,
+      "ordinals": 0
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.453,
+       "p95_ms": 11.797,
+       "mean_ms": 24.588,
+       "max_ms": 864.954,
+       "wall_ms": 985.4,
+       "majflt": 297
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.94,
+       "p95_ms": 1.091,
+       "mean_ms": 0.957,
+       "max_ms": 1.11,
+       "wall_ms": 40.0,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.923,
+       "p95_ms": 0.974,
+       "mean_ms": 0.927,
+       "max_ms": 0.994,
+       "wall_ms": 38.8,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.41,
+      "load5": 1.63,
+      "load15": 2.06,
+      "running": "1/2238",
+      "t": "2026-09-25T02:32:07"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 16384,
+      "ordinals": 1643888640
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.36,
+      "load5": 1.63,
+      "load15": 2.06,
+      "running": "1/2215",
+      "t": "2026-09-25T02:31:59"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.41,
+      "load5": 1.63,
+      "load15": 2.06,
+      "running": "1/2238",
+      "t": "2026-09-25T02:32:05"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 23.98,
+    "sqlite_p50_ms": 2.928,
+    "sqlite_p95_ms": 3.054,
+    "ordinals_p50_ms": 0.923,
+    "ordinals_p95_ms": 0.974,
+    "p95_ratio_sqlite_over_ordinals": 3.136,
+    "sqlite_majflt": 0,
+    "ordinals_majflt": 0
+   }
+  },
+  {
+   "cap_gib": 16.0,
+   "balloon": {
+    "requested_bytes": 12678389760,
+    "ready": "READY rc=0 pid=599852"
+   },
+   "mem_available_after_balloon": 17540087808,
+   "cap_effective_gib": 16.34,
+   "mlocked_bytes": 12678389760,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 125.176,
+       "p95_ms": 163.291,
+       "mean_ms": 128.597,
+       "max_ms": 174.817,
+       "wall_ms": 5146.3,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.867,
+       "p95_ms": 3.114,
+       "mean_ms": 2.895,
+       "max_ms": 3.232,
+       "wall_ms": 117.7,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.797,
+       "p95_ms": 3.883,
+       "mean_ms": 2.89,
+       "max_ms": 4.14,
+       "wall_ms": 117.5,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.62,
+      "load5": 1.67,
+      "load15": 2.06,
+      "running": "1/2215",
+      "t": "2026-09-25T02:32:27"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 1525792768
+     },
+     "resident_after_bytes": {
+      "meta": 122654720,
+      "ordinals": 1525792768
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.462,
+       "p95_ms": 12.072,
+       "mean_ms": 23.968,
+       "max_ms": 836.168,
+       "wall_ms": 960.6,
+       "majflt": 291
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.98,
+       "p95_ms": 1.361,
+       "mean_ms": 1.046,
+       "max_ms": 1.537,
+       "wall_ms": 43.8,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.971,
+       "p95_ms": 1.143,
+       "mean_ms": 0.997,
+       "max_ms": 1.212,
+       "wall_ms": 41.7,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.57,
+      "load5": 1.66,
+      "load15": 2.05,
+      "running": "1/2222",
+      "t": "2026-09-25T02:32:29"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 16384,
+      "ordinals": 1643888640
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.67,
+      "load5": 1.68,
+      "load15": 2.07,
+      "running": "1/2228",
+      "t": "2026-09-25T02:32:21"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.62,
+      "load5": 1.67,
+      "load15": 2.06,
+      "running": "1/2215",
+      "t": "2026-09-25T02:32:27"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 16.34,
+    "sqlite_p50_ms": 2.797,
+    "sqlite_p95_ms": 3.883,
+    "ordinals_p50_ms": 0.971,
+    "ordinals_p95_ms": 1.143,
+    "p95_ratio_sqlite_over_ordinals": 3.397,
+    "sqlite_majflt": 0,
+    "ordinals_majflt": 0
+   }
+  },
+  {
+   "cap_gib": 10.0,
+   "balloon": {
+    "requested_bytes": 19314597888,
+    "ready": "READY rc=0 pid=599878"
+   },
+   "mem_available_after_balloon": 11056185344,
+   "cap_effective_gib": 10.3,
+   "mlocked_bytes": 19314597888,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 126.233,
+       "p95_ms": 159.599,
+       "mean_ms": 129.894,
+       "max_ms": 194.945,
+       "wall_ms": 5198.3,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.884,
+       "p95_ms": 3.099,
+       "mean_ms": 2.903,
+       "max_ms": 3.245,
+       "wall_ms": 118.0,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 2.913,
+       "p95_ms": 3.159,
+       "mean_ms": 2.944,
+       "max_ms": 3.308,
+       "wall_ms": 119.7,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.85,
+      "load5": 1.72,
+      "load15": 2.06,
+      "running": "1/2224",
+      "t": "2026-09-25T02:32:53"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 1525792768
+     },
+     "resident_after_bytes": {
+      "meta": 122654720,
+      "ordinals": 1525792768
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.509,
+       "p95_ms": 14.142,
+       "mean_ms": 26.662,
+       "max_ms": 929.509,
+       "wall_ms": 1068.5,
+       "majflt": 291
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.977,
+       "p95_ms": 1.151,
+       "mean_ms": 1.007,
+       "max_ms": 1.174,
+       "wall_ms": 42.3,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.91,
+       "p95_ms": 0.957,
+       "mean_ms": 0.902,
+       "max_ms": 0.964,
+       "wall_ms": 37.9,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.85,
+      "load5": 1.72,
+      "load15": 2.06,
+      "running": "1/2217",
+      "t": "2026-09-25T02:32:55"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 16384,
+      "ordinals": 1643888640
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.74,
+      "load5": 1.69,
+      "load15": 2.06,
+      "running": "1/2230",
+      "t": "2026-09-25T02:32:47"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.85,
+      "load5": 1.72,
+      "load15": 2.06,
+      "running": "1/2224",
+      "t": "2026-09-25T02:32:53"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 10.3,
+    "sqlite_p50_ms": 2.913,
+    "sqlite_p95_ms": 3.159,
+    "ordinals_p50_ms": 0.91,
+    "ordinals_p95_ms": 0.957,
+    "p95_ratio_sqlite_over_ordinals": 3.301,
+    "sqlite_majflt": 0,
+    "ordinals_majflt": 0
+   }
+  },
+  {
+   "cap_gib": 6.0,
+   "balloon": {
+    "requested_bytes": 23717076992,
+    "ready": "READY rc=0 pid=599936"
+   },
+   "mem_available_after_balloon": 6888869888,
+   "cap_effective_gib": 6.42,
+   "mlocked_bytes": 23717076992,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 128.825,
+       "p95_ms": 168.26,
+       "mean_ms": 134.839,
+       "max_ms": 191.107,
+       "wall_ms": 5396.1,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 3.182,
+       "p95_ms": 3.819,
+       "mean_ms": 3.247,
+       "max_ms": 4.474,
+       "wall_ms": 132.0,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 3.019,
+       "p95_ms": 4.103,
+       "mean_ms": 3.171,
+       "max_ms": 4.847,
+       "wall_ms": 128.9,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 2.46,
+      "load5": 1.87,
+      "load15": 2.09,
+      "running": "5/2238",
+      "t": "2026-09-25T02:33:42"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 1525788672
+     },
+     "resident_after_bytes": {
+      "meta": 122654720,
+      "ordinals": 1525788672
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.602,
+       "p95_ms": 14.259,
+       "mean_ms": 27.092,
+       "max_ms": 945.811,
+       "wall_ms": 1085.9,
+       "majflt": 291
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.993,
+       "p95_ms": 1.064,
+       "mean_ms": 1.001,
+       "max_ms": 1.131,
+       "wall_ms": 41.9,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.975,
+       "p95_ms": 1.064,
+       "mean_ms": 0.985,
+       "max_ms": 1.104,
+       "wall_ms": 41.1,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 2.46,
+      "load5": 1.87,
+      "load15": 2.09,
+      "running": "2/2225",
+      "t": "2026-09-25T02:33:44"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 16384,
+      "ordinals": 1643888640
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 20.0,
+     "loadavg": {
+      "load1": 1.99,
+      "load5": 1.76,
+      "load15": 2.06,
+      "running": "2/2241",
+      "t": "2026-09-25T02:33:36"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.46,
+      "load5": 1.87,
+      "load15": 2.09,
+      "running": "5/2238",
+      "t": "2026-09-25T02:33:42"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 6.42,
+    "sqlite_p50_ms": 3.019,
+    "sqlite_p95_ms": 4.103,
+    "ordinals_p50_ms": 0.975,
+    "ordinals_p95_ms": 1.064,
+    "p95_ratio_sqlite_over_ordinals": 3.856,
+    "sqlite_majflt": 0,
+    "ordinals_majflt": 0
+   }
+  },
+  {
+   "cap_gib": 3.0,
+   "balloon": {
+    "requested_bytes": 27126820864,
+    "ready": "READY rc=0 pid=608370"
+   },
+   "mem_available_after_balloon": 3730300928,
+   "cap_effective_gib": 3.47,
+   "mlocked_bytes": 27126820864,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 127.781,
+       "p95_ms": 166.966,
+       "mean_ms": 130.178,
+       "max_ms": 172.358,
+       "wall_ms": 5209.4,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 115.026,
+       "p95_ms": 132.042,
+       "mean_ms": 116.572,
+       "max_ms": 135.188,
+       "wall_ms": 4665.1,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 3.076,
+       "p95_ms": 120.485,
+       "mean_ms": 35.044,
+       "max_ms": 139.479,
+       "wall_ms": 1403.9,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.95,
+      "load5": 1.87,
+      "load15": 2.08,
+      "running": "1/2234",
+      "t": "2026-09-25T02:34:39"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 1525792768
+     },
+     "resident_after_bytes": {
+      "meta": 122593280,
+      "ordinals": 1525747712
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.513,
+       "p95_ms": 14.038,
+       "mean_ms": 27.458,
+       "max_ms": 967.178,
+       "wall_ms": 1100.3,
+       "majflt": 291
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.957,
+       "p95_ms": 1.109,
+       "mean_ms": 0.972,
+       "max_ms": 1.145,
+       "wall_ms": 40.6,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 0.956,
+       "p95_ms": 1.126,
+       "mean_ms": 0.971,
+       "max_ms": 1.14,
+       "wall_ms": 40.7,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 1.95,
+      "load5": 1.87,
+      "load15": 2.08,
+      "running": "1/2233",
+      "t": "2026-09-25T02:34:41"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 16384,
+      "ordinals": 1643888640
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 20.0,
+     "loadavg": {
+      "load1": 2.22,
+      "load5": 1.92,
+      "load15": 2.1,
+      "running": "1/2219",
+      "t": "2026-09-25T02:34:27"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.95,
+      "load5": 1.87,
+      "load15": 2.08,
+      "running": "1/2234",
+      "t": "2026-09-25T02:34:39"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 3.47,
+    "sqlite_p50_ms": 3.076,
+    "sqlite_p95_ms": 120.485,
+    "ordinals_p50_ms": 0.956,
+    "ordinals_p95_ms": 1.126,
+    "p95_ratio_sqlite_over_ordinals": 107.003,
+    "sqlite_majflt": 0,
+    "ordinals_majflt": 0
+   }
+  },
+  {
+   "cap_gib": 1.5,
+   "balloon": {
+    "requested_bytes": 29035249664,
+    "ready": "READY rc=0 pid=608441"
+   },
+   "mem_available_after_balloon": 1919971328,
+   "cap_effective_gib": 1.79,
+   "mlocked_bytes": 29035249664,
+   "arms": {
+    "sqlite": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 125.928,
+       "p95_ms": 194.857,
+       "mean_ms": 137.665,
+       "max_ms": 205.953,
+       "wall_ms": 5509.2,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 3.088,
+       "p95_ms": 4.066,
+       "mean_ms": 3.219,
+       "max_ms": 4.7,
+       "wall_ms": 130.9,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 3.089,
+       "p95_ms": 4.117,
+       "mean_ms": 3.231,
+       "max_ms": 5.243,
+       "wall_ms": 131.3,
+       "majflt": 1
+      }
+     ],
+     "loadavg_after": {
+      "load1": 2.59,
+      "load5": 2.07,
+      "load15": 2.14,
+      "running": "2/2239",
+      "t": "2026-09-25T02:35:12"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 674017280
+     },
+     "resident_after_bytes": {
+      "meta": 122654720,
+      "ordinals": 427880448
+     },
+     "ids_without_ordinal": null
+    },
+    "ordinals": {
+     "passes": [
+      {
+       "n_queries": 40,
+       "p50_ms": 1.968,
+       "p95_ms": 21.52,
+       "mean_ms": 44.551,
+       "max_ms": 1496.19,
+       "wall_ms": 1785.4,
+       "majflt": 579
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 1.229,
+       "p95_ms": 1.4,
+       "mean_ms": 1.25,
+       "max_ms": 1.486,
+       "wall_ms": 52.5,
+       "majflt": 0
+      },
+      {
+       "n_queries": 40,
+       "p50_ms": 1.094,
+       "p95_ms": 1.72,
+       "mean_ms": 1.212,
+       "max_ms": 1.82,
+       "wall_ms": 50.7,
+       "majflt": 0
+      }
+     ],
+     "loadavg_after": {
+      "load1": 2.54,
+      "load5": 2.06,
+      "load15": 2.14,
+      "running": "2/2239",
+      "t": "2026-09-25T02:35:15"
+     },
+     "resident_before_bytes": {
+      "meta": 0,
+      "ordinals": 0
+     },
+     "resident_after_bytes": {
+      "meta": 0,
+      "ordinals": 1643855872
+     },
+     "ids_without_ordinal": 0
+    }
+   },
+   "quiet_gate": {
+    "sqlite": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.64,
+      "load5": 2.07,
+      "load15": 2.14,
+      "running": "2/2240",
+      "t": "2026-09-25T02:35:06"
+     },
+     "other_python": []
+    },
+    "ordinals": {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.59,
+      "load5": 2.07,
+      "load15": 2.14,
+      "running": "2/2239",
+      "t": "2026-09-25T02:35:12"
+     },
+     "other_python": []
+    }
+   },
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "summary": {
+    "cap_effective_gib": 1.79,
+    "sqlite_p50_ms": 3.089,
+    "sqlite_p95_ms": 4.117,
+    "ordinals_p50_ms": 1.094,
+    "ordinals_p95_ms": 1.72,
+    "p95_ratio_sqlite_over_ordinals": 2.394,
+    "sqlite_majflt": 1,
+    "ordinals_majflt": 0
+   }
+  }
+ ],
+ "loadavg_at_end": {
+  "load1": 2.42,
+  "load5": 2.05,
+  "load15": 2.14,
+  "running": "2/2229",
+  "t": "2026-09-25T02:35:19"
+ }
+}

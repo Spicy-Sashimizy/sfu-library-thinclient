@@ -1,5 +1,7 @@
 # 00 · Vision & Goals
 
+**Status:** ACTIVE
+
 ## What we are deciding
 
 Whether **SEISMIC** can serve the SPLADE sparse leg at **150M** with:
@@ -16,7 +18,7 @@ alternatives (accept the JVM via OpenSearch+SEISMIC, or size a bigger Qdrant box
 ## Why SEISMIC and not "more BMP"
 
 The prior project killed the bespoke mmap-BMP engine on **two measured axes**
-(`sparse_engine_project/03_GO_NO_GO_GATES.md`):
+(`archive/sparse_engine_project/03_GO_NO_GO_GATES.md`):
 
 | Axis | mmap-BMP result | SEISMIC |
 |---|---|---|

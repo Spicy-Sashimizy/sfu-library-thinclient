@@ -1,9 +1,11 @@
 # 03 · Benchmark Methodology
 
+**Status:** ACTIVE
+
 Full, reproducible benchmarking spec for the SEISMIC go/no-go. Every gate in
 `02_GO_NO_GO_GATES.md` maps to a measurement here. **Measured unless marked `est.`**
 This doc reuses the canonical project methodology (`docs/BENCHMARK_METHODOLOGY.md`
-for quality/LLM-judging; `docs/bmp_decommission_plan/METRICS_CATALOG.md` for the
+for quality/LLM-judging; `docs/archive/bmp_decommission_plan/METRICS_CATALOG.md` for the
 metric→script→result-file ledger) and adds the SEISMIC-specific RAM/pruning probes.
 
 ## 1. Corpus & tiers

@@ -16,7 +16,7 @@ done
 
 # 2. the bundle-manifest contract example + updater reference implementation
 cp -v "$ORACLE/data/eval_results/portable_stack_manifest.json" fixtures/
-cp -v "$ORACLE/scripts/demo_dependability/portable_bundle_updater.py" upstream_specs/reference_updater.py
+cp -v "$ORACLE/scripts/archive/demo_dependability/portable_bundle_updater.py" upstream_specs/reference_updater.py
 
 # 3. frozen spec snapshots (dated — this repo builds against THESE, see CONTRACT.md)
 for d in PORTABLE_STACK_MANIFEST.md PORTABLE_DATA_SHIPPING_RESEARCH.md \

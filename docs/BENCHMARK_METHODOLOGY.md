@@ -1,5 +1,7 @@
 # Benchmark Methodology: Old vs New
 
+**Status:** ACTIVE
+
 **Last updated:** 2026-06-18  
 **Context:** Explains why the citation-count benchmark was replaced and how the LLM-judged method works; plus the 150M thin-client-vs-OpenSearch parity method and measured results (see last section).
 
@@ -170,7 +172,7 @@ Records: `data/eval_results/thinclient_parity_waves_150m.json` (summary),
 
 ## BMP↔Qdrant live-index fidelity gate + presentation metrics suite (added 2026-06-24)
 
-BMP-decommission (see `docs/bmp_decommission_plan/PLAN.md`) added two new
+BMP-decommission (see `docs/archive/bmp_decommission_plan/PLAN.md`) added two new
 metric families, recorded here per the new-module efficacy rule.
 
 ### Live-index quant fidelity (Workstream B1)
@@ -251,5 +253,5 @@ Canonical ledger: `data/eval_results/METRICS_CATALOG.json`.
 
 **Script:** `scripts/build_presentation_metrics.py --rebuild`.
 **Result files:** `data/eval_results/METRICS_CATALOG.json`,
-`presentation_metrics_<date>.json`. **Rendered:** `docs/bmp_decommission_plan/
+`presentation_metrics_<date>.json`. **Rendered:** `docs/archive/bmp_decommission_plan/
 {PRESENTATION_METRICS.md, METRICS_CATALOG.md}`. **Date:** 2026-06-24.

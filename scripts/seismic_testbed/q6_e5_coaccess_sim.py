@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Q6 — E5 co-access forward-reordering page-touch simulation (cold-pages lever).
 
-Roadmap: docs/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q6 ("the one
+Roadmap: docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q6 ("the one
 remaining fault-COUNT lever"); design docs/seismic_150m_testbed/
 09_CROSS_SHARD_MMAP_AUDIT.md §3.4 (E5) + 10_FORWARD_COMPRESSION_DESIGN.md
 §7.4 item 2. Decides whether the E5 converter (forward permute + 48-bit

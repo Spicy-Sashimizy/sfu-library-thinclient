@@ -1,6 +1,6 @@
 # 17 — BM25-through-SEISMIC feasibility spike (MEASURED 2026-08-01)
 
-**Status:** spike COMPLETE, measured. **Verdict: technically feasible and
+**Status:** ACTIVE — spike COMPLETE, measured. **Verdict: technically feasible and
 quality-neutral, but it buys nothing — RECOMMEND NOT ADOPTING.**
 **Corpus:** 207,973-doc subset of `social_sciences__recent` (NOT 150M).
 **Code:** `spike/bm25_seismic/` · **Results:** `data/eval_results/bm25_seismic_spike_*.json`
@@ -219,8 +219,8 @@ Result: `data/eval_results/bm25_seismic_spike_tantivy_splade_20260801_2157.json`
 
 Serving SPLADE means a sparse dot product, which needs a per-(term, doc) float
 the scorer uses **linearly**. Lucene has one (`FeatureField`/`rank_features`) —
-which is why SPLADE rode Lucene into Elasticsearch (`sparse_engine_project/
-WHY_NO_FOSS.md` §3). tantivy has no equivalent: its float/integer fields are
+which is why SPLADE rode Lucene into Elasticsearch (`docs/archive/sparse_engine_project/WHY_NO_FOSS.md`
+§3). tantivy has no equivalent: its float/integer fields are
 per-**doc**. The only per-(term, doc) magnitude is **term frequency**, reachable
 only via the "fake words" trick (emit token `t` `round(w*70)` times), and the
 only scorer that reads it is BM25, whose `k1`/`b` are fixed in Rust and not
@@ -396,7 +396,7 @@ mmap/low-RAM · 150M docs):
 | **Qdrant** | ✅ dense + sparse + BM25-via-FastEmbed | ✅ Rust | ⚠️ server | ❌ mutable-first | ❌ **measured here: OOMs at 150M, needs ≥64 GB** |
 | Elasticsearch / OpenSearch | ✅ | ❌ JVM | ❌ | ❌ | ✅ |
 
-**Verdict vs `sparse_engine_project/WHY_NO_FOSS.md` (2026-06-25).** That doc's
+**Verdict vs `archive/sparse_engine_project/WHY_NO_FOSS.md` (2026-06-25).** That doc's
 core claim — the no-JVM + immutable + all-three-legs + 150M intersection is
 empty — **still holds**, with one update: **Infinity now has an in-process
 embedded mode**, moving it from "a whole new DB to adopt" to "a library you could

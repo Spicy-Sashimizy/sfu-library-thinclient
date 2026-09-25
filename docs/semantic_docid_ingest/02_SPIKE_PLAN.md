@@ -1,6 +1,6 @@
 # 02 — Spike Plan (Stage 1)
 
-**Status: PROPOSED / NOT STARTED (2026-06-30).**
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **PROPOSED / NOT STARTED (2026-06-30).**
 
 ## Goal of the spike
 

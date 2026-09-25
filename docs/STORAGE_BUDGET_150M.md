@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-11 · **Updated:** 2026-06-16 (§1 now carries the AS-BUILT 150M
 footprint; the completed build supersedes the earlier `meta.sqlite` estimate) ·
-**Status:** all numbers below are MEASURED unless marked *est.* · Sources: `scripts/experiments/eval_storage_levers.py` →
+**Status:** ACTIVE — all numbers below are MEASURED unless marked *est.* · Sources: `scripts/experiments/eval_storage_levers.py` →
 `data/eval_results/storage_levers_eval.json`, `scripts/experiments/eval_text_compression.py`
 → `data/eval_results/text_compression_eval.json`, component sizes from the 1M
 validation build (`data/thinclient_1m`), full method detail in
@@ -55,7 +55,7 @@ shards resident at once → **~211 GB**. Every other leg is mmap/paged and serve
 > thin-client SPLADE leg is now served from the Qdrant `on_disk` sparse
 > collection (205 GB on disk, ~1.4 GB resident at rest for 30M, RAM-bound at
 > 150M on a 24 GB host); see `docs/THIN_CLIENT_SWAP.md` off-BMP section + the
-> B1/B2 parity gate in `docs/bmp_decommission_plan/VALIDATION_REPORT.md`.
+> B1/B2 parity gate in `docs/archive/bmp_decommission_plan/VALIDATION_REPORT.md`.
 >
 > **UPDATE (2026-07-14):** the SPLADE leg serves **SEISMIC** (not Qdrant — that
 > narrative above is historical), and as of the E8 dv-v2 flip (`fcfcfb2`) the

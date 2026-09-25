@@ -1,5 +1,7 @@
 # 02 · Defect ledger — six defects, one day (2026-07-14)
 
+**Status:** ACTIVE
+
 All six were found by refusing to trust a number that looked too good, then
 following the raw evidence. Fix commits: **2203d9b** (#1–#5), backend edits in
 the R1 session for **#6** (shared `_coalesce_extents`). Every defect below

@@ -1,6 +1,6 @@
 # 01 — Architecture
 
-**Status: DESIGN ONLY / UNMEASURED (2026-06-30).** Every number below is *est.*
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **DESIGN ONLY / UNMEASURED (2026-06-30).** Every number below is *est.*
 or "unmeasured / design only" until the spike in `02_SPIKE_PLAN.md` runs.
 
 ## The shape that survives the constraints

@@ -1,5 +1,7 @@
 # Decision Trail
 
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written)
+
 Dated log of how the recommendation in `03_GO_NO_GO.md` was reached.
 
 ## 2026-06-30 — origin & reasoning

@@ -3,7 +3,7 @@
 against the torch-CPU baseline.
 
 Why: the demo's CPU rerank (~5 s warm/query reported) is the serving bottleneck at
-5-15 concurrent (HYBRID_DEMO_DEPLOYMENT.md risk #4). int8 ONNX is the highest-leverage
+5-15 concurrent (docs/deprecated/oci_demo/HYBRID_DEMO_DEPLOYMENT.md risk #4). int8 ONNX is the highest-leverage
 pre-demo throughput lever and is fully independent of the BMP->Qdrant migration.
 
 Measures (records to data/eval_results/):

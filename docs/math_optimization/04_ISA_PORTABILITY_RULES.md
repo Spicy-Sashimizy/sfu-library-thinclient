@@ -1,5 +1,7 @@
 # 04 — ISA-portability rules (x86 → aarch64 / Apple Silicon / iPhone)
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 This is the discipline that keeps the codebase cross-ISA through any math
 change. It exists because the user specifically flagged the risk of an x86-only
 optimization locking the codebase out of an ARM/iPhone transition.

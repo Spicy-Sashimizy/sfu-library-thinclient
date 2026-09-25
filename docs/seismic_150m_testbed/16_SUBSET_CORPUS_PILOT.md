@@ -1,5 +1,7 @@
 # 16 · Subset-corpus pilot — selection machinery + build-viability design note
 
+**Status:** ACTIVE
+
 **Created 2026-07-16 (deployprep WI-5, stretch).** The portable handout
 (`docs/LOCALIZED_DEPLOYMENT_PLAN.md` §2 "Subset" tier) ships a **subset index**
 (~10–15M docs on a laptop, year × citation floor cut from 150M). This doc records

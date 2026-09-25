@@ -1,5 +1,7 @@
 # 04 · What to Build and Gather
 
+**Status:** ACTIVE
+
 ## Already have (in this container)
 
 | Asset | Where | Use |

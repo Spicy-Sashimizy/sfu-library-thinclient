@@ -1,5 +1,7 @@
 # 14 · Encoder upgrade path — query-encoder spike (D-track successor)
 
+**Status:** ACTIVE
+
 > **Status note 2026-08-10:** the 2026-07-10 banner below is the
 > creation-time state and is superseded by §4/§6 — **C1–C5 are all
 > measured/decided (C1/C2/C5 KILL 2026-07-10, C3 skipped, C4 distillation
@@ -8,7 +10,7 @@
 > unscheduled.
 
 > **Status 2026-07-10: SPIKE — design + candidate registry only. NOTHING
-> MEASURED.** Registered as **Q11** in `12_EXECUTION_ROADMAP.md` §3. Every
+> MEASURED.** Registered as **Q11** in `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` §3. Every
 > quality/latency claim below is `*est.*` or literature-reported until a row
 > lands in §6. Parent results: D-track in `08_LATENCY_RESEARCH.md` §D
 > (D1 dynamic-int8 KILLED overlap 0.79; D2 ORT fusion PROMOTED 1.11×;

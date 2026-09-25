@@ -1,5 +1,7 @@
 # 01 · Chronicle — the session, question by question
 
+**Status:** ACTIVE
+
 Operator questions are quoted as typed (typos preserved, marked ⟨Q⟩). Answers
 are recorded with their substance and every number quoted. Times UTC.
 

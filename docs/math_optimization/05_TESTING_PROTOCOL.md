@@ -1,5 +1,7 @@
 # 05 — Testing protocol (staged, pre-registered bars)
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 Every math change (M1–M5) follows this protocol. Each stage is a go/no-go gate
 with a pre-registered bar; no stage's bar is retrofitted to the result.
 
@@ -12,7 +14,7 @@ with a pre-registered bar; no stage's bar is retrofitted to the result.
 > 2. **n≥100 minimum** for any promotable overlap gate (the M2 n=40→100
 >    reversal, `07_M2_IMPLEMENTATION_RESULTS.md`).
 > 3. Execution queue + per-candidate recipes:
->    `../seismic_150m_testbed/12_EXECUTION_ROADMAP.md`.
+>    `../archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md`.
 
 Result files write to `data/eval_results/{topic}_{descriptor}_{YYYYMMDD}[_{HHMM}].{json,log}`
 (the established convention; see `06_PREGATE_RESULTS.md` for examples).

@@ -1,5 +1,7 @@
 # Portable build — how to ship the per-shard accompanying data (RESEARCH ONLY)
 
+**Status:** ACTIVE
+
 **2026-07-17. Status: RESEARCH / DECISION RECORD — NOTHING BUILT.** Owner
 question: for the handout/portable build, should we (a) ship all shard DBs
 prebuilt ("150M cold") and unpack sections, (b) ship empty and have the end

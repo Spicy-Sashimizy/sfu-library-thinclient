@@ -1,5 +1,7 @@
 # 03 · Min-RAM design map — the effective combo
 
+**Status:** DEFERRED 2026-09-25 (F1-F6 hooks built and env-gated OFF; no promotion decision taken)
+
 **Created 2026-07-13. Status: DESIGN + Phase 0/5 building (2026-07-14) — every
 projected number is *est.* unless it cites a result file.** This doc assembles
 the *most effective version of each proposed function* from docs 01/02 into one

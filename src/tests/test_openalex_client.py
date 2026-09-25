@@ -247,3 +247,77 @@ class TestOpenAlexResponseCache:
             r2 = client._get("/works", {"search": "beta"})
         assert r1 == payload_a
         assert r2 == payload_b
+
+
+_FAKE_KEY = "test-key-not-a-real-secret"
+
+
+class TestFetchAbstractsByIds:
+    def _inv(self, text: str) -> dict:
+        inv: dict[str, list[int]] = {}
+        for pos, word in enumerate(text.split()):
+            inv.setdefault(word, []).append(pos)
+        return inv
+
+    def test_sends_key_select_and_chunks_by_50(self):
+        client = _make_client(api_key=_FAKE_KEY, mailto="a@b.c")
+        ids = [f"W{i}" for i in range(120)]
+        with patch("requests.get", return_value=_ok_response({"results": [
+            {"id": "https://openalex.org/W3", "abstract_inverted_index": self._inv("hello world")},
+            {"id": "https://openalex.org/W4", "abstract_inverted_index": None},
+        ]})) as mock_get:
+            out = client.fetch_abstracts_by_ids(ids)
+        assert mock_get.call_count == 3
+        params = [c.kwargs["params"] for c in mock_get.call_args_list]
+        assert all(p["api_key"] == _FAKE_KEY and "mailto" not in p for p in params)
+        assert all(p["select"] == "id,abstract_inverted_index" for p in params)
+        assert [p["per-page"] for p in params] == ["50", "50", "20"]
+        assert params[0]["filter"] == "openalex_id:" + "|".join(ids[:50])
+        assert all(c.kwargs["timeout"] == 15.0 for c in mock_get.call_args_list)
+        assert out == {"W3": "hello world"}
+        assert client.budget_status()["calls_today"] == 3
+
+    def test_no_key_uses_mailto(self):
+        client = _make_client(mailto="a@b.c")
+        with patch("requests.get", return_value=_ok_response({"results": []})) as mock_get:
+            client.fetch_abstracts_by_ids(["https://openalex.org/W1"])
+        p = mock_get.call_args.kwargs["params"]
+        assert p["mailto"] == "a@b.c" and "api_key" not in p
+        assert p["filter"] == "openalex_id:W1"
+
+    def test_429_returns_empty_without_retry_sleep(self):
+        client = _make_client(api_key=_FAKE_KEY, retry_base_delay=30.0)
+        resp = MagicMock()
+        resp.status_code = 429
+        with patch("requests.get", return_value=resp) as mock_get, \
+                patch("time.sleep") as mock_sleep:
+            out = client.fetch_abstracts_by_ids(["W1", "W2"])
+        assert out == {}
+        assert mock_get.call_count == 1
+        mock_sleep.assert_not_called()
+        assert client.budget_status()["calls_today"] == 0
+
+    def test_budget_exhausted_blocks_without_http(self):
+        client = _make_client(api_key=_FAKE_KEY, daily_call_limit=2)
+        client._tracker._count = 2
+        with patch("requests.get") as mock_get:
+            assert client.fetch_abstracts_by_ids(["W1"]) == {}
+        mock_get.assert_not_called()
+
+    def test_breaker_open_blocks_without_http(self):
+        client = _make_client(api_key=_FAKE_KEY)
+        for _ in range(3):
+            client._breaker.record_failure()
+        with patch("requests.get") as mock_get:
+            assert client.fetch_abstracts_by_ids(["W1"]) == {}
+        mock_get.assert_not_called()
+
+    def test_error_logs_redact_api_key(self, caplog):
+        import logging
+        client = _make_client(api_key=_FAKE_KEY)
+        err = requests.ConnectionError(f"bad url /works?api_key={_FAKE_KEY}&x=1")
+        with patch("requests.get", side_effect=err), \
+                caplog.at_level(logging.ERROR, logger="sfu_library_mcp"):
+            assert client.fetch_abstracts_by_ids(["W1"]) == {}
+        assert "OpenAlex request failed" in caplog.text
+        assert _FAKE_KEY not in caplog.text

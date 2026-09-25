@@ -1,5 +1,7 @@
 # 03 · Measurement tables — everything measured this session
 
+**Status:** ACTIVE
+
 All numbers cite their result file. Latency semantics vary by table — noted
 per table. Dates: baselines 2026-07-13, everything else 2026-07-14.
 
@@ -70,8 +72,39 @@ fanned to all 8 shards. The 2026-07-03 E7b sweep was the single-shard one.
 
 ## T5 — Cells pending at time of writing
 
+> **Reconciled 2026-09-25** — 2 items: 2 DONE, 0 CLOSED, 0 SUPERSEDED, 0 STILL OPEN.
+> Nothing in this section is pending. Both cells ran the same day (2026-07-14,
+> commit `dd34f269`) and their outcomes are recorded exactly where this section
+> said they would be: `11_EXPERIMENT_BACKLOG.md` §R1. The heading's "pending at
+> time of writing" is true of 2026-07-14 and false ever since. One residual is
+> open but is a *new* question, not a T5 cell: after the F5 scope bug was fixed in
+> code on 2026-08-31 (commit `5fcca7b1`, fork `2c4d863`), the hook's real-stack
+> efficacy is still UNMEASURED — no `.so` was rebuilt and no cell re-run, and the
+> re-run requires its own pre-registration (DRAFT
+> `spike/convergence_repro/PREREGISTRATION_WSL2_REHOST.md`, 2026-09-25, which
+> `docs/README.md` does list).
+
 Pin-ON (F3, `SFU_SEISMIC_PIN_BUDGET_GB=1.6`) at 8/6 GB after the defect-#6
 fix, and the F5 release-except cell at 16 GB — each dumping last-pass top-10
 results for quality-parity vs `r1_results_uncapped_ref.json`. Outcomes land
 in `11_EXPERIMENT_BACKLOG.md` (R1 section); this file intentionally does not
 pre-record them.
+
+- Pin-ON (F3) at 8/6 GB — **DONE 2026-07-14 (commit `dd34f269`; cells
+  `data/eval_results/r1_cap{8,6}g_pin16_20260714.json`; verdict recorded in
+  `11_EXPERIMENT_BACKLOG.md` §R1 "F3 pin-ON arm")** — the pre-registered pin
+  hypothesis is **REFUTED** in the self-thrash regime: steady p50 8G 2135 →
+  2229–2461 ms and 6G 4924 → 6631–6791 ms (~35% WORSE), majflt 261k → 264k and
+  550k → ~590k. Pin engaged correctly (1.64 GB locked, 8 shards).
+- F5 release-except at 16 GB — **DONE 2026-07-14 (commit `dd34f269`; cell
+  `data/eval_results/r1_cap16g_f5rel_20260714.json`; verdict in
+  `11_EXPERIMENT_BACKLOG.md` §R1 "F5 release-except cell")** — **NULL RESULT as
+  built, with a diagnosed scope bug** (pass-for-pass identical to the plain 16G
+  cell; post-release RssFile unchanged at 14.32 GB despite "released 16.45 GB",
+  because the hook covered only the forward_data slab and `release_bytes` credited
+  EINVAL'd madvise calls). Scope + accounting fixed in code 2026-08-31 (commit
+  `5fcca7b1`); real-stack efficacy remains UNMEASURED — see the reconciled note above.
+- Quality-parity dump (the shared bar of both cells) — **DONE 2026-07-14** —
+  **40/40 bit-identical** (ids + scores) vs `r1_results_uncapped_ref.json` in all
+  three stressed cells (`r1_results_cap{8g_pin16,6g_pin16,16g_f5rel}.json`):
+  pressure is latency-only, up to ~590k faults/pass.

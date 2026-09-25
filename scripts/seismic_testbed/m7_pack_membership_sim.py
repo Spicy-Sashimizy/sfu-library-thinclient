@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """M7 Stage-0 sim: query-hits per 8-lane pack on real candidate sets (lane accounting).
 
-Roadmap: docs/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q2; candidate spec
+Roadmap: docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md Q2; candidate spec
 docs/math_optimization/08_FURTHER_MATH_CANDIDATES.md §M7. Decides GO/KILL on
 moving the query-membership test BEFORE the gather.
 

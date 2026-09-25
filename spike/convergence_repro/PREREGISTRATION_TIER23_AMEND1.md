@@ -1,9 +1,42 @@
 # Pre-registration DRAFT — Tier-2/3 Amendment 1: classic ladder extension below 25 GB (t23c cells; bars B1x/B5x)
 
-**Date:** 2026-09-01 · **Status:** **DRAFT — NOT FROZEN. No cells may run
-against this document.** Freeze requires: (a) the exploratory descent
+> **CLOSED-UNRUNNABLE 2026-09-25 — this amendment can never be frozen.**
+> As of 2026-09-25 the operator has **no access to any cloud host**; the
+> **OCI E5, 62 GiB, kernel 6.17.0-1018-oracle** box that every `t23c_*` cell
+> below presumes is **permanently gone**, and the only host is a **31 GB
+> WSL2 machine**. The cells cannot be re-hosted: the OCI two-population
+> footprint is **29.1 GB = 93.9%** of that host's total RAM; a **28 GB cap
+> leaves 3 GB** for the kernel, the dev container and the orchestrator while
+> idle already consumes ~5 GB (31 − 5 = **26 GB < 28 GB**, so the cap is
+> looser than the RAM available to fill it); and decisively, **cap 28 GB
+> sits 8.6 GB above that host's own 19.4 GB footprint** — the entire 16–30 GB
+> ladder below lands in its "nothing is evicted, so nothing sorts" regime,
+> where every arm looks alike by construction.
+>
+> **Consequences, recorded:** bars **B1x/B5x** are never frozen and never
+> judged; the missing `t23c_mglru_cap28g_rep2` replicate is never run (note
+> that the *cell* `mglru:28:1` itself **did** run 2026-09-01 and closed
+> phase B at 17/17 — `RESULTS.md` §21; what dies here is only its **rep 2**
+> and the classic descent); and the 2026-09-01 verdicts **B1/B5 NOT PASSED
+> on uncomputable components** and **B4 FAIL on bar arithmetic** are now the
+> **permanent** record of publication-gate item 3, not an interim one.
+>
+> This document is retired as a **draft that was never frozen** — not as a
+> failed test. Nothing in it was ever judged, so nothing in it is refuted.
+> Full statement and the per-item classification:
+> `docs/session_2026-07-14_f6_corrections_r1_ladder/04_CONVERGENCE_ARTIFACT.md`,
+> **Addendum 2026-09-25**. The re-hostable work that survives the host loss
+> is pre-registered separately in `PREREGISTRATION_WSL2_REHOST.md` (DRAFT) —
+> which is **not** a replacement for this document: it asks a different
+> host's version of a different question.
+
+**Date:** 2026-09-01 · **Status:** **CLOSED-UNRUNNABLE 2026-09-25** (was:
+DRAFT — NOT FROZEN). **No cells may run against this document**, and none
+ever can. Freeze *would have* required: (a) the exploratory descent
 executed and its rung placements recorded here, (b) bars B1x/B5x frozen —
-each its own commit before any confirmatory cell.
+each its own commit before any confirmatory cell. Condition (a) is
+unsatisfiable as of 2026-09-25, so (b) never arrives. Everything below this
+line is preserved verbatim as the design that was never run.
 
 **Why this amendment exists.** Phase B (PREREGISTRATION_TIER23.md §7,
 judged 2026-09-01) recorded **B1 and B5 NOT PASSED on uncomputable
@@ -28,7 +61,7 @@ same arm toggle discipline, any-date SKIP resume.
 **24 / 22 / 20 / 18 / 16 GB**, descending, stopping early once a plateau
 rung and its adjacent near-zero rung are identified at 2 GB resolution,
 then bisecting to 1 GB. Rung placement may be informed by the
-smallmachine_levers phase A′ L0 cells (classic 18 and 14 GB, running
+archived smallmachine_levers phase A′ L0 cells (classic 18 and 14 GB, running
 2026-09-01 under the sml protocol — corroborating context only; sml cells
 are named to a different spike and are excluded from every t23 bar).
 

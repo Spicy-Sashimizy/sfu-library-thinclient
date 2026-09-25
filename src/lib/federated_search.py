@@ -11,11 +11,14 @@ DOI deduplication uses normalized DOI strings (no https://doi.org/ prefix) as ke
 RRF fusion formula: score = Σ 1 / (k + rank_i) where k=60.
 """
 
+import contextlib
 import logging
 import re
 from datetime import date, timedelta
 from enum import Enum
 from typing import Any
+
+from lib import speculative_rerank
 
 logger = logging.getLogger("sfu_library_mcp")
 
@@ -254,23 +257,31 @@ class FederatedSearchRouter:
             bm25f_results: list[dict] = []
             splade_results: list[dict] = []
             bm25f_ok = splade_ok = False
-            try:
-                bm25f_results = self._opensearch.search(
-                    query, top_k=top_k, mode="bm25f", filters=filters
-                )
-                bm25f_ok = True
-            except Exception:
-                logger.exception("FederatedSearchRouter: BM25F search failed")
-            try:
-                splade_results = self._opensearch.search(
-                    query, top_k=top_k, mode="splade", filters=filters
-                )
-                splade_ok = True
-            except Exception:
-                logger.exception("FederatedSearchRouter: SPLADE search failed")
+            draft = None
+            scope = getattr(self._opensearch, "hydrate_scope", contextlib.nullcontext)
+            with scope():
+                try:
+                    bm25f_results = self._opensearch.search(
+                        query, top_k=top_k, mode="bm25f", filters=filters
+                    )
+                    bm25f_ok = True
+                except Exception:
+                    logger.exception("FederatedSearchRouter: BM25F search failed")
+                if speculative_rerank.is_enabled():
+                    draft = speculative_rerank.on_draft(query, bm25f_results, top_k)
+                try:
+                    splade_results = self._opensearch.search(
+                        query, top_k=top_k, mode="splade", filters=filters
+                    )
+                    splade_ok = True
+                except Exception:
+                    logger.exception("FederatedSearchRouter: SPLADE search failed")
             if not bm25f_ok and not splade_ok:
                 self.last_degraded = True
-            return _rrf_merge(bm25f_results, splade_results, top_k)
+            merged = _rrf_merge(bm25f_results, splade_results, top_k)
+            if draft is not None:
+                speculative_rerank.bind(draft, merged)
+            return merged
 
         if source == SearchSource.LIVE_API:
             return live_results[:top_k]

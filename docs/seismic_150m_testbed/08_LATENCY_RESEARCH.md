@@ -1,5 +1,7 @@
 # 08 · Latency Research — RAM-efficient ways to speed up the SEISMIC serve leg
 
+**Status:** ACTIVE
+
 **Created 2026-06-30.** Status: RESEARCH / DESIGN-ONLY. Every number below that is
 not tagged `[OURS]` is an **external literature figure** (paper/benchmark on a
 different corpus + host) — per the CLAUDE.md efficacy rule it is **not a measured
@@ -571,8 +573,17 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 
 ## Prioritized next steps (for our G5/G8 work)
 
+> **Reconciled 2026-09-25** — 6 items: 5 DONE, 0 CLOSED, 1 SUPERSEDED, 0 STILL OPEN.
+> No item in this list is pending work. Per-item evidence tags are appended below;
+> the list text itself is unchanged.
+
 1. **A4 — encode-vs-traverse split instrumentation.** Tiny, non-disruptive, makes
    every later number actionable. Do now (does not touch the running bench).
+   — **DONE 2026-07-08 (§A4 "MEASURED on the promoted served path (G8e)" above;
+   `scripts/seismic_testbed/g8e_encode_traverse_split.py`,
+   `data/eval_results/g8e_encode_traverse_split_20260708.json`; commit `75aa2b1f`)** —
+   warm p50 64.2 ms = encode 20.0 ms (31%) + traverse/fan-out/merge 43.7 ms (69%),
+   of which the single-shard kernel is only ~3–6 ms.
 2. **A1 — DONE 2026-06-30 (see "A1 measured" #1 + #2).** Swap confound solved
    (Qdrant stopped); RAM-starvation question answered by raising the WSL cap
    32→56 GB → **warm p50 18.1 s → 0.55 s (33×)**, proving the engine is fast at
@@ -580,17 +591,44 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
    blocking): a *perfectly* zero-swap verdict wants a ≥72 GB host or `vmtouch`
    pre-fault (§A2); **the strategic win is §B index shrink** so a smaller box
    caches the whole working set.
+   — **DONE 2026-06-30 (§A1 measured #1 + #2)**; the residual "≥72 GB host or
+   `vmtouch` pre-fault" polish is **CLOSED-UNRUNNABLE 2026-09-25** — no cloud hosts
+   remain (OCI E5 and every DigitalOcean droplet are gone) and the only surviving
+   machine is the 31 GB local WSL2 host (`docs/infrastructure/README.md` banner).
 3. **C1 — `query_cut`/`heap_factor` sweep.** Free, no rebuild, likely the biggest
    single latency lever; record latency-vs-overlap@10 Pareto. **✅ DONE 2026-06-30**
    — measured above (4.02× faster traversal at overlap@10 0.995; `query_cut=10`
    is the dominant lever). Ship C1 before B/D.
+   — **DONE 2026-06-30 (commit `d27bb3ed`,
+   `data/eval_results/seismic_sweep_c1_querycut_heapfactor_20260630.json`)**, and
+   re-measured at full corpus in the G8c warm matrix 2026-07-05
+   (`data/eval_results/g8c_{dv,f16}_warm_kp200_qc10_hf08_20260705.json`).
 4. **B1 + B2 — DotVByte forward-index + 4-bit summary quant** in the C2 reader.
    Shrinks the dominant working set → fewer faults → lower latency *and* keeps the
    RAM floor (the pivot's whole point). Build-side work.
+   — **DONE 2026-07-04 for B1 (dotvbyte forward index shipped E7 2026-07-03,
+   PROMOTED E7b, all 8 shards converted E7c 2026-07-04, E8 dv-v2 served default
+   since 2026-07-14 — `10_FORWARD_COMPRESSION_DESIGN.md` §7.5/§7.6,
+   `THIN_CLIENT_SWAP.md` §SPLADE leg); B2 (4-bit summary quant) SUPERSEDED
+   2026-08-10 — never built, and the math-candidate book M1–M10 is now fully
+   decided (`math_optimization/08_FURTHER_MATH_CANDIDATES.md` §M8: "every
+   candidate measured, killed, or dead-parked"); the byte mass is the forward
+   index (85%, doc 09), not the summaries.**
 5. **C3 (LSP/0) / C2 (dynamic superblock)** — only if A shows traversal is the
    real bottleneck; prefer C3 (claims latency↑ + RAM↓) over C2 (RAM↑).
+   — **SUPERSEDED 2026-07-08 (G8e, `g8e_encode_traverse_split_20260708.json`)** —
+   the stated precondition failed: traversal is not the bottleneck (single-shard
+   kernel ~3–6 ms of a 64.2 ms warm p50; ~35 ms is federation machinery), so the
+   conditional never fired. Neither C2 nor C3 was ever implemented, and the
+   math-candidate book closed 2026-08-10 (`math_optimization/08` §M8).
 6. **D — int8 SPLADE encoder** only if A4 shows the encoder dominates; gate on
    overlap@10 parity.
+   — **DONE 2026-07-10 (measured KILL; `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q11,
+   `data/eval_results/q11_c5_static_int8_20260710_*.json`)** — C5 static-int8
+   merged overlap@10 **0.006** and 5.5× SLOWER; with D1's 0.79 the int8 encoder
+   family is dead end-to-end. The whole encoder book was CLOSED 2026-07-28 after
+   the C4 distillation KILL (`14_ENCODER_UPGRADE_PATH.md` §6); the served fused
+   fp32 encoder stays.
 
 > Reminder (CLAUDE.md efficacy rule): none of B/C/D is "done" until *we* measure it
 > on *our* index and record before→after numbers + eval script + result file here.

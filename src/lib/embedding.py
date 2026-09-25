@@ -6,6 +6,7 @@ to replace Semantic Scholar API dependency for Stage 2 reranking.
 """
 
 import logging
+import math
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,10 @@ import numpy as np
 logger = logging.getLogger("sfu_library_mcp")
 
 _DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
+_FIXED_SEQ_LEN = 256
+_EMBED_BATCH = 11
+_PAD_TEXT = ""
 
 _model = None
 _model_name = None
@@ -63,8 +68,40 @@ def _load_model(model_path: str | None = None):
         return None
 
 
+def _seq_len(model) -> int:
+    """The constant padded length: min(_FIXED_SEQ_LEN, the model's max_seq_length)."""
+    configured = getattr(model, "max_seq_length", None) or _FIXED_SEQ_LEN
+    return min(_FIXED_SEQ_LEN, int(configured))
+
+
+def _embed_batch(model, texts: list[str]) -> np.ndarray:
+    """Embed exactly one fixed-shape batch: (len(texts), _seq_len(model)) tokens.
+
+    Tokenizes with ``padding="max_length"`` so the forward pass always sees the
+    same tensor shape, then L2-normalizes each row. Returns float32 (N, D).
+    """
+    import torch
+    if getattr(model, "training", False):
+        model.eval()
+    enc = model.tokenizer(
+        list(texts), padding="max_length", truncation="longest_first",
+        max_length=_seq_len(model), return_tensors="pt",
+    )
+    features = {k: v.to(model.device) for k, v in enc.items()}
+    with torch.inference_mode():
+        emb = model.forward(features)["sentence_embedding"]
+        emb = torch.nn.functional.normalize(emb, p=2, dim=1)
+    return emb.float().cpu().numpy()
+
+
 def encode_texts(texts: list[str], model_path: str | None = None) -> np.ndarray | None:
-    """Encode a list of texts into normalized embedding vectors.
+    """Encode a list of texts into normalized embedding vectors, fixed-shape.
+
+    Every forward pass is one (_EMBED_BATCH, _seq_len) batch: texts are cut into
+    chunks of _EMBED_BATCH and a short chunk is filled with _PAD_TEXT rows whose
+    outputs are discarded. A text's vector therefore does not depend on which
+    other texts, or how many, were encoded with it (docs/CODE_INVARIANTS.md,
+    "Fixed-shape scoring").
 
     Returns an (N, D) numpy array of unit-length embeddings, or None on failure.
     """
@@ -73,31 +110,43 @@ def encode_texts(texts: list[str], model_path: str | None = None) -> np.ndarray 
         return None
 
     try:
-        embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-        return np.asarray(embeddings)
+        rows = []
+        for start in range(0, len(texts), _EMBED_BATCH):
+            chunk = list(texts[start:start + _EMBED_BATCH])
+            n = len(chunk)
+            chunk.extend([_PAD_TEXT] * (_EMBED_BATCH - n))
+            rows.append(_embed_batch(model, chunk)[:n])
+        if not rows:
+            return np.zeros((0, 0), dtype=np.float32)
+        return np.concatenate(rows, axis=0)
     except Exception as e:
         logger.error("Embedding encode failed: %s", e)
         return None
+
+
+def _cosine(doc_emb: np.ndarray, query_emb: np.ndarray) -> float:
+    """Dot product of two unit vectors, exactly rounded (order-independent)."""
+    return math.fsum((doc_emb.astype(np.float64) * query_emb.astype(np.float64)).tolist())
 
 
 def compute_similarity(query: str, documents: list[str], model_path: str | None = None) -> list[float]:
     """Compute cosine similarity between a query and a list of documents.
 
     Returns a list of similarity scores (0.0-1.0), one per document.
-    Returns empty list on failure.
+    Returns empty list on failure. Each score is a pure function of
+    (query, document, model): fixed-shape encoding plus an exactly rounded dot
+    product, so it is bit-identical whatever else is in ``documents``.
     """
     if not documents:
         return []
 
     texts = [query] + documents
     embeddings = encode_texts(texts, model_path)
-    if embeddings is None:
+    if embeddings is None or len(embeddings) != len(texts):
         return []
 
     query_emb = embeddings[0]
-    doc_embs = embeddings[1:]
-    similarities = [max(0.0, s) for s in (doc_embs @ query_emb).tolist()]
-    return similarities
+    return [max(0.0, _cosine(d, query_emb)) for d in embeddings[1:]]
 
 
 def score_papers_semantic(

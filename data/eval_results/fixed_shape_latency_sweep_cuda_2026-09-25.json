@@ -1,0 +1,545 @@
+{
+ "date": "2026-09-25",
+ "mode": "fixed",
+ "texts": "long",
+ "torch_threads": 8,
+ "cuda_visible": true,
+ "ce_device": "cuda:0",
+ "ce_class": "CrossEncoder",
+ "fixed_shape": {
+  "ce_seq_len": 256,
+  "ce_batch": 20,
+  "embed_seq_len": 256,
+  "embed_batch": 16
+ },
+ "cross_encoder": {
+  "arms": [
+   {
+    "arm": "B_full_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "D_reversed_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "E_remainder7_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "F_shuffled_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   }
+  ],
+  "all_bit_identical": true,
+  "raw": {
+   "alone": [
+    "-0x1.834ac00000000p+2",
+    "-0x1.77a0cc0000000p+2",
+    "-0x1.befa6c0000000p+2",
+    "-0x1.c008680000000p+2",
+    "-0x1.6069a60000000p+2",
+    "-0x1.897b6a0000000p+2",
+    "-0x1.70f2380000000p+2",
+    "-0x1.88da8e0000000p+2",
+    "-0x1.8f0d340000000p+2",
+    "-0x1.b3d94c0000000p+2",
+    "-0x1.7a9a1c0000000p+2",
+    "-0x1.23579c0000000p+2",
+    "-0x1.7e1b980000000p+2",
+    "-0x1.7a9b440000000p+2",
+    "-0x1.8a28260000000p+2",
+    "-0x1.e0ca200000000p+2",
+    "-0x1.c259380000000p+2",
+    "-0x1.c050000000000p+2",
+    "-0x1.072d000000000p+3",
+    "-0x1.b740780000000p+2"
+   ],
+   "full": [
+    "-0x1.834ac00000000p+2",
+    "-0x1.77a0cc0000000p+2",
+    "-0x1.befa6c0000000p+2",
+    "-0x1.c008680000000p+2",
+    "-0x1.6069a60000000p+2",
+    "-0x1.897b6a0000000p+2",
+    "-0x1.70f2380000000p+2",
+    "-0x1.88da8e0000000p+2",
+    "-0x1.8f0d340000000p+2",
+    "-0x1.b3d94c0000000p+2",
+    "-0x1.7a9a1c0000000p+2",
+    "-0x1.23579c0000000p+2",
+    "-0x1.7e1b980000000p+2",
+    "-0x1.7a9b440000000p+2",
+    "-0x1.8a28260000000p+2",
+    "-0x1.e0ca200000000p+2",
+    "-0x1.c259380000000p+2",
+    "-0x1.c050000000000p+2",
+    "-0x1.072d000000000p+3",
+    "-0x1.b740780000000p+2"
+   ],
+   "mixed": [
+    "-0x1.834ac00000000p+2",
+    "-0x1.77a0cc0000000p+2",
+    "-0x1.befa6c0000000p+2",
+    "-0x1.c008680000000p+2",
+    "-0x1.6069a60000000p+2",
+    "-0x1.897b6a0000000p+2",
+    "-0x1.70f2380000000p+2",
+    "-0x1.88da8e0000000p+2",
+    "-0x1.8f0d340000000p+2",
+    "-0x1.b3d94c0000000p+2",
+    "-0x1.3dffce0000000p+2",
+    "-0x1.0b4e300000000p+2",
+    "-0x1.bec6540000000p+2",
+    "-0x1.4e01860000000p+2",
+    "-0x1.eea7820000000p+2",
+    "-0x1.c2153a0000000p+2",
+    "-0x1.8222280000000p+2",
+    "-0x1.b802d40000000p+2",
+    "-0x1.c3d36c0000000p+2",
+    "-0x1.cad10c0000000p+2"
+   ],
+   "reversed": [
+    "-0x1.834ac00000000p+2",
+    "-0x1.77a0cc0000000p+2",
+    "-0x1.befa6c0000000p+2",
+    "-0x1.c008680000000p+2",
+    "-0x1.6069a60000000p+2",
+    "-0x1.897b6a0000000p+2",
+    "-0x1.70f2380000000p+2",
+    "-0x1.88da8e0000000p+2",
+    "-0x1.8f0d340000000p+2",
+    "-0x1.b3d94c0000000p+2",
+    "-0x1.7a9a1c0000000p+2",
+    "-0x1.23579c0000000p+2",
+    "-0x1.7e1b980000000p+2",
+    "-0x1.7a9b440000000p+2",
+    "-0x1.8a28260000000p+2",
+    "-0x1.e0ca200000000p+2",
+    "-0x1.c259380000000p+2",
+    "-0x1.c050000000000p+2",
+    "-0x1.072d000000000p+3",
+    "-0x1.b740780000000p+2"
+   ],
+   "remainder": [
+    "-0x1.7a9b440000000p+2",
+    "-0x1.8a28260000000p+2",
+    "-0x1.e0ca200000000p+2",
+    "-0x1.c259380000000p+2",
+    "-0x1.c050000000000p+2",
+    "-0x1.072d000000000p+3",
+    "-0x1.b740780000000p+2"
+   ],
+   "shuffled": [
+    "-0x1.834ac00000000p+2",
+    "-0x1.77a0cc0000000p+2",
+    "-0x1.befa6c0000000p+2",
+    "-0x1.c008680000000p+2",
+    "-0x1.6069a60000000p+2",
+    "-0x1.897b6a0000000p+2",
+    "-0x1.70f2380000000p+2",
+    "-0x1.88da8e0000000p+2",
+    "-0x1.8f0d340000000p+2",
+    "-0x1.b3d94c0000000p+2",
+    "-0x1.7a9a1c0000000p+2",
+    "-0x1.23579c0000000p+2",
+    "-0x1.7e1b980000000p+2",
+    "-0x1.7a9b440000000p+2",
+    "-0x1.8a28260000000p+2",
+    "-0x1.e0ca200000000p+2",
+    "-0x1.c259380000000p+2",
+    "-0x1.c050000000000p+2",
+    "-0x1.072d000000000p+3",
+    "-0x1.b740780000000p+2"
+   ]
+  }
+ },
+ "stage1_embedding": {
+  "arms": [
+   {
+    "arm": "B_full_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "D_reversed_batch_vs_alone",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "E_remainder7_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   },
+   {
+    "arm": "F_shuffled_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   }
+  ],
+  "all_bit_identical": true,
+  "raw": {
+   "alone": [
+    "0x1.472d89b582b89p-1",
+    "0x1.49cc50c13d68cp-1",
+    "0x1.20a58adcfa414p-1",
+    "0x1.54c7422987271p-1",
+    "0x1.6029691f8513bp-1",
+    "0x1.5058e3c2a17e6p-1",
+    "0x1.536780969edccp-1",
+    "0x1.3c69ef9ec3e45p-1",
+    "0x1.3dd377c9dad02p-1",
+    "0x1.557e2a895f03bp-1",
+    "0x1.471a028fb1cf2p-1",
+    "0x1.5c9d468782c31p-1",
+    "0x1.3d3be266360e0p-1",
+    "0x1.3760418427079p-1",
+    "0x1.3d80f2a553c84p-1",
+    "0x1.382b4109600e5p-1",
+    "0x1.3267c2bee1accp-1",
+    "0x1.2bc7b0fdbb90fp-1",
+    "0x1.29b7edc65a1d4p-1",
+    "0x1.3dffe4a938ce6p-1"
+   ],
+   "full": [
+    "0x1.472d89b582b89p-1",
+    "0x1.49cc50c13d68cp-1",
+    "0x1.20a58adcfa414p-1",
+    "0x1.54c7422987271p-1",
+    "0x1.6029691f8513bp-1",
+    "0x1.5058e3c2a17e6p-1",
+    "0x1.536780969edccp-1",
+    "0x1.3c69ef9ec3e45p-1",
+    "0x1.3dd377c9dad02p-1",
+    "0x1.557e2a895f03bp-1",
+    "0x1.471a028fb1cf2p-1",
+    "0x1.5c9d468782c31p-1",
+    "0x1.3d3be266360e0p-1",
+    "0x1.3760418427079p-1",
+    "0x1.3d80f2a553c84p-1",
+    "0x1.382b4109600e5p-1",
+    "0x1.3267c2bee1accp-1",
+    "0x1.2bc7b0fdbb90fp-1",
+    "0x1.29b7edc65a1d4p-1",
+    "0x1.3dffe4a938ce6p-1"
+   ],
+   "mixed": [
+    "0x1.472d89b582b89p-1",
+    "0x1.49cc50c13d68cp-1",
+    "0x1.20a58adcfa414p-1",
+    "0x1.54c7422987271p-1",
+    "0x1.6029691f8513bp-1",
+    "0x1.5058e3c2a17e6p-1",
+    "0x1.536780969edccp-1",
+    "0x1.3c69ef9ec3e45p-1",
+    "0x1.3dd377c9dad02p-1",
+    "0x1.557e2a895f03bp-1",
+    "0x1.5587b599dbaeap-1",
+    "0x1.2d409ce8233a5p-1",
+    "0x1.3bf86bb896828p-1",
+    "0x1.3d07f364d8383p-1",
+    "0x1.46259305207fbp-1",
+    "0x1.113b121e66afcp-1",
+    "0x1.413bc5c236180p-1",
+    "0x1.0a15ce3b6c74dp-1",
+    "0x1.3fcc75e3db0c9p-1",
+    "0x1.31e9f17701d11p-1"
+   ],
+   "reversed": [
+    "0x1.472d89b582b89p-1",
+    "0x1.49cc50c13d68cp-1",
+    "0x1.20a58adcfa414p-1",
+    "0x1.54c7422987271p-1",
+    "0x1.6029691f8513bp-1",
+    "0x1.5058e3c2a17e6p-1",
+    "0x1.536780969edccp-1",
+    "0x1.3c69ef9ec3e45p-1",
+    "0x1.3dd377c9dad02p-1",
+    "0x1.557e2a895f03bp-1",
+    "0x1.471a028fb1cf2p-1",
+    "0x1.5c9d468782c31p-1",
+    "0x1.3d3be266360e0p-1",
+    "0x1.3760418427079p-1",
+    "0x1.3d80f2a553c84p-1",
+    "0x1.382b4109600e5p-1",
+    "0x1.3267c2bee1accp-1",
+    "0x1.2bc7b0fdbb90fp-1",
+    "0x1.29b7edc65a1d4p-1",
+    "0x1.3dffe4a938ce6p-1"
+   ],
+   "remainder": [
+    "0x1.3760418427079p-1",
+    "0x1.3d80f2a553c84p-1",
+    "0x1.382b4109600e5p-1",
+    "0x1.3267c2bee1accp-1",
+    "0x1.2bc7b0fdbb90fp-1",
+    "0x1.29b7edc65a1d4p-1",
+    "0x1.3dffe4a938ce6p-1"
+   ],
+   "shuffled": [
+    "0x1.472d89b582b89p-1",
+    "0x1.49cc50c13d68cp-1",
+    "0x1.20a58adcfa414p-1",
+    "0x1.54c7422987271p-1",
+    "0x1.6029691f8513bp-1",
+    "0x1.5058e3c2a17e6p-1",
+    "0x1.536780969edccp-1",
+    "0x1.3c69ef9ec3e45p-1",
+    "0x1.3dd377c9dad02p-1",
+    "0x1.557e2a895f03bp-1",
+    "0x1.471a028fb1cf2p-1",
+    "0x1.5c9d468782c31p-1",
+    "0x1.3d3be266360e0p-1",
+    "0x1.3760418427079p-1",
+    "0x1.3d80f2a553c84p-1",
+    "0x1.382b4109600e5p-1",
+    "0x1.3267c2bee1accp-1",
+    "0x1.2bc7b0fdbb90fp-1",
+    "0x1.29b7edc65a1d4p-1",
+    "0x1.3dffe4a938ce6p-1"
+   ]
+  }
+ },
+ "bench": {
+  "ce": {
+   "serve20/legacy_longest": {
+    "p50_ms": 18.76,
+    "p95_ms": 19.75,
+    "n": 15
+   },
+   "serve20/fixed_L256_B20": {
+    "p50_ms": 16.28,
+    "p95_ms": 17.34,
+    "n": 15
+   },
+   "serve20/fixed_L256_B10": {
+    "p50_ms": 21.24,
+    "p95_ms": 25.15,
+    "n": 15
+   },
+   "serve20/fixed_L256_B5": {
+    "p50_ms": 35.44,
+    "p95_ms": 39.17,
+    "n": 15
+   },
+   "serve20/fixed_L256_B4": {
+    "p50_ms": 46.1,
+    "p95_ms": 55.51,
+    "n": 15
+   },
+   "serve20/fixed_L128_B20": {
+    "p50_ms": 13.3,
+    "p95_ms": 13.88,
+    "n": 15
+   },
+   "serve20/fixed_L128_B10": {
+    "p50_ms": 21.21,
+    "p95_ms": 24.84,
+    "n": 15
+   },
+   "serve20/fixed_L128_B5": {
+    "p50_ms": 40.13,
+    "p95_ms": 45.51,
+    "n": 15
+   },
+   "serve20/fixed_L128_B4": {
+    "p50_ms": 45.23,
+    "p95_ms": 50.04,
+    "n": 15
+   },
+   "remainder10/legacy_longest": {
+    "p50_ms": 13.65,
+    "p95_ms": 15.2,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B20": {
+    "p50_ms": 15.17,
+    "p95_ms": 16.34,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B10": {
+    "p50_ms": 10.34,
+    "p95_ms": 12.54,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B5": {
+    "p50_ms": 17.14,
+    "p95_ms": 23.03,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B4": {
+    "p50_ms": 28.72,
+    "p95_ms": 32.6,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B20": {
+    "p50_ms": 12.27,
+    "p95_ms": 14.05,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B10": {
+    "p50_ms": 10.65,
+    "p95_ms": 12.34,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B5": {
+    "p50_ms": 19.2,
+    "p95_ms": 20.62,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B4": {
+    "p50_ms": 25.64,
+    "p95_ms": 29.69,
+    "n": 15
+   }
+  },
+  "embed": {
+   "serve20/legacy_longest": {
+    "p50_ms": 27.39,
+    "p95_ms": 28.3,
+    "n": 15
+   },
+   "serve20/fixed_L256_B32": {
+    "p50_ms": 22.54,
+    "p95_ms": 23.43,
+    "n": 15
+   },
+   "serve20/fixed_L256_B16": {
+    "p50_ms": 29.71,
+    "p95_ms": 30.9,
+    "n": 15
+   },
+   "serve20/fixed_L256_B11": {
+    "p50_ms": 27.0,
+    "p95_ms": 28.69,
+    "n": 15
+   },
+   "serve20/fixed_L256_B8": {
+    "p50_ms": 32.5,
+    "p95_ms": 36.01,
+    "n": 15
+   },
+   "serve20/fixed_L256_B7": {
+    "p50_ms": 31.39,
+    "p95_ms": 35.08,
+    "n": 15
+   },
+   "serve20/fixed_L128_B32": {
+    "p50_ms": 15.41,
+    "p95_ms": 18.14,
+    "n": 15
+   },
+   "serve20/fixed_L128_B16": {
+    "p50_ms": 23.82,
+    "p95_ms": 30.78,
+    "n": 15
+   },
+   "serve20/fixed_L128_B11": {
+    "p50_ms": 22.97,
+    "p95_ms": 25.29,
+    "n": 15
+   },
+   "serve20/fixed_L128_B8": {
+    "p50_ms": 31.49,
+    "p95_ms": 35.38,
+    "n": 15
+   },
+   "serve20/fixed_L128_B7": {
+    "p50_ms": 31.31,
+    "p95_ms": 35.77,
+    "n": 15
+   },
+   "remainder10/legacy_longest": {
+    "p50_ms": 17.88,
+    "p95_ms": 21.62,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B32": {
+    "p50_ms": 21.68,
+    "p95_ms": 22.24,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B16": {
+    "p50_ms": 14.53,
+    "p95_ms": 16.27,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B11": {
+    "p50_ms": 11.53,
+    "p95_ms": 14.7,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B8": {
+    "p50_ms": 21.78,
+    "p95_ms": 24.64,
+    "n": 15
+   },
+   "remainder10/fixed_L256_B7": {
+    "p50_ms": 21.07,
+    "p95_ms": 23.73,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B32": {
+    "p50_ms": 14.67,
+    "p95_ms": 16.86,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B16": {
+    "p50_ms": 12.87,
+    "p95_ms": 14.9,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B11": {
+    "p50_ms": 11.0,
+    "p95_ms": 11.63,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B8": {
+    "p50_ms": 21.76,
+    "p95_ms": 24.47,
+    "n": 15
+   },
+   "remainder10/fixed_L128_B7": {
+    "p50_ms": 19.99,
+    "p95_ms": 22.68,
+    "n": 15
+   }
+  }
+ }
+}

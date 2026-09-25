@@ -11,7 +11,7 @@ engine, and tantivy's mmap profile for both.
 Serving a SPLADE vector means computing a sparse dot product
 `SUM_t q_w(t) * d_w(t)`. For that, an engine needs a per-(term, doc) float the
 scorer uses **linearly**. Lucene has one (`FeatureField` / `rank_features`) —
-which is why SPLADE rode Lucene into Elasticsearch (`WHY_NO_FOSS.md` §3).
+which is why SPLADE rode Lucene into Elasticsearch (`docs/archive/sparse_engine_project/WHY_NO_FOSS.md` §3).
 tantivy's exposed schema has no equivalent: `add_text_field`,
 `add_{integer,float,unsigned,date,bytes,json,ip_addr,facet,boolean}_field` —
 the float/integer fields are per-DOC, not per-(term, doc). The only per-(term,

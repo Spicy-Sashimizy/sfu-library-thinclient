@@ -1,6 +1,6 @@
 # 00 — Concept & Context
 
-**Status: DESIGN ONLY / UNMEASURED (2026-06-30).**
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **DESIGN ONLY / UNMEASURED (2026-06-30).**
 
 This document records the full idea trail, in the order it was reasoned out, so
 the conclusions in `03_GO_NO_GO.md` can be audited against their premises.

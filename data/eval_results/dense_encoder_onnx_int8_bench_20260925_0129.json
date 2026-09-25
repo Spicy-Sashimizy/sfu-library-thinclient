@@ -1,0 +1,85 @@
+{
+  "date": "2026-09-25T01:29:19Z",
+  "what": "v5 dense encoder (CLS pool + L2 norm): torch fp32 CPU vs dynamic-int8 ONNX \u2014 encode latency + embedding parity",
+  "model": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+  "out": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5-onnx-int8",
+  "host": {
+    "cpu_count": 16,
+    "intra_op_threads": 16,
+    "torch_threads": 16,
+    "isa": "avx2",
+    "quant": "dynamic int8 per-channel",
+    "loadavg_1_5_15": [
+      16.61,
+      7.57,
+      6.54
+    ]
+  },
+  "n_texts": 64,
+  "max_len": 256,
+  "size_mb": {
+    "torch_safetensors": 133.5,
+    "onnx_fp32": 133.0,
+    "onnx_int8": 34.0
+  },
+  "embedding_parity": {
+    "cosine_torch_vs_int8": {
+      "mean": 0.994925,
+      "min": 0.990617
+    },
+    "cosine_st_vs_torch": {
+      "mean": 1.0,
+      "min": 1.0
+    },
+    "cosine_st_vs_int8": {
+      "mean": 0.994926,
+      "min": 0.990617
+    },
+    "neighbour_top5_agreement_all_texts": 0.7656,
+    "neighbour_top3_agreement_distinct_topics": 0.9583,
+    "distinct_topics": 8
+  },
+  "latency": {
+    "batch_1": {
+      "torch_fp32": {
+        "batch": 1,
+        "n": 960,
+        "p50_ms": 24.802,
+        "p95_ms": 81.506,
+        "mean_ms": 34.524,
+        "docs_per_s": 29.0
+      },
+      "onnx_int8": {
+        "batch": 1,
+        "n": 960,
+        "p50_ms": 7.338,
+        "p95_ms": 16.325,
+        "mean_ms": 8.462,
+        "docs_per_s": 118.2
+      },
+      "speedup_mean": 4.08,
+      "speedup_p50": 3.38
+    },
+    "batch_32": {
+      "torch_fp32": {
+        "batch": 32,
+        "n": 30,
+        "p50_ms": 294.219,
+        "p95_ms": 1181.338,
+        "mean_ms": 427.543,
+        "docs_per_s": 74.8
+      },
+      "onnx_int8": {
+        "batch": 32,
+        "n": 30,
+        "p50_ms": 156.585,
+        "p95_ms": 238.501,
+        "mean_ms": 159.394,
+        "docs_per_s": 200.8
+      },
+      "speedup_mean": 2.68,
+      "speedup_p50": 1.88
+    }
+  },
+  "note": "Latency + embedding parity only. Retrieval-quality parity (nDCG) is NOT measured here; the dense leg is default OFF (SFU_DENSE_LEG, ablation DROP 2026-08-18)."
+}

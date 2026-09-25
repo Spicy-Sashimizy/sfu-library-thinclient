@@ -1,6 +1,6 @@
 # Seismic-only dev container + BMP/Qdrant archival split (2026-07-06)
 
-**Status: Phase A (SEISMIC default promotion) DONE 2026-07-06 — commit-linked
+**Status:** ACTIVE — **Phase A (SEISMIC default promotion) DONE 2026-07-06 — commit-linked
 below. Phases B–E (the physical split) are planned, not yet executed.**
 
 This doc is the canonical map for splitting this dev container into (1) a

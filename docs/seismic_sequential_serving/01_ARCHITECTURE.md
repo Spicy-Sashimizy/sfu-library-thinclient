@@ -1,5 +1,7 @@
 # 01 · Architecture — sequential federation
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, implemented 2026-06-30 (mechanisms A + B).** External claims
 tagged `[literature]`. Mechanism (C) `mlock`/`MADV_RANDOM` remains design-only.
 
@@ -109,7 +111,7 @@ shards down (missing/truncated/unreadable file, search exception, hang/timeout)
   one shared SPLADE vocab space — doc 09: calibration unnecessary by
   construction). **MEASURED 2026-07-17**: recall retention@10 = **0.850** across
   every fault class (in the pre-registered [0.80, 0.95] band) →
-  `docs/infrastructure/DEMO_DEPENDABILITY.md` §WI-10.
+  `docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md` §WI-10.
 
 ## Code touch-points (IMPLEMENTED — two distinct classes, 2026-06-30)
 

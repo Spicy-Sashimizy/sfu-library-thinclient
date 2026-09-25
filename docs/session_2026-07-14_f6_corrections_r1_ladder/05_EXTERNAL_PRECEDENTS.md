@@ -1,5 +1,7 @@
 # 05 · External precedents — documented versions of tonight's phenomena
 
+**Status:** ACTIVE
+
 Web research 2026-07-14, on the operator's question: *"search online to see
 if there any documented version of this interaction that we are seeing
 tonight."* Verdict: every phenomenon has precedent; two are near-verbatim.

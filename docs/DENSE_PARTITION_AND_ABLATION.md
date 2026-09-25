@@ -1,6 +1,8 @@
 # Dense ANN leg — payload partition + keep/drop assessment (2026-08-17)
 
-**Status: CURRENT.** Two questions, answered separately:
+**Status:** ACTIVE — ablation verdict DROP (2026-08-18) is the standing answer.
+
+Two questions, answered separately:
 
 1. **Can the OCI demo payload ship without the dense leg?** Yes — verified, and
    there is now a single env gate for it (`SFU_DENSE_LEG=0`). §1–§3.
@@ -269,9 +271,23 @@ dense row. That is **binary-vs-float rescore fidelity** — how well b1 Hamming 
 int8 rescore reproduces exact fp32 ranking **within the covered 600k subset**
 (`dense_compression_eval.json` `ann_recall@10_vs_exact`). It says the
 compression is lossless-enough; it says **nothing** about whether the leg helps
-retrieval over 150M docs. Same for the warm cache: the four "Success metrics"
-in `DENSE_WARMCACHE_RESEARCH.md` are all **UNMEASURED** — the 20,520 accumulated
-delta docs have never been evaluated for recall contribution.
+retrieval over 150M docs. **The warm cache's four "Success metrics" are no
+longer unmeasured — all four were MEASURED 2026-09-25**
+(`DENSE_WARMCACHE_RESEARCH.md` "Success metrics — MEASURED 2026-09-25";
+`scripts/experiments/eval_warmcache_replay.py`;
+`data/eval_results/warmcache_metrics_20260925.json`): on a 240-query replay
+that grew a delta 0 → 17,316 docs, the dense leg's recall@50 against judged
+qrels rose **0.107 → 0.348** while the seed-only control stayed flat at ~0.14,
+and the leg's cache-hit fraction rose **0.000 → 0.592**. Metric 2 (delta vs
+exact) measures **mean 0.9978 / min 0.94**, so the pre-registration's claim
+that v1's brute force is "trivially exact" is false. Metric 3 (p95
+`search_rrf` with the cache on) is **unchanged**: p50 +31.5 ms (+0.9%), and
+the p95 delta comes out −6.8% — the wrong sign, i.e. the host's noise floor
+rather than a win. **None of that reverses
+§7's verdict** — it measures the cache's own coverage growth, not fused nDCG,
+and the leg stays default-OFF. Metric 1's pre-registered input (the served
+query log) is **UNMEASURABLE**: every entry's `query_norm` is empty by PII
+policy, so a surrogate judged stream was used and labelled.
 
 ---
 

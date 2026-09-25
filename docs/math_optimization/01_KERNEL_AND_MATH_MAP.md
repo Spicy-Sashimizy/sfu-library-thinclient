@@ -1,5 +1,7 @@
 # 01 — Grounded kernel and math map
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 All line numbers against `/workspaces/sfu-library-thinclient/spike/vectorium_fork`
 and `/workspaces/sfu-library-thinclient/spike/seismic_upstream` as of 2026-07-03.
 

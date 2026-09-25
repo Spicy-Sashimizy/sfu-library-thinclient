@@ -1,10 +1,12 @@
 # 08 — Further math candidates (M6–M10): pre-registered, UNMEASURED
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 **Created 2026-07-05. Status: DESIGN ONLY / PRE-REGISTERED — every row
 UNMEASURED unless it cites a result file.**
 
 > **Status note 2026-08-10** (verdicts recorded in
-> `../seismic_150m_testbed/12_EXECUTION_ROADMAP.md`'s ledger, back-ported here):
+> `../archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md`'s ledger, back-ported here):
 > **M7 KILLED 2026-07-08** (Q2, all-miss-pack 0.194 < 0.3 bar). **M2b
 > KILLED 2026-07-10** (Q4, gate a 0.987/0.983 < 0.99) → **M6 KILLED
 > transitively same day** (Q5; the cpuid inventory never ran — moot). **M8
@@ -406,7 +408,7 @@ width, or at minimum `vcvtph2ps` batching can shrink convert cost.
 > → M2b → M6**, with M2b/M6 quality gates on shards 1–2 at n=100 (05's
 > worst-case-shard rule), and the quality-*recovery* lever E8 (dv-v2 per-doc
 > scale, `seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md`) ahead of all of
-> them. Recipes: `seismic_150m_testbed/12_EXECUTION_ROADMAP.md`. The original
+> them. Recipes: `archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md`. The original
 > order below stands as the pre-G8d record.
 >
 > **AMENDED 2026-07-08 (Stage-0 results in):** E8 Stage-0 **GO**

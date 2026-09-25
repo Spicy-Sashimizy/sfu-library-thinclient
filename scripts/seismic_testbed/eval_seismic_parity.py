@@ -110,8 +110,9 @@ class QdrantMedBioScoped:
     ZERO med_bio docs → false G2 FAIL). The med_bio hits share the full-corpus
     ranking (verified identical scores: W6997459625 @13.76 was SEISMIC #2 AND
     Qdrant med_bio rank-70 hit). fetch_n=500k costs ~15s/query but is safe;
-    shorten via early-stop once top_k med_bio hits are in hand (TODO: not in
-    the client API, so the full fetch is the cost)."""
+    an early-stop once top_k med_bio hits are in hand is not available in the
+    Qdrant client API, so the full fetch is the cost (Qdrant is rollback-only
+    since 2026-07-06; this evaluator is kept for the parity record)."""
 
     def __init__(self, collection: str, oaid_set: set[str],
                  url: str = "http://localhost:6333",

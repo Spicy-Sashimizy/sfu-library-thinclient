@@ -1,5 +1,7 @@
 # SFU_* / DEMO_* env-gate reference (consolidated 2026-09-01)
 
+**Status:** ACTIVE
+
 Every serving/build gate, its default, and its parsing quirk, in one
 grep-able place. The code is authoritative; this table is the index.
 Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
@@ -8,8 +10,9 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 ## Parsing quirks (read first)
 
 - **Literal-`1`-only gates**: `SFU_DENSE_LEG`, `SFU_ABSTRACTS_PREFAULT`,
-  `SFU_CE_ONNX` — ONLY the literal string `1` enables; any other value
-  (including typos) leaves the default OFF.
+  `SFU_CE_ONNX`, `SFU_DENSE_ENCODER_ONNX`, `SFU_BLOCK_PREFETCH`,
+  `SFU_SEARCH_SPECULATIVE_RERANK` — ONLY the literal string `1`
+  enables; any other value (including typos) leaves the default OFF.
 - **Tri-state**: `SFU_SEISMIC_MLOCK_FLOOR` — `1` = rescoped navigation
   floor (~20 MB/shard, 2026-08-17); `full` = the 2026-07-14 whole-slab pin
   (~13.4 GB, measurement reproduction only). `SFU_SEISMIC_PREFLOOR` — `1`
@@ -37,6 +40,7 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_LOAD_MEM_FLOOR_GB` | set | refuse a BMP load that would OOM (3.07× on-disk resident) |
 | `SFU_DENSE_LEG` | **OFF since 2026-08-18** (ablation: harmful at 0.4% coverage) | literal `1` enables the whole leg (seed + warm cache) |
 | `SFU_DENSE_WARMCACHE` | on when leg on | `0` disables the cache only; inert while the leg is off |
+| `SFU_DENSE_DELTA_USEARCH_MIN` | unset/`0` ⇒ RAM Hamming brute force (v1 behaviour, byte-identical) | row count above which the warm-cache delta is also kept in a mutable usearch b1 index and queried through it (4× over-fetch, then the same exact int8 rescore). A non-integer value logs and stays at brute force; any usearch error disables the lever for the process and brute force continues. Measured 2026-09-25: `DENSE_WARMCACHE_RESEARCH.md` §"Deferred to v2" |
 
 ## Staging / residency levers (dev-container; production no-ops)
 
@@ -47,6 +51,7 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_META_STAGE_FORCE=1` | off | stage even off a local FS (tests) |
 | `SFU_META_STAGE_VERIFY` | `fingerprint` | `size` \| `fingerprint` (size + head/tail 64 KiB sha256) \| `sha256` |
 | `SFU_ABSTRACTS_PREFAULT` | OFF (J1: costs load time; 0.919× cold-start regression otherwise absorbed) | literal `1` prefaults the 421 MB flat locator |
+| `SFU_BLOCK_PREFETCH` / `SFU_BLOCK_PREFETCH_MAX_MB` | OFF / `32` | literal `1` enables lever #4 term-prefix prefetch (`lib/thinclient/block_prefetch.py`): WILLNEED advice over the typed prefix's posting lists in each shard's `posting_lists.bin`, at most `MAX_MB` MiB per call (non-numeric or ≤ 0 ⇒ 32), one in flight, extra calls dropped; no-op unless `SFU_SEISMIC_LOAD_MODE=mmap`. Not wired to any endpoint yet. IMPLEMENTED 2026-09-25, EFFICACY UNMEASURED (`scripts/experiments/eval_block_prefetch.py`, run PENDING) |
 
 ## Disk-streaming pin tier (all default OFF = byte-identical; kill-switch discipline)
 
@@ -66,6 +71,9 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_RESULT_CACHE` | staging-on | WI-17 read-through cache; `0` = the one-env rollback. Tunables: `_TTL` (s), `_MAX_SIZE`, `_MAX_MEM_MB` |
 | `SFU_CACHE_PRESEED` | on (no-op when cache off) | WI-17b post-warmup primer |
 | `SFU_SEARCH_SPECULATE` | **OFF** (owner flips defaults, not builds) | WI-18 keystroke speculation; `SFU_SPECULATE_MIN_RATIO` (0.35), `SFU_SPECULATE_LITERAL` (OFF) |
+| `SFU_SEARCH_DRAFT_STREAM` | **OFF** (IMPLEMENTED 2026-09-25, EFFICACY UNMEASURED) | lever #2 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: truthy (`1`/`true`/`yes`/`on`) enables `POST /api/search_stream` (SSE BM25F draft → final) and advertises `search_draft_stream: true` on `/health`, which switches the GUI's first-page search to the stream. Forced off (404, `false`) while `SFU_SEQUENTIAL_MODE` is on. Off ⇒ route 404s, GUI uses `/api/search` unchanged |
+| `SFU_SEARCH_SPECULATIVE_RERANK` | **OFF** (IMPLEMENTED 2026-09-25, PARITY MEASURED 120/120 2026-09-25) | lever #1 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: literal `1` starts a background draft of the rerank pipeline on the BM25F leg's pool while the SPLADE leg runs (`lib/speculative_rerank.py`); the real `_maybe_rerank` reuses the drafted stage-1/CE score of every candidate that is also in the fused pool and scores only the rest; byte-identical to OFF because both paths use fixed-shape scoring (`CODE_INVARIANTS.md` §reranker "Fixed-shape scoring", 2026-09-25). Off/absent ⇒ no thread, no context, pipeline unchanged. Counters: `speculative_rerank.counters()` (module dict, not yet on `/health`) |
+| `SFU_METRICS_LOG_PATH` | unset (off) | per-tool-call JSONL metrics log (both transports), e.g. `logs/mcp_metrics.jsonl`. Line: `{ts, tool, latency_ms, success, server_version, session, ids}` — `session`/`ids` added 2026-09-25 (`THIN_CLIENT_SWAP.md` §Serving swap; `CODE_INVARIANTS.md` §tools.py "Metrics log ids/session"). Write failures swallowed |
 | `SFU_SERVE_QUERY_LOG` | staging-on | WI-2 query log; `_RAW=1` captures raw text (OFF: hash-only), `_MAX_BYTES` rotation |
 | `SFU_SEQUENTIAL_MODE` | absent | set by the Windows START.bat; advertises on /health so the GUI queues searches |
 | `SFU_DEMO_UPDATE_VERIFY_SEISMIC` | — | `/verify` forces the lazy seismic load (WI-13 update gate) |
@@ -80,16 +88,22 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_CE_ONNX` | OFF | literal `1`: int8 ONNX CE — slower at serve shape (52 vs 11.8 ms batch-20); single-stream fallback only |
 | `SFU_ORT_INTRA_THREADS` | small | keep tiny/non-spinning with the TRT EP (full-width pool starved the GPU 3.5k→960 docs/s) |
 | `SFU_SEISMIC_M2_INT6` | OFF | M2 integer-dot kernel (NOT promoted — gate a failed at n=100) |
+| `SFU_DENSE_ENCODER_ONNX` | OFF | literal `1`: int8 ONNX v5 bi-encoder for the dense warm cache's background doc encoding. **Fails OPEN** — an enabled gate with an unusable export logs an ERROR and falls back to torch (same embeddings, slower). Inert while `SFU_DENSE_LEG` is off |
+| `SFU_DENSE_ENCODER_ONNX_PATH` | `models/sfu-academic-embed-v5-onnx-int8` | export dir (`model_quantized.onnx`, else `model.onnx`); built by `scripts/experiments/export_dense_encoder_onnx_int8.py` |
+| `SFU_DENSE_ENCODER_ONNX_THREADS` | `0` ⇒ onnxruntime default | intra-op threads for that session (inter-op pinned to 1 when set) |
 
-## Demo broker (DEMO_*)
+## Demo broker (DEMO_*) — DORMANT since 2026-09-25
+
+> **STATUS 2026-09-25: CLOUD ACCESS ENDED.** No OCI/DO host exists; every gate
+> in this section is inert. "Live since" dates below are historical.
 
 | Gate | Default | Meaning |
 |---|---|---|
 | `DEMO_BROKER_LIVE` | `0` | **the dry-run/spend gate** |
 | `DEMO_CLOUD` | `do` | `oci` = the live OCI deploy |
 | `OCI_STOP_ACTION` | SOFTSTOP | ACPI shutdown; `STOP` = hard power-off fallback |
-| `DEMO_WATCHDOG_HEARTBEAT_HOUR` / `_FAIL_THRESHOLD` / `_STATE_PATH` | `9` / `2` / `watchdog.json` | `watchdog.py` (systemd timer, read-only): ntfy on instance-state change, health failures, recovery, daily heartbeat. Live since 2026-09-07 |
-| `DEMO_PIN_RUNNING` | `0` | `1` = `_destroy` is a no-op (reaper + killswitch log `reap_suppressed`, never stop). Live since 2026-09-07 (trial grace period, E5 limit 0) |
+| `DEMO_WATCHDOG_HEARTBEAT_HOUR` / `_FAIL_THRESHOLD` / `_STATE_PATH` | `9` / `2` / `watchdog.json` | `watchdog.py` (systemd timer, read-only): ntfy on instance-state change, health failures, recovery, daily heartbeat. Live 2026-09-07 → 2026-09-25 (host gone) |
+| `DEMO_PIN_RUNNING` | `0` | `1` = `_destroy` is a no-op (reaper + killswitch log `reap_suppressed`, never stop). Live 2026-09-07 → 2026-09-25 (host gone) |
 | `OCI_INSTANCE_IP` | set | private-IP proxy path, no control-plane call per request |
 | `DEMO_MCP_RESERVED_SLOTS` | 2 | MCP-priority slots of the 6 global billable slots |
 | `DEMO_DIAL_BACKEND` | off | `systemd` / `cgroup`; off ⇒ /admin/dial 404s |

@@ -1,5 +1,7 @@
 # 01 · Architecture
 
+**Status:** ACTIVE
+
 ## The three candidate paths
 
 All three serve the **same** SPLADE `sparse_field` already stored in `spool_backup`
@@ -62,7 +64,7 @@ A category error worth stating once so it isn't re-attempted:
 ## Path C in detail — SEISMIC on an mmap substrate (this *is* the old BMP "Option B")
 
 Path C is the same **immutable-mmap-substrate** idea the prior project
-carried as Option B (`sparse_engine_project/00_VISION_AND_GOALS.md`,
+carried as Option B (`archive/sparse_engine_project/00_VISION_AND_GOALS.md`,
 `04_BUILD_AND_GATHER.md` "Lance sparse-column writer/reader", risk R9). It is worth
 stating plainly that **the Lance idea fits SEISMIC better than it ever fit BMP** — and
 exactly *where* it bites.
@@ -70,7 +72,7 @@ exactly *where* it bites.
 **Why it closes the loop here when it couldn't for BMP.** Lance contributes **one
 axis only: the RAM cure** (immutable, mmap'd, page-cache-resident, ~0 anon). It
 contributes *nothing* to pruning — Lance has no sparse index (the LanceDB #1930 gap,
-`WHY_NO_FOSS.md`).
+`docs/archive/sparse_engine_project/WHY_NO_FOSS.md`).
 - For **BMP** that was fatal: BMP's broken axis was *pruning* (linear in corpus,
   `sparse_engine_project` row-6). Lance would have cured RAM and left a linear-scan
   engine — useless at 150M.
@@ -81,7 +83,7 @@ contributes *nothing* to pruning — Lance has no sparse index (the LanceDB #193
 
 **The catch that decides it — the FORMAT-WALL recurs.** Holding the data in Lance and
 getting SEISMIC's *speed* are different things, and your own mmap-BMP spike already
-paid for this lesson (`sparse_engine_project/03_GO_NO_GO_GATES.md` G3a): the R3-v1
+paid for this lesson (`archive/sparse_engine_project/03_GO_NO_GO_GATES.md` G3a): the R3-v1
 compact format that **decoded per query** was 696 ms; the zero-decode
 `bytemuck::cast_slice` POD layout was 25.63 ms — a ~27× swing on layout alone.
 - SEISMIC's hot path is **random pointer-chasing** (coordinate-at-a-time traversal)
@@ -129,11 +131,11 @@ fixed-width POD, RAM cure via mmap):
 **The top pick is already validated by *this project*.** The only green latency number
 in the prior engine spike — the FORMAT-WALL flip **696 ms → 25.63 ms** — was achieved
 with **raw `memmap2` + `bytemuck::cast_slice` over `#[repr(C)]` POD**, *not* Lance
-(`sparse_engine_project/03_GO_NO_GO_GATES.md` G1 zero-decode row, `R3v2_delta.patch`).
+(`archive/sparse_engine_project/03_GO_NO_GO_GATES.md` G1 zero-decode row, `R3v2_delta.patch`).
 So "raw mmap + bytemuck" is not speculative — it is the substrate the team already
 measured at the latency target.
 
-**Recommended composition (assemble thin pieces, per `WHY_NO_FOSS.md`'s "one seam"):**
+**Recommended composition (assemble thin pieces, per `docs/archive/sparse_engine_project/WHY_NO_FOSS.md`'s "one seam"):**
 - **Term dictionary** (term → postings offset): an **mmap'd FST** — the [`fst` crate](https://crates.io/crates/fst),
   exactly what tantivy uses; zero-copy, tiny resident RAM.
 - **Forward index + block postings + summary vectors**: **raw `memmap2` + `bytemuck`**

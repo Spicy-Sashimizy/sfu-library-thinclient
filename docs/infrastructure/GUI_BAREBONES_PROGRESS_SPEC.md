@@ -1,5 +1,7 @@
 # GUI spec — search-progress indication + bare-bones default with toggles
 
+**Status:** ACTIVE
+
 **2026-07-17. DESIGN SPEC (owner-requested). Implementation delegated to the
 deployprep wave-5 drive session; this doc is the contract.** Grounded in the
 research below + this repo's measured latencies (WI-1/6/7/11).

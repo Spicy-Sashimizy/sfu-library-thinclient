@@ -1,5 +1,7 @@
 # 00 · Vision & Goals — sequential SEISMIC serving
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30, updated 2026-06-30.** Mechanisms (A) (serial branch +
 `SFU_SEISMIC_FEDERATION` flag) and (B) (`MADV_DONTNEED` `release_pages`, hard
 ~1-shard resident guarantee) are **IMPLEMENTED** for the sequential class only

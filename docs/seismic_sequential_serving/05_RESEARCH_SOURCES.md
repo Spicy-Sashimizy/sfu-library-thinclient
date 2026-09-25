@@ -1,5 +1,7 @@
 # 05 · Research Sources — annotated bibliography
 
+**Status:** DEFERRED 2026-07-16 (measured WI-1 but never promoted; parallel federation is still the served path)
+
 **Created 2026-06-30.** The external evidence backing every design choice in this
 directory. Each entry: what it is, and **which decision here it supports**. All are
 `[literature]` (other corpora/hardware) — they justify *which* technique to try,

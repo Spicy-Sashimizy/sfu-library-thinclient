@@ -1,0 +1,123 @@
+{
+ "date": "2026-09-25",
+ "source_log": "data/eval_results/serve_query_log.jsonl",
+ "rows_total": 2260,
+ "excluded": {
+  "cache_hit": 1037,
+  "no_leg_timings": 249,
+  "warmup": 14
+ },
+ "gap_definition": "leg_ms.total - (bm25f + splade [+ dense]); see module docstring",
+ "buckets": {
+  "2026-07-18|speculative": {
+   "total": {
+    "n": 92,
+    "p50_ms": 2395.7,
+    "p95_ms": 4759.2,
+    "mean_ms": 2802.9
+   },
+   "legs": {
+    "n": 92,
+    "p50_ms": 1187.4,
+    "p95_ms": 3785.3,
+    "mean_ms": 1603.4
+   },
+   "gap": {
+    "n": 92,
+    "p50_ms": 1149.2,
+    "p95_ms": 1459.5,
+    "mean_ms": 1199.5
+   },
+   "gap_share_p50": 0.468,
+   "gap_share_mean": 0.45
+  },
+  "2026-07-18|user": {
+   "total": {
+    "n": 375,
+    "p50_ms": 2698.2,
+    "p95_ms": 4508.8,
+    "mean_ms": 2842.5
+   },
+   "legs": {
+    "n": 375,
+    "p50_ms": 1743.9,
+    "p95_ms": 3781.1,
+    "mean_ms": 1861.3
+   },
+   "gap": {
+    "n": 375,
+    "p50_ms": 1049.0,
+    "p95_ms": 1428.4,
+    "mean_ms": 981.2
+   },
+   "gap_share_p50": 0.378,
+   "gap_share_mean": 0.376
+  },
+  "2026-07-28|speculative": {
+   "total": {
+    "n": 216,
+    "p50_ms": 1950.7,
+    "p95_ms": 3753.1,
+    "mean_ms": 2176.7
+   },
+   "legs": {
+    "n": 216,
+    "p50_ms": 683.2,
+    "p95_ms": 2753.7,
+    "mean_ms": 972.6
+   },
+   "gap": {
+    "n": 216,
+    "p50_ms": 1235.4,
+    "p95_ms": 1823.5,
+    "mean_ms": 1204.1
+   },
+   "gap_share_p50": 0.639,
+   "gap_share_mean": 0.591
+  },
+  "2026-07-28|user": {
+   "total": {
+    "n": 277,
+    "p50_ms": 2281.9,
+    "p95_ms": 4781.4,
+    "mean_ms": 2501.2
+   },
+   "legs": {
+    "n": 277,
+    "p50_ms": 1009.3,
+    "p95_ms": 3536.7,
+    "mean_ms": 1381.1
+   },
+   "gap": {
+    "n": 277,
+    "p50_ms": 1240.5,
+    "p95_ms": 1621.9,
+    "mean_ms": 1120.1
+   },
+   "gap_share_p50": 0.525,
+   "gap_share_mean": 0.488
+  },
+  "ALL": {
+   "total": {
+    "n": 960,
+    "p50_ms": 2429.4,
+    "p95_ms": 4416.7,
+    "mean_ms": 2590.4
+   },
+   "legs": {
+    "n": 960,
+    "p50_ms": 1320.5,
+    "p95_ms": 3524.7,
+    "mean_ms": 1498.1
+   },
+   "gap": {
+    "n": 960,
+    "p50_ms": 1149.9,
+    "p95_ms": 1618.0,
+    "mean_ms": 1092.4
+   },
+   "gap_share_p50": 0.455,
+   "gap_share_mean": 0.464
+  }
+ }
+}

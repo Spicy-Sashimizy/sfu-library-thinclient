@@ -1,5 +1,7 @@
 # 04 · The non-monotonic convergence artifact (R1, 2026-07-14)
 
+**Status:** ACTIVE
+
 **The canonical write-up of the observation** referenced from
 `11_EXPERIMENT_BACKLOG.md` §R1. Status: MEASURED (the observation);
 literature-anchored (the mechanism); the composite phenomenon appears to be
@@ -594,3 +596,204 @@ MGLRU-FG RFC test (`PREREGISTRATION_T1D_FG.md`) and the access-histogram
 probe (`PREREGISTRATION_T1D_PROBE.md`) are drafted, not run. The spin-off
 decision (standalone public repo on item-1 PASS, recorded 2026-08-31) is
 now unblocked and awaits the owner.
+
+> **CORRECTION 2026-09-25 — two clauses of the paragraph above were already
+> false on the day it was written.** The paragraph was drafted against the
+> 2026-09-06 state; the probe ran later the same day (2026-09-12) and the
+> paragraph was not re-read before it shipped. Corrected against
+> `spike/convergence_repro/RESULTS.md` §32 and
+> `PREREGISTRATION_T1D_PROBE.md` §7/§8:
+>
+> - **"the access-histogram probe … drafted, not run" is WRONG.** The probe's
+>   method, query mix (N=1,000 draws, seed 20260912) and output schema were
+>   **FROZEN 2026-09-12** (§7) and the probe **RAN 2026-09-12** (§8; raw
+>   `data/eval_results/t1dprobe_*_20260912.*`, commit `14ceea4d`; readouts
+>   recorded in commit `33f016a2`). Determinism bar PASS — two 1,000-draw
+>   replays byte-identical. Readouts: hot-80 = **10.4%** of forward pages /
+>   **3.21 GB**; mass at synthetic h = 0.05/0.10/0.20 → 0.589/0.789/0.961, so
+>   the real index's skew is ≈ **`hotset:0.10:0.80`** on the forward-page
+>   denominator (a *harder* skew than the judged `hotset:0.20:0.80` cells
+>   drew); hot-80 clustering 446,508 extents, run p50 1 / p90 3 / max 266 —
+>   only 1.57× tighter than random placement, so the T1d-12 `hotsetc` E=8 arm
+>   over-models contiguity. The probe was re-scoped to a **local counting**
+>   measurement (`PREREGISTRATION_T1D_PROBE.md` header, 2026-09-06), which is
+>   why it never needed the OCI box and why N7 never bound it.
+> - **"S-realprofile stays severed behind §6 gap 3" is WRONG.**
+>   `PREREGISTRATION_TIER1D.md` §6 **gap 3 is CLOSED** (RESULTS.md §32
+>   headline). S-realprofile (§3.6) remains severed, but now only on the two
+>   *driver* prerequisites named in `PREREGISTRATION_T1D_PROBE.md` §8.3 — the
+>   ranking-import mode for `t1d_cell.py` and the initial-residency profile —
+>   neither of which is host-gated. No verdict moved: §23's Tier-1d verdicts
+>   and the gate table above stand exactly as recorded.
+> - **Still accurate as written:** the MGLRU-FG RFC test
+>   (`PREREGISTRATION_T1D_FG.md`) is DRAFT and un-run, and the Tier-1e
+>   inversion pre-registration did not exist. Tier-1e is drafted
+>   2026-09-25 as `spike/convergence_repro/PREREGISTRATION_TIER1E.md`
+>   (DRAFT, un-frozen, no cell may run).
+
+## Figure set (2026-09-13) — the write-up's figures, built from committed cells
+
+https://claude.ai/code/artifact/1b60d178-4b25-440c-b1c9-9a12bdfdc898 — seven
+figures, each mark a field of a recorded result file (no re-measurement):
+(1) R1 ladder per-pass p50 + majflt by cap, the observation; (2) R2 fine
+ladder, pass-3 p50 vs converged p50 by cap (non-monotone vs monotone);
+(3) R3 between-pass cachestat residency + active_file, 12 vs 16 GB;
+(4) Tier-2/3 real stack, per-pass p50 and converged state by cap, classic vs
+MGLRU (the cliff displacement); (5) Tier-2/3 reclaim anatomy at 28 GB,
+workingset activate vs refault; (6) Tier-1d hot-set residency + majflt per
+pass, both arms, both seeds, plus the 8 GiB control; (7) Tier-1d
+characterization, floor ratio vs h and vs cap. Companion: the 2026-09-12
+access-histogram probe chart (§ above). Source and data:
+`spike/convergence_repro/figures/` (`extract.py` → `figures_data.json`,
+`figures_template.html` + `build.py`); rebuild after any cited cell changes.
+Not yet drawable from committed data: the small-machine 16 GB
+converge/thrash split (run-4 timeouts left no JSON) and the F5
+residue-eviction lever on the real stack (unmeasured).
+
+## Regime map definitions (2026-09-13) — pinned before figure 8 was drawn
+
+The map plots cap ÷ measured hot set (log axis) with one lane per host. Its
+three regimes are defined by two measured quantities per host, recorded here
+so the drawing is auditable:
+
+- **Lower boundary = hot set + anon.** Below it the pages the workload
+  re-touches do not fit; no reclaim policy converges (capacity arithmetic).
+- **Upper boundary = post-pass-1 footprint** (both populations resident +
+  anon). Above it nothing is evicted, so nothing sorts; every cap looks alike.
+- **The band between** is where the one-time cache sort happens under
+  pressure, at a pressure-proportional speed — the artifact regime. MGLRU's
+  cliff is a fourth line inside the band, on that arm only.
+
+| host | hot set | anon | lower | footprint (upper) | evidence |
+|---|---|---|---|---|---|
+| WSL2 6.18 classic (R1/R2/R3, 2026-07-14/15) | **10.1 GB** | 1.2 GB | 11.3 GB | **19.4 GB** (bracketed: 17 GB sorts, 24 GB fits, nothing between) | R3 12 GB cell drained to 10.13 GB; R2 12 GB converged rssfile 9.94 GB; R2 24 GB after pass 1: cgroup file 18.17 GB + anon 1.2 GB; R2 11 GB converges (18 ms), 10 GB plateaus (1.42 s) — the lower boundary lands where the arithmetic says |
+| OCI E5 62 GiB, 6.17 (Tier-2/3, 2026-09-01) | **13.76 GB** | 1.0 GB | 14.8 GB (*predicted*; classic ladder floor 25 GB) | **29.1 GB** (measured: 30 GB zero scan, 29 GB barely trims) | RESULTS.md §22; smallmachine PREREGISTRATION §1; MGLRU cliff **28.5 GB** at 1 GB resolution |
+| Synthetic Tier-1d (WSL2, both arms, 2026-09-05/06) | **1.0 GiB** (h=0.20 of R=5 GiB) | ~0 | 1.0 GiB | **6.75 GiB** (R + L) | by construction; cap sweep 0.75/1.5/2.5/4/8 GiB |
+
+Point outcome classes (per cell): *fits* (near-zero within 3 passes, no
+visible transient), *transient* (near-zero after a visible sort in the
+window), *plateau* (never near-zero), and for the Tier-1d sweep *divergent*
+(arm ratio > 1.16) / *pressured* (hot set does not fit, or loose cap). Cells
+without a result JSON (small-machine run-4 timeouts at 16 GB) appear as an
+annotation, never as a point. The classic lower boundary on the OCI host is
+drawn dashed as a prediction because the ladder never went below 25 GB.
+
+**Figure 8 DRAWN 2026-09-13** (commit `28891f97`, same figure-set URL as
+above, figure 8 card): 60 cells placed — WSL2 21 (4 fits / 12 transient /
+5 plateau), OCI 29 (23 / 3 / 3), Tier-1d 10 (2 fits / 4 divergent /
+4 pressured). The classifier, told nothing about where the artifact is,
+isolates it: the only OCI transients are the three classic 28 GB cells
+(pass-2 p50 13–17.6× the floor) and the only OCI plateaus are MGLRU 26 and
+28 GB; on WSL2 every R2 near-zero cell from 11 to 17 GB is a transient
+(4–5 passes to converge) and only 24 GB is a clean fit; the 6–10 GB
+plateaus all sit below the 11.3 GB lower boundary, the 11 GB cell just
+above it. Rule constants: near-zero 2,500 majflt/pass, visible sort = a
+pass ≥ 2 above 5× the converged p50, Tier-1d divergence = ratio > 1.16
+(`figures/extract.py` `FIG8_HOSTS` + `classify()`).
+
+## Addendum 2026-09-25 — host change: the OCI box is gone; what that closes and what re-hosts
+
+**The fact.** As of **2026-09-25** the operator has **no access to any cloud
+host**. The **OCI E5, 62 GiB, kernel 6.17.0-1018-oracle, no swap** box that
+produced every Tier-2/3 and small-machine cell
+(`spike/convergence_repro/PREREGISTRATION_TIER23.md`, RESULTS.md §§18–22;
+`spike/archive/smallmachine_levers/PREREGISTRATION.md` phases A′/A″) is **permanently
+gone**. The only host is this WSL2 machine — the same one that ran R1/R2/R3
+and all of Tier-1d.
+
+| | OCI E5 (gone 2026-09-25) | this WSL2 host (measured 2026-09-25) |
+|---|---|---|
+| RAM | 62 GiB | **31 GB total**, 26 GB available at idle (~5 GB used before any cell) |
+| swap | none | 16 GB |
+| cores | — | 16 |
+| kernel | 6.17.0-1018-oracle | `6.18.33.2-microsoft-standard-WSL2+` (custom build) |
+| MGLRU | present | `/sys/kernel/mm/lru_gen/enabled` = **`0x0007`**, both arms toggleable |
+| cgroup | v2 | v2 |
+
+Note the second host change: RESULTS.md §31 recorded the `.wslconfig` revert
+from the 56 GB Tier-1d experiment profile to the everyday block as *pending*.
+It has happened — **31 GB is the current boot**, not 56 GB. Tier-1d's judged
+cells (caps ≤ 8 GiB) are unaffected; nothing below is argued from 56 GB.
+
+### The arithmetic that decides every item
+
+Three independent facts, each sufficient on its own, and all three drawn from
+the regime-map constants pinned in the section above:
+
+1. **The OCI upper boundary does not fit in this host's total RAM.** The
+   two-population footprint on the OCI stack is **29.1 GB** (28.1 GB file +
+   1.0 GB anon, RESULTS.md §22) = **93.9% of this host's 31 GB total**. An
+   "everything fits" control needs a cap ≥ 29–30 GB; the small-machine
+   big-RAM regression control (sml §4, bar S4) needs **34 GB**, which is
+   **3 GB above this host's entire RAM**. Neither control can exist here, and
+   without the upper boundary the band has no top.
+2. **A 28 GB cap is not meaningfully reachable on a 31 GB host.** The missing
+   boundary cells sit at cap 28 GB. 31 − 28 = **3 GB** left for the WSL2
+   kernel, init, the dev container, the orchestrator and every page the cap
+   does not own; measured idle usage before any cell is **~5 GB**, so
+   31 − 5 = **26 GB < 28 GB** — the cap is looser than the RAM actually
+   available to fill it. A cgroup limit that the host cannot make bind does
+   not measure reclaim policy; it measures host RAM. Same for AMEND1's top
+   rungs 24/22 GB once the ~5 GB floor is charged (26 GB usable).
+3. **The decisive one: the same cap number is not the same regime on this
+   host.** This host's real stack (R1/R2/R3 constants, regime-map table
+   above) has **hot set 10.1 GB + 1.2 GB anon = 11.3 GB lower boundary** and
+   **19.4 GB footprint (upper boundary)**. Cap 28 GB is **8.6 GB above this
+   host's upper boundary** — squarely in the "nothing is evicted, so nothing
+   sorts, every cap looks alike" regime. The **entire OCI ladder, 25–30 GB,
+   lies above this host's footprint.** There is **no cap on this host at
+   which the OCI cells' question can be posed at all**, regardless of how
+   much RAM the machine had. (The hot sets themselves differ 13.76 / 10.1 =
+   **1.36×** on the same 150M manifest; the record does not establish whether
+   that is host, codec or serving config, which is a second independent
+   reason a same-numbered cap here would not be a replication.)
+
+**Consequence, stated once:** every OCI-derived cell is **CLOSED-UNRUNNABLE**
+— same-host replication is impossible and same-cap re-hosting would measure a
+different regime. Everything whose question lives in *this* host's own band
+(11.3–19.4 GB) or in the synthetic (caps ≤ 8 GiB) is **RE-HOSTABLE**.
+
+### Item-by-item classification (2026-09-25)
+
+| open item | where it lived | classification | one-line reason |
+|---|---|---|---|
+| `t23c_mglru_cap28g_rep2` — replicate of the 28 GB MGLRU plateau boundary cell (AMEND1 §1) | OCI | **CLOSED-UNRUNNABLE** | cap 28 GB is above this host's 19.4 GB footprint and above its 26 GB usable RAM; the rung cannot be made to bind or to sit in the band |
+| AMEND1 classic descent 24/22/20/18/16 GB + confirmatory bracket → **B1x/B5x** | OCI | **CLOSED-UNRUNNABLE** | the descent exists to bracket a classic plateau below 25 GB on a stack whose floor is 14.8 GB; on this host every one of those rungs is a *different* regime against an 11.3 GB floor |
+| **B1 / B5** (not passed on uncomputable components) and **B4** (FAIL on bar arithmetic) | OCI | **CLOSED-UNRUNNABLE — now FINAL AS RECORDED** | the only path to tightening them was AMEND1; with that closed, the 2026-09-01 verdicts are the permanent record, not an interim one |
+| `PREREGISTRATION_TIER23_AMEND1.md` (DRAFT, **never frozen**) | OCI | **CLOSED-UNRUNNABLE** | it defines only `t23c_*` cells on the OCI protocol; it can never be frozen, so it is retired as a draft, not as a failed test |
+| `spike/archive/smallmachine_levers/PREREGISTRATION.md` phase B, bars **S1–S5** (DRAFT, never frozen; already unfreezable as designed per its phase-A′ synthesis) | OCI | **CLOSED-UNRUNNABLE** | rungs 14/16/18/20 GB and the 34 GB S4 control are derived from OCI constants; S4's control alone exceeds this host's total RAM |
+| **Figure: small-machine 16 GB converge/thrash split** (not drawable — run-4 cells timed out leaving no JSON) | OCI | **CLOSED-UNRUNNABLE as a figure** | the cells left no result JSON and the host that would back-fill them is gone; nothing can be recovered for the OCI lane of figure 8 |
+| The *question* behind that figure — is there a ragged-edge rung just above the hot set where the real stack converges sometimes and thrashes sometimes, and what is the split? | re-posed | **RE-HOSTABLE** | this host has its own ragged edge already bracketed (R2: 11 GB converges at 18 ms, 10 GB plateaus at 1.42 s); rungs 10–13 GB bind hard under 31 GB. **Re-posed, not replicated** — a new n>2 split measurement on this host's constants |
+| **Figure: F5 residue-eviction lever on the real stack** (unmeasured) | never ran on OCI | **RE-HOSTABLE** | F5's scope fix (fork `2c4d863`) and the index are both on this host, and the lever's target band is 11.3–19.4 GB — the only blocker is that no `.so` carrying the fix has been rebuilt and served |
+| **S-realprofile** (`PREREGISTRATION_TIER1D.md` §3.6) | local | **RE-HOSTABLE** | never host-gated after the probe went local (§6 gap 3 CLOSED 2026-09-12); blocked only on two driver prerequisites (ranking-import mode, initial-residency profile), `PREREGISTRATION_T1D_PROBE.md` §8.3 |
+| **T1d-FG** — the MGLRU-FG RFC test (`PREREGISTRATION_T1D_FG.md`, DRAFT) | local | **UNAFFECTED / RE-HOSTABLE** | WSL2 kernel work with caps ≤ 8 GiB; the host loss touches nothing in it. Still DRAFT, still un-run |
+| **Tier-1e** — synthetic inversion reproduction (drafted 2026-09-25) | local | **RE-HOSTABLE by construction** | synthetic, `t1d_cell.py`, caps ≤ 8 GiB, R=5 GiB + L=1.75 GiB — fits this host with ~22 GB to spare |
+
+New DRAFT pre-registrations written 2026-09-25 for the re-hostable work (both
+**DRAFT — awaiting the operator's freeze; no cell may run**):
+`spike/convergence_repro/PREREGISTRATION_WSL2_REHOST.md` (the ragged-edge
+split + F5 on the real stack, on this host's constants) and
+`spike/convergence_repro/PREREGISTRATION_TIER1E.md` (the synthetic inversion).
+
+### Publication gate — current status of all three items + the spin-off (2026-09-25)
+
+Supersedes the gate table in the 2026-09-12 addendum above for *status*; the
+evidence citations there stand unchanged.
+
+| item | status 2026-09-25 | can it still move? | evidence |
+|---|---|---|---|
+| 1 — index-independent synthetic repro | **PASSED** (arm asymmetry, steady-floor ratio 1.443 in both seeds, bar ≥1.30). The *inversion* form remains real-stack-only. | **Yes** — synthetic, fully re-runnable on this host; Tier-1e is drafted for the inversion form | RESULTS.md §23–25, §30 |
+| 2 — native Linux, real stack | **CONFIRMED** (B2/B3 PASS, 5.8×/5.6× at 26-vs-28 GB) | **No new OCI cell is possible.** The verdict stands as a closed, judged record; a reader cannot re-run it | addendum 2026-09-01 (c)/(d) |
+| 3 — MGLRU arm | **MEASURED and now FINAL AS RECORDED**: cliff displaced ≥ ~4 GB upward, transient replaced by sustained thrash (~220× at 28 GB); **B1/B5 not-passed on uncomputable-as-frozen components, B4 FAIL on bar arithmetic — permanently, because AMEND1 is CLOSED-UNRUNNABLE** | **No** | addendum 2026-09-01 (d), RESULTS.md §21–22; AMEND1 retired |
+| spin-off decision (standalone public repo on item-1 PASS, recorded 2026-08-31) | **Still unblocked; still awaits the owner** — but its honest shape changed on 2026-09-25 | — | this addendum |
+
+**What the host loss does to the spin-off.** The synthetic tier (item 1) is
+the part a reader can reproduce: `t1d_cell.py`, frozen bars, fresh seeds,
+commodity hardware, ≤8 GiB caps. The real-stack tiers (items 2–3) become
+**archival evidence** — measured, judged, fully recorded, and not reproducible
+by anyone, including us. Any write-up must say that in those words rather than
+implying the real-stack cells are re-runnable, and must not describe B1/B4/B5
+as "to be tightened": they are final. The one thing that *can* still be added
+on the real stack is on **this** host, in **its** band (11.3–19.4 GB), which
+is a different machine's version of the same phenomenon and must be labelled
+as such.

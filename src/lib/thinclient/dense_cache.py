@@ -7,11 +7,18 @@ rescore, which sidesteps HNSW insert-order recall degradation entirely at
 delta scale and merges with seed scores exactly (corpus-independent dot
 products). A single background worker dedups, CPU-encodes surfaced docs in
 small batches, and appends. Everything is bounded: queue, doc cap, one thread.
+
+v2 levers, both default-inert (docs/DENSE_WARMCACHE_RESEARCH.md "Deferred to
+v2"): `SFU_DENSE_DELTA_USEARCH_MIN` swaps the RAM brute force for a mutable
+usearch b1 index once the delta passes a configurable row count, and
+`SFU_DENSE_ENCODER_ONNX` swaps the torch encoder for an int8 ONNX export.
+Folding the delta back into the seed lives in `dense_delta_merge.py`.
 """
 
 from __future__ import annotations
 
 import logging
+import os
 import queue
 import sqlite3
 import threading
@@ -26,6 +33,11 @@ DELTA_KEY_BASE = 1 << 40
 ENCODE_BATCH = 32
 QUEUE_MAX_DOCS = 2_000
 DEFAULT_MAX_DOCS = 500_000
+ANN_OVERFETCH = 4
+ANN_EXPANSION_ADD = 128
+ANN_EXPANSION_SEARCH = 128
+ONNX_DEFAULT_DIR = "models/sfu-academic-embed-v5-onnx-int8"
+ONNX_MAX_LEN = 256
 _POPCNT = np.unpackbits(np.arange(256, dtype=np.uint8)[:, None],
                         axis=1).sum(1).astype(np.uint8)
 
@@ -36,6 +48,85 @@ _SCHEMA = (
     "  title TEXT, doi TEXT, year INTEGER, type TEXT, is_oa INTEGER,"
     "  added_at REAL);"
 )
+
+
+def _ann_threshold() -> int:
+    raw = os.environ.get("SFU_DENSE_DELTA_USEARCH_MIN", "")
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        logger.warning("SFU_DENSE_DELTA_USEARCH_MIN=%r is not an integer; "
+                       "keeping brute-force delta search", raw)
+        return 0
+
+
+class OnnxDenseEncoder:
+    """int8 ONNX query/doc encoder for the v5 bi-encoder (CLS pool + L2 norm).
+
+    Mirrors `sentence_transformers` for this checkpoint exactly: BERT forward,
+    take token 0 of `last_hidden_state`, L2-normalize. Export + measured parity
+    and latency: `scripts/experiments/export_dense_encoder_onnx_int8.py`.
+    """
+
+    def __init__(self, onnx_dir: str, tokenizer_dir: str,
+                 intra_threads: int = 0, max_length: int = ONNX_MAX_LEN):
+        d = Path(onnx_dir)
+        model_file = d / "model_quantized.onnx"
+        if not model_file.exists():
+            model_file = d / "model.onnx"
+        if not model_file.exists():
+            raise FileNotFoundError(
+                f"no model_quantized.onnx / model.onnx in {d} — build it with "
+                "scripts/experiments/export_dense_encoder_onnx_int8.py")
+        import onnxruntime as ort
+        from transformers import AutoTokenizer
+
+        opts = ort.SessionOptions()
+        if intra_threads > 0:
+            opts.intra_op_num_threads = intra_threads
+            opts.inter_op_num_threads = 1
+        self.session = ort.InferenceSession(
+            str(model_file), opts, providers=["CPUExecutionProvider"])
+        self.inputs = {i.name for i in self.session.get_inputs()}
+        tok_dir = d if (d / "tokenizer.json").exists() else Path(tokenizer_dir)
+        self.tok = AutoTokenizer.from_pretrained(str(tok_dir))
+        self.max_length = max_length
+
+    def __call__(self, texts: list[str]) -> np.ndarray:
+        enc = self.tok(list(texts), padding=True, truncation=True,
+                       max_length=self.max_length, return_tensors="np")
+        feed = {k: v.astype(np.int64) for k, v in enc.items()
+                if k in self.inputs}
+        out = np.asarray(self.session.run(None, feed)[0], dtype=np.float32)
+        cls = out[:, 0, :] if out.ndim == 3 else out
+        norms = np.linalg.norm(cls, axis=1, keepdims=True)
+        return cls / np.maximum(norms, 1e-12)
+
+
+def make_onnx_encoder(model_path: str):
+    """Build the gated int8 ONNX encoder, or None when the gate is off.
+
+    `SFU_DENSE_ENCODER_ONNX` is a literal-`1` gate (default OFF). An enabled
+    gate whose export is unusable logs an error and returns None — the caller
+    falls back to torch, which is slower but semantically identical.
+    """
+    if os.environ.get("SFU_DENSE_ENCODER_ONNX", "0") != "1":
+        return None
+    repo_root = Path(__file__).resolve().parents[3]
+    onnx_dir = os.environ.get("SFU_DENSE_ENCODER_ONNX_PATH") or str(
+        repo_root / ONNX_DEFAULT_DIR)
+    try:
+        threads = int(os.environ.get("SFU_DENSE_ENCODER_ONNX_THREADS", "0"))
+    except ValueError:
+        threads = 0
+    try:
+        enc = OnnxDenseEncoder(onnx_dir, model_path, intra_threads=threads)
+    except Exception as exc:
+        logger.error("SFU_DENSE_ENCODER_ONNX=1 but %s is unusable (%s); "
+                     "falling back to the torch encoder", onnx_dir, exc)
+        return None
+    logger.info("dense warm cache: int8 ONNX encoder from %s", onnx_dir)
+    return enc
 
 
 class DenseWarmCache:
@@ -65,6 +156,10 @@ class DenseWarmCache:
         self._queue: queue.Queue = queue.Queue(maxsize=QUEUE_MAX_DOCS)
         self._worker: threading.Thread | None = None
         self._closed = False
+        self._ann = None
+        self._ann_n = 0
+        self._ann_min = _ann_threshold()
+        self._onnx_checked = False
         self.stats = {"enqueued": 0, "encoded": 0, "dropped": 0, "errors": 0}
 
         rows = self._db.execute(
@@ -77,6 +172,8 @@ class DenseWarmCache:
         if rows:
             logger.info("dense warm cache: restored %d docs from delta.sqlite",
                         self._n)
+        with self._lock:
+            self._ann_sync_locked()
 
 
     def enqueue(self, docs: list[dict]) -> None:
@@ -109,6 +206,9 @@ class DenseWarmCache:
                     self._worker.start()
 
     def _encode(self, texts: list[str]) -> np.ndarray:
+        if self._encoder is None and not self._onnx_checked:
+            self._onnx_checked = True
+            self._encoder = make_onnx_encoder(self.model_path)
         if self._encoder is not None:
             return np.asarray(self._encoder(texts), dtype=np.float32)
         from lib.opensearch_retriever import _get_dense_model
@@ -174,12 +274,45 @@ class DenseWarmCache:
         self._ids.append(doc_id)
         self._known.add(doc_id)
         self._n += 1
+        self._ann_sync_locked()
+
+    def _ann_sync_locked(self) -> None:
+        """Bring the mutable usearch delta index level with the RAM arrays.
+
+        No-op below `SFU_DENSE_DELTA_USEARCH_MIN` rows (0/unset = never, the
+        v1 brute-force behaviour byte-for-byte). Any usearch failure disables
+        the lever for the process: brute force stays correct, just slower.
+        """
+        if self._ann_min <= 0 or self._n < self._ann_min:
+            return
+        try:
+            if self._ann is None:
+                from usearch.index import Index
+                self._ann = Index(ndim=self.dim, dtype="b1",
+                                  metric="hamming",
+                                  expansion_add=ANN_EXPANSION_ADD,
+                                  expansion_search=ANN_EXPANSION_SEARCH)
+                self._ann_n = 0
+            if self._ann_n < self._n:
+                self._ann.add(
+                    np.arange(self._ann_n, self._n, dtype=np.uint64),
+                    self._codes[self._ann_n:self._n])
+                self._ann_n = self._n
+        except Exception as exc:
+            logger.warning("dense delta usearch index disabled (%s); "
+                           "falling back to brute force", exc)
+            self._ann, self._ann_n, self._ann_min = None, 0, 0
 
 
     def search(self, qbits: np.ndarray, q: np.ndarray,
                fetch: int) -> list[tuple[str, float]]:
-        """Brute-force Hamming over the delta + exact int8 rescore.
-        Scores are directly comparable with the seed leg's."""
+        """Hamming candidates over the delta + exact int8 rescore.
+
+        Candidates come from the RAM brute force (v1 default) or, above
+        `SFU_DENSE_DELTA_USEARCH_MIN`, from the mutable usearch b1 index with
+        `ANN_OVERFETCH`× over-fetch. Either way the returned scores are exact
+        int8 dot products, so they stay directly comparable with the seed leg's.
+        """
         with self._lock:
             n = self._n
             if n == 0:
@@ -187,11 +320,24 @@ class DenseWarmCache:
             codes = self._codes[:n]
             int8 = self._int8[:n]
             ids = list(self._ids)
-        dists = _POPCNT[np.bitwise_xor(codes, qbits.ravel())].sum(axis=1)
+            ann = self._ann if self._ann_n == n else None
         take = min(fetch, n)
-        cand = np.argpartition(dists, take - 1)[:take]
+        cand = None
+        if ann is not None:
+            try:
+                hits = ann.search(qbits.ravel(),
+                                  min(n, max(take, take * ANN_OVERFETCH)))
+                keys = np.asarray(hits.keys, dtype=np.int64).ravel()
+                if keys.size:
+                    cand = keys[keys < n]
+            except Exception as exc:
+                logger.warning("dense delta usearch search failed (%s); "
+                               "brute force for this query", exc)
+        if cand is None or cand.size == 0:
+            dists = _POPCNT[np.bitwise_xor(codes, qbits.ravel())].sum(axis=1)
+            cand = np.argpartition(dists, take - 1)[:take]
         scores = (int8[cand].astype(np.float32) / 127.0) @ q
-        order = np.argsort(-scores)
+        order = np.argsort(-scores)[:take]
         return [(ids[int(cand[i])], float(scores[i])) for i in order]
 
     def metadata_rows(self, ids: list[str]) -> dict[str, tuple]:
@@ -213,7 +359,9 @@ class DenseWarmCache:
 
     def info(self) -> dict:
         return {"docs": self._n, "max_docs": self.max_docs,
-                "queue": self._queue.qsize(), **self.stats}
+                "queue": self._queue.qsize(),
+                "delta_engine": "usearch" if self._ann is not None else "brute",
+                "delta_ann_min": self._ann_min, **self.stats}
 
     def close(self) -> None:
         self._closed = True

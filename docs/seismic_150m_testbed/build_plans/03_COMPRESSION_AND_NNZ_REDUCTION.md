@@ -1,6 +1,6 @@
 # Build Plan 03 — Forward-index compression (DotVByte) + source nnz reduction
 
-**Status:** DESIGN (created 2026-06-28, unbuilt). **Solves:** serving RAM/disk
+**Status:** DEFERRED 2026-09-25 (DESIGN, unbuilt since 2026-06-28) — DESIGN (created 2026-06-28, unbuilt). **Solves:** serving RAM/disk
 reliably; build RAM only *lossily*. **Adjunct, not a primary RAM escape** — read the
 honest framing before investing here.
 

@@ -1,6 +1,6 @@
 # 04 — What to borrow from Lucene (and what not to)
 
-**Status: DESIGN REFERENCE (2026-06-30).**
+**Status:** DEFERRED 2026-09-25 (DESIGN ONLY / UNMEASURED since 2026-06-30; no code was ever written) — **DESIGN REFERENCE (2026-06-30).**
 
 The LSM machinery this idea rides on is Lucene, feature-for-feature. We are *not*
 using Lucene (no-JVM thin client), so we re-implement the **design** over the

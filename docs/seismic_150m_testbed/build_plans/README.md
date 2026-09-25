@@ -1,5 +1,7 @@
 # SEISMIC 150M — Build Plans (RAM-escape engineering)
 
+**Status:** ACTIVE
+
 **Created 2026-06-28.** These are the *implementation* plans that came out of the
 2026-06-28 design session on "can we run a full-corpus SEISMIC leg on the 32 GB
 WSL2 box without the JVM." They are build/engineering plans, NOT new gate

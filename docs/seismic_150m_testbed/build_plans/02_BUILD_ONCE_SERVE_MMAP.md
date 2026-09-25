@@ -1,6 +1,6 @@
 # Build Plan 02 — Build-once on a bigger host, serve mmap on 32 GB
 
-**Status:** DESIGN (created 2026-06-28, unbuilt). **Solves:** the 150M build-RAM
+**Status:** DEFERRED 2026-09-25 (DESIGN, unbuilt since 2026-06-28) — DESIGN (created 2026-06-28, unbuilt). **Solves:** the 150M build-RAM
 wall as a **one-time** operation, with **no new code** and **no JVM**. This is the
 cheapest path to a measurable G6 if any ≥56 GB box is reachable.
 

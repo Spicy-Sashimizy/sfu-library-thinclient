@@ -1,5 +1,7 @@
 # 07 — M2 implementation results (MEASURED 2026-07-03)
 
+**Status:** DEFERRED 2026-09-25 (M2 measured but NOT promoted - it failed its pre-registered bar; M6-M10 pre-registered and unfrozen)
+
 **Verdict: M2 IMPLEMENTED, CORRECT, FASTER — but FAILS the pre-registered
 quality bar at n=100. Stays env-gated OFF (`SFU_SEISMIC_M2_INT6`), NOT
 promoted.** The n=40 pre-gate 0.99 was a small-n artifact, exactly as the

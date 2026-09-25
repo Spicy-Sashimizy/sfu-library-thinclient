@@ -1,5 +1,7 @@
 # 09 · Cross-Shard Signals & Mmap Page-Economics Audit
 
+**Status:** ACTIVE
+
 **Created 2026-07-02. Status: RESEARCH AUDIT + E1 MEASURED (2026-07-02).** The
 audit itself was read-only; **experiment E1 (§4) has since been RUN** on one
 150M mmap shard (single-shard micro-measurement, ≤100 queries, mmap load only —

@@ -1,5 +1,7 @@
 # 06 · Kernel page-reclaim internals — what actually decided tonight's numbers
 
+**Status:** ACTIVE
+
 Written 2026-07-14, answering the operator questions: *"what is the
 documentation around the kernel level page interactions? how is it 'learning'
 — isn't it either a binary choice on which pages are evicted and or governed

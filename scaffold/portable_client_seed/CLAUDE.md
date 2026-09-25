@@ -47,7 +47,7 @@ In the oracle repo (`sfu-library-thinclient`):
   + the installer delta list (Windows/mmap, CPU wheels, licensing, spool).
 - `docs/infrastructure/PORTABLE_DATA_SHIPPING_RESEARCH.md` — DECIDED:
   subset-prebuilt + OpenAlex live tail; per-shard chunked download.
-- WI-14 updater (`scripts/demo_dependability/portable_bundle_updater.py`) —
+- WI-14 updater (`scripts/archive/demo_dependability/portable_bundle_updater.py`) —
   the update contract this client implements natively.
 - `docs/seismic_150m_testbed/10_FORWARD_COMPRESSION_DESIGN.md` §7.7 — the
   portable-CPU gate history.

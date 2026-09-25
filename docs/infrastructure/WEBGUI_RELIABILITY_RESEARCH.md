@@ -1,5 +1,7 @@
 # Web GUI reliability — layered-redundancy research (RESEARCH ONLY)
 
+**Status:** ACTIVE
+
 **2026-07-17. Status: RESEARCH / DESIGN MAP — NOTHING BUILT.** Owner question:
 how do we make the web GUI "super reliable" with multiple levels of
 redundancy, given what we have? Researched online + mapped onto the actual
@@ -60,7 +62,7 @@ Playwright e2e sweep exists).
   [timeout/retry/circuit-breaker](https://dev.to/rafaeljcamara/downstream-resiliency-the-timeout-retry-and-circuit-breaker-patterns-2bej),
   [circuit breakers + retries](https://blog.habsi.net/building-resilient-microservices-with-circuit-breakers-and-retry-patterns/)
 - The in-repo measured facts this leans on: WI-9/10/11 verdicts
-  (`DEMO_DEPENDABILITY.md`), Q12 repeat-traffic skew
+  (`docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md`), Q12 repeat-traffic skew
   (`disk_streaming_research/`), the single-event-loop first-call block
   (`THIN_CLIENT_SWAP.md` §Web GUI).
 

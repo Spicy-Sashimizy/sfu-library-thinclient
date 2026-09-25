@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Small-machine levers PHASE-A' orchestrator — runs ON THE OCI SERVE BOX as root
-# (spike/smallmachine_levers/PREREGISTRATION.md sections 2-5: lever arms
+# (spike/archive/smallmachine_levers/PREREGISTRATION.md sections 2-5: lever arms
 # L0/L1/L3, calibration cells, bar N8 protocol pin).
 #
 # Differences from the Tier-2/3 phase-B orchestrator (t23b_host_orchestrator.sh):

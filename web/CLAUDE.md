@@ -17,6 +17,6 @@ horizontal overflow + no layout shift are hard bars.
 
 Search result paging (PAGE_SIZE 10, cap 5 pages, cumulative fetch + client
 merge — the federated path ignores `page`): the constraint is recorded in
-`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §GUI result paging. Editing
+`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §GUI result paging. Editing
 `web/lib/api.js` or `web/*.js` means rotating the `?v=duckN` token in all
 four HTML files.

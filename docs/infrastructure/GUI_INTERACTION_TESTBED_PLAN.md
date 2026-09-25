@@ -1,5 +1,7 @@
 # GUI full-interaction testbed — plan for a future GLM wave (WI-16)
 
+**Status:** ACTIVE
+
 > **WAVE LAUNCHED 2026-07-17 ~18:20Z** as deployprep wave 6 (drive prompt
 > `data/eval_results/_deployprep6_drive_prompt.md`). Pre-launch host audit:
 > Chromium was MISSING in-container (wave-5 finding) — fixed 18:07Z
