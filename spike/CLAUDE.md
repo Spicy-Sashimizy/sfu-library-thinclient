@@ -8,6 +8,9 @@
 - `archive/smallmachine_levers/` — CLOSED DEAD 2026-09-25 (cloud access
   ended; the OCI E5 box its bars were judged on is gone). Evidence only;
   never pending.
+- `archive/block_prefetch/` — lever #4 term-prefix WILLNEED prefetch module +
+  unit tests, CLOSED MEASURED 2026-09-25 (cold −4.4% vs ≥ 20% bar;
+  `docs/SPECULATIVE_RETRIEVAL_UPGRADES.md` §4 row 4). Evidence only; never pending.
 - `archive/mmap_bmp/` — the killed BMP spike (STOPPED 2026-06-26, evidence
   for docs/archive/sparse_engine_project decision record). Do not resurrect or
   delete.

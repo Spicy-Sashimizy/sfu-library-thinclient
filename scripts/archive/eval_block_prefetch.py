@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Lever #4 (term-prefix block prefetch while typing) — A/B harness.
 
-Status when written (2026-09-25): NOT RUN. The host page cache was reserved by
-another agent's measurement, so this script was written and syntax-checked
-only; its results are PENDING. Pre-registration is
-`docs/SPECULATIVE_RETRIEVAL_UPGRADES.md` §4 row 4.
+Status: CLOSED MEASURED 2026-09-25. Run once (shard 0, n=40, cap 32 MiB,
+lead 300 ms): cold traverse p50 1658.9 -> 1590.3 ms (paired median -4.4%,
+bar was >= 20%), warm p50 27.9 -> 35.6 ms (worse on 38/40), parity 40/40.
+Results: data/eval_results/block_prefetch_ab_2026-09-25.json. Pre-registration
+and verdict: `docs/SPECULATIVE_RETRIEVAL_UPGRADES.md` §4 row 4. Moved from
+scripts/experiments/; the module it drives lives in spike/archive/block_prefetch/.
 
 What it measures, per query, on the served SEISMIC mmap shards:
 
@@ -38,7 +40,7 @@ A global `drop_caches` is never used.
 
 Run later (only when the host page cache is free for this measurement):
 
-    .venv/bin/python3 scripts/experiments/eval_block_prefetch.py \
+    .venv/bin/python3 scripts/archive/eval_block_prefetch.py \
         --confirm-host-free --shards 0 --n 40 \
         --out data/eval_results/block_prefetch_ab_<date>.json
 
@@ -59,7 +61,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(REPO / "scripts" / "experiments"))
+sys.path.insert(0, str(REPO / "spike" / "archive" / "block_prefetch"))
 
 import eval_ordinals_cliff as cliff  # ladder: evict / resident_bytes / wait_quiet / Balloon
 
@@ -249,7 +252,7 @@ def main() -> None:
     os.environ["SFU_BLOCK_PREFETCH"] = "1"
     if args.max_mb is not None:
         os.environ["SFU_BLOCK_PREFETCH_MAX_MB"] = str(args.max_mb)
-    from lib.thinclient import block_prefetch as bp
+    import block_prefetch as bp
 
     backend = build_backend(args.manifest, args.shards, args.federation, args.stage_dir)
     dirs = [d for d in backend._shard_mmap_dirs if d]
@@ -261,7 +264,7 @@ def main() -> None:
     report = {
         "what": "lever #4 term-prefix block prefetch — cold/warm A/B",
         "date": time.strftime("%Y-%m-%d"),
-        "script": "scripts/experiments/eval_block_prefetch.py",
+        "script": "scripts/archive/eval_block_prefetch.py",
         "pre_registration": "docs/SPECULATIVE_RETRIEVAL_UPGRADES.md §4 row 4",
         "manifest": args.manifest, "stage_dir": args.stage_dir, "shards": args.shards, "federation": args.federation,
         "shard_dirs": dirs, "layouts_loaded": len(layouts),

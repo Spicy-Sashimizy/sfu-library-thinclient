@@ -1,5 +1,9 @@
 """Term-prefix block prefetch while typing (speculative-retrieval lever #4).
 
+CLOSED MEASURED 2026-09-25 (archived from src/lib/thinclient/; nothing live
+imports it): cold traverse -4.4% paired median vs a >= 20% bar, warm arm
+slower. `docs/SPECULATIVE_RETRIEVAL_UPGRADES.md` §4 row 4.
+
 Draft = the SPLADE terms of the text typed so far; speculated work = a kernel
 read-ahead hint (`madvise(MADV_WILLNEED)` on an already-mapped range, else
 `posix_fadvise(POSIX_FADV_WILLNEED)` on the file) over those terms' posting

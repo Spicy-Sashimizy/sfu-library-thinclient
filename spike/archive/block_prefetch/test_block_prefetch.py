@@ -1,10 +1,11 @@
-"""Unit tests for `lib.thinclient.block_prefetch` (speculative lever #4).
+"""Unit tests for the archived `block_prefetch` module (speculative lever #4,
+CLOSED MEASURED 2026-09-25; moved from src/lib/thinclient/ and src/tests/).
 
 Synthetic `.mmap/` shard dirs only (manifest.json + token_to_id_map.bin +
 a posting_lists.bin of exactly the walked size); no model, no real index,
 no page-cache side effects (advise calls are monkeypatched).
 
-Run:  .venv/bin/python3 -m pytest src/tests/test_block_prefetch.py -q
+Run:  .venv/bin/python3 -m pytest spike/archive/block_prefetch/test_block_prefetch.py -q
 """
 
 import json
@@ -16,9 +17,10 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib.thinclient import block_prefetch as bp  # noqa: E402
+import block_prefetch as bp  # noqa: E402
 from lib.thinclient.sharded_seismic_backend import _postings_nav_runs  # noqa: E402
 
 TOKENS = ["neural", "network", "protein", "folding", "climate", "policy", "ocean", "salt"]

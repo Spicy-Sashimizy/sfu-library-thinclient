@@ -10,7 +10,7 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 ## Parsing quirks (read first)
 
 - **Literal-`1`-only gates**: `SFU_DENSE_LEG`, `SFU_ABSTRACTS_PREFAULT`,
-  `SFU_CE_ONNX`, `SFU_DENSE_ENCODER_ONNX`, `SFU_BLOCK_PREFETCH`,
+  `SFU_CE_ONNX`, `SFU_DENSE_ENCODER_ONNX`,
   `SFU_SEARCH_SPECULATIVE_RERANK` — ONLY the literal string `1`
   enables; any other value (including typos) leaves the default OFF.
 - **Tri-state**: `SFU_SEISMIC_MLOCK_FLOOR` — `1` = rescoped navigation
@@ -51,7 +51,7 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_META_STAGE_FORCE=1` | off | stage even off a local FS (tests) |
 | `SFU_META_STAGE_VERIFY` | `fingerprint` | `size` \| `fingerprint` (size + head/tail 64 KiB sha256) \| `sha256` |
 | `SFU_ABSTRACTS_PREFAULT` | OFF (J1: costs load time; 0.919× cold-start regression otherwise absorbed) | literal `1` prefaults the 421 MB flat locator |
-| `SFU_BLOCK_PREFETCH` / `SFU_BLOCK_PREFETCH_MAX_MB` | OFF / `32` | literal `1` enables lever #4 term-prefix prefetch (`lib/thinclient/block_prefetch.py`): WILLNEED advice over the typed prefix's posting lists in each shard's `posting_lists.bin`, at most `MAX_MB` MiB per call (non-numeric or ≤ 0 ⇒ 32), one in flight, extra calls dropped; no-op unless `SFU_SEISMIC_LOAD_MODE=mmap`. Not wired to any endpoint yet. IMPLEMENTED 2026-09-25, EFFICACY UNMEASURED (`scripts/experiments/eval_block_prefetch.py`, run PENDING) |
+| ~~`SFU_BLOCK_PREFETCH` / `SFU_BLOCK_PREFETCH_MAX_MB`~~ | REMOVED 2026-09-25 | lever #4 term-prefix WILLNEED prefetch, **CLOSED MEASURED 2026-09-25**: cold traverse p50 1658.9 → 1590.3 ms (paired median −4.4%, bar ≥ 20%), RAM-resident arm slower (27.9 → 35.6 ms). No live code reads either variable; the module is archived at `spike/archive/block_prefetch/block_prefetch.py` (harness `scripts/archive/eval_block_prefetch.py`, results `data/eval_results/block_prefetch_ab_2026-09-25.json`). Setting them does nothing |
 
 ## Disk-streaming pin tier (all default OFF = byte-identical; kill-switch discipline)
 
@@ -71,8 +71,8 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_RESULT_CACHE` | staging-on | WI-17 read-through cache; `0` = the one-env rollback. Tunables: `_TTL` (s), `_MAX_SIZE`, `_MAX_MEM_MB` |
 | `SFU_CACHE_PRESEED` | on (no-op when cache off) | WI-17b post-warmup primer |
 | `SFU_SEARCH_SPECULATE` | **OFF** (owner flips defaults, not builds) | WI-18 keystroke speculation; `SFU_SPECULATE_MIN_RATIO` (0.35), `SFU_SPECULATE_LITERAL` (OFF) |
-| `SFU_SEARCH_DRAFT_STREAM` | **OFF** (IMPLEMENTED 2026-09-25, EFFICACY UNMEASURED) | lever #2 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: truthy (`1`/`true`/`yes`/`on`) enables `POST /api/search_stream` (SSE BM25F draft → final) and advertises `search_draft_stream: true` on `/health`, which switches the GUI's first-page search to the stream. Forced off (404, `false`) while `SFU_SEQUENTIAL_MODE` is on. Off ⇒ route 404s, GUI uses `/api/search` unchanged |
-| `SFU_SEARCH_SPECULATIVE_RERANK` | **OFF** (IMPLEMENTED 2026-09-25, PARITY MEASURED 120/120 2026-09-25) | lever #1 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: literal `1` starts a background draft of the rerank pipeline on the BM25F leg's pool while the SPLADE leg runs (`lib/speculative_rerank.py`); the real `_maybe_rerank` reuses the drafted stage-1/CE score of every candidate that is also in the fused pool and scores only the rest; byte-identical to OFF because both paths use fixed-shape scoring (`CODE_INVARIANTS.md` §reranker "Fixed-shape scoring", 2026-09-25). Off/absent ⇒ no thread, no context, pipeline unchanged. Counters: `speculative_rerank.counters()` (module dict, not yet on `/health`) |
+| `SFU_SEARCH_DRAFT_STREAM` | **OFF** (IMPLEMENTED 2026-09-25; stays OFF: measurement (a) overlap@10 = 0.433 < ~0.7 bar, 2026-09-25, DEFERRED) | lever #2 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: truthy (`1`/`true`/`yes`/`on`) enables `POST /api/search_stream` (SSE BM25F draft → final) and advertises `search_draft_stream: true` on `/health`, which switches the GUI's first-page search to the stream. Forced off (404, `false`) while `SFU_SEQUENTIAL_MODE` is on. Off ⇒ route 404s, GUI uses `/api/search` unchanged |
+| `SFU_SEARCH_SPECULATIVE_RERANK` | **OFF** (IMPLEMENTED 2026-09-25, PARITY MEASURED 360/360; multi-pass A/B 2026-09-25: −80 ms/miss attributable < 128 ms bar, total p50 not reduced, stays OFF) | lever #1 of `SPECULATIVE_RETRIEVAL_UPGRADES.md`: literal `1` starts a background draft of the rerank pipeline on the BM25F leg's pool while the SPLADE leg runs (`lib/speculative_rerank.py`); the real `_maybe_rerank` reuses the drafted stage-1/CE score of every candidate that is also in the fused pool and scores only the rest; byte-identical to OFF because both paths use fixed-shape scoring (`CODE_INVARIANTS.md` §reranker "Fixed-shape scoring", 2026-09-25). Off/absent ⇒ no thread, no context, pipeline unchanged. Counters: `speculative_rerank.counters()` (module dict, not yet on `/health`) |
 | `SFU_METRICS_LOG_PATH` | unset (off) | per-tool-call JSONL metrics log (both transports), e.g. `logs/mcp_metrics.jsonl`. Line: `{ts, tool, latency_ms, success, server_version, session, ids}` — `session`/`ids` added 2026-09-25 (`THIN_CLIENT_SWAP.md` §Serving swap; `CODE_INVARIANTS.md` §tools.py "Metrics log ids/session"). Write failures swallowed |
 | `SFU_SERVE_QUERY_LOG` | staging-on | WI-2 query log; `_RAW=1` captures raw text (OFF: hash-only), `_MAX_BYTES` rotation |
 | `SFU_SEQUENTIAL_MODE` | absent | set by the Windows START.bat; advertises on /health so the GUI queues searches |
