@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 
-**Last updated:** 2026-06-18  
+**Last updated:** 2026-09-27  
 **Context:** Explains why the citation-count benchmark was replaced and how the LLM-judged method works; plus the 150M thin-client-vs-OpenSearch parity method and measured results (see last section).
 
 ---
@@ -48,7 +48,7 @@ The most extreme case: `Canadian documentary film Indigenous representation` sco
 **Judge backends (`--judge`):**
 - `claude` (default) — `claude-haiku-4-5-20251001` via `claude -p` subprocess (no API key needed — uses Claude Code session)
 - `ollama` — local Ollama REST, free (`--ollama-model`, `--ollama-url`)
-- `neuralwatt` (added 2026-06-29) — OpenAI-compatible `POST {NEURALWATT_BASE_URL}/chat/completions`, reads `NEURALWATT_API_KEY` / `NEURALWATT_BASE_URL` / `NEURALWATT_MODEL` from `.env`. Use a `-flex` model id (e.g. `kimi-k2.7-code-flex`) for NeuralWatt's discounted async tier. **`NEURALWATT_MAX_TOKENS` default = 2048** (was 512 — Kimi is a reasoning model; the 512 budget was exhausted by reasoning → empty `content`); raise it for larger batches. `_call_neuralwatt` raises a retryable error on null/empty content (with `finish_reason` + max_tokens hint) rather than crashing. Note: NeuralWatt is OpenAI-compatible ONLY (the Anthropic Messages API `/v1/messages` returns HTTP 403), so the `claude` CLI cannot be pointed at it — this backend is for re-baking `llm_judge_cache.json` only, not for routing the CLI. **Re-bake / agreement study 2026-06-29** (`scripts/seismic_testbed/kimi_vs_haiku_rebake.py`): re-judged a stratified 10-query / 343-pair sample with `kimi-k2.7-code-flex` against the existing Haiku cache (read-only; never writes it). **Kimi ≠ Haiku regime:** exact agreement only 50.1%, within-1 75.8%; Kimi mean grade 1.74 vs Haiku 2.01 (Kimi ~0.27 stricter); 35/181 (19%) of Haiku-grade-3 docs Kimi marked grade-0 → a full Kimi re-judge would shift NDCG, so it is NOT a drop-in swap for the Haiku cache G6 commits against. Result `data/eval_results/kimi_vs_haiku_rebake_20260629.json`. **Wired to SEISMIC 2026-06-30** (`scripts/seismic_testbed/seismic_quality_eval.py`): routes the neuralwatt/Kimi judge onto the SEISMIC 150M mmap retrieval path (not OpenSearch) + OpenAlex metadata, with an **isolated Kimi cache** (`seismic_kimi_judge_cache.json`; the Haiku `llm_judge_cache.json` is never touched). First result (120 q, 100% metadata coverage): **SEISMIC NDCG@10 0.944 / MRR@10 0.996 / P@10(≥2) 0.773** (`seismic_quality_kimi_20260630_084905.json`; see `seismic_150m_testbed/06_FINDINGS.md` 2026-06-30 row). Kimi-judged → NOT directly comparable to the Haiku baseline numbers below.  
+- `neuralwatt` (added 2026-06-29) — OpenAI-compatible `POST {NEURALWATT_BASE_URL}/chat/completions`, reads `NEURALWATT_API_KEY` / `NEURALWATT_BASE_URL` / `NEURALWATT_MODEL` from `.env`. Use a `-flex` model id (e.g. `kimi-k2.7-code-flex`) for NeuralWatt's discounted async tier. **`NEURALWATT_MAX_TOKENS` default = 2048** (was 512 — Kimi is a reasoning model; the 512 budget was exhausted by reasoning → empty `content`); raise it for larger batches. `_call_neuralwatt` raises a retryable error on null/empty content (with `finish_reason` + max_tokens hint) rather than crashing. Note: NeuralWatt is OpenAI-compatible ONLY (the Anthropic Messages API `/v1/messages` returns HTTP 403), so the `claude` CLI cannot be pointed at it — this backend is for re-baking `llm_judge_cache.json` only, not for routing the CLI. **Re-bake / agreement study 2026-06-29** (`scripts/seismic_testbed/kimi_vs_haiku_rebake.py`): re-judged a stratified 10-query / 343-pair sample with `kimi-k2.7-code-flex` against the existing Haiku cache (read-only; never writes it). **Kimi ≠ Haiku regime:** exact agreement only 50.1%, within-1 75.8%; Kimi mean grade 1.74 vs Haiku 2.01 (Kimi ~0.27 stricter); 35/181 (19%) of Haiku-grade-3 docs Kimi marked grade-0 → a full Kimi re-judge would shift NDCG, so it is NOT a drop-in swap for the Haiku cache G6 commits against. Result `data/eval_results/kimi_vs_haiku_rebake_20260629.json`. **Wired to SEISMIC 2026-06-30** (`scripts/seismic_testbed/seismic_quality_eval.py`): routes the neuralwatt/Kimi judge onto the SEISMIC 150M mmap retrieval path (not OpenSearch) + OpenAlex metadata, with an **isolated Kimi cache** (`seismic_kimi_judge_cache.json`; the Haiku `llm_judge_cache.json` is never touched). First result (120 q, 100% metadata coverage): **SEISMIC NDCG@10 0.944 / MRR@10 0.996 / P@10(≥2) 0.773** (`seismic_quality_kimi_20260630_084905.json`; see `seismic_150m_testbed/06_FINDINGS.md` 2026-06-30 row). Kimi-judged → NOT directly comparable to the Haiku baseline numbers below. **Status note 2026-09-27:** 0.944 (and the matched n=120 0.9262) scored IDs from the 2026-06-29 f16 build, not the shards served today; the served E8 dv-v2 number is in §"Served E8 dv-v2 SPLADE leg — absolute NDCG@10" at the end of this doc.  
 **Results:** `data/eval_results/benchmark_llm_judge_final.json`  
 **Report:** `data/eval_results/benchmark_report_final.md`
 
@@ -255,3 +255,72 @@ Canonical ledger: `data/eval_results/METRICS_CATALOG.json`.
 **Result files:** `data/eval_results/METRICS_CATALOG.json`,
 `presentation_metrics_<date>.json`. **Rendered:** `docs/archive/bmp_decommission_plan/
 {PRESENTATION_METRICS.md, METRICS_CATALOG.md}`. **Date:** 2026-06-24.
+
+## Served E8 dv-v2 SPLADE leg — absolute NDCG@10 (MEASURED 2026-09-27)
+
+**WHAT:** the first absolute quality number for the SEISMIC shard set that is
+actually served today — 8 E8 dv-v2 mmap shards
+(`data/seismic_150m/index/plan01/global_shard{0..7}of8.dotvbyte.e5.v2.mmap`,
+manifest `data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json`, the code
+default). Every earlier SEISMIC-leg number (0.944 and 0.9262, 2026-06-30) scored
+IDs retrieved by the 2026-06-29 f16 build, before the dv → E5 → E8 dv-v2
+promotions. **Correction of a recurring misreading:** those 2026-06-30 SEISMIC-leg
+numbers were **Kimi**-judged, not Haiku; no Haiku SEISMIC-leg number existed
+before this run.
+
+**Protocol:** the same 120 parity queries as the 2026-06-30 matched rejudge
+(`seismic_g6_rrf_fullcorpus_n120_20260629.json`, judge-cache join via its
+`judge_key`), served-leg retrieval replicated from `Retriever._splade_leg_seismic`
+(no filters, leg top_k 50, k′/query_cut env-unset → backend defaults, heap_factor
+0.8, `ParallelSeismicBackend` mmap), scored on the top-10. NDCG ideal is within
+the leg's own top-10 (no cross-method pool) — identical to
+`seismic_quality_eval.py` / `rejudge_seismic_leg_n120.py`. Paired arm: the
+2026-06-29 build's stored `seismic_top10` for the same queries, judged in the same
+regime, so the paired Δ isolates the shard-set change. Both judges were run:
+
+| Judge | Arm | NDCG@10 | MRR@10 | P@10(≥2) | mean grade | judged-pair coverage |
+|---|---|---|---|---|---|---|
+| Haiku 4.5 (`claude -p`) | **served E8 dv-v2** | **0.9426** | 0.9792 | 0.8525 | 2.412 | 1200/1200 |
+| Haiku 4.5 | 2026-06-29 build | 0.9438 | 0.9792 | 0.8500 | 2.407 | 1200/1200 |
+| Kimi (`kimi-k2.7-code-flex`) | **served E8 dv-v2** | **0.9249** | 0.9833 | 0.7625 | 2.110 | 1200/1200 |
+| Kimi | 2026-06-29 build (reproduces 0.9262 exactly) | 0.9262 | 0.9833 | 0.7592 | 2.105 | 1200/1200 |
+
+**Paired Δ (served − 2026-06-29 build, n=120):** Haiku **−0.0012** (SEM 0.0005,
+95% CI −0.0023..−0.0001; served ≥ old on 106/120, worse on 14); Kimi **−0.0013**
+(SEM 0.0007, CI −0.0026..−0.0000; ≥ on 109/120, worse on 11). The Kimi pairing
+against the stored per-query grades of `rejudge_kimi_seismic_n120_20260630_2137.json`
+gives the identical Δ. Retrieval drift: mean overlap@10 vs the 2026-06-29 IDs
+**0.9858**, exact top-10 order on 68/120. **Verdict:** the served leg is
+quality-equivalent to the build the G6 PASS was measured on — a statistically
+detectable but ~0.1-point NDCG cost of the dv/E5/E8 compression, consistent with
+the dv-v2 overlap@10 vs f16 of ~0.9955; the G6 non-inferiority margin over Qdrant
+(+0.0197 Kimi) is not consumed.
+
+**New judgments:** Haiku 118 CLI calls, 692 pair-judgments → **594 new unique
+(query, doc) cache entries** (the 80 NL parity queries share judge keys with the
+40 keyword queries, so concurrent rows occasionally judged the same key; last
+write wins, one grade per key), 525 pair-visits were cache hits, 0 failed calls;
+Kimi 12 new pairs (12 calls). **Cache regime:** the canonical caches were NOT
+modified — `llm_judge_cache.json` (Haiku, 4034 entries) and
+`seismic_kimi_judge_cache.json` were read-only seeds; new judgments went to
+isolated overlays `data/eval_results/seismic_haiku_judge_overlay.json` (594) and
+`seismic_kimi_judge_overlay.json` (12). Merge them into the canonical caches
+deliberately if later runs should reuse them.
+
+**Comparability caveats:** (1) the Haiku 0.9426 is comparable to other Haiku
+numbers only under the same within-own-top-10 NDCG definition — it is NOT
+comparable to the pooled-ideal Haiku numbers in `benchmark_llm_judge_final.json`
+(SPLADE 0.6534) or the RRF-system G6/A1 numbers (0.505–0.5378); (2) Kimi numbers
+are not comparable to Haiku numbers (Kimi ~0.27 grade stricter, agreement study
+above); (3) OpenAlex metadata coverage was 853/892 unique ids today (vs 877/877 on
+2026-06-30): 39 ids now lack a title/abstract in OpenAlex (57 served / 58 old-arm
+pairs), newly judged ones from ID only. This is symmetric across arms, so the
+paired Δ is unaffected; the absolute numbers may be marginally understated.
+
+**Script:** `scripts/seismic_testbed/served_leg_quality_rejudge.py` (`retrieve`
+under `flock /tmp/sfu_latency_measure.lock`, 323 s for 120 queries; `judge`
+outside the lock). **Result files:**
+`data/eval_results/seismic_quality_haiku_e8dvv2_2026-09-27.json` (Haiku, headline),
+`seismic_quality_kimi_e8dvv2_2026-09-27.json` (Kimi),
+`seismic_served_e8dvv2_leg_top50_2026-09-27.json` (retrieval dump, top-50).
+**Date:** 2026-09-27.

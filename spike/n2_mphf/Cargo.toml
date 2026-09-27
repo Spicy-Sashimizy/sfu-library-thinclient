@@ -1,0 +1,19 @@
+[package]
+name = "n2_mphf"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+ptr_hash = { version = "=2.1.1", features = ["epserde"] }
+epserde = "0.13"
+memmap2 = "0.9"
+libc = "0.2"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
+rayon = "1"
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = "thin"
+codegen-units = 1

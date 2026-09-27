@@ -85,7 +85,7 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_SPLADE_MODEL_PATH` | bert-FUSED local export (D2, 2026-07-09) | bare HF hub ids don't work air-gapped |
 | `SFU_EMBEDDING_MODEL_PATH` | repo-relative v5 | must match LambdaMART training checkpoint (parity) |
 | `SFU_CE_MODEL_PATH` | v1 (base-flip DECISION PENDING; base measured +0.0165 better 2026-08-19) | torch CE checkpoint |
-| `SFU_CE_ONNX` | OFF | literal `1`: int8 ONNX CE — slower at serve shape (52 vs 11.8 ms batch-20); single-stream fallback only |
+| `SFU_CE_ONNX` | OFF | literal `1`: int8 ONNX CE — slower at serve shape with CUDA (52 vs 11.8 ms batch-20); single-stream fallback only. On a CPU-only host (CUDA absent, 2026-09-27) it is faster than the torch CE (CE stage p50 219 vs 337 ms) but NOT ranking-equivalent: top-10 order changes on 108/120 topics vs torch v1 (`cpu_only_serve_path_2026-09-27.json`; `THIN_CLIENT_SWAP.md` §Rerank) |
 | `SFU_ORT_INTRA_THREADS` | small | keep tiny/non-spinning with the TRT EP (full-width pool starved the GPU 3.5k→960 docs/s) |
 | `SFU_SEISMIC_M2_INT6` | OFF | M2 integer-dot kernel (NOT promoted — gate a failed at n=100) |
 | `SFU_DENSE_ENCODER_ONNX` | OFF | literal `1`: int8 ONNX v5 bi-encoder for the dense warm cache's background doc encoding. **Fails OPEN** — an enabled gate with an unusable export logs an ERROR and falls back to torch (same embeddings, slower). Inert while `SFU_DENSE_LEG` is off |

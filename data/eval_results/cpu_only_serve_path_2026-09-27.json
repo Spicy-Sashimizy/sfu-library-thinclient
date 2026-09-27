@@ -1,0 +1,2258 @@
+{
+ "what": "Portable stack \u00a7(d) row 6: served search path (router LOCAL_RRF -> _cache_works -> _maybe_rerank: embed rerank + cross-encoder) end-to-end with CUDA absent, both encoders on CPU, vs the GPU serving defaults; int8 ONNX CE opt-in as a third arm.",
+ "date": "2026-09-27",
+ "script": "scripts/experiments/eval_cpu_only_serve_path.py",
+ "topics_file": "data/eval_results/dense_ablation_qrels_20260817.json",
+ "query_field": "natural",
+ "n_topics": 120,
+ "arms": {
+  "gpu": {},
+  "cpu": {
+   "CUDA_VISIBLE_DEVICES": ""
+  },
+  "cpu_onnx_ce": {
+   "CUDA_VISIBLE_DEVICES": "",
+   "SFU_CE_ONNX": "1"
+  },
+  "cpu_wheels": {
+   "CUDA_VISIBLE_DEVICES": ""
+  }
+ },
+ "cpu_venv": "/tmp/claude-1000/cpu_venv/bin/python",
+ "round_orders": [
+  [
+   "gpu",
+   "cpu",
+   "cpu_onnx_ce",
+   "cpu_wheels"
+  ],
+  [
+   "cpu",
+   "cpu_onnx_ce",
+   "cpu_wheels",
+   "gpu"
+  ]
+ ],
+ "rounds": 2,
+ "lock": "/tmp/sfu_latency_measure.lock",
+ "lock_wait_s_per_round": [
+  4335.1,
+  67.9,
+  45.2
+ ],
+ "cpu_arm_serves": true,
+ "pooled": {
+  "gpu": {
+   "n_passes": 2,
+   "stages": {
+    "total_ms": {
+     "n": 240,
+     "p50": 4965.5,
+     "p95": 7170.0,
+     "mean": 4984.1
+    },
+    "retrieval_ms": {
+     "n": 240,
+     "p50": 4618.2,
+     "p95": 6827.6,
+     "mean": 4698.1
+    },
+    "splade_encode_ms": {
+     "n": 240,
+     "p50": 41.9,
+     "p95": 76.7,
+     "mean": 58.3
+    },
+    "seismic_traverse_ms": {
+     "n": 240,
+     "p50": 1515.9,
+     "p95": 2704.3,
+     "mean": 1601.1
+    },
+    "splade_leg_ms": {
+     "n": 240,
+     "p50": 1550.6,
+     "p95": 2951.2,
+     "mean": 1659.6
+    },
+    "bm25f_leg_ms": {
+     "n": 240,
+     "p50": 2807.2,
+     "p95": 4541.5,
+     "mean": 2906.9
+    },
+    "hydrate_ms": {
+     "n": 240,
+     "p50": 127.1,
+     "p95": 176.3,
+     "mean": 131.1
+    },
+    "maybe_rerank_ms": {
+     "n": 240,
+     "p50": 285.0,
+     "p95": 365.6,
+     "mean": 285.5
+    },
+    "stage1_ms": {
+     "n": 240,
+     "p50": 232.5,
+     "p95": 285.8,
+     "mean": 227.0
+    },
+    "stage1_embed_ms": {
+     "n": 240,
+     "p50": 232.2,
+     "p95": 285.2,
+     "mean": 226.7
+    },
+    "ce_ms": {
+     "n": 240,
+     "p50": 56.3,
+     "p95": 101.3,
+     "mean": 57.6
+    }
+   },
+   "peak_rss_mb_max": 12620,
+   "peak_rss_anon_mb_sampled_max": 1582,
+   "import_to_ready_s": [
+    121.08,
+    114.2
+   ],
+   "warm_queries_s": [
+    100.49,
+    94.65
+   ]
+  },
+  "cpu": {
+   "n_passes": 2,
+   "stages": {
+    "total_ms": {
+     "n": 240,
+     "p50": 5789.4,
+     "p95": 7923.4,
+     "mean": 5858.9
+    },
+    "retrieval_ms": {
+     "n": 240,
+     "p50": 4677.2,
+     "p95": 6766.1,
+     "mean": 4775.8
+    },
+    "splade_encode_ms": {
+     "n": 240,
+     "p50": 44.5,
+     "p95": 108.6,
+     "mean": 73.8
+    },
+    "seismic_traverse_ms": {
+     "n": 240,
+     "p50": 1651.4,
+     "p95": 2943.7,
+     "mean": 1675.4
+    },
+    "splade_leg_ms": {
+     "n": 240,
+     "p50": 1703.4,
+     "p95": 3026.3,
+     "mean": 1749.5
+    },
+    "bm25f_leg_ms": {
+     "n": 240,
+     "p50": 2833.0,
+     "p95": 4433.8,
+     "mean": 2891.8
+    },
+    "hydrate_ms": {
+     "n": 240,
+     "p50": 128.3,
+     "p95": 174.6,
+     "mean": 134.0
+    },
+    "maybe_rerank_ms": {
+     "n": 240,
+     "p50": 1058.5,
+     "p95": 1199.6,
+     "mean": 1082.6
+    },
+    "stage1_ms": {
+     "n": 240,
+     "p50": 721.2,
+     "p95": 840.9,
+     "mean": 740.9
+    },
+    "stage1_embed_ms": {
+     "n": 240,
+     "p50": 721.0,
+     "p95": 840.7,
+     "mean": 740.5
+    },
+    "ce_ms": {
+     "n": 240,
+     "p50": 336.6,
+     "p95": 378.6,
+     "mean": 340.7
+    }
+   },
+   "peak_rss_mb_max": 12830,
+   "peak_rss_anon_mb_sampled_max": 1424,
+   "import_to_ready_s": [
+    117.02,
+    117.8
+   ],
+   "warm_queries_s": [
+    97.36,
+    97.59
+   ]
+  },
+  "cpu_onnx_ce": {
+   "n_passes": 2,
+   "stages": {
+    "total_ms": {
+     "n": 240,
+     "p50": 5730.1,
+     "p95": 7740.7,
+     "mean": 5780.8
+    },
+    "retrieval_ms": {
+     "n": 240,
+     "p50": 4669.6,
+     "p95": 6703.5,
+     "mean": 4776.5
+    },
+    "splade_encode_ms": {
+     "n": 240,
+     "p50": 42.7,
+     "p95": 78.9,
+     "mean": 59.2
+    },
+    "seismic_traverse_ms": {
+     "n": 240,
+     "p50": 1605.7,
+     "p95": 2737.2,
+     "mean": 1644.8
+    },
+    "splade_leg_ms": {
+     "n": 240,
+     "p50": 1702.9,
+     "p95": 2795.7,
+     "mean": 1704.2
+    },
+    "bm25f_leg_ms": {
+     "n": 240,
+     "p50": 2845.5,
+     "p95": 4672.6,
+     "mean": 2942.4
+    },
+    "hydrate_ms": {
+     "n": 240,
+     "p50": 124.4,
+     "p95": 167.7,
+     "mean": 129.4
+    },
+    "maybe_rerank_ms": {
+     "n": 240,
+     "p50": 960.4,
+     "p95": 1205.2,
+     "mean": 1003.8
+    },
+    "stage1_ms": {
+     "n": 240,
+     "p50": 728.9,
+     "p95": 829.7,
+     "mean": 745.1
+    },
+    "stage1_embed_ms": {
+     "n": 240,
+     "p50": 728.7,
+     "p95": 829.5,
+     "mean": 744.7
+    },
+    "ce_ms": {
+     "n": 240,
+     "p50": 218.5,
+     "p95": 364.3,
+     "mean": 257.8
+    }
+   },
+   "peak_rss_mb_max": 13076,
+   "peak_rss_anon_mb_sampled_max": 1584,
+   "import_to_ready_s": [
+    113.84,
+    114.85
+   ],
+   "warm_queries_s": [
+    94.11,
+    95.46
+   ]
+  },
+  "cpu_wheels": {
+   "n_passes": 2,
+   "stages": {
+    "total_ms": {
+     "n": 240,
+     "p50": 5742.7,
+     "p95": 7891.2,
+     "mean": 5819.2
+    },
+    "retrieval_ms": {
+     "n": 240,
+     "p50": 4645.3,
+     "p95": 6688.2,
+     "mean": 4746.0
+    },
+    "splade_encode_ms": {
+     "n": 240,
+     "p50": 42.0,
+     "p95": 89.0,
+     "mean": 59.8
+    },
+    "seismic_traverse_ms": {
+     "n": 240,
+     "p50": 1569.2,
+     "p95": 2623.6,
+     "mean": 1616.0
+    },
+    "splade_leg_ms": {
+     "n": 240,
+     "p50": 1606.5,
+     "p95": 2662.3,
+     "mean": 1676.0
+    },
+    "bm25f_leg_ms": {
+     "n": 240,
+     "p50": 2849.2,
+     "p95": 4540.9,
+     "mean": 2939.7
+    },
+    "hydrate_ms": {
+     "n": 240,
+     "p50": 126.0,
+     "p95": 173.5,
+     "mean": 129.9
+    },
+    "maybe_rerank_ms": {
+     "n": 240,
+     "p50": 1053.3,
+     "p95": 1192.8,
+     "mean": 1072.8
+    },
+    "stage1_ms": {
+     "n": 240,
+     "p50": 714.8,
+     "p95": 826.1,
+     "mean": 732.4
+    },
+    "stage1_embed_ms": {
+     "n": 240,
+     "p50": 714.6,
+     "p95": 825.9,
+     "mean": 732.0
+    },
+    "ce_ms": {
+     "n": 240,
+     "p50": 338.0,
+     "p95": 379.6,
+     "mean": 339.5
+    }
+   },
+   "peak_rss_mb_max": 12855,
+   "peak_rss_anon_mb_sampled_max": 1353,
+   "import_to_ready_s": [
+    33.53,
+    33.74
+   ],
+   "warm_queries_s": [
+    28.77,
+    29.16
+   ]
+  }
+ },
+ "parity": {
+  "gpu": {
+   "vs_first_gpu_pass": [
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "120/120",
+     "final_top10_exact_order": "120/120",
+     "final_top10_same_set": "120/120",
+     "final_top10_overlap_mean": 1.0,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 0.0,
+     "stage1_score_p50_abs_delta": 0.0,
+     "ce_score_max_abs_delta": 0.0,
+     "ce_score_p50_abs_delta": 0.0,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": []
+    }
+   ],
+   "within_arm_pass0_vs_pass1": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 0.0,
+    "stage1_score_p50_abs_delta": 0.0,
+    "ce_score_max_abs_delta": 0.0,
+    "ce_score_p50_abs_delta": 0.0,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  "cpu": {
+   "vs_first_gpu_pass": [
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "120/120",
+     "final_top10_exact_order": "120/120",
+     "final_top10_same_set": "120/120",
+     "final_top10_overlap_mean": 1.0,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6808509826660156e-05,
+     "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": []
+    },
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "120/120",
+     "final_top10_exact_order": "120/120",
+     "final_top10_same_set": "120/120",
+     "final_top10_overlap_mean": 1.0,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6808509826660156e-05,
+     "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": []
+    }
+   ],
+   "within_arm_pass0_vs_pass1": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 0.0,
+    "stage1_score_p50_abs_delta": 0.0,
+    "ce_score_max_abs_delta": 0.0,
+    "ce_score_p50_abs_delta": 0.0,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  "cpu_onnx_ce": {
+   "vs_first_gpu_pass": [
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "12/120",
+     "final_top10_exact_order": "12/120",
+     "final_top10_same_set": "81/120",
+     "final_top10_overlap_mean": 0.9675,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6266512870788574,
+     "ce_score_p50_abs_delta": 0.192169189453125,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": [
+      "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "hospital emergency department overcrowding wait times patient outcomes",
+      "childhood vaccination coverage school immunization programs uptake",
+      "wearable device physical activity monitoring chronic disease self management",
+      "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "Metis identity scrip land dispossession prairie history",
+      "Canadian Arctic sovereignty Northwest Passage shipping governance",
+      "Canadian universal pharmacare drug coverage policy debate",
+      "interprovincial trade barriers Canadian economic union regulation",
+      "bail reform pretrial detention remand population Canada",
+      "gang desistance youth intervention programs street involvement",
+      "haptic feedback tangible interface design user perception",
+      "data physicalization tangible data representation public engagement",
+      "serious games health behaviour change gamification design",
+      "wearable computing textile interfaces embodied interaction design",
+      "concussion return to play protocol youth sport recovery",
+      "high altitude hypoxia ventilatory acclimatization physiology",
+      "thermoregulation heat strain occupational workers hydration",
+      "gait analysis prosthetic limb amputee walking energetics",
+      "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "caribou herd decline habitat disturbance boreal recovery planning",
+      "mine tailings dam failure water quality remediation monitoring",
+      "marine protected area network design fisheries spillover effects",
+      "cryptocurrency market volatility bitcoin price contagion spillover",
+      "household debt mortgage stress test housing finance Canada",
+      "corporate bond liquidity credit spread market microstructure",
+      "podcast audiences intimacy parasocial relationship listeners",
+      "news deserts local journalism decline community information",
+      "influencer marketing disclosure sponsored content consumer trust",
+      "minimum wage employment effects small business labour demand",
+      "immigration labour market wages native workers displacement",
+      "carbon border adjustment mechanism trade competitiveness leakage",
+      "Spanish influenza 1918 pandemic public health response cities",
+      "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+      "women's suffrage movement provincial franchise campaigns Canada",
+      "compiler optimization loop vectorization SIMD code generation",
+      "approximate nearest neighbour search vector index billion scale",
+      "static analysis memory safety vulnerability detection C programs",
+      "teacher retention burnout attrition rural schools workforce",
+      "early literacy phonics instruction reading intervention primary grades",
+      "graduate student supervision mentorship doctoral completion attrition",
+      "sleep deprivation memory consolidation cognitive performance",
+      "loneliness social isolation mental health older adults intervention",
+      "implicit bias measurement predictive validity discrimination behaviour",
+      "transgender healthcare access gender affirming care barriers",
+      "unpaid care work gender division household labour time use",
+      "5G millimeter wave antenna array beamforming design",
+      "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "autonomous vehicle sensor fusion lidar camera perception",
+      "soft robotics pneumatic actuator compliant gripper design",
+      "religious participation secularization generational change belonging",
+      "neighbourhood effects concentrated disadvantage child outcomes",
+      "free will moral responsibility determinism compatibilism",
+      "philosophy of mind consciousness qualia explanatory gap",
+      "topological data analysis persistent homology point clouds",
+      "stochastic partial differential equations numerical approximation convergence",
+      "gravitational wave detection black hole merger interferometer",
+      "topological insulator edge states spin orbit coupling materials",
+      "lithium ion battery electrolyte degradation cathode interface",
+      "PFAS forever chemicals water treatment removal degradation",
+      "remote work hybrid arrangements productivity employee wellbeing",
+      "family business succession planning governance next generation",
+      "workplace automation job displacement reskilling worker adjustment",
+      "code switching bilingual speakers sociolinguistic variation",
+      "prosody intonation speech perception listener comprehension",
+      "modernist poetry fragmentation form early twentieth century",
+      "graphic novels comics studies narrative visual storytelling",
+      "film festival circuit curation programming world cinema",
+      "sound design film music affect audience emotional response",
+      "glacier retreat mass balance monitoring mountain water supply",
+      "coastal erosion sea level rise shoreline retreat adaptation",
+      "falls prevention older adults balance training home hazards",
+      "social prescribing older adults community programs wellbeing",
+      "ritual kinship exchange gift economies ethnography Melanesia",
+      "migration transnational families remittances belonging ethnography",
+      "radiocarbon dating chronology Bayesian modelling stratigraphy",
+      "ancient DNA population migration archaeogenetics prehistoric Europe",
+      "refugee resettlement burden sharing international protection regime",
+      "economic sanctions effectiveness compliance target state behaviour",
+      "Cuban revolution health system export medical diplomacy",
+      "Andean agrarian reform peasant movements land tenure",
+      "informal settlements upgrading tenure security global south cities",
+      "cycling infrastructure bike lanes mode shift urban mobility",
+      "access to justice self represented litigants legal aid funding",
+      "environmental litigation climate lawsuits state liability courts",
+      "gut microbiome host immune interaction metabolite signalling",
+      "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "jazz improvisation performance analysis interaction ensemble",
+      "music streaming royalties artist income platform economics",
+      "childcare policy universal early learning affordability workforce",
+      "public procurement innovation policy government purchasing outcomes",
+      "maternal mortality skilled birth attendance low resource settings",
+      "neglected tropical disease mass drug administration elimination",
+      "district heating waste heat recovery thermal network efficiency",
+      "auditor independence non-audit services fee dependence quality",
+      "revenue recognition standard IFRS 15 adoption financial reporting",
+      "causal inference propensity score matching observational studies",
+      "extreme value theory tail risk catastrophe insurance modelling",
+      "conservation of contemporary art materials degradation museum practice",
+      "dramaturgy new play development workshop process",
+      "puppetry object theatre performance materiality audience",
+      "audiobook market growth narration production publishing industry",
+      "peer review reform preprints open science scholarly communication",
+      "community land trust affordable housing stewardship models",
+      "participatory budgeting civic engagement municipal decision making",
+      "psychological safety team performance speaking up organizations",
+      "corporate social responsibility greenwashing stakeholder perception",
+      "forensic entomology postmortem interval insect succession estimation"
+     ]
+    },
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "12/120",
+     "final_top10_exact_order": "12/120",
+     "final_top10_same_set": "81/120",
+     "final_top10_overlap_mean": 0.9675,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6266512870788574,
+     "ce_score_p50_abs_delta": 0.192169189453125,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": [
+      "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "hospital emergency department overcrowding wait times patient outcomes",
+      "childhood vaccination coverage school immunization programs uptake",
+      "wearable device physical activity monitoring chronic disease self management",
+      "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "Metis identity scrip land dispossession prairie history",
+      "Canadian Arctic sovereignty Northwest Passage shipping governance",
+      "Canadian universal pharmacare drug coverage policy debate",
+      "interprovincial trade barriers Canadian economic union regulation",
+      "bail reform pretrial detention remand population Canada",
+      "gang desistance youth intervention programs street involvement",
+      "haptic feedback tangible interface design user perception",
+      "data physicalization tangible data representation public engagement",
+      "serious games health behaviour change gamification design",
+      "wearable computing textile interfaces embodied interaction design",
+      "concussion return to play protocol youth sport recovery",
+      "high altitude hypoxia ventilatory acclimatization physiology",
+      "thermoregulation heat strain occupational workers hydration",
+      "gait analysis prosthetic limb amputee walking energetics",
+      "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "caribou herd decline habitat disturbance boreal recovery planning",
+      "mine tailings dam failure water quality remediation monitoring",
+      "marine protected area network design fisheries spillover effects",
+      "cryptocurrency market volatility bitcoin price contagion spillover",
+      "household debt mortgage stress test housing finance Canada",
+      "corporate bond liquidity credit spread market microstructure",
+      "podcast audiences intimacy parasocial relationship listeners",
+      "news deserts local journalism decline community information",
+      "influencer marketing disclosure sponsored content consumer trust",
+      "minimum wage employment effects small business labour demand",
+      "immigration labour market wages native workers displacement",
+      "carbon border adjustment mechanism trade competitiveness leakage",
+      "Spanish influenza 1918 pandemic public health response cities",
+      "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+      "women's suffrage movement provincial franchise campaigns Canada",
+      "compiler optimization loop vectorization SIMD code generation",
+      "approximate nearest neighbour search vector index billion scale",
+      "static analysis memory safety vulnerability detection C programs",
+      "teacher retention burnout attrition rural schools workforce",
+      "early literacy phonics instruction reading intervention primary grades",
+      "graduate student supervision mentorship doctoral completion attrition",
+      "sleep deprivation memory consolidation cognitive performance",
+      "loneliness social isolation mental health older adults intervention",
+      "implicit bias measurement predictive validity discrimination behaviour",
+      "transgender healthcare access gender affirming care barriers",
+      "unpaid care work gender division household labour time use",
+      "5G millimeter wave antenna array beamforming design",
+      "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "autonomous vehicle sensor fusion lidar camera perception",
+      "soft robotics pneumatic actuator compliant gripper design",
+      "religious participation secularization generational change belonging",
+      "neighbourhood effects concentrated disadvantage child outcomes",
+      "free will moral responsibility determinism compatibilism",
+      "philosophy of mind consciousness qualia explanatory gap",
+      "topological data analysis persistent homology point clouds",
+      "stochastic partial differential equations numerical approximation convergence",
+      "gravitational wave detection black hole merger interferometer",
+      "topological insulator edge states spin orbit coupling materials",
+      "lithium ion battery electrolyte degradation cathode interface",
+      "PFAS forever chemicals water treatment removal degradation",
+      "remote work hybrid arrangements productivity employee wellbeing",
+      "family business succession planning governance next generation",
+      "workplace automation job displacement reskilling worker adjustment",
+      "code switching bilingual speakers sociolinguistic variation",
+      "prosody intonation speech perception listener comprehension",
+      "modernist poetry fragmentation form early twentieth century",
+      "graphic novels comics studies narrative visual storytelling",
+      "film festival circuit curation programming world cinema",
+      "sound design film music affect audience emotional response",
+      "glacier retreat mass balance monitoring mountain water supply",
+      "coastal erosion sea level rise shoreline retreat adaptation",
+      "falls prevention older adults balance training home hazards",
+      "social prescribing older adults community programs wellbeing",
+      "ritual kinship exchange gift economies ethnography Melanesia",
+      "migration transnational families remittances belonging ethnography",
+      "radiocarbon dating chronology Bayesian modelling stratigraphy",
+      "ancient DNA population migration archaeogenetics prehistoric Europe",
+      "refugee resettlement burden sharing international protection regime",
+      "economic sanctions effectiveness compliance target state behaviour",
+      "Cuban revolution health system export medical diplomacy",
+      "Andean agrarian reform peasant movements land tenure",
+      "informal settlements upgrading tenure security global south cities",
+      "cycling infrastructure bike lanes mode shift urban mobility",
+      "access to justice self represented litigants legal aid funding",
+      "environmental litigation climate lawsuits state liability courts",
+      "gut microbiome host immune interaction metabolite signalling",
+      "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "jazz improvisation performance analysis interaction ensemble",
+      "music streaming royalties artist income platform economics",
+      "childcare policy universal early learning affordability workforce",
+      "public procurement innovation policy government purchasing outcomes",
+      "maternal mortality skilled birth attendance low resource settings",
+      "neglected tropical disease mass drug administration elimination",
+      "district heating waste heat recovery thermal network efficiency",
+      "auditor independence non-audit services fee dependence quality",
+      "revenue recognition standard IFRS 15 adoption financial reporting",
+      "causal inference propensity score matching observational studies",
+      "extreme value theory tail risk catastrophe insurance modelling",
+      "conservation of contemporary art materials degradation museum practice",
+      "dramaturgy new play development workshop process",
+      "puppetry object theatre performance materiality audience",
+      "audiobook market growth narration production publishing industry",
+      "peer review reform preprints open science scholarly communication",
+      "community land trust affordable housing stewardship models",
+      "participatory budgeting civic engagement municipal decision making",
+      "psychological safety team performance speaking up organizations",
+      "corporate social responsibility greenwashing stakeholder perception",
+      "forensic entomology postmortem interval insect succession estimation"
+     ]
+    }
+   ],
+   "within_arm_pass0_vs_pass1": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 0.0,
+    "stage1_score_p50_abs_delta": 0.0,
+    "ce_score_max_abs_delta": 0.0,
+    "ce_score_p50_abs_delta": 0.0,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  "cpu_wheels": {
+   "vs_first_gpu_pass": [
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "120/120",
+     "final_top10_exact_order": "120/120",
+     "final_top10_same_set": "120/120",
+     "final_top10_overlap_mean": 1.0,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6808509826660156e-05,
+     "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": []
+    },
+    {
+     "fused_byte_identical": "120/120",
+     "final_top10_byte_identical": "120/120",
+     "final_top10_exact_order": "120/120",
+     "final_top10_same_set": "120/120",
+     "final_top10_overlap_mean": 1.0,
+     "stage1_top20_order_identical": "120/120",
+     "stage1_score_max_abs_delta": 5.283087497476302e-07,
+     "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+     "ce_score_max_abs_delta": 1.6808509826660156e-05,
+     "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+     "n_stage1_scores_compared": 2400,
+     "n_ce_scores_compared": 2400,
+     "topics_with_top10_order_change": []
+    }
+   ],
+   "within_arm_pass0_vs_pass1": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 0.0,
+    "stage1_score_p50_abs_delta": 0.0,
+    "ce_score_max_abs_delta": 0.0,
+    "ce_score_p50_abs_delta": 0.0,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  }
+ },
+ "passes": [
+  {
+   "tag": "warmup_gpu",
+   "arm": "gpu",
+   "rc": 0,
+   "wall_s": 851.0,
+   "device": {
+    "arm": "gpu",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": null,
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": true,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cuda:0",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cuda:0"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": true
+   },
+   "load_index_s": 2.11,
+   "import_to_ready_s": 125.97,
+   "warm_queries_s": 106.09,
+   "pass_s": 718.8,
+   "peak_rss_mb": 12129,
+   "peak_rss_anon_mb_sampled": 1573,
+   "final_rss": {
+    "VmHWM": 12129,
+    "VmRSS": 10637,
+    "RssAnon": 872,
+    "RssFile": 9761,
+    "RssShmem": 4
+   },
+   "cuda_max_allocated_mb": 270.9,
+   "remote_abstract_memo": {
+    "preloaded_keys": 0,
+    "memo_hits": 0,
+    "misses": 240,
+    "remote_calls": 240,
+    "allow_remote_calls": true
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5802.8,
+     "p95": 7964.3,
+     "mean": 5989.6
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 5490.3,
+     "p95": 7628.2,
+     "mean": 5699.7
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 43.7,
+     "p95": 100.5,
+     "mean": 63.6
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1594.9,
+     "p95": 2548.2,
+     "mean": 1607.8
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1640.3,
+     "p95": 2665.4,
+     "mean": 1671.6
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2906.9,
+     "p95": 4610.2,
+     "mean": 3002.6
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 865.0,
+     "p95": 1293.0,
+     "mean": 1025.2
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 293.1,
+     "p95": 358.6,
+     "mean": 289.7
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 230.7,
+     "p95": 294.3,
+     "mean": 235.3
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 230.5,
+     "p95": 294.1,
+     "mean": 235.0
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 42.2,
+     "p95": 101.0,
+     "mean": 52.4
+    }
+   }
+  },
+  {
+   "tag": "r0_gpu",
+   "arm": "gpu",
+   "rc": 0,
+   "wall_s": 732.5,
+   "device": {
+    "arm": "gpu",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": null,
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": true,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cuda:0",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cuda:0"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": true
+   },
+   "load_index_s": 2.11,
+   "import_to_ready_s": 121.08,
+   "warm_queries_s": 100.49,
+   "pass_s": 598.2,
+   "peak_rss_mb": 12502,
+   "peak_rss_anon_mb_sampled": 1582,
+   "final_rss": {
+    "VmHWM": 12502,
+    "VmRSS": 11271,
+    "RssAnon": 583,
+    "RssFile": 10683,
+    "RssShmem": 4
+   },
+   "cuda_max_allocated_mb": 270.9,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 4902.3,
+     "p95": 7401.4,
+     "mean": 4985.1
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4592.0,
+     "p95": 7036.9,
+     "mean": 4693.7
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 42.6,
+     "p95": 95.7,
+     "mean": 63.4
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1406.2,
+     "p95": 2704.3,
+     "mean": 1569.7
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1465.1,
+     "p95": 2951.2,
+     "mean": 1633.4
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2807.2,
+     "p95": 4649.6,
+     "mean": 2927.1
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 127.6,
+     "p95": 181.8,
+     "mean": 132.5
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 287.5,
+     "p95": 368.7,
+     "mean": 290.9
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 239.2,
+     "p95": 293.4,
+     "mean": 230.8
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 238.9,
+     "p95": 293.1,
+     "mean": 230.4
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 58.8,
+     "p95": 101.2,
+     "mean": 59.0
+    }
+   }
+  },
+  {
+   "tag": "r0_cpu",
+   "arm": "cpu",
+   "rc": 0,
+   "wall_s": 830.9,
+   "device": {
+    "arm": "cpu",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cpu"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.08,
+   "import_to_ready_s": 117.02,
+   "warm_queries_s": 97.36,
+   "pass_s": 700.8,
+   "peak_rss_mb": 12823,
+   "peak_rss_anon_mb_sampled": 1383,
+   "final_rss": {
+    "VmHWM": 12823,
+    "VmRSS": 11116,
+    "RssAnon": 677,
+    "RssFile": 10438,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5780.9,
+     "p95": 7923.4,
+     "mean": 5840.1
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4677.2,
+     "p95": 6822.4,
+     "mean": 4754.6
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 46.8,
+     "p95": 103.7,
+     "mean": 79.3
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1694.5,
+     "p95": 2692.0,
+     "mean": 1658.6
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1744.0,
+     "p95": 3014.3,
+     "mean": 1738.2
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2849.3,
+     "p95": 4430.2,
+     "mean": 2881.6
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 129.3,
+     "p95": 171.2,
+     "mean": 134.3
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 1067.1,
+     "p95": 1207.1,
+     "mean": 1084.9
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 726.1,
+     "p95": 841.0,
+     "mean": 741.7
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 725.9,
+     "p95": 840.8,
+     "mean": 741.3
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 339.1,
+     "p95": 382.1,
+     "mean": 342.1
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6808509826660156e-05,
+    "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  {
+   "tag": "r0_cpu_onnx_ce",
+   "arm": "cpu_onnx_ce",
+   "rc": 0,
+   "wall_s": 821.9,
+   "device": {
+    "arm": "cpu_onnx_ce",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": "1",
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "lib.reranker._OnnxCrossEncoder",
+     "ort_providers": [
+      "CPUExecutionProvider"
+     ]
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.09,
+   "import_to_ready_s": 113.84,
+   "warm_queries_s": 94.11,
+   "pass_s": 694.6,
+   "peak_rss_mb": 13076,
+   "peak_rss_anon_mb_sampled": 1584,
+   "final_rss": {
+    "VmHWM": 13076,
+    "VmRSS": 11338,
+    "RssAnon": 704,
+    "RssFile": 10634,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5708.5,
+     "p95": 7740.7,
+     "mean": 5787.6
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4811.5,
+     "p95": 6698.7,
+     "mean": 4786.0
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 42.3,
+     "p95": 73.8,
+     "mean": 61.4
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1634.1,
+     "p95": 2833.0,
+     "mean": 1639.8
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1709.0,
+     "p95": 2937.5,
+     "mean": 1701.3
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2887.0,
+     "p95": 4698.7,
+     "mean": 2954.4
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 126.7,
+     "p95": 161.1,
+     "mean": 129.9
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 951.3,
+     "p95": 1226.2,
+     "mean": 1001.3
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 720.6,
+     "p95": 881.1,
+     "mean": 742.1
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 720.4,
+     "p95": 880.9,
+     "mean": 741.6
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 234.3,
+     "p95": 380.9,
+     "mean": 258.4
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "12/120",
+    "final_top10_exact_order": "12/120",
+    "final_top10_same_set": "81/120",
+    "final_top10_overlap_mean": 0.9675,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6266512870788574,
+    "ce_score_p50_abs_delta": 0.192169189453125,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": [
+     "type 2 diabetes prevention lifestyle intervention primary care Canada",
+     "hospital emergency department overcrowding wait times patient outcomes",
+     "childhood vaccination coverage school immunization programs uptake",
+     "wearable device physical activity monitoring chronic disease self management",
+     "Indigenous food sovereignty traditional harvesting country foods nutrition",
+     "Metis identity scrip land dispossession prairie history",
+     "Canadian Arctic sovereignty Northwest Passage shipping governance",
+     "Canadian universal pharmacare drug coverage policy debate",
+     "interprovincial trade barriers Canadian economic union regulation",
+     "bail reform pretrial detention remand population Canada",
+     "gang desistance youth intervention programs street involvement",
+     "haptic feedback tangible interface design user perception",
+     "data physicalization tangible data representation public engagement",
+     "serious games health behaviour change gamification design",
+     "wearable computing textile interfaces embodied interaction design",
+     "concussion return to play protocol youth sport recovery",
+     "high altitude hypoxia ventilatory acclimatization physiology",
+     "thermoregulation heat strain occupational workers hydration",
+     "gait analysis prosthetic limb amputee walking energetics",
+     "eelgrass seagrass habitat restoration coastal carbon sequestration",
+     "caribou herd decline habitat disturbance boreal recovery planning",
+     "mine tailings dam failure water quality remediation monitoring",
+     "marine protected area network design fisheries spillover effects",
+     "cryptocurrency market volatility bitcoin price contagion spillover",
+     "household debt mortgage stress test housing finance Canada",
+     "corporate bond liquidity credit spread market microstructure",
+     "podcast audiences intimacy parasocial relationship listeners",
+     "news deserts local journalism decline community information",
+     "influencer marketing disclosure sponsored content consumer trust",
+     "minimum wage employment effects small business labour demand",
+     "immigration labour market wages native workers displacement",
+     "carbon border adjustment mechanism trade competitiveness leakage",
+     "Spanish influenza 1918 pandemic public health response cities",
+     "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+     "women's suffrage movement provincial franchise campaigns Canada",
+     "compiler optimization loop vectorization SIMD code generation",
+     "approximate nearest neighbour search vector index billion scale",
+     "static analysis memory safety vulnerability detection C programs",
+     "teacher retention burnout attrition rural schools workforce",
+     "early literacy phonics instruction reading intervention primary grades",
+     "graduate student supervision mentorship doctoral completion attrition",
+     "sleep deprivation memory consolidation cognitive performance",
+     "loneliness social isolation mental health older adults intervention",
+     "implicit bias measurement predictive validity discrimination behaviour",
+     "transgender healthcare access gender affirming care barriers",
+     "unpaid care work gender division household labour time use",
+     "5G millimeter wave antenna array beamforming design",
+     "additive manufacturing metal 3D printing fatigue defects microstructure",
+     "autonomous vehicle sensor fusion lidar camera perception",
+     "soft robotics pneumatic actuator compliant gripper design",
+     "religious participation secularization generational change belonging",
+     "neighbourhood effects concentrated disadvantage child outcomes",
+     "free will moral responsibility determinism compatibilism",
+     "philosophy of mind consciousness qualia explanatory gap",
+     "topological data analysis persistent homology point clouds",
+     "stochastic partial differential equations numerical approximation convergence",
+     "gravitational wave detection black hole merger interferometer",
+     "topological insulator edge states spin orbit coupling materials",
+     "lithium ion battery electrolyte degradation cathode interface",
+     "PFAS forever chemicals water treatment removal degradation",
+     "remote work hybrid arrangements productivity employee wellbeing",
+     "family business succession planning governance next generation",
+     "workplace automation job displacement reskilling worker adjustment",
+     "code switching bilingual speakers sociolinguistic variation",
+     "prosody intonation speech perception listener comprehension",
+     "modernist poetry fragmentation form early twentieth century",
+     "graphic novels comics studies narrative visual storytelling",
+     "film festival circuit curation programming world cinema",
+     "sound design film music affect audience emotional response",
+     "glacier retreat mass balance monitoring mountain water supply",
+     "coastal erosion sea level rise shoreline retreat adaptation",
+     "falls prevention older adults balance training home hazards",
+     "social prescribing older adults community programs wellbeing",
+     "ritual kinship exchange gift economies ethnography Melanesia",
+     "migration transnational families remittances belonging ethnography",
+     "radiocarbon dating chronology Bayesian modelling stratigraphy",
+     "ancient DNA population migration archaeogenetics prehistoric Europe",
+     "refugee resettlement burden sharing international protection regime",
+     "economic sanctions effectiveness compliance target state behaviour",
+     "Cuban revolution health system export medical diplomacy",
+     "Andean agrarian reform peasant movements land tenure",
+     "informal settlements upgrading tenure security global south cities",
+     "cycling infrastructure bike lanes mode shift urban mobility",
+     "access to justice self represented litigants legal aid funding",
+     "environmental litigation climate lawsuits state liability courts",
+     "gut microbiome host immune interaction metabolite signalling",
+     "mRNA vaccine lipid nanoparticle delivery stability formulation",
+     "jazz improvisation performance analysis interaction ensemble",
+     "music streaming royalties artist income platform economics",
+     "childcare policy universal early learning affordability workforce",
+     "public procurement innovation policy government purchasing outcomes",
+     "maternal mortality skilled birth attendance low resource settings",
+     "neglected tropical disease mass drug administration elimination",
+     "district heating waste heat recovery thermal network efficiency",
+     "auditor independence non-audit services fee dependence quality",
+     "revenue recognition standard IFRS 15 adoption financial reporting",
+     "causal inference propensity score matching observational studies",
+     "extreme value theory tail risk catastrophe insurance modelling",
+     "conservation of contemporary art materials degradation museum practice",
+     "dramaturgy new play development workshop process",
+     "puppetry object theatre performance materiality audience",
+     "audiobook market growth narration production publishing industry",
+     "peer review reform preprints open science scholarly communication",
+     "community land trust affordable housing stewardship models",
+     "participatory budgeting civic engagement municipal decision making",
+     "psychological safety team performance speaking up organizations",
+     "corporate social responsibility greenwashing stakeholder perception",
+     "forensic entomology postmortem interval insect succession estimation"
+    ]
+   }
+  },
+  {
+   "tag": "r0_cpu_wheels",
+   "arm": "cpu_wheels",
+   "rc": 0,
+   "wall_s": 752.7,
+   "device": {
+    "arm": "cpu_wheels",
+    "python": "/tmp/claude-1000/cpu_venv/bin/python",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cpu",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "AzureExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cpu"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.06,
+   "import_to_ready_s": 33.53,
+   "warm_queries_s": 28.77,
+   "pass_s": 707.7,
+   "peak_rss_mb": 12262,
+   "peak_rss_anon_mb_sampled": 1349,
+   "final_rss": {
+    "VmHWM": 12262,
+    "VmRSS": 10630,
+    "RssAnon": 649,
+    "RssFile": 9981,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5819.5,
+     "p95": 8060.2,
+     "mean": 5897.3
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4764.9,
+     "p95": 6888.5,
+     "mean": 4781.8
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 41.3,
+     "p95": 89.8,
+     "mean": 61.1
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1563.5,
+     "p95": 2623.6,
+     "mean": 1634.4
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1610.6,
+     "p95": 2662.3,
+     "mean": 1695.6
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2863.9,
+     "p95": 4574.7,
+     "mean": 2955.2
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 128.3,
+     "p95": 177.6,
+     "mean": 130.6
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 1105.8,
+     "p95": 1201.2,
+     "mean": 1115.1
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 755.7,
+     "p95": 838.4,
+     "mean": 763.5
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 755.4,
+     "p95": 838.2,
+     "mean": 763.2
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 348.3,
+     "p95": 385.3,
+     "mean": 350.8
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6808509826660156e-05,
+    "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  {
+   "tag": "r1_cpu",
+   "arm": "cpu",
+   "rc": 0,
+   "wall_s": 837.8,
+   "device": {
+    "arm": "cpu",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cpu"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.33,
+   "import_to_ready_s": 117.8,
+   "warm_queries_s": 97.59,
+   "pass_s": 705.4,
+   "peak_rss_mb": 12830,
+   "peak_rss_anon_mb_sampled": 1424,
+   "final_rss": {
+    "VmHWM": 12830,
+    "VmRSS": 11074,
+    "RssAnon": 697,
+    "RssFile": 10376,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5804.4,
+     "p95": 7795.3,
+     "mean": 5877.7
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4736.1,
+     "p95": 6612.2,
+     "mean": 4796.9
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 43.4,
+     "p95": 108.6,
+     "mean": 68.4
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1624.0,
+     "p95": 2989.7,
+     "mean": 1692.2
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1654.5,
+     "p95": 3026.3,
+     "mean": 1760.7
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2827.1,
+     "p95": 4433.8,
+     "mean": 2901.9
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 127.4,
+     "p95": 177.7,
+     "mean": 133.7
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 1054.9,
+     "p95": 1156.4,
+     "mean": 1080.3
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 716.8,
+     "p95": 795.1,
+     "mean": 740.1
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 716.5,
+     "p95": 794.8,
+     "mean": 739.7
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 336.3,
+     "p95": 364.5,
+     "mean": 339.3
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6808509826660156e-05,
+    "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  {
+   "tag": "r1_cpu_onnx_ce",
+   "arm": "cpu_onnx_ce",
+   "rc": 0,
+   "wall_s": 820.5,
+   "device": {
+    "arm": "cpu_onnx_ce",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": "1",
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "lib.reranker._OnnxCrossEncoder",
+     "ort_providers": [
+      "CPUExecutionProvider"
+     ]
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.08,
+   "import_to_ready_s": 114.85,
+   "warm_queries_s": 95.46,
+   "pass_s": 692.9,
+   "peak_rss_mb": 13047,
+   "peak_rss_anon_mb_sampled": 1393,
+   "final_rss": {
+    "VmHWM": 13047,
+    "VmRSS": 10970,
+    "RssAnon": 740,
+    "RssFile": 10229,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5741.7,
+     "p95": 7654.3,
+     "mean": 5773.9
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4626.9,
+     "p95": 6724.0,
+     "mean": 4767.0
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 43.6,
+     "p95": 92.4,
+     "mean": 57.1
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1600.9,
+     "p95": 2624.5,
+     "mean": 1649.8
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1689.4,
+     "p95": 2675.6,
+     "mean": 1707.1
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2833.1,
+     "p95": 4633.6,
+     "mean": 2930.4
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 123.8,
+     "p95": 168.0,
+     "mean": 129.0
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 966.1,
+     "p95": 1138.6,
+     "mean": 1006.4
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 734.4,
+     "p95": 811.8,
+     "mean": 748.1
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 734.0,
+     "p95": 810.9,
+     "mean": 747.7
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 210.0,
+     "p95": 352.6,
+     "mean": 257.2
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "12/120",
+    "final_top10_exact_order": "12/120",
+    "final_top10_same_set": "81/120",
+    "final_top10_overlap_mean": 0.9675,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6266512870788574,
+    "ce_score_p50_abs_delta": 0.192169189453125,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": [
+     "type 2 diabetes prevention lifestyle intervention primary care Canada",
+     "hospital emergency department overcrowding wait times patient outcomes",
+     "childhood vaccination coverage school immunization programs uptake",
+     "wearable device physical activity monitoring chronic disease self management",
+     "Indigenous food sovereignty traditional harvesting country foods nutrition",
+     "Metis identity scrip land dispossession prairie history",
+     "Canadian Arctic sovereignty Northwest Passage shipping governance",
+     "Canadian universal pharmacare drug coverage policy debate",
+     "interprovincial trade barriers Canadian economic union regulation",
+     "bail reform pretrial detention remand population Canada",
+     "gang desistance youth intervention programs street involvement",
+     "haptic feedback tangible interface design user perception",
+     "data physicalization tangible data representation public engagement",
+     "serious games health behaviour change gamification design",
+     "wearable computing textile interfaces embodied interaction design",
+     "concussion return to play protocol youth sport recovery",
+     "high altitude hypoxia ventilatory acclimatization physiology",
+     "thermoregulation heat strain occupational workers hydration",
+     "gait analysis prosthetic limb amputee walking energetics",
+     "eelgrass seagrass habitat restoration coastal carbon sequestration",
+     "caribou herd decline habitat disturbance boreal recovery planning",
+     "mine tailings dam failure water quality remediation monitoring",
+     "marine protected area network design fisheries spillover effects",
+     "cryptocurrency market volatility bitcoin price contagion spillover",
+     "household debt mortgage stress test housing finance Canada",
+     "corporate bond liquidity credit spread market microstructure",
+     "podcast audiences intimacy parasocial relationship listeners",
+     "news deserts local journalism decline community information",
+     "influencer marketing disclosure sponsored content consumer trust",
+     "minimum wage employment effects small business labour demand",
+     "immigration labour market wages native workers displacement",
+     "carbon border adjustment mechanism trade competitiveness leakage",
+     "Spanish influenza 1918 pandemic public health response cities",
+     "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+     "women's suffrage movement provincial franchise campaigns Canada",
+     "compiler optimization loop vectorization SIMD code generation",
+     "approximate nearest neighbour search vector index billion scale",
+     "static analysis memory safety vulnerability detection C programs",
+     "teacher retention burnout attrition rural schools workforce",
+     "early literacy phonics instruction reading intervention primary grades",
+     "graduate student supervision mentorship doctoral completion attrition",
+     "sleep deprivation memory consolidation cognitive performance",
+     "loneliness social isolation mental health older adults intervention",
+     "implicit bias measurement predictive validity discrimination behaviour",
+     "transgender healthcare access gender affirming care barriers",
+     "unpaid care work gender division household labour time use",
+     "5G millimeter wave antenna array beamforming design",
+     "additive manufacturing metal 3D printing fatigue defects microstructure",
+     "autonomous vehicle sensor fusion lidar camera perception",
+     "soft robotics pneumatic actuator compliant gripper design",
+     "religious participation secularization generational change belonging",
+     "neighbourhood effects concentrated disadvantage child outcomes",
+     "free will moral responsibility determinism compatibilism",
+     "philosophy of mind consciousness qualia explanatory gap",
+     "topological data analysis persistent homology point clouds",
+     "stochastic partial differential equations numerical approximation convergence",
+     "gravitational wave detection black hole merger interferometer",
+     "topological insulator edge states spin orbit coupling materials",
+     "lithium ion battery electrolyte degradation cathode interface",
+     "PFAS forever chemicals water treatment removal degradation",
+     "remote work hybrid arrangements productivity employee wellbeing",
+     "family business succession planning governance next generation",
+     "workplace automation job displacement reskilling worker adjustment",
+     "code switching bilingual speakers sociolinguistic variation",
+     "prosody intonation speech perception listener comprehension",
+     "modernist poetry fragmentation form early twentieth century",
+     "graphic novels comics studies narrative visual storytelling",
+     "film festival circuit curation programming world cinema",
+     "sound design film music affect audience emotional response",
+     "glacier retreat mass balance monitoring mountain water supply",
+     "coastal erosion sea level rise shoreline retreat adaptation",
+     "falls prevention older adults balance training home hazards",
+     "social prescribing older adults community programs wellbeing",
+     "ritual kinship exchange gift economies ethnography Melanesia",
+     "migration transnational families remittances belonging ethnography",
+     "radiocarbon dating chronology Bayesian modelling stratigraphy",
+     "ancient DNA population migration archaeogenetics prehistoric Europe",
+     "refugee resettlement burden sharing international protection regime",
+     "economic sanctions effectiveness compliance target state behaviour",
+     "Cuban revolution health system export medical diplomacy",
+     "Andean agrarian reform peasant movements land tenure",
+     "informal settlements upgrading tenure security global south cities",
+     "cycling infrastructure bike lanes mode shift urban mobility",
+     "access to justice self represented litigants legal aid funding",
+     "environmental litigation climate lawsuits state liability courts",
+     "gut microbiome host immune interaction metabolite signalling",
+     "mRNA vaccine lipid nanoparticle delivery stability formulation",
+     "jazz improvisation performance analysis interaction ensemble",
+     "music streaming royalties artist income platform economics",
+     "childcare policy universal early learning affordability workforce",
+     "public procurement innovation policy government purchasing outcomes",
+     "maternal mortality skilled birth attendance low resource settings",
+     "neglected tropical disease mass drug administration elimination",
+     "district heating waste heat recovery thermal network efficiency",
+     "auditor independence non-audit services fee dependence quality",
+     "revenue recognition standard IFRS 15 adoption financial reporting",
+     "causal inference propensity score matching observational studies",
+     "extreme value theory tail risk catastrophe insurance modelling",
+     "conservation of contemporary art materials degradation museum practice",
+     "dramaturgy new play development workshop process",
+     "puppetry object theatre performance materiality audience",
+     "audiobook market growth narration production publishing industry",
+     "peer review reform preprints open science scholarly communication",
+     "community land trust affordable housing stewardship models",
+     "participatory budgeting civic engagement municipal decision making",
+     "psychological safety team performance speaking up organizations",
+     "corporate social responsibility greenwashing stakeholder perception",
+     "forensic entomology postmortem interval insect succession estimation"
+    ]
+   }
+  },
+  {
+   "tag": "r1_cpu_wheels",
+   "arm": "cpu_wheels",
+   "rc": 0,
+   "wall_s": 734.3,
+   "device": {
+    "arm": "cpu_wheels",
+    "python": "/tmp/claude-1000/cpu_venv/bin/python",
+    "CUDA_VISIBLE_DEVICES": "",
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cpu",
+    "torch_cuda_available": false,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "AzureExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cpu",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cpu"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [],
+    "torch_cuda_initialized": false
+   },
+   "load_index_s": 2.04,
+   "import_to_ready_s": 33.74,
+   "warm_queries_s": 29.16,
+   "pass_s": 689.0,
+   "peak_rss_mb": 12855,
+   "peak_rss_anon_mb_sampled": 1353,
+   "final_rss": {
+    "VmHWM": 12855,
+    "VmRSS": 11090,
+    "RssAnon": 678,
+    "RssFile": 10411,
+    "RssShmem": 0
+   },
+   "cuda_max_allocated_mb": null,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5566.5,
+     "p95": 7646.2,
+     "mean": 5741.1
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4531.3,
+     "p95": 6599.7,
+     "mean": 4710.2
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 42.7,
+     "p95": 81.3,
+     "mean": 58.6
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1573.5,
+     "p95": 2588.8,
+     "mean": 1597.6
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1606.5,
+     "p95": 2642.8,
+     "mean": 1656.3
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2842.3,
+     "p95": 4503.0,
+     "mean": 2924.2
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 125.7,
+     "p95": 164.6,
+     "mean": 129.2
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 1017.0,
+     "p95": 1090.7,
+     "mean": 1030.5
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 692.9,
+     "p95": 756.3,
+     "mean": 701.3
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 692.7,
+     "p95": 756.0,
+     "mean": 700.9
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 326.4,
+     "p95": 364.1,
+     "mean": 328.3
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 5.283087497476302e-07,
+    "stage1_score_p50_abs_delta": 8.652585781199207e-08,
+    "ce_score_max_abs_delta": 1.6808509826660156e-05,
+    "ce_score_p50_abs_delta": 3.6954879760742188e-06,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  },
+  {
+   "tag": "r1_gpu",
+   "arm": "gpu",
+   "rc": 0,
+   "wall_s": 725.7,
+   "device": {
+    "arm": "gpu",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "CUDA_VISIBLE_DEVICES": null,
+    "SFU_CE_ONNX": null,
+    "torch_version": "2.6.0+cu124",
+    "torch_cuda_available": true,
+    "torch_threads": 8,
+    "torch_interop_threads": 16,
+    "ort_version": "1.26.0",
+    "ort_available_providers": [
+     "TensorrtExecutionProvider",
+     "CUDAExecutionProvider",
+     "CPUExecutionProvider"
+    ],
+    "embedder_device": "cuda:0",
+    "cross_encoder": {
+     "type": "sentence_transformers.cross_encoder.model.CrossEncoder",
+     "device": "cuda:0"
+    },
+    "splade_ort_providers": [
+     "CPUExecutionProvider"
+    ],
+    "cuda_libs_mapped": [
+     "libcublas.so.12",
+     "libcublasLt.so.12",
+     "libcuda.so.1",
+     "libcuda.so.1.1",
+     "libcudart.41118559.so.12",
+     "libcudart.so.12",
+     "libcudnn.so.9",
+     "libnvrtc.so.12",
+     "libtorch_cuda.so"
+    ],
+    "torch_cuda_initialized": true
+   },
+   "load_index_s": 2.13,
+   "import_to_ready_s": 114.2,
+   "warm_queries_s": 94.65,
+   "pass_s": 598.0,
+   "peak_rss_mb": 12620,
+   "peak_rss_anon_mb_sampled": 1549,
+   "final_rss": {
+    "VmHWM": 12620,
+    "VmRSS": 10850,
+    "RssAnon": 585,
+    "RssFile": 10261,
+    "RssShmem": 4
+   },
+   "cuda_max_allocated_mb": 270.9,
+   "remote_abstract_memo": {
+    "preloaded_keys": 240,
+    "memo_hits": 240,
+    "misses": 0,
+    "remote_calls": 0,
+    "allow_remote_calls": false
+   },
+   "stages": {
+    "total_ms": {
+     "n": 120,
+     "p50": 5015.0,
+     "p95": 6811.4,
+     "mean": 4983.0
+    },
+    "retrieval_ms": {
+     "n": 120,
+     "p50": 4746.0,
+     "p95": 6516.6,
+     "mean": 4702.6
+    },
+    "splade_encode_ms": {
+     "n": 120,
+     "p50": 41.3,
+     "p95": 72.2,
+     "mean": 53.1
+    },
+    "seismic_traverse_ms": {
+     "n": 120,
+     "p50": 1558.3,
+     "p95": 2633.2,
+     "mean": 1632.6
+    },
+    "splade_leg_ms": {
+     "n": 120,
+     "p50": 1608.1,
+     "p95": 2938.5,
+     "mean": 1685.8
+    },
+    "bm25f_leg_ms": {
+     "n": 120,
+     "p50": 2820.7,
+     "p95": 4379.0,
+     "mean": 2886.7
+    },
+    "hydrate_ms": {
+     "n": 120,
+     "p50": 126.4,
+     "p95": 171.3,
+     "mean": 129.8
+    },
+    "maybe_rerank_ms": {
+     "n": 120,
+     "p50": 279.4,
+     "p95": 358.9,
+     "mean": 280.1
+    },
+    "stage1_ms": {
+     "n": 120,
+     "p50": 222.2,
+     "p95": 276.9,
+     "mean": 223.2
+    },
+    "stage1_embed_ms": {
+     "n": 120,
+     "p50": 222.0,
+     "p95": 276.6,
+     "mean": 223.0
+    },
+    "ce_ms": {
+     "n": 120,
+     "p50": 53.2,
+     "p95": 101.6,
+     "mean": 56.2
+    }
+   },
+   "parity_vs_first_gpu": {
+    "fused_byte_identical": "120/120",
+    "final_top10_byte_identical": "120/120",
+    "final_top10_exact_order": "120/120",
+    "final_top10_same_set": "120/120",
+    "final_top10_overlap_mean": 1.0,
+    "stage1_top20_order_identical": "120/120",
+    "stage1_score_max_abs_delta": 0.0,
+    "stage1_score_p50_abs_delta": 0.0,
+    "ce_score_max_abs_delta": 0.0,
+    "ce_score_p50_abs_delta": 0.0,
+    "n_stage1_scores_compared": 2400,
+    "n_ce_scores_compared": 2400,
+    "topics_with_top10_order_change": []
+   }
+  }
+ ],
+ "note": "host: local WSL2 (31 GB, 16 cores), RTX 4070 Ti SUPER; shards staged to SFU_SEISMIC_STAGE_DIR; other agents active on the host between rounds (flock held per round only). CPU arms hide the GPU with CUDA_VISIBLE_DEVICES=\"\" inside the cu124 torch / onnxruntime-gpu venv; no CPU-only wheel set was installed."
+}

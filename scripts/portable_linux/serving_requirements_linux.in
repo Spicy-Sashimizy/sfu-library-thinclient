@@ -1,0 +1,30 @@
+# Top-level CPU-only serving wheel set for the portable Linux bundle.
+# Versions mirror the dev venv (docs/infrastructure/PORTABLE_STACK_MANIFEST.md (a))
+# except the two GPU dists, which are swapped for their CPU twins:
+#   torch 2.6.0+cu124   -> torch 2.6.0+cpu   (download.pytorch.org/whl/cpu)
+#   onnxruntime-gpu     -> onnxruntime       (same 1.26.0)
+# Resolved (with transitive deps + sha256) into serving_requirements_linux.lock.txt
+# by `bundle_tool.py lock`; the build installs ONLY from the lock.
+#
+# EXCLUDED: pyzotero 1.10.0 -- its dependency bibtexparser<2 (>=1.4.3) ships
+# sdist-only, which the wheel-only policy (--only-binary=:all:) rejects
+# (resolver error, 2026-09-27). lib/zotero.py imports pyzotero lazily, so the
+# search serve path is unaffected; the Zotero MCP tools are unavailable in the bundle.
+
+torch==2.6.0+cpu
+onnxruntime==1.26.0
+tantivy==0.26.0
+numpy==2.4.3
+zstandard==0.25.0
+transformers==4.57.6
+tokenizers==0.22.2
+sentence-transformers==5.4.1
+usearch==2.25.3
+scipy==1.17.1
+scikit-learn==1.8.0
+regex==2026.4.4
+requests==2.32.5
+starlette==0.52.1
+uvicorn==0.40.0
+mcp==1.26.0
+pydantic==2.12.5

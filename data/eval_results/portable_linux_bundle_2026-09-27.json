@@ -1,0 +1,304 @@
+{
+ "probe": "portable_linux_bundle",
+ "date": "2026-09-27",
+ "host": {
+  "os": "WSL2 kernel 6.18, Debian 12 container",
+  "glibc": "2.36",
+  "cpu": "x86-64 with AVX2 (x86-64-v3)"
+ },
+ "scripts": "scripts/portable_linux/build_linux_runtime.sh (+ pins.conf, serving_requirements_linux.lock.txt, bundle_tool.py, bundle_check.py)",
+ "recipe": {
+  "recipe_version": 1,
+  "pbs_tag": "20260924",
+  "pbs_asset": "cpython-3.11.16+20260924-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+  "pbs_sha256": "68c6739376b65258dee5058ccf6777232fe38d31a578965ae8bda327ec7da3a8",
+  "python_version": "3.11.16",
+  "seismic_so_source": "spike/seismic_upstream/target/portable_so/v3/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+  "seismic_so_sha256": "6c88c8c7862720b05b0e0eee6747b6483ec8e47b48f6e4a7c8d9e9d7a354d57c",
+  "lock_sha256": "09ef8537c5c5d2d81a4e92f19a5ce7104c8c1b5bf0b03c9c05212a28b8ecc95e",
+  "source_git_head": "d2416b1526ec6bd1a83fd4e37d8ff987c672f029",
+  "env_contract": [
+   "SFU_THINCLIENT_INDEX_ROOT",
+   "SFU_SEISMIC_SHARD_MANIFEST",
+   "SFU_SPLADE_MODEL_PATH",
+   "SFU_EMBEDDING_MODEL_PATH",
+   "SFU_CE_MODEL_PATH"
+  ]
+ },
+ "wheel_lock": {
+  "n_wheels": 63,
+  "torch": "2.6.0+cpu",
+  "onnxruntime": "1.26.0 (CPU dist)",
+  "cuda_wheels_in_lock": 0,
+  "excluded": {
+   "pyzotero==1.10.0": "dependency bibtexparser<2 is sdist-only; wheel-only policy rejects it; lazy import, search unaffected"
+  }
+ },
+ "size": {
+  "manifest_totals": {
+   "launcher": {
+    "files": 3,
+    "bytes": 10714
+   },
+   "runtime": {
+    "files": 3855,
+    "bytes": 82132145
+   },
+   "seismic_so": {
+    "files": 2,
+    "bytes": 2700400
+   },
+   "source": {
+    "files": 41,
+    "bytes": 679861
+   },
+   "wheels": {
+    "files": 21348,
+    "bytes": 1183212110
+   }
+  },
+  "manifest_total_bytes": 1268735230,
+  "n_files": 25249,
+  "on_disk_du_block_bytes_fresh_build": 1346527232,
+  "download_cache_bytes": {
+   "cpython_tarball": 30778566,
+   "wheelhouse_63_wheels": 324356193
+  },
+  "largest_site_packages_mib": {
+   "torch": 670,
+   "scipy": 83,
+   "transformers": 57,
+   "onnxruntime": 51,
+   "numkong": 44
+  }
+ },
+ "build_wall_s": {
+  "cold_cache_build_c_recipe_rev1": {
+   "total": 35.9,
+   "fetch_extract_python": 2.5,
+   "download_wheels": 15.9,
+   "install_wheels": 11.4,
+   "assemble_so_source_launcher": 1.5,
+   "manifest": 4.6
+  },
+  "offline_warm_build_a_final": {
+   "total": 14.3,
+   "fetch_extract_python": 1.1,
+   "download_wheels": 0.0,
+   "install_wheels": 10.2,
+   "assemble_so_source_launcher": 0.3,
+   "manifest": 2.7
+  },
+  "offline_warm_build_b_final": {
+   "total": 13.7,
+   "fetch_extract_python": 1.0,
+   "download_wheels": 0.0,
+   "install_wheels": 9.7,
+   "assemble_so_source_launcher": 0.3,
+   "manifest": 2.7
+  }
+ },
+ "determinism": {
+  "final_recipe": {
+   "builds": [
+    "build_a (offline)",
+    "other/deeper/build_b (offline, deeper path)"
+   ],
+   "bundle_sha256": [
+    "a3936833b4f9b45d981e0bb86fc5dc6737c3a3c8a46548eef7716e6408a4e820",
+    "a3936833b4f9b45d981e0bb86fc5dc6737c3a3c8a46548eef7716e6408a4e820"
+   ],
+   "identical": true,
+   "build_path_strings_in_bundle": 0
+  },
+  "recipe_rev1_incl_cold_build": {
+   "builds": [
+    "build_c (cold cache, online)",
+    "build_a (offline)",
+    "other/deeper/build_b (offline, deeper path)"
+   ],
+   "bundle_sha256": [
+    "a9ccdc73fd0c1831c5288d6562e4a5e571c8f8265cc909dc50458c68bcb8e5f0",
+    "a9ccdc73fd0c1831c5288d6562e4a5e571c8f8265cc909dc50458c68bcb8e5f0",
+    "a9ccdc73fd0c1831c5288d6562e4a5e571c8f8265cc909dc50458c68bcb8e5f0"
+   ],
+   "identical": true,
+   "build_path_strings_in_bundle": 0,
+   "fixed_on_the_way": [
+    "pip wrote timestamped .pyc into the bundle while running -> PYTHONDONTWRITEBYTECODE=1",
+    "console-script shebangs + RECORD hashes carried the build path -> sh trampoline + RECORD refresh"
+   ],
+   "note": "identical recipe except an earlier bundle_check.py (the only differing file); cold-cache + 2 offline builds identical"
+  }
+ },
+ "abi": {
+  "so_tag": "cpython-311-x86_64-linux-gnu",
+  "bundled_python": "3.11.16",
+  "so_loads": true,
+  "so_glibc_max": "GLIBC_2.34",
+  "max_wheel_tag": "manylinux_2_34 (cryptography 50.0.1, via mcp->pyjwt[crypto])",
+  "host_floor": "glibc>=2.34 + x86-64-v3; only verified on glibc 2.36"
+ },
+ "import_check_inplace": {
+  "bundle": "/tmp/claude-1000/portable_linux/build_a",
+  "python": "3.11.16",
+  "executable": "/tmp/claude-1000/portable_linux/build_a/python/bin/python3.11",
+  "retriever_file": "/tmp/claude-1000/portable_linux/build_a/app/src/lib/thinclient/retriever.py",
+  "seismic_file": "/tmp/claude-1000/portable_linux/build_a/ext/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+  "seismic_has_MmapSeismicIndex": true,
+  "torch_version": "2.6.0+cpu",
+  "torch_cuda_available": false,
+  "onnxruntime_version": "1.26.0",
+  "ort_providers": [
+   "AzureExecutionProvider",
+   "CPUExecutionProvider"
+  ],
+  "dists": {
+   "tantivy": "0.26.0",
+   "transformers": "4.57.6",
+   "tokenizers": "0.22.2",
+   "sentence-transformers": "5.4.1",
+   "numpy": "2.4.3",
+   "zstandard": "0.25.0",
+   "usearch": "2.25.3",
+   "onnxruntime": "1.26.0",
+   "torch": "2.6.0+cpu",
+   "mcp": "1.26.0",
+   "starlette": "0.52.1",
+   "uvicorn": "0.40.0"
+  },
+  "all_inside_bundle": true,
+  "sys_path_outside_bundle": [],
+  "modules_outside_bundle": [],
+  "runtime_temp_stubs": [
+   "/tmp/tmprgf4nmzp",
+   "/tmp/tmprgf4nmzp/_remote_module_non_scriptable.py"
+  ],
+  "ort_non_cpu_providers": [],
+  "status": "PASS",
+  "wall_s": 9.55,
+  "cwd": "/"
+ },
+ "import_check_relocated": {
+  "bundle": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated",
+  "python": "3.11.16",
+  "executable": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/python/bin/python3.11",
+  "retriever_file": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/app/src/lib/thinclient/retriever.py",
+  "seismic_file": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/ext/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+  "seismic_has_MmapSeismicIndex": true,
+  "torch_version": "2.6.0+cpu",
+  "torch_cuda_available": false,
+  "onnxruntime_version": "1.26.0",
+  "ort_providers": [
+   "AzureExecutionProvider",
+   "CPUExecutionProvider"
+  ],
+  "dists": {
+   "tantivy": "0.26.0",
+   "transformers": "4.57.6",
+   "tokenizers": "0.22.2",
+   "sentence-transformers": "5.4.1",
+   "numpy": "2.4.3",
+   "zstandard": "0.25.0",
+   "usearch": "2.25.3",
+   "onnxruntime": "1.26.0",
+   "torch": "2.6.0+cpu",
+   "mcp": "1.26.0",
+   "starlette": "0.52.1",
+   "uvicorn": "0.40.0"
+  },
+  "all_inside_bundle": true,
+  "sys_path_outside_bundle": [],
+  "modules_outside_bundle": [],
+  "runtime_temp_stubs": [
+   "/tmp/tmpiy4d2qwr",
+   "/tmp/tmpiy4d2qwr/_remote_module_non_scriptable.py"
+  ],
+  "ort_non_cpu_providers": [],
+  "status": "PASS",
+  "wall_s": 4.44,
+  "cwd": "/var",
+  "moved_from": "/tmp/claude-1000/portable_linux/build_a"
+ },
+ "smoke": {
+  "lock": "flock /tmp/sfu_latency_measure.lock",
+  "index": {
+   "index_root": "data/thinclient_index (9p)",
+   "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json, anchored to absolute paths in a temp copy",
+   "splade_model": "models/splade_onnx_fused"
+  },
+  "attempt1": {
+   "bundle": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated",
+   "query": "social capital and civic participation",
+   "top_k": 10,
+   "n_hits": 10,
+   "n_with_abstract": 6,
+   "top_titles": [
+    "Civic Participation and Soft Social Capital: Evidence from Greece",
+    "Big Local and civic participation",
+    "Big Local and civic participation"
+   ],
+   "construct_ms": 0.2,
+   "first_search_rrf_wall_ms": 13365.9,
+   "seismic_so_served": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/ext/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "seismic_backend_loaded": true,
+   "error": null,
+   "warnings": [
+    "WARNING sfu_library_mcp: SEISMIC SPLADE leg failed (No local bert-base-uncased tokenizer found for SPLADE. Tried: /workspaces/sfu-library-thinclient/models/splade_onnx_fused, /tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/app/models/sfu-academic-embed-v1, /tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/app/models/sfu-academic-embed-v4-bge, /tmp/claude-1000/port"
+   ],
+   "leg_fallback_warnings": [
+    "WARNING sfu_library_mcp: SEISMIC SPLADE leg failed (No local bert-base-uncased tokenizer found for SPLADE. Tried: /workspaces/sfu-library-thinclient/models/splade_onnx_fused, /tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/app/models/sfu-academic-embed-v1, /tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/app/models/sfu-academic-embed-v4-bge, /tmp/claude-1000/port"
+   ],
+   "torch_imported": true,
+   "cuda_available": false,
+   "sys_path_outside_bundle": [],
+   "modules_outside_bundle": [],
+   "runtime_temp_stubs": [
+    "/tmp/tmpifmylvvm",
+    "/tmp/tmpifmylvvm/_remote_module_non_scriptable.py"
+   ],
+   "status": "FAIL",
+   "lock_window_utc": [
+    "2026-09-27T04:02:46Z",
+    "2026-09-27T04:03:01Z"
+   ],
+   "verdict": "FAIL (caught): SPLADE leg failed -> silent BM25F-only fallback. models/splade_onnx_fused has no tokenizer files; the repo serve path borrows bert-base-uncased from code-relative models/sfu-academic-embed-v1 (_TOKENIZER_FALLBACK_DIRS), which does not exist beside the bundle's code."
+  },
+  "attempt2": {
+   "bundle": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated",
+   "query": "social capital and civic participation",
+   "splade_model_dir": "/workspaces/sfu-library-thinclient/models/splade_onnx_fused",
+   "splade_tokenizer_dir": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v1",
+   "top_k": 10,
+   "n_hits": 10,
+   "n_with_abstract": 8,
+   "top_titles": [
+    "Civic Participation and Soft Social Capital: Evidence from Greece",
+    "Peran Modal Sosial dalam Mewujudkan Civic Engagement Pada Santri Pondok Buntet Pesantren",
+    "Big Local and civic participation"
+   ],
+   "construct_ms": 0.3,
+   "first_search_rrf_wall_ms": 18774.8,
+   "seismic_so_served": "/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated/ext/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "seismic_backend_loaded": true,
+   "error": null,
+   "warnings": [],
+   "leg_fallback_warnings": [],
+   "torch_imported": true,
+   "cuda_available": false,
+   "sys_path_outside_bundle": [],
+   "modules_outside_bundle": [],
+   "runtime_temp_stubs": [
+    "/tmp/tmptewxwj8c",
+    "/tmp/tmptewxwj8c/_remote_module_non_scriptable.py"
+   ],
+   "status": "PASS",
+   "lock_window_utc": [
+    "2026-09-27T04:19:16Z",
+    "2026-09-27T04:19:36Z"
+   ],
+   "splade_tokenizer_source": "models/sfu-academic-embed-v1 (symlinked into a temp composite SPLADE dir)",
+   "verdict": "PASS: 10 hits, SEISMIC served from the bundle's ext/ .so, no warnings; one cold-process number, not a benchmark"
+  }
+ }
+}

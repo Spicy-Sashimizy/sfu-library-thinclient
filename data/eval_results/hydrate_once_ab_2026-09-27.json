@@ -1,0 +1,571 @@
+{
+ "what": "Lever #0 hydrate once per request (ThinClientRetriever.hydrate_scope memo, router LOCAL_RRF scope): multi-pass A/B scope bypassed (OFF) vs current code (ON), docs/SPECULATIVE_RETRIEVAL_UPGRADES.md \u00a74 row 0 / \u00a76 step 3.",
+ "date": "2026-09-27",
+ "script": "scripts/experiments/eval_hydrate_once_ab.py",
+ "topics_file": "data/eval_results/dense_ablation_qrels_20260817.json",
+ "query_field": "natural",
+ "n_topics": 120,
+ "pass_order": [
+  "warmup",
+  "off",
+  "on",
+  "on",
+  "off",
+  "off",
+  "on"
+ ],
+ "config": {
+  "features": {
+   "cache_enabled": true,
+   "retry_enabled": true,
+   "circuit_breaker_enabled": true,
+   "metrics_enabled": true,
+   "rerank_enabled": true,
+   "zotero_enabled": true,
+   "semantic_scholar_enabled": true,
+   "europe_pmc_enabled": false,
+   "local_embedding_enabled": true,
+   "rrf_enabled": true,
+   "crossencoder_enabled": true,
+   "query_log_enabled": false,
+   "lambdamart_enabled": false,
+   "engagement_log_enabled": false,
+   "local_opensearch_enabled": true,
+   "splade_enabled": false,
+   "federated_search_enabled": true,
+   "local_rrf_enabled": true
+  },
+  "fetch_k": 20,
+  "limit": 10,
+  "torch_device": "cuda",
+  "torch_threads": 8,
+  "load_s": 1.2,
+  "embedding_model_path": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+  "speculative_rerank_gate": "unset (default OFF) in both arms",
+  "force_source": "LOCAL_RRF",
+  "remote_abstracts": {
+   "mode": "per-id stub, 0 OpenAlex calls",
+   "per_id_preloaded": 0
+  },
+  "dense_cache_present": false
+ },
+ "results": {
+  "byte_parity_final_all_passes_vs_first_off": true,
+  "byte_parity_fused_all_passes_vs_first_off": true,
+  "hydrate_ms_pooled_p50_drop": 1.42,
+  "hydrate_ms_pooled_p95_drop": 5.45,
+  "total_ms_pooled_p50_drop": 110.8,
+  "total_ms_pooled_p95_drop": 35.2,
+  "est_saving_ms_from_3b": 7.0,
+  "off_duplicate_ids_per_request": {
+   "n": 360,
+   "p50": 1,
+   "p95": 5,
+   "mean": 1.59
+  },
+  "wi18_counters_unchanged": true,
+  "result_cache_counters_unchanged": true,
+  "speculative_rerank_counters_unchanged": true,
+  "counters_before_after": {
+   "wi18": [
+    {
+     "enabled": false,
+     "fired": 0,
+     "dropped_busy": 0,
+     "suppressed_by_guard": 0,
+     "predicted": 0,
+     "literal": 0,
+     "stores": 0,
+     "suppressed_by_reason": {
+      "warming": 0,
+      "degraded": 0,
+      "cache-off": 0,
+      "shed": 0,
+      "short-input": 0
+     }
+    },
+    {
+     "enabled": false,
+     "fired": 0,
+     "dropped_busy": 0,
+     "suppressed_by_guard": 0,
+     "predicted": 0,
+     "literal": 0,
+     "stores": 0,
+     "suppressed_by_reason": {
+      "warming": 0,
+      "degraded": 0,
+      "cache-off": 0,
+      "shed": 0,
+      "short-input": 0
+     }
+    }
+   ],
+   "result_cache": [
+    {
+     "enabled": true,
+     "hit": 0,
+     "miss": 0,
+     "store": 0,
+     "bypass": 0,
+     "resident": 0,
+     "hit_ratio": 0.0
+    },
+    {
+     "enabled": true,
+     "hit": 0,
+     "miss": 0,
+     "store": 0,
+     "bypass": 0,
+     "resident": 0,
+     "hit_ratio": 0.0
+    }
+   ],
+   "speculative_rerank": [
+    {
+     "drafts_started": 0,
+     "dropped_busy": 0,
+     "skipped_rerank_off": 0,
+     "job_errors": 0,
+     "abandoned": 0,
+     "bound": 0,
+     "consumed_with_draft": 0,
+     "candidates_drafted": 0,
+     "candidates_accepted": 0,
+     "embed_hits": 0,
+     "embed_misses": 0,
+     "embed_calls_skipped": 0,
+     "ce_hits": 0,
+     "ce_misses": 0,
+     "ce_calls_skipped": 0,
+     "draft_ce_dropped_slot": 0,
+     "draft_ce_batches": 0,
+     "draft_ce_early": 0,
+     "draft_ce_covered": 0,
+     "real_ce_waited": 0,
+     "enabled": false
+    },
+    {
+     "drafts_started": 0,
+     "dropped_busy": 0,
+     "skipped_rerank_off": 0,
+     "job_errors": 0,
+     "abandoned": 0,
+     "bound": 0,
+     "consumed_with_draft": 0,
+     "candidates_drafted": 0,
+     "candidates_accepted": 0,
+     "embed_hits": 0,
+     "embed_misses": 0,
+     "embed_calls_skipped": 0,
+     "ce_hits": 0,
+     "ce_misses": 0,
+     "ce_calls_skipped": 0,
+     "draft_ce_dropped_slot": 0,
+     "draft_ce_batches": 0,
+     "draft_ce_early": 0,
+     "draft_ce_covered": 0,
+     "real_ce_waited": 0,
+     "enabled": false
+    }
+   ]
+  }
+ },
+ "paired": {
+  "hydrate_ms": {
+   "per_topic_median_off_minus_on": {
+    "n": 120,
+    "p50": 2.244,
+    "p95": 12.714,
+    "mean": 0.609
+   },
+   "topics_on_faster": 71
+  },
+  "total_ms": {
+   "per_topic_median_off_minus_on": {
+    "n": 120,
+    "p50": 15.559,
+    "p95": 746.557,
+    "mean": -10.15
+   },
+   "topics_on_faster": 61
+  }
+ },
+ "pooled": {
+  "off": {
+   "hydrate_ms": {
+    "n": 360,
+    "p50": 130.17,
+    "p95": 171.33,
+    "mean": 133.97
+   },
+   "total_ms": {
+    "n": 360,
+    "p50": 4960.4,
+    "p95": 6871.5,
+    "mean": 4953.6
+   },
+   "retrieval_ms": {
+    "n": 360,
+    "p50": 4616.6,
+    "p95": 6613.0,
+    "mean": 4667.3
+   },
+   "maybe_rerank_ms": {
+    "n": 360,
+    "p50": 279.8,
+    "p95": 369.5,
+    "mean": 285.1
+   },
+   "counts": {
+    "requests": 360,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 14400,
+    "fetch_abstracts_ids_total": 14400,
+    "remote_ids_total": 8787,
+    "duplicate_ids_total": 573,
+    "duplicate_share": 0.0398,
+    "requests_with_duplicate": 225
+   }
+  },
+  "on": {
+   "hydrate_ms": {
+    "n": 360,
+    "p50": 128.75,
+    "p95": 165.88,
+    "mean": 131.31
+   },
+   "total_ms": {
+    "n": 360,
+    "p50": 4849.6,
+    "p95": 6836.3,
+    "mean": 4940.7
+   },
+   "retrieval_ms": {
+    "n": 360,
+    "p50": 4545.7,
+    "p95": 6559.0,
+    "mean": 4657.5
+   },
+   "maybe_rerank_ms": {
+    "n": 360,
+    "p50": 282.9,
+    "p95": 357.4,
+    "mean": 282.2
+   },
+   "counts": {
+    "requests": 360,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 13827,
+    "fetch_abstracts_ids_total": 13827,
+    "remote_ids_total": 8448,
+    "duplicate_ids_total": 0,
+    "duplicate_share": 0.0,
+    "requests_with_duplicate": 0
+   }
+  }
+ },
+ "passes": [
+  {
+   "arm": "warmup",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 150.78,
+    "p95": 200.4,
+    "mean": 155.58
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 4777.0,
+    "p95": 7621.5,
+    "mean": 5626.4
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4476.7,
+    "p95": 7318.3,
+    "mean": 5233.1
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 281.9,
+    "p95": 361.5,
+    "mean": 392.7
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4609,
+    "fetch_abstracts_ids_total": 4609,
+    "remote_ids_total": 2816,
+    "duplicate_ids_total": 0,
+    "duplicate_share": 0.0,
+    "requests_with_duplicate": 0
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "off",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 130.17,
+    "p95": 162.59,
+    "mean": 132.42
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 4786.0,
+    "p95": 6812.0,
+    "mean": 4883.3
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4497.2,
+    "p95": 6736.3,
+    "mean": 4603.2
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 284.5,
+    "p95": 357.1,
+    "mean": 279.3
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4800,
+    "fetch_abstracts_ids_total": 4800,
+    "remote_ids_total": 2929,
+    "duplicate_ids_total": 191,
+    "duplicate_share": 0.0398,
+    "requests_with_duplicate": 75
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "on",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 127.6,
+    "p95": 168.62,
+    "mean": 130.14
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 4811.0,
+    "p95": 6848.7,
+    "mean": 4914.1
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4513.7,
+    "p95": 6579.8,
+    "mean": 4629.8
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 288.7,
+    "p95": 357.4,
+    "mean": 283.4
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4609,
+    "fetch_abstracts_ids_total": 4609,
+    "remote_ids_total": 2816,
+    "duplicate_ids_total": 0,
+    "duplicate_share": 0.0,
+    "requests_with_duplicate": 0
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "on",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 129.71,
+    "p95": 167.38,
+    "mean": 132.61
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 4941.5,
+    "p95": 6994.1,
+    "mean": 4965.2
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4587.6,
+    "p95": 6653.4,
+    "mean": 4680.5
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 283.4,
+    "p95": 363.2,
+    "mean": 283.7
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4609,
+    "fetch_abstracts_ids_total": 4609,
+    "remote_ids_total": 2816,
+    "duplicate_ids_total": 0,
+    "duplicate_share": 0.0,
+    "requests_with_duplicate": 0
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "off",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 131.64,
+    "p95": 171.83,
+    "mean": 135.11
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 5081.6,
+    "p95": 6784.5,
+    "mean": 4963.8
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4774.0,
+    "p95": 6469.7,
+    "mean": 4676.8
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 284.7,
+    "p95": 369.5,
+    "mean": 285.7
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4800,
+    "fetch_abstracts_ids_total": 4800,
+    "remote_ids_total": 2929,
+    "duplicate_ids_total": 191,
+    "duplicate_share": 0.0398,
+    "requests_with_duplicate": 75
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "off",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 128.59,
+    "p95": 174.15,
+    "mean": 134.37
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 5008.0,
+    "p95": 7006.6,
+    "mean": 5013.7
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4721.7,
+    "p95": 6749.3,
+    "mean": 4722.0
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 274.2,
+    "p95": 375.5,
+    "mean": 290.5
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4800,
+    "fetch_abstracts_ids_total": 4800,
+    "remote_ids_total": 2929,
+    "duplicate_ids_total": 191,
+    "duplicate_share": 0.0398,
+    "requests_with_duplicate": 75
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  },
+  {
+   "arm": "on",
+   "hydrate_ms": {
+    "n": 120,
+    "p50": 128.09,
+    "p95": 164.0,
+    "mean": 131.18
+   },
+   "total_ms": {
+    "n": 120,
+    "p50": 4872.4,
+    "p95": 6594.3,
+    "mean": 4942.8
+   },
+   "retrieval_ms": {
+    "n": 120,
+    "p50": 4598.8,
+    "p95": 6263.9,
+    "mean": 4662.2
+   },
+   "maybe_rerank_ms": {
+    "n": 120,
+    "p50": 278.5,
+    "p95": 353.0,
+    "mean": 279.5
+   },
+   "counts": {
+    "requests": 120,
+    "hydrate_calls_per_request": 2.0,
+    "meta_rows_calls_per_request": 2.0,
+    "fetch_abstracts_calls_per_request": 2.0,
+    "remote_calls_per_request": 1.958,
+    "meta_rows_ids_total": 4609,
+    "fetch_abstracts_ids_total": 4609,
+    "remote_ids_total": 2816,
+    "duplicate_ids_total": 0,
+    "duplicate_share": 0.0,
+    "requests_with_duplicate": 0
+   },
+   "final_identical_to_first_off": "120/120",
+   "fused_identical_to_first_off": "120/120"
+  }
+ ],
+ "note": "host: local WSL2 (31 GB, 16 cores), RTX 4070 Ti SUPER; run held /tmp/sfu_latency_measure.lock (no other index-loading job during the run); remote-abstract wall time is NOT in the hydrate figures (per-id stub), remote savings are the id/call counts"
+}

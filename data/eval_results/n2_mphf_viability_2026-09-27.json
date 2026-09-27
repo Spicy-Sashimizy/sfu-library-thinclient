@@ -1,0 +1,918 @@
+{
+  "experiment": "N2 MPHF viability for ordinal addressing (doc 18 \u00a77 N2)",
+  "date": "2026-09-27",
+  "host": {
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "cores": 16,
+    "mem_total_gb": 33.7,
+    "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+    "fs_of_work_dir": "overlay (local disk, not 9p)"
+  },
+  "library": {
+    "name": "ptr_hash (PtrHash, Groot Koerkamp, SEA 2025)",
+    "version": "2.1.1",
+    "license": "MIT",
+    "serialization": "epserde 0.13.1 (file-backed mmap via Deserialize::mmap)",
+    "hasher": "ptr_hash::hash::Xxh3Int",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "rustflags": "-C target-cpu=x86-64-v3, opt-level=3, lto=thin, codegen-units=1"
+  },
+  "input": {
+    "path": "/tmp/claude-1000/n2_mphf/wids.npy",
+    "source": "spike/meta_consolidation/work_ordinals_full/wids.npy (byte copy, sha256 verified)",
+    "sha256": "4d435f344daa57161c49e0155edafd143f73fd2567b41358aed680c1eec68d08",
+    "n_keys": 150413098,
+    "key_min": 108,
+    "key_max": 7143276021
+  },
+  "build": {
+    "n": 150413098,
+    "params": "PtrHashParams::default() (Linear bucket fn, single part, remap Vec<u32>, Xxh3Int)",
+    "key_load_touch_s": 31.104,
+    "construction_s": 45.426,
+    "store_s": 0.027,
+    "mphf_bytes": 56215380,
+    "bits_per_key_file": 2.9899,
+    "pilot_bits_per_key": 2.6667,
+    "remap_bits_per_key": 0.3232,
+    "maxrss_kb_before_build": 1176692,
+    "maxrss_kb_after_build": 3458920,
+    "threads": 16,
+    "wall_s_incl_process": 76.56,
+    "peak_rss_kb_child": 3458920
+  },
+  "payload": {
+    "n": 150413098,
+    "slot_collisions": 0,
+    "empty_slots": 0,
+    "minimal_perfect": true,
+    "slot_pass_s": 46.075,
+    "payload_total_s": 47.823,
+    "maxrss_kb": 3434348,
+    "wall_s_incl_process": 48.05
+  },
+  "queries": {
+    "n": 1000000,
+    "seed": 20260927,
+    "key_min": 108,
+    "key_max": 7143276021,
+    "miss_candidates_rejected_as_members": 21290,
+    "key_density": 0.021057
+  },
+  "arms": {
+    "bsearch": {
+      "arm": "bsearch",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/wids.npy"
+      ],
+      "on_disk_bytes": 1203304912,
+      "tsc_ghz": 2.9998,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "wids.npy": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1203304912
+        },
+        "misses": {
+          "wids.npy": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1203304912
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 4292526,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 1700.1,
+            "p90_ns": 165341.4,
+            "p99_ns": 601621.6,
+            "p999_ns": 1260097.1,
+            "max_ns": 4470474.1,
+            "mean_ns": 43476.33,
+            "wall_ns_per_key_incl_timer": 43535.04,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 4539966,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 460.0,
+            "p90_ns": 1840.1,
+            "p99_ns": 506525.4,
+            "p999_ns": 1085075.0,
+            "max_ns": 6118523.0,
+            "mean_ns": 18070.93,
+            "wall_ns_per_key_incl_timer": 18115.81,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 0
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 1100.1,
+          "p90_ns": 1500.1,
+          "p99_ns": 1870.1,
+          "p999_ns": 12500.9,
+          "max_ns": 143990.0,
+          "mean_ns": 1167.13,
+          "wall_ns_per_key_incl_timer": 1207.49,
+          "throughput_loop_ns_per_key": 685.47,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 90.0,
+          "p90_ns": 920.1,
+          "p99_ns": 1520.1,
+          "p999_ns": 2070.1,
+          "max_ns": 159031.0,
+          "mean_ns": 319.62,
+          "wall_ns_per_key_incl_timer": 359.27,
+          "throughput_loop_ns_per_key": 233.36,
+          "accepted": 0
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 0,
+        "miss_false_accept_rate": 0.0
+      },
+      "warm_resident": {
+        "VmRSS_kb": 1206924,
+        "RssFile_kb": 1175508,
+        "RssAnon_kb": 31416,
+        "page_cache": {
+          "wids.npy": {
+            "resident_bytes": 1201000448,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 1201000448,
+          "total_file_bytes": 1203304912
+        }
+      },
+      "wall_s": 89.59
+    },
+    "mphf_only": {
+      "arm": "mphf_only",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/full/mphf.bin"
+      ],
+      "on_disk_bytes": 56215380,
+      "tsc_ghz": 2.9998,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 56215380
+        },
+        "misses": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 56215380
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 610200,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 90.0,
+            "p90_ns": 120.0,
+            "p99_ns": 138099.3,
+            "p999_ns": 190352.8,
+            "max_ns": 392156.7,
+            "mean_ns": 2198.79,
+            "wall_ns_per_key_incl_timer": 2244.97,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 450545,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 60.0,
+            "p90_ns": 120.0,
+            "p99_ns": 136749.2,
+            "p999_ns": 188862.7,
+            "max_ns": 461268.4,
+            "mean_ns": 2174.11,
+            "wall_ns_per_key_incl_timer": 2214.13,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 40.0,
+          "p90_ns": 60.0,
+          "p99_ns": 160.0,
+          "p999_ns": 590.0,
+          "max_ns": 200413.5,
+          "mean_ns": 45.8,
+          "wall_ns_per_key_incl_timer": 85.46,
+          "throughput_loop_ns_per_key": 16.4,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 40.0,
+          "p90_ns": 60.0,
+          "p99_ns": 120.0,
+          "p999_ns": 530.0,
+          "max_ns": 87935.9,
+          "mean_ns": 41.31,
+          "wall_ns_per_key_incl_timer": 80.85,
+          "throughput_loop_ns_per_key": 16.24,
+          "accepted": 1000000
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 1000000,
+        "miss_false_accept_rate": 1.0
+      },
+      "warm_resident": {
+        "VmRSS_kb": 88936,
+        "RssFile_kb": 57520,
+        "RssAnon_kb": 31416,
+        "page_cache": {
+          "mphf.bin": {
+            "resident_bytes": 56217600,
+            "file_bytes": 56215380
+          },
+          "total_resident_bytes": 56217600,
+          "total_file_bytes": 56215380
+        }
+      },
+      "wall_s": 4.99
+    },
+    "mphf_keys": {
+      "arm": "mphf_keys",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/full/mphf.bin",
+        "/tmp/claude-1000/n2_mphf/full/keys_by_slot.u64"
+      ],
+      "on_disk_bytes": 1259520164,
+      "tsc_ghz": 2.9998,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "keys_by_slot.u64": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304784
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1259520164
+        },
+        "misses": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "keys_by_slot.u64": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304784
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1259520164
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 482382,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 450.0,
+            "p90_ns": 171281.4,
+            "p99_ns": 277728.5,
+            "p999_ns": 372494.5,
+            "max_ns": 3919046.2,
+            "mean_ns": 48044.81,
+            "wall_ns_per_key_incl_timer": 48113.4,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 441959,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 430.0,
+            "p90_ns": 162570.8,
+            "p99_ns": 280728.7,
+            "p999_ns": 389106.3,
+            "max_ns": 2877162.1,
+            "mean_ns": 46312.83,
+            "wall_ns_per_key_incl_timer": 46369.23,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 0
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 190.0,
+          "p90_ns": 250.0,
+          "p99_ns": 720.0,
+          "p999_ns": 850.1,
+          "max_ns": 70104.7,
+          "mean_ns": 220.45,
+          "wall_ns_per_key_incl_timer": 260.12,
+          "throughput_loop_ns_per_key": 75.21,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 190.0,
+          "p90_ns": 250.0,
+          "p99_ns": 720.0,
+          "p999_ns": 840.1,
+          "max_ns": 61224.1,
+          "mean_ns": 216.21,
+          "wall_ns_per_key_incl_timer": 255.85,
+          "throughput_loop_ns_per_key": 61.28,
+          "accepted": 0
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 0,
+        "miss_false_accept_rate": 0.0
+      },
+      "warm_resident": {
+        "VmRSS_kb": 1262912,
+        "RssFile_kb": 1231492,
+        "RssAnon_kb": 31420,
+        "page_cache": {
+          "mphf.bin": {
+            "resident_bytes": 56217600,
+            "file_bytes": 56215380
+          },
+          "keys_by_slot.u64": {
+            "resident_bytes": 1202167808,
+            "file_bytes": 1203304784
+          },
+          "total_resident_bytes": 1258385408,
+          "total_file_bytes": 1259520164
+        }
+      },
+      "wall_s": 97.52
+    },
+    "mphf_perm_wids": {
+      "arm": "mphf_perm_wids",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/full/mphf.bin",
+        "/tmp/claude-1000/n2_mphf/full/perm.u32",
+        "/tmp/claude-1000/n2_mphf/wids.npy"
+      ],
+      "on_disk_bytes": 1861172684,
+      "tsc_ghz": 2.9998,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "perm.u32": {
+            "resident_bytes": 0,
+            "file_bytes": 601652392
+          },
+          "wids.npy": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1861172684
+        },
+        "misses": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "perm.u32": {
+            "resident_bytes": 0,
+            "file_bytes": 601652392
+          },
+          "wids.npy": {
+            "resident_bytes": 0,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 1861172684
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 6185133,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 760.0,
+            "p90_ns": 229809.8,
+            "p99_ns": 412387.1,
+            "p999_ns": 542465.3,
+            "max_ns": 4416839.9,
+            "mean_ns": 69103.97,
+            "wall_ns_per_key_incl_timer": 69171.67,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 5496864,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 740.0,
+            "p90_ns": 229735.1,
+            "p99_ns": 417497.4,
+            "p999_ns": 548786.0,
+            "max_ns": 5406037.2,
+            "mean_ns": 68126.68,
+            "wall_ns_per_key_incl_timer": 68184.03,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 0
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 360.0,
+          "p90_ns": 550.0,
+          "p99_ns": 930.1,
+          "p999_ns": 1140.1,
+          "max_ns": 145819.6,
+          "mean_ns": 411.26,
+          "wall_ns_per_key_incl_timer": 451.17,
+          "throughput_loop_ns_per_key": 104.49,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 330.0,
+          "p90_ns": 450.0,
+          "p99_ns": 880.1,
+          "p999_ns": 1200.1,
+          "max_ns": 127228.4,
+          "mean_ns": 371.12,
+          "wall_ns_per_key_incl_timer": 410.62,
+          "throughput_loop_ns_per_key": 100.62,
+          "accepted": 0
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 0,
+        "miss_false_accept_rate": 0.0
+      },
+      "warm_resident": {
+        "VmRSS_kb": 1850292,
+        "RssFile_kb": 1818876,
+        "RssAnon_kb": 31416,
+        "page_cache": {
+          "mphf.bin": {
+            "resident_bytes": 56217600,
+            "file_bytes": 56215380
+          },
+          "perm.u32": {
+            "resident_bytes": 601653248,
+            "file_bytes": 601652392
+          },
+          "wids.npy": {
+            "resident_bytes": 1201987584,
+            "file_bytes": 1203304912
+          },
+          "total_resident_bytes": 1859858432,
+          "total_file_bytes": 1861172684
+        }
+      },
+      "wall_s": 141.34
+    },
+    "mphf_fp8": {
+      "arm": "mphf_fp8",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/full/mphf.bin",
+        "/tmp/claude-1000/n2_mphf/full/fp8.u8"
+      ],
+      "on_disk_bytes": 206628478,
+      "tsc_ghz": 2.9998,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "fp8.u8": {
+            "resident_bytes": 0,
+            "file_bytes": 150413098
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 206628478
+        },
+        "misses": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "fp8.u8": {
+            "resident_bytes": 0,
+            "file_bytes": 150413098
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 206628478
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 487810,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 220.0,
+            "p90_ns": 470.0,
+            "p99_ns": 209618.1,
+            "p999_ns": 370553.2,
+            "max_ns": 1272509.6,
+            "mean_ns": 8032.44,
+            "wall_ns_per_key_incl_timer": 8081.9,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 509988,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 220.0,
+            "p90_ns": 450.0,
+            "p99_ns": 201362.6,
+            "p999_ns": 361404.9,
+            "max_ns": 842253.0,
+            "mean_ns": 7909.96,
+            "wall_ns_per_key_incl_timer": 7951.55,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 3913
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 160.0,
+          "p90_ns": 240.0,
+          "p99_ns": 700.0,
+          "p999_ns": 800.1,
+          "max_ns": 168980.6,
+          "mean_ns": 194.76,
+          "wall_ns_per_key_incl_timer": 234.59,
+          "throughput_loop_ns_per_key": 60.33,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 160.0,
+          "p90_ns": 230.0,
+          "p99_ns": 690.0,
+          "p999_ns": 780.0,
+          "max_ns": 51313.2,
+          "mean_ns": 187.18,
+          "wall_ns_per_key_incl_timer": 226.8,
+          "throughput_loop_ns_per_key": 57.73,
+          "accepted": 3913
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 3913,
+        "miss_false_accept_rate": 0.003913
+      },
+      "warm_resident": {
+        "VmRSS_kb": 235704,
+        "RssFile_kb": 204288,
+        "RssAnon_kb": 31416,
+        "page_cache": {
+          "mphf.bin": {
+            "resident_bytes": 56217600,
+            "file_bytes": 56215380
+          },
+          "fp8.u8": {
+            "resident_bytes": 150413312,
+            "file_bytes": 150413098
+          },
+          "total_resident_bytes": 206630912,
+          "total_file_bytes": 206628478
+        }
+      },
+      "wall_s": 17.16
+    },
+    "mphf_fp16": {
+      "arm": "mphf_fp16",
+      "files": [
+        "/tmp/claude-1000/n2_mphf/full/mphf.bin",
+        "/tmp/claude-1000/n2_mphf/full/fp16.u16"
+      ],
+      "on_disk_bytes": 357041576,
+      "tsc_ghz": 2.9999,
+      "timer_overhead_cycles": 60,
+      "resident_after_evict": {
+        "hits": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "fp16.u16": {
+            "resident_bytes": 0,
+            "file_bytes": 300826196
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 357041576
+        },
+        "misses": {
+          "mphf.bin": {
+            "resident_bytes": 0,
+            "file_bytes": 56215380
+          },
+          "fp16.u16": {
+            "resident_bytes": 0,
+            "file_bytes": 300826196
+          },
+          "total_resident_bytes": 0,
+          "total_file_bytes": 357041576
+        }
+      },
+      "cold": {
+        "hits": {
+          "open_ns": 523769,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 230.0,
+            "p90_ns": 710.0,
+            "p99_ns": 249299.0,
+            "p999_ns": 350662.7,
+            "max_ns": 2505910.9,
+            "mean_ns": 13032.58,
+            "wall_ns_per_key_incl_timer": 13083.05,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 1000000
+          }
+        },
+        "misses": {
+          "open_ns": 428419,
+          "pass": {
+            "n": 1000000,
+            "p50_ns": 240.0,
+            "p90_ns": 750.0,
+            "p99_ns": 249279.0,
+            "p999_ns": 357583.0,
+            "max_ns": 2819157.2,
+            "mean_ns": 12996.13,
+            "wall_ns_per_key_incl_timer": 13039.23,
+            "throughput_loop_ns_per_key": null,
+            "accepted": 14
+          }
+        }
+      },
+      "warm": {
+        "hits": {
+          "n": 1000000,
+          "p50_ns": 170.0,
+          "p90_ns": 240.0,
+          "p99_ns": 710.0,
+          "p999_ns": 820.0,
+          "max_ns": 142715.2,
+          "mean_ns": 206.37,
+          "wall_ns_per_key_incl_timer": 245.85,
+          "throughput_loop_ns_per_key": 79.21,
+          "accepted": 1000000
+        },
+        "misses": {
+          "n": 1000000,
+          "p50_ns": 190.0,
+          "p90_ns": 240.0,
+          "p99_ns": 720.0,
+          "p999_ns": 840.0,
+          "max_ns": 163985.9,
+          "mean_ns": 218.0,
+          "wall_ns_per_key_incl_timer": 257.64,
+          "throughput_loop_ns_per_key": 80.63,
+          "accepted": 14
+        }
+      },
+      "correctness": {
+        "hits_not_found_or_wrong": 0,
+        "misses_false_accepts_warm": 14,
+        "miss_false_accept_rate": 1.4e-05
+      },
+      "warm_resident": {
+        "VmRSS_kb": 382828,
+        "RssFile_kb": 351412,
+        "RssAnon_kb": 31416,
+        "page_cache": {
+          "mphf.bin": {
+            "resident_bytes": 56217600,
+            "file_bytes": 56215380
+          },
+          "fp16.u16": {
+            "resident_bytes": 300826624,
+            "file_bytes": 300826196
+          },
+          "total_resident_bytes": 357044224,
+          "total_file_bytes": 357041576
+        }
+      },
+      "wall_s": 27.41
+    }
+  },
+  "numpy_searchsorted_baseline": {
+    "batch1": {
+      "n_keys": 200000,
+      "cold": {
+        "hits": {
+          "p50_ns": 7360.0,
+          "p99_ns": 29982.0,
+          "mean_ns": 11681.822615,
+          "accepted": 200000
+        },
+        "misses": {
+          "p50_ns": 6550.0,
+          "p99_ns": 26091.0,
+          "mean_ns": 10581.063035,
+          "accepted": 0
+        }
+      },
+      "warm": {
+        "hits": {
+          "p50_ns": 7290.0,
+          "p99_ns": 22342.0,
+          "mean_ns": 7860.195855,
+          "accepted": 200000
+        },
+        "misses": {
+          "p50_ns": 6480.0,
+          "p99_ns": 19861.01000000001,
+          "mean_ns": 7072.021315,
+          "accepted": 0
+        }
+      }
+    },
+    "batch1000": {
+      "n_keys": 1000000,
+      "cold": {
+        "hits": {
+          "p50_ns": 1503.624,
+          "p99_ns": 1870.8151299999995,
+          "mean_ns": 2199.569849,
+          "accepted": 1000000
+        },
+        "misses": {
+          "p50_ns": 507.631,
+          "p99_ns": 2330.564479999992,
+          "mean_ns": 1185.277182,
+          "accepted": 0
+        }
+      },
+      "warm": {
+        "hits": {
+          "p50_ns": 1509.6285,
+          "p99_ns": 1754.2317,
+          "mean_ns": 1528.545781,
+          "accepted": 1000000
+        },
+        "misses": {
+          "p50_ns": 485.02,
+          "p99_ns": 595.01851,
+          "mean_ns": 489.1377279999999,
+          "accepted": 0
+        }
+      }
+    },
+    "note": "per-CALL time divided by batch size, perf_counter_ns; batch=1 includes the full numpy dispatch overhead per id, which is what a per-id caller would pay",
+    "wall_s": 19.8
+  },
+  "summary": {
+    "bsearch": {
+      "exact_membership": true,
+      "on_disk_bytes": 1203304912,
+      "warm_resident_bytes": 1201000448,
+      "warm_p50_ns_worst_of_hit_miss": 1100.1,
+      "warm_p99_ns_worst_of_hit_miss": 1870.1,
+      "warm_throughput_ns_hits": 685.47,
+      "miss_false_accept_rate": 0.0,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": false,
+      "latency_bar_pass_warm_p50": false
+    },
+    "mphf_only": {
+      "exact_membership": false,
+      "on_disk_bytes": 56215380,
+      "warm_resident_bytes": 56217600,
+      "warm_p50_ns_worst_of_hit_miss": 40.0,
+      "warm_p99_ns_worst_of_hit_miss": 160.0,
+      "warm_throughput_ns_hits": 16.4,
+      "miss_false_accept_rate": 1.0,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": true,
+      "latency_bar_pass_warm_p50": true
+    },
+    "mphf_keys": {
+      "exact_membership": true,
+      "on_disk_bytes": 1259520164,
+      "warm_resident_bytes": 1258385408,
+      "warm_p50_ns_worst_of_hit_miss": 190.0,
+      "warm_p99_ns_worst_of_hit_miss": 720.0,
+      "warm_throughput_ns_hits": 75.21,
+      "miss_false_accept_rate": 0.0,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": false,
+      "latency_bar_pass_warm_p50": false
+    },
+    "mphf_perm_wids": {
+      "exact_membership": true,
+      "on_disk_bytes": 1861172684,
+      "warm_resident_bytes": 1859858432,
+      "warm_p50_ns_worst_of_hit_miss": 360.0,
+      "warm_p99_ns_worst_of_hit_miss": 930.1,
+      "warm_throughput_ns_hits": 104.49,
+      "miss_false_accept_rate": 0.0,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": false,
+      "latency_bar_pass_warm_p50": false
+    },
+    "mphf_fp8": {
+      "exact_membership": false,
+      "on_disk_bytes": 206628478,
+      "warm_resident_bytes": 206630912,
+      "warm_p50_ns_worst_of_hit_miss": 160.0,
+      "warm_p99_ns_worst_of_hit_miss": 700.0,
+      "warm_throughput_ns_hits": 60.33,
+      "miss_false_accept_rate": 0.003913,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": false,
+      "latency_bar_pass_warm_p50": false
+    },
+    "mphf_fp16": {
+      "exact_membership": false,
+      "on_disk_bytes": 357041576,
+      "warm_resident_bytes": 357044224,
+      "warm_p50_ns_worst_of_hit_miss": 190.0,
+      "warm_p99_ns_worst_of_hit_miss": 720.0,
+      "warm_throughput_ns_hits": 79.21,
+      "miss_false_accept_rate": 1.4e-05,
+      "hits_not_found_or_wrong": 0,
+      "size_bar_pass": false,
+      "latency_bar_pass_warm_p50": false
+    }
+  },
+  "bar": {
+    "bytes_max": 100000000,
+    "ns_per_key_max": 100.0,
+    "source": "doc 18 \u00a77 N2, pre-registered 2026-08-02: <=100 MB and <=100 ns/key end-to-end incl. verification read"
+  },
+  "information_theoretic_floor": {
+    "universe": 7143275914,
+    "n": 150413098,
+    "min_bytes_any_exact_membership_structure": 131554714,
+    "bits_per_key": 6.997,
+    "note": "log2 C(U,n)/8 over U = key_max-key_min+1; no exact structure (MPHF+keys, Elias-Fano, succinct bitmap, ...) can store this set in fewer bytes, so a <=100 MB exact answer is impossible"
+  },
+  "verdict": {
+    "result": "FAIL",
+    "mphf_alone_bytes": 56215380,
+    "reason": "size: every exact arm (mphf_keys 1,259,520,164 B; mphf_perm_wids 1,861,172,684 B) exceeds 100 MB and exceeds the 1,203,304,912 B sorted array; smallest verified arm mphf_fp8 is 206,628,478 B and falsely accepts 0.39% of non-members; the information-theoretic floor for any exact structure is 131,554,714 B. latency: mphf_keys warm isolated p50 190 ns (fails <=100), throughput loop 75 ns/key (passes); bsearch warm p50 1100 ns / 685 ns/key.",
+    "decision": "sorted array stays; nothing wired into serving; ordinals remain opt-in (SFU_THINCLIENT_ORDINALS default off)",
+    "annotated": "reason/decision fields added by hand after the run, 2026-09-27; all measured fields are untouched harness output"
+  },
+  "caveats": [
+    "rdtscp resolution on this host is 30 cycles = 10 ns; 60-cycle timer overhead subtracted from each per-key sample",
+    "warm MPHF numbers benefit from the 5700X3D's 96 MB L3 holding the whole 56 MB MPHF",
+    "bsearch miss p50 (90 ns) is a query-distribution artifact: uniform random non-members fall mostly in sparse W-id stretches and reuse a cached search path",
+    "numpy baseline 'cold' at batch=1000 amortises faults across the batch; its per-call p50 is not a per-key cold latency"
+  ]
+}

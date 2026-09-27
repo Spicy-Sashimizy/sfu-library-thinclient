@@ -114,6 +114,10 @@ nor the fastest option:
 | MPHF (RecSplit / ShockHash-RS) | ~28 MB *(est.)* | slower than PtrHash | 1.44–1.58 bits/key, near the log2(e)=1.443 lower bound |
 
 *(Space figures are arithmetic from the published bits/key, not measured here.)*
+*(**MEASURED 2026-09-27, §7 N2:** PtrHash default over the real 150.4M W-ids is
+56.2 MB (2.99 bits/key), and with the verification payload an exact answer
+costs 1,260 MB — more than the sorted array. The "~27× smaller" below is
+refuted; see §7 N2.)*
 
 **MPHF caveat that matters for us:** a minimal perfect hash is only defined for
 keys **in** the constructed set. Query a W-id that is not in the index and it
@@ -153,8 +157,8 @@ low-milliseconds where SQLite costs 38–400 ms, reproduced across two runs.
 | artifact | size |
 |---|---|
 | filter columns (`year` i16, `type` i8, `is_oa` u8, `section` i8) × 150M | 0.75 GB |
-| sorted W-id index (int64) — replaceable by ~45 MB MPHF | 1.20 GB |
-| **total resident** | **~1.95 GB** (→ ~0.8 GB with MPHF) |
+| sorted W-id index (int64) — ~~replaceable by ~45 MB MPHF~~ *not replaceable: §7 N2 measured MPHF + verification at 1.26 GB (2026-09-27)* | 1.20 GB |
+| **total resident** | **~1.95 GB** (~~→ ~0.8 GB with MPHF~~ refuted §7 N2) |
 
 ~1.95 GB stays in RAM permanently. **24.9 GB never can.** This is why the result
 is structural and not a page-cache accident.
@@ -193,7 +197,7 @@ all 10 sections. Then:
 |---|---|---|
 | `meta.sqlite` filter columns | mmap'd columnar arrays, ordinal-indexed | numpy fancy-index |
 | `meta.sqlite` title/DOI | flat blob + ordinal-indexed `(off, len)` arrays | one pread on final top-k only |
-| `meta.sqlite` id lookup | MPHF (W-id→ordinal) + `ordinal→W-id` array for verification | ~8–37 ns/key |
+| `meta.sqlite` id lookup | MPHF (W-id→ordinal) + `ordinal→W-id` array for verification | ~8–37 ns/key *(est.; measured 2026-09-27 §7 N2: 190 ns p50 isolated / 75 ns throughput warm, 1.26 GB — FAIL, sorted array kept)* |
 | `abstracts.sqlite` locator | ordinal-indexed `(block, off, len)` arrays | **solves C3's locator without tantivy or SQLite** |
 | `abstracts.sqlite` blocks | flat zstd block file, unchanged codec | **C3's good half** (§11: 3.8× faster) |
 | `dense/ids.json` | the ordinal **is** the usearch key | **C4, free** |
@@ -241,10 +245,10 @@ Ordered by how much they should worry you.
 
 ## 7. Next steps
 
-> **Reconciled 2026-09-25** — 5 items (N1–N5): 4 DONE, 0 CLOSED, 0 SUPERSEDED, 1 STILL OPEN.
-> STILL OPEN: **N2** (MPHF viability), deferred on this section's own quantified
-> reasoning and listed as open work nowhere — not in `docs/README.md`, not in this
-> folder's `README.md`. Read every "DONE" here together with **§14 (2026-08-03)**,
+> **Reconciled 2026-09-25, updated 2026-09-27** — 5 items (N1–N5): 4 DONE,
+> 1 CLOSED MEASURED (**N2**, MPHF viability: **FAIL** against its pre-registered
+> bar on 2026-09-27 — the sorted array stays), 0 SUPERSEDED, 0 STILL OPEN.
+> Read every "DONE" here together with **§14 (2026-08-03)**,
 > which re-attributed the headline multiples to the 9p filesystem rather than to
 > addressing, and with §20–§21 (2026-08-04), which closed the meta-store route
 > ("no store holds the speed gate; meta.sqlite stays").
@@ -287,12 +291,63 @@ before N4 would repeat this investigation's recurring error — optimising a sta
 that is not on the critical path (cf. §11, where C3's locator turned out to be
 1.3% of abstract fetch).
 
-— **STILL OPEN 2026-09-25** — never built or measured; no MPHF/PtrHash/RecSplit
-result file exists under `data/eval_results/`. The deferral reasoning still holds
-and §14 (2026-08-03) strengthens it — ordinals are a **residency** lever, and
-§12's measured sorted-array space (1.96 GB for the full 150M ordinal space, vs
-`meta.sqlite`'s 24.91 GB) already works. Listed as open work in no Active table
-(`docs/README.md`, `docs/seismic_150m_testbed/README.md`).
+— **CLOSED MEASURED 2026-09-27 — FAIL. The sorted array stays.** Built and
+benchmarked over the real 150,413,098 W-ids (byte copy of
+`spike/meta_consolidation/work_ordinals_full/wids.npy`, sha256-verified, staged
+to local overlay disk). Library: **PtrHash** (`ptr_hash` crate 2.1.1, MIT,
+Groot Koerkamp SEA 2025), `PtrHashParams::default()`, `Xxh3Int` hasher, stored
+and file-backed-mmap'd via `epserde` 0.13.1. Code `spike/n2_mphf/` (harness
+`src/main.rs`, orchestrator `run_n2.py`); results
+`data/eval_results/n2_mphf_viability_2026-09-27.json`. Host: Ryzen 7 5700X3D
+(96 MB L3), 31 GB, 1M member + 1M non-member ids per pass, cold = page cache
+evicted (`POSIX_FADV_DONTNEED`, mincore-verified 0 resident) before each pass,
+per-key times by `rdtscp` (10 ns resolution on this host, 20 ns overhead
+subtracted); "throughput" = the same 1M keys in an untimed loop.
+
+*Construction:* **45.4 s** (76.6 s incl. reading the 1.2 GB key file), peak RSS
+**3.30 GiB** (`ru_maxrss` 3,458,920 KiB; 1.12 GiB of it the mmap'd keys); minimal and perfect on all 150.4M
+keys (0 collisions, 0 empty slots). *MPHF alone:* **56,215,380 B = 2.99
+bits/key** (pilots 2.67 + remap 0.32) — §3's "~45 MB" estimate was 2.4 bits/key.
+It mmaps (epserde `mmap`): warm resident set = the whole 56.2 MB file.
+
+| arm (all exact unless noted) | on disk | warm resident | warm p50 / p99 ns (hit · miss) | warm throughput ns/key (hit) | cold mean ns (hit) | non-member false accepts |
+|---|---|---|---|---|---|---|
+| **sorted array + binary search (today)** | **1,203 MB** | 1,201 MB | 1100 / 1870 · 90 / 1520 | 685 | 43,476 | 0 |
+| MPHF only, **no verification** (reference) | 56 MB | 56 MB | 40 / 160 · 40 / 120 | 16 | 2,199 | **100%** |
+| MPHF + `keys_by_slot` (ordinal := slot, renumbered) | **1,260 MB** | 1,258 MB | **190 / 720** · 190 / 720 | **75** | 48,045 | 0 |
+| MPHF + slot→ordinal `u32` + today's `wids` (keeps numbering) | 1,861 MB | 1,860 MB | 360 / 930 · 330 / 880 | 104 | 69,104 | 0 |
+| MPHF + 8-bit fingerprint *(probabilistic)* | 207 MB | 207 MB | 160 / 700 · 160 / 690 | 60 | 8,032 | 0.39% |
+| MPHF + 16-bit fingerprint *(probabilistic)* | 357 MB | 357 MB | 170 / 710 · 190 / 720 | 79 | 13,033 | 0.0014% |
+
+(The shipped numpy path, `np.searchsorted` over the mmap'd array, measured
+1.51 µs/key p50 warm at batch = 1000 and 7.3 µs per single-id call. The
+binary-search *miss* p50 of 90 ns is a query-distribution artifact: uniform
+random non-members fall mostly in sparse stretches of the W-id range and reuse
+the same cached search path; MPHF arms are distribution-independent.)
+
+**Verdict against the pre-registered bar (≤ 100 MB AND ≤ 100 ns/key end to end):
+FAIL, on size, decisively.**
+1. *Size.* The only arms that give an exact membership answer — which §6 risk 2
+   makes non-optional — are 1,260 MB and 1,861 MB, i.e. **larger** than the
+   1,203 MB sorted array they were meant to replace. The smallest verified
+   arm, an 8-bit fingerprint, is 207 MB and still wrongly accepts 0.39% of
+   non-members. The bar was in fact unreachable for *any* exact structure: the
+   information-theoretic floor for this set (n = 150,413,098 keys from a
+   universe of 7.14e9) is log2 C(U, n) = **131.6 MB (7.0 bits/key)**, above 100 MB.
+2. *Latency.* Warm isolated-lookup p50 of the exact MPHF arm is 190 ns (fails
+   ≤ 100 ns); its throughput loop is 75 ns/key (would pass). Either way it is
+   5.8× (p50) to 9.1× (throughput) faster than the binary search — but per the
+   deferral reasoning above that is ~1 ms of a ~50 ms query at k = 1000, and
+   the warm MPHF numbers are flattered by this CPU's 96 MB L3 holding the whole
+   56 MB MPHF. Cold, the exact MPHF arm is no better than the binary search
+   (48.0 vs 43.5 µs mean): both are page-fault-bound on a 1.2 GB array.
+
+**What this corrects.** §3's "~27× smaller" and §4.2's "1.20 GB → ~45 MB /
+→ ~0.8 GB total" counted the MPHF but not its verification payload. §3's own
+premise (the `ordinal → W-id` array must exist anyway) means the MPHF is
+*additive*: +56 MB on top of the same 1.2 GB. **As a residency lever the MPHF
+is negative.** The sorted array stays; ordinals remain opt-in behind
+`SFU_THINCLIENT_ORDINALS` (default off) and nothing was wired into serving.
 
 **N3 — build-time ordinal assignment (medium).** One pass over all 10 sections
 assigning global ordinals; write the ordinal fast field into a rebuilt tantivy

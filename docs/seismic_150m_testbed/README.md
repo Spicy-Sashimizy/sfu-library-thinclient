@@ -136,8 +136,11 @@ Lance BTREE) while keeping the *address*, and all lost. Assigning dense build-ti
 lets ~1.95 GB stay resident where 24.9 GB cannot. Closes 17 §13's load-bearing
 gap: tantivy fast-field reads are 2.1–11× cheaper than the stored-id read
 production already pays. Cross-referenced to Lucene's docid↔UID split (mainstream
-practice; we collapsed identity and address) and to MPHF/Elias-Fano, which are
-better primitives than the sorted array measured here. Ends with staged next
+practice; we collapsed identity and address) and to MPHF/Elias-Fano, proposed as
+better primitives than the sorted array (**MPHF refuted 2026-09-27, §7 N2
+CLOSED MEASURED FAIL:** PtrHash is 56.2 MB alone but 1.26 GB with the
+verification read an exact answer needs — larger than the 1.20 GB sorted
+array, which stays; `data/eval_results/n2_mphf_viability_2026-09-27.json`). Ends with staged next
 steps N1–N5. **N5, N3 and N4 EXECUTED 2026-08-02** (§9, §11): the flat block
 store was built and passed a byte-parity gate on 20,000 abstracts at 2.89×
 end-to-end (correcting §11's 3.4× projection); ordinal artifacts built at 97,063
