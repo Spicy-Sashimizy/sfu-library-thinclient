@@ -1,0 +1,1147 @@
+From a6fd0a1069a9a2d7b4d681197eead23330a2be5c Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Tue, 29 Sep 2026 19:51:16 +0000
+Subject: [PATCH] fork: in-place v3 A2b heap-unit read path + readers.bin
+ registration (pre-build)
+
+Unit parse/checksum/view build from the unit's own 24 scalars, cached per
+(list, offset); zero inflation for unit lists; reader registration per
+FORMAT_V3.md revision 4 with per-term heartbeat; bench probes; test fixture
+a2b_fixture_rewrite_list (unit + native-splice oracle). mmap_io: per-list
+read/write helpers extracted (write_mmap_index / read_posting_lists bodies
+unchanged).
+---
+ src/inplace_v3.rs       | 453 +++++++++++++++++++++++++++++++++++++---
+ src/lib.rs              |   2 +
+ src/mmap_index.rs       |  44 ++++
+ src/mmap_io.rs          | 338 ++++++++++++++++++++----------
+ src/pylib/mmap_index.rs |  57 +++++
+ src/pylib/mod.rs        |   2 +-
+ 6 files changed, 759 insertions(+), 137 deletions(-)
+
+diff --git a/src/inplace_v3.rs b/src/inplace_v3.rs
+index 5814c8c..2c3a6b9 100644
+--- a/src/inplace_v3.rs
++++ b/src/inplace_v3.rs
+@@ -7,7 +7,8 @@ use std::collections::HashMap;
+ use std::fs::File;
+ use std::io::Write;
+ use std::path::Path;
+-use std::sync::atomic::{AtomicU64, AtomicU8, Ordering};
++use std::sync::atomic::{AtomicBool, AtomicU64, AtomicU8, Ordering};
++use std::sync::{Arc, Mutex};
+ 
+ use itertools::Itertools;
+ use memmap2::Mmap;
+@@ -22,8 +23,12 @@ use vectorium::{
+ };
+ 
+ use crate::inverted_index_wrapper::resolve_query_tokens;
+-use crate::mmap_index::{v3_range, V3_START_MASK, V3_TAG_MASK};
+-use crate::mmap_io::{MmapPackedForward, MmapSeismicIndexDotVByte};
++use crate::mmap_index::{v3_range, MmapPostingList, V3_START_MASK, V3_TAG_MASK};
++use crate::mmap_io::{
++    MmapPackedForward, MmapSeismicIndexDotVByte, UNIT_SCALARS, extend_list_bytes,
++    manifest_with_list_replaced, posting_list_view_from_unit,
++};
++use crate::QuantizedSummary;
+ use crate::utils::KHeap;
+ 
+ /// Header magic `b"SFUIPV3\0"` as a little-endian u64.
+@@ -50,6 +55,19 @@ pub const PFREE_MAGIC: u64 = u64::from_le_bytes(*b"SFUPFL3\0");
+ pub const PFREE_EMPTY_BYTES: usize = 64;
+ /// Reader table (FORMAT_V3.md R3, reserved, DESIGN): slots x 64 B.
+ pub const READER_SLOTS: usize = 256;
++/// A2b unit magic `b"SFUL2B3\0"` (FORMAT_V3.md §3.6, revision 3).
++pub const UNIT_MAGIC: u64 = u64::from_le_bytes(*b"SFUL2B3\0");
++/// A2b unit header bytes.
++pub const UNIT_HEADER: usize = 256;
++/// Offset of the unit checksum inside the unit header.
++pub const UNIT_CKSUM_AT: usize = 248;
++/// Largest block count a unit may carry (the zero inflation slice length).
++pub const UNIT_MAX_BLOCKS: usize = 65536;
++static ZERO_INFLATION: [u8; UNIT_MAX_BLOCKS] = [0u8; UNIT_MAX_BLOCKS];
++/// Reader-table slot words: pid, epoch snapshot, query-start ns, heartbeat ns, 4 reserved.
++pub const READER_SLOT_WORDS: usize = 8;
++/// Epoch value of an idle reader slot.
++pub const READER_IDLE: u64 = u64::MAX;
+ /// Header record length inside each 4 KiB slot page.
+ pub const HEADER_RECORD: usize = 128;
+ 
+@@ -67,7 +85,11 @@ pub const COPIED_FILES: [&str; 8] = [
+ 
+ /// FNV-1a 64 over a byte slice.
+ pub fn fnv1a64(bytes: &[u8]) -> u64 {
+-    let mut h: u64 = 0xcbf2_9ce4_8422_2325;
++    fnv1a64_update(0xcbf2_9ce4_8422_2325, bytes)
++}
++
++/// FNV-1a 64 continuation (streaming over several slices).
++pub fn fnv1a64_update(mut h: u64, bytes: &[u8]) -> u64 {
+     for &b in bytes {
+         h ^= b as u64;
+         h = h.wrapping_mul(0x0000_0100_0000_01b3);
+@@ -499,7 +521,16 @@ pub struct MmapSeismicIndexInplaceV3 {
+     row_override: &'static [u8],
+     list_dir: &'static [u8],
+     native_off: Vec<u64>,
+-    _posting_heap: &'static [u8],
++    posting_heap: &'static [u8],
++    pl_len: u64,
++    fdw: usize,
++    unit_cache: Mutex<HashMap<(usize, u64), Arc<MmapPostingList<'static>>>>,
++    readers: Option<&'static [u8]>,
++    readers_note: String,
++    reg_enabled: AtomicBool,
++    pid: u64,
++    pidns: u64,
++    boot: u64,
+     n_docs: usize,
+     n_lists: usize,
+     manifest_fnv: u64,
+@@ -548,6 +579,21 @@ impl MmapSeismicIndexInplaceV3 {
+             .ok_or_else(|| inval("inplace_v3.a2b_reserved.posting_heap.reserve_bytes missing".into()))?;
+         let posting_heap = leak_map(&dir.join("posting_heap.bin"))?;
+         let pl_len = std::fs::metadata(dir.join("posting_lists.bin"))?.len() as usize;
++        let fdw = mget(&man, "forward_data_words")?;
++        let (readers, readers_note) = match std::fs::OpenOptions::new()
++            .read(true)
++            .write(true)
++            .open(dir.join("readers.bin"))
++            .and_then(|f| unsafe { memmap2::MmapMut::map_mut(&f) })
++        {
++            Ok(m) if m.len() == 64 * READER_SLOTS => {
++                let leaked: &'static mut memmap2::MmapMut = Box::leak(Box::new(m));
++                let b: &'static [u8] = unsafe { std::slice::from_raw_parts(leaked.as_ptr(), leaked.len()) };
++                (Some(b), "readers.bin mapped read-write".to_string())
++            }
++            Ok(m) => (None, format!("readers.bin has {} bytes, expected {}", m.len(), 64 * READER_SLOTS)),
++            Err(e) => (None, format!("readers.bin not mapped read-write: {e}")),
++        };
+         let native_off: Vec<u64> =
+             list_locations(&man, pl_len)?.iter().map(|l| l.pp_byte as u64).collect();
+         let crc_len = std::fs::metadata(dir.join("list_crc.bin"))?.len() as usize;
+@@ -575,7 +621,16 @@ impl MmapSeismicIndexInplaceV3 {
+             row_override,
+             list_dir,
+             native_off,
+-            _posting_heap: posting_heap,
++            posting_heap,
++            pl_len: pl_len as u64,
++            fdw,
++            unit_cache: Mutex::new(HashMap::new()),
++            reg_enabled: AtomicBool::new(readers.is_some()),
++            readers,
++            readers_note,
++            pid: std::process::id() as u64,
++            pidns: pidns_inode(),
++            boot: boot_id_u64(),
+             n_docs,
+             n_lists,
+             manifest_fnv: fnv1a64(&man_bytes),
+@@ -654,18 +709,167 @@ impl MmapSeismicIndexInplaceV3 {
+         unsafe { (*p).load(Ordering::Acquire) }
+     }
+ 
+-    /// Resolve list t for this query: native lists use the load-time view;
+-    /// an A2b unit (DESIGN, not built) is refused, never mis-read.
+-    #[inline(always)]
+-    fn check_native(&self, bank: usize, t: usize) -> Result<(), String> {
+-        let off = self.list_unit_offset(bank, t);
++    /// Parse, verify (checksum) and build the view of the A2b unit at `off`
++    /// for list `t` (FORMAT_V3.md §3.6, revision 3). Uncached.
++    pub fn build_unit_view(&self, t: usize, off: u64) -> Result<MmapPostingList<'static>, String> {
++        if off < self.pl_len {
++            return Err(format!("list {t}: unit offset {off} is inside posting_lists.bin"));
++        }
++        let h = (off - self.pl_len) as usize;
++        if h % 8 != 0 || h + UNIT_HEADER > self.posting_heap.len() {
++            return Err(format!("list {t}: unit offset {off} misaligned or beyond the heap"));
++        }
++        let heap: &'static [u8] = self.posting_heap;
++        let hdr = &heap[h..h + UNIT_HEADER];
++        let u64_at = |o: usize| u64::from_le_bytes(hdr[o..o + 8].try_into().unwrap());
++        if u64_at(0) != UNIT_MAGIC {
++            return Err(format!("list {t}: bad unit magic at {off}"));
++        }
++        if u32::from_le_bytes(hdr[8..12].try_into().unwrap()) as usize != t {
++            return Err(format!("list {t}: unit at {off} belongs to another list"));
++        }
++        let body_len = u64_at(16) as usize;
++        if h + UNIT_HEADER + body_len > heap.len() {
++            return Err(format!("list {t}: unit body beyond the heap"));
++        }
++        let body: &'static [u8] = &heap[h + UNIT_HEADER..h + UNIT_HEADER + body_len];
++        let ck = fnv1a64_update(fnv1a64(&hdr[0..UNIT_CKSUM_AT]), body);
++        if ck != u64_at(UNIT_CKSUM_AT) {
++            return Err(format!("list {t}: unit checksum mismatch at {off}"));
++        }
++        let mut sc = [0u64; UNIT_SCALARS];
++        for (i, x) in sc.iter_mut().enumerate() {
++            *x = u64_at(24 + 8 * i);
++        }
++        let view = posting_list_view_from_unit(body, &sc)?;
++        if view.n_blocks() > UNIT_MAX_BLOCKS {
++            return Err(format!("list {t}: unit has {} blocks", view.n_blocks()));
++        }
++        for w in view.posting_words() {
++            if v3_range(w).end > self.fdw {
++                return Err(format!("list {t}: unit posting beyond forward_data"));
++            }
++        }
++        Ok(view)
++    }
++
++    /// Cached unit view keyed by (list, offset); a new offset is a new key,
++    /// entries are never modified in place.
++    pub fn unit_view(&self, t: usize, off: u64) -> Result<Arc<MmapPostingList<'static>>, String> {
++        if let Some(v) = self.unit_cache.lock().unwrap().get(&(t, off)) {
++            return Ok(v.clone());
++        }
++        let v = Arc::new(self.build_unit_view(t, off)?);
++        let mut c = self.unit_cache.lock().unwrap();
++        if c.len() >= 4096 {
++            c.retain(|&(lt, lo), _| lo == self.list_unit_offset(0, lt) || lo == self.list_unit_offset(1, lt));
++        }
++        Ok(c.entry((t, off)).or_insert(v).clone())
++    }
++
++    /// Number of cached unit views.
++    pub fn unit_cache_len(&self) -> usize {
++        self.unit_cache.lock().unwrap().len()
++    }
++
++    /// Drop every cached unit view (benchmarks only).
++    pub fn unit_cache_clear(&self) {
++        self.unit_cache.lock().unwrap().clear();
++    }
++
++    /// Enable/disable reader registration (default: on when readers.bin maps RW).
++    pub fn set_reader_registration(&self, on: bool) -> bool {
++        let on = on && self.readers.is_some();
++        self.reg_enabled.store(on, Ordering::SeqCst);
++        on
++    }
++
++    /// (registration enabled, note on readers.bin).
++    pub fn reader_registration_state(&self) -> (bool, String) {
++        (self.reg_enabled.load(Ordering::SeqCst), self.readers_note.clone())
++    }
++
++    /// Registration cost probe: `n` x (begin_query + drop); returns ns per query.
++    pub fn bench_registration(&self, n: usize) -> Result<f64, String> {
++        let t = std::time::Instant::now();
++        for _ in 0..n {
++            let (_, g) = self.begin_query()?;
++            g.refresh()?;
++            drop(g);
++        }
++        Ok(t.elapsed().as_nanos() as f64 / n.max(1) as f64)
++    }
++
++    /// Unit build probe: `n` uncached builds of list t's active unit; returns
++    /// (ns per build incl. checksum, ns per checksum alone).
++    pub fn bench_unit_build(&self, t: usize, n: usize) -> Result<(f64, f64), String> {
++        let e = self.published_epoch().ok_or("no header")?;
++        let off = self.list_unit_offset((e & 1) as usize, t);
+         if off == self.native_off[t] {
+-            Ok(())
+-        } else {
+-            Err(format!(
+-                "list {t}: list_dir points at an A2b unit (offset {off}); this decoder build reads native lists only"
+-            ))
++            return Err(format!("list {t} is native"));
++        }
++        let t0 = std::time::Instant::now();
++        for _ in 0..n {
++            std::hint::black_box(self.build_unit_view(t, off)?);
++        }
++        let build = t0.elapsed().as_nanos() as f64 / n.max(1) as f64;
++        let h = (off - self.pl_len) as usize;
++        let body_len = u64::from_le_bytes(self.posting_heap[h + 16..h + 24].try_into().unwrap()) as usize;
++        let t1 = std::time::Instant::now();
++        for _ in 0..n {
++            std::hint::black_box(fnv1a64(&self.posting_heap[h..h + UNIT_HEADER + body_len]));
++        }
++        Ok((build, t1.elapsed().as_nanos() as f64 / n.max(1) as f64))
++    }
++
++    fn reader_slot(&self, i: usize) -> &'static [AtomicU64] {
++        let base = self.readers.unwrap().as_ptr() as *const AtomicU64;
++        unsafe { std::slice::from_raw_parts(base.add(i * READER_SLOT_WORDS), READER_SLOT_WORDS) }
++    }
++
++    /// Begin a query: snapshot E and, if enabled, register it in readers.bin
++    /// (FORMAT_V3.md revision 4: claim a slot, store E, SeqCst fence, re-read
++    /// the header, repeat until stable). The guard clears the slot on drop.
++    pub fn begin_query(&self) -> Result<(u64, ReaderGuard), String> {
++        if !self.reg_enabled.load(Ordering::Relaxed) {
++            let e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
++            return Ok((e, ReaderGuard { slot: None, gen: 0, pid: 0, last: std::cell::Cell::new(0) }));
++        }
++        let start = (self.pid as usize).wrapping_mul(2654435761) % READER_SLOTS;
++        let mut claimed = None;
++        for k in 0..READER_SLOTS {
++            let i = (start + k) % READER_SLOTS;
++            let slot = self.reader_slot(i);
++            if slot[0]
++                .compare_exchange(0, self.pid, Ordering::SeqCst, Ordering::SeqCst)
++                .is_ok()
++            {
++                claimed = Some(slot);
++                break;
++            }
++        }
++        let slot = claimed.ok_or_else(|| "reader table full".to_string())?;
++        let gen = slot[7].load(Ordering::SeqCst).wrapping_add(1);
++        slot[1].store(READER_IDLE, Ordering::SeqCst);
++        slot[4].store(self.pidns, Ordering::SeqCst);
++        slot[5].store(0, Ordering::SeqCst);
++        slot[6].store(self.boot, Ordering::SeqCst);
++        slot[7].store(gen, Ordering::SeqCst);
++        let t = monotonic_ns();
++        slot[2].store(t, Ordering::SeqCst);
++        slot[3].store(t, Ordering::SeqCst);
++        let guard = ReaderGuard { slot: Some(slot), gen, pid: self.pid, last: std::cell::Cell::new(t) };
++        let mut e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
++        loop {
++            slot[1].store(e, Ordering::SeqCst);
++            std::sync::atomic::fence(Ordering::SeqCst);
++            let e2 = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
++            if e2 == e {
++                break;
++            }
++            e = e2;
+         }
++        Ok((e, guard))
+     }
+ 
+     /// Number of lists whose active-bank directory entry is not native.
+@@ -700,9 +904,7 @@ impl MmapSeismicIndexInplaceV3 {
+         first_sorted: bool,
+         want_stats: bool,
+     ) -> Result<(Vec<ScoredVectorDotProduct>, Vec<usize>, Vec<usize>), String> {
+-        let epoch = self
+-            .published_epoch()
+-            .ok_or_else(|| "no valid header slot at query time".to_string())?;
++        let (epoch, _reader) = self.begin_query()?;
+         let b = (epoch & 1) as usize;
+         let bank: &[u8] = &self.inflation[b * self.n_blocks_total..(b + 1) * self.n_blocks_total];
+         let forward = self.inner.forward();
+@@ -731,9 +933,16 @@ impl MmapSeismicIndexInplaceV3 {
+         if first_sorted {
+             if let Some((&component_id, _value)) = iter.next() {
+                 let t: usize = component_id.as_();
+-                self.check_native(b, t)?;
+-                let infl = &bank[self.block_base[t]..self.block_base[t + 1]];
+-                lists[t].sort_and_search_v3(
++                _reader.refresh()?;
++                let off = self.list_unit_offset(b, t);
++                let unit;
++                let (list, infl): (&MmapPostingList<'static>, &[u8]) = if off == self.native_off[t] {
++                    (&lists[t], &bank[self.block_base[t]..self.block_base[t + 1]])
++                } else {
++                    unit = self.unit_view(t, off)?;
++                    (&*unit, &ZERO_INFLATION[..unit.n_blocks()])
++                };
++                list.sort_and_search_v3(
+                     &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited, forward,
+                     if want_stats { Some(&mut block_stats) } else { None }, infl, epoch,
+                 );
+@@ -741,9 +950,16 @@ impl MmapSeismicIndexInplaceV3 {
+         }
+         for (&component_id, _value) in iter {
+             let t: usize = component_id.as_();
+-            self.check_native(b, t)?;
+-            let infl = &bank[self.block_base[t]..self.block_base[t + 1]];
+-            lists[t].search_v3(
++            _reader.refresh()?;
++            let off = self.list_unit_offset(b, t);
++            let unit;
++            let (list, infl): (&MmapPostingList<'static>, &[u8]) = if off == self.native_off[t] {
++                (&lists[t], &bank[self.block_base[t]..self.block_base[t + 1]])
++            } else {
++                unit = self.unit_view(t, off)?;
++                (&*unit, &ZERO_INFLATION[..unit.n_blocks()])
++            };
++            list.search_v3(
+                 &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited, forward,
+                 if want_stats { Some(&mut block_stats) } else { None }, infl, epoch,
+             );
+@@ -771,3 +987,190 @@ fn _assert_distance_trait(d: &ScoredRange<vectorium::DotProduct>) -> f32 {
+ 
+ #[allow(dead_code)]
+ const _START_MASK_IS_32: () = assert!(V3_START_MASK == 0xFFFF_FFFF);
++
++/// CLOCK_MONOTONIC in ns (FORMAT_V3.md revision 4).
++pub fn monotonic_ns() -> u64 {
++    #[cfg(unix)]
++    {
++        let mut ts = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++        unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut ts) };
++        (ts.tv_sec as u64).wrapping_mul(1_000_000_000).wrapping_add(ts.tv_nsec as u64)
++    }
++    #[cfg(not(unix))]
++    {
++        0
++    }
++}
++
++fn pidns_inode() -> u64 {
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::MetadataExt;
++        std::fs::metadata("/proc/self/ns/pid").map(|m| m.ino()).unwrap_or(0)
++    }
++    #[cfg(not(unix))]
++    {
++        0
++    }
++}
++
++fn boot_id_u64() -> u64 {
++    std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
++        .ok()
++        .and_then(|s| {
++            let hex: String = s.chars().filter(|c| c.is_ascii_hexdigit()).take(16).collect();
++            u64::from_str_radix(&hex, 16).ok()
++        })
++        .unwrap_or(0)
++}
++
++/// Heartbeat refresh interval (FORMAT_V3.md revision 4).
++pub const HEARTBEAT_NS: u64 = 10_000_000_000;
++
++/// A registered reader-table slot; cleared (epoch idle, then pid 0) on drop.
++pub struct ReaderGuard {
++    slot: Option<&'static [AtomicU64]>,
++    gen: u64,
++    pid: u64,
++    last: std::cell::Cell<u64>,
++}
++
++impl ReaderGuard {
++    /// Refresh the heartbeat if >= 10 s old; fail if the slot was reclaimed.
++    #[inline]
++    pub fn refresh(&self) -> Result<(), String> {
++        let Some(slot) = self.slot else { return Ok(()) };
++        let now = monotonic_ns();
++        if now.wrapping_sub(self.last.get()) < HEARTBEAT_NS {
++            return Ok(());
++        }
++        if slot[0].load(Ordering::SeqCst) != self.pid || slot[7].load(Ordering::SeqCst) != self.gen {
++            return Err("reader-table slot reclaimed as stale during the query".into());
++        }
++        slot[3].store(now, Ordering::SeqCst);
++        self.last.set(now);
++        Ok(())
++    }
++}
++
++impl Drop for ReaderGuard {
++    fn drop(&mut self) {
++        if let Some(slot) = self.slot {
++            if slot[0].load(Ordering::SeqCst) == self.pid && slot[7].load(Ordering::SeqCst) == self.gen {
++                slot[1].store(READER_IDLE, Ordering::SeqCst);
++                slot[0].store(0, Ordering::SeqCst);
++            }
++        }
++    }
++}
++
++/// Test fixture (A2b read path, 2026-09-29): rewrite list `t` of a zero-patch
++/// v3 dir into a heap unit with block `drop_block` removed (postings of that
++/// block dropped, summary rebuilt from the dequantised per-block vectors of
++/// the remaining blocks), publish it in BOTH list_dir banks at epoch 0, and
++/// write `oracle_dir`: a dv-v2 dir whose posting_lists.bin carries the SAME
++/// list body natively (spliced in place of list t, manifest entry replaced;
++/// other files hard-linked). The v3 decoder serving the unit and the v2
++/// decoder serving the oracle must return identical results. With
++/// `poison_native_inflation` the active bank's codes of list t's native
++/// blocks are set to 255 (they must be ignored for a unit list). Offline
++/// fixture: written with pwrite before any reader maps the dir.
++pub fn a2b_fixture_rewrite_list(
++    v3_dir: &Path,
++    t: usize,
++    drop_block: usize,
++    oracle_dir: &Path,
++    poison_native_inflation: bool,
++) -> std::io::Result<serde_json::Value> {
++    use std::os::unix::fs::FileExt;
++    use vectorium::DatasetGrowable as _;
++    let r = MmapSeismicIndexInplaceV3::from_mmap(v3_dir)?;
++    let e = r.published_epoch().ok_or_else(|| inval("no header".into()))?;
++    if e != 0 || r.non_native_lists() != Some(0) {
++        return Err(inval("fixture needs a zero-patch v3 dir at epoch 0".into()));
++    }
++    let list = &r.inner.posting_lists_slice()[t];
++    let nb = list.n_blocks();
++    if nb < 2 || drop_block >= nb {
++        return Err(inval(format!("list {t} has {nb} blocks; cannot drop block {drop_block}")));
++    }
++    let words = list.posting_words();
++    let bo: Vec<usize> = list.block_offsets().to_vec();
++    let vecs = list.summary_view().per_block_vectors();
++    let mut new_words: Vec<u64> = Vec::new();
++    let mut new_bo: Vec<usize> = vec![0];
++    let mut new_vecs: Vec<(Vec<u16>, Vec<f32>)> = Vec::new();
++    for b in 0..nb {
++        if b == drop_block {
++            continue;
++        }
++        new_words.extend_from_slice(&words[bo[b]..bo[b + 1]]);
++        new_bo.push(new_words.len());
++        new_vecs.push(vecs[b].clone());
++    }
++    let dim = crate::mmap_io::manifest_list_scalars(v3_dir, t)?[3] as usize;
++    let q = vectorium::PlainSparseQuantizer::<u16, f32, vectorium::DotProduct>::new(dim, dim);
++    let mut g = vectorium::SparseDatasetGrowable::new(q);
++    for (c, v) in &new_vecs {
++        g.push(SparseVectorView::new(c.as_slice(), v.as_slice()));
++    }
++    let summary: QuantizedSummary<u16> = QuantizedSummary::from(vectorium::SparseDataset::from(g));
++    let mut body: Vec<u8> = Vec::new();
++    let m = extend_list_bytes(&mut body, &new_words, &new_bo, &summary);
++    while body.len() % 8 != 0 {
++        body.push(0);
++    }
++    let sc = m.to_scalars();
++    let mut hdr = vec![0u8; UNIT_HEADER];
++    hdr[0..8].copy_from_slice(&UNIT_MAGIC.to_le_bytes());
++    hdr[8..12].copy_from_slice(&(t as u32).to_le_bytes());
++    hdr[12..16].copy_from_slice(&(e as u32).to_le_bytes());
++    hdr[16..24].copy_from_slice(&(body.len() as u64).to_le_bytes());
++    for (i, x) in sc.iter().enumerate() {
++        hdr[24 + 8 * i..32 + 8 * i].copy_from_slice(&x.to_le_bytes());
++    }
++    let ck = fnv1a64_update(fnv1a64(&hdr[0..UNIT_CKSUM_AT]), &body);
++    hdr[UNIT_CKSUM_AT..UNIT_HEADER].copy_from_slice(&ck.to_le_bytes());
++    let unit_off = r.pl_len;
++    {
++        let f = std::fs::OpenOptions::new().write(true).open(v3_dir.join("posting_heap.bin"))?;
++        f.write_all_at(&hdr, 0)?;
++        f.write_all_at(&body, UNIT_HEADER as u64)?;
++        f.sync_all()?;
++        let d = std::fs::OpenOptions::new().write(true).open(v3_dir.join("list_dir.bin"))?;
++        d.write_all_at(&unit_off.to_le_bytes(), (8 * t) as u64)?;
++        d.write_all_at(&unit_off.to_le_bytes(), (8 * (r.n_lists + t)) as u64)?;
++        d.sync_all()?;
++        if poison_native_inflation {
++            let bi = std::fs::OpenOptions::new().write(true).open(v3_dir.join("block_inflation.bin"))?;
++            let n = r.block_base[t + 1] - r.block_base[t];
++            bi.write_all_at(&vec![255u8; n], r.block_base[t] as u64)?;
++            bi.sync_all()?;
++        }
++    }
++    std::fs::create_dir_all(oracle_dir)?;
++    for f in ["config.json", "forward_offsets.bin", "forward_data.bin", "forward_encoder.bin",
++              "token_to_id_map.bin", "document_mapping_strings.bin", "document_mapping_offsets.bin"] {
++        std::fs::hard_link(v3_dir.join(f), oracle_dir.join(f))?;
++    }
++    let pl = std::fs::read(v3_dir.join("posting_lists.bin"))?;
++    let pp_t = r.native_off[t] as usize;
++    let pp_next = if t + 1 < r.n_lists { r.native_off[t + 1] as usize } else { pl.len() };
++    let mut spliced = Vec::with_capacity(pl.len() + body.len());
++    spliced.extend_from_slice(&pl[..pp_t]);
++    spliced.extend_from_slice(&body);
++    spliced.extend_from_slice(&pl[pp_next..]);
++    write_all(&oracle_dir.join("posting_lists.bin"), &spliced)?;
++    let man_s = std::fs::read_to_string(v3_dir.join("manifest.json"))?;
++    let new_s = manifest_with_list_replaced(&man_s, t, &sc).map_err(inval)?;
++    let mut v: serde_json::Value = serde_json::from_str(&new_s).map_err(|e| inval(e.to_string()))?;
++    v.as_object_mut().unwrap().insert("forward_format_version".into(), serde_json::json!(2));
++    write_all(&oracle_dir.join("manifest.json"), &serde_json::to_vec_pretty(&v).map_err(|e| inval(e.to_string()))?)?;
++    Ok(serde_json::json!({
++        "list": t, "drop_block": drop_block, "old_blocks": nb, "new_blocks": nb - 1,
++        "old_postings": words.len(), "new_postings": new_words.len(),
++        "unit_offset": unit_off, "unit_body_bytes": body.len(), "unit_header_bytes": UNIT_HEADER,
++        "native_list_bytes": pp_next - pp_t, "poison_native_inflation": poison_native_inflation,
++        "oracle_dir": oracle_dir.to_string_lossy(),
++    }))
++}
+diff --git a/src/lib.rs b/src/lib.rs
+index 6203994..f1f5f56 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -57,6 +57,7 @@ use {
+     pylib::get_seismic_string,
+     pylib::PyMmapIndex,
+     pylib::inplace_v3_convert,
++    pylib::inplace_v3_a2b_fixture,
+     pyo3::prelude::PyModule,
+     pyo3::prelude::*,
+     pyo3::{Bound, PyResult, pymodule},
+@@ -75,6 +76,7 @@ fn seismic(m: &Bound<'_, PyModule>) -> PyResult<()> {
+     m.add_class::<SeismicIndexDotVByte>()?;
+     m.add_class::<PyMmapIndex>()?;
+     m.add_function(wrap_pyfunction!(inplace_v3_convert, m)?)?;
++    m.add_function(wrap_pyfunction!(inplace_v3_a2b_fixture, m)?)?;
+     m.add_class::<PySeismicDataset>()?;
+     m.add_class::<PySeismicDatasetLV>()?;
+     Ok(())
+diff --git a/src/mmap_index.rs b/src/mmap_index.rs
+index 3d75ce9..84dcfc0 100644
+--- a/src/mmap_index.rs
++++ b/src/mmap_index.rs
+@@ -844,3 +844,47 @@ impl<'a> MmapPostingList<'a> {
+         survivors.len()
+     }
+ }
++
++// In-place v3 A2b test support (2026-09-29): read a list's content back as
++// owned per-block data, so a fixture can rewrite a list into a heap unit.
++impl<'a> MmapQuantizedSummary<'a, u16> {
++    /// Per-block summary vectors (component ascending, dequantised value),
++    /// exactly the values `distances` multiplies by the query.
++    pub fn per_block_vectors(&self) -> Vec<(Vec<u16>, Vec<f32>)> {
++        let mut out: Vec<(Vec<u16>, Vec<f32>)> = vec![(Vec::new(), Vec::new()); self.n_summaries];
++        let mut emit = |c: u16, lo: usize, hi: usize| {
++            for pos in lo..hi {
++                let s_id = self.summaries_ids.get(pos).unwrap() as usize;
++                let v = self.values[pos] as f32 * self.quants[s_id] + self.minimums[s_id];
++                out[s_id].0.push(c);
++                out[s_id].1.push(v);
++            }
++        };
++        if let Some(cids) = self.component_ids {
++            for (i, &c) in cids.iter().enumerate() {
++                let lo = self.offsets.select(i).unwrap();
++                let hi = self.offsets.select(i + 1).unwrap();
++                emit(c, lo, hi);
++            }
++        } else if self.n_summaries > 0 {
++            for c in 0..self.dim {
++                let lo = self.offsets.select(c).unwrap() - c;
++                let hi = self.offsets.select(c + 1).unwrap() - (c + 1);
++                emit(c as u16, lo, hi);
++            }
++        }
++        out
++    }
++}
++
++impl<'a> MmapPostingList<'a> {
++    /// Raw posting words (v2/v3 bit layout), for fixtures.
++    pub fn posting_words(&self) -> Vec<u64> {
++        self.packed_postings.iter().map(v3_load_word).collect()
++    }
++
++    /// The summary view, for fixtures.
++    pub fn summary_view(&self) -> &MmapQuantizedSummary<'a, u16> {
++        &self.summaries
++    }
++}
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index cf1ee25..1196093 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -113,7 +113,7 @@ unsafe fn os_mlock(_ptr: *const core::ffi::c_void, _len: usize) -> i32 { -1 }
+ /// Per-posting-list manifest entry. Records where each flat slice lives in its
+ /// file + the scalars the reader needs to reconstruct `EliasFanoView`/`BitFieldSlice`.
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+-struct PostingListManifest {
++pub(crate) struct PostingListManifest {
+     // packed_postings: &[u64] (PackedPostingBlock is #[repr(transparent] over u64)
+     packed_postings_words: usize,
+     // block_offsets: &[usize]
+@@ -266,105 +266,13 @@ pub fn write_mmap_index(
+     let mut cursor: usize = 0;
+ 
+     for pl in posting_lists {
+-        // PackedPostingBlock is #[repr(transparent)] over a single u64 field, so
+-        // &[PackedPostingBlock] and &[u64] have identical layout — cast via bytemuck.
+         let pp: &[crate::posting_list::PackedPostingBlock] = pl.packed_postings().as_ref();
+         let pp: &[u64] = bytemuck::cast_slice(pp);
+-        let pp_words = pp.len();
+-        extend_pod(&mut pl_buf, pp);
+-        cursor += pp_words * std::mem::size_of::<u64>();
+-
+-        let bo: &[usize] = pl.block_offsets().as_ref();
+-        let bo_len = bo.len();
+-        extend_pod(&mut pl_buf, bo);
+-
+-        let summaries: &QuantizedSummary<u16> = pl.summaries();
+-        let n_summaries = summaries.n_summaries();
+-        let dim = summaries.dim();
+-        let values: &[u8] = summaries.values();
+-        let minimums: &[f32] = summaries.minimums();
+-        let quants: &[f32] = summaries.quants();
+-
+-        // EliasFano offsets
+-        let ef: &EliasFano = summaries.offsets();
+-        let high: &DArray = ef.high_bits();
+-        let high_bv = high.bv();
+-        let high_words: &[u64] = high_bv.words();
+-        let ef_high_bits_n_bits = high_bv.len();
+-        let ef_high_bits_n_words = high_words.len();
+-        extend_pod(&mut pl_buf, high_words);
+-
+-        // Inventories
+-        let inv: &Inventories<true> = high.ones_inventories();
+-        let inv_n_sets = inv.n_sets();
+-        let block_inv: &[i64] = inv.block_inventory();
+-        let subblock_inv: &[u16] = inv.subblock_inventory();
+-        let overflow: &[usize] = inv.overflow_positions();
+-        extend_pod(&mut pl_buf, block_inv);
+-        extend_pod(&mut pl_buf, subblock_inv);
+-        extend_pod(&mut pl_buf, overflow);
+-
+-        // low_bits BitField
+-        let low_bits = ef.low_bits();
+-        let low_bv = low_bits.bitvector();
+-        let low_words: &[u64] = low_bv.words();
+-        let ef_low_bits_field_width = low_bits.field_width();
+-        let ef_low_bits_n_bits = low_bv.len();
+-        let ef_low_bits_n_words = low_words.len();
+-        extend_pod(&mut pl_buf, low_words);
+-
+-        let ef_low_len = ef.low_len();
+-        let ef_universe = ef.universe();
+-        let ef_num_vals = ef.num_vals();
+-
+-        // summaries_ids BitField
+-        let sids = summaries.summaries_ids();
+-        let sids_bv = sids.bitvector();
+-        let sids_words: &[u64] = sids_bv.words();
+-        let summaries_ids_field_width = sids.field_width();
+-        let summaries_ids_n_bits = sids_bv.len();
+-        let summaries_ids_n_words = sids_words.len();
+-        extend_pod(&mut pl_buf, sids_words);
+-
+-        // values / minimums / quants
+-        extend_pod(&mut pl_buf, values);
+-        extend_pod(&mut pl_buf, minimums);
+-        extend_pod(&mut pl_buf, quants);
+-
+-        // component_ids (optional)
+-        let has_component_ids = summaries.component_ids().is_some();
+-        let component_ids_len = summaries.component_ids().map(|c| c.len()).unwrap_or(0);
+-        if let Some(cids) = summaries.component_ids() {
+-            extend_pod(&mut pl_buf, cids);
+-        }
+-
+-        pl_manifests.push(PostingListManifest {
+-            packed_postings_words: pp_words,
+-            block_offsets_len: bo_len,
+-            n_summaries,
+-            dim,
+-            has_component_ids,
+-            component_ids_len,
+-            values_len: values.len(),
+-            minimums_len: minimums.len(),
+-            quants_len: quants.len(),
+-            summaries_ids_field_width,
+-            summaries_ids_n_bits,
+-            summaries_ids_n_words,
+-            ef_high_bits_n_bits,
+-            ef_high_bits_n_words,
+-            ef_low_bits_field_width,
+-            ef_low_bits_n_bits,
+-            ef_low_bits_n_words,
+-            ef_low_len,
+-            ef_universe,
+-            ef_num_vals,
+-            inv_n_sets,
+-            inv_block_inventory_len: block_inv.len(),
+-            inv_subblock_inventory_len: subblock_inv.len(),
+-            inv_overflow_positions_len: overflow.len(),
+-        });
++        let m = extend_list_bytes(&mut pl_buf, pp, pl.block_offsets().as_ref(), pl.summaries());
++        cursor += pp.len() * std::mem::size_of::<u64>();
++        pl_manifests.push(m);
+     }
++    let _ = cursor;
+     write_file(&dir.join("posting_lists.bin"), &pl_buf)?;
+ 
+     // ---- config ----
+@@ -429,6 +337,201 @@ pub fn write_mmap_index(
+     Ok(manifest)
+ }
+ 
++/// Append one posting list's slices to `pl_buf` in the reader's layout and
++/// return its manifest entry. Extracted 2026-09-29 (in-place v3) from the
++/// `write_mmap_index` loop, byte-for-byte the same sequence; also used to
++/// serialise A2b unit bodies (alignment is relative to `pl_buf`'s start,
++/// which is 8-aligned in the file in both uses).
++pub(crate) fn extend_list_bytes(
++    pl_buf: &mut Vec<u8>,
++    pp: &[u64],
++    bo: &[usize],
++    summaries: &QuantizedSummary<u16>,
++) -> PostingListManifest {
++    let pp_words = pp.len();
++    extend_pod(pl_buf, pp);
++    let bo_len = bo.len();
++    extend_pod(pl_buf, bo);
++    let n_summaries = summaries.n_summaries();
++    let dim = summaries.dim();
++    let values: &[u8] = summaries.values();
++    let minimums: &[f32] = summaries.minimums();
++    let quants: &[f32] = summaries.quants();
++    let ef: &EliasFano = summaries.offsets();
++    let high: &DArray = ef.high_bits();
++    let high_bv = high.bv();
++    let high_words: &[u64] = high_bv.words();
++    let ef_high_bits_n_bits = high_bv.len();
++    let ef_high_bits_n_words = high_words.len();
++    extend_pod(pl_buf, high_words);
++    let inv: &Inventories<true> = high.ones_inventories();
++    let inv_n_sets = inv.n_sets();
++    let block_inv: &[i64] = inv.block_inventory();
++    let subblock_inv: &[u16] = inv.subblock_inventory();
++    let overflow: &[usize] = inv.overflow_positions();
++    extend_pod(pl_buf, block_inv);
++    extend_pod(pl_buf, subblock_inv);
++    extend_pod(pl_buf, overflow);
++    let low_bits = ef.low_bits();
++    let low_bv = low_bits.bitvector();
++    let low_words: &[u64] = low_bv.words();
++    let ef_low_bits_field_width = low_bits.field_width();
++    let ef_low_bits_n_bits = low_bv.len();
++    let ef_low_bits_n_words = low_words.len();
++    extend_pod(pl_buf, low_words);
++    let ef_low_len = ef.low_len();
++    let ef_universe = ef.universe();
++    let ef_num_vals = ef.num_vals();
++    let sids = summaries.summaries_ids();
++    let sids_bv = sids.bitvector();
++    let sids_words: &[u64] = sids_bv.words();
++    let summaries_ids_field_width = sids.field_width();
++    let summaries_ids_n_bits = sids_bv.len();
++    let summaries_ids_n_words = sids_words.len();
++    extend_pod(pl_buf, sids_words);
++    extend_pod(pl_buf, values);
++    extend_pod(pl_buf, minimums);
++    extend_pod(pl_buf, quants);
++    let has_component_ids = summaries.component_ids().is_some();
++    let component_ids_len = summaries.component_ids().map(|c| c.len()).unwrap_or(0);
++    if let Some(cids) = summaries.component_ids() {
++        extend_pod(pl_buf, cids);
++    }
++    PostingListManifest {
++        packed_postings_words: pp_words,
++        block_offsets_len: bo_len,
++        n_summaries,
++        dim,
++        has_component_ids,
++        component_ids_len,
++        values_len: values.len(),
++        minimums_len: minimums.len(),
++        quants_len: quants.len(),
++        summaries_ids_field_width,
++        summaries_ids_n_bits,
++        summaries_ids_n_words,
++        ef_high_bits_n_bits,
++        ef_high_bits_n_words,
++        ef_low_bits_field_width,
++        ef_low_bits_n_bits,
++        ef_low_bits_n_words,
++        ef_low_len,
++        ef_universe,
++        ef_num_vals,
++        inv_n_sets,
++        inv_block_inventory_len: block_inv.len(),
++        inv_subblock_inventory_len: subblock_inv.len(),
++        inv_overflow_positions_len: overflow.len(),
++    }
++}
++
++/// Number of per-list scalars in an A2b unit header (FORMAT_V3.md §3.6):
++/// the `PostingListManifest` fields in declaration order, each as u64.
++pub(crate) const UNIT_SCALARS: usize = 24;
++
++impl PostingListManifest {
++    pub(crate) fn to_scalars(&self) -> [u64; UNIT_SCALARS] {
++        [
++            self.packed_postings_words as u64, self.block_offsets_len as u64,
++            self.n_summaries as u64, self.dim as u64, self.has_component_ids as u64,
++            self.component_ids_len as u64, self.values_len as u64, self.minimums_len as u64,
++            self.quants_len as u64, self.summaries_ids_field_width as u64,
++            self.summaries_ids_n_bits as u64, self.summaries_ids_n_words as u64,
++            self.ef_high_bits_n_bits as u64, self.ef_high_bits_n_words as u64,
++            self.ef_low_bits_field_width as u64, self.ef_low_bits_n_bits as u64,
++            self.ef_low_bits_n_words as u64, self.ef_low_len as u64, self.ef_universe as u64,
++            self.ef_num_vals as u64, self.inv_n_sets as u64, self.inv_block_inventory_len as u64,
++            self.inv_subblock_inventory_len as u64, self.inv_overflow_positions_len as u64,
++        ]
++    }
++
++    pub(crate) fn from_scalars(s: &[u64; UNIT_SCALARS]) -> Result<Self, String> {
++        if s[4] > 1 || s[9] > 64 || s[14] > 64 {
++            return Err("unit scalars out of range (bool / field widths)".into());
++        }
++        let u = |i: usize| s[i] as usize;
++        Ok(Self {
++            packed_postings_words: u(0), block_offsets_len: u(1), n_summaries: u(2), dim: u(3),
++            has_component_ids: s[4] == 1, component_ids_len: u(5), values_len: u(6),
++            minimums_len: u(7), quants_len: u(8), summaries_ids_field_width: s[9] as u8,
++            summaries_ids_n_bits: u(10), summaries_ids_n_words: u(11),
++            ef_high_bits_n_bits: u(12), ef_high_bits_n_words: u(13),
++            ef_low_bits_field_width: s[14] as u8, ef_low_bits_n_bits: u(15),
++            ef_low_bits_n_words: u(16), ef_low_len: u(17), ef_universe: u(18), ef_num_vals: u(19),
++            inv_n_sets: u(20), inv_block_inventory_len: u(21), inv_subblock_inventory_len: u(22),
++            inv_overflow_positions_len: u(23),
++        })
++    }
++
++    /// Byte length of this list's slice sequence when it starts at an
++    /// 8-aligned offset (the reader's alignment walk, as in the converter).
++    pub(crate) fn walk_len(&self) -> usize {
++        let mut c = skip_pod::<u64>(0, self.packed_postings_words);
++        c = skip_pod::<usize>(c, self.block_offsets_len);
++        c = skip_pod::<u64>(c, self.ef_high_bits_n_words);
++        c = skip_pod::<i64>(c, self.inv_block_inventory_len);
++        c = skip_pod::<u16>(c, self.inv_subblock_inventory_len);
++        c = skip_pod::<usize>(c, self.inv_overflow_positions_len);
++        c = skip_pod::<u64>(c, self.ef_low_bits_n_words);
++        c = skip_pod::<u64>(c, self.summaries_ids_n_words);
++        c += self.values_len;
++        c = skip_pod::<f32>(c, self.minimums_len);
++        c = skip_pod::<f32>(c, self.quants_len);
++        if self.has_component_ids {
++            c = skip_pod::<u16>(c, self.component_ids_len);
++        }
++        c
++    }
++}
++
++/// Manifest scalars of list `t` (in-place v3 test fixtures).
++pub(crate) fn manifest_list_scalars(dir: &Path, t: usize) -> std::io::Result<[u64; UNIT_SCALARS]> {
++    let m: MmapManifest = serde_json::from_str(&std::fs::read_to_string(dir.join("manifest.json"))?)
++        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
++    Ok(m.posting_lists[t].to_scalars())
++}
++
++/// Replace list `t`'s manifest entry by `scalars` in a manifest JSON value
++/// (in-place v3 test fixtures: the native-splice oracle).
++pub(crate) fn manifest_with_list_replaced(
++    manifest_json: &str,
++    t: usize,
++    scalars: &[u64; UNIT_SCALARS],
++) -> Result<String, String> {
++    let mut m: MmapManifest = serde_json::from_str(manifest_json).map_err(|e| e.to_string())?;
++    m.posting_lists[t] = PostingListManifest::from_scalars(scalars)?;
++    serde_json::to_string_pretty(&m).map_err(|e| e.to_string())
++}
++
++/// Build a list view over an A2b unit body (FORMAT_V3.md §3.6). The body must
++/// be 8-aligned and exactly the scalars' walk length (+ < 8 padding); the
++/// reader's `read_pod` alignment/bounds asserts then cannot fire.
++pub(crate) fn posting_list_view_from_unit(
++    body: &'static [u8],
++    scalars: &[u64; UNIT_SCALARS],
++) -> Result<MmapPostingList<'static>, String> {
++    let plm = PostingListManifest::from_scalars(scalars)?;
++    if body.as_ptr() as usize % 8 != 0 {
++        return Err("unit body not 8-aligned".into());
++    }
++    let need = plm.walk_len();
++    if need > body.len() || body.len() - need >= 8 {
++        return Err(format!("unit body {} bytes, scalars walk {}", body.len(), need));
++    }
++    if plm.packed_postings_words == 0 {
++        if plm.block_offsets_len != 0 || plm.n_summaries != 0 {
++            return Err("empty unit with blocks".into());
++        }
++    } else if plm.block_offsets_len != plm.n_summaries + 1
++        || plm.minimums_len != plm.n_summaries
++        || plm.quants_len != plm.n_summaries
++    {
++        return Err("unit block counts inconsistent".into());
++    }
++    let mut cursor = 0usize;
++    Ok(read_one_list(body, &mut cursor, &plm))
++}
++
+ fn write_file(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+     let mut f = File::create(path)?;
+     f.write_all(bytes)?;
+@@ -635,26 +738,40 @@ fn read_posting_lists(
+         Vec::with_capacity(manifest.n_posting_lists);
+ 
+     for plm in &manifest.posting_lists {
++        posting_lists.push(read_one_list(pl_bytes, &mut cursor, plm));
++    }
++    posting_lists
++}
++
++/// One list of `read_posting_lists` (extracted 2026-09-29 for the in-place v3
++/// A2b unit reader; body unchanged).
++fn read_one_list(
++    pl_bytes: &'static [u8],
++    cursor: &mut usize,
++    plm: &PostingListManifest,
++) -> MmapPostingList<'static> {
++    let cursor = cursor;
++    {
+             // packed_postings (u64) — read as u64 then cast to PackedPostingBlock
+             // (#[repr(transparent)] over u64, identical layout).
+-            let pp_u64: &'static [u64] = read_pod(&pl_bytes, &mut cursor, plm.packed_postings_words);
++            let pp_u64: &'static [u64] = read_pod(&pl_bytes, cursor, plm.packed_postings_words);
+             let pp: &'static [crate::posting_list::PackedPostingBlock] = unsafe {
+                 std::slice::from_raw_parts(pp_u64.as_ptr() as *const _, pp_u64.len())
+             };
+ 
+             // block_offsets (usize)
+-            let bo: &'static [usize] = read_pod(&pl_bytes, &mut cursor, plm.block_offsets_len);
++            let bo: &'static [usize] = read_pod(&pl_bytes, cursor, plm.block_offsets_len);
+ 
+             // ---- EliasFano high_bits: DArray<false> -> bv: BitVector(words) + Inventories ----
+-            let hb_words: &'static [u64] = read_pod(&pl_bytes, &mut cursor, plm.ef_high_bits_n_words);
++            let hb_words: &'static [u64] = read_pod(&pl_bytes, cursor, plm.ef_high_bits_n_words);
+             let hb_bv: BitSlice<'static> = unsafe {
+                 BitSlice::from_raw_parts(hb_words, plm.ef_high_bits_n_bits)
+             };
+ 
+             // Inventories: block_inventory (i64), subblock (u16), overflow (usize)
+-            let bi: &'static [i64] = read_pod(&pl_bytes, &mut cursor, plm.inv_block_inventory_len);
+-            let sbi: &'static [u16] = read_pod(&pl_bytes, &mut cursor, plm.inv_subblock_inventory_len);
+-            let ov: &'static [usize] = read_pod(&pl_bytes, &mut cursor, plm.inv_overflow_positions_len);
++            let bi: &'static [i64] = read_pod(&pl_bytes, cursor, plm.inv_block_inventory_len);
++            let sbi: &'static [u16] = read_pod(&pl_bytes, cursor, plm.inv_subblock_inventory_len);
++            let ov: &'static [usize] = read_pod(&pl_bytes, cursor, plm.inv_overflow_positions_len);
+             let inv_view = InventoriesView {
+                 n_sets: plm.inv_n_sets,
+                 block_inventory: bi,
+@@ -664,7 +781,7 @@ fn read_posting_lists(
+             let high = DArrayView::from_raw_parts(hb_bv, inv_view);
+ 
+             // low_bits BitField: words (u64) + scalars
+-            let lb_words: &'static [u64] = read_pod(&pl_bytes, &mut cursor, plm.ef_low_bits_n_words);
++            let lb_words: &'static [u64] = read_pod(&pl_bytes, cursor, plm.ef_low_bits_n_words);
+             let lb_bv: BitSlice<'static> = unsafe {
+                 BitSlice::from_raw_parts(lb_words, plm.ef_low_bits_n_bits)
+             };
+@@ -686,7 +803,7 @@ fn read_posting_lists(
+             );
+ 
+             // summaries_ids BitField (u64 words)
+-            let sids_words: &'static [u64] = read_pod(&pl_bytes, &mut cursor, plm.summaries_ids_n_words);
++            let sids_words: &'static [u64] = read_pod(&pl_bytes, cursor, plm.summaries_ids_n_words);
+             let sids_bv: BitSlice<'static> = unsafe {
+                 BitSlice::from_raw_parts(sids_words, plm.summaries_ids_n_bits)
+             };
+@@ -707,14 +824,14 @@ fn read_posting_lists(
+             };
+ 
+             // values (u8) — alignment 1, no padding needed
+-            let values: &'static [u8] = read_bytes(&pl_bytes, &mut cursor, plm.values_len);
++            let values: &'static [u8] = read_bytes(&pl_bytes, cursor, plm.values_len);
+             // minimums (f32)
+-            let minimums: &'static [f32] = read_pod(&pl_bytes, &mut cursor, plm.minimums_len);
++            let minimums: &'static [f32] = read_pod(&pl_bytes, cursor, plm.minimums_len);
+             // quants (f32)
+-            let quants: &'static [f32] = read_pod(&pl_bytes, &mut cursor, plm.quants_len);
++            let quants: &'static [f32] = read_pod(&pl_bytes, cursor, plm.quants_len);
+             // component_ids (optional, u16)
+             let component_ids: Option<&'static [u16]> = if plm.has_component_ids {
+-                Some(read_pod(&pl_bytes, &mut cursor, plm.component_ids_len))
++                Some(read_pod(&pl_bytes, cursor, plm.component_ids_len))
+             } else {
+                 None
+             };
+@@ -729,9 +846,8 @@ fn read_posting_lists(
+                 minimums,
+                 quants,
+             );
+-            posting_lists.push(MmapPostingList::from_raw_parts(pp, bo, summaries));
++            MmapPostingList::from_raw_parts(pp, bo, summaries)
+     }
+-    posting_lists
+ }
+ 
+ /// E7: token map read, extracted verbatim from `MmapSeismicIndex::from_mmap`.
+diff --git a/src/pylib/mmap_index.rs b/src/pylib/mmap_index.rs
+index 858bca6..653a69b 100644
+--- a/src/pylib/mmap_index.rs
++++ b/src/pylib/mmap_index.rs
+@@ -66,6 +66,25 @@ enum AnyMmapIndex {
+     InplaceV3(MmapSeismicIndexInplaceV3),
+ }
+ 
++/// In-place v3 A2b test fixture (FORMAT_V3.md revision 3): rewrite list `t`
++/// of a zero-patch v3 dir into a heap unit without block `drop_block` and
++/// write the native-splice oracle dir. Returns a JSON report.
++#[pyfunction]
++#[pyo3(signature = (v3_dir, t, drop_block, oracle_dir, poison_native_inflation=true))]
++pub fn inplace_v3_a2b_fixture(
++    v3_dir: &str,
++    t: usize,
++    drop_block: usize,
++    oracle_dir: &str,
++    poison_native_inflation: bool,
++) -> PyResult<String> {
++    crate::inplace_v3::a2b_fixture_rewrite_list(
++        Path::new(v3_dir), t, drop_block, Path::new(oracle_dir), poison_native_inflation,
++    )
++    .map(|v| v.to_string())
++    .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("inplace_v3_a2b_fixture failed: {e}")))
++}
++
+ /// In-place v3 (2026-09-29): convert a dv-v2 shard dir (a local COPY) into a
+ /// format-v3 dir with zero patches. Returns the encoder's JSON report
+ /// (sizes, timings, measured spare bits). Spec: FORMAT_V3.md (main repo).
+@@ -581,9 +600,47 @@ impl PyMmapIndex {
+             _ => None,
+         }
+     }
++
++    /// In-place v3: enable/disable readers.bin registration; returns the state.
++    pub fn set_reader_registration(&self, on: bool) -> PyResult<bool> {
++        Ok(self.v3()?.set_reader_registration(on))
++    }
++
++    /// In-place v3: (registration enabled, readers.bin note).
++    pub fn reader_registration_state(&self) -> PyResult<(bool, String)> {
++        Ok(self.v3()?.reader_registration_state())
++    }
++
++    /// In-place v3: ns per (register + unregister), averaged over n.
++    pub fn bench_registration(&self, n: usize) -> PyResult<f64> {
++        self.v3()?.bench_registration(n).map_err(pyo3::exceptions::PyRuntimeError::new_err)
++    }
++
++    /// In-place v3: (ns per uncached unit build incl. checksum, ns per checksum).
++    pub fn bench_unit_build(&self, t: usize, n: usize) -> PyResult<(f64, f64)> {
++        self.v3()?.bench_unit_build(t, n).map_err(pyo3::exceptions::PyRuntimeError::new_err)
++    }
++
++    /// In-place v3: cached unit views.
++    pub fn unit_cache_len(&self) -> PyResult<usize> {
++        Ok(self.v3()?.unit_cache_len())
++    }
++
++    /// In-place v3: drop cached unit views (benchmarks only).
++    pub fn unit_cache_clear(&self) -> PyResult<()> {
++        self.v3()?.unit_cache_clear();
++        Ok(())
++    }
+ }
+ 
+ impl PyMmapIndex {
++    fn v3(&self) -> PyResult<&MmapSeismicIndexInplaceV3> {
++        match &self.idx {
++            AnyMmapIndex::InplaceV3(i) => Ok(i),
++            _ => Err(pyo3::exceptions::PyTypeError::new_err("not an in-place v3 index")),
++        }
++    }
++
+     /// Doc id of a returned row: slab (or the v3 row override), else the
+     /// numeric row — identical to `remap_doc_ids` for f16/dv dirs.
+     fn doc_id_string(&self, doc_idx: usize) -> String {
+diff --git a/src/pylib/mod.rs b/src/pylib/mod.rs
+index 907b4b9..cca8d25 100644
+--- a/src/pylib/mod.rs
++++ b/src/pylib/mod.rs
+@@ -1206,7 +1206,7 @@ pub use dotvbyte::SeismicIndexDotVByte;
+ // C2.5 (2026-06-28): pyo3 exposure of the C2 mmap reader (`MmapSeismicIndex`).
+ // See `pylib/mmap_index.rs` + `.claude/plans/seismic-c25-pyo3-mmap-binding.md`.
+ mod mmap_index;
+-pub use mmap_index::{PyMmapIndex, inplace_v3_convert};
++pub use mmap_index::{PyMmapIndex, inplace_v3_a2b_fixture, inplace_v3_convert};
+ 
+ impl_seismic_dataset!(SeismicDataset, "SeismicDataset", u16);
+ impl_seismic_dataset!(SeismicDatasetLV, "SeismicDatasetLV", u32);
+-- 
+2.55.0
+

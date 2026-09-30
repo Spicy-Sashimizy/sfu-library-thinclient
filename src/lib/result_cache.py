@@ -31,14 +31,21 @@ exactly the ones ``api_search`` forwards into ``search_academic_structured``
 and that change the result set, and ``stamp`` is the served index's manifest
 ``built`` timestamp + ``engines`` blob — an index/model swap therefore cannot
 serve a stale response (different stamp → different key → always a miss).
+When ``SFU_DELTA_ROOT`` loaded a delta layer, ``@delta=<_delta_stamp>`` is
+appended to the stamp so a delta publish + reload or a buffer write rotates
+the key; with the layer off the key is byte-identical to the pre-2026-09-29
+recipe (docs/CODE_INVARIANTS.md §"result_cache").
 Only parameters that affect the result set are hashed; e.g. ``page`` is
 included because it selects a different result page even for an identical
 query+limit.
 """
 from __future__ import annotations
 
+import itertools
 import logging
 import os
+import threading
+import weakref
 from typing import Any
 
 from lib.cache import ResponseCache
@@ -50,21 +57,17 @@ _DEFAULT_MAX_SIZE = int(os.environ.get("SFU_RESULT_CACHE_MAX_SIZE", "256"))
 _DEFAULT_MAX_MEM_MB = int(os.environ.get("SFU_RESULT_CACHE_MAX_MEM_MB", "64"))
 
 
-_stamp_cache: tuple[str, str] | None = None
-
 
 def _manifest_stamp() -> str:
     """A stable identity for the *currently served* index + model stack.
 
     Built from the thinclient manifest's ``built`` timestamp + ``engines`` blob
     so an index rebuild (new ``built``) or a model swap (new ``engines``)
-    invalidates every cached entry by rotating the key. Read once per process
-    (an index swap mid-process goes through ``retriever.reload()``, after which
-    a serve restart is the norm — re-reading per-query would be needlessly
-    hot-path expensive). Returns ``"unknown"`` when no thinclient retriever is
+    invalidates every cached entry by rotating the key. The manifest is re-read
+    on every call (``tc._manifest()``). With a delta layer loaded the
+    :func:`_delta_stamp` suffix is appended. Returns ``"unknown"`` when no thinclient retriever is
     wired (the OpenAlex-only path), which is still a stable, cacheable identity.
     """
-    global _stamp_cache
     try:
         from lib.tools import _get_thinclient_retriever
         tc = _get_thinclient_retriever()
@@ -73,9 +76,55 @@ def _manifest_stamp() -> str:
         manifest = tc._manifest() or {}
         built = str(manifest.get("built", "?"))
         engines = str(manifest.get("engines", "?"))
-        return f"{built}@{engines}"
+        delta = getattr(tc, "_delta", None)
+        if delta is None:
+            return f"{built}@{engines}"
+        return f"{built}@{engines}@delta={_delta_stamp(delta)}"
     except Exception:
         return "unknown"
+
+
+_delta_epochs: "weakref.WeakKeyDictionary[Any, int]" = weakref.WeakKeyDictionary()
+_delta_epoch_next = itertools.count(1)
+_delta_epoch_lock = threading.Lock()
+
+
+def _file_sig(path: str) -> str:
+    try:
+        st = os.stat(path)
+    except OSError:
+        return "-"
+    return f"{st.st_mtime_ns}.{st.st_size}"
+
+
+def _delta_stamp(delta: Any) -> str:
+    """Identity of the served delta layer for the result-cache key (R1,
+    docs/delta_ingest/02_DESIGN.md). Only called when ``SFU_DELTA_ROOT`` loaded
+    a layer, so the gate-off key is unchanged.
+
+    Three parts: the published ``stamp`` from ``generations.json`` (held in
+    memory by the layer); a process-local epoch per ``DeltaLayer`` instance, so
+    every ``retriever.reload()`` rotates the key even when two publishes
+    produce the same one-second stamp; and ``os.stat`` signatures of the files
+    the live buffer is read from per query (ledger, its WAL, the buffer tantivy
+    ``meta.json``), so ingest writes that change buffer results rotate it too.
+    Three ``stat`` calls, no file read, no directory scan. Never raises.
+    """
+    with _delta_epoch_lock:
+        epoch = _delta_epochs.get(delta)
+        if epoch is None:
+            epoch = next(_delta_epoch_next)
+            _delta_epochs[delta] = epoch
+    root = os.fspath(getattr(delta, "root", ""))
+    sigs = ",".join(_file_sig(os.path.join(root, *parts)) for parts in _DELTA_BUFFER_FILES)
+    return f"{getattr(delta, 'stamp', None) or '-'}#{epoch}~{sigs}"
+
+
+_DELTA_BUFFER_FILES = (
+    ("ledger.sqlite",),
+    ("ledger.sqlite-wal",),
+    ("buffer", "delta_buffer", "tantivy", "meta.json"),
+)
 
 
 def is_enabled() -> bool:

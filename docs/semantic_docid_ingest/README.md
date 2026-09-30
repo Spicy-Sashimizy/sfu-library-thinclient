@@ -6,6 +6,12 @@ hierarchical, semantic document IDs at ingest time on the host**, and using
 those IDs as the routing key for an LSM-style stack of **immutable** sparse
 segments over the SEISMIC/BMP leg.
 
+> **2026-09-29:** the rule-based Stage 1 of this design (deterministic
+> section ids, mutable warm buffer, immutable segments, compaction, NRT
+> swap) is now BUILT as `docs/delta_ingest/` / `spike/delta_ingest/`
+> (EFFICACY UNMEASURED). This folder stays DEFERRED for the learned
+> semantic-id half only.
+
 This is a *thinking trail*, not a commitment. The headline recommendation is in
 [`03_GO_NO_GO.md`](03_GO_NO_GO.md). Read that first if you only have a minute.
 

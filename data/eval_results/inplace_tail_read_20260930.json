@@ -1,0 +1,950 @@
+{
+  "synthetic": {
+    "measured_utc": "2026-09-30 03:47",
+    "what": "v3.1 forward tail read path (decoder) on the synthetic shard: zero-patch parity of the v3.1 layout + tail fixture vs native oracle; identity test, not a pre-registered bar",
+    "synthetic_source": "/home/vscode/work/inplace_update/m4/root_n1/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+    "dirs": {
+      "v2": "/home/vscode/work/inplace_update/stage3/encoder/synth/v2",
+      "v3_1": "/home/vscode/work/inplace_update/stage3/encoder/synth/v3",
+      "oracle": "/home/vscode/work/inplace_update/stage3/encoder/synth/oracle"
+    },
+    "build": {
+      "so": "/home/vscode/work/inplace_update/stage3/encoder/so_tail/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a0870b757b574a62f9fd77ce8dedc9454dff94ca271d18968b280cf2f5051a4d",
+      "rustflags": "-C target-cpu=x86-64-v3",
+      "patch": "spike/seismic_upstream_inplace_v3_tail.patch"
+    },
+    "encoder": {
+      "copied_bytes": [
+        [
+          "config.json",
+          312
+        ],
+        [
+          "forward_offsets.bin",
+          1282784
+        ],
+        [
+          "forward_data.bin",
+          30279872
+        ],
+        [
+          "forward_encoder.bin",
+          88694
+        ],
+        [
+          "posting_lists.bin",
+          78998640
+        ],
+        [
+          "token_to_id_map.bin",
+          496206
+        ],
+        [
+          "document_mapping_strings.bin",
+          1763800
+        ],
+        [
+          "document_mapping_offsets.bin",
+          1282784
+        ]
+      ],
+      "doc_ids": {
+        "bits": 33,
+        "max_numeric_id": 7213221597
+      },
+      "dst": "/home/vscode/work/inplace_update/stage3/encoder/synth/v3",
+      "empty_lists": 0,
+      "forward_tail": {
+        "base_words": 3784984,
+        "defaults_used": [
+          true,
+          true
+        ],
+        "forward_data.bin_apparent": 33310912,
+        "forward_offsets.bin_apparent": 1413856,
+        "reserve_rows": 16384,
+        "reserve_words": 378880
+      },
+      "manifest_fnv64": "44720068ed6fac8f",
+      "max_list_len": 5250,
+      "n_blocks_total": 183213,
+      "n_docs": 160347,
+      "n_posting_lists": 22167,
+      "n_postings": 3758807,
+      "posting_words_high16_nonzero": 0,
+      "seconds": {
+        "copy": 0.190900847,
+        "ids": 0.003268375,
+        "list_crc": 0.010798196,
+        "list_min": 2.24084465,
+        "scan": 0.025258903,
+        "side_files_and_sync": 0.725204786,
+        "total": 3.372971652
+      },
+      "side_file_bytes": {
+        "block_inflation.bin": 366426,
+        "forward_free.bin": 576,
+        "inplace_header.bin": 8192,
+        "list_crc.bin": 177336,
+        "list_dir.bin": 354672,
+        "list_min.bin": 177336,
+        "manifest.json": 16521899,
+        "posting_free.bin": 64,
+        "posting_heap.bin_apparent": 78999552,
+        "readers.bin": 16384,
+        "row_id_override.bin_apparent": 1413848
+      },
+      "source_manifest_fnv64": "d2798d917d97160e",
+      "spare_bits": {
+        "bits_forward_offsets_max": 22,
+        "bits_max_len": 7,
+        "bits_max_start": 22,
+        "forward_data_words": 3784984,
+        "forward_offsets_max": 3784984,
+        "len_bits_histogram": [
+          0,
+          0,
+          0,
+          19,
+          27005,
+          3178634,
+          444647,
+          108502,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_len_words": 71,
+        "max_range_end_words": 3784984,
+        "max_start_words": 3784929,
+        "min_len_words": 7,
+        "spare_in_len_field_16": 9,
+        "spare_in_offset_field_48": 26,
+        "spare_per_forward_offsets_entry": 42,
+        "spare_total_per_word": 35,
+        "start_headroom_bits_v3": 10,
+        "used_by_v3": 16
+      },
+      "src": "/home/vscode/work/inplace_update/stage3/encoder/synth/v2"
+    },
+    "encode_wall_s": {
+      "value": 3.407066822052002,
+      "note": "host shared, not a measurement (cores 8-15, latency lock not taken)"
+    },
+    "copied_prefix_identical": {
+      "forward_data.bin": true,
+      "forward_offsets.bin": true
+    },
+    "other_files_identical": {
+      "config.json": true,
+      "forward_encoder.bin": true,
+      "posting_lists.bin": true,
+      "token_to_id_map.bin": true,
+      "document_mapping_strings.bin": true,
+      "document_mapping_offsets.bin": true
+    },
+    "sizes": {
+      "forward_data.bin": {
+        "v2": 30279872,
+        "v3": 33310912,
+        "v3_allocated": 30281728
+      },
+      "forward_offsets.bin": {
+        "v2": 1282784,
+        "v3": 1413856,
+        "v3_allocated": 1286144
+      },
+      "row_id_override.bin": {
+        "v3": 1413848,
+        "v3_allocated": 0
+      }
+    },
+    "baseline_epoch0": {
+      "header_info(slot0,slot1,nonzero_infl,non_native_lists)": [
+        0,
+        null,
+        0,
+        0
+      ],
+      "tail_info(base_words,reserve_words,reserve_rows,used,rows)": [
+        3784984,
+        378880,
+        16384,
+        0,
+        0
+      ],
+      "n_docs_reported": 160347
+    },
+    "zero_patch_parity_v31_vs_v2": {
+      "identical": 460,
+      "of": 460,
+      "per_set": {
+        "QA": {
+          "n": 240,
+          "identical": 240
+        },
+        "QT": {
+          "n": 120,
+          "identical": 120
+        },
+        "QD": {
+          "n": 100,
+          "identical": 100
+        }
+      },
+      "first_difference": null
+    },
+    "chosen_docs": {
+      "n": 64,
+      "ids": [
+        "W7169807453",
+        "W7212519173",
+        "W2980331074",
+        "W3110919048",
+        "W3111144288",
+        "W7168145940",
+        "W7171796218",
+        "W7165680760",
+        "W7212905161",
+        "W7212465005",
+        "W7212730511",
+        "W7213192739",
+        "W7212490738",
+        "W7169871814",
+        "W7212456867",
+        "W4417000536",
+        "W7213085656",
+        "W7208815697",
+        "W7165506320",
+        "W7213204046",
+        "W7212619452",
+        "W3111395482",
+        "W7166693531",
+        "W7213219498",
+        "W7171305720",
+        "W3205276472",
+        "W3149459213",
+        "W7212450743",
+        "W7212795933",
+        "W7212862154",
+        "W7202297771",
+        "W7164751347",
+        "W3039841164",
+        "W7212765115",
+        "W7212849566",
+        "W7212902588",
+        "W7212525979",
+        "W7212191214",
+        "W4411796967",
+        "W7163867089",
+        "W3081214495",
+        "W7212433173",
+        "W7212427568",
+        "W7212523990",
+        "W7212813339",
+        "W7213155325",
+        "W7213202146",
+        "W7213107789",
+        "W7211986340",
+        "W7148286577",
+        "W7212171833",
+        "W4391179435",
+        "W4389570042",
+        "W7171567131",
+        "W7213221535",
+        "W7154829741",
+        "W7212458896",
+        "W7155505673",
+        "W7167425051",
+        "W3080952192",
+        "W7212210075",
+        "W7213023300",
+        "W3047070893",
+        "W7124418639"
+      ],
+      "top200_occurrences": [
+        166,
+        133,
+        109,
+        105,
+        104,
+        103,
+        99,
+        97,
+        94,
+        92,
+        90,
+        89,
+        89,
+        89,
+        87,
+        86,
+        85,
+        85,
+        85,
+        85,
+        83,
+        83,
+        83,
+        83,
+        82,
+        82,
+        82,
+        80,
+        80,
+        79,
+        78,
+        78,
+        77,
+        77,
+        76,
+        75,
+        75,
+        75,
+        74,
+        74,
+        74,
+        74,
+        73,
+        73,
+        71,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        68,
+        68,
+        67,
+        67,
+        66,
+        66,
+        66,
+        66,
+        65,
+        65,
+        63,
+        63,
+        63
+      ]
+    },
+    "fixture": {
+      "base_words": 3784984,
+      "fresh_ids": [
+        "W7213221598",
+        "W7213221599",
+        "W7213221600",
+        "W7213221601",
+        "W7213221602",
+        "W7213221603",
+        "W7213221604",
+        "W7213221605",
+        "W7213221606",
+        "W7213221607",
+        "W7213221608",
+        "W7213221609",
+        "W7213221610",
+        "W7213221611",
+        "W7213221612",
+        "W7213221613",
+        "W7213221614",
+        "W7213221615",
+        "W7213221616",
+        "W7213221617",
+        "W7213221618",
+        "W7213221619",
+        "W7213221620",
+        "W7213221621",
+        "W7213221622",
+        "W7213221623",
+        "W7213221624",
+        "W7213221625",
+        "W7213221626",
+        "W7213221627",
+        "W7213221628",
+        "W7213221629",
+        "W7213221630",
+        "W7213221631",
+        "W7213221632",
+        "W7213221633",
+        "W7213221634",
+        "W7213221635",
+        "W7213221636",
+        "W7213221637",
+        "W7213221638",
+        "W7213221639",
+        "W7213221640",
+        "W7213221641",
+        "W7213221642",
+        "W7213221643",
+        "W7213221644",
+        "W7213221645",
+        "W7213221646",
+        "W7213221647",
+        "W7213221648",
+        "W7213221649",
+        "W7213221650",
+        "W7213221651",
+        "W7213221652",
+        "W7213221653",
+        "W7213221654",
+        "W7213221655",
+        "W7213221656",
+        "W7213221657",
+        "W7213221658",
+        "W7213221659",
+        "W7213221660",
+        "W7213221661"
+      ],
+      "lists_touched": 2653,
+      "max_base_numeric_id": 7213221597,
+      "n_docs_appended": 64,
+      "nnz_added": 8643,
+      "oracle_dir": "/home/vscode/work/inplace_update/stage3/encoder/synth/oracle",
+      "published_epoch": 1,
+      "record_words": [
+        55,
+        48,
+        47,
+        51,
+        50,
+        42,
+        35,
+        36,
+        42,
+        27,
+        45,
+        30,
+        43,
+        30,
+        61,
+        27,
+        30,
+        23,
+        40,
+        34,
+        32,
+        31,
+        32,
+        40,
+        35,
+        42,
+        39,
+        35,
+        48,
+        45,
+        70,
+        44,
+        33,
+        58,
+        34,
+        20,
+        44,
+        28,
+        36,
+        31,
+        33,
+        38,
+        29,
+        32,
+        33,
+        35,
+        41,
+        35,
+        40,
+        48,
+        38,
+        25,
+        33,
+        16,
+        35,
+        37,
+        43,
+        36,
+        42,
+        32,
+        56,
+        45,
+        48,
+        32
+      ],
+      "reserve_rows": 16384,
+      "reserve_words": 378880,
+      "rows": [
+        31463,
+        153575,
+        128870,
+        54194,
+        54398,
+        90149,
+        32415,
+        31300,
+        36761,
+        27008,
+        7252,
+        83782,
+        27285,
+        32636,
+        23962,
+        21278,
+        62087,
+        31158,
+        150534,
+        135873,
+        68452,
+        55093,
+        55165,
+        16206,
+        42075,
+        129101,
+        720,
+        154201,
+        112464,
+        146095,
+        31162,
+        55177,
+        54402,
+        35557,
+        8200,
+        143612,
+        124531,
+        121239,
+        89514,
+        89771,
+        443,
+        153097,
+        102236,
+        73108,
+        9587,
+        87956,
+        64351,
+        133001,
+        73975,
+        150527,
+        126454,
+        31001,
+        31484,
+        90129,
+        48481,
+        800,
+        156107,
+        54641,
+        89509,
+        129070,
+        128451,
+        17075,
+        55097,
+        89520
+      ],
+      "tag_on_repointed_words": 1,
+      "tail_rows_published": 64,
+      "tail_words_used": 2455,
+      "words_repointed_per_doc": [
+        183,
+        152,
+        159,
+        174,
+        164,
+        132,
+        114,
+        110,
+        133,
+        88,
+        141,
+        97,
+        145,
+        100,
+        209,
+        91,
+        99,
+        70,
+        131,
+        118,
+        104,
+        101,
+        102,
+        132,
+        116,
+        137,
+        136,
+        113,
+        157,
+        154,
+        246,
+        152,
+        107,
+        187,
+        119,
+        59,
+        154,
+        93,
+        121,
+        98,
+        111,
+        123,
+        87,
+        104,
+        107,
+        114,
+        137,
+        106,
+        134,
+        156,
+        123,
+        76,
+        111,
+        47,
+        111,
+        122,
+        141,
+        122,
+        130,
+        105,
+        183,
+        140,
+        158,
+        108
+      ],
+      "words_repointed_total": 8054
+    },
+    "fixture_wall_s": {
+      "value": 0.8514649868011475,
+      "note": "host shared, not a measurement (cores 8-15, latency lock not taken)"
+    },
+    "header_info": [
+      0,
+      1,
+      0,
+      0
+    ],
+    "tail_info": [
+      3784984,
+      378880,
+      16384,
+      2455,
+      64
+    ],
+    "n_docs_reported": {
+      "v3": 160347,
+      "oracle": 160411
+    },
+    "parity_v31_tail_vs_oracle": {
+      "identical": 460,
+      "of": 460,
+      "per_set": {
+        "QA": {
+          "n": 240,
+          "identical": 240
+        },
+        "QT": {
+          "n": 120,
+          "identical": 120
+        },
+        "QD": {
+          "n": 100,
+          "identical": 100
+        }
+      },
+      "first_difference": null
+    },
+    "non_vacuity": {
+      "queries_with_tail_doc_in_top200": 406,
+      "tail_doc_hits_total": 5186,
+      "old_ids_of_moved_docs_still_returned": 0,
+      "queries_changed_vs_epoch0_baseline": 406
+    },
+    "readers_busy_after_queries": [],
+    "registration_state": [
+      true,
+      "readers.bin mapped read-write"
+    ],
+    "verdict": "PASS",
+    "indicative_ms_p50": {
+      "v31_tail": 1.459773,
+      "v2_oracle": 1.390563,
+      "note": "host shared, not a measurement (cores 8-15, latency lock not taken)"
+    },
+    "params": {
+      "k": 200,
+      "heap_factor": 0.8,
+      "query_cut": "len(terms)",
+      "sorted": true,
+      "m8_batch": "unset"
+    },
+    "wall_s": 15.1
+  },
+  "live_index_guard": [
+    {
+      "tag": "tail-start",
+      "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+      "data/seismic_150m": {
+        "files": 320,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      },
+      "/var/tmp/seismic_stage": {
+        "files": 96,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      }
+    },
+    {
+      "tag": "tail-end",
+      "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+      "data/seismic_150m": {
+        "files": 320,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      },
+      "/var/tmp/seismic_stage": {
+        "files": 96,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      }
+    }
+  ],
+  "timing_note": "host shared, not a measurement (cores 8-15, latency lock not taken)",
+  "shard0": {
+    "measured_utc": "2026-09-30 03:48",
+    "what": "zero-patch parity of the v3.1 conversion of shard 0 vs A0 (served .so on the same v2 copy), B1's definition; identity test",
+    "dirs": {
+      "v2copy": "/home/vscode/work/inplace_update/stage1/v2copy",
+      "v3_1": "/home/vscode/work/inplace_update/stage3/encoder/v3_1",
+      "encode_report": "/home/vscode/work/inplace_update/stage3/encoder/encode_report_v3_1.json",
+      "source": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap"
+    },
+    "builds": {
+      "served": {
+        "so": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6"
+      },
+      "side_v3_1": {
+        "so": "/home/vscode/work/inplace_update/stage3/encoder/so_tail/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "a0870b757b574a62f9fd77ce8dedc9454dff94ca271d18968b280cf2f5051a4d",
+        "patch": "spike/seismic_upstream_inplace_v3_tail.patch",
+        "rustflags": "-C target-cpu=x86-64-v3"
+      }
+    },
+    "encoder": {
+      "copied_bytes": [
+        [
+          "config.json",
+          312
+        ],
+        [
+          "forward_offsets.bin",
+          150394584
+        ],
+        [
+          "forward_data.bin",
+          3853883944
+        ],
+        [
+          "forward_encoder.bin",
+          114834
+        ],
+        [
+          "posting_lists.bin",
+          1159211728
+        ],
+        [
+          "token_to_id_map.bin",
+          645849
+        ],
+        [
+          "document_mapping_strings.bin",
+          206749517
+        ],
+        [
+          "document_mapping_offsets.bin",
+          150394584
+        ]
+      ],
+      "doc_ids": {
+        "bits": 33,
+        "max_numeric_id": 7143275721
+      },
+      "dst": "/home/vscode/work/inplace_update/stage3/encoder/v3_1",
+      "empty_lists": 2089,
+      "forward_tail": {
+        "base_words": 481735493,
+        "defaults_used": [
+          true,
+          true
+        ],
+        "forward_data.bin_apparent": 4239272488,
+        "forward_offsets.bin_apparent": 165435096,
+        "reserve_rows": 1880064,
+        "reserve_words": 48173568
+      },
+      "manifest_fnv64": "c36aaa25b33a96c6",
+      "max_list_len": 5250,
+      "n_blocks_total": 3206978,
+      "n_docs": 18799322,
+      "n_posting_lists": 28702,
+      "n_postings": 40361159,
+      "posting_words_high16_nonzero": 0,
+      "seconds": {
+        "copy": 25.054195267,
+        "ids": 0.405339558,
+        "list_crc": 0.160388958,
+        "list_min": 17.433917082,
+        "scan": 0.174501052,
+        "side_files_and_sync": 1.063492297,
+        "total": 45.310212163
+      },
+      "side_file_bytes": {
+        "block_inflation.bin": 6413956,
+        "forward_free.bin": 576,
+        "inplace_header.bin": 8192,
+        "list_crc.bin": 229616,
+        "list_dir.bin": 459232,
+        "list_min.bin": 229616,
+        "manifest.json": 21880938,
+        "posting_free.bin": 64,
+        "posting_heap.bin_apparent": 1159213056,
+        "readers.bin": 16384,
+        "row_id_override.bin_apparent": 165435088
+      },
+      "source_manifest_fnv64": "e14c71a12c610f65",
+      "spare_bits": {
+        "bits_forward_offsets_max": 29,
+        "bits_max_len": 7,
+        "bits_max_start": 29,
+        "forward_data_words": 481735493,
+        "forward_offsets_max": 481735493,
+        "len_bits_histogram": [
+          0,
+          0,
+          0,
+          1407,
+          964352,
+          31634386,
+          6843603,
+          917411,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_len_words": 74,
+        "max_range_end_words": 357641134,
+        "max_start_words": 357641117,
+        "min_len_words": 4,
+        "spare_in_len_field_16": 9,
+        "spare_in_offset_field_48": 19,
+        "spare_per_forward_offsets_entry": 35,
+        "spare_total_per_word": 28,
+        "start_headroom_bits_v3": 3,
+        "used_by_v3": 16
+      },
+      "src": "/home/vscode/work/inplace_update/stage1/v2copy"
+    },
+    "encode_reused": false,
+    "encode_wall_s": {
+      "value": 45.34674310684204,
+      "note": "host shared, not a measurement (cores 8-15, latency lock not taken)"
+    },
+    "copied_prefix_identical": {
+      "forward_data.bin": true,
+      "forward_offsets.bin": true
+    },
+    "other_files_identical": {
+      "config.json": true,
+      "forward_encoder.bin": true,
+      "posting_lists.bin": true,
+      "token_to_id_map.bin": true,
+      "document_mapping_strings.bin": true,
+      "document_mapping_offsets.bin": true
+    },
+    "sizes": {
+      "forward_data.bin": {
+        "v2": 3853883944,
+        "v3_1": 4239272488,
+        "v3_1_allocated": 3853893632
+      },
+      "forward_offsets.bin": {
+        "v2": 150394584,
+        "v3_1": 165435096,
+        "v3_1_allocated": 150396928
+      },
+      "row_id_override.bin": {
+        "v3_1": 165435088,
+        "v3_1_allocated": 0
+      }
+    },
+    "v3_1_state": {
+      "forward_format": "dotvbyte_fixedu8_v2_inplace_v3",
+      "n_docs": 18799322,
+      "header_info(slot0,slot1,nonzero_infl,non_native_lists)": [
+        0,
+        null,
+        0,
+        0
+      ],
+      "tail_info(base_words,reserve_words,reserve_rows,used,rows)": [
+        481735493,
+        48173568,
+        1880064,
+        0,
+        0
+      ]
+    },
+    "parity_v31_vs_A0": {
+      "identical": 460,
+      "of": 460,
+      "per_set": {
+        "QA": {
+          "n": 240,
+          "identical": 240
+        },
+        "QT": {
+          "n": 120,
+          "identical": 120
+        },
+        "QD": {
+          "n": 100,
+          "identical": 100
+        }
+      },
+      "first_difference": null
+    },
+    "indicative_ms_p50": {
+      "A0": 2.963471,
+      "V31": 2.722643,
+      "note": "host shared, not a measurement (cores 8-15, latency lock not taken)"
+    },
+    "params": {
+      "k": 200,
+      "heap_factor": 0.8,
+      "query_cut": "len(terms)",
+      "sorted": true,
+      "m8_batch": "unset"
+    },
+    "verdict": "PASS",
+    "wall_s": 62.3,
+    "v3_1_sentinel": {
+      "dst": "/home/vscode/work/inplace_update/stage3/encoder/v3_1",
+      "source": "/home/vscode/work/inplace_update/stage1/v2copy",
+      "source_manifest_fnv64": "e14c71a12c610f65",
+      "written_by": "convert_dv_v2_to_inplace_v3 (FORMAT_V3.md)"
+    }
+  }
+}

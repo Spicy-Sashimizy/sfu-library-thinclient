@@ -598,6 +598,7 @@ class _SeismicBackendBase:
         if load_mode not in ("stock", "mmap"):
             raise ValueError(f"load_mode must be 'stock' or 'mmap', got {load_mode!r}")
         self._seismic = seismic
+        self._shard_result_filter = None
         self._string_dtype = seismic.get_seismic_string()
         self._backend_proto = SeismicBackend
         self.splade_model_path = splade_model_path
@@ -1061,7 +1062,12 @@ class _SeismicBackendBase:
         that throws or times out returns `[]` (no federation contribution) + is
         marked failed for the reprobe cooldown. The OTHER shards still serve →
         "one shard down, seven serve." When OFF (default) the path is unchanged
-        (byte-identical to pre-WI-10: a thrown search propagates as before)."""
+        (byte-identical to pre-WI-10: a thrown search propagates as before).
+
+        `_shard_result_filter` (default None = byte-identical path): an optional
+        `f(per_shard) -> per_shard` applied BEFORE `_merge_topk`, installed by
+        the delta layer's livedocs mask (`DeltaLayer.attach_seismic`) so masked
+        base copies never enter the merge."""
         if not q:
             return []
         qcomp, qvals, qc, kp = _prepare_query(q, top_k, self._string_dtype,
@@ -1071,11 +1077,17 @@ class _SeismicBackendBase:
             return idx.search(query_id="q", query_components=qcomp, query_values=qvals,
                               k=kp, query_cut=qc, heap_factor=heap_factor)
 
+        shard_filter = getattr(self, "_shard_result_filter", None)
         if not self._fault_boundary:
             per_shard = self._fan_out(_search_one)
+            if shard_filter is not None:
+                per_shard = shard_filter(per_shard)
             return _merge_topk(per_shard, top_k)
         per_shard = self._fan_out(self._guarded_search_one(_search_one))
-        return _merge_topk([r if r is not None else [] for r in per_shard], top_k)
+        per_shard = [r if r is not None else [] for r in per_shard]
+        if shard_filter is not None:
+            per_shard = shard_filter(per_shard)
+        return _merge_topk(per_shard, top_k)
 
     def _guarded_search_one(self, _search_one):
         """Wrap `_search_one` so each shard's search is fault-bounded: a None
@@ -1440,6 +1452,9 @@ class HybridSeismicBackend(_SeismicBackendBase):
         if not self._force_parallel:
             with self._lock:
                 self._maybe_flip(traverse_ms)
+        shard_filter = getattr(self, "_shard_result_filter", None)
+        if shard_filter is not None:
+            per_shard = shard_filter(per_shard)
         return _merge_topk(per_shard, top_k)
 
     def search_with_timing(self, query: str, top_k: int,

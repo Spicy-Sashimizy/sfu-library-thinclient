@@ -1,0 +1,271 @@
+{
+  "B1": {
+    "bar": "B1 parity: v3 decoder on v3 copy, zero patches, vs A0; top-200 ids + f32 score bits; E8 recall-max; 460 queries; PASS 460/460 else FAIL",
+    "run_ahead_of_go": true,
+    "measured_utc": "2026-09-29 21:50",
+    "params": {
+      "k": 200,
+      "query_cut": "len(terms)",
+      "heap_factor": 0.8,
+      "sorted": true,
+      "m8_batch": "unset (served default)"
+    },
+    "dirs": {
+      "v2copy": "/home/vscode/work/inplace_update/stage1/v2copy",
+      "v3": "/home/vscode/work/inplace_update/stage1/v3",
+      "source": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap"
+    },
+    "builds": {
+      "served": {
+        "so": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6"
+      },
+      "side_v3": {
+        "so": "/home/vscode/work/inplace_update/stage1/so_v3/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+        "sha256": "c70f58f42b654a4dcdc22f181804f0ba07b1a985ee4ab34e5a21daab75dc969d",
+        "patch": "spike/seismic_upstream_inplace_v3.patch",
+        "rustflags": "-C target-cpu=x86-64-v3"
+      }
+    },
+    "encoder": {
+      "copied_bytes": [
+        [
+          "config.json",
+          312
+        ],
+        [
+          "forward_offsets.bin",
+          150394584
+        ],
+        [
+          "forward_data.bin",
+          3853883944
+        ],
+        [
+          "forward_encoder.bin",
+          114834
+        ],
+        [
+          "posting_lists.bin",
+          1159211728
+        ],
+        [
+          "token_to_id_map.bin",
+          645849
+        ],
+        [
+          "document_mapping_strings.bin",
+          206749517
+        ],
+        [
+          "document_mapping_offsets.bin",
+          150394584
+        ]
+      ],
+      "doc_ids": {
+        "bits": 33,
+        "max_numeric_id": 7143275721
+      },
+      "dst": "/home/vscode/work/inplace_update/stage1/v3",
+      "empty_lists": 2089,
+      "manifest_fnv64": "27b8997a64c6c80f",
+      "max_list_len": 5250,
+      "n_blocks_total": 3206978,
+      "n_docs": 18799322,
+      "n_posting_lists": 28702,
+      "n_postings": 40361159,
+      "posting_words_high16_nonzero": 0,
+      "seconds": {
+        "copy": 18.67262544,
+        "ids": 0.372853017,
+        "list_crc": 0.150952568,
+        "list_min": 16.35967714,
+        "scan": 0.117565934,
+        "side_files_and_sync": 0.173907269,
+        "total": 36.118309351
+      },
+      "side_file_bytes": {
+        "block_inflation.bin": 6413956,
+        "forward_free.bin": 576,
+        "inplace_header.bin": 8192,
+        "list_crc.bin": 229616,
+        "list_dir.bin": 459232,
+        "list_min.bin": 229616,
+        "manifest.json": 21880588,
+        "posting_free.bin": 64,
+        "posting_heap.bin_apparent": 1159213056,
+        "readers.bin": 16384,
+        "row_id_override.bin_apparent": 150394576
+      },
+      "source_manifest_fnv64": "e14c71a12c610f65",
+      "spare_bits": {
+        "bits_forward_offsets_max": 29,
+        "bits_max_len": 7,
+        "bits_max_start": 29,
+        "forward_data_words": 481735493,
+        "forward_offsets_max": 481735493,
+        "len_bits_histogram": [
+          0,
+          0,
+          0,
+          1407,
+          964352,
+          31634386,
+          6843603,
+          917411,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_len_words": 74,
+        "max_range_end_words": 357641134,
+        "max_start_words": 357641117,
+        "min_len_words": 4,
+        "spare_in_len_field_16": 9,
+        "spare_in_offset_field_48": 19,
+        "spare_per_forward_offsets_entry": 35,
+        "spare_total_per_word": 28,
+        "start_headroom_bits_v3": 3,
+        "used_by_v3": 16
+      },
+      "src": "/home/vscode/work/inplace_update/stage1/v2copy"
+    },
+    "copied_files_byte_identical": {
+      "config.json": true,
+      "forward_offsets.bin": true,
+      "forward_data.bin": true,
+      "forward_encoder.bin": true,
+      "posting_lists.bin": true,
+      "token_to_id_map.bin": true,
+      "document_mapping_strings.bin": true,
+      "document_mapping_offsets.bin": true
+    },
+    "v2_reader_rejects_v3": {
+      "arm": "reject",
+      "so": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+      "so_sha256": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6",
+      "pid": 3010373,
+      "rejected": true,
+      "error": "OSError: MmapSeismicIndexDotVByte::from_mmap(\"/home/vscode/work/inplace_update/stage1/v3\") failed: dotvbyte dir has forward_format_version 3; this reader supports 1 (FixedU8Q) and 2 (per-doc scale) \u2014 rebuild the reader"
+    },
+    "v3_state": {
+      "forward_format": "dotvbyte_fixedu8_v2_inplace_v3",
+      "inplace_epoch": 0,
+      "header_info(slot0,slot1,nonzero_infl,non_native_lists)": [
+        0,
+        null,
+        0,
+        0
+      ]
+    },
+    "result_lengths": {
+      "min": 200,
+      "max": 200
+    },
+    "parity_v3_vs_A0": {
+      "identical": 460,
+      "of": 460,
+      "per_set": {
+        "QA": {
+          "n": 240,
+          "identical": 240
+        },
+        "QT": {
+          "n": 120,
+          "identical": 120
+        },
+        "QD": {
+          "n": 100,
+          "identical": 100
+        }
+      },
+      "first_difference": null
+    },
+    "control_v2side_vs_A0": {
+      "identical": 460,
+      "of": 460,
+      "first_difference": null
+    },
+    "mask_cost": {
+      "n_queries": 460,
+      "measured_passes": 2,
+      "discarded_warmup_passes": 1,
+      "v2_ms": {
+        "p50": 2.8369755,
+        "p95": 4.6936645,
+        "mean": 2.9589874804347827
+      },
+      "v3_ms": {
+        "p50": 2.876028,
+        "p95": 4.6601155,
+        "mean": 2.9907352608695654
+      },
+      "ratio_of_p50": 1.0137655400971914,
+      "per_query_ratio": {
+        "median": 1.010768684764476,
+        "mean": 1.0127752258906544,
+        "p5": 0.9589255504343143,
+        "p95": 1.0727055614722627,
+        "mean_ci95_bootstrap": [
+          1.0091274472336718,
+          1.0164188315024323
+        ]
+      },
+      "per_query_diff_ms": {
+        "median": 0.030386999999999997,
+        "mean": 0.03174778043478261
+      },
+      "includes": "3 masks + visibility XOR per posting (both passes), inflation load + multiply per block, list_dir load + compare per query term, header read + 2x FNV per query, row override load per winner"
+    },
+    "mask_cost_note": "decoder v3 vs v2 (same side build, same content: V3DIR vs V2COPY); latency run under the latency lock, one process, taskset 0-7; host quiet-gating as the lock provides, no separate quiet gate",
+    "single_pass_ms_p50": {
+      "A0": 2.614423,
+      "V3": 2.708887,
+      "V2SIDE": 2.581599
+    },
+    "verdict": "PASS",
+    "wall_s": 61.4,
+    "live_index_guard": [
+      {
+        "tag": "b1-start",
+        "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+        "data/seismic_150m": {
+          "files": 320,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        },
+        "/var/tmp/seismic_stage": {
+          "files": 96,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        }
+      },
+      {
+        "tag": "b1-end",
+        "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+        "data/seismic_150m": {
+          "files": 320,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        },
+        "/var/tmp/seismic_stage": {
+          "files": 96,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        }
+      }
+    ],
+    "v3_sentinel": {
+      "dst": "/home/vscode/work/inplace_update/stage1/v3",
+      "source": "/home/vscode/work/inplace_update/stage1/v2copy",
+      "source_manifest_fnv64": "e14c71a12c610f65",
+      "written_by": "convert_dv_v2_to_inplace_v3 (FORMAT_V3.md)"
+    }
+  }
+}

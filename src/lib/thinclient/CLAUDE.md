@@ -19,7 +19,11 @@ delta index above `SFU_DENSE_DELTA_USEARCH_MIN`, int8 ONNX encoder behind
 `SFU_DENSE_ENCODER_ONNX`, both default-inert)
 · `dense_delta_merge.py` (`merge_dense_delta`: fold the SQLite delta into the
 seed artifacts atomically, then truncate; 2026-09-25, serving efficacy unmeasured)
-· `doc_encoder.py` (GPU TRT batch SPLADE encoder for monthly rebuilds).
+· `doc_encoder.py` (GPU TRT batch SPLADE encoder for monthly rebuilds)
+· `delta_layer.py` (2026-09-29: serving reader for the delta-ingest layer —
+mutable buffer + immutable generations + newest-wins masks; gate
+`SFU_DELTA_ROOT` default OFF; ingest side lives in `spike/delta_ingest/`;
+`docs/delta_ingest/`; EFFICACY UNMEASURED).
 
 Run anything with the venv: `/workspaces/sfu-library-thinclient/.venv/bin/python3`.
 

@@ -1,0 +1,940 @@
+diff --git a/src/inplace_v3.rs b/src/inplace_v3.rs
+index c8c5f3e..d2d4d97 100644
+--- a/src/inplace_v3.rs
++++ b/src/inplace_v3.rs
+@@ -70,6 +70,18 @@ pub const READER_SLOT_WORDS: usize = 8;
+ pub const READER_IDLE: u64 = u64::MAX;
+ /// Header record length inside each 4 KiB slot page.
+ pub const HEADER_RECORD: usize = 128;
++/// Header record offset of "forward tail words used" (v3.1, revision 6).
++pub const HEADER_TAIL_WORDS_AT: usize = 64;
++/// Header record offset of "forward tail rows published" (v3.1, revision 6).
++pub const HEADER_TAIL_ROWS_AT: usize = 72;
++/// Tail reserve defaults round up to this many entries (4 KiB of u64).
++pub const TAIL_ROUND: u64 = 512;
++/// Manifest minor version carried by v3.1 dirs (`inplace_v3.minor`).
++pub const FORMAT_MINOR: u32 = 1;
++
++fn round_up_512(x: u64) -> u64 {
++    x.div_ceil(TAIL_ROUND) * TAIL_ROUND
++}
+ 
+ /// Index files copied verbatim by the encoder.
+ pub const COPIED_FILES: [&str; 8] = [
+@@ -289,8 +301,13 @@ fn bits_needed(x: u64) -> u32 {
+     64 - x.leading_zeros()
+ }
+ 
+-fn header_record(slot: u32, epoch: u64, n_docs: u64, n_lists: u64, n_blocks: u64, man_fnv: u64) -> [u8; HEADER_RECORD] {
++#[allow(clippy::too_many_arguments)]
++fn header_record(
++    slot: u32, epoch: u64, n_docs: u64, n_lists: u64, n_blocks: u64, man_fnv: u64, tail_words: u64, tail_rows: u64,
++) -> [u8; HEADER_RECORD] {
+     let mut r = [0u8; HEADER_RECORD];
++    r[HEADER_TAIL_WORDS_AT..HEADER_TAIL_WORDS_AT + 8].copy_from_slice(&tail_words.to_le_bytes());
++    r[HEADER_TAIL_ROWS_AT..HEADER_TAIL_ROWS_AT + 8].copy_from_slice(&tail_rows.to_le_bytes());
+     r[0..8].copy_from_slice(&HEADER_MAGIC.to_le_bytes());
+     r[8..12].copy_from_slice(&FORMAT_VERSION.to_le_bytes());
+     r[12..16].copy_from_slice(&slot.to_le_bytes());
+@@ -314,16 +331,21 @@ fn write_all(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+ /// patches (FORMAT_V3.md §5). `dst` must not exist or be empty. Returns a
+ /// JSON report incl. the measured spare-bit facts.
+ pub fn convert_dv_v2_to_inplace_v3(src: &Path, dst: &Path) -> std::io::Result<serde_json::Value> {
+-    convert_dv_v2_to_inplace_v3_with(src, dst, None)
++    convert_dv_v2_to_inplace_v3_with(src, dst, None, None, None)
+ }
+ 
+ /// As [`convert_dv_v2_to_inplace_v3`] with an explicit A2b posting-heap
+ /// reserve in bytes (None = the size of `posting_lists.bin` rounded up to
+-/// 4 KiB; the file is sparse, so the reserve allocates no blocks).
++/// 4 KiB; the file is sparse, so the reserve allocates no blocks) and the
++/// v3.1 forward-tail reserves (FORMAT_V3.md revision 6): `tail_reserve_words`
++/// (None = base words / 10 rounded up to 512) and `tail_reserve_rows` (None =
++/// n_docs / 10 rounded up to 512); 0 for both = the v3.0 layout.
+ pub fn convert_dv_v2_to_inplace_v3_with(
+     src: &Path,
+     dst: &Path,
+     heap_reserve: Option<u64>,
++    tail_reserve_words: Option<u64>,
++    tail_reserve_rows: Option<u64>,
+ ) -> std::io::Result<serde_json::Value> {
+     use std::time::Instant;
+     let t0 = Instant::now();
+@@ -537,9 +559,24 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+         }
+         write_all(&dst.join("forward_free.bin"), &buf)?;
+     }
++    let tail_words = tail_reserve_words.unwrap_or_else(|| round_up_512(fdw as u64 / 10));
++    let tail_rows = tail_reserve_rows.unwrap_or_else(|| round_up_512(n_docs as u64 / 10));
++    if fdw as u64 + tail_words > (1u64 << 32) {
++        return Err(inval(format!(
++            "base {fdw} + tail reserve {tail_words} words exceeds the 32-bit START field"
++        )));
++    }
+     {
+         let f = File::create(dst.join("row_id_override.bin"))?;
+-        f.set_len((8 * n_docs) as u64)?;
++        f.set_len(8 * (n_docs as u64 + tail_rows))?;
++        f.sync_all()?;
++    }
++    {
++        let f = std::fs::OpenOptions::new().write(true).open(dst.join("forward_data.bin"))?;
++        f.set_len(8 * (fdw as u64 + tail_words))?;
++        f.sync_all()?;
++        let f = std::fs::OpenOptions::new().write(true).open(dst.join("forward_offsets.bin"))?;
++        f.set_len(8 * (n_docs as u64 + 1 + tail_rows))?;
+         f.sync_all()?;
+     }
+ 
+@@ -551,7 +588,14 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+         serde_json::json!({
+             "format": "sfu_inplace_v3",
+             "version": FORMAT_VERSION,
++            "minor": FORMAT_MINOR,
+             "record_envelope_version": 2,
++            "forward_tail": {"base_words": fdw, "reserve_words": tail_words, "reserve_rows": tail_rows,
++                             "offsets_entries_on_disk": n_docs as u64 + 1 + tail_rows,
++                             "override_entries_on_disk": n_docs as u64 + tail_rows,
++                             "tail_words_used_field": HEADER_TAIL_WORDS_AT,
++                             "tail_rows_published_field": HEADER_TAIL_ROWS_AT,
++                             "status": "v3.1 (FORMAT_V3.md revision 6)"},
+             "posting_word": {"free_bit": 63, "tag_shift": 48, "tag_bits": 15,
+                              "start_shift": 16, "start_bits": 32, "len_bits": 16},
+             "n_blocks_total": n_blocks_total,
+@@ -585,7 +629,7 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+     let man_fnv = fnv1a64(&new_man);
+     let mut hdr = vec![0u8; HEADER_BYTES];
+     hdr[0..HEADER_RECORD].copy_from_slice(&header_record(
+-        0, 0, n_docs as u64, n_lists as u64, n_blocks_total as u64, man_fnv,
++        0, 0, n_docs as u64, n_lists as u64, n_blocks_total as u64, man_fnv, 0, 0,
+     ));
+     write_all(&dst.join("inplace_header.bin"), &hdr)?;
+     File::open(dst)?.sync_all()?;
+@@ -621,11 +665,15 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+         },
+         "doc_ids": {"max_numeric_id": max_id, "bits": bits_needed(max_id)},
+         "copied_bytes": copied,
++        "forward_tail": {"base_words": fdw, "reserve_words": tail_words, "reserve_rows": tail_rows,
++                         "forward_data.bin_apparent": 8 * (fdw as u64 + tail_words),
++                         "forward_offsets.bin_apparent": 8 * (n_docs as u64 + 1 + tail_rows),
++                         "defaults_used": [tail_reserve_words.is_none(), tail_reserve_rows.is_none()]},
+         "side_file_bytes": {
+             "block_inflation.bin": 2 * n_blocks_total,
+             "list_min.bin": 8 * n_lists,
+             "forward_free.bin": FREE_EMPTY_BYTES,
+-            "row_id_override.bin_apparent": 8 * n_docs,
++            "row_id_override.bin_apparent": 8 * (n_docs as u64 + tail_rows),
+             "list_dir.bin": 16 * n_lists,
+             "list_crc.bin": 8 * n_lists,
+             "posting_heap.bin_apparent": heap_reserve,
+@@ -654,7 +702,10 @@ pub struct MmapSeismicIndexInplaceV3 {
+     native_off: Vec<u64>,
+     posting_heap: &'static [u8],
+     pl_len: u64,
+-    fdw: usize,
++    base_words: usize,
++    tail_reserve_words: usize,
++    tail_reserve_rows: usize,
++    offsets_all: &'static [usize],
+     unit_cache: Mutex<HashMap<(usize, u64), Arc<MmapPostingList<'static>>>>,
+     readers: Option<&'static [u8]>,
+     readers_note: String,
+@@ -711,6 +762,22 @@ impl MmapSeismicIndexInplaceV3 {
+         let posting_heap = leak_map(&dir.join("posting_heap.bin"))?;
+         let pl_len = std::fs::metadata(dir.join("posting_lists.bin"))?.len() as usize;
+         let fdw = mget(&man, "forward_data_words")?;
++        let (base_words, tail_reserve_words, tail_reserve_rows) = match iv.get("forward_tail") {
++            Some(ft) => (mget(ft, "base_words")?, mget(ft, "reserve_words")?, mget(ft, "reserve_rows")?),
++            None => (fdw, 0, 0),
++        };
++        if base_words != fdw || mget(&man, "forward_offsets_len")? != n_docs + 1 {
++            return Err(inval("forward_tail.base_words / forward_offsets_len inconsistent with the manifest".into()));
++        }
++        let fd_len = std::fs::metadata(dir.join("forward_data.bin"))?.len();
++        let fo_len = std::fs::metadata(dir.join("forward_offsets.bin"))?.len();
++        if fd_len != 8 * (base_words + tail_reserve_words) as u64
++            || fo_len != 8 * (n_docs + 1 + tail_reserve_rows) as u64
++        {
++            return Err(inval(format!(
++                "forward files do not match base + tail reserve: data {fd_len} B (want 8 x ({base_words} + {tail_reserve_words})), offsets {fo_len} B (want 8 x ({n_docs} + 1 + {tail_reserve_rows}))"
++            )));
++        }
+         let (readers, readers_note) = match std::fs::OpenOptions::new()
+             .read(true)
+             .write(true)
+@@ -733,7 +800,7 @@ impl MmapSeismicIndexInplaceV3 {
+         let free_len = std::fs::metadata(dir.join("forward_free.bin"))?.len() as usize;
+         if header.len() != HEADER_BYTES
+             || inflation.len() != 2 * n_blocks_total
+-            || row_override.len() != 8 * n_docs
++            || row_override.len() != 8 * (n_docs + tail_reserve_rows)
+             || list_min_len != 8 * n_lists
+             || free_len < FREE_EMPTY_BYTES
+             || list_dir.len() != 16 * n_lists
+@@ -743,7 +810,7 @@ impl MmapSeismicIndexInplaceV3 {
+         {
+             return Err(inval("v3 side file sizes do not match the manifest".into()));
+         }
+-        let me = Self {
++        let mut me = Self {
+             inner: MmapSeismicIndexDotVByte::from_mmap_with(dir, true)?,
+             header,
+             inflation,
+@@ -754,7 +821,10 @@ impl MmapSeismicIndexInplaceV3 {
+             native_off,
+             posting_heap,
+             pl_len: pl_len as u64,
+-            fdw,
++            base_words,
++            tail_reserve_words,
++            tail_reserve_rows,
++            offsets_all: &[],
+             unit_cache: Mutex::new(HashMap::new()),
+             reg_enabled: AtomicBool::new(readers.is_some()),
+             readers,
+@@ -766,6 +836,13 @@ impl MmapSeismicIndexInplaceV3 {
+             n_lists,
+             manifest_fnv: fnv1a64(&man_bytes),
+         };
++        me.offsets_all = me.inner.forward_offsets_full();
++        if me.offsets_all.len() != n_docs + 1 + tail_reserve_rows
++            || me.offsets_all[n_docs] != base_words
++            || me.inner.forward().len() != n_docs
++        {
++            return Err(inval("forward_offsets.bin: base CSR end != base_words or length != n_docs + 1 + reserve_rows".into()));
++        }
+         if me.inner.posting_lists_slice().len() != me.n_lists {
+             return Err(inval("reader list count != manifest".into()));
+         }
+@@ -785,6 +862,13 @@ impl MmapSeismicIndexInplaceV3 {
+     }
+ 
+     fn slot_epoch(&self, s: usize) -> Option<u64> {
++        self.slot_state(s).map(|x| x.epoch)
++    }
++
++    /// One 128-byte slot record read atomically (16 Acquire loads) and
++    /// verified; the epoch and the v3.1 tail counters come from the same
++    /// snapshot (FORMAT_V3.md revision 6).
++    fn slot_state(&self, s: usize) -> Option<QuerySnap> {
+         let base = self.header.as_ptr() as usize + s * HEADER_PAGE;
+         let mut r = [0u8; HEADER_RECORD];
+         for i in 0..HEADER_RECORD / 8 {
+@@ -802,20 +886,86 @@ impl MmapSeismicIndexInplaceV3 {
+             && u64_at(40) == self.n_blocks_total as u64
+             && u64_at(48) == self.manifest_fnv
+             && u64_at(HEADER_RECORD - 8) == fnv1a64(&r[0..HEADER_RECORD - 8])
+-            && u64_at(16) <= V3_TAG_MASK;
+-        if ok { Some(u64_at(16)) } else { None }
++            && u64_at(16) <= V3_TAG_MASK
++            && u64_at(HEADER_TAIL_WORDS_AT) <= self.tail_reserve_words as u64
++            && u64_at(HEADER_TAIL_ROWS_AT) <= self.tail_reserve_rows as u64;
++        if ok {
++            Some(QuerySnap {
++                epoch: u64_at(16),
++                tail_words: u64_at(HEADER_TAIL_WORDS_AT),
++                tail_rows: u64_at(HEADER_TAIL_ROWS_AT),
++            })
++        } else {
++            None
++        }
+     }
+ 
+-    /// Published epoch E = the larger epoch of the valid slots (tie: slot 0).
+-    pub fn published_epoch(&self) -> Option<u64> {
+-        match (self.slot_epoch(0), self.slot_epoch(1)) {
+-            (Some(a), Some(b)) => Some(if b > a { b } else { a }),
++    /// Published state = the record of the valid slot with the larger epoch
++    /// (tie: slot 0): epoch E, tail words used, tail rows published.
++    pub fn published_state(&self) -> Option<QuerySnap> {
++        match (self.slot_state(0), self.slot_state(1)) {
++            (Some(a), Some(b)) => Some(if b.epoch > a.epoch { b } else { a }),
+             (Some(a), None) => Some(a),
+             (None, Some(b)) => Some(b),
+             (None, None) => None,
+         }
+     }
+ 
++    /// Published epoch E = the larger epoch of the valid slots (tie: slot 0).
++    pub fn published_epoch(&self) -> Option<u64> {
++        self.published_state().map(|x| x.epoch)
++    }
++
++    /// v3.1 tail diagnostics: (base_words, reserve_words, reserve_rows, tail
++    /// words used, tail rows published) of the published record.
++    pub fn tail_info(&self) -> Option<(u64, u64, u64, u64, u64)> {
++        let st = self.published_state()?;
++        Some((
++            self.base_words as u64,
++            self.tail_reserve_words as u64,
++            self.tail_reserve_rows as u64,
++            st.tail_words,
++            st.tail_rows,
++        ))
++    }
++
++    /// Row of a winner's forward range: base CSR when START < base_words,
++    /// else the published tail rows `offsets[n_docs .. n_docs + tail_rows]`
++    /// (FORMAT_V3.md revision 6). Explicit error, never a panic, for a tail
++    /// range that is not a published record.
++    fn row_of_range(&self, range: std::ops::Range<usize>, tail_rows: u64) -> Result<usize, String> {
++        if range.start < self.base_words {
++            return Ok(self.inner.forward().id_from_range(range) as usize);
++        }
++        let n = self.n_docs;
++        let published = &self.offsets_all[n..n + tail_rows as usize];
++        let j = published.binary_search(&range.start).map_err(|_| {
++            format!(
++                "tail START {} is not a published tail row start ({} tail rows published)",
++                range.start, tail_rows
++            )
++        })?;
++        let end = self.offsets_all[n + j + 1];
++        if end != range.end {
++            return Err(format!(
++                "tail row {} spans [{}, {}) but the posting says [{}, {})",
++                n + j, range.start, end, range.start, range.end
++            ));
++        }
++        Ok(n + j)
++    }
++
++    /// External id of a returned row with the v3.1 rule: a tail row (row >=
++    /// n_docs) must carry an override, else an explicit error.
++    pub fn doc_id_checked(&self, row: usize) -> Result<String, String> {
++        if row >= self.n_docs {
++            return self
++                .doc_id_string(row)
++                .ok_or_else(|| format!("tail row {row} has no row_id_override entry"));
++        }
++        Ok(self.doc_id_string(row).unwrap_or_else(|| row.to_string()))
++    }
++
+     /// Per-slot view for diagnostics: (slot0 epoch, slot1 epoch), None = invalid.
+     pub fn header_slots(&self) -> (Option<u64>, Option<u64>) {
+         (self.slot_epoch(0), self.slot_epoch(1))
+@@ -823,13 +973,16 @@ impl MmapSeismicIndexInplaceV3 {
+ 
+     /// External id of a returned row: the override if set, else the slab.
+     pub fn doc_id_string(&self, row: usize) -> Option<String> {
+-        if row < self.n_docs {
++        if row < self.n_docs + self.tail_reserve_rows {
+             let p = (self.row_override.as_ptr() as usize + 8 * row) as *const AtomicU64;
+             let v = unsafe { (*p).load(Ordering::Relaxed) };
+             if v != 0 {
+                 return Some(format!("W{}", v & !(1u64 << 63)));
+             }
+         }
++        if row >= self.n_docs {
++            return None;
++        }
+         self.inner.doc_id(row).map(|s| s.to_owned())
+     }
+ 
+@@ -842,7 +995,7 @@ impl MmapSeismicIndexInplaceV3 {
+ 
+     /// Parse, verify (checksum) and build the view of the A2b unit at `off`
+     /// for list `t` (FORMAT_V3.md §3.6, revision 3). Uncached.
+-    pub fn build_unit_view(&self, t: usize, off: u64) -> Result<MmapPostingList<'static>, String> {
++    pub fn build_unit_view(&self, t: usize, off: u64, bound_words: usize) -> Result<MmapPostingList<'static>, String> {
+         if off < self.pl_len {
+             return Err(format!("list {t}: unit offset {off} is inside posting_lists.bin"));
+         }
+@@ -877,8 +1030,10 @@ impl MmapSeismicIndexInplaceV3 {
+             return Err(format!("list {t}: unit has {} blocks", view.n_blocks()));
+         }
+         for w in view.posting_words() {
+-            if v3_range(w).end > self.fdw {
+-                return Err(format!("list {t}: unit posting beyond forward_data"));
++            if v3_range(w).end > bound_words {
++                return Err(format!(
++                    "list {t}: unit posting beyond base_words + tail words used ({bound_words})"
++                ));
+             }
+         }
+         Ok(view)
+@@ -886,11 +1041,11 @@ impl MmapSeismicIndexInplaceV3 {
+ 
+     /// Cached unit view keyed by (list, offset); a new offset is a new key,
+     /// entries are never modified in place.
+-    pub fn unit_view(&self, t: usize, off: u64) -> Result<Arc<MmapPostingList<'static>>, String> {
++    pub fn unit_view(&self, t: usize, off: u64, bound_words: usize) -> Result<Arc<MmapPostingList<'static>>, String> {
+         if let Some(v) = self.unit_cache.lock().unwrap().get(&(t, off)) {
+             return Ok(v.clone());
+         }
+-        let v = Arc::new(self.build_unit_view(t, off)?);
++        let v = Arc::new(self.build_unit_view(t, off, bound_words)?);
+         let mut c = self.unit_cache.lock().unwrap();
+         if c.len() >= 4096 {
+             c.retain(|&(lt, lo), _| lo == self.list_unit_offset(0, lt) || lo == self.list_unit_offset(1, lt));
+@@ -934,14 +1089,16 @@ impl MmapSeismicIndexInplaceV3 {
+     /// Unit build probe: `n` uncached builds of list t's active unit; returns
+     /// (ns per build incl. checksum, ns per checksum alone).
+     pub fn bench_unit_build(&self, t: usize, n: usize) -> Result<(f64, f64), String> {
+-        let e = self.published_epoch().ok_or("no header")?;
++        let st = self.published_state().ok_or("no header")?;
++        let e = st.epoch;
++        let bound = self.base_words + st.tail_words as usize;
+         let off = self.list_unit_offset((e & 1) as usize, t);
+         if off == self.native_off[t] {
+             return Err(format!("list {t} is native"));
+         }
+         let t0 = std::time::Instant::now();
+         for _ in 0..n {
+-            std::hint::black_box(self.build_unit_view(t, off)?);
++            std::hint::black_box(self.build_unit_view(t, off, bound)?);
+         }
+         let build = t0.elapsed().as_nanos() as f64 / n.max(1) as f64;
+         let h = (off - self.pl_len) as usize;
+@@ -961,9 +1118,9 @@ impl MmapSeismicIndexInplaceV3 {
+     /// Begin a query: snapshot E and, if enabled, register it in readers.bin
+     /// (FORMAT_V3.md revision 4: claim a slot, store E, SeqCst fence, re-read
+     /// the header, repeat until stable). The guard clears the slot on drop.
+-    pub fn begin_query(&self) -> Result<(u64, ReaderGuard), String> {
++    pub fn begin_query(&self) -> Result<(QuerySnap, ReaderGuard), String> {
+         if !self.reg_enabled.load(Ordering::Relaxed) {
+-            let e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
++            let e = self.published_state().ok_or_else(|| "no valid header slot at query time".to_string())?;
+             return Ok((e, ReaderGuard { slot: None, generation: 0, pid: 0, last: std::cell::Cell::new(0) }));
+         }
+         let start = (self.pid as usize).wrapping_mul(2654435761) % READER_SLOTS;
+@@ -990,12 +1147,13 @@ impl MmapSeismicIndexInplaceV3 {
+         slot[2].store(t, Ordering::SeqCst);
+         slot[3].store(t, Ordering::SeqCst);
+         let guard = ReaderGuard { slot: Some(slot), generation, pid: self.pid, last: std::cell::Cell::new(t) };
+-        let mut e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
++        let mut e = self.published_state().ok_or_else(|| "no valid header slot at query time".to_string())?;
+         loop {
+-            slot[1].store(e, Ordering::SeqCst);
++            slot[1].store(e.epoch, Ordering::SeqCst);
+             std::sync::atomic::fence(Ordering::SeqCst);
+-            let e2 = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
+-            if e2 == e {
++            let e2 = self.published_state().ok_or_else(|| "no valid header slot at query time".to_string())?;
++            if e2.epoch == e.epoch {
++                e = e2;
+                 break;
+             }
+             e = e2;
+@@ -1035,7 +1193,9 @@ impl MmapSeismicIndexInplaceV3 {
+         first_sorted: bool,
+         want_stats: bool,
+     ) -> Result<(Vec<ScoredVectorDotProduct>, Vec<usize>, Vec<usize>), String> {
+-        let (epoch, _reader) = self.begin_query()?;
++        let (snap, _reader) = self.begin_query()?;
++        let epoch = snap.epoch;
++        let bound_words = self.base_words + snap.tail_words as usize;
+         let b = (epoch & 1) as usize;
+         let bank: &[u8] = &self.inflation[b * self.n_blocks_total..(b + 1) * self.n_blocks_total];
+         let forward = self.inner.forward();
+@@ -1070,7 +1230,7 @@ impl MmapSeismicIndexInplaceV3 {
+                 let (list, infl): (&MmapPostingList<'static>, &[u8]) = if off == self.native_off[t] {
+                     (&lists[t], &bank[self.block_base[t]..self.block_base[t + 1]])
+                 } else {
+-                    unit = self.unit_view(t, off)?;
++                    unit = self.unit_view(t, off, bound_words)?;
+                     (&*unit, &ZERO_INFLATION[..unit.n_blocks()])
+                 };
+                 list.sort_and_search_v3(
+@@ -1087,7 +1247,7 @@ impl MmapSeismicIndexInplaceV3 {
+             let (list, infl): (&MmapPostingList<'static>, &[u8]) = if off == self.native_off[t] {
+                 (&lists[t], &bank[self.block_base[t]..self.block_base[t + 1]])
+             } else {
+-                unit = self.unit_view(t, off)?;
++                unit = self.unit_view(t, off, bound_words)?;
+                 (&*unit, &ZERO_INFLATION[..unit.n_blocks()])
+             };
+             list.search_v3(
+@@ -1097,17 +1257,13 @@ impl MmapSeismicIndexInplaceV3 {
+         }
+ 
+         let visited_starts: Vec<usize> = visited.into_iter().collect();
+-        Ok((
+-            heap.into_sorted_vec()
+-                .into_iter()
+-                .map(|scored| ScoredVectorDotProduct {
+-                    distance: scored.distance,
+-                    vector: forward.id_from_range(scored.range),
+-                })
+-                .collect(),
+-            visited_starts,
+-            block_stats,
+-        ))
++        let sorted = heap.into_sorted_vec();
++        let mut winners = Vec::with_capacity(sorted.len());
++        for scored in sorted {
++            let row = self.row_of_range(scored.range, snap.tail_rows)?;
++            winners.push(ScoredVectorDotProduct { distance: scored.distance, vector: row as vectorium::VectorId });
++        }
++        Ok((winners, visited_starts, block_stats))
+     }
+ }
+ 
+@@ -1158,6 +1314,15 @@ fn boot_id_u64() -> u64 {
+ /// Heartbeat refresh interval (FORMAT_V3.md revision 4).
+ pub const HEARTBEAT_NS: u64 = 10_000_000_000;
+ 
++/// The header record snapshot a query runs under: epoch E and the v3.1 tail
++/// counters, all from one verified 128-byte record (revision 6).
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub struct QuerySnap {
++    pub epoch: u64,
++    pub tail_words: u64,
++    pub tail_rows: u64,
++}
++
+ /// A registered reader-table slot; cleared (epoch idle, then pid 0) on drop.
+ pub struct ReaderGuard {
+     slot: Option<&'static [AtomicU64]>,
+@@ -1205,7 +1370,9 @@ impl Drop for ReaderGuard {
+ /// decoder serving the oracle must return identical results. With
+ /// `poison_native_inflation` the active bank's codes of list t's native
+ /// blocks are set to 255 (they must be ignored for a unit list). Offline
+-/// fixture: written with pwrite before any reader maps the dir.
++/// fixture: written with pwrite before any reader maps the dir. The oracle's
++/// forward files are the BASE prefixes (v3.1 dirs carry a sparse tail
++/// reserve the v2 reader must not see; fixed 2026-09-30).
+ pub fn a2b_fixture_rewrite_list(
+     v3_dir: &Path,
+     t: usize,
+@@ -1286,10 +1453,12 @@ pub fn a2b_fixture_rewrite_list(
+     }
+     std::fs::create_dir(&oracle_canon)?;
+     let oracle_dir: &Path = &oracle_canon;
+-    for f in ["config.json", "forward_offsets.bin", "forward_data.bin", "forward_encoder.bin",
+-              "token_to_id_map.bin", "document_mapping_strings.bin", "document_mapping_offsets.bin"] {
++    for f in ["config.json", "forward_encoder.bin", "token_to_id_map.bin",
++              "document_mapping_strings.bin", "document_mapping_offsets.bin"] {
+         copy_bytes(&v3_dir.join(f), &oracle_dir.join(f))?;
+     }
++    write_all(&oracle_dir.join("forward_data.bin"), bytemuck::cast_slice(&r.inner.forward().data()[..r.base_words]))?;
++    write_all(&oracle_dir.join("forward_offsets.bin"), bytemuck::cast_slice(&r.offsets_all[..r.n_docs + 1]))?;
+     let pl = std::fs::read(v3_dir.join("posting_lists.bin"))?;
+     let pp_t = r.native_off[t] as usize;
+     let pp_next = if t + 1 < r.n_lists { r.native_off[t + 1] as usize } else { pl.len() };
+@@ -1311,3 +1480,204 @@ pub fn a2b_fixture_rewrite_list(
+         "oracle_dir": oracle_dir.to_string_lossy(),
+     }))
+ }
++
++/// Test fixture (v3.1 forward tail, FORMAT_V3.md revision 6, 2026-09-30):
++/// on a zero-patch v3.1 work copy at epoch 0, append a copy of each named
++/// base doc's record to the forward tail (fresh id `W<max_base_id + 1 + j>`
++/// via `row_id_override.bin`), repoint EVERY posting word of that doc at
++/// the tail copy with TAG = 1, publish header slot 1 = epoch 1 with the
++/// tail counters, and write `oracle_dir`: a dv-v2 dir carrying the same
++/// content natively (tail records appended to the forward, N real offsets,
++/// slab extended, the same rewritten posting words with TAG cleared). The
++/// v3.1 decoder on the fixture (E = 1) and the v2 decoder on the oracle
++/// must return identical results. Offline fixture: pwrite before any
++/// reader maps the dir for queries.
++pub fn tail_fixture_append(
++    v3_dir: &Path,
++    doc_ids: &[String],
++    oracle_dir: &Path,
++) -> std::io::Result<serde_json::Value> {
++    use std::os::unix::fs::FileExt;
++    require_work_copy(v3_dir)?;
++    let oracle_canon = guard_output_dir(oracle_dir, Some(v3_dir))?;
++    if oracle_canon.exists() {
++        return Err(inval(format!("oracle dir {oracle_canon:?} exists")));
++    }
++    if doc_ids.is_empty() {
++        return Err(inval("no doc ids".into()));
++    }
++    let r = MmapSeismicIndexInplaceV3::from_mmap(v3_dir)?;
++    let st = r.published_state().ok_or_else(|| inval("no header".into()))?;
++    if st.epoch != 0 || st.tail_words != 0 || st.tail_rows != 0 || r.non_native_lists() != Some(0) {
++        return Err(inval("fixture needs a zero-patch v3.1 dir at epoch 0 with an empty tail".into()));
++    }
++    let n = r.n_docs;
++    let base = r.base_words;
++    if doc_ids.len() > r.tail_reserve_rows {
++        return Err(inval(format!("{} docs > reserve_rows {}", doc_ids.len(), r.tail_reserve_rows)));
++    }
++    let strings: &'static [u8] = leak_map(&v3_dir.join("document_mapping_strings.bin"))?;
++    let soffs: &'static [usize] = bytemuck::cast_slice(leak_map(&v3_dir.join("document_mapping_offsets.bin"))?);
++    if soffs.len() != n + 1 {
++        return Err(inval("document_mapping_offsets length != n_docs + 1".into()));
++    }
++    let want: HashMap<&str, usize> = doc_ids.iter().enumerate().map(|(i, s)| (s.as_str(), i)).collect();
++    if want.len() != doc_ids.len() {
++        return Err(inval("duplicate doc ids".into()));
++    }
++    let mut rows: Vec<Option<usize>> = vec![None; doc_ids.len()];
++    let mut max_id: u64 = 0;
++    for row in 0..n {
++        let s = &strings[soffs[row]..soffs[row + 1]];
++        let id: u64 = std::str::from_utf8(&s[1..]).ok().and_then(|x| x.parse().ok()).unwrap_or(0);
++        max_id = max_id.max(id);
++        if let Some(&i) = std::str::from_utf8(s).ok().and_then(|x| want.get(x)) {
++            rows[i] = Some(row);
++        }
++    }
++    let rows: Vec<usize> = rows
++        .into_iter()
++        .enumerate()
++        .map(|(i, r)| r.ok_or_else(|| inval(format!("doc id {} not in the slab", doc_ids[i]))))
++        .collect::<Result<_, _>>()?;
++
++    let offs = r.offsets_all;
++    let data: &[u64] = r.inner.forward().data();
++    let fd = std::fs::OpenOptions::new().write(true).open(v3_dir.join("forward_data.bin"))?;
++    let fo = std::fs::OpenOptions::new().write(true).open(v3_dir.join("forward_offsets.bin"))?;
++    let ro = std::fs::OpenOptions::new().write(true).open(v3_dir.join("row_id_override.bin"))?;
++    let mut used: usize = 0;
++    let mut start_map: HashMap<usize, usize> = HashMap::new();
++    let mut new_ids: Vec<String> = Vec::new();
++    let mut tail_offsets: Vec<u64> = Vec::new();
++    let mut tail_bytes: Vec<u8> = Vec::new();
++    let mut nnz_added: usize = 0;
++    let mut lens: Vec<usize> = Vec::new();
++    for (j, &row) in rows.iter().enumerate() {
++        let (s, e) = (offs[row], offs[row + 1]);
++        let len = e - s;
++        if len == 0 || len >= 65536 {
++            return Err(inval(format!("row {row}: record of {len} words does not fit LEN")));
++        }
++        if used + len > r.tail_reserve_words {
++            return Err(inval(format!("tail reserve of {} words exhausted at doc {j}", r.tail_reserve_words)));
++        }
++        let ts = base + used;
++        let rec: &[u8] = bytemuck::cast_slice(&data[s..e]);
++        fd.write_all_at(rec, (8 * ts) as u64)?;
++        fo.write_all_at(&((ts + len) as u64).to_le_bytes(), (8 * (n + j + 1)) as u64)?;
++        let nid = max_id + 1 + j as u64;
++        ro.write_all_at(&((1u64 << 63) | nid).to_le_bytes(), (8 * (n + j)) as u64)?;
++        if start_map.insert(s, ts).is_some() {
++            return Err(inval(format!("row {row} named twice")));
++        }
++        nnz_added += r.inner.forward().encoder().decode_vector(r.inner.forward().get_with_range(s..e)).components().len();
++        new_ids.push(format!("W{nid}"));
++        tail_offsets.push((ts + len) as u64);
++        tail_bytes.extend_from_slice(rec);
++        lens.push(len);
++        used += len;
++    }
++    fd.sync_all()?;
++    fo.sync_all()?;
++    ro.sync_all()?;
++
++    let man_s = std::fs::read_to_string(v3_dir.join("manifest.json"))?;
++    let man: serde_json::Value = serde_json::from_str(&man_s).map_err(|e| inval(e.to_string()))?;
++    let mut pl: Vec<u8> = std::fs::read(v3_dir.join("posting_lists.bin"))?;
++    let locs = list_locations(&man, pl.len())?;
++    let pw = std::fs::OpenOptions::new().write(true).open(v3_dir.join("posting_lists.bin"))?;
++    let mut repointed: Vec<usize> = vec![0; rows.len()];
++    let start_to_j: HashMap<usize, usize> = rows.iter().enumerate().map(|(j, &row)| (offs[row], j)).collect();
++    let mut n_repointed: usize = 0;
++    let mut lists_touched: usize = 0;
++    for l in &locs {
++        let mut touched = false;
++        for i in 0..l.pp_words {
++            let at = l.pp_byte + 8 * i;
++            let w = u64::from_le_bytes(pl[at..at + 8].try_into().unwrap());
++            if (w >> 48) != 0 {
++                return Err(inval("posting word with bits 48..63 set in a zero-patch dir".into()));
++            }
++            let start = ((w >> 16) & V3_START_MASK) as usize;
++            if let Some(&ts) = start_map.get(&start) {
++                let len = w & 0xFFFF;
++                let v2 = ((ts as u64) << 16) | len;
++                let v3 = (1u64 << 48) | v2;
++                pw.write_all_at(&v3.to_le_bytes(), at as u64)?;
++                pl[at..at + 8].copy_from_slice(&v2.to_le_bytes());
++                repointed[start_to_j[&start]] += 1;
++                n_repointed += 1;
++                touched = true;
++            }
++        }
++        lists_touched += touched as usize;
++    }
++    pw.sync_all()?;
++    if let Some(j) = repointed.iter().position(|&c| c == 0) {
++        return Err(inval(format!("doc {} (row {}) has no posting; fixture would be vacuous", doc_ids[j], rows[j])));
++    }
++
++    let hdr = header_record(
++        1, 1, n as u64, r.n_lists as u64, r.n_blocks_total as u64, r.manifest_fnv, used as u64, rows.len() as u64,
++    );
++    let hf = std::fs::OpenOptions::new().write(true).open(v3_dir.join("inplace_header.bin"))?;
++    hf.write_all_at(&hdr, HEADER_PAGE as u64)?;
++    hf.sync_all()?;
++    File::open(v3_dir)?.sync_all()?;
++
++    std::fs::create_dir(&oracle_canon)?;
++    let oracle_dir: &Path = &oracle_canon;
++    for f in ["config.json", "forward_encoder.bin", "token_to_id_map.bin"] {
++        copy_bytes(&v3_dir.join(f), &oracle_dir.join(f))?;
++    }
++    {
++        let mut w = File::create(oracle_dir.join("forward_data.bin"))?;
++        w.write_all(bytemuck::cast_slice(&data[..base]))?;
++        w.write_all(&tail_bytes)?;
++        w.sync_all()?;
++    }
++    {
++        let mut w = File::create(oracle_dir.join("forward_offsets.bin"))?;
++        w.write_all(bytemuck::cast_slice(&offs[..n + 1]))?;
++        w.write_all(bytemuck::cast_slice(&tail_offsets))?;
++        w.sync_all()?;
++    }
++    {
++        let mut w = File::create(oracle_dir.join("document_mapping_strings.bin"))?;
++        w.write_all(&strings[..soffs[n]])?;
++        let mut o = File::create(oracle_dir.join("document_mapping_offsets.bin"))?;
++        o.write_all(bytemuck::cast_slice(&soffs[..n + 1]))?;
++        let mut cur = soffs[n];
++        for id in &new_ids {
++            w.write_all(id.as_bytes())?;
++            cur += id.len();
++            o.write_all(&(cur as u64).to_le_bytes())?;
++        }
++        w.sync_all()?;
++        o.sync_all()?;
++    }
++    write_all(&oracle_dir.join("posting_lists.bin"), &pl)?;
++    let mut v = man;
++    {
++        let nnz = mget(&v, "forward_nnz")? + nnz_added;
++        let o = v.as_object_mut().unwrap();
++        o.remove("inplace_v3");
++        o.insert("forward_format_version".into(), serde_json::json!(2));
++        o.insert("n_docs".into(), serde_json::json!(n + rows.len()));
++        o.insert("forward_offsets_len".into(), serde_json::json!(n + 1 + rows.len()));
++        o.insert("forward_data_words".into(), serde_json::json!(base + used));
++        o.insert("forward_nnz".into(), serde_json::json!(nnz));
++    }
++    write_all(&oracle_dir.join("manifest.json"), &serde_json::to_vec_pretty(&v).map_err(|e| inval(e.to_string()))?)?;
++    File::open(oracle_dir)?.sync_all()?;
++    Ok(serde_json::json!({
++        "n_docs_appended": rows.len(), "rows": rows, "fresh_ids": new_ids, "record_words": lens,
++        "tail_words_used": used, "tail_rows_published": rows.len(),
++        "base_words": base, "reserve_words": r.tail_reserve_words, "reserve_rows": r.tail_reserve_rows,
++        "words_repointed_total": n_repointed, "words_repointed_per_doc": repointed,
++        "lists_touched": lists_touched, "published_epoch": 1, "tag_on_repointed_words": 1,
++        "max_base_numeric_id": max_id, "nnz_added": nnz_added,
++        "oracle_dir": oracle_dir.to_string_lossy(),
++    }))
++}
+diff --git a/src/lib.rs b/src/lib.rs
+index f1f5f56..0e2c50f 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -58,6 +58,7 @@ use {
+     pylib::PyMmapIndex,
+     pylib::inplace_v3_convert,
+     pylib::inplace_v3_a2b_fixture,
++    pylib::inplace_v3_tail_fixture,
+     pyo3::prelude::PyModule,
+     pyo3::prelude::*,
+     pyo3::{Bound, PyResult, pymodule},
+@@ -77,6 +78,7 @@ fn seismic(m: &Bound<'_, PyModule>) -> PyResult<()> {
+     m.add_class::<PyMmapIndex>()?;
+     m.add_function(wrap_pyfunction!(inplace_v3_convert, m)?)?;
+     m.add_function(wrap_pyfunction!(inplace_v3_a2b_fixture, m)?)?;
++    m.add_function(wrap_pyfunction!(inplace_v3_tail_fixture, m)?)?;
+     m.add_class::<PySeismicDataset>()?;
+     m.add_class::<PySeismicDatasetLV>()?;
+     Ok(())
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 1196093..3fd780f 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -1675,11 +1675,28 @@ impl MmapSeismicIndexDotVByte {
+         // is therefore DISABLED (random=false everywhere); `leak_mmap_advise`
+         // kept as infrastructure. See docs 10 §7 amendment.
+         let fwd_offsets_mmap = leak_mmap_advise(dir.join("forward_offsets.bin"), false)?;
+-        let fwd_offsets: &'static [usize] = bytemuck::cast_slice(fwd_offsets_mmap);
+-        debug_assert_eq!(fwd_offsets.len(), manifest.forward_offsets_len);
++        let fwd_offsets_all: &'static [usize] = bytemuck::cast_slice(fwd_offsets_mmap);
+         let fwd_data_mmap = leak_mmap_advise(dir.join("forward_data.bin"), false)?;
+         let fwd_data: &'static [u64] = bytemuck::cast_slice(fwd_data_mmap);
+-        debug_assert_eq!(fwd_data.len(), manifest.forward_data_words);
++        // In-place v3.1 (FORMAT_V3.md revision 6): the files may carry a
++        // sparse tail reserve beyond the manifest counts. The CSR view is the
++        // BASE prefix (id_from_range / len see base rows only); the data view
++        // is the whole mapping so tail records are reachable without re-mmap.
++        let fwd_offsets: &'static [usize] = if allow_inplace_v3 && version == 3 {
++            if fwd_offsets_all.len() < manifest.forward_offsets_len
++                || fwd_data.len() < manifest.forward_data_words
++            {
++                return Err(std::io::Error::new(
++                    std::io::ErrorKind::InvalidData,
++                    "v3 forward files shorter than the manifest counts",
++                ));
++            }
++            &fwd_offsets_all[..manifest.forward_offsets_len]
++        } else {
++            fwd_offsets_all
++        };
++        debug_assert_eq!(fwd_offsets.len(), manifest.forward_offsets_len);
++        debug_assert!(fwd_data.len() >= manifest.forward_data_words);
+ 
+         let enc_bytes = std::fs::read(dir.join("forward_encoder.bin"))?;
+         let bin_cfg = bincode::config::standard()
+@@ -1719,6 +1736,12 @@ impl MmapSeismicIndexDotVByte {
+         })
+     }
+ 
++    /// In-place v3.1: the FULL on-disk offsets array (base CSR + tail
++    /// reserve), for the tail-row search of `crate::inplace_v3`.
++    pub(crate) fn forward_offsets_full(&self) -> &'static [usize] {
++        bytemuck::cast_slice(self._fwd_offsets_mmap)
++    }
++
+     /// In-place v3: the posting lists (crate-internal, for the v3 traversal).
+     pub(crate) fn posting_lists_slice(&self) -> &[MmapPostingList<'static>] {
+         &self.posting_lists
+diff --git a/src/pylib/mmap_index.rs b/src/pylib/mmap_index.rs
+index 653a69b..9c02344 100644
+--- a/src/pylib/mmap_index.rs
++++ b/src/pylib/mmap_index.rs
+@@ -89,11 +89,31 @@ pub fn inplace_v3_a2b_fixture(
+ /// format-v3 dir with zero patches. Returns the encoder's JSON report
+ /// (sizes, timings, measured spare bits). Spec: FORMAT_V3.md (main repo).
+ #[pyfunction]
+-#[pyo3(signature = (src, dst, heap_reserve=None))]
+-pub fn inplace_v3_convert(src: &str, dst: &str, heap_reserve: Option<u64>) -> PyResult<String> {
+-    crate::inplace_v3::convert_dv_v2_to_inplace_v3_with(Path::new(src), Path::new(dst), heap_reserve)
++#[pyo3(signature = (src, dst, heap_reserve=None, tail_reserve_words=None, tail_reserve_rows=None))]
++pub fn inplace_v3_convert(
++    src: &str,
++    dst: &str,
++    heap_reserve: Option<u64>,
++    tail_reserve_words: Option<u64>,
++    tail_reserve_rows: Option<u64>,
++) -> PyResult<String> {
++    crate::inplace_v3::convert_dv_v2_to_inplace_v3_with(
++        Path::new(src), Path::new(dst), heap_reserve, tail_reserve_words, tail_reserve_rows,
++    )
++    .map(|v| v.to_string())
++    .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("inplace_v3_convert failed: {e}")))
++}
++
++/// In-place v3.1 tail fixture (FORMAT_V3.md revision 6): on a zero-patch v3.1
++/// work copy, append a copy of each named base doc to the forward tail with a
++/// fresh id, repoint every posting of that doc at the tail copy (TAG = 1),
++/// publish epoch 1 with the tail counters, and write a dv-v2 oracle dir
++/// carrying the same content natively. Returns a JSON report.
++#[pyfunction]
++pub fn inplace_v3_tail_fixture(v3_dir: &str, doc_ids: Vec<String>, oracle_dir: &str) -> PyResult<String> {
++    crate::inplace_v3::tail_fixture_append(Path::new(v3_dir), &doc_ids, Path::new(oracle_dir))
+         .map(|v| v.to_string())
+-        .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("inplace_v3_convert failed: {e}")))
++        .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("inplace_v3_tail_fixture failed: {e}")))
+ }
+ 
+ #[pymethods]
+@@ -383,14 +403,7 @@ impl PyMmapIndex {
+                     .0
+             }
+         };
+-        Ok(results
+-            .into_iter()
+-            .map(|scored| {
+-                let score = scored.distance.distance();
+-                let doc_idx = scored.vector as usize;
+-                (query_id.clone(), score, self.doc_id_string(doc_idx))
+-            })
+-            .collect())
++        self.map_results(&query_id, results)
+     }
+ 
+     /// Q6/E5 (2026-07-09): `search` + the traversal's scored-candidate set —
+@@ -448,14 +461,7 @@ impl PyMmapIndex {
+                 (r, v)
+             }
+         };
+-        let mapped = results
+-            .into_iter()
+-            .map(|scored| {
+-                let score = scored.distance.distance();
+-                let doc_idx = scored.vector as usize;
+-                (query_id.clone(), score, self.doc_id_string(doc_idx))
+-            })
+-            .collect();
++        let mapped = self.map_results(&query_id, results)?;
+         Ok((mapped, visited.into_iter().map(|s| s as u64).collect()))
+     }
+ 
+@@ -509,14 +515,7 @@ impl PyMmapIndex {
+                 .search_raw_v3(&components, &values, k, query_cut, heap_factor, sorted, true)
+                 .map_err(pyo3::exceptions::PyRuntimeError::new_err)?,
+         };
+-        let mapped = results
+-            .into_iter()
+-            .map(|scored| {
+-                let score = scored.distance.distance();
+-                let doc_idx = scored.vector as usize;
+-                (query_id.clone(), score, self.doc_id_string(doc_idx))
+-            })
+-            .collect();
++        let mapped = self.map_results(&query_id, results)?;
+         Ok((
+             mapped,
+             visited.into_iter().map(|s| s as u64).collect(),
+@@ -601,6 +600,16 @@ impl PyMmapIndex {
+         }
+     }
+ 
++    /// In-place v3.1 tail diagnostics: (base_words, reserve_words,
++    /// reserve_rows, tail words used, tail rows published) of the published
++    /// header record; None for non-v3 dirs or without a valid header.
++    pub fn inplace_tail_info(&self) -> Option<(u64, u64, u64, u64, u64)> {
++        match &self.idx {
++            AnyMmapIndex::InplaceV3(i) => i.tail_info(),
++            _ => None,
++        }
++    }
++
+     /// In-place v3: enable/disable readers.bin registration; returns the state.
+     pub fn set_reader_registration(&self, on: bool) -> PyResult<bool> {
+         Ok(self.v3()?.set_reader_registration(on))
+@@ -642,13 +651,27 @@ impl PyMmapIndex {
+     }
+ 
+     /// Doc id of a returned row: slab (or the v3 row override), else the
+-    /// numeric row — identical to `remap_doc_ids` for f16/dv dirs.
+-    fn doc_id_string(&self, doc_idx: usize) -> String {
++    /// numeric row — identical to `remap_doc_ids` for f16/dv dirs. A v3.1
++    /// tail row without an override is an explicit error (never the numeric
++    /// fallback), FORMAT_V3.md revision 6.
++    fn doc_id_checked(&self, doc_idx: usize) -> PyResult<String> {
+         match &self.idx {
+-            AnyMmapIndex::F16(i) => i.doc_id(doc_idx).map(|s| s.to_owned()),
+-            AnyMmapIndex::DotVByte(i) => i.doc_id(doc_idx).map(|s| s.to_owned()),
+-            AnyMmapIndex::InplaceV3(i) => i.doc_id_string(doc_idx),
++            AnyMmapIndex::F16(i) => Ok(i.doc_id(doc_idx).map(|s| s.to_owned()).unwrap_or_else(|| doc_idx.to_string())),
++            AnyMmapIndex::DotVByte(i) => Ok(i.doc_id(doc_idx).map(|s| s.to_owned()).unwrap_or_else(|| doc_idx.to_string())),
++            AnyMmapIndex::InplaceV3(i) => i.doc_id_checked(doc_idx).map_err(pyo3::exceptions::PyRuntimeError::new_err),
++        }
++    }
++
++    fn map_results(
++        &self,
++        query_id: &str,
++        results: Vec<vectorium::ScoredVectorDotProduct>,
++    ) -> PyResult<Vec<(String, f32, String)>> {
++        let mut out = Vec::with_capacity(results.len());
++        for scored in results {
++            let score = scored.distance.distance();
++            out.push((query_id.to_owned(), score, self.doc_id_checked(scored.vector as usize)?));
+         }
+-        .unwrap_or_else(|| doc_idx.to_string())
++        Ok(out)
+     }
+ }
+diff --git a/src/pylib/mod.rs b/src/pylib/mod.rs
+index cca8d25..9ce6225 100644
+--- a/src/pylib/mod.rs
++++ b/src/pylib/mod.rs
+@@ -1206,7 +1206,7 @@ pub use dotvbyte::SeismicIndexDotVByte;
+ // C2.5 (2026-06-28): pyo3 exposure of the C2 mmap reader (`MmapSeismicIndex`).
+ // See `pylib/mmap_index.rs` + `.claude/plans/seismic-c25-pyo3-mmap-binding.md`.
+ mod mmap_index;
+-pub use mmap_index::{PyMmapIndex, inplace_v3_a2b_fixture, inplace_v3_convert};
++pub use mmap_index::{PyMmapIndex, inplace_v3_a2b_fixture, inplace_v3_convert, inplace_v3_tail_fixture};
+ 
+ impl_seismic_dataset!(SeismicDataset, "SeismicDataset", u16);
+ impl_seismic_dataset!(SeismicDatasetLV, "SeismicDatasetLV", u32);

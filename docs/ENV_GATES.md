@@ -34,9 +34,10 @@ Details and provenance: `CODE_INVARIANTS.md`, `CODE_INVARIANTS_SCRIPTS.md`,
 | `SFU_SEISMIC_FEDERATION` | unset ⇒ FS-aware (sequential on 9p/NFS, parallel on local disk) | `parallel` / `sequential`; env always overrides the heuristic |
 | `SFU_SEISMIC_K_PRIME` | unset ⇒ max(2×top_k, 100) | do NOT set in parity runs — the default is the served behavior |
 | `SFU_SEISMIC_QUERY_CUT` | unset = all terms (recall-first) | §C1 lever: 10 ⇒ 4× traverse at overlap 0.995 |
-| `SFU_THINCLIENT_ORDINALS` | unset (OFF) | ordinal filter arrays dir; FAILS CLOSED if configured and unusable |
+| `SFU_THINCLIENT_ORDINALS` | unset (OFF) | ordinal filter arrays dir; FAILS CLOSED if configured and unusable. **Also read by the delta-ingest `publish()`** (`spike/delta_ingest/generation.py`, since 2026-09-29, item C) when no `ordinal_dir` argument is passed: a relative value resolves against the base index root; when set, deletes and superseded base copies go into the livedocs bitset `<delta_root>/livedocs/base-<stamp>.liv` and `mask.deleted` keeps only ids without a base ordinal; unset → JSON mask lists exactly as before. No CLI flag exists for it yet. Keep the arrays on local disk (9p lookups ~0.7 s per 100 ids, `docs/delta_ingest/02_DESIGN.md` §4 item 3) |
 | `SFU_THINCLIENT_INDEX_ROOT` | `data/thinclient_index` | empty value silently targets the REAL serving root — beware in staging |
 | `SFU_SKIP_BMP` | off | load tantivy/meta/dense only (BM25F leg on small hosts) |
+| `SFU_DELTA_ROOT` | unset (OFF, 2026-09-29) | delta-ingest layer (`docs/delta_ingest/`): literal `1` = `<index_root>/delta`, any other value = that path; a missing dir logs a warning and stays OFF. When ON and `SFU_SEISMIC_SHARD_MANIFEST` is unset, the composed `delta/shard_manifest.json` is served (a set env manifest still wins — delta SEISMIC shards then NOT served, warning logged). Put the delta root on local disk (delta meta/shards are not covered by the staging levers) |
 | `SFU_LOAD_MEM_FLOOR_GB` | set | refuse a BMP load that would OOM (3.07× on-disk resident) |
 | `SFU_DENSE_LEG` | **OFF since 2026-08-18** (ablation: harmful at 0.4% coverage) | literal `1` enables the whole leg (seed + warm cache) |
 | `SFU_DENSE_WARMCACHE` | on when leg on | `0` disables the cache only; inert while the leg is off |

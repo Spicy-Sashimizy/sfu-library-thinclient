@@ -1,0 +1,518 @@
+{
+ "measurement": "M7-seed: base-hash seed for the ingest ledger (O4) + O5/O6, M7 partitions reclassified",
+ "date": "2026-09-30",
+ "git_commit_at_run": "fc8586c30d42bbb20b6acaa5f1b8946b1e6ec700",
+ "expectation_verbatim": "the seeded-ledger ratio for in-base docs agrees with M7's exact proxy (encoder text changed 25.3% -> about 3.96:1 among in-base docs on that subset)",
+ "pass_rule": "|R_enc / M7 ratio - 1| <= 0.02 (primary file, min_year=2015 arm); consistency: counts equal",
+ "meta_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+ "meta_over_9p": true,
+ "local_copy_search": [],
+ "timings_valid": false,
+ "timings_note": "shared host: B7 latency run on cores 0-7, S0-2 (~19 GB) on cores 8-15, this run nice 10 on 8-15; 9p reads; timings are indicative only",
+ "parts": {
+  "primary": {
+   "file": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+   "lines": 276848,
+   "o6_year_gate": {
+    "in_base_year_lt_2015": 199,
+    "in_base_year_lt_2010": 101,
+    "in_slice_2015": 194931,
+    "in_slice_2010": 205358,
+    "in_slice_in_base_2015": 34584,
+    "in_slice_in_base_2010": 34620,
+    "in_base_year_lt_2015_by_year": {
+     "1857": 1,
+     "1862": 1,
+     "1864": 2,
+     "1867": 1,
+     "1871": 1,
+     "1873": 2,
+     "1877": 1,
+     "1878": 1,
+     "1883": 1,
+     "1884": 2,
+     "1885": 3,
+     "1886": 4,
+     "1928": 1,
+     "1963": 1,
+     "1965": 1,
+     "1975": 2,
+     "1982": 1,
+     "1983": 2,
+     "1985": 1,
+     "1987": 1,
+     "1988": 1,
+     "1989": 2,
+     "1990": 2,
+     "1992": 2,
+     "1994": 2,
+     "1995": 2,
+     "1998": 2,
+     "1999": 2,
+     "2000": 2,
+     "2001": 4,
+     "2002": 5,
+     "2003": 3,
+     "2004": 1,
+     "2005": 5,
+     "2006": 8,
+     "2007": 6,
+     "2008": 7,
+     "2009": 15,
+     "2010": 23,
+     "2011": 18,
+     "2012": 6,
+     "2013": 21,
+     "2014": 30
+    }
+   },
+   "seed_set": {
+    "ids": 9971,
+    "of_which_in_slice_2015": 9965,
+    "m7_hot_compared": 9965
+   },
+   "seed_call": {
+    "stats": {
+     "meta_rows": 9971,
+     "meta_missing": 0,
+     "seeded": 9971
+    },
+    "skipped_by_section": {},
+    "wall_s": 11.644,
+    "timers_s": {
+     "meta_s": 3.486,
+     "abstract_fetch_s": 7.333,
+     "hash_s": 0.213,
+     "ledger_write_s": 0.025
+    },
+    "io_delta": {
+     "rchar": 171729227,
+     "read_bytes": 171584764,
+     "syscr": 25910,
+     "majflt": 4608
+    },
+    "maxrss_kb": 499660,
+    "meta_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+    "sidecar_roots": [
+     "/workspaces/sfu-library-thinclient/data/thinclient_index/sections"
+    ]
+   },
+   "seed_docs_per_s": 856.3,
+   "arms": {
+    "2015": {
+     "min_year": 2015,
+     "classify_all_in_slice": {
+      "new": 160347,
+      "updated": 32666,
+      "unchanged": 1918
+     },
+     "seeded_subset": {
+      "updated": 8047,
+      "encode_changed": 2517,
+      "updated_content_only": 5530,
+      "unchanged": 1918
+     },
+     "seeded_subset_touched": 9965,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 28,
+      "content_only_type_differs": 1034,
+      "content_only_is_oa_differs": 5225,
+      "content_only_doi_differs": 13,
+      "content_only_combo:is_oa": 4465,
+      "content_only_combo:type+is_oa": 727,
+      "content_only_combo:type": 302,
+      "content_only_combo:type+is_oa+doi": 2,
+      "content_only_combo:year+is_oa": 22,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:year+type": 1,
+      "content_only_combo:is_oa+doi": 5,
+      "content_only_combo:year+is_oa+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34584,
+      "doi_diff_raw_base_vs_normalized_record": 33600,
+      "doi_diff_both_normalize_doi": 379
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9591,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2383,
+     "in_slice_touched": 194931,
+     "must_encode_as_coded": 193013,
+     "must_encode_encode_aware": 187483,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0099,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0397,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    },
+    "2010": {
+     "min_year": 2010,
+     "classify_all_in_slice": {
+      "new": 170738,
+      "updated": 32702,
+      "unchanged": 1918
+     },
+     "seeded_subset": {
+      "updated": 8053,
+      "encode_changed": 2520,
+      "updated_content_only": 5533,
+      "unchanged": 1918
+     },
+     "seeded_subset_touched": 9971,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 31,
+      "content_only_type_differs": 1035,
+      "content_only_is_oa_differs": 5227,
+      "content_only_doi_differs": 13,
+      "content_only_combo:is_oa": 4465,
+      "content_only_combo:type+is_oa": 727,
+      "content_only_combo:type": 302,
+      "content_only_combo:year+type": 2,
+      "content_only_combo:type+is_oa+doi": 2,
+      "content_only_combo:year+is_oa": 24,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:is_oa+doi": 5,
+      "content_only_combo:year+is_oa+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34620,
+      "doi_diff_raw_base_vs_normalized_record": 33631,
+      "doi_diff_both_normalize_doi": 405
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9567,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2382,
+     "in_slice_touched": 205358,
+     "must_encode_as_coded": 203440,
+     "must_encode_encode_aware": 197907,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0094,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0376,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    }
+   },
+   "m7_reference": {
+    "hot_compared": 9965,
+    "encode_changed": 2517,
+    "content_changed": 8047,
+    "ratio": 3.959
+   },
+   "consistency": {
+    "encode_changed_equals_m7": true,
+    "seeded_subset_touched_equals_m7_compared": true,
+    "content_changed_as_coded_vs_m7": [
+     8047,
+     8047
+    ]
+   },
+   "verdict_vs_m7_ratio": "PASS",
+   "wall_s": {
+    "pass1": 98.1,
+    "seed": 11.7,
+    "classify_both_arms": 100.5
+   },
+   "ledger_size": {
+    "ledger_file_bytes": 344064,
+    "rows": 9971,
+    "file_bytes_per_row": 34.51,
+    "base_hashes_table_bytes": 286720,
+    "table_bytes_per_row": 28.76
+   }
+  },
+  "supplementary": {
+   "file": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-22_part_0054.gz",
+   "lines": 187412,
+   "o6_year_gate": {
+    "in_base_year_lt_2015": 29,
+    "in_base_year_lt_2010": 14,
+    "in_slice_2015": 55237,
+    "in_slice_2010": 70378,
+    "in_slice_in_base_2015": 48190,
+    "in_slice_in_base_2010": 48200,
+    "in_base_year_lt_2015_by_year": {
+     "1978": 1,
+     "1992": 1,
+     "1993": 1,
+     "1995": 2,
+     "1996": 1,
+     "1997": 1,
+     "2003": 1,
+     "2004": 1,
+     "2006": 1,
+     "2008": 2,
+     "2009": 2,
+     "2010": 2,
+     "2011": 3,
+     "2013": 4,
+     "2014": 6
+    }
+   },
+   "seed_set": {
+    "ids": 10844,
+    "of_which_in_slice_2015": 10843,
+    "m7_hot_compared": 10843
+   },
+   "seed_call": {
+    "stats": {
+     "meta_rows": 10844,
+     "meta_missing": 0,
+     "seeded": 10844
+    },
+    "skipped_by_section": {},
+    "wall_s": 9.059,
+    "timers_s": {
+     "meta_s": 3.135,
+     "abstract_fetch_s": 5.588,
+     "hash_s": 0.214,
+     "ledger_write_s": 0.021
+    },
+    "io_delta": {
+     "rchar": 181434756,
+     "read_bytes": 181434628,
+     "syscr": 27272,
+     "majflt": 2436
+    },
+    "maxrss_kb": 575760,
+    "meta_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+    "sidecar_roots": [
+     "/workspaces/sfu-library-thinclient/data/thinclient_index/sections"
+    ]
+   },
+   "seed_docs_per_s": 1197.0,
+   "arms": {
+    "2015": {
+     "min_year": 2015,
+     "classify_all_in_slice": {
+      "new": 7047,
+      "updated": 46156,
+      "unchanged": 2034
+     },
+     "seeded_subset": {
+      "updated": 8809,
+      "encode_changed": 3182,
+      "updated_content_only": 5627,
+      "unchanged": 2034
+     },
+     "seeded_subset_touched": 10843,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 7,
+      "content_only_type_differs": 1493,
+      "content_only_is_oa_differs": 4888,
+      "content_only_doi_differs": 6,
+      "content_only_combo:type": 735,
+      "content_only_combo:is_oa": 4126,
+      "content_only_combo:type+is_oa": 754,
+      "content_only_combo:year+type+is_oa": 1,
+      "content_only_combo:year": 2,
+      "content_only_combo:year+is_oa": 2,
+      "content_only_combo:type+is_oa+doi": 1,
+      "content_only_combo:is_oa+doi": 3,
+      "content_only_combo:year+is_oa+doi": 1,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:year+type": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 48190,
+      "doi_diff_raw_base_vs_normalized_record": 45129,
+      "doi_diff_both_normalize_doi": 78
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.4076,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2309,
+     "in_slice_touched": 55237,
+     "must_encode_as_coded": 53203,
+     "must_encode_encode_aware": 47576,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0382,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.161,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    },
+    "2010": {
+     "min_year": 2010,
+     "classify_all_in_slice": {
+      "new": 22178,
+      "updated": 46166,
+      "unchanged": 2034
+     },
+     "seeded_subset": {
+      "updated": 8810,
+      "encode_changed": 3182,
+      "updated_content_only": 5628,
+      "unchanged": 2034
+     },
+     "seeded_subset_touched": 10844,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 8,
+      "content_only_type_differs": 1493,
+      "content_only_is_oa_differs": 4889,
+      "content_only_doi_differs": 6,
+      "content_only_combo:type": 735,
+      "content_only_combo:is_oa": 4126,
+      "content_only_combo:type+is_oa": 754,
+      "content_only_combo:year+type+is_oa": 1,
+      "content_only_combo:year": 2,
+      "content_only_combo:year+is_oa": 3,
+      "content_only_combo:type+is_oa+doi": 1,
+      "content_only_combo:is_oa+doi": 3,
+      "content_only_combo:year+is_oa+doi": 1,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:year+type": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 48200,
+      "doi_diff_raw_base_vs_normalized_record": 45132,
+      "doi_diff_both_normalize_doi": 80
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.4079,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2309,
+     "in_slice_touched": 70378,
+     "must_encode_as_coded": 68344,
+     "must_encode_encode_aware": 62716,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0298,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.1222,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    }
+   },
+   "m7_reference": {
+    "hot_compared": 10843,
+    "encode_changed": 3182,
+    "content_changed": 8809,
+    "ratio": 3.408
+   },
+   "consistency": {
+    "encode_changed_equals_m7": true,
+    "seeded_subset_touched_equals_m7_compared": true,
+    "content_changed_as_coded_vs_m7": [
+     8809,
+     8809
+    ]
+   },
+   "verdict_vs_m7_ratio": "PASS",
+   "wall_s": {
+    "pass1": 110.4,
+    "seed": 9.1,
+    "classify_both_arms": 97.1
+   },
+   "ledger_size": {
+    "ledger_file_bytes": 368640,
+    "rows": 10844,
+    "file_bytes_per_row": 33.99,
+    "base_hashes_table_bytes": 311296,
+    "table_bytes_per_row": 28.71
+   }
+  }
+ },
+ "throughput": {
+  "range_lo": 2000000000,
+  "rows_limit": 300000,
+  "T2": {
+   "stats": {
+    "meta_rows": 300000,
+    "skipped_no_local_sidecar": 239614,
+    "seeded": 60386
+   },
+   "skipped_by_section": {
+    "other__recent": 67006,
+    "med_bio__recent": 86756,
+    "phys_eng__recent": 44552,
+    "cs_math__recent": 40815,
+    "med_bio__archive": 49,
+    "social_sciences__archive": 156,
+    "cs_math__archive": 101,
+    "other__archive": 112,
+    "phys_eng__archive": 67
+   },
+   "wall_s": 39.511,
+   "timers_s": {
+    "meta_s": 4.433,
+    "abstract_fetch_s": 33.158,
+    "hash_s": 1.311,
+    "ledger_write_s": 0.155
+   },
+   "io_delta": {
+    "rchar": 697311353,
+    "read_bytes": 704192502,
+    "syscr": 74650,
+    "majflt": 1489
+   },
+   "maxrss_kb": 575760,
+   "meta_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+   "sidecar_roots": [
+    "/workspaces/sfu-library-thinclient/data/thinclient_index/sections"
+   ],
+   "cursor": 2108649987,
+   "done": false,
+   "meta_rows_per_s": 7592.8,
+   "seeded_docs_per_s": 1528.3,
+   "ledger_size": {
+    "ledger_file_bytes": 1765376,
+    "rows": 60386,
+    "file_bytes_per_row": 29.23,
+    "base_hashes_table_bytes": 1708032,
+    "table_bytes_per_row": 28.29
+   }
+  },
+  "T2w": {
+   "stats": {
+    "meta_rows": 300000,
+    "skipped_no_local_sidecar": 239614,
+    "seeded": 60386
+   },
+   "skipped_by_section": {
+    "other__recent": 67006,
+    "med_bio__recent": 86756,
+    "phys_eng__recent": 44552,
+    "cs_math__recent": 40815,
+    "med_bio__archive": 49,
+    "social_sciences__archive": 156,
+    "cs_math__archive": 101,
+    "other__archive": 112,
+    "phys_eng__archive": 67
+   },
+   "wall_s": 28.445,
+   "timers_s": {
+    "meta_s": 4.15,
+    "abstract_fetch_s": 21.679,
+    "hash_s": 1.743,
+    "ledger_write_s": 0.193
+   },
+   "io_delta": {
+    "rchar": 697311355,
+    "read_bytes": 705191926,
+    "syscr": 74650,
+    "majflt": 1354
+   },
+   "maxrss_kb": 575760,
+   "meta_path": "/workspaces/sfu-library-thinclient/data/thinclient_index/meta.sqlite",
+   "sidecar_roots": [
+    "/workspaces/sfu-library-thinclient/data/thinclient_index/sections"
+   ],
+   "cursor": 2108649987,
+   "done": false,
+   "meta_rows_per_s": 10546.7,
+   "seeded_docs_per_s": 2122.9,
+   "ledger_size": {
+    "ledger_file_bytes": 1765376,
+    "rows": 60386,
+    "file_bytes_per_row": 29.23,
+    "base_hashes_table_bytes": 1708032,
+    "table_bytes_per_row": 28.29
+   }
+  },
+  "local_copy_arm": "NOT RUN: no local copy of meta.sqlite or the hot sidecar exists (searched /var/tmp, /home/vscode/work; SFU_META_STAGE_DIR unset in .env)"
+ },
+ "extrapolation_150M": {
+  "mark": "*est.*",
+  "assumption": "every section's abstract sidecar is available locally (unpacked) with the hot section's per-doc fetch cost in id order; per-meta-row scan cost and per-doc fetch+hash+write cost from the T2 timers scale linearly (one-time store opens excluded); single process; this host's shared 9p conditions",
+  "model": "N x (meta_s/meta_rows + (abstract_fetch_s + hash_s + ledger_write_s)/seeded) from T2 timers",
+  "meta_ms_per_row": 0.0148,
+  "fetch_hash_write_ms_per_seeded_doc": 0.5734,
+  "per_doc_ms": 0.5882,
+  "naive_wall_over_seeded_hours": 27.3,
+  "wall_hours_est": 24.6,
+  "rchar_bytes_per_seeded_doc_id_order": 11547.6,
+  "read_gb_est_id_order": 1736.9,
+  "ledger_base_hashes_gb_est": 4.26,
+  "timings_valid": false
+ },
+ "no_writes_under_data": {
+  "new_entries": []
+ },
+ "wall_seconds_total": 496.7,
+ "host": "SHITBOX-sfu-library-thinclient"
+}

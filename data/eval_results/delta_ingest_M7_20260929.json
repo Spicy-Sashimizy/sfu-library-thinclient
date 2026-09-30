@@ -1,0 +1,138 @@
+{
+ "measurement": "M7 churn filter (docs/delta_ingest/03_SPIKE_PLAN.md)",
+ "date": "2026-09-29",
+ "git_commit_at_run": "6f5dd471757be999798cb47988419fdf4c086394",
+ "bar_verbatim": "recorded; expectation from research >= 10:1 touched:changed -- if it is < 3:1 the design's write-amplification argument is wrong",
+ "input": {
+  "manifest": "https://openalex.s3.amazonaws.com/data/jsonl/works/manifest.json",
+  "manifest_date": "2026-09-23",
+  "partition": "updated_date=2026-09-15",
+  "file_url": "s3://openalex/data/jsonl/works/updated_date=2026-09-15/part_0001.gz",
+  "https_url": "https://openalex.s3.amazonaws.com/data/jsonl/works/updated_date=2026-09-15/part_0001.gz",
+  "local_path": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+  "content_length_bytes": 359271114,
+  "manifest_content_length": 359271114,
+  "manifest_record_count": 276848,
+  "partition_files_in_manifest": 3,
+  "sample": false,
+  "limit_lines": null,
+  "lines_processed": 276848
+ },
+ "slice_filter": {
+  "adapter": "OpenAlexSnapshotAdapter(min_year=2015, allow_xpac=False)",
+  "reasons_all_records": {
+   "lines": 276848,
+   "year_lt_2015": 50758,
+   "in_slice": 194931,
+   "no_abstract": 24099,
+   "abstract_lt_50_chars": 1363,
+   "is_xpac": 5697
+  },
+  "reason_x_base_membership": {
+   "abstract_lt_50_chars|in_base": 80,
+   "abstract_lt_50_chars|not_in_base": 1283,
+   "in_slice|in_base": 34584,
+   "in_slice|not_in_base": 160347,
+   "is_xpac|in_base": 4294,
+   "is_xpac|not_in_base": 1403,
+   "no_abstract|in_base": 119,
+   "no_abstract|not_in_base": 23980,
+   "year_lt_2015|in_base": 199,
+   "year_lt_2015|not_in_base": 50559
+  },
+  "adapter_yielded": 194931,
+  "adapter_duplicate_ids": 0,
+  "raw_in_slice_equals_adapter": true
+ },
+ "counts": {
+  "touched_all_records_in_file": 276848,
+  "touched_in_slice": 194931,
+  "outside_slice": 81917,
+  "in_slice_in_base": 34584,
+  "in_slice_new_not_in_base": 160347,
+  "new_not_in_base_by_created_date": {
+   "created_lt_2026": 1444,
+   "created_ge_2026-06-11": 157318,
+   "created_2026-01-01_to_2026-06-10": 1585
+  }
+ },
+ "baseline_A_ledger_as_coded": {
+  "definition": "IngestLedger.classify on a fresh ledger with in_base from BaseIndex.contains (meta.sqlite). The ledger holds no hashes for base docs; an in-base id with no ledger row is 'updated' unconditionally.",
+  "classify": {
+   "new": 160347,
+   "updated": 34584,
+   "unchanged": 0
+  },
+  "must_encode": 194931,
+  "ratio_touched_in_slice_to_must_encode": 1.0,
+  "ratio_touched_all_to_must_encode": 1.42
+ },
+ "baseline_B_base_field_proxy": {
+  "definition": "Snapshot record (normalize_openalex_work) vs what the base holds. meta.sqlite docs row (title, doi, year, type, is_oa) for every in-base doc; abstract only for the hot section social_sciences__recent via its abstracts.sqlite sidecar (all other sections store no abstracts locally). Base text dates from the 2026-06-11..16 build (exported from the retired OpenSearch index), so this counts ALL drift since then, not only the 2026-09-15 change.",
+  "field_diffs_all_in_base": {
+   "title_changed_exact": 2649,
+   "title_changed_ws_nfc": 2410,
+   "title_changed_loose": 2294,
+   "doi_changed_raw": 33600,
+   "doi_changed_normalised": 379,
+   "year_changed": 283,
+   "type_changed": 5162,
+   "is_oa_changed": 25792,
+   "nonabstract_content_changed_normalised": 28178,
+   "section_changed": 1327,
+   "is_oa_base0_to_new1": 25792
+  },
+  "type_transitions_top10": {
+   "review->article": 1989,
+   "article->conference-paper": 1118,
+   "article->book-review": 265,
+   "article->editorial": 195,
+   "article->other": 180,
+   "article->review": 147,
+   "letter->article": 133,
+   "other->report": 115,
+   "article->dataset": 107,
+   "other->article": 93
+  },
+  "hot_subset_exact": {
+   "docs_in_hot_section": 9965,
+   "compared": 9965,
+   "encode_hash_changed": 2517,
+   "content_hash_changed_doi_normalised": 8047,
+   "content_hash_changed_raw_base_doi": 9914,
+   "abstract_changed_exact": 2260,
+   "abstract_changed_ws_nfc": 2258,
+   "abstract_changed_loose": 1895,
+   "encoder_text_changed_ws_nfc": 2476,
+   "encoder_text_changed_loose": 2119,
+   "encode_changed_sim_ge_0.98_cosmetic": 1344,
+   "encode_changed_sim_0.90_0.98_minor": 302,
+   "encode_changed_sim_lt_0.90_substantive": 871,
+   "encode_changed_base_abstract_has_html_tag": 452,
+   "encode_changed_base_abstract_starts_Abstract": 419
+  },
+  "hot_subset_encode_hash_change_rate": 0.25258,
+  "hot_subset_encoder_text_change_rate_ws_nfc": 0.24847,
+  "est_in_base_encode_changed_extrapolated_from_hot": 8735,
+  "est_in_base_encode_changed_ws_nfc_extrapolated_from_hot": 8593,
+  "must_encode_lower_bound_new_plus_title_changed": 162996,
+  "must_encode_est_new_plus_hot_rate_extrapolated": 169082,
+  "must_encode_est_ws_nfc": 168940,
+  "ratio_touched_in_slice_to_must_encode_upper_bound": 1.196,
+  "ratio_touched_in_slice_to_must_encode_est": 1.153,
+  "ratio_touched_all_to_must_encode_est": 1.637,
+  "ratio_in_base_touched_to_encode_changed_hot_exact": 3.959,
+  "ratio_in_base_touched_to_encode_changed_hot_ws_nfc": 4.025,
+  "ratio_in_base_touched_to_content_changed_hot_exact": 1.238
+ },
+ "wall_seconds": {
+  "raw_pass": 40.4,
+  "adapter": 38.4,
+  "base_membership": 42.3,
+  "ledger_classify": 0.3,
+  "meta_rows": 12.5,
+  "hot_sidecar": 18.0,
+  "total": 151.9
+ },
+ "host": "SHITBOX-sfu-library-thinclient"
+}

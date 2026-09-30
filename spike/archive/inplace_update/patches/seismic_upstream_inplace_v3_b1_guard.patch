@@ -1,0 +1,176 @@
+From c7b4b54b7b09a107b05b10a5ccc4b62358df191b Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Tue, 29 Sep 2026 20:16:44 +0000
+Subject: [PATCH] fork (b1-guard): live-index guard on the converter, on top of
+ a3173d1 (B1 build source)
+
+---
+ src/inplace_v3.rs | 141 ++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 136 insertions(+), 5 deletions(-)
+
+diff --git a/src/inplace_v3.rs b/src/inplace_v3.rs
+index 5814c8c..3eb90d3 100644
+--- a/src/inplace_v3.rs
++++ b/src/inplace_v3.rs
+@@ -65,6 +65,124 @@ pub const COPIED_FILES: [&str; 8] = [
+     "document_mapping_offsets.bin",
+ ];
+ 
++/// Work root every v3 output must live under (live-index guard, 2026-09-29).
++pub const WORK_ROOT: &str = "/home/vscode/work/inplace_update";
++/// Roots an output may never be, or be inside.
++pub const FORBIDDEN_ROOTS: [&str; 2] = ["/workspaces/sfu-library-thinclient/data", "/var/tmp/seismic_stage"];
++/// Manifests whose `mmap_dir` entries are forbidden outputs.
++pub const SERVED_MANIFESTS: [&str; 3] = [
++    "/var/tmp/seismic_stage/staged_manifest.json",
++    "/workspaces/sfu-library-thinclient/data/thinclient_index/manifest.json",
++    "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/manifest.json",
++];
++/// Sentinel file marking a v3 work copy.
++pub const SENTINEL: &str = ".inplace_work_copy";
++
++fn canon_lenient(p: &Path) -> std::io::Result<std::path::PathBuf> {
++    if p.exists() {
++        return std::fs::canonicalize(p);
++    }
++    let parent = p.parent().ok_or_else(|| inval(format!("{p:?} has no parent")))?;
++    let name = p.file_name().ok_or_else(|| inval(format!("{p:?} has no file name")))?;
++    Ok(canon_lenient(parent)?.join(name))
++}
++
++fn collect_mmap_dirs(v: &serde_json::Value, out: &mut Vec<String>) {
++    match v {
++        serde_json::Value::Object(m) => {
++            for (k, x) in m {
++                if k == "mmap_dir" {
++                    if let Some(s) = x.as_str() {
++                        out.push(s.to_string());
++                    }
++                }
++                collect_mmap_dirs(x, out);
++            }
++        }
++        serde_json::Value::Array(a) => a.iter().for_each(|x| collect_mmap_dirs(x, out)),
++        _ => {}
++    }
++}
++
++/// Refuse any output that is, or is inside, the live index, the stage, or a
++/// served `mmap_dir`, or is not under WORK_ROOT; also refuse overlap with the
++/// source. Returns the canonical output path.
++pub fn guard_output_dir(dst: &Path, src: Option<&Path>) -> std::io::Result<std::path::PathBuf> {
++    let d = canon_lenient(dst)?;
++    let work = std::fs::canonicalize(WORK_ROOT)?;
++    if !d.starts_with(&work) || d == work {
++        return Err(inval(format!("GUARD: output {d:?} is not under {work:?}")));
++    }
++    let mut forbidden: Vec<std::path::PathBuf> = Vec::new();
++    for r in FORBIDDEN_ROOTS {
++        forbidden.push(canon_lenient(Path::new(r)).unwrap_or_else(|_| Path::new(r).to_path_buf()));
++    }
++    for m in SERVED_MANIFESTS {
++        if let Ok(b) = std::fs::read(m) {
++            if let Ok(v) = serde_json::from_slice::<serde_json::Value>(&b) {
++                let mut dirs = Vec::new();
++                collect_mmap_dirs(&v, &mut dirs);
++                for x in dirs {
++                    let p = Path::new(&x);
++                    let p = if p.is_absolute() { p.to_path_buf() } else { Path::new("/workspaces/sfu-library-thinclient").join(p) };
++                    forbidden.push(canon_lenient(&p).unwrap_or(p));
++                }
++            }
++        }
++    }
++    for f in &forbidden {
++        if d.starts_with(f) {
++            return Err(inval(format!("GUARD: output {d:?} is inside forbidden {f:?}")));
++        }
++    }
++    if let Some(src) = src {
++        let s = std::fs::canonicalize(src)?;
++        if d.starts_with(&s) || s.starts_with(&d) {
++            return Err(inval(format!("GUARD: output {d:?} overlaps source {s:?}")));
++        }
++    }
++    Ok(d)
++}
++
++/// Require the sentinel of a v3 work copy in `dir` (fixtures and updaters).
++pub fn require_work_copy(dir: &Path) -> std::io::Result<()> {
++    let d = guard_output_dir(dir, None)?;
++    let s = std::fs::read_to_string(d.join(SENTINEL))
++        .map_err(|e| inval(format!("GUARD: {d:?} has no {SENTINEL}: {e}")))?;
++    let v: serde_json::Value = serde_json::from_str(&s).map_err(|e| inval(e.to_string()))?;
++    if v.get("dst").and_then(|x| x.as_str()) != Some(&*d.to_string_lossy()) {
++        return Err(inval(format!("GUARD: {SENTINEL} of {d:?} names another dir")));
++    }
++    Ok(())
++}
++
++fn copy_bytes(src: &Path, dst: &Path) -> std::io::Result<u64> {
++    use std::io::Read;
++    let mut r = std::fs::OpenOptions::new().read(true).open(src)?;
++    let mut w = std::fs::OpenOptions::new().write(true).create_new(true).open(dst)?;
++    let mut buf = vec![0u8; 8 << 20];
++    let mut n: u64 = 0;
++    loop {
++        let k = r.read(&mut buf)?;
++        if k == 0 {
++            break;
++        }
++        w.write_all(&buf[..k])?;
++        n += k as u64;
++    }
++    w.sync_all()?;
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::MetadataExt;
++        let ms = std::fs::symlink_metadata(src)?;
++        let md = std::fs::symlink_metadata(dst)?;
++        if !md.file_type().is_file() || md.nlink() != 1 || (ms.dev() == md.dev() && ms.ino() == md.ino()) {
++            return Err(inval(format!("GUARD: {dst:?} is not an independent copy of {src:?}")));
++        }
++    }
++    Ok(n)
++}
++
+ /// FNV-1a 64 over a byte slice.
+ pub fn fnv1a64(bytes: &[u8]) -> u64 {
+     let mut h: u64 = 0xcbf2_9ce4_8422_2325;
+@@ -199,15 +317,28 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+     if man.get("has_knn").and_then(|x| x.as_bool()).unwrap_or(false) {
+         return Err(inval("knn-carrying source unsupported".into()));
+     }
+-    if dst.exists() && std::fs::read_dir(dst)?.next().is_some() {
+-        return Err(inval(format!("destination {dst:?} exists and is not empty")));
+-    }
+-    std::fs::create_dir_all(dst)?;
++    let dst_canon = guard_output_dir(dst, Some(src))?;
++    if dst.exists() {
++        return Err(inval(format!("destination {dst:?} exists")));
++    }
++    std::fs::create_dir(&dst_canon)?;
++    let dst: &Path = &dst_canon;
++    write_all(
++        &dst.join(SENTINEL),
++        serde_json::to_string_pretty(&serde_json::json!({
++            "dst": dst.to_string_lossy(),
++            "source": std::fs::canonicalize(src)?.to_string_lossy(),
++            "source_manifest_fnv64": format!("{:016x}", fnv1a64(&man_bytes)),
++            "written_by": "convert_dv_v2_to_inplace_v3 (FORMAT_V3.md)",
++        }))
++        .map_err(|e| inval(e.to_string()))?
++        .as_bytes(),
++    )?;
+ 
+     let t_copy = Instant::now();
+     let mut copied: Vec<(String, u64)> = Vec::new();
+     for f in COPIED_FILES {
+-        let n = std::fs::copy(src.join(f), dst.join(f))?;
++        let n = copy_bytes(&src.join(f), &dst.join(f))?;
+         copied.push((f.to_string(), n));
+     }
+     let copy_s = t_copy.elapsed().as_secs_f64();
+-- 
+2.55.0
+

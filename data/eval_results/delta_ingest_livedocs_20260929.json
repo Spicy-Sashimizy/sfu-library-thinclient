@@ -1,0 +1,2977 @@
+{
+  "item": "delta-ingest C livedocs bitset",
+  "date": "2026-09-29",
+  "commit": "d069057ff3bfa94235a0a43b5f0aab7787ee39e8",
+  "script": "scripts/experiments/eval_delta_ingest_livedocs_bitset.py",
+  "delivered_path": "python per-shard post-filter before _merge_topk (no Rust gather-time skip)",
+  "backend": "ParallelSeismicBackend",
+  "n_shards": 8,
+  "topics_planned": 120,
+  "topics_done": 101,
+  "topics_done_keys": [
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "childhood vaccination coverage school immunization programs uptake",
+    "palliative care access rural communities end of life symptom management",
+    "wearable device physical activity monitoring chronic disease self management",
+    "Indigenous data sovereignty OCAP principles research governance",
+    "urban Indigenous friendship centres community services identity",
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "Metis identity scrip land dispossession prairie history",
+    "Quebec language policy Bill 101 French minority rights",
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "Canadian universal pharmacare drug coverage policy debate",
+    "interprovincial trade barriers Canadian economic union regulation",
+    "bail reform pretrial detention remand population Canada",
+    "intimate partner violence risk assessment protective orders",
+    "gang desistance youth intervention programs street involvement",
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "haptic feedback tangible interface design user perception",
+    "data physicalization tangible data representation public engagement",
+    "serious games health behaviour change gamification design",
+    "wearable computing textile interfaces embodied interaction design",
+    "concussion return to play protocol youth sport recovery",
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "thermoregulation heat strain occupational workers hydration",
+    "gait analysis prosthetic limb amputee walking energetics",
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "mine tailings dam failure water quality remediation monitoring",
+    "marine protected area network design fisheries spillover effects",
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "household debt mortgage stress test housing finance Canada",
+    "corporate bond liquidity credit spread market microstructure",
+    "electoral turnout youth voter mobilization campaign contact",
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "foreign election interference disinformation state actors democracy",
+    "podcast audiences intimacy parasocial relationship listeners",
+    "news deserts local journalism decline community information",
+    "influencer marketing disclosure sponsored content consumer trust",
+    "minimum wage employment effects small business labour demand",
+    "immigration labour market wages native workers displacement",
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "Spanish influenza 1918 pandemic public health response cities",
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "compiler optimization loop vectorization SIMD code generation",
+    "approximate nearest neighbour search vector index billion scale",
+    "static analysis memory safety vulnerability detection C programs",
+    "teacher retention burnout attrition rural schools workforce",
+    "early literacy phonics instruction reading intervention primary grades",
+    "graduate student supervision mentorship doctoral completion attrition",
+    "sleep deprivation memory consolidation cognitive performance",
+    "loneliness social isolation mental health older adults intervention",
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "transgender healthcare access gender affirming care barriers",
+    "unpaid care work gender division household labour time use",
+    "5G millimeter wave antenna array beamforming design",
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "soft robotics pneumatic actuator compliant gripper design",
+    "religious participation secularization generational change belonging",
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "free will moral responsibility determinism compatibilism",
+    "philosophy of mind consciousness qualia explanatory gap",
+    "topological data analysis persistent homology point clouds",
+    "stochastic partial differential equations numerical approximation convergence",
+    "gravitational wave detection black hole merger interferometer",
+    "topological insulator edge states spin orbit coupling materials",
+    "lithium ion battery electrolyte degradation cathode interface",
+    "PFAS forever chemicals water treatment removal degradation",
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "family business succession planning governance next generation",
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "workplace automation job displacement reskilling worker adjustment",
+    "code switching bilingual speakers sociolinguistic variation",
+    "prosody intonation speech perception listener comprehension",
+    "modernist poetry fragmentation form early twentieth century",
+    "graphic novels comics studies narrative visual storytelling",
+    "film festival circuit curation programming world cinema",
+    "sound design film music affect audience emotional response",
+    "glacier retreat mass balance monitoring mountain water supply",
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "falls prevention older adults balance training home hazards",
+    "social prescribing older adults community programs wellbeing",
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "migration transnational families remittances belonging ethnography",
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "refugee resettlement burden sharing international protection regime",
+    "economic sanctions effectiveness compliance target state behaviour",
+    "Cuban revolution health system export medical diplomacy",
+    "Andean agrarian reform peasant movements land tenure",
+    "informal settlements upgrading tenure security global south cities",
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "access to justice self represented litigants legal aid funding",
+    "environmental litigation climate lawsuits state liability courts",
+    "gut microbiome host immune interaction metabolite signalling",
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "jazz improvisation performance analysis interaction ensemble",
+    "music streaming royalties artist income platform economics",
+    "childcare policy universal early learning affordability workforce",
+    "public procurement innovation policy government purchasing outcomes"
+  ],
+  "ordinal_dir": "/var/tmp/sfu_delta_C_20260929/ords",
+  "ordinal_dir_source": "/workspaces/sfu-library-thinclient/spike/meta_consolidation/work_ordinals_full",
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "nbits": 150413098,
+  "G1_bit_identity_empty_bitset": {
+    "fused_identical_off1_vs_empty": 101,
+    "final_identical_off1_vs_empty": 101,
+    "fused_identical_off1_vs_off2_control": 101,
+    "final_identical_off1_vs_off2_control": 101,
+    "fused_identical_empty_vs_off2": 101,
+    "final_identical_empty_vs_off2": 101,
+    "n": 101
+  },
+  "G2_synthetic_delete": {
+    "design": "per topic: bitset = seeded 0.1% random ordinals + that topic's top-1 fused/BM25F/SPLADE ids",
+    "random_ordinals": 150413,
+    "seed_ids_total": 265,
+    "topics_with_seed_in_output": 0,
+    "topics_with_tombstoned_in_output": 0,
+    "tombstoned_in_output_examples": [],
+    "order_preserved_bm25f": 101,
+    "order_preserved_splade": 101,
+    "order_preserved_fused_report_only": 22,
+    "tombstoned_ids_in_off_outputs_total": 275,
+    "n": 101
+  },
+  "R1_overfetch": {
+    "seismic_calls_logged": 101,
+    "queries_with_drops": 101,
+    "candidates_dropped_total": 284,
+    "max_dropped_one_shard": 3,
+    "certified_exact_at_50": 101,
+    "certified_exact_at_10": 101
+  },
+  "R2_latency_warm_traverse_ms": {
+    "none": {
+      "p50": 852.14,
+      "p95": 2055.8,
+      "n": 120
+    },
+    "empty": {
+      "p50": 68.0,
+      "p95": 314.26,
+      "n": 120
+    },
+    "synth": {
+      "p50": 29.67,
+      "p95": 57.65,
+      "n": 120
+    }
+  },
+  "R2_topics": 60,
+  "R2_filter_cost": {
+    "empty": {
+      "shard_filter_ms_p50": 6.537,
+      "shard_filter_ms_max": 443.793,
+      "shard_candidates_per_call": 800,
+      "bm25f_filter_hits_ms_per_call_50_hits": 0.19
+    },
+    "synth": {
+      "shard_filter_ms_p50": 10.64,
+      "shard_filter_ms_max": 227.447,
+      "shard_candidates_per_call": 800,
+      "bm25f_filter_hits_ms_per_call_50_hits": 0.216
+    }
+  },
+  "rows": [
+    {
+      "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4415500083",
+        "W7100589539"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3761.026559979655,
+        "splade": 3403.4947279724292
+      },
+      "leg_ms_empty": {
+        "bm25f": 2754.320959036704,
+        "splade": 693.9453089726157
+      }
+    },
+    {
+      "topic": "hospital emergency department overcrowding wait times patient outcomes",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3001764589",
+        "W7097293237",
+        "W7106571149"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3132.1193409967236,
+        "splade": 2805.2185110282153
+      },
+      "leg_ms_empty": {
+        "bm25f": 1945.5716339871287,
+        "splade": 416.1236140062101
+      }
+    },
+    {
+      "topic": "childhood vaccination coverage school immunization programs uptake",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W1838776397",
+        "W2805555500",
+        "W4406782204"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3674.0855709649622,
+        "splade": 3752.705494000111
+      },
+      "leg_ms_empty": {
+        "bm25f": 2370.639461965766,
+        "splade": 298.1108449748717
+      }
+    },
+    {
+      "topic": "palliative care access rural communities end of life symptom management",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7111877799",
+        "W2766313569",
+        "W7061920979"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5995.054613042157,
+        "splade": 3103.2941169687547
+      },
+      "leg_ms_empty": {
+        "bm25f": 3038.012178032659,
+        "splade": 927.6326159597374
+      }
+    },
+    {
+      "topic": "wearable device physical activity monitoring chronic disease self management",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4311699905",
+        "W6902065750",
+        "W2033900397"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3791.3433570065536,
+        "splade": 4283.850317005999
+      },
+      "leg_ms_empty": {
+        "bm25f": 2533.91116700368,
+        "splade": 793.3168559684418
+      }
+    },
+    {
+      "topic": "Indigenous data sovereignty OCAP principles research governance",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6905008100",
+        "W6924964552",
+        "W7080575167"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4667.708580032922,
+        "splade": 3922.203783004079
+      },
+      "leg_ms_empty": {
+        "bm25f": 2593.241938040592,
+        "splade": 1375.0794199877419
+      }
+    },
+    {
+      "topic": "urban Indigenous friendship centres community services identity",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6886090986",
+        "W2256336270",
+        "W4379804924"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3779.845085053239,
+        "splade": 2290.986336010974
+      },
+      "leg_ms_empty": {
+        "bm25f": 2813.9597440022044,
+        "splade": 1034.0131990378723
+      }
+    },
+    {
+      "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2895017103",
+        "W2999727577",
+        "W7064887820"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3055.3964019636624,
+        "splade": 1715.7421329757199
+      },
+      "leg_ms_empty": {
+        "bm25f": 1974.754488968756,
+        "splade": 785.774358024355
+      }
+    },
+    {
+      "topic": "Metis identity scrip land dispossession prairie history",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6980923948",
+        "W7139536725"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5241.264630982187,
+        "splade": 7255.857052979991
+      },
+      "leg_ms_empty": {
+        "bm25f": 3320.368300017435,
+        "splade": 2204.064989986364
+      }
+    },
+    {
+      "topic": "Quebec language policy Bill 101 French minority rights",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2963151947",
+        "W7064473661",
+        "W1567644233"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3560.5189470225014,
+        "splade": 2712.965271959547
+      },
+      "leg_ms_empty": {
+        "bm25f": 2046.4686519699171,
+        "splade": 550.7973909843713
+      }
+    },
+    {
+      "topic": "Canadian Arctic sovereignty Northwest Passage shipping governance",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3010381196",
+        "W7026400390"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4248.822527995799,
+        "splade": 4638.574766984675
+      },
+      "leg_ms_empty": {
+        "bm25f": 3027.904684015084,
+        "splade": 1407.0673669921234
+      }
+    },
+    {
+      "topic": "Canadian universal pharmacare drug coverage policy debate",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3012844699",
+        "W7132970318"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4860.379646008369,
+        "splade": 3180.369151988998
+      },
+      "leg_ms_empty": {
+        "bm25f": 5982.853097957559,
+        "splade": 1191.1762849777006
+      }
+    },
+    {
+      "topic": "interprovincial trade barriers Canadian economic union regulation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6983446901",
+        "W7116041846"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5097.79987699585,
+        "splade": 8677.747858047951
+      },
+      "leg_ms_empty": {
+        "bm25f": 4448.798247030936,
+        "splade": 2767.352183989715
+      }
+    },
+    {
+      "topic": "bail reform pretrial detention remand population Canada",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7128444032",
+        "W2901218374"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4857.947976037394,
+        "splade": 10654.05384497717
+      },
+      "leg_ms_empty": {
+        "bm25f": 3088.7331609847024,
+        "splade": 14636.507369054016
+      }
+    },
+    {
+      "topic": "intimate partner violence risk assessment protective orders",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7009219093",
+        "W2923255471"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 4172.8155559976585,
+        "splade": 4080.66214597784
+      },
+      "leg_ms_empty": {
+        "bm25f": 2141.51300303638,
+        "splade": 225.95433198148385
+      }
+    },
+    {
+      "topic": "gang desistance youth intervention programs street involvement",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4402062182",
+        "W4413128158",
+        "W4402822717"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3896.3044910342433,
+        "splade": 3858.0845899996348
+      },
+      "leg_ms_empty": {
+        "bm25f": 2129.7075810143724,
+        "splade": 773.2529790373519
+      }
+    },
+    {
+      "topic": "wildlife crime illegal trafficking enforcement conservation criminology",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2495143571",
+        "W2802353036",
+        "W3124328114"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4150.640540989116,
+        "splade": 5987.559449975379
+      },
+      "leg_ms_empty": {
+        "bm25f": 2332.840939052403,
+        "splade": 419.35470601310953
+      }
+    },
+    {
+      "topic": "haptic feedback tangible interface design user perception",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2336829246",
+        "W4403318063",
+        "W4283013744"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 6172.561184968799,
+        "splade": 2245.5069519928657
+      },
+      "leg_ms_empty": {
+        "bm25f": 3071.867151011247,
+        "splade": 340.470772003755
+      }
+    },
+    {
+      "topic": "data physicalization tangible data representation public engagement",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4402401880",
+        "W2292923994",
+        "W2947560401"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5556.615716021042,
+        "splade": 3593.0064340354875
+      },
+      "leg_ms_empty": {
+        "bm25f": 3013.121547992341,
+        "splade": 323.97085800766945
+      }
+    },
+    {
+      "topic": "serious games health behaviour change gamification design",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4243855276",
+        "W4413340644",
+        "W6926978979"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3233.9550139731728,
+        "splade": 2084.5136609859765
+      },
+      "leg_ms_empty": {
+        "bm25f": 2068.1774230324663,
+        "splade": 455.63430996844545
+      }
+    },
+    {
+      "topic": "wearable computing textile interfaces embodied interaction design",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6982635318",
+        "W2791248944",
+        "W4242530144"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 4539.859285985585,
+        "splade": 3412.2288080397993
+      },
+      "leg_ms_empty": {
+        "bm25f": 2527.4014199967496,
+        "splade": 1484.2410029959865
+      }
+    },
+    {
+      "topic": "concussion return to play protocol youth sport recovery",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3004551562",
+        "W4410009910",
+        "W4404183157"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5075.812141993083,
+        "splade": 3630.752830009442
+      },
+      "leg_ms_empty": {
+        "bm25f": 3081.977266992908,
+        "splade": 424.0896159899421
+      }
+    },
+    {
+      "topic": "high altitude hypoxia ventilatory acclimatization physiology",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4399347145",
+        "W4283752175"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3111.370348953642,
+        "splade": 4198.359364992939
+      },
+      "leg_ms_empty": {
+        "bm25f": 1940.729657013435,
+        "splade": 1728.5460900166072
+      }
+    },
+    {
+      "topic": "thermoregulation heat strain occupational workers hydration",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3172062634",
+        "W3012747116",
+        "W4394675795"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3203.079687024001,
+        "splade": 5647.609609004576
+      },
+      "leg_ms_empty": {
+        "bm25f": 3184.8308999906294,
+        "splade": 5392.0410290011205
+      }
+    },
+    {
+      "topic": "gait analysis prosthetic limb amputee walking energetics",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4404108924",
+        "W2406192890"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 10179.72712899791,
+        "splade": 7491.845894022845
+      },
+      "leg_ms_empty": {
+        "bm25f": 4406.307247001678,
+        "splade": 1042.0034069684334
+      }
+    },
+    {
+      "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4414617439",
+        "W2607948464",
+        "W4385950510"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5268.099162029102,
+        "splade": 4433.977501001209
+      },
+      "leg_ms_empty": {
+        "bm25f": 3133.771220978815,
+        "splade": 6661.710208980367
+      }
+    },
+    {
+      "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2921234954",
+        "W4413035512"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4239.533971005585,
+        "splade": 2561.688709014561
+      },
+      "leg_ms_empty": {
+        "bm25f": 2286.6270049707964,
+        "splade": 491.0072240163572
+      }
+    },
+    {
+      "topic": "mine tailings dam failure water quality remediation monitoring",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4381951194",
+        "W3120381171",
+        "W2534167397"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 6417.013532016426,
+        "splade": 7221.223608008586
+      },
+      "leg_ms_empty": {
+        "bm25f": 3270.8807599847205,
+        "splade": 535.338404995855
+      }
+    },
+    {
+      "topic": "marine protected area network design fisheries spillover effects",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2580100895",
+        "W4388047208",
+        "W4226099517"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4587.154626031406,
+        "splade": 3115.6321259913966
+      },
+      "leg_ms_empty": {
+        "bm25f": 2582.6087879831903,
+        "splade": 4480.6288160034455
+      }
+    },
+    {
+      "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4414821165",
+        "W2913264688",
+        "W3187731129"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 2153.8684599800035,
+        "splade": 2896.327148017008
+      },
+      "leg_ms_empty": {
+        "bm25f": 787.5862820073962,
+        "splade": 518.0112139787525
+      }
+    },
+    {
+      "topic": "household debt mortgage stress test housing finance Canada",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3123628848",
+        "W3167074810",
+        "W568335031"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5055.587175011169,
+        "splade": 5126.981925975997
+      },
+      "leg_ms_empty": {
+        "bm25f": 2834.470245987177,
+        "splade": 372.1345249796286
+      }
+    },
+    {
+      "topic": "corporate bond liquidity credit spread market microstructure",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3124537084",
+        "W7015438905",
+        "W4223933624"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5510.896808991674,
+        "splade": 2569.0613439655863
+      },
+      "leg_ms_empty": {
+        "bm25f": 3124.658931978047,
+        "splade": 553.3477190183476
+      }
+    },
+    {
+      "topic": "electoral turnout youth voter mobilization campaign contact",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2737108318",
+        "W3166104013"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4392.196758999489,
+        "splade": 3505.0561759853736
+      },
+      "leg_ms_empty": {
+        "bm25f": 2213.8313929899596,
+        "splade": 1846.2282419786789
+      }
+    },
+    {
+      "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7137420464",
+        "W7035015925",
+        "W3197934816"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3740.2830100036226,
+        "splade": 4123.3319389866665
+      },
+      "leg_ms_empty": {
+        "bm25f": 2554.547152016312,
+        "splade": 2061.2012069905177
+      }
+    },
+    {
+      "topic": "foreign election interference disinformation state actors democracy",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6887696176",
+        "W2966168475",
+        "W4407725609"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 4261.6588199744,
+        "splade": 3857.026185025461
+      },
+      "leg_ms_empty": {
+        "bm25f": 1969.7882680338807,
+        "splade": 930.9723550104536
+      }
+    },
+    {
+      "topic": "podcast audiences intimacy parasocial relationship listeners",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2949911233"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 1,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2955.8662220370024,
+        "splade": 13634.503677021712
+      },
+      "leg_ms_empty": {
+        "bm25f": 1428.0603509978391,
+        "splade": 183.9942240039818
+      }
+    },
+    {
+      "topic": "news deserts local journalism decline community information",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2287181547",
+        "W2904319892",
+        "W7062546487"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 6672.48147301143,
+        "splade": 2960.378560004756
+      },
+      "leg_ms_empty": {
+        "bm25f": 2451.210025988985,
+        "splade": 834.7960209939629
+      }
+    },
+    {
+      "topic": "influencer marketing disclosure sponsored content consumer trust",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4402844356",
+        "W2760409403",
+        "W7092656193"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2007.7198600047268,
+        "splade": 2268.864357029088
+      },
+      "leg_ms_empty": {
+        "bm25f": 531.0386360506527,
+        "splade": 1145.260575984139
+      }
+    },
+    {
+      "topic": "minimum wage employment effects small business labour demand",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2160681951",
+        "W3086454310"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 7503.050058032386,
+        "splade": 4120.096207014285
+      },
+      "leg_ms_empty": {
+        "bm25f": 3416.856835014187,
+        "splade": 677.7438489953056
+      }
+    },
+    {
+      "topic": "immigration labour market wages native workers displacement",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2623262923",
+        "W2338238395",
+        "W4408648877"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2449.1235580062494,
+        "splade": 3166.4834929979406
+      },
+      "leg_ms_empty": {
+        "bm25f": 819.2532459506765,
+        "splade": 124.88063296768814
+      }
+    },
+    {
+      "topic": "carbon border adjustment mechanism trade competitiveness leakage",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4225275000",
+        "W6991020942",
+        "W7123316080"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3730.770120047964,
+        "splade": 1287.1346799656749
+      },
+      "leg_ms_empty": {
+        "bm25f": 2442.5317749846727,
+        "splade": 139.1546910163015
+      }
+    },
+    {
+      "topic": "Spanish influenza 1918 pandemic public health response cities",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7099175772",
+        "W7014965056",
+        "W7034059978"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3275.674079952296,
+        "splade": 4336.367066018283
+      },
+      "leg_ms_empty": {
+        "bm25f": 3896.892302960623,
+        "splade": 3749.1136270109564
+      }
+    },
+    {
+      "topic": "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3083271648",
+        "W3156355908",
+        "W7029434353"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4482.899360009469,
+        "splade": 4209.331790043507
+      },
+      "leg_ms_empty": {
+        "bm25f": 3150.125130021479,
+        "splade": 2093.474959023297
+      }
+    },
+    {
+      "topic": "women's suffrage movement provincial franchise campaigns Canada",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3037695093",
+        "W2469397264",
+        "W6906637538"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3864.3806340405717,
+        "splade": 5622.243084013462
+      },
+      "leg_ms_empty": {
+        "bm25f": 2692.640704975929,
+        "splade": 795.8993740030564
+      }
+    },
+    {
+      "topic": "compiler optimization loop vectorization SIMD code generation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4409447834",
+        "W2787898679",
+        "W7097684133"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2275.5274470546283,
+        "splade": 4760.480648023076
+      },
+      "leg_ms_empty": {
+        "bm25f": 854.280931991525,
+        "splade": 1169.0426240093075
+      }
+    },
+    {
+      "topic": "approximate nearest neighbour search vector index billion scale",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6958671257",
+        "W4415963521",
+        "W4299007031"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5262.830200023018,
+        "splade": 10351.114429999143
+      },
+      "leg_ms_empty": {
+        "bm25f": 2709.9325750023127,
+        "splade": 1382.8465060214512
+      }
+    },
+    {
+      "topic": "static analysis memory safety vulnerability detection C programs",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2900563308",
+        "W2559899649",
+        "W2269942371"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4661.419323994778,
+        "splade": 2702.0202670246363
+      },
+      "leg_ms_empty": {
+        "bm25f": 1944.028893020004,
+        "splade": 1267.8143109660596
+      }
+    },
+    {
+      "topic": "teacher retention burnout attrition rural schools workforce",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2345430256",
+        "W6989497997"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3388.0805860389955,
+        "splade": 3548.5498670022935
+      },
+      "leg_ms_empty": {
+        "bm25f": 1965.0122780003585,
+        "splade": 2569.01390501298
+      }
+    },
+    {
+      "topic": "early literacy phonics instruction reading intervention primary grades",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3000422420",
+        "W2782362600",
+        "W1601882826"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 6478.420546976849,
+        "splade": 5719.641629024409
+      },
+      "leg_ms_empty": {
+        "bm25f": 2976.414405973628,
+        "splade": 1439.333917980548
+      }
+    },
+    {
+      "topic": "graduate student supervision mentorship doctoral completion attrition",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3011120731",
+        "W4382061989",
+        "W2800840144"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3384.481301996857,
+        "splade": 5022.751588956453
+      },
+      "leg_ms_empty": {
+        "bm25f": 1968.4575889841653,
+        "splade": 1960.023156949319
+      }
+    },
+    {
+      "topic": "sleep deprivation memory consolidation cognitive performance",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2898885580",
+        "W7099977269",
+        "W7102503058"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3067.4796030507423,
+        "splade": 3588.3441920159385
+      },
+      "leg_ms_empty": {
+        "bm25f": 1959.631213976536,
+        "splade": 161.81994101498276
+      }
+    },
+    {
+      "topic": "loneliness social isolation mental health older adults intervention",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4310723330",
+        "W3211363640",
+        "W4389069087"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3861.0433299909346,
+        "splade": 3605.8362659532577
+      },
+      "leg_ms_empty": {
+        "bm25f": 1876.122221001424,
+        "splade": 774.7233610134572
+      }
+    },
+    {
+      "topic": "implicit bias measurement predictive validity discrimination behaviour",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4296442007",
+        "W3025580585"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 1272.9004430002533,
+        "splade": 1969.9430390028283
+      },
+      "leg_ms_empty": {
+        "bm25f": 337.1629759785719,
+        "splade": 523.3647479908541
+      }
+    },
+    {
+      "topic": "transgender healthcare access gender affirming care barriers",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7082150444",
+        "W4387395051",
+        "W4411622351"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3439.663444994949,
+        "splade": 1546.495162008796
+      },
+      "leg_ms_empty": {
+        "bm25f": 1506.7812509951182,
+        "splade": 548.6820939695463
+      }
+    },
+    {
+      "topic": "unpaid care work gender division household labour time use",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3176727472",
+        "W6963868956",
+        "W7133183174"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3438.2024650112726,
+        "splade": 3185.722844034899
+      },
+      "leg_ms_empty": {
+        "bm25f": 1785.1730980328284,
+        "splade": 372.673436999321
+      }
+    },
+    {
+      "topic": "5G millimeter wave antenna array beamforming design",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2980454274",
+        "W2596019918",
+        "W3043201250"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3320.9466469706967,
+        "splade": 1446.7265109997243
+      },
+      "leg_ms_empty": {
+        "bm25f": 1637.5291760195978,
+        "splade": 136.76735199987888
+      }
+    },
+    {
+      "topic": "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2955121012",
+        "W4399595668"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4331.741624046117,
+        "splade": 2409.7291229991242
+      },
+      "leg_ms_empty": {
+        "bm25f": 2452.6021929923445,
+        "splade": 210.8837069827132
+      }
+    },
+    {
+      "topic": "autonomous vehicle sensor fusion lidar camera perception",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4380558779",
+        "W4410341713"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3383.047554991208,
+        "splade": 1463.82469200762
+      },
+      "leg_ms_empty": {
+        "bm25f": 2428.933972027153,
+        "splade": 144.98380897566676
+      }
+    },
+    {
+      "topic": "soft robotics pneumatic actuator compliant gripper design",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3102285775",
+        "W7126379370"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 1873.5835140105337,
+        "splade": 2110.4804709902965
+      },
+      "leg_ms_empty": {
+        "bm25f": 963.2829260081053,
+        "splade": 163.6307709850371
+      }
+    },
+    {
+      "topic": "religious participation secularization generational change belonging",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7065878397",
+        "W2539265163"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 2902.046830044128,
+        "splade": 2569.915922009386
+      },
+      "leg_ms_empty": {
+        "bm25f": 1867.9573920089751,
+        "splade": 661.2135979812592
+      }
+    },
+    {
+      "topic": "neighbourhood effects concentrated disadvantage child outcomes",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4416102022",
+        "W2288623079",
+        "W3125085568"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4269.774181011599,
+        "splade": 2104.407701990567
+      },
+      "leg_ms_empty": {
+        "bm25f": 2310.9658019966446,
+        "splade": 300.3942249924876
+      }
+    },
+    {
+      "topic": "free will moral responsibility determinism compatibilism",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4405944095",
+        "W157925926"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2216.148998995777,
+        "splade": 2396.485851961188
+      },
+      "leg_ms_empty": {
+        "bm25f": 971.3627599994652,
+        "splade": 991.824374999851
+      }
+    },
+    {
+      "topic": "philosophy of mind consciousness qualia explanatory gap",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2605480996",
+        "W2465614357",
+        "W4382931337"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4933.730799995828,
+        "splade": 2783.953992999159
+      },
+      "leg_ms_empty": {
+        "bm25f": 2721.0929639986716,
+        "splade": 579.9163070041686
+      }
+    },
+    {
+      "topic": "topological data analysis persistent homology point clouds",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3111372129",
+        "W3037023568",
+        "W4399458283"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2453.7821949925274,
+        "splade": 1513.9740320155397
+      },
+      "leg_ms_empty": {
+        "bm25f": 1387.5796750071459,
+        "splade": 313.90341400401667
+      }
+    },
+    {
+      "topic": "stochastic partial differential equations numerical approximation convergence",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2237493139",
+        "W1754812219"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3802.137103979476,
+        "splade": 2336.6172629757784
+      },
+      "leg_ms_empty": {
+        "bm25f": 2616.1389090120792,
+        "splade": 114.10765000618994
+      }
+    },
+    {
+      "topic": "gravitational wave detection black hole merger interferometer",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2738057944",
+        "W2885582921"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 1798.0782319791615,
+        "splade": 743.3958479668945
+      },
+      "leg_ms_empty": {
+        "bm25f": 1146.173678978812,
+        "splade": 147.09464804036543
+      }
+    },
+    {
+      "topic": "topological insulator edge states spin orbit coupling materials",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2904352746",
+        "W4283077819",
+        "W2243741990"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5339.143993973266,
+        "splade": 1693.5106799937785
+      },
+      "leg_ms_empty": {
+        "bm25f": 3814.7534169838764,
+        "splade": 362.45512700406834
+      }
+    },
+    {
+      "topic": "lithium ion battery electrolyte degradation cathode interface",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3164259897",
+        "W2304034986"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 4517.749275022652,
+        "splade": 2587.4702250002883
+      },
+      "leg_ms_empty": {
+        "bm25f": 3245.1881900196895,
+        "splade": 836.0088500194252
+      }
+    },
+    {
+      "topic": "PFAS forever chemicals water treatment removal degradation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6945919729",
+        "W4396976058",
+        "W4414797786"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2716.607878974173,
+        "splade": 1359.7685840213671
+      },
+      "leg_ms_empty": {
+        "bm25f": 1125.810277997516,
+        "splade": 85.95267700729892
+      }
+    },
+    {
+      "topic": "remote work hybrid arrangements productivity employee wellbeing",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7066288857",
+        "W6930858022",
+        "W4412924378"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2606.9765480351634,
+        "splade": 1531.747594999615
+      },
+      "leg_ms_empty": {
+        "bm25f": 2062.8552910056897,
+        "splade": 160.7202420127578
+      }
+    },
+    {
+      "topic": "family business succession planning governance next generation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6907791695",
+        "W3109048814"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5040.3654660331085,
+        "splade": 1520.74005396571
+      },
+      "leg_ms_empty": {
+        "bm25f": 2747.638247034047,
+        "splade": 129.73406800301746
+      }
+    },
+    {
+      "topic": "migrant agricultural workers temporary foreign worker program conditions",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3175033442",
+        "W4408470808"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 1889.070701028686,
+        "splade": 2383.6717039812356
+      },
+      "leg_ms_empty": {
+        "bm25f": 645.2143650385551,
+        "splade": 544.0288729732856
+      }
+    },
+    {
+      "topic": "workplace automation job displacement reskilling worker adjustment",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4214569538",
+        "W4398139633",
+        "W1821977771"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2847.779634001199,
+        "splade": 2190.3389130020514
+      },
+      "leg_ms_empty": {
+        "bm25f": 1859.654997009784,
+        "splade": 154.63362698210403
+      }
+    },
+    {
+      "topic": "code switching bilingual speakers sociolinguistic variation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3006572001",
+        "W2753015232",
+        "W6943984220"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3122.659931948874,
+        "splade": 1036.7509630159475
+      },
+      "leg_ms_empty": {
+        "bm25f": 2051.6026469995268,
+        "splade": 125.21388701861724
+      }
+    },
+    {
+      "topic": "prosody intonation speech perception listener comprehension",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2923788460",
+        "W3121120658"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3181.1937139718793,
+        "splade": 1283.62530504819
+      },
+      "leg_ms_empty": {
+        "bm25f": 2617.33420798555,
+        "splade": 144.75676603615284
+      }
+    },
+    {
+      "topic": "modernist poetry fragmentation form early twentieth century",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7134453596",
+        "W6968279936"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3728.8998760050163,
+        "splade": 3991.875376959797
+      },
+      "leg_ms_empty": {
+        "bm25f": 2224.6698859962635,
+        "splade": 1002.8769260388799
+      }
+    },
+    {
+      "topic": "graphic novels comics studies narrative visual storytelling",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4404730232",
+        "W3158170072",
+        "W7079487698"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3019.7579480009153,
+        "splade": 3032.9380279872566
+      },
+      "leg_ms_empty": {
+        "bm25f": 2065.5345240375027,
+        "splade": 544.6968920296058
+      }
+    },
+    {
+      "topic": "film festival circuit curation programming world cinema",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2922208497",
+        "W4251029785",
+        "W3046657902"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3254.2280339985155,
+        "splade": 2232.5993989943527
+      },
+      "leg_ms_empty": {
+        "bm25f": 2038.343166001141,
+        "splade": 389.9417270440608
+      }
+    },
+    {
+      "topic": "sound design film music affect audience emotional response",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4413169999",
+        "W2289685172",
+        "W7125706001"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 4,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3802.5308899814263,
+        "splade": 1828.729497967288
+      },
+      "leg_ms_empty": {
+        "bm25f": 2181.589547020849,
+        "splade": 163.07097696699202
+      }
+    },
+    {
+      "topic": "glacier retreat mass balance monitoring mountain water supply",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7135394273",
+        "W2883680418"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 1777.7467669802718,
+        "splade": 2121.5635539847426
+      },
+      "leg_ms_empty": {
+        "bm25f": 736.2766930018552,
+        "splade": 408.3073749789037
+      }
+    },
+    {
+      "topic": "coastal erosion sea level rise shoreline retreat adaptation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6908070373",
+        "W4211141257",
+        "W4367852449"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4849.408920039423,
+        "splade": 3500.8410260197707
+      },
+      "leg_ms_empty": {
+        "bm25f": 2574.7813720372505,
+        "splade": 315.47066097846255
+      }
+    },
+    {
+      "topic": "falls prevention older adults balance training home hazards",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4405491735",
+        "W2260897428",
+        "W6958686492"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3849.8954629758373,
+        "splade": 1677.505468018353
+      },
+      "leg_ms_empty": {
+        "bm25f": 1907.1616390137933,
+        "splade": 337.10433199303225
+      }
+    },
+    {
+      "topic": "social prescribing older adults community programs wellbeing",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2990139670",
+        "W4303044289",
+        "W7124709030"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2037.6324980170466,
+        "splade": 1983.6053469916806
+      },
+      "leg_ms_empty": {
+        "bm25f": 1493.158465018496,
+        "splade": 120.04416802665219
+      }
+    },
+    {
+      "topic": "ritual kinship exchange gift economies ethnography Melanesia",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4392030961",
+        "W4214942879"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3306.705945986323,
+        "splade": 1770.4939889954403
+      },
+      "leg_ms_empty": {
+        "bm25f": 2807.7288499916904,
+        "splade": 458.4035149891861
+      }
+    },
+    {
+      "topic": "migration transnational families remittances belonging ethnography",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4221090864",
+        "W1464690691",
+        "W4386482079"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2718.8613829785027,
+        "splade": 2231.5513740177266
+      },
+      "leg_ms_empty": {
+        "bm25f": 1962.9124229541048,
+        "splade": 649.5409460039809
+      }
+    },
+    {
+      "topic": "radiocarbon dating chronology Bayesian modelling stratigraphy",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6942128704",
+        "W4283750667"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4325.439944979735,
+        "splade": 2547.371013031807
+      },
+      "leg_ms_empty": {
+        "bm25f": 2212.018732971046,
+        "splade": 322.60638097068295
+      }
+    },
+    {
+      "topic": "ancient DNA population migration archaeogenetics prehistoric Europe",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3101768842",
+        "W2606749402",
+        "W3210267326"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2744.215886981692,
+        "splade": 3644.5771250291727
+      },
+      "leg_ms_empty": {
+        "bm25f": 1766.3391040405259,
+        "splade": 295.3501790179871
+      }
+    },
+    {
+      "topic": "refugee resettlement burden sharing international protection regime",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6986736049",
+        "W3038101530",
+        "W3211049453"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4759.272523981053,
+        "splade": 2941.8807169422507
+      },
+      "leg_ms_empty": {
+        "bm25f": 3123.4412160119973,
+        "splade": 1787.338028952945
+      }
+    },
+    {
+      "topic": "economic sanctions effectiveness compliance target state behaviour",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4398309224",
+        "W2337928406",
+        "W4282974889"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4835.561864019837,
+        "splade": 2449.7280929936096
+      },
+      "leg_ms_empty": {
+        "bm25f": 2541.3909580092877,
+        "splade": 323.7098670215346
+      }
+    },
+    {
+      "topic": "Cuban revolution health system export medical diplomacy",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6980871719",
+        "W2765261028"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4189.913145964965,
+        "splade": 2307.8475550282747
+      },
+      "leg_ms_empty": {
+        "bm25f": 2205.45344799757,
+        "splade": 541.9246109668165
+      }
+    },
+    {
+      "topic": "Andean agrarian reform peasant movements land tenure",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2943082070",
+        "W3117035933"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 4046.7168649774976,
+        "splade": 3356.8880180246197
+      },
+      "leg_ms_empty": {
+        "bm25f": 3024.33738700347,
+        "splade": 991.6520599508658
+      }
+    },
+    {
+      "topic": "informal settlements upgrading tenure security global south cities",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2943598679",
+        "W3082562021"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2875.530413002707,
+        "splade": 3064.733263978269
+      },
+      "leg_ms_empty": {
+        "bm25f": 1758.5609150119126,
+        "splade": 737.3773290310055
+      }
+    },
+    {
+      "topic": "cycling infrastructure bike lanes mode shift urban mobility",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2922220831",
+        "W2773859874",
+        "W2598197212"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 1169.3815710023046,
+        "splade": 2739.0887400251813
+      },
+      "leg_ms_empty": {
+        "bm25f": 364.31804101448506,
+        "splade": 324.2954360321164
+      }
+    },
+    {
+      "topic": "access to justice self represented litigants legal aid funding",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3003649295",
+        "W2584225964",
+        "W7026452797"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3901.540972001385,
+        "splade": 2938.205859041773
+      },
+      "leg_ms_empty": {
+        "bm25f": 2287.6181989558972,
+        "splade": 518.7206490081735
+      }
+    },
+    {
+      "topic": "environmental litigation climate lawsuits state liability courts",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4411540764",
+        "W4401175769",
+        "W4385472190"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4314.29044198012,
+        "splade": 2349.0966529934667
+      },
+      "leg_ms_empty": {
+        "bm25f": 2455.380850005895,
+        "splade": 568.9364429563284
+      }
+    },
+    {
+      "topic": "gut microbiome host immune interaction metabolite signalling",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3016607181",
+        "W4399806122",
+        "W7126499360"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3933.4880789974704,
+        "splade": 2329.5747180236503
+      },
+      "leg_ms_empty": {
+        "bm25f": 2799.1219600080512,
+        "splade": 912.6768370042555
+      }
+    },
+    {
+      "topic": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4392853867",
+        "W4317716324"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3340.0211069965735,
+        "splade": 6015.937777003273
+      },
+      "leg_ms_empty": {
+        "bm25f": 2203.372032032348,
+        "splade": 1351.929950993508
+      }
+    },
+    {
+      "topic": "jazz improvisation performance analysis interaction ensemble",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W6981524411",
+        "W7057627097"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3305.1983089535497,
+        "splade": 3303.035474033095
+      },
+      "leg_ms_empty": {
+        "bm25f": 1422.7338220225647,
+        "splade": 441.0826690145768
+      }
+    },
+    {
+      "topic": "music streaming royalties artist income platform economics",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2755436677",
+        "W7135955045",
+        "W2313156432"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2825.1363189774565,
+        "splade": 2980.4756400408223
+      },
+      "leg_ms_empty": {
+        "bm25f": 1765.3049629880115,
+        "splade": 319.55884501803666
+      }
+    },
+    {
+      "topic": "childcare policy universal early learning affordability workforce",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2592420410",
+        "W7124693227"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3487.991760019213,
+        "splade": 3199.269135016948
+      },
+      "leg_ms_empty": {
+        "bm25f": 2052.68718698062,
+        "splade": 1183.7894819909707
+      }
+    },
+    {
+      "topic": "public procurement innovation policy government purchasing outcomes",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7062558780",
+        "W4254777884"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3783.754778036382,
+        "splade": 3344.333380984608
+      },
+      "leg_ms_empty": {
+        "bm25f": 1581.3807190279476,
+        "splade": 177.31135297799483
+      }
+    }
+  ],
+  "wall_s": 2171.2,
+  "verdicts": {
+    "G1": "PASS (PARTIAL 101/120 topics)",
+    "G2": "PASS (PARTIAL 101/120 topics)"
+  }
+}

@@ -1,0 +1,1532 @@
+{
+ "measurement": "M4 read amplification per live delta generation (docs/delta_ingest/03_SPIKE_PLAN.md)",
+ "bar_preregistered": "03_SPIKE_PLAN.md M4: search_rrf p50/p95 with 0, 1, 4, 8 live generations of corpus (b) split evenly, before and after compact -> p50 growth <= +8 ms per generation *est.* budget, and compaction returns to within 5% of the 1-generation arm",
+ "go_line": "05_INPLACE_BIT_UPDATE_BRIEF_2026-09-29.md section 6 / 06_INPLACE_SPIKE_PLAN.md: GO input = OLS slope of search_rrf p50 (parallel) over N in {0,1,4,8}; GO needs >= 3 ms p50/gen",
+ "design": "inproc (see the script header REVISION 2026-09-29, written before any measured run)",
+ "script": "scripts/experiments/eval_delta_ingest_m4_read_amp.py",
+ "git_commit_measured_code": "ef48050d2a729248f1cc628a2fcbfaf5cc3e4bce",
+ "code_snapshot": "/home/vscode/work/inplace_update/m4/code_ef48050d",
+ "date_utc": "2026-09-29",
+ "seed_order": 20260929,
+ "warmup_passes": 1,
+ "measured_passes": 2,
+ "top_k": 50,
+ "topics_file": "data/eval_results/dense_ablation_qrels_20260817.json",
+ "query_field": "natural",
+ "limit_topics": 120,
+ "corpus_b": {
+  "source_ledger": "/var/tmp/sfu_delta_F_20260929/root/desktop_gpu/ledger.sqlite",
+  "records_live": 194931,
+  "in_base": 34584,
+  "kept": 160347,
+  "membership_check_s": 20.3,
+  "order": "ledger rowid",
+  "ids_sha256": "da54600bc6196274001c7f6e08abca56dd4698b8f400f34ee4d39c17a4587ba4",
+  "utc": "2026-09-29T08:48:42Z"
+ },
+ "base_manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+ "builds": {
+  "build_n1.json": {
+   "root": "/home/vscode/work/inplace_update/m4/root_n1",
+   "n": 1,
+   "chunk_sizes": [
+    160347
+   ],
+   "freezes": [
+    {
+     "k": 0,
+     "gen": 1,
+     "docs": 160347,
+     "wall_s": 219.4,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 19.72,
+       "docs": 160347,
+       "dim": 22167,
+       "nnz": 13378290
+      },
+      "mmap": {
+       "seconds": 1.8
+      },
+      "dotvbyte": {
+       "seconds": 7.17
+      }
+     }
+    }
+   ],
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "started": "2026-09-29T08:48:57Z",
+   "host_start": {
+    "utc": "2026-09-29T08:48:57Z",
+    "loadavg": [
+     0.927734375,
+     0.82421875,
+     0.66357421875
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 28.74,
+     "Cached": 25.98,
+     "SwapTotal": 16.0,
+     "SwapFree": 14.41
+    },
+    "gpu": {
+     "util_pct": 37,
+     "mem_used_mib": 3893
+    },
+    "top_procs": [
+     "2567435 37.0 5556 00:00 git commit -q -m inplace_update Stage 0: read-only shard decoder + Python SEISMIC traversal Decodes the c1a posting_lists.bin layout (pa",
+     "2567424 36.1 44848 00:00 .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py build --n 1",
+     "2188995 2.8 334312 03:13:37 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "2491067 2.6 516812 43:47 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "1630943 1.8 280176 08:30:22 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "452609 1.3 180512 19:49:47 /home/vscode/.local/bin/claude --allow-dangerously-skip-permissions --model claude-fable-5-1 --permission-mode bypassPermissions",
+     "107 0.4 2544 1-00:18:07 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     "452409 0.4 100272 19:50:34 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ],
+    "busy_procs_gt20pct": [
+     "2567435 37.0 5556 00:00 git commit -q -m inplace_update Stage 0: read-only shard decoder + Python SEISMIC traversal Decodes the c1a posting_lists.bin layout (pa"
+    ]
+   },
+   "finished": "2026-09-29T08:52:37Z"
+  },
+  "build_n4.json": {
+   "root": "/home/vscode/work/inplace_update/m4/root_n4",
+   "n": 4,
+   "chunk_sizes": [
+    40087,
+    40087,
+    40087,
+    40086
+   ],
+   "freezes": [
+    {
+     "k": 0,
+     "gen": 1,
+     "docs": 40087,
+     "wall_s": 60.8,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 8.5,
+       "docs": 40087,
+       "dim": 18450,
+       "nnz": 3353197
+      },
+      "mmap": {
+       "seconds": 0.83
+      },
+      "dotvbyte": {
+       "seconds": 3.38
+      }
+     }
+    },
+    {
+     "k": 1,
+     "gen": 2,
+     "docs": 40087,
+     "wall_s": 64.6,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 10.17,
+       "docs": 40087,
+       "dim": 17481,
+       "nnz": 3331719
+      },
+      "mmap": {
+       "seconds": 1.0
+      },
+      "dotvbyte": {
+       "seconds": 2.27
+      }
+     }
+    },
+    {
+     "k": 2,
+     "gen": 3,
+     "docs": 40087,
+     "wall_s": 58.9,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 10.05,
+       "docs": 40087,
+       "dim": 17423,
+       "nnz": 3346582
+      },
+      "mmap": {
+       "seconds": 0.77
+      },
+      "dotvbyte": {
+       "seconds": 2.52
+      }
+     }
+    },
+    {
+     "k": 3,
+     "gen": 4,
+     "docs": 40086,
+     "wall_s": 54.2,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 8.87,
+       "docs": 40086,
+       "dim": 17273,
+       "nnz": 3346792
+      },
+      "mmap": {
+       "seconds": 0.86
+      },
+      "dotvbyte": {
+       "seconds": 2.42
+      }
+     }
+    }
+   ],
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "started": "2026-09-29T08:52:39Z",
+   "host_start": {
+    "utc": "2026-09-29T08:52:39Z",
+    "loadavg": [
+     4.7080078125,
+     2.28857421875,
+     1.2509765625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 27.8,
+     "Cached": 18.72,
+     "SwapTotal": 16.0,
+     "SwapFree": 14.4
+    },
+    "gpu": {
+     "util_pct": 27,
+     "mem_used_mib": 3907
+    },
+    "busy_procs_gt20pct": []
+   },
+   "finished": "2026-09-29T08:56:38Z"
+  },
+  "build_n8.json": {
+   "root": "/home/vscode/work/inplace_update/m4/root_n8",
+   "n": 8,
+   "chunk_sizes": [
+    20044,
+    20044,
+    20044,
+    20043,
+    20043,
+    20043,
+    20043,
+    20043
+   ],
+   "freezes": [
+    {
+     "k": 0,
+     "gen": 1,
+     "docs": 20044,
+     "wall_s": 25.0,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 2.9,
+       "docs": 20044,
+       "dim": 14408,
+       "nnz": 1666331
+      },
+      "mmap": {
+       "seconds": 0.49
+      },
+      "dotvbyte": {
+       "seconds": 1.46
+      }
+     }
+    },
+    {
+     "k": 1,
+     "gen": 2,
+     "docs": 20044,
+     "wall_s": 29.9,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 7.41,
+       "docs": 20044,
+       "dim": 16907,
+       "nnz": 1686959
+      },
+      "mmap": {
+       "seconds": 0.61
+      },
+      "dotvbyte": {
+       "seconds": 1.32
+      }
+     }
+    },
+    {
+     "k": 2,
+     "gen": 3,
+     "docs": 20044,
+     "wall_s": 28.4,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 5.26,
+       "docs": 20044,
+       "dim": 15130,
+       "nnz": 1664599
+      },
+      "mmap": {
+       "seconds": 0.89
+      },
+      "dotvbyte": {
+       "seconds": 1.39
+      }
+     }
+    },
+    {
+     "k": 3,
+     "gen": 4,
+     "docs": 20043,
+     "wall_s": 26.7,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 5.55,
+       "docs": 20043,
+       "dim": 14688,
+       "nnz": 1667117
+      },
+      "mmap": {
+       "seconds": 0.91
+      },
+      "dotvbyte": {
+       "seconds": 1.28
+      }
+     }
+    },
+    {
+     "k": 4,
+     "gen": 5,
+     "docs": 20043,
+     "wall_s": 28.1,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 5.71,
+       "docs": 20043,
+       "dim": 14687,
+       "nnz": 1671890
+      },
+      "mmap": {
+       "seconds": 0.51
+      },
+      "dotvbyte": {
+       "seconds": 1.25
+      }
+     }
+    },
+    {
+     "k": 5,
+     "gen": 6,
+     "docs": 20043,
+     "wall_s": 26.5,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 5.38,
+       "docs": 20043,
+       "dim": 14881,
+       "nnz": 1674602
+      },
+      "mmap": {
+       "seconds": 0.53
+      },
+      "dotvbyte": {
+       "seconds": 1.28
+      }
+     }
+    },
+    {
+     "k": 6,
+     "gen": 7,
+     "docs": 20043,
+     "wall_s": 29.3,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 4.81,
+       "docs": 20043,
+       "dim": 14331,
+       "nnz": 1671609
+      },
+      "mmap": {
+       "seconds": 0.42
+      },
+      "dotvbyte": {
+       "seconds": 1.46
+      }
+     }
+    },
+    {
+     "k": 7,
+     "gen": 8,
+     "docs": 20043,
+     "wall_s": 31.0,
+     "seismic": "served",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 6.26,
+       "docs": 20043,
+       "dim": 14988,
+       "nnz": 1675183
+      },
+      "mmap": {
+       "seconds": 0.46
+      },
+      "dotvbyte": {
+       "seconds": 1.24
+      }
+     }
+    }
+   ],
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "started": "2026-09-29T08:56:39Z",
+   "host_start": {
+    "utc": "2026-09-29T08:56:39Z",
+    "loadavg": [
+     8.1923828125,
+     4.697265625,
+     2.42626953125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 27.67,
+     "Cached": 9.19,
+     "SwapTotal": 16.0,
+     "SwapFree": 14.41
+    },
+    "gpu": {
+     "util_pct": 32,
+     "mem_used_mib": 4466
+    },
+    "busy_procs_gt20pct": []
+   },
+   "finished": "2026-09-29T09:00:25Z"
+  }
+ },
+ "compactions": {
+  "compact_n4.json": {
+   "root": "/home/vscode/work/inplace_update/m4/root_n4c",
+   "from": "/home/vscode/work/inplace_update/m4/root_n4",
+   "copy_s": 1.5,
+   "compacted": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "into": 5,
+   "compact_wall_s": 145.9,
+   "utc": "2026-09-29T09:05:03Z",
+   "published_after": [
+    5
+   ]
+  },
+  "compact_n8.json": {
+   "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+   "from": "/home/vscode/work/inplace_update/m4/root_n8",
+   "copy_s": 2.3,
+   "compacted": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "into": 9,
+   "compact_wall_s": 126.4,
+   "utc": "2026-09-29T09:02:35Z",
+   "published_after": [
+    9
+   ]
+  }
+ },
+ "federations": {
+  "parallel": {
+   "status": "COMPLETE",
+   "file": "/home/vscode/work/inplace_update/m4/inproc_fixprime/parallel.json",
+   "prime_mode": "separate",
+   "n0_bias_warning": null,
+   "measured_passes": 2,
+   "arms": {
+    "n0": {
+     "n_gen": 0,
+     "n_calls": 240,
+     "p50_ms": 2306.78,
+     "p95_ms": 3478.58,
+     "mean_ms": 2363.91,
+     "per_pass_p50_ms": [
+      2328.14,
+      2304.43
+     ],
+     "legs_p50_ms": {
+      "bm25f": 2034.02,
+      "splade": 186.57,
+      "splade_encode": 33.37,
+      "seismic_traverse": 152.02
+     },
+     "components_mean_ms": {
+      "bm25f_base": 2074.03,
+      "bm25f_delta": 0.0,
+      "bm25f_buffer": 0.0,
+      "abs_base": 35.386,
+      "abs_delta": 0.0,
+      "delta_meta": 0.0,
+      "delta_buffer_abs": 0.0,
+      "delta_masks": 0.0,
+      "delta_buffer_poll": 0.0
+     },
+     "serial_delta_ms_mean": 0.0,
+     "serial_delta_ms_p50": 0.0,
+     "seismic_delta_increment_ms_mean": 0.0,
+     "seismic_delta_shard_sum_ms_mean": 0.0,
+     "shard_base_max_ms_p50": 87.36,
+     "majflt_mean": 1017.0,
+     "delta_docs_in_top10_mean": 0.0,
+     "delta_docs_in_top50_mean": 0.0,
+     "p50_by_position": {
+      "0": 2352.8,
+      "1": 2249.0,
+      "2": 2304.43,
+      "3": 2345.54
+     }
+    },
+    "n1": {
+     "n_gen": 1,
+     "n_calls": 240,
+     "p50_ms": 2340.5,
+     "p95_ms": 3568.68,
+     "mean_ms": 2385.79,
+     "per_pass_p50_ms": [
+      2340.5,
+      2306.01
+     ],
+     "legs_p50_ms": {
+      "bm25f": 2015.78,
+      "splade": 196.65,
+      "splade_encode": 33.07,
+      "seismic_traverse": 165.26
+     },
+     "components_mean_ms": {
+      "bm25f_base": 2062.378,
+      "bm25f_delta": 8.438,
+      "bm25f_buffer": 0.021,
+      "abs_base": 35.359,
+      "abs_delta": 5.723,
+      "delta_meta": 0.044,
+      "delta_buffer_abs": 0.11,
+      "delta_masks": 0.229,
+      "delta_buffer_poll": 0.1
+     },
+     "serial_delta_ms_mean": 14.565,
+     "serial_delta_ms_p50": 12.06,
+     "seismic_delta_increment_ms_mean": 0.0,
+     "seismic_delta_shard_sum_ms_mean": 16.919,
+     "shard_base_max_ms_p50": 90.29,
+     "majflt_mean": 1134.4,
+     "delta_docs_in_top10_mean": 0.0,
+     "delta_docs_in_top50_mean": 0.025,
+     "p50_by_position": {
+      "0": 2616.46,
+      "1": 2348.2,
+      "2": 2305.06,
+      "3": 2269.59
+     }
+    },
+    "n4": {
+     "n_gen": 4,
+     "n_calls": 240,
+     "p50_ms": 2387.11,
+     "p95_ms": 3599.89,
+     "mean_ms": 2446.95,
+     "per_pass_p50_ms": [
+      2416.16,
+      2378.93
+     ],
+     "legs_p50_ms": {
+      "bm25f": 2046.92,
+      "splade": 221.68,
+      "splade_encode": 33.54,
+      "seismic_traverse": 188.74
+     },
+     "components_mean_ms": {
+      "bm25f_base": 2068.91,
+      "bm25f_delta": 11.441,
+      "bm25f_buffer": 0.021,
+      "abs_base": 35.189,
+      "abs_delta": 20.437,
+      "delta_meta": 0.111,
+      "delta_buffer_abs": 0.096,
+      "delta_masks": 0.366,
+      "delta_buffer_poll": 0.085
+     },
+     "serial_delta_ms_mean": 32.471,
+     "serial_delta_ms_p50": 29.99,
+     "seismic_delta_increment_ms_mean": 0.0,
+     "seismic_delta_shard_sum_ms_mean": 98.497,
+     "shard_base_max_ms_p50": 98.88,
+     "majflt_mean": 1453.1,
+     "delta_docs_in_top10_mean": 0.0,
+     "delta_docs_in_top50_mean": 0.025,
+     "p50_by_position": {
+      "0": 2585.82,
+      "1": 2531.3,
+      "2": 2416.49,
+      "3": 2305.76
+     }
+    },
+    "n8": {
+     "n_gen": 8,
+     "n_calls": 240,
+     "p50_ms": 2535.89,
+     "p95_ms": 3772.63,
+     "mean_ms": 2552.55,
+     "per_pass_p50_ms": [
+      2508.9,
+      2568.81
+     ],
+     "legs_p50_ms": {
+      "bm25f": 2065.47,
+      "splade": 248.13,
+      "splade_encode": 33.55,
+      "seismic_traverse": 214.22
+     },
+     "components_mean_ms": {
+      "bm25f_base": 2080.191,
+      "bm25f_delta": 14.495,
+      "bm25f_buffer": 0.019,
+      "abs_base": 35.431,
+      "abs_delta": 38.954,
+      "delta_meta": 0.302,
+      "delta_buffer_abs": 0.135,
+      "delta_masks": 0.579,
+      "delta_buffer_poll": 0.126
+     },
+     "serial_delta_ms_mean": 54.484,
+     "serial_delta_ms_p50": 50.56,
+     "seismic_delta_increment_ms_mean": 0.116,
+     "seismic_delta_shard_sum_ms_mean": 239.19,
+     "shard_base_max_ms_p50": 96.43,
+     "majflt_mean": 1672.4,
+     "delta_docs_in_top10_mean": 0.0,
+     "delta_docs_in_top50_mean": 0.025,
+     "p50_by_position": {
+      "0": 2448.82,
+      "1": 2449.68,
+      "2": 2457.14,
+      "3": 2753.09
+     }
+    }
+   },
+   "wall_s": 5254.9,
+   "pass_wall_s": [
+    1554.2,
+    1808.0,
+    1782.7
+   ],
+   "maxrss_gb": 72.57,
+   "health_arms": {
+    "n0": {
+     "load_s": 0.7,
+     "backend_load_s": 1.29,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "meta_path": "/home/vscode/work/inplace_update/m4/code_ef48050d/data/thinclient_index/meta.sqlite",
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n1": {
+     "load_s": 0.44,
+     "backend_load_s": 1.29,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "meta_path": "/home/vscode/work/inplace_update/m4/code_ef48050d/data/thinclient_index/meta.sqlite",
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "n4": {
+     "load_s": 0.55,
+     "backend_load_s": 1.37,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 12,
+     "sections": 49,
+     "abstract_stores": 39,
+     "meta_path": "/home/vscode/work/inplace_update/m4/code_ef48050d/data/thinclient_index/meta.sqlite",
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "delta_stamp": "g0004-1790672198",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n4/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 39,
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 38,
+      "buffer": 1,
+      "shards": 12,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 38
+     }
+    },
+    "n8": {
+     "load_s": 0.65,
+     "backend_load_s": 1.68,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "meta_path": "/home/vscode/work/inplace_update/m4/code_ef48050d/data/thinclient_index/meta.sqlite",
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "_prime": {
+     "load_s": 0.35,
+     "backend_load_s": 1.09,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "meta_path": "/home/vscode/work/inplace_update/m4/code_ef48050d/data/thinclient_index/meta.sqlite",
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "quiet_gate_start": {
+    "quiet": true,
+    "waited_s": 1.0,
+    "samples": [
+     {
+      "utc": "2026-09-29T21:53:36Z",
+      "load1": 2.0322265625,
+      "busy_gt50pct": []
+     }
+    ]
+   },
+   "quiet_waits": [
+    {
+     "pass": 2,
+     "q": 0,
+     "utc": "2026-09-29T22:19:31Z",
+     "load1": 1.88720703125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 10,
+     "utc": "2026-09-29T22:22:09Z",
+     "load1": 1.62353515625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 20,
+     "utc": "2026-09-29T22:25:06Z",
+     "load1": 1.70361328125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 30,
+     "utc": "2026-09-29T22:27:49Z",
+     "load1": 2.84375,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 40,
+     "utc": "2026-09-29T22:30:17Z",
+     "load1": 1.587890625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 50,
+     "utc": "2026-09-29T22:32:46Z",
+     "load1": 2.44189453125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 60,
+     "utc": "2026-09-29T22:34:48Z",
+     "load1": 1.58447265625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 70,
+     "utc": "2026-09-29T22:37:16Z",
+     "load1": 2.671875,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 80,
+     "utc": "2026-09-29T22:39:35Z",
+     "load1": 2.71728515625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 90,
+     "utc": "2026-09-29T22:42:21Z",
+     "load1": 1.98095703125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 100,
+     "utc": "2026-09-29T22:44:46Z",
+     "load1": 1.77685546875,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 2,
+     "q": 110,
+     "utc": "2026-09-29T22:47:22Z",
+     "load1": 1.78515625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 0,
+     "utc": "2026-09-29T22:49:39Z",
+     "load1": 1.2587890625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 10,
+     "utc": "2026-09-29T22:52:32Z",
+     "load1": 1.93212890625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 20,
+     "utc": "2026-09-29T22:55:14Z",
+     "load1": 1.6953125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 30,
+     "utc": "2026-09-29T22:58:01Z",
+     "load1": 2.18896484375,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 40,
+     "utc": "2026-09-29T23:00:16Z",
+     "load1": 2.908203125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 50,
+     "utc": "2026-09-29T23:02:42Z",
+     "load1": 2.90673828125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 60,
+     "utc": "2026-09-29T23:04:50Z",
+     "load1": 2.1953125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 70,
+     "utc": "2026-09-29T23:07:12Z",
+     "load1": 3.130859375,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 80,
+     "utc": "2026-09-29T23:09:38Z",
+     "load1": 2.32568359375,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 90,
+     "utc": "2026-09-29T23:12:02Z",
+     "load1": 2.5673828125,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 100,
+     "utc": "2026-09-29T23:14:27Z",
+     "load1": 3.47900390625,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    },
+    {
+     "pass": 3,
+     "q": 110,
+     "utc": "2026-09-29T23:17:06Z",
+     "load1": 2.76513671875,
+     "busy": [],
+     "quiet": true,
+     "waited_s": 1.1
+    }
+   ],
+   "host_start": {
+    "utc": "2026-09-29T21:51:48Z",
+    "loadavg": [
+     1.94384765625,
+     3.845703125,
+     3.77880859375
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 28.43,
+     "Cached": 20.69,
+     "SwapTotal": 16.0,
+     "SwapFree": 14.02
+    },
+    "gpu": {
+     "util_pct": 2,
+     "mem_used_mib": 1052
+    },
+    "busy_procs_gt20pct": []
+   },
+   "host_end": {
+    "utc": "2026-09-29T23:19:22Z",
+    "loadavg": [
+     1.90283203125,
+     2.513671875,
+     2.4580078125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 27.97,
+     "Cached": 27.36,
+     "SwapTotal": 16.0,
+     "SwapFree": 11.83
+    },
+    "gpu": {
+     "util_pct": 0,
+     "mem_used_mib": 1622
+    },
+    "busy_procs_gt20pct": []
+   },
+   "n_warnings_during_passes": 0,
+   "prime_n0_p50_ms": 5051.53,
+   "p50_by_position_all_arms": {
+    "0": 2469.6,
+    "1": 2393.4,
+    "2": 2390.26,
+    "3": 2360.87
+   },
+   "slope_primary_ms_per_gen_ols_0_1_4_8": 27.681,
+   "slope_primary_per_pass": [
+    {
+     "pass": 2,
+     "slope": 23.144,
+     "p50s": {
+      "0": 2328.14,
+      "1": 2340.5,
+      "4": 2416.16,
+      "8": 2508.9
+     }
+    },
+    {
+     "pass": 3,
+     "slope": 33.758,
+     "p50s": {
+      "0": 2304.43,
+      "1": 2306.01,
+      "4": 2378.93,
+      "8": 2568.81
+     }
+    }
+   ],
+   "slope_secondary_ols_1_4_8": 28.415,
+   "paired_per_query_slope_ms_per_gen": {
+    "n": 240,
+    "median": 14.829,
+    "mean": 23.459,
+    "bootstrap95_median": [
+     12.968,
+     16.856
+    ]
+   },
+   "paired_differences": {
+    "n1_minus_n0": {
+     "n": 240,
+     "median_ms": 20.69,
+     "bootstrap95_median": [
+      12.78,
+      28.765
+     ]
+    },
+    "n4_minus_n0": {
+     "n": 240,
+     "median_ms": 72.48,
+     "bootstrap95_median": [
+      62.565,
+      83.36
+     ]
+    },
+    "n8_minus_n0": {
+     "n": 240,
+     "median_ms": 123.15,
+     "bootstrap95_median": [
+      111.66,
+      137.11
+     ]
+    },
+    "n8_minus_n1": {
+     "n": 240,
+     "median_ms": 105.76,
+     "bootstrap95_median": [
+      94.105,
+      115.94
+     ]
+    }
+   },
+   "component_tax_ms_per_gen_ols_0_1_4_8": 6.476,
+   "component_tax_points_mean_ms": {
+    "0": 0.0,
+    "1": 14.565,
+    "4": 32.471,
+    "8": 54.6
+   },
+   "verdict_growth_bar_le_8ms": "FAIL",
+   "go_line_ge_3ms": "MET (tax >= 3 ms/gen)",
+   "compaction": {
+    "n8c": {
+     "verdict_within_5pct": "NOT MEASURED"
+    },
+    "n4c": {
+     "verdict_within_5pct": "NOT MEASURED"
+    }
+   }
+  }
+ },
+ "degraded_or_retried": [],
+ "log_scan": {
+  "parallel.log": {
+   "path": "/home/vscode/work/inplace_update/m4/inproc_fixprime/parallel.log",
+   "bytes": 620,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  }
+ },
+ "log_scan_enomem_hits": {},
+ "runs_dir": "/home/vscode/work/inplace_update/m4/inproc_fixprime",
+ "post_hoc": {
+  "note": "POST-HOC (not pre-registered), added after the run by `annotate`; the bar verdicts above are computed only from the pre-registered statistics",
+  "primary_slope_bootstrap95": {
+   "what": "OLS of arm p50 over N in {0,1,4,8}, resampling (pass, topic) units with all four arms, 2000 resamples, seed 20260929",
+   "n_units": 240,
+   "ci": [
+    14.77,
+    34.113
+   ],
+   "width_ms": 19.343
+  },
+  "leg_attribution_parallel": {
+   "what": "per-call leg split of search_rrf; means are additive, medians are not; 'ols_slope_of_means' of all legs sums to the mean-total slope",
+   "legs": {
+    "total": {
+     "arm_means_ms": {
+      "n0": 2363.91,
+      "n1": 2385.79,
+      "n4": 2446.95,
+      "n8": 2552.55
+     },
+     "ols_slope_of_means_ms_per_gen": 23.459,
+     "paired_n8_minus_n0_median_ms": 123.15,
+     "paired_n8_minus_n0_mean_ms": 188.63,
+     "paired_per_query_slope_median_ms_per_gen": 14.829
+    },
+    "bm25f_base_sections": {
+     "arm_means_ms": {
+      "n0": 2074.03,
+      "n1": 2062.38,
+      "n4": 2068.91,
+      "n8": 2080.19
+     },
+     "ols_slope_of_means_ms_per_gen": 1.333,
+     "paired_n8_minus_n0_median_ms": -0.09,
+     "paired_n8_minus_n0_mean_ms": 6.16,
+     "paired_per_query_slope_median_ms_per_gen": 0.199
+    },
+    "bm25f_delta_sections": {
+     "arm_means_ms": {
+      "n0": 0.0,
+      "n1": 8.46,
+      "n4": 11.46,
+      "n8": 14.51
+     },
+     "ols_slope_of_means_ms_per_gen": 1.51,
+     "paired_n8_minus_n0_median_ms": 12.18,
+     "paired_n8_minus_n0_mean_ms": 14.51,
+     "paired_per_query_slope_median_ms_per_gen": 1.257
+    },
+    "bm25f_other_parse_merge_masks": {
+     "arm_means_ms": {
+      "n0": 3.89,
+      "n1": 5.36,
+      "n4": 9.14,
+      "n8": 46.1
+     },
+     "ols_slope_of_means_ms_per_gen": 5.19,
+     "paired_n8_minus_n0_median_ms": 8.82,
+     "paired_n8_minus_n0_mean_ms": 42.21,
+     "paired_per_query_slope_median_ms_per_gen": 1.075
+    },
+    "seismic_traverse": {
+     "arm_means_ms": {
+      "n0": 173.55,
+      "n1": 191.46,
+      "n4": 220.58,
+      "n8": 264.42
+     },
+     "ols_slope_of_means_ms_per_gen": 11.01,
+     "paired_n8_minus_n0_median_ms": 58.25,
+     "paired_n8_minus_n0_mean_ms": 90.88,
+     "paired_per_query_slope_median_ms_per_gen": 7.114
+    },
+    "splade_encode": {
+     "arm_means_ms": {
+      "n0": 39.53,
+      "n1": 39.41,
+      "n4": 43.05,
+      "n8": 34.14
+     },
+     "ols_slope_of_means_ms_per_gen": -0.586,
+     "paired_n8_minus_n0_median_ms": 0.3,
+     "paired_n8_minus_n0_mean_ms": -5.39,
+     "paired_per_query_slope_median_ms_per_gen": 0.147
+    },
+    "splade_other_delta_merge": {
+     "arm_means_ms": {
+      "n0": 0.04,
+      "n1": 0.07,
+      "n4": 0.08,
+      "n8": 0.04
+     },
+     "ols_slope_of_means_ms_per_gen": -0.001,
+     "paired_n8_minus_n0_median_ms": 0.01,
+     "paired_n8_minus_n0_mean_ms": 0.0,
+     "paired_per_query_slope_median_ms_per_gen": 0.001
+    },
+    "hydrate_abstracts_base": {
+     "arm_means_ms": {
+      "n0": 35.39,
+      "n1": 35.36,
+      "n4": 35.19,
+      "n8": 35.43
+     },
+     "ols_slope_of_means_ms_per_gen": 0.003,
+     "paired_n8_minus_n0_median_ms": 0.04,
+     "paired_n8_minus_n0_mean_ms": 0.04,
+     "paired_per_query_slope_median_ms_per_gen": 0.009
+    },
+    "hydrate_abstracts_delta": {
+     "arm_means_ms": {
+      "n0": 0.0,
+      "n1": 5.72,
+      "n4": 20.44,
+      "n8": 38.95
+     },
+     "ols_slope_of_means_ms_per_gen": 4.838,
+     "paired_n8_minus_n0_median_ms": 36.64,
+     "paired_n8_minus_n0_mean_ms": 38.95,
+     "paired_per_query_slope_median_ms_per_gen": 4.54
+    },
+    "hydrate_delta_meta": {
+     "arm_means_ms": {
+      "n0": 0.0,
+      "n1": 0.04,
+      "n4": 0.11,
+      "n8": 0.3
+     },
+     "ols_slope_of_means_ms_per_gen": 0.037,
+     "paired_n8_minus_n0_median_ms": 0.0,
+     "paired_n8_minus_n0_mean_ms": 0.3,
+     "paired_per_query_slope_median_ms_per_gen": 0.0
+    },
+    "hydrate_other_base_meta_fuse": {
+     "arm_means_ms": {
+      "n0": 37.49,
+      "n1": 37.42,
+      "n4": 37.9,
+      "n8": 38.31
+     },
+     "ols_slope_of_means_ms_per_gen": 0.113,
+     "paired_n8_minus_n0_median_ms": 1.01,
+     "paired_n8_minus_n0_mean_ms": 0.82,
+     "paired_per_query_slope_median_ms_per_gen": 0.12
+    }
+   },
+   "seismic_shards": {
+    "n0": {
+     "slowest_base_shard_p50_ms": 87.36,
+     "slowest_shard_any_p50_ms": 87.36,
+     "delta_shards_own_time_sum_mean_ms": 0.0,
+     "traverse_minus_slowest_shard_mean_ms": 70.9
+    },
+    "n1": {
+     "slowest_base_shard_p50_ms": 90.29,
+     "slowest_shard_any_p50_ms": 90.29,
+     "delta_shards_own_time_sum_mean_ms": 16.92,
+     "traverse_minus_slowest_shard_mean_ms": 83.59
+    },
+    "n4": {
+     "slowest_base_shard_p50_ms": 98.88,
+     "slowest_shard_any_p50_ms": 98.88,
+     "delta_shards_own_time_sum_mean_ms": 98.5,
+     "traverse_minus_slowest_shard_mean_ms": 103.31
+    },
+    "n8": {
+     "slowest_base_shard_p50_ms": 96.43,
+     "slowest_shard_any_p50_ms": 96.43,
+     "delta_shards_own_time_sum_mean_ms": 239.19,
+     "traverse_minus_slowest_shard_mean_ms": 133.86
+    }
+   }
+  },
+  "discarded_run_inproc_main": {
+   "status": "DISCARDED for the n0 arm (REVISION 2, commit 60f24f4c); not used for any verdict",
+   "why": "the PRIME call ran on the n0 retriever itself, leaving that instance warm (own SQLite connection caches for meta/abstracts on 9p, own shard mappings): in measured pass 2 n0 had median traverse 48 ms vs 193 ms for n1, hydration 5 vs 77 ms, 5 vs 723 major faults per call, p50 ~370 ms below every delta arm",
+   "runs_dir": "/home/vscode/work/inplace_update/m4/inproc_main",
+   "code_snapshot_commit": "585f3cab",
+   "prime_mode": "n0",
+   "arms": [
+    "n0",
+    "n1",
+    "n4",
+    "n8",
+    "n4c",
+    "n8c"
+   ],
+   "slope_primary_biased_ms_per_gen": 44.317,
+   "slope_primary_per_pass_biased": [
+    {
+     "pass": 2,
+     "slope": 42.063,
+     "p50s": {
+      "0": 2158.28,
+      "1": 2526.78,
+      "4": 2528.73,
+      "8": 2617.49
+     }
+    },
+    {
+     "pass": 3,
+     "slope": 55.706,
+     "p50s": {
+      "0": 2138.64,
+      "1": 2479.05,
+      "4": 2483.89,
+      "8": 2699.82
+     }
+    }
+   ],
+   "slope_ols_1_4_8_unaffected_by_prime": 16.19,
+   "paired_per_query_slope_biased": {
+    "n": 240,
+    "median": 39.625,
+    "mean": 53.223,
+    "bootstrap95_median": [
+     35.533,
+     43.276
+    ]
+   },
+   "paired_differences": {
+    "n1_minus_n0": {
+     "n": 240,
+     "median_ms": 285.23,
+     "bootstrap95_median": [
+      264.92,
+      305.315
+     ]
+    },
+    "n4_minus_n0": {
+     "n": 240,
+     "median_ms": 335.35,
+     "bootstrap95_median": [
+      315.18,
+      365.895
+     ]
+    },
+    "n8_minus_n0": {
+     "n": 240,
+     "median_ms": 416.92,
+     "bootstrap95_median": [
+      393.2,
+      453.4
+     ]
+    },
+    "n8_minus_n1": {
+     "n": 240,
+     "median_ms": 117.0,
+     "bootstrap95_median": [
+      102.325,
+      132.43
+     ]
+    },
+    "n8c_minus_n1": {
+     "n": 240,
+     "median_ms": 11.88,
+     "bootstrap95_median": [
+      -3.0,
+      24.38
+     ]
+    },
+    "n4c_minus_n1": {
+     "n": 240,
+     "median_ms": 6.14,
+     "bootstrap95_median": [
+      -4.85,
+      15.375
+     ]
+    },
+    "n8c_minus_n8": {
+     "n": 240,
+     "median_ms": -111.27,
+     "bootstrap95_median": [
+      -131.89,
+      -89.465
+     ]
+    },
+    "n4c_minus_n4": {
+     "n": 240,
+     "median_ms": -46.89,
+     "bootstrap95_median": [
+      -61.69,
+      -34.71
+     ]
+    }
+   },
+   "compaction_same_process": {
+    "n8c": {
+     "p50_ms": 2491.85,
+     "n1_p50_ms": 2526.78,
+     "ratio_vs_n1": 0.9862,
+     "verdict_within_5pct": "PASS"
+    },
+    "n4c": {
+     "p50_ms": 2504.27,
+     "n1_p50_ms": 2526.78,
+     "ratio_vs_n1": 0.9911,
+     "verdict_within_5pct": "PASS"
+    }
+   },
+   "arm_p50_ms": {
+    "n0": 2158.28,
+    "n1": 2526.78,
+    "n4": 2528.73,
+    "n8": 2635.87,
+    "n4c": 2504.27,
+    "n8c": 2491.85
+   }
+  },
+  "notes": [
+   "design: the 'design' field text predates REVISION 2; this file's parallel entry ran with prime_mode=separate (REVISION 2, harness commit 60f24f4c), code snapshot = git archive ef48050d src (contains the staging fix 585f3cab and 60f24f4c).",
+   "Which statistic the bar uses: the pre-registered PRIMARY = OLS of arm p50 over N in {0,1,4,8}, parallel backend (27.681 ms/gen, bootstrap95 in primary_slope_bootstrap95). The paired per-query slope (median 14.829, bootstrap95 12.968-16.856) is supplementary. Both lie wholly above 8 ms (bar FAIL) and above 3 ms (GO line MET); the measurement resolves 3 ms.",
+   "Why primary (27.7) and paired median (14.8) differ: the per-query latency distribution is heavy-tailed at n8 (mean n8-n0 188.6 ms vs median 123.2); arm p50 of pooled calls picks up shifts of the upper-middle of the distribution; per-pass primary slopes were 23.1 and 33.8 ms/gen. The mean-based slope is 23.5 ms/gen.",
+   "maxrss_gb 72.57 is ru_maxrss of the one measuring process: it counts every resident page mapped into the process, and 5 retrievers (4 arms + prime) each mmap the same 8 staged base shards (plus tantivy/sqlite mmaps), so the shared page-cache pages are counted once per mapping. It is not physical memory: MemAvailable stayed 27.97-28.43 GB (host_start/host_end); SwapFree fell 14.02 -> 11.83 GB during the run.",
+   "Sequential federation: NOT MEASURED. Parallel (the served mode and the GO input) was re-run first after REVISION 2; the remaining window (limit 03:05Z 2026-09-30) fit either the sequential run (~2.5 h) or the compaction arms (~1.6 h), and the compaction arms carry half of the pre-registered bar, so they were run instead.",
+   "Delta docs appear rarely in results for these 120 topics: mean delta docs in top-50 about 0.03 per query in every delta arm; the tax is paid regardless of whether delta docs match."
+  ]
+ }
+}

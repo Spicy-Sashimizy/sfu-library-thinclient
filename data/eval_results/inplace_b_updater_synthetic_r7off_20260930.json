@@ -1,0 +1,724 @@
+{
+ "label": "SYNTHETIC - not a bar result",
+ "meta": {
+  "harness": "scripts/experiments/eval_inplace_bench.py",
+  "plan": "docs/delta_ingest/06_INPLACE_SPIKE_PLAN.md (frozen bars + addenda 1-4)",
+  "updater": "spike/inplace_update/updater (UPDATER_DESIGN.md)",
+  "git_head": "70fe49f42bffcbc91387079797563aa5197dc91e",
+  "written_utc": "2026-09-30T04:10:30.227978+00:00"
+ },
+ "B4": {
+  "bar": "B4 storage",
+  "arms": {
+   "A2b": {
+    "before": {
+     ".inplace_work_copy": {
+      "st_size": 234,
+      "allocated": 4096
+     },
+     "block_inflation.bin": {
+      "st_size": 59502,
+      "allocated": 0
+     },
+     "config.json": {
+      "st_size": 200,
+      "allocated": 4096
+     },
+     "document_mapping_offsets.bin": {
+      "st_size": 160008,
+      "allocated": 163840
+     },
+     "document_mapping_strings.bin": {
+      "st_size": 160000,
+      "allocated": 163840
+     },
+     "forward_data.bin": {
+      "st_size": 1305000,
+      "allocated": 827392
+     },
+     "forward_encoder.bin": {
+      "st_size": 10,
+      "allocated": 4096
+     },
+     "forward_free.bin": {
+      "st_size": 576,
+      "allocated": 4096
+     },
+     "forward_offsets.bin": {
+      "st_size": 192008,
+      "allocated": 163840
+     },
+     "inplace_header.bin": {
+      "st_size": 8192,
+      "allocated": 4096
+     },
+     "list_crc.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "list_dir.bin": {
+      "st_size": 32000,
+      "allocated": 32768
+     },
+     "list_min.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "manifest.json": {
+      "st_size": 1508097,
+      "allocated": 1511424
+     },
+     "posting_free.bin": {
+      "st_size": 64,
+      "allocated": 4096
+     },
+     "posting_heap.bin": {
+      "st_size": 14938112,
+      "allocated": 0
+     },
+     "posting_lists.bin": {
+      "st_size": 4979262,
+      "allocated": 4980736
+     },
+     "readers.bin": {
+      "st_size": 16384,
+      "allocated": 0
+     },
+     "row_id_override.bin": {
+      "st_size": 192000,
+      "allocated": 0
+     },
+     "token_to_id_map.bin": {
+      "st_size": 40898,
+      "allocated": 40960
+     },
+     "_total": {
+      "st_size": 23624547,
+      "allocated": 7942144
+     }
+    },
+    "batches": [
+     {
+      "quarter": 1,
+      "synthetic_reuse": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1000,
+       "deletes_applied": 1000,
+       "docs_offered": 2500,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 2500,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 32796,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 32796,
+       "postings_evicted": 0,
+       "postings_freed": 35078,
+       "rows_freed": 3000,
+       "rows_fully_evicted": 0,
+       "lists_touched": 2000,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 2000,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 4932808,
+       "heap_reserve": 14938112,
+       "gap_s": 0.0,
+       "total_s": 0.395785107,
+       "plan_s": 0.012748132,
+       "logical_bytes": 4989576,
+       "write_ops": 6031,
+       "wall_s_harness": 0.4279941210006655,
+       "device_bytes_ru_oublock": 4968448,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 4968448,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 0.37882381,
+         "heap_bumped_bytes": 4932808,
+         "heap_reused_bytes": 0,
+         "heap_reused_units": 0,
+         "heap_superseded_bytes": 0,
+         "marks": 35078,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "tail_records_written": 0,
+         "unit_bytes": 4932808,
+         "units_written": 2000,
+         "wait_readers_s": 3.8191e-05,
+         "write_s": 0.378785409
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_clear_deferred": 0,
+        "overrides_cleared": 0,
+        "posting_free_bytes": 0,
+        "posting_free_entries": 0,
+        "posting_free_rebuilt": false,
+        "posting_free_trusted": true,
+        "seconds": 0.004128092
+       },
+       "docs_placed_hole": 0,
+       "docs_placed_tail": 0,
+       "tail": false,
+       "tail_reserve_words": 60000,
+       "tail_reserve_rows": 4000,
+       "tail_words_before": 0,
+       "tail_words_after": 0,
+       "tail_rows_before": 0,
+       "tail_rows_after": 0,
+       "heap_reuse": false,
+       "heap_reused_units": 0,
+       "heap_reused_bytes": 0,
+       "heap_bumped_bytes": 4932808,
+       "heap_superseded_bytes": 0,
+       "heap_free_entries_before": 0,
+       "heap_free_bytes_before": 0,
+       "heap_free_entries_after": 0,
+       "heap_free_bytes_after": 0
+      }
+     },
+     {
+      "quarter": 2,
+      "synthetic_reuse": true,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 1,
+       "end_epoch": 2,
+       "deletes_offered": 950,
+       "deletes_applied": 853,
+       "docs_offered": 2375,
+       "docs_placed": 2375,
+       "docs_unplaced_no_hole": 0,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 31588,
+       "postings_inserted": 29497,
+       "postings_dropped_capacity": 2091,
+       "postings_dropped_unplaced": 0,
+       "postings_evicted": 15,
+       "postings_freed": 29450,
+       "rows_freed": 2557,
+       "rows_fully_evicted": 0,
+       "lists_touched": 2000,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 2000,
+       "heap_bytes_before": 4932808,
+       "heap_bytes_after": 9833864,
+       "heap_reserve": 14938112,
+       "gap_s": 0.0,
+       "total_s": 0.52421865,
+       "plan_s": 0.024925367,
+       "logical_bytes": 5089256,
+       "write_ops": 12781,
+       "wall_s_harness": 0.5556945520002046,
+       "device_bytes_ru_oublock": 5918720,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        152,
+        4163,
+        5180,
+        3394,
+        2681,
+        2076,
+        1658,
+        10193
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        1,
+        7,
+        0,
+        0,
+        0,
+        0,
+        2083
+       ],
+       "proc_self_io_write_bytes": 5918720,
+       "phases": [
+        {
+         "epoch": 2,
+         "fills": 29497,
+         "flip_done_at_s": 0.493095194,
+         "heap_bumped_bytes": 4901056,
+         "heap_reused_bytes": 0,
+         "heap_reused_units": 0,
+         "heap_superseded_bytes": 4932808,
+         "marks": 29465,
+         "records_written": 2375,
+         "stale_reader_slots_cleared": 0,
+         "tail_records_written": 0,
+         "unit_bytes": 4901056,
+         "units_written": 2000,
+         "wait_readers_s": 4.5082e-05,
+         "write_s": 0.493049762
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 1,
+        "free_list_holes": 3000,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_clear_deferred": 0,
+        "overrides_cleared": 0,
+        "posting_free_bytes": 0,
+        "posting_free_entries": 0,
+        "posting_free_rebuilt": false,
+        "posting_free_trusted": true,
+        "seconds": 0.005982388
+       },
+       "docs_placed_hole": 2375,
+       "docs_placed_tail": 0,
+       "tail": false,
+       "tail_reserve_words": 60000,
+       "tail_reserve_rows": 4000,
+       "tail_words_before": 0,
+       "tail_words_after": 0,
+       "tail_rows_before": 0,
+       "tail_rows_after": 0,
+       "heap_reuse": false,
+       "heap_reused_units": 0,
+       "heap_reused_bytes": 0,
+       "heap_bumped_bytes": 4901056,
+       "heap_superseded_bytes": 4932808,
+       "heap_free_entries_before": 0,
+       "heap_free_bytes_before": 0,
+       "heap_free_entries_after": 1,
+       "heap_free_bytes_after": 4932808
+      }
+     },
+     {
+      "quarter": 3,
+      "synthetic_reuse": true,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 2,
+       "end_epoch": 3,
+       "deletes_offered": 902,
+       "deletes_applied": 815,
+       "docs_offered": 2256,
+       "docs_placed": 2256,
+       "docs_unplaced_no_hole": 0,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 30425,
+       "postings_inserted": 27647,
+       "postings_dropped_capacity": 2778,
+       "postings_dropped_unplaced": 0,
+       "postings_evicted": 669,
+       "postings_freed": 28470,
+       "rows_freed": 2442,
+       "rows_fully_evicted": 0,
+       "lists_touched": 2000,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 2000,
+       "heap_bytes_before": 9833864,
+       "heap_bytes_after": 14689632,
+       "heap_reserve": 14938112,
+       "gap_s": 0.0,
+       "total_s": 0.501351265,
+       "plan_s": 0.030978748,
+       "logical_bytes": 5040536,
+       "write_ops": 12543,
+       "wall_s_harness": 0.5351692000003823,
+       "device_bytes_ru_oublock": 5890048,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        165,
+        4139,
+        5001,
+        3292,
+        2590,
+        1991,
+        1644,
+        8825
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        1,
+        3,
+        0,
+        0,
+        0,
+        0,
+        2774
+       ],
+       "proc_self_io_write_bytes": 5890048,
+       "phases": [
+        {
+         "epoch": 3,
+         "fills": 27647,
+         "flip_done_at_s": 0.463384425,
+         "heap_bumped_bytes": 4855768,
+         "heap_reused_bytes": 0,
+         "heap_reused_units": 0,
+         "heap_superseded_bytes": 4901056,
+         "marks": 29139,
+         "records_written": 2256,
+         "stale_reader_slots_cleared": 0,
+         "tail_records_written": 0,
+         "unit_bytes": 4855768,
+         "units_written": 2000,
+         "wait_readers_s": 4.3582e-05,
+         "write_s": 0.463340353
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 2,
+        "free_list_holes": 3182,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_clear_deferred": 0,
+        "overrides_cleared": 0,
+        "posting_free_bytes": 4932808,
+        "posting_free_entries": 1,
+        "posting_free_rebuilt": false,
+        "posting_free_trusted": true,
+        "seconds": 0.006785694
+       },
+       "docs_placed_hole": 2256,
+       "docs_placed_tail": 0,
+       "tail": false,
+       "tail_reserve_words": 60000,
+       "tail_reserve_rows": 4000,
+       "tail_words_before": 0,
+       "tail_words_after": 0,
+       "tail_rows_before": 0,
+       "tail_rows_after": 0,
+       "heap_reuse": false,
+       "heap_reused_units": 0,
+       "heap_reused_bytes": 0,
+       "heap_bumped_bytes": 4855768,
+       "heap_superseded_bytes": 4901056,
+       "heap_free_entries_before": 1,
+       "heap_free_bytes_before": 4932808,
+       "heap_free_entries_after": 1,
+       "heap_free_bytes_after": 9833864
+      }
+     },
+     {
+      "quarter": 4,
+      "synthetic_reuse": true,
+      "error": "apply failed: {'error': 'posting heap exhausted: epoch 4 needs 252560 B (unit of list 61: 4104 B) with 0 B reusable and bump 14689632 of reserve 14938112 (R7); nothing of this epoch was written', 'injected': False} "
+     }
+    ],
+    "after_q1": {
+     ".inplace_work_copy": {
+      "st_size": 234,
+      "allocated": 4096
+     },
+     "block_inflation.bin": {
+      "st_size": 59502,
+      "allocated": 0
+     },
+     "config.json": {
+      "st_size": 200,
+      "allocated": 4096
+     },
+     "document_mapping_offsets.bin": {
+      "st_size": 160008,
+      "allocated": 163840
+     },
+     "document_mapping_strings.bin": {
+      "st_size": 160000,
+      "allocated": 163840
+     },
+     "forward_data.bin": {
+      "st_size": 1305000,
+      "allocated": 827392
+     },
+     "forward_encoder.bin": {
+      "st_size": 10,
+      "allocated": 4096
+     },
+     "forward_free.bin": {
+      "st_size": 24576,
+      "allocated": 24576
+     },
+     "forward_offsets.bin": {
+      "st_size": 192008,
+      "allocated": 163840
+     },
+     "inplace_header.bin": {
+      "st_size": 8192,
+      "allocated": 8192
+     },
+     "list_crc.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "list_dir.bin": {
+      "st_size": 32000,
+      "allocated": 32768
+     },
+     "list_min.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "manifest.json": {
+      "st_size": 1508097,
+      "allocated": 1511424
+     },
+     "posting_free.bin": {
+      "st_size": 64,
+      "allocated": 4096
+     },
+     "posting_heap.bin": {
+      "st_size": 14938112,
+      "allocated": 4935680
+     },
+     "posting_lists.bin": {
+      "st_size": 4979262,
+      "allocated": 4980736
+     },
+     "readers.bin": {
+      "st_size": 16384,
+      "allocated": 0
+     },
+     "row_id_override.bin": {
+      "st_size": 192000,
+      "allocated": 0
+     },
+     "token_to_id_map.bin": {
+      "st_size": 40898,
+      "allocated": 40960
+     },
+     "_total": {
+      "st_size": 23648547,
+      "allocated": 12902400
+     }
+    },
+    "failed_at_q4": "apply failed: {'error': 'posting heap exhausted: epoch 4 needs 252560 B (unit of list 61: 4104 B) with 0 B reusable and bump 14689632 of reserve 14938112 (R7); nothing of this epoch was written', 'injected': False} ",
+    "after_q1..q14": {
+     ".inplace_work_copy": {
+      "st_size": 234,
+      "allocated": 4096
+     },
+     "block_inflation.bin": {
+      "st_size": 59502,
+      "allocated": 0
+     },
+     "config.json": {
+      "st_size": 200,
+      "allocated": 4096
+     },
+     "document_mapping_offsets.bin": {
+      "st_size": 160008,
+      "allocated": 163840
+     },
+     "document_mapping_strings.bin": {
+      "st_size": 160000,
+      "allocated": 163840
+     },
+     "forward_data.bin": {
+      "st_size": 1305000,
+      "allocated": 827392
+     },
+     "forward_encoder.bin": {
+      "st_size": 10,
+      "allocated": 4096
+     },
+     "forward_free.bin": {
+      "st_size": 27520,
+      "allocated": 28672
+     },
+     "forward_offsets.bin": {
+      "st_size": 192008,
+      "allocated": 163840
+     },
+     "inplace_header.bin": {
+      "st_size": 8192,
+      "allocated": 8192
+     },
+     "list_crc.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "list_dir.bin": {
+      "st_size": 32000,
+      "allocated": 32768
+     },
+     "list_min.bin": {
+      "st_size": 16000,
+      "allocated": 16384
+     },
+     "manifest.json": {
+      "st_size": 1508097,
+      "allocated": 1511424
+     },
+     "posting_free.bin": {
+      "st_size": 80,
+      "allocated": 4096
+     },
+     "posting_heap.bin": {
+      "st_size": 14938112,
+      "allocated": 14696448
+     },
+     "posting_lists.bin": {
+      "st_size": 4979262,
+      "allocated": 4980736
+     },
+     "readers.bin": {
+      "st_size": 16384,
+      "allocated": 0
+     },
+     "row_id_override.bin": {
+      "st_size": 192000,
+      "allocated": 151552
+     },
+     "token_to_id_map.bin": {
+      "st_size": 40898,
+      "allocated": 40960
+     },
+     "_total": {
+      "st_size": 23651507,
+      "allocated": 22818816
+     }
+    },
+    "heap": {
+     "bytes_per_batch": [
+      4932808,
+      4901056,
+      4855768
+     ],
+     "reserve": 14938112,
+     "used_after_q4": 14689632,
+     "batches_to_exhaustion_from_empty": 3.0507459955429788,
+     "remaining_batches_after_q4": 0.050745995542978886,
+     "accepted_batches": 3,
+     "heap_reuse": false,
+     "reused_bytes_per_batch": [
+      0,
+      0,
+      0
+     ],
+     "superseded_bytes_per_batch": [
+      0,
+      4932808,
+      4901056
+     ],
+     "free_bytes_after_last": 9833864
+    },
+    "tail": {
+     "words_used_after_last": 0,
+     "rows_used_after_last": 0,
+     "reserve_words": 60000,
+     "reserve_rows": 4000,
+     "placed_hole_per_batch": [
+      0,
+      2375,
+      2256
+     ],
+     "placed_tail_per_batch": [
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  "batches": 14
+ },
+ "baseline_b4": {
+  "checks": [
+   {
+    "when": "start b4",
+    "checked_utc": "2026-09-30T04:10:26.257153+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   },
+   {
+    "when": "end b4",
+    "checked_utc": "2026-09-30T04:10:30.187465+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   }
+  ]
+ }
+}

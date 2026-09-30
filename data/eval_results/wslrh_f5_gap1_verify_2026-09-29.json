@@ -1,0 +1,864 @@
+{
+ "record": "WSL2 re-host \u00a76 gap 1 \u2014 F5 release_pages_except mechanism check, UNCAPPED (not the \u00a75 calibration record)",
+ "date": "2026-09-29",
+ "prereg": "spike/convergence_repro/PREREGISTRATION_WSL2_REHOST.md \u00a75 item 3 / \u00a76 gap 1",
+ "fork_commit": "2c4d863820a6110ab3da46dd1a7f33ac2b47b40a",
+ "manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+ "encoded_queries": "data/eval_results/e7b_encoded_queries.json",
+ "served_so_untouched": true,
+ "host": {
+  "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+  "meminfo": {
+   "MemTotal_kb": 32863248,
+   "MemAvailable_kb": 29896620,
+   "Cached_kb": 15080808,
+   "SwapTotal_kb": 16777216,
+   "SwapFree_kb": 15701896
+  },
+  "cgroup_memory_max": "max",
+  "lru_gen_enabled": "0x0007"
+ },
+ "arms": {
+  "fixed": {
+   "arm": "fixed",
+   "so_path": "/tmp/claude-1000/-workspaces-sfu-library-thinclient/00d79fd9-6183-4150-9e89-0b92d1ccb6ba/scratchpad/f5so/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "so_sha256": "b0c322d24e153787703de0947fb5d3a82fbf9982a327d0d7a285658f25ebb726",
+   "so_has_release_pages_except_by_slab": true,
+   "env": {
+    "SFU_SEISMIC_PREFLOOR_HOTSET": "1",
+    "SFU_SEISMIC_PIN_BUDGET_GB": null,
+    "SFU_SEISMIC_MLOCK_FLOOR": null,
+    "SFU_SEISMIC_PREFLOOR_AT_LOAD": null
+   },
+   "sidecar_budget": "hot50_1.6gb",
+   "queries": 40,
+   "top_k": 50,
+   "uncapped": true,
+   "cgroup_memory_max": "max",
+   "lru_gen_enabled": "0x0007",
+   "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+   "load_s": 185.32,
+   "load_majflt": 237276,
+   "n_shards": 8,
+   "slab_mappings_missing": [],
+   "slab_file_bytes": {
+    "forward_data.bin": 30836512808,
+    "forward_offsets.bin": 1203304848,
+    "posting_lists.bin": 9275412972,
+    "document_mapping_strings.bin": 1654200557,
+    "document_mapping_offsets.bin": 1203304848
+   },
+   "kept_extents_total": 6367,
+   "kept_bytes_raw": 1599934464,
+   "kept_bytes_coalesced": 14390890496,
+   "pre": {
+    "vm": {
+     "vmrss_kb": 15195076,
+     "rssanon_kb": 1185956,
+     "rssfile_kb": 14009120,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 13739400,
+     "forward_offsets.bin": 0,
+     "posting_lists.bin": 0,
+     "document_mapping_strings.bin": 0,
+     "document_mapping_offsets.bin": 0
+    },
+    "hot_kept_residency": {
+     "pages": 3513401,
+     "mapped_pages": 3434850,
+     "pagecache_pages": 3513401,
+     "mapped_pct": 97.7642,
+     "pagecache_pct": 100.0
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 377124,
+     "pagecache_pages": 390609,
+     "mapped_pct": 96.5477,
+     "pagecache_pct": 100.0
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1629173,
+     "pagecache_pages": 1705374,
+     "mapped_pct": 87.7916,
+     "pagecache_pct": 91.8978
+    }
+   },
+   "release": {
+    "requested_bytes_residue": 276193280,
+    "requested_bytes_residue_def": "RssFile_pre - hot-kept mapped bytes: the load residue the call is meant to remove (uncapped)",
+    "prereg_expected_bytes": 9300000000,
+    "prereg_expected_def": "\u00a75 check 3 (a): footprint 19.4 GB - hot set 10.1 GB, a CAPPED-cell quantity; recorded for reference only",
+    "advised_scope_bytes": 29781845537,
+    "advised_scope_def": "slab bytes in the hook's scope minus kept extents (what MADV_DONTNEED is asked to cover, resident or not)",
+    "released_bytes": 29781845537,
+    "released_bytes_def": "the hook's return value = bytes madvise accepted (resident or not); NOT bytes that were resident",
+    "released_by_slab": {
+     "forward_data": 16445622312,
+     "forward_offsets": 1203304848,
+     "postings": 9275412972,
+     "doc_strings": 1654200557,
+     "doc_offsets": 1203304848
+    },
+    "write_status": "ok",
+    "elapsed_s": 0.014
+   },
+   "post": {
+    "vm": {
+     "vmrss_kb": 15224996,
+     "rssanon_kb": 1215872,
+     "rssfile_kb": 14009124,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 13739400,
+     "forward_offsets.bin": 0,
+     "posting_lists.bin": 0,
+     "document_mapping_strings.bin": 0,
+     "document_mapping_offsets.bin": 0
+    },
+    "hot_kept_residency": {
+     "pages": 3513401,
+     "mapped_pages": 3434850,
+     "pagecache_pages": 3513401,
+     "mapped_pct": 97.7642,
+     "pagecache_pct": 100.0
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 377124,
+     "pagecache_pages": 390609,
+     "mapped_pct": 96.5477,
+     "pagecache_pct": 100.0
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1629173,
+     "pagecache_pages": 1705374,
+     "mapped_pct": 87.7916,
+     "pagecache_pct": 91.8978
+    }
+   },
+   "serve_after_release": {
+    "n_queries": 40,
+    "empty_results": 0,
+    "p50_ms": 1584.43,
+    "p95_ms": 3548.44,
+    "max_ms": 5648.21,
+    "majflt": 149485,
+    "wall_s": 75.43,
+    "vm": {
+     "vmrss_kb": 12252632,
+     "rssanon_kb": 1292936,
+     "rssfile_kb": 10959696,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    }
+   },
+   "checks": {
+    "a_released_vs_residue": {
+     "released_bytes": 29781845537,
+     "residue_bytes": 276193280,
+     "ratio": 107.8297,
+     "pass": false,
+     "note": "released_bytes counts advised (resident or not) bytes; see released_bytes_def \u2014 the RssFile drop in (b) is the physical quantity"
+    },
+    "b_rssfile_drop_vs_residue": {
+     "rssfile_pre_bytes": 14345338880,
+     "rssfile_post_bytes": 14345342976,
+     "drop_bytes": -4096,
+     "residue_bytes": 276193280,
+     "ratio": -0.0,
+     "pass": false,
+     "slab_rss_drop_kb": {
+      "forward_data.bin": 0,
+      "forward_offsets.bin": 0,
+      "posting_lists.bin": 0,
+      "document_mapping_strings.bin": 0,
+      "document_mapping_offsets.bin": 0
+     }
+    },
+    "c_hot_kept_stays_mapped": {
+     "pre_mapped_pct": 97.7642,
+     "post_mapped_pct": 97.7642,
+     "ratio": 1.0,
+     "pass": true,
+     "pre_pagecache_pct": 100.0,
+     "post_pagecache_pct": 100.0
+    },
+    "serves_after_release": {
+     "pass": true
+    },
+    "tolerance_frac": 0.2
+   },
+   "subprocess_rc": 0
+  },
+  "control": {
+   "arm": "control",
+   "so_path": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "so_sha256": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6",
+   "so_has_release_pages_except_by_slab": false,
+   "env": {
+    "SFU_SEISMIC_PREFLOOR_HOTSET": "1",
+    "SFU_SEISMIC_PIN_BUDGET_GB": null,
+    "SFU_SEISMIC_MLOCK_FLOOR": null,
+    "SFU_SEISMIC_PREFLOOR_AT_LOAD": null
+   },
+   "sidecar_budget": "hot50_1.6gb",
+   "queries": 40,
+   "top_k": 50,
+   "uncapped": true,
+   "cgroup_memory_max": "max",
+   "lru_gen_enabled": "0x0007",
+   "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+   "load_s": 187.12,
+   "load_majflt": 237295,
+   "n_shards": 8,
+   "slab_mappings_missing": [],
+   "slab_file_bytes": {
+    "forward_data.bin": 30836512808,
+    "forward_offsets.bin": 1203304848,
+    "posting_lists.bin": 9275412972,
+    "document_mapping_strings.bin": 1654200557,
+    "document_mapping_offsets.bin": 1203304848
+   },
+   "kept_extents_total": 6367,
+   "kept_bytes_raw": 1599934464,
+   "kept_bytes_coalesced": 14390890496,
+   "pre": {
+    "vm": {
+     "vmrss_kb": 15357008,
+     "rssanon_kb": 1138112,
+     "rssfile_kb": 14218896,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 13949020,
+     "forward_offsets.bin": 0,
+     "posting_lists.bin": 0,
+     "document_mapping_strings.bin": 0,
+     "document_mapping_offsets.bin": 0
+    },
+    "hot_kept_residency": {
+     "pages": 3513401,
+     "mapped_pages": 3460444,
+     "pagecache_pages": 3513401,
+     "mapped_pct": 98.4927,
+     "pagecache_pct": 100.0
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 378907,
+     "pagecache_pages": 390609,
+     "mapped_pct": 97.0042,
+     "pagecache_pct": 100.0
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1641545,
+     "pagecache_pages": 1705374,
+     "mapped_pct": 88.4583,
+     "pagecache_pct": 91.8978
+    }
+   },
+   "release": {
+    "requested_bytes_residue": 386170880,
+    "requested_bytes_residue_def": "RssFile_pre - hot-kept mapped bytes: the load residue the call is meant to remove (uncapped)",
+    "prereg_expected_bytes": 9300000000,
+    "prereg_expected_def": "\u00a75 check 3 (a): footprint 19.4 GB - hot set 10.1 GB, a CAPPED-cell quantity; recorded for reference only",
+    "advised_scope_bytes": 16445622312,
+    "advised_scope_def": "slab bytes in the hook's scope minus kept extents (what MADV_DONTNEED is asked to cover, resident or not)",
+    "released_bytes": 16445622312,
+    "released_bytes_def": "the hook's return value = bytes madvise accepted (resident or not); NOT bytes that were resident",
+    "released_by_slab": {
+     "forward_data": 16445622312
+    },
+    "write_status": "ok",
+    "elapsed_s": 0.016
+   },
+   "post": {
+    "vm": {
+     "vmrss_kb": 15279228,
+     "rssanon_kb": 1167484,
+     "rssfile_kb": 14111744,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 13841776,
+     "forward_offsets.bin": 0,
+     "posting_lists.bin": 0,
+     "document_mapping_strings.bin": 0,
+     "document_mapping_offsets.bin": 0
+    },
+    "hot_kept_residency": {
+     "pages": 3513401,
+     "mapped_pages": 3460444,
+     "pagecache_pages": 3513401,
+     "mapped_pct": 98.4927,
+     "pagecache_pct": 100.0
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 378907,
+     "pagecache_pages": 390609,
+     "mapped_pct": 97.0042,
+     "pagecache_pct": 100.0
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1641545,
+     "pagecache_pages": 1705374,
+     "mapped_pct": 88.4583,
+     "pagecache_pct": 91.8978
+    }
+   },
+   "serve_after_release": {
+    "n_queries": 40,
+    "empty_results": 0,
+    "p50_ms": 1457.5,
+    "p95_ms": 3465.44,
+    "max_ms": 5023.79,
+    "majflt": 141622,
+    "wall_s": 68.63,
+    "vm": {
+     "vmrss_kb": 12362620,
+     "rssanon_kb": 1245212,
+     "rssfile_kb": 11117408,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    }
+   },
+   "checks": {
+    "a_released_vs_residue": {
+     "released_bytes": 16445622312,
+     "residue_bytes": 386170880,
+     "ratio": 42.5864,
+     "pass": false,
+     "note": "released_bytes counts advised (resident or not) bytes; see released_bytes_def \u2014 the RssFile drop in (b) is the physical quantity"
+    },
+    "b_rssfile_drop_vs_residue": {
+     "rssfile_pre_bytes": 14560149504,
+     "rssfile_post_bytes": 14450425856,
+     "drop_bytes": 109723648,
+     "residue_bytes": 386170880,
+     "ratio": 0.2841,
+     "pass": false,
+     "slab_rss_drop_kb": {
+      "forward_data.bin": 107244,
+      "forward_offsets.bin": 0,
+      "posting_lists.bin": 0,
+      "document_mapping_strings.bin": 0,
+      "document_mapping_offsets.bin": 0
+     }
+    },
+    "c_hot_kept_stays_mapped": {
+     "pre_mapped_pct": 98.4927,
+     "post_mapped_pct": 98.4927,
+     "ratio": 1.0,
+     "pass": true,
+     "pre_pagecache_pct": 100.0,
+     "post_pagecache_pct": 100.0
+    },
+    "serves_after_release": {
+     "pass": true
+    },
+    "tolerance_frac": 0.2
+   },
+   "subprocess_rc": 0
+  },
+  "fixed_raw_warm1": {
+   "arm": "fixed_raw_warm1",
+   "so_variant": "fixed",
+   "so_path": "/tmp/claude-1000/-workspaces-sfu-library-thinclient/00d79fd9-6183-4150-9e89-0b92d1ccb6ba/scratchpad/f5so/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "so_sha256": "b0c322d24e153787703de0947fb5d3a82fbf9982a327d0d7a285658f25ebb726",
+   "so_has_release_pages_except_by_slab": true,
+   "env": {
+    "SFU_SEISMIC_PREFLOOR_HOTSET": "1",
+    "SFU_SEISMIC_PIN_BUDGET_GB": null,
+    "SFU_SEISMIC_MLOCK_FLOOR": null,
+    "SFU_SEISMIC_PREFLOOR_AT_LOAD": null
+   },
+   "sidecar_budget": "hot50_1.6gb",
+   "pin_mode": "raw_sidecar_extents",
+   "warm_passes": 1,
+   "queries": 40,
+   "top_k": 50,
+   "uncapped": true,
+   "cgroup_memory_max": "max",
+   "lru_gen_enabled": "0x0007",
+   "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+   "load_s": 227.18,
+   "load_majflt": 237276,
+   "n_shards": 8,
+   "slab_mappings_missing": [],
+   "slab_file_bytes": {
+    "forward_data.bin": 30836512808,
+    "forward_offsets.bin": 1203304848,
+    "posting_lists.bin": 9275412972,
+    "document_mapping_strings.bin": 1654200557,
+    "document_mapping_offsets.bin": 1203304848
+   },
+   "kept_extents_total": 267236,
+   "kept_bytes_raw": 1599934464,
+   "kept_bytes_coalesced": 14390890496,
+   "kept_bytes": 1599934464,
+   "warm_passes_before_release": [
+    {
+     "n_queries": 40,
+     "empty_results": 0,
+     "p50_ms": 2881.6,
+     "p95_ms": 7345.17,
+     "max_ms": 8851.72,
+     "majflt": 249345,
+     "wall_s": 122.88,
+     "vm": {
+      "vmrss_kb": 10740948,
+      "rssanon_kb": 1250860,
+      "rssfile_kb": 9490088,
+      "rssshmem_kb": 0,
+      "vmswap_kb": 0
+     }
+    }
+   ],
+   "pre": {
+    "vm": {
+     "vmrss_kb": 10740948,
+     "rssanon_kb": 1250860,
+     "rssfile_kb": 9490088,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 7645968,
+     "forward_offsets.bin": 508228,
+     "posting_lists.bin": 588912,
+     "document_mapping_strings.bin": 247832,
+     "document_mapping_offsets.bin": 228592
+    },
+    "hot_kept_residency": {
+     "pages": 390609,
+     "mapped_pages": 293314,
+     "pagecache_pages": 324475,
+     "mapped_pct": 75.0915,
+     "pagecache_pct": 83.069
+    },
+    "hot_coalesced_residency": {
+     "pages": 3513401,
+     "mapped_pages": 1652446,
+     "pagecache_pages": 2141345,
+     "mapped_pct": 47.0327,
+     "pagecache_pct": 60.9479
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 293314,
+     "pagecache_pages": 324475,
+     "mapped_pct": 75.0915,
+     "pagecache_pct": 83.069
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1071649,
+     "pagecache_pages": 1292035,
+     "mapped_pct": 57.7482,
+     "pagecache_pct": 69.6242
+    }
+   },
+   "release": {
+    "requested_bytes_residue": 8516435968,
+    "requested_bytes_residue_def": "RssFile_pre - hot-kept mapped bytes: the load residue the call is meant to remove (uncapped)",
+    "prereg_expected_bytes": 9300000000,
+    "prereg_expected_def": "\u00a75 check 3 (a): footprint 19.4 GB - hot set 10.1 GB, a CAPPED-cell quantity; recorded for reference only",
+    "advised_scope_bytes": 42572801569,
+    "advised_scope_def": "slab bytes in the hook's scope minus kept extents (what MADV_DONTNEED is asked to cover, resident or not)",
+    "released_bytes": 42572801569,
+    "released_bytes_def": "the hook's return value = bytes madvise accepted (resident or not); NOT bytes that were resident",
+    "released_by_slab": {
+     "forward_data": 29236578344,
+     "forward_offsets": 1203304848,
+     "postings": 9275412972,
+     "doc_strings": 1654200557,
+     "doc_offsets": 1203304848
+    },
+    "write_status": "ok",
+    "elapsed_s": 1.092
+   },
+   "post": {
+    "vm": {
+     "vmrss_kb": 2724448,
+     "rssanon_kb": 1280632,
+     "rssfile_kb": 1443816,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 1173256,
+     "forward_offsets.bin": 0,
+     "posting_lists.bin": 0,
+     "document_mapping_strings.bin": 0,
+     "document_mapping_offsets.bin": 0
+    },
+    "hot_kept_residency": {
+     "pages": 390609,
+     "mapped_pages": 293314,
+     "pagecache_pages": 324475,
+     "mapped_pct": 75.0915,
+     "pagecache_pct": 83.069
+    },
+    "hot_coalesced_residency": {
+     "pages": 3513401,
+     "mapped_pages": 293314,
+     "pagecache_pages": 2141345,
+     "mapped_pct": 8.3484,
+     "pagecache_pct": 60.9479
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 293314,
+     "pagecache_pages": 324475,
+     "mapped_pct": 75.0915,
+     "pagecache_pct": 83.069
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 293314,
+     "pagecache_pages": 1292035,
+     "mapped_pct": 15.8059,
+     "pagecache_pct": 69.6242
+    }
+   },
+   "serve_after_release": {
+    "n_queries": 40,
+    "empty_results": 0,
+    "p50_ms": 1874.5,
+    "p95_ms": 5330.59,
+    "max_ms": 6462.82,
+    "majflt": 241463,
+    "wall_s": 92.28,
+    "vm": {
+     "vmrss_kb": 11277576,
+     "rssanon_kb": 1283988,
+     "rssfile_kb": 9993588,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    }
+   },
+   "checks": {
+    "a_released_vs_residue": {
+     "released_bytes": 42572801569,
+     "residue_bytes": 8516435968,
+     "ratio": 4.9989,
+     "pass": false,
+     "note": "released_bytes counts advised (resident or not) bytes; see released_bytes_def \u2014 the RssFile drop in (b) is the physical quantity"
+    },
+    "b_rssfile_drop_vs_residue": {
+     "rssfile_pre_bytes": 9717850112,
+     "rssfile_post_bytes": 1478467584,
+     "drop_bytes": 8239382528,
+     "residue_bytes": 8516435968,
+     "ratio": 0.9675,
+     "pass": true,
+     "slab_rss_drop_kb": {
+      "forward_data.bin": 6472712,
+      "forward_offsets.bin": 508228,
+      "posting_lists.bin": 588912,
+      "document_mapping_strings.bin": 247832,
+      "document_mapping_offsets.bin": 228592
+     }
+    },
+    "c_hot_kept_stays_mapped": {
+     "pre_mapped_pct": 75.0915,
+     "post_mapped_pct": 75.0915,
+     "ratio": 1.0,
+     "pass": true,
+     "pre_pagecache_pct": 83.069,
+     "post_pagecache_pct": 83.069
+    },
+    "serves_after_release": {
+     "pass": true
+    },
+    "tolerance_frac": 0.2
+   },
+   "subprocess_rc": 0
+  },
+  "control_raw_warm1": {
+   "arm": "control_raw_warm1",
+   "so_variant": "control",
+   "so_path": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "so_sha256": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6",
+   "so_has_release_pages_except_by_slab": false,
+   "env": {
+    "SFU_SEISMIC_PREFLOOR_HOTSET": "1",
+    "SFU_SEISMIC_PIN_BUDGET_GB": null,
+    "SFU_SEISMIC_MLOCK_FLOOR": null,
+    "SFU_SEISMIC_PREFLOOR_AT_LOAD": null
+   },
+   "sidecar_budget": "hot50_1.6gb",
+   "pin_mode": "raw_sidecar_extents",
+   "warm_passes": 1,
+   "queries": 40,
+   "top_k": 50,
+   "uncapped": true,
+   "cgroup_memory_max": "max",
+   "lru_gen_enabled": "0x0007",
+   "kernel": "6.18.33.2-microsoft-standard-WSL2+",
+   "load_s": 200.16,
+   "load_majflt": 237292,
+   "n_shards": 8,
+   "slab_mappings_missing": [],
+   "slab_file_bytes": {
+    "forward_data.bin": 30836512808,
+    "forward_offsets.bin": 1203304848,
+    "posting_lists.bin": 9275412972,
+    "document_mapping_strings.bin": 1654200557,
+    "document_mapping_offsets.bin": 1203304848
+   },
+   "kept_extents_total": 267236,
+   "kept_bytes_raw": 1599934464,
+   "kept_bytes_coalesced": 14390890496,
+   "kept_bytes": 1599934464,
+   "warm_passes_before_release": [
+    {
+     "n_queries": 40,
+     "empty_results": 0,
+     "host_vmstat_delta": {
+      "workingset_refault_file": 1586640,
+      "pgmajfault": 208013,
+      "pgsteal_kswapd": 2438162,
+      "pgsteal_direct": 0,
+      "pgscan_kswapd": 2444448,
+      "pgscan_direct": 0
+     },
+     "host_meminfo_end": {
+      "MemFree_kb": 270112,
+      "MemAvailable_kb": 28740200,
+      "Cached_kb": 27718956,
+      "Active(file)_kb": 11533304,
+      "Inactive(file)_kb": 16628552
+     },
+     "p50_ms": 2249.99,
+     "p95_ms": 5571.7,
+     "max_ms": 8087.44,
+     "majflt": 207974,
+     "wall_s": 102.1,
+     "vm": {
+      "vmrss_kb": 11144952,
+      "rssanon_kb": 1183488,
+      "rssfile_kb": 9961464,
+      "rssshmem_kb": 0,
+      "vmswap_kb": 0
+     }
+    }
+   ],
+   "pre": {
+    "vm": {
+     "vmrss_kb": 11144952,
+     "rssanon_kb": 1183488,
+     "rssfile_kb": 9961464,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 8118500,
+     "forward_offsets.bin": 508328,
+     "posting_lists.bin": 588768,
+     "document_mapping_strings.bin": 247908,
+     "document_mapping_offsets.bin": 228640
+    },
+    "host_vmstat": {
+     "workingset_refault_file": 3354256473,
+     "pgmajfault": 53025870,
+     "pgsteal_kswapd": 3423376487,
+     "pgsteal_direct": 47792179,
+     "pgscan_kswapd": 3801098110,
+     "pgscan_direct": 67326523
+    },
+    "host_meminfo": {
+     "MemFree_kb": 230768,
+     "MemAvailable_kb": 28701508,
+     "Cached_kb": 27719608,
+     "Active(file)_kb": 11533944,
+     "Inactive(file)_kb": 16628564
+    },
+    "hot_kept_residency": {
+     "pages": 390609,
+     "mapped_pages": 303964,
+     "pagecache_pages": 325728,
+     "mapped_pct": 77.818,
+     "pagecache_pct": 83.3898
+    },
+    "hot_coalesced_residency": {
+     "pages": 3513401,
+     "mapped_pages": 1792010,
+     "pagecache_pages": 2361377,
+     "mapped_pct": 51.005,
+     "pagecache_pct": 67.2106
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 303964,
+     "pagecache_pages": 325728,
+     "mapped_pct": 77.818,
+     "pagecache_pct": 83.3898
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 1124796,
+     "pagecache_pages": 1340664,
+     "mapped_pct": 60.6121,
+     "pagecache_pct": 72.2446
+    }
+   },
+   "release": {
+    "requested_bytes_residue": 8955502592,
+    "requested_bytes_residue_def": "RssFile_pre - hot-kept mapped bytes: the load residue the call is meant to remove (uncapped)",
+    "prereg_expected_bytes": 9300000000,
+    "prereg_expected_def": "\u00a75 check 3 (a): footprint 19.4 GB - hot set 10.1 GB, a CAPPED-cell quantity; recorded for reference only",
+    "advised_scope_bytes": 29236578344,
+    "advised_scope_def": "slab bytes in the hook's scope minus kept extents (what MADV_DONTNEED is asked to cover, resident or not)",
+    "released_bytes": 29236578344,
+    "released_bytes_def": "the hook's return value = bytes madvise accepted (resident or not); NOT bytes that were resident",
+    "released_by_slab": {
+     "forward_data": 29236578344
+    },
+    "write_status": "ok",
+    "elapsed_s": 1.162
+   },
+   "post": {
+    "vm": {
+     "vmrss_kb": 4247984,
+     "rssanon_kb": 1189160,
+     "rssfile_kb": 3058824,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    },
+    "slab_rss_kb": {
+     "forward_data.bin": 1215856,
+     "forward_offsets.bin": 508328,
+     "posting_lists.bin": 588768,
+     "document_mapping_strings.bin": 247908,
+     "document_mapping_offsets.bin": 228640
+    },
+    "host_vmstat": {
+     "workingset_refault_file": 3354256801,
+     "pgmajfault": 53025872,
+     "pgsteal_kswapd": 3423376487,
+     "pgsteal_direct": 47792179,
+     "pgscan_kswapd": 3801098110,
+     "pgscan_direct": 67326523
+    },
+    "host_meminfo": {
+     "MemFree_kb": 229912,
+     "MemAvailable_kb": 28703988,
+     "Cached_kb": 27722896,
+     "Active(file)_kb": 11533944,
+     "Inactive(file)_kb": 16631868
+    },
+    "hot_kept_residency": {
+     "pages": 390609,
+     "mapped_pages": 301695,
+     "pagecache_pages": 323374,
+     "mapped_pct": 77.2371,
+     "pagecache_pct": 82.7871
+    },
+    "hot_coalesced_residency": {
+     "pages": 3513401,
+     "mapped_pages": 301695,
+     "pagecache_pages": 2336163,
+     "mapped_pct": 8.587,
+     "pagecache_pct": 66.4929
+    },
+    "hot_raw_sidecar_residency": {
+     "pages": 390609,
+     "mapped_pages": 301695,
+     "pagecache_pages": 323374,
+     "mapped_pct": 77.2371,
+     "pagecache_pct": 82.7871
+    },
+    "full_touched_residency": {
+     "pages": 1855728,
+     "mapped_pages": 301695,
+     "pagecache_pages": 1327678,
+     "mapped_pct": 16.2575,
+     "pagecache_pct": 71.5449
+    }
+   },
+   "serve_after_release": {
+    "n_queries": 40,
+    "empty_results": 0,
+    "host_vmstat_delta": {
+     "workingset_refault_file": 878825,
+     "pgmajfault": 89858,
+     "pgsteal_kswapd": 880589,
+     "pgsteal_direct": 0,
+     "pgscan_kswapd": 883684,
+     "pgscan_direct": 0
+    },
+    "host_meminfo_end": {
+     "MemFree_kb": 278504,
+     "MemAvailable_kb": 28683576,
+     "Cached_kb": 27654284,
+     "Active(file)_kb": 11564260,
+     "Inactive(file)_kb": 16533364
+    },
+    "p50_ms": 702.77,
+    "p95_ms": 2167.43,
+    "max_ms": 2858.65,
+    "majflt": 89675,
+    "wall_s": 34.18,
+    "vm": {
+     "vmrss_kb": 11556096,
+     "rssanon_kb": 1191544,
+     "rssfile_kb": 10364552,
+     "rssshmem_kb": 0,
+     "vmswap_kb": 0
+    }
+   },
+   "checks": {
+    "a_released_vs_residue": {
+     "released_bytes": 29236578344,
+     "residue_bytes": 8955502592,
+     "ratio": 3.2646,
+     "pass": false,
+     "note": "released_bytes counts advised (resident or not) bytes; see released_bytes_def \u2014 the RssFile drop in (b) is the physical quantity"
+    },
+    "b_rssfile_drop_vs_residue": {
+     "rssfile_pre_bytes": 10200539136,
+     "rssfile_post_bytes": 3132235776,
+     "drop_bytes": 7068303360,
+     "residue_bytes": 8955502592,
+     "ratio": 0.7893,
+     "pass": false,
+     "slab_rss_drop_kb": {
+      "forward_data.bin": 6902644,
+      "forward_offsets.bin": 0,
+      "posting_lists.bin": 0,
+      "document_mapping_strings.bin": 0,
+      "document_mapping_offsets.bin": 0
+     }
+    },
+    "c_hot_kept_stays_mapped": {
+     "pre_mapped_pct": 77.818,
+     "post_mapped_pct": 77.2371,
+     "ratio": 0.9925,
+     "pass": true,
+     "pre_pagecache_pct": 83.3898,
+     "post_pagecache_pct": 82.7871
+    },
+    "serves_after_release": {
+     "pass": true
+    },
+    "tolerance_frac": 0.2
+   },
+   "subprocess_rc": 0
+  }
+ },
+ "fixed_vs_control_overlap_at_10": 1.0
+}

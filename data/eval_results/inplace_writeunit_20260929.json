@@ -1,0 +1,239 @@
+{
+  "meta": {
+    "what": "W1 write-unit structural measurement (supplementary, arm A2b); not an efficacy result",
+    "definition_source": "docs/delta_ingest/06_INPLACE_SPIKE_PLAN.md Addendum 2026-09-29 (second), d4ba6b87",
+    "measured_utc": "2026-09-29 21:48",
+    "shard_dir": "/home/vscode/work/inplace_update/stage1/v2copy",
+    "source_dir": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap",
+    "manifest_identical_to_source": true,
+    "posting_lists_bytes": 1159211728,
+    "posting_lists_sha256_first16MiB": "bc06d0ceae8eca2d79d7ef3cd4360721557f5a5f9603ce27d9280fd56d79e724",
+    "layout_walks_agree": [
+      "mmap_io.rs read_posting_lists (mirrored)",
+      "spike/inplace_update/shard.py ShardView._layout"
+    ],
+    "seconds": 36.9,
+    "live_index_guard": [
+      {
+        "tag": "w1-start",
+        "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+        "data/seismic_150m": {
+          "files": 320,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        },
+        "/var/tmp/seismic_stage": {
+          "files": 96,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        }
+      },
+      {
+        "tag": "w1-end",
+        "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+        "data/seismic_150m": {
+          "files": 320,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        },
+        "/var/tmp/seismic_stage": {
+          "files": 96,
+          "missing_or_changed": 0,
+          "new_or_changed": 0
+        }
+      }
+    ]
+  },
+  "counts": {
+    "n_lists": 28702,
+    "n_empty_lists": 2089,
+    "n_nonempty_lists": 26613,
+    "n_blocks": 3206978,
+    "n_summary_entries": 295726272,
+    "lists_with_ge2_blocks": 23575,
+    "summaries_ids_width_hist": {
+      "0": 3038,
+      "1": 762,
+      "2": 1031,
+      "3": 1440,
+      "4": 2208,
+      "5": 2795,
+      "6": 3385,
+      "7": 3532,
+      "8": 3364,
+      "9": 5058
+    },
+    "lists_dense_offsets": 9447,
+    "lists_sparse_offsets_component_ids": 17166
+  },
+  "bytes_per_list": {
+    "packed_postings": {
+      "n": 26613,
+      "min": 8.0,
+      "p50": 4960.0,
+      "p90": 42000.0,
+      "p99": 42000.0,
+      "max": 42000.0,
+      "total": 322889272.0,
+      "mean": 12132.764889339796
+    },
+    "block_offsets": {
+      "n": 26613,
+      "min": 16.0,
+      "p50": 400.0,
+      "p90": 3352.0,
+      "p99": 3720.0,
+      "max": 3872.0,
+      "total": 25868728.0,
+      "mean": 972.0335174538759
+    },
+    "summary_section_payload": {
+      "n": 26613,
+      "min": 60.0,
+      "p50": 15658.0,
+      "p90": 94506.19999999998,
+      "p99": 113992.68000000001,
+      "max": 134057.0,
+      "total": 810166038.0,
+      "mean": 30442.491940029307
+    },
+    "summary_section_span_incl_padding": {
+      "n": 26613,
+      "min": 72.0,
+      "p50": 15664.0,
+      "p90": 94516.79999999999,
+      "p99": 113999.04000000001,
+      "max": 134064.0,
+      "total": 810386880.0,
+      "mean": 30450.79021530831
+    },
+    "whole_list_span": {
+      "n": 26613,
+      "min": 96.0,
+      "p50": 21528.0,
+      "p90": 138494.4,
+      "p99": 159572.16000000003,
+      "max": 179736.0,
+      "total": 1159144880.0,
+      "mean": 43555.58862210198
+    },
+    "summary_parts_total": {
+      "ef_high": 90381992,
+      "inventories": 21225940,
+      "ef_low": 15486304,
+      "summaries_ids": 305151904,
+      "values": 295726272,
+      "minimums": 12827912,
+      "quants": 12827912,
+      "component_ids": 56537802,
+      "padding": 220842
+    }
+  },
+  "bytes_per_block": {
+    "packed_postings": {
+      "n": 3206978,
+      "min": 8.0,
+      "p50": 72.0,
+      "p90": 192.0,
+      "p99": 480.0,
+      "max": 41736.0,
+      "total": 322889272.0,
+      "mean": 100.68334488106872
+    },
+    "block_offsets": {
+      "each": 8,
+      "total": 25655824,
+      "note": "plus one terminal usize per non-empty list"
+    },
+    "summary_attributable": {
+      "n": 3206978,
+      "min": 14.0,
+      "p50": 160.0,
+      "p90": 358.0,
+      "p99": 686.75,
+      "max": 2834.0,
+      "total": 626419834.5,
+      "mean": 195.33025624123397
+    },
+    "summary_entries": {
+      "n": 3206978,
+      "min": 4.0,
+      "p50": 75.0,
+      "p90": 172.0,
+      "p99": 337.0,
+      "max": 1529.0,
+      "total": 295726272.0,
+      "mean": 92.2133772043338
+    }
+  },
+  "separability_evidence": {
+    "block_entry_span_fraction_of_list_summary": {
+      "n": 3203940,
+      "min": 0.0885197198896535,
+      "p50": 0.974003280478563,
+      "p90": 0.9940276835046031,
+      "p99": 0.9987738113979575,
+      "max": 1.0,
+      "total": 3080842.410767164,
+      "mean": 0.9615793088407286
+    },
+    "blocks_with_contiguous_entries": 0,
+    "blocks_with_entries_in_ge2_block_lists": 3203940,
+    "share_contiguous": 0.0,
+    "lists_whose_entries_interleave_blocks": 23575,
+    "component_runs_touched_per_block": {
+      "n": 3206978,
+      "min": 4.0,
+      "p50": 75.0,
+      "p90": 172.0,
+      "p99": 337.0,
+      "max": 1529.0,
+      "total": 295726272.0,
+      "mean": 92.2133772043338
+    },
+    "summary_bytes_after_a_blocks_first_entry": {
+      "n": 3203940,
+      "min": 76.5,
+      "p50": 63741.5,
+      "p90": 90580.25,
+      "p99": 101383.75,
+      "max": 115971.875,
+      "total": 181108319306.625,
+      "mean": 56526.7512208796
+    },
+    "reading": "each summary entry is one (component, block) pair stored in the run of its component; a block's entries are spread over as many component runs as it has entries. span_fraction = (last - first + 1) / values_len of the list."
+  },
+  "code_facts": [
+    "Summary layout is component-major: entries of component c occupy positions offsets.select(c)..offsets.select(c+1) (sparse: via component_ids index i; dense: select(c) - c) of values[] and summaries_ids[]; summaries_ids[p] is the block id of entry p (src/mmap_index.rs MmapQuantizedSummary::distances; src/quantized_summary.rs distances).",
+    "offsets is ONE Elias-Fano sequence per list over all components (dense: dim+1 = 28,703 values; sparse: component_ids_len+1), with a DArray/Inventories select index (src/mmap_io.rs read_posting_lists; manifest ef_* / inv_* fields).",
+    "summaries_ids is ONE fixed-width bitfield per list, width = bits(n_blocks - 1); values is one u8 array per list; minimums/quants are per-block f32 arrays indexed by block id.",
+    "Whether a list uses dense offsets or component_ids is chosen per list by a size comparison (src/quantized_summary.rs space_usage for sparse vs dense offset strategy).",
+    "Packed postings of block b are packed_postings[bo[b]..bo[b+1]]; block_offsets is a dense prefix array of usize, the end of block b is the start of block b+1 (src/mmap_index.rs block_slice).",
+    "No on-disk field names a list: the reader derives every list's slices at load time by walking the manifest's per-list lengths with alignment padding (src/mmap_io.rs read_posting_lists); the manifest is JSON and the resulting &'static slices are fixed for the process lifetime."
+  ],
+  "separable": {
+    "block_summary": false,
+    "why": [
+      "Re-encoding one block's summary (the build recomputes its alpha-mass component set and its u8 quantisation) inserts or removes (component, block) entries in the middle of the list's component-major values[] / summaries_ids[] arrays whenever the block's component set changes, which shifts every later entry and changes the list's Elias-Fano offsets from that component on.",
+      "Adding a component the list's summary does not yet carry also changes component_ids (sparse lists) and can flip the list between the dense and sparse offset strategies.",
+      "A block's new block count or posting count is not representable either: summaries_ids width depends on the list's block count, and block_offsets is a prefix array.",
+      "Only a same-component-set requantisation is fixed-width (the block's u8 values + its f32 min/quant), but those u8 values are scattered over the block's component runs (separability_evidence) and it is not what the build does when the component set changes."
+    ],
+    "block_postings": "contiguous slice, but not relocatable alone: its extent is two neighbouring entries of a dense prefix array (block_offsets[b], block_offsets[b+1])"
+  },
+  "data_consistent_with_code_verdict": true,
+  "write_unit": "LIST",
+  "rule": "BLOCK if separable, else LIST (plan 06 second addendum)",
+  "offset_flip": {
+    "LIST": {
+      "on_disk_offsets_naming_a_list_in_v2": 0,
+      "finding": "no single 8-byte store can publish a rewritten list in the v2 format: a list's location is the prefix sum of manifest lengths (JSON), computed once at load",
+      "consequence": "A2b needs an indirection table in format v3: one fixed-width, 8-byte-aligned offset per list (plus a self-describing unit header carrying the list's ~23 manifest scalars and a checksum), read by the decoder at query time"
+    },
+    "BLOCK": {
+      "offsets_naming_a_block": "postings: 2 entries of the dense block_offsets prefix array (bo[b], bo[b+1]; shared with the neighbours); summary: its entries' positions inside per-component Elias-Fano runs + the summaries_ids bitfield",
+      "flippable_in_place": false,
+      "finding": "the offsets that name a block are inside a dense prefix array and an Elias-Fano sequence; neither can be flipped by one aligned 8-byte store"
+    }
+  }
+}

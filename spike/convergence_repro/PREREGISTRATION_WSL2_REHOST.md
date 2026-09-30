@@ -195,6 +195,169 @@ one-shot rule).
 4. **§5 calibration executed** and recorded here.
 5. **§7 bars frozen** in their own commit, after 1–4.
 
+### §6 gap 1 RECORD 2026-09-29 — F5 `.so` rebuilt (portable) and verified on the real stack; served binary NOT swapped
+
+**Status of gap 1: BUILT + MECHANISM MEASURED (uncapped). The swap of the
+served binary remains an operator decision.** This is NOT the §5 check 3
+calibration record (that cell is "F5 classic at 16 GB"; this container has no
+cgroup write access, no docker, no systemd-run, so no cell can be capped).
+
+**Build (commit `4e1ae681`).** Fork `spike/seismic_upstream` @ `2c4d863`,
+`RUSTFLAGS='-C target-cpu=x86-64-v3' .venv/bin/maturin build --release -i
+.venv/bin/python3` (build, not develop). rustc/cargo 1.101.0-nightly
+(d080e7dff 2026-09-27; `rust-toolchain.toml` channel=nightly), maturin
+1.14.1. Wheel + full record: `spike/convergence_repro/build/`
+(`pyseismic_lsr-0.4.0-cp311-x86_64-v3-fork2c4d863.whl`, `BUILD_RECORD.txt`).
+sha256 rebuilt `.so` `b0c322d2…ebb726`; served `.so` (untouched, installed
+2026-08-10, pre-fix hook) `62639335…c21d6c6`. SIMD profile objdump: rebuilt
+82 vfmadd / 13,965 ymm / 0 zmm (the doc 10 §7.7 v3 profile), served 118 /
+15,434 / 0. Rust synthetic proof `cargo test --no-default-features --lib
+release_pages_except_covers_all_slabs`: **PASS**, dotvbyte 9,600 → 42,554 B
+(4.43×), f16 4,200 → 41,354 B (9.85×) — the numbers gap 1 predicted.
+
+**Verification (commit `a9f247fb`).** Driver
+`spike/convergence_repro/wslrh_f5_gap1_verify.py`; results
+`data/eval_results/wslrh_f5_gap1_verify_2026-09-29.json`. Four arms, each its
+own process under `flock /tmp/sfu_latency_measure.lock`, the 8 served dv-v2
+shards, `SFU_SEISMIC_PREFLOOR_HOTSET=1`, the 40 pre-encoded e7b queries; the
+rebuilt `.so` loaded by `sys.path` prepend (served file never touched).
+Residency measured on the `.so`'s own mappings: `mapped_pct` =
+`/proc/self/pagemap` present bit (what `MADV_DONTNEED` drops),
+`pagecache_pct` = `mincore` (what a cap would evict); per-slab Rss from
+`/proc/self/smaps`. RssFile/drop figures below are GB = 1e9 B from the JSON.
+
+| arm | keep-set passed to the hook | release point | RssFile pre → post (drop) | residue outside keep-set | (b) drop/residue | structural slabs Rss pre → post | (c) keep-set mapped pre → post | serves |
+|---|---|---|---|---|---|---|---|---|
+| `fixed` (rebuilt) | backend-coalesced hot50, **14.39 GB** | at load, before pass 1 (§3 protocol) | 14.345 → 14.345 (**0.000**) | 0.276 (non-slab files) | — (nothing to drop) | 0 → 0 | 97.76 → 97.76 % | 40/40 |
+| `control` (served) | same 14.39 GB | same | 14.560 → 14.450 (0.110) | 0.386 | 0.28 | 0 → 0 | 98.49 → 98.49 % | 40/40 |
+| `fixed_raw_warm1` (rebuilt) | RAW hot50 sidecar extents, **1.60 GB** | after 1 query pass | 9.718 → 1.478 (**8.239**) | 8.516 | **0.968 PASS** | 0.520 + 0.603 + 0.234 → **0 + 0 + 0** | 75.09 → 75.09 % | 40/40 |
+| `control_raw_warm1` (served) | same 1.60 GB | after 1 query pass | 10.201 → 3.132 (7.068) | 8.956 | 0.789 FAIL | 0.521 + 0.603 + 0.234 → **unchanged** | 77.82 → 77.24 % | 40/40 |
+
+Per-slab advised bytes returned by the hook (rebuilt, warm arm): forward
+29.237, forward_offsets 1.203, postings 9.275, doc_strings 1.654,
+doc_offsets 1.203 GB (= every slab the reader maps; served arm: forward only).
+`write_status=ok`, elapsed 0.01 s (load arms) / 1.1–1.2 s (warm arms).
+Rebuilt-v3 vs served top-10 overlap@10 = **1.0000** (parity, as doc 10 §7.7).
+
+**What this establishes.**
+
+1. **The scope fix does what it claims on the real stack.** With
+   query-touched pages resident, the rebuilt hook takes all three structural
+   slabs (1.36 GB) to zero; the served hook leaves them untouched. RssFile
+   drop 8.239 vs 7.068 GB. The keep-set is not disturbed by either hook.
+2. **The 2026-07-14 "released 16.45 GB, RssFile unchanged" null is fully
+   explained.** The hook's return value is *advised* bytes (slab minus
+   keep-set, resident or not): today's served arm returns 16,445,622,312 B,
+   byte-identical to the 2026-07-14 cell's `released_gb 16.446`. At load,
+   under this load path, the ONLY resident slab pages are the keep-set
+   (forward Rss 14.069 GB = the keep-set's 3,434,850 mapped pages × 4 KiB
+   exactly; structural Rss 0), so there was nothing outside it to release.
+   §5 check 3 (a) as written ("released bytes ≈ footprint − hot set")
+   cannot pass with this accounting; the physical quantity is the
+   per-slab RssFile drop in (b). At freeze, re-word (a) to "per-slab RssFile
+   drop ≈ resident residue" or teach the hook to count resident pages only.
+3. **The keep-set the production path prefaults is ~9× the hot set.**
+   `_coalesce_extents` (2048-extent cap, gap escalating to 4096 pages) turns
+   hot50's 48,825 raw pages/shard into ~440k pages/shard: **14.39 GB
+   prefaulted across 8 shards while the backend logs "touched 1.60 GB"**.
+   Passing that coalesced set to F5 keeps all 14.39 GB. Passing the RAW
+   sidecar extents (`fixed_raw_warm1`; `MADV_DONTNEED` needs no VMA split, so
+   the extent cap does not apply to the release call) keeps 1.60 GB and
+   releases the gap filler. The §3 F5 arm must say which set it passes; the
+   raw set is the one that matches "evict the residue by name".
+4. **"Uncapped" on this host is not pressure-free.** MemFree sat at
+   ~0.24 GB with Cached ~28.4 GB through the warm arms; kswapd stole 2.44M
+   pages (≈10 GB) during the control warm pass and 0.88M during its serve
+   pass (`host_vmstat_delta`, recorded for the last arm only — the counter
+   hook was added mid-run), and the raw hot set's page-cache residency fell
+   100 % → 83 % over one query pass. The 27–28 GB page cache is the
+   effective ceiling; §4's rungs are still required for any latency claim,
+   and no latency here is a bar input (cold-pass p50 0.7–2.9 s, majflt
+   90k–250k, recorded not concluded).
+
+**What remains for gap 1.** The operator's swap of the served `.so`
+(install the wheel into `.venv`, or copy the `.so` over
+`.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so`
+after backing up `62639335…`), then a re-run of this driver with
+`--arms control` to confirm the served binary now carries the by-slab hook.
+The §5 check 3 cell itself still needs a host with a cgroup cap. Gap 2's
+`--f5-release-except` flag should pass the RAW sidecar extents and record
+the per-slab breakdown, per findings 2–3 above.
+
+### §6 gaps 2–3 RECORD 2026-09-29
+
+**Status of the two harness gaps: CLOSED IN CODE, UNEXERCISED ON AN INDEX.
+No cell ran. This dev container cannot cap memory** (read-only cgroup v2 —
+`/sys/fs/cgroup` is not writable, `memory.max` reads `max`; no docker
+daemon; no `systemd-run`; uid 1000, `/sys/kernel/mm/lru_gen/enabled` not
+writable), so nothing in §5, §7 or §10 is any closer to being judgeable
+than it was on 2026-09-25. Gap 1 (the F5 `.so` rebuild) is a separate
+agent's commit and is not claimed here; the served `.venv` binary at the
+time of this record still exposes only the pre-fix
+`MmapSeismicIndex.release_pages_except` (no `release_pages_except_by_slab`),
+which the driver detects and names.
+
+- **Gap 2 — driver:** `scripts/seismic_testbed/wslrh_convergence_ladder.py`
+  (commit `3be3b82b`). Clone of the judged `r2_convergence_ladder.py`; the L0
+  path (load, 40-query mix, convergence rule, per-pass record, exit 3 on
+  empty results, VmSwap rule) is unchanged so R2 cells stay comparable.
+  Adds `--arm` (verified against `lru_gen/enabled`, exit 4 on mismatch — N8),
+  `--postload-reclaim-bytes` (L3, the `t23_convergence_ladder.py`
+  `memory.reclaim` write verbatim), `--f5-release-except <sidecar>` (F5:
+  after load, before pass 1, `release_pages_except(<hot extents>)` on every
+  shard, keeping exactly the extents `prefault_hotset()` prefaulted from
+  that sidecar — same budget clamp, same `_coalesce_extents`, imported from
+  the backend), and the §9 `rehost` block with the figure-8
+  `classification`. The F5 and L3 blocks carry one key set —
+  `requested_bytes`, `freed_bytes` (`memory.current` delta), `write_status`,
+  `pre_gauges`/`post_gauges`, `elapsed_s`, `rssfile_pre`/`rssfile_post`
+  (bytes), `hot_resident_pct_pre`/`_post` (mincore(2) over the kept hot
+  extents of each shard's `forward_data.bin`) — so W7 is a field-for-field
+  comparison; F5 additionally records `released_bytes` (the hook's return),
+  the per-slab breakdown, and `scope` (`all_slabs` only when the served
+  `.so` carries the 2026-08-31 fix; `forward_slab_only_prefix_hook` marks a
+  cell that reproduces the 2026-07-14 NULL scope). A missing / mismatched
+  sidecar exits 5. Constraints recorded in
+  `docs/CODE_INVARIANTS_SCRIPTS.md` (the script is comment-free).
+- **Gap 3 — orchestrator:** `spike/convergence_repro/wslrh_orchestrator.sh`
+  (this commit). Clone of `t1d_wsl2_orchestrator.sh` / t23b / sml with two
+  cap mechanisms (`CAP_MECH=docker`: memory-capped sibling container from
+  the Windows host, the R2 mechanism, sysfs via a privileged throwaway;
+  `CAP_MECH=systemd`: `systemd-run --scope -p MemoryMax -p MemorySwapMax=0`
+  as root in the distro, `/mnt/*` refused) and a **startup gate that aborts
+  with a clear message when neither exists** — an uncapped cell is never run
+  silently. Per-cell: spec `lever:arm:capGB:rep[:bytes]` validated for the
+  whole list before any cell (N1: only the §4 rungs; L3 must carry its
+  bytes), deadline shed, any-date SKIP resume (quarantined files do not
+  count as done), arm toggle asserted after the write, `drop_caches`,
+  `CELL_TIMEOUT=2400` fixed with no override (N5; a shed keeps its
+  `.log`/`.status` as the readout), N8 verification on the result file
+  (`probe`, `lever`, `prefault_gate`, `arm`, `lru_gen_enabled` readback,
+  `cgroup_memory_max` = cap in bytes, F5 `write_status: ok` + `scope:
+  all_slabs` + nonzero `released_bytes`, L3 `requested_bytes` = spec bytes)
+  with `.PROTOVIOLATION.json` quarantine-and-abort (exit 5), the §8 N6 swap
+  check (`swap_confounded: true` → `.SWAPQUARANTINE.json`, excluded; second
+  occurrence aborts, exit 6), N3 lock file, and the N4 trap that restores
+  `lru_gen=0x0007` on every exit path and asserts the readback. Default
+  `CELLS` = the §5 calibration list as written (10, 13, 22, F5-16, 11, 12 —
+  six single cells; §11's "5" undercounts by one).
+
+**What was smoke-tested, and how (nothing touched the index):**
+
+| check | method | result |
+|---|---|---|
+| driver `--help`, `py_compile`, no `#` comments | direct | pass |
+| driver F5 / L3 / L0 paths, exits 2/4/5, classifier | `scripts/tests/test_wslrh_convergence_ladder.py` — backend, cgroup dir and `lru_gen` file mocked; a temp shard dir with a real `forward_data.bin` + `seismic.hotset.v1` sidecar; fake index exposing the pre-fix and the fixed hook surfaces | 8 passed (1.2 s) |
+| orchestrator syntax, `--help` | `bash -n`, direct | pass (shellcheck not installed here) |
+| orchestrator startup on this host | real invocation, `CAP_MECH=auto` | aborted at the cap gate, exit 1, zero files written under `data/eval_results/` |
+| spec validation | `DRY_RUN=1` with off-list rung 15 and 30, unknown lever/arm, L3 without bytes, non-L3 with bytes | all six named, exit 2 |
+| plan + any-date SKIP + quarantine glob | `DRY_RUN=1` against a scratch eval dir holding a dated result, a `.PROTOVIOLATION.json` and a `.SWAPQUARANTINE.json` | dated result SKIPped, the two quarantined stems re-planned, L3/F5 args and `memory.max` expectations printed |
+
+**Still open before freeze:** §6 gap 1 on the *served* binary (separate
+commit), then §6 gap 4 (the §5 calibration window, which needs a capping
+host — the Windows-host docker path or root in the distro — and this
+container is neither), then gap 5.
+
 ---
 
 ## 7. Bars (TO BE FROZEN after §5 — drafted intent only)

@@ -174,6 +174,21 @@ was first written and bear on it two ways:
    > `docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md`, R1 "F5 release-except
    > cell" entry. The synthetic early-sort arm testing the same claim under a
    > controlled residue is `spike/convergence_repro/PREREGISTRATION_EARLYSORT.md`.
+   >
+   > **ADDENDUM 2026-09-29 — MEASURED on the real stack (uncapped mechanism
+   > check, served binary NOT swapped):** the fork `2c4d863` `.so` was rebuilt
+   > portable (x86-64-v3) and run against the 8 served shards vs the served
+   > pre-fix `.so`. After one query pass the fixed hook takes all three
+   > structural slabs (1.36 GB) to Rss 0 and drops RssFile 8.24 of 8.52 GB
+   > residue (0.968); the served hook drops 7.07 GB (0.789) and leaves the
+   > structural slabs untouched. The 2026-07-14 "released 16.45 GB" is
+   > reproduced to the byte as *advised* (not resident) forward-slab bytes —
+   > at load nothing outside the prefaulted keep-set was resident, which is
+   > why RssFile did not move. Record, caveats (page cache is the ceiling on
+   > this 31 GB host; not the §5-check-3 capped cell) and what remains:
+   > `spike/convergence_repro/PREREGISTRATION_WSL2_REHOST.md` §6 "gap 1
+   > RECORD 2026-09-29"; JSON
+   > `data/eval_results/wslrh_f5_gap1_verify_2026-09-29.json`.
 4. On the operator question "can we trigger the forced reclaim manually to
    get the benefit without scaling the host": yes — that is F5 (map-guided,
    this repo), or map-blind equivalents documented in production elsewhere

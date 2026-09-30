@@ -1,0 +1,36 @@
+WSL2 re-host §6 gap 1 — portable F5 .so build record (2026-09-29)
+
+Fork:        spike/seismic_upstream @ 2c4d863820a6110ab3da46dd1a7f33ac2b47b40a ("fork: F5 release_pages_except SCOPE FIX")
+Patches:     spike/seismic_upstream_fork.patch + spike/seismic_upstream_f5_scope_fix.patch
+Toolchain:   cargo 1.101.0-nightly (3d7cf6e93 2026-09-25);rustc 1.101.0-nightly (d080e7dff 2026-09-27); (rust-toolchain.toml channel=nightly; auto-installed by rustup on 2026-09-29)
+maturin:     maturin 1.14.1
+Python:      Python 3.11.2 (.venv)
+
+Rust test (synthetic proof), run 2026-09-29:
+  cd spike/seismic_upstream && cargo test --no-default-features --lib release_pages_except_covers_all_slabs -- --nocapture --test-threads=1
+  test mmap_io::tests::release_pages_except_covers_all_slabs ... Distributing and pruning postings: 0 secs
+  F5 scope (dotvbyte): per-slab [("forward_data", 9600), ("forward_offsets", 4808), ("postings", 19848), ("doc_strings", 3490), ("doc_offsets", 4808)]
+  F5 scope (dotvbyte): BEFORE (forward slab only) = 9600 B, AFTER (all slabs) = 42554 B, 4.43x
+  F5 scope (f16): per-slab [("forward_values", 4200), ("forward_components", 4200), ("forward_offsets", 4808), ("postings", 19848), ("doc_strings", 3490), ("doc_offsets", 4808)]
+  F5 scope (f16): BEFORE (forward slab only) = 4200 B, AFTER (all slabs) = 41354 B, 9.85x
+  test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.04s
+
+Build (portable, NEVER target-cpu=native):
+  cd spike/seismic_upstream && RUSTFLAGS='-C target-cpu=x86-64-v3' .venv/bin/maturin build --release -i .venv/bin/python3 --out <scratch>/wheel_v3
+  (build, not develop — the served .so is never touched)
+
+Artifacts:
+  wheel (this dir):  pyseismic_lsr-0.4.0-cp311-x86_64-v3-fork2c4d863.whl
+    bd98b8258aa32c78336b958c27d1b03685692eebcb64ef5dbab65e85074ec0b0  wheel_v3/pyseismic_lsr-0.4.0-cp311-cp311-manylinux_2_34_x86_64.whl
+    b0c322d24e153787703de0947fb5d3a82fbf9982a327d0d7a285658f25ebb726  f5so/seismic/seismic.cpython-311-x86_64-linux-gnu.so
+  served .so (UNTOUCHED, pre-fix hook, installed 2026-08-10 21:51):
+    62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6  .venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so
+
+Rebuilt .so checks: import OK via sys.path prepend; MmapSeismicIndex.release_pages_except(self, pinned_extents, keep_structural=False); release_pages_except_by_slab PRESENT.
+SIMD profile (objdump): rebuilt vfmadd=82 ymm=13965 zmm=0 (matches doc 10 §7.7 v3 profile); served vfmadd=118 ymm=15434 zmm=0.
+
+Side-load package layout (what the harness prepends to sys.path):
+  <dir>/seismic/__init__.py   -> "from .seismic import *"
+  <dir>/seismic/seismic.cpython-311-x86_64-linux-gnu.so   (unzipped from the wheel)
+
+The SWAP of the served binary is an operator decision (not done here).

@@ -269,3 +269,135 @@ class TestPreseedCollection:
         assert h1 is False, "first call should be a miss"
         assert h2 is True, "second call should hit (idempotent re-prime)"
         assert same, "cached response must be byte-identical to the fresh one"
+
+
+def _key_at_46ec1182(args, stamp=None, tc=None):
+    """Verbatim pre-change recipe (make_cache_key + _manifest_stamp at commit
+    46ec1182) with the retriever lookup inlined; the gate-off oracle."""
+    def manifest_stamp():
+        try:
+            if tc is None:
+                return "openalex-only"
+            manifest = tc._manifest() or {}
+            built = str(manifest.get("built", "?"))
+            engines = str(manifest.get("engines", "?"))
+            return f"{built}@{engines}"
+        except Exception:
+            return "unknown"
+    q = (args.get("query", "") or "").casefold().strip().strip("'\".,;:!?()[]")
+    parts = [" ".join(q.split())]
+    for fld in ("limit", "page", "year_from", "year_to",
+                "open_access_only", "type", "prefer_local"):
+        parts.append(f"{fld}={args.get(fld, '')}")
+    parts.append(f"stamp={stamp or manifest_stamp()}")
+    return "v1|" + "|".join(parts)
+
+
+class _FakeTC:
+    def __init__(self, manifest, delta=None, has_delta_attr=True):
+        self._m = manifest
+        if has_delta_attr:
+            self._delta = delta
+
+    def _manifest(self):
+        if isinstance(self._m, Exception):
+            raise self._m
+        return self._m
+
+
+_REPRESENTATIVE_ARGS = [
+    {"query": "machine learning", "limit": 10},
+    {"query": "  Machine  Learning! ", "limit": 10, "page": 2},
+    {"query": "climate adaptation", "limit": 50, "year_from": 2015, "year_to": 2020,
+     "open_access_only": True, "type": "article", "prefer_local": True},
+    {"query": "über straße 日本", "limit": 5, "client": "curl"},
+    {"query": "", "limit": 0},
+    {"query": "q"},
+]
+
+
+def _install_tc(monkeypatch, tc):
+    import types
+    fake = types.ModuleType("lib.tools")
+    fake._get_thinclient_retriever = lambda: tc
+    monkeypatch.setitem(sys.modules, "lib.tools", fake)
+
+
+class TestDeltaStampR1:
+    """R1 (docs/delta_ingest/02_DESIGN.md): the key carries the delta layer's
+    identity when SFU_DELTA_ROOT loaded one, and is byte-identical otherwise."""
+
+    @pytest.mark.parametrize("tc_kind", ["none", "no_delta_attr", "delta_none", "manifest_raises",
+                                         "empty_manifest"])
+    def test_gate_off_keys_byte_identical_to_46ec1182(self, monkeypatch, tc_kind):
+        manifest = {"built": "2026-07-06T00:00:00", "engines": {"sparse": "seismic"}}
+        tc = {"none": None,
+              "no_delta_attr": _FakeTC(manifest, has_delta_attr=False),
+              "delta_none": _FakeTC(manifest, delta=None),
+              "manifest_raises": _FakeTC(RuntimeError("boom")),
+              "empty_manifest": _FakeTC({})}[tc_kind]
+        _install_tc(monkeypatch, tc)
+        for args in _REPRESENTATIVE_ARGS:
+            for stamp in (None, "explicit-stamp"):
+                new = result_cache.make_cache_key(args, stamp=stamp)
+                old = _key_at_46ec1182(args, stamp=stamp, tc=tc)
+                assert new.encode("utf-8") == old.encode("utf-8"), (tc_kind, args, stamp)
+
+    def _layer(self, root, stamp):
+        from lib.thinclient.delta_layer import DeltaLayer
+        root.mkdir(parents=True, exist_ok=True)
+        (root / "generations.json").write_text(
+            '{"format": 1, "stamp": "%s", "generations": [], "mask": {}}' % stamp)
+        return DeltaLayer(root)
+
+    def test_buffer_path_matches_delta_layer(self):
+        from lib.thinclient.delta_layer import BUFFER_SECTION
+        assert result_cache._DELTA_BUFFER_FILES[2][1] == BUFFER_SECTION
+
+    def test_delta_on_key_carries_stamp_and_differs_from_gate_off(self, monkeypatch, tmp_path):
+        manifest = {"built": "b", "engines": "e"}
+        layer = self._layer(tmp_path / "delta", "g0001-1000")
+        _install_tc(monkeypatch, _FakeTC(manifest, delta=layer))
+        args = {"query": "q", "limit": 10}
+        on = result_cache.make_cache_key(args)
+        off = _key_at_46ec1182(args, tc=_FakeTC(manifest, delta=None))
+        assert on != off
+        assert on.startswith(off + "@delta=g0001-1000#")
+        assert result_cache.make_cache_key(args) == on, "unchanged layer must keep hitting"
+
+    def test_publish_and_reload_rotates_key(self, monkeypatch, tmp_path):
+        manifest = {"built": "b", "engines": "e"}
+        args = {"query": "q", "limit": 10}
+        tc = _FakeTC(manifest, delta=self._layer(tmp_path / "delta", "g0001-1000"))
+        _install_tc(monkeypatch, tc)
+        k1 = result_cache.make_cache_key(args)
+        tc._delta = self._layer(tmp_path / "delta", "g0002-1005")
+        k2 = result_cache.make_cache_key(args)
+        tc._delta = self._layer(tmp_path / "delta", "g0002-1005")
+        k3 = result_cache.make_cache_key(args)
+        assert len({k1, k2, k3}) == 3, "a new generation, and a same-second republish, must both rotate"
+
+    def test_buffer_writes_rotate_key(self, monkeypatch, tmp_path):
+        import os as _os
+        root = tmp_path / "delta"
+        layer = self._layer(root, "g0001-1000")
+        _install_tc(monkeypatch, _FakeTC({"built": "b", "engines": "e"}, delta=layer))
+        args = {"query": "q", "limit": 10}
+        keys = [result_cache.make_cache_key(args)]
+        (root / "ledger.sqlite").write_bytes(b"x" * 10)
+        keys.append(result_cache.make_cache_key(args))
+        (root / "ledger.sqlite-wal").write_bytes(b"y")
+        keys.append(result_cache.make_cache_key(args))
+        meta = root / "buffer" / "delta_buffer" / "tantivy" / "meta.json"
+        meta.parent.mkdir(parents=True)
+        meta.write_text("{}")
+        keys.append(result_cache.make_cache_key(args))
+        _os.utime(meta, ns=(1, 1))
+        keys.append(result_cache.make_cache_key(args))
+        assert len(set(keys)) == len(keys), keys
+
+    def test_delta_stamp_never_raises(self, tmp_path):
+        class Bare:
+            pass
+        s = result_cache._delta_stamp(Bare())
+        assert s.startswith("-#") and s.endswith("~-,-,-")

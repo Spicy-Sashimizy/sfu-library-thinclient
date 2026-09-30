@@ -1,0 +1,7921 @@
+{
+ "meta": {
+  "harness": "scripts/experiments/eval_inplace_bench.py",
+  "plan": "docs/delta_ingest/06_INPLACE_SPIKE_PLAN.md (frozen bars + addenda 1-4)",
+  "updater": "spike/inplace_update/updater (UPDATER_DESIGN.md)",
+  "git_head": "dfc06e6e283ed27f011266a230bb7f4327f6a7d4",
+  "written_utc": "2026-09-30T21:20:53.239294+00:00"
+ },
+ "B2": {
+  "bar": "B2 apply cost",
+  "host_before": {
+   "loadavg": [
+    2.31640625,
+    1.44677734375,
+    0.90771484375
+   ],
+   "nproc": 16,
+   "lock_note": "run under flock /tmp/sfu_latency_measure.lock (caller)"
+  },
+  "batch": "/home/vscode/work/inplace_update/stage2/docs/q1.sfubat",
+  "reps": 3,
+  "arms": {
+   "A2": {
+    "reps": [
+     {
+      "arm": "A2",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 13.29454973,
+      "plan_s": 3.231848404,
+      "logical_bytes": 34793104,
+      "write_ops": 3209320,
+      "wall_s_harness": 14.116816112999913,
+      "device_bytes_ru_oublock": 1280028672,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 1280028672,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 8.736428506,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 7.8063e-05,
+        "write_s": 8.736349793
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.272926964
+      }
+     },
+     {
+      "arm": "A2",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 13.048655639,
+      "plan_s": 2.950327631,
+      "logical_bytes": 34793104,
+      "write_ops": 3209320,
+      "wall_s_harness": 13.681779245999678,
+      "device_bytes_ru_oublock": 1280258048,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 1280258048,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 8.600850404,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 6.8923e-05,
+        "write_s": 8.600780811
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.450350905
+      }
+     },
+     {
+      "arm": "A2",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 14.352216486,
+      "plan_s": 3.20562199,
+      "logical_bytes": 34793104,
+      "write_ops": 3209320,
+      "wall_s_harness": 15.022453517999566,
+      "device_bytes_ru_oublock": 1280389120,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 1280389120,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 9.646842527,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 6.1482e-05,
+        "write_s": 9.646780335
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.452165157
+      }
+     }
+    ],
+    "median_wall_s": 13.29454973,
+    "median_device_bytes": 1280258048,
+    "median_logical_bytes": 34793104,
+    "verdict_vs_A1": "PARTIAL",
+    "wall_ok": true,
+    "bytes_ok": false
+   },
+   "A2b": {
+    "reps": [
+     {
+      "arm": "A2b",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 24771,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 1088655296,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 235.292822271,
+      "plan_s": 3.216378977,
+      "logical_bytes": 1098170392,
+      "write_ops": 74340,
+      "wall_s_harness": 236.15065704900007,
+      "device_bytes_ru_oublock": 2200162304,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 2200162304,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 230.534697495,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 1088655296,
+        "units_written": 24771,
+        "wait_readers_s": 6.5542e-05,
+        "write_s": 230.534631313
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.4906280760000001
+      }
+     },
+     {
+      "arm": "A2b",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 24771,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 1088655296,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 242.736009984,
+      "plan_s": 3.3057152739999998,
+      "logical_bytes": 1098170392,
+      "write_ops": 74340,
+      "wall_s_harness": 243.67825103300038,
+      "device_bytes_ru_oublock": 2200162304,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 2200162304,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 237.938698511,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 1088655296,
+        "units_written": 24771,
+        "wait_readers_s": 7.5702e-05,
+        "write_s": 237.938621949
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.428182075
+      }
+     },
+     {
+      "arm": "A2b",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 1,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 0,
+      "docs_unplaced_no_hole": 32155,
+      "docs_unplaced_no_posting": 0,
+      "postings_offered": 2999413,
+      "postings_inserted": 0,
+      "postings_dropped_capacity": 0,
+      "postings_dropped_unplaced": 2999413,
+      "postings_evicted": 0,
+      "postings_freed": 3184522,
+      "rows_freed": 1139757,
+      "rows_fully_evicted": 0,
+      "lists_touched": 24771,
+      "infl_blocks_raised": 0,
+      "infl_saturated": 0,
+      "blind_components": 0,
+      "blind_mass": 0.0,
+      "a2b_lists_rewritten": 24771,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 1088655296,
+      "heap_reserve": 1159213056,
+      "gap_s": 0.0,
+      "total_s": 236.672165464,
+      "plan_s": 2.934359738,
+      "logical_bytes": 1098170392,
+      "write_ops": 74340,
+      "wall_s_harness": 237.69771711200065,
+      "device_bytes_ru_oublock": 2200293376,
+      "inserted_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "dropped_by_len_decile": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "proc_self_io_write_bytes": 2200293376,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 231.932128556,
+        "marks": 3184522,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 1088655296,
+        "units_written": 24771,
+        "wait_readers_s": 0.000135004,
+        "write_s": 231.931992792
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.7604357130000001
+      }
+     }
+    ],
+    "median_wall_s": 236.672165464,
+    "median_device_bytes": 2200162304,
+    "median_logical_bytes": 1098170392,
+    "verdict_vs_A1": "FAIL",
+    "wall_ok": false,
+    "bytes_ok": false
+   },
+   "A2-2p/old-at-free": {
+    "reps": [
+     {
+      "arm": "A2-2p/old-at-free",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29651,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2504,
+      "postings_offered": 2999413,
+      "postings_inserted": 929614,
+      "postings_dropped_capacity": 2069799,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13276,
+      "postings_freed": 3184522,
+      "rows_freed": 1144112,
+      "rows_fully_evicted": 4355,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 200970,
+      "infl_saturated": 0,
+      "blind_components": 104962266,
+      "blind_mass": 65949074.821598224,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 10.28002711,
+      "total_s": 29.786650565,
+      "plan_s": 6.6246386170000005,
+      "logical_bytes": 58497186,
+      "write_ops": 4440053,
+      "wall_s_harness": 30.667172593999567,
+      "device_bytes_ru_oublock": 2694717440,
+      "inserted_by_len_decile": [
+       65219,
+       62227,
+       64436,
+       53133,
+       46836,
+       48490,
+       41670,
+       38345,
+       37296,
+       471962
+      ],
+      "dropped_by_len_decile": [
+       420138,
+       110690,
+       81703,
+       65015,
+       52902,
+       39064,
+       29313,
+       49504,
+       30975,
+       1190495
+      ],
+      "proc_self_io_write_bytes": 2694717440,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 11.305812121,
+        "marks": 3197798,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 0.000116494,
+        "write_s": 11.305694797
+       },
+       {
+        "epoch": 2,
+        "fills": 929614,
+        "flip_done_at_s": 21.585839231,
+        "marks": 0,
+        "records_written": 29651,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 4.8322e-05,
+        "write_s": 10.002096563
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.510024976
+      }
+     },
+     {
+      "arm": "A2-2p/old-at-free",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29651,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2504,
+      "postings_offered": 2999413,
+      "postings_inserted": 929614,
+      "postings_dropped_capacity": 2069799,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13276,
+      "postings_freed": 3184522,
+      "rows_freed": 1144112,
+      "rows_fully_evicted": 4355,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 200970,
+      "infl_saturated": 0,
+      "blind_components": 104962266,
+      "blind_mass": 65949074.821598224,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 8.244674111,
+      "total_s": 29.298921415,
+      "plan_s": 8.092630998,
+      "logical_bytes": 58497186,
+      "write_ops": 4440053,
+      "wall_s_harness": 30.184577042000456,
+      "device_bytes_ru_oublock": 2694455296,
+      "inserted_by_len_decile": [
+       65219,
+       62227,
+       64436,
+       53133,
+       46836,
+       48490,
+       41670,
+       38345,
+       37296,
+       471962
+      ],
+      "dropped_by_len_decile": [
+       420138,
+       110690,
+       81703,
+       65015,
+       52902,
+       39064,
+       29313,
+       49504,
+       30975,
+       1190495
+      ],
+      "proc_self_io_write_bytes": 2694455296,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 10.246936816,
+        "marks": 3197798,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 8.5023e-05,
+        "write_s": 10.246850073
+       },
+       {
+        "epoch": 2,
+        "fills": 929614,
+        "flip_done_at_s": 18.491610927,
+        "marks": 0,
+        "records_written": 29651,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 4.5722e-05,
+        "write_s": 8.045717307
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 2.640383216
+      }
+     },
+     {
+      "arm": "A2-2p/old-at-free",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29651,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2504,
+      "postings_offered": 2999413,
+      "postings_inserted": 929614,
+      "postings_dropped_capacity": 2069799,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13276,
+      "postings_freed": 3184522,
+      "rows_freed": 1144112,
+      "rows_fully_evicted": 4355,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 200970,
+      "infl_saturated": 0,
+      "blind_components": 104962266,
+      "blind_mass": 65949074.821598224,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 7.771504809000001,
+      "total_s": 25.574962477,
+      "plan_s": 6.664689783,
+      "logical_bytes": 58497186,
+      "write_ops": 4440053,
+      "wall_s_harness": 26.325286842999958,
+      "device_bytes_ru_oublock": 2694590464,
+      "inserted_by_len_decile": [
+       65219,
+       62227,
+       64436,
+       53133,
+       46836,
+       48490,
+       41670,
+       38345,
+       37296,
+       471962
+      ],
+      "dropped_by_len_decile": [
+       420138,
+       110690,
+       81703,
+       65015,
+       52902,
+       39064,
+       29313,
+       49504,
+       30975,
+       1190495
+      ],
+      "proc_self_io_write_bytes": 2694590464,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 9.673308554,
+        "marks": 3197798,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 5.7372e-05,
+        "write_s": 9.673250432
+       },
+       {
+        "epoch": 2,
+        "fills": 929614,
+        "flip_done_at_s": 17.444813363,
+        "marks": 0,
+        "records_written": 29651,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 4.8552e-05,
+        "write_s": 7.565148455
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.3979973
+      }
+     }
+    ],
+    "median_wall_s": 29.298921415,
+    "median_device_bytes": 2694590464,
+    "median_logical_bytes": 58497186,
+    "verdict_vs_A1": "FAIL",
+    "wall_ok": false,
+    "bytes_ok": false
+   },
+   "A2-2p/old-at-fill": {
+    "reps": [
+     {
+      "arm": "A2-2p/old-at-fill",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29635,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2520,
+      "postings_offered": 2999413,
+      "postings_inserted": 925707,
+      "postings_dropped_capacity": 2073706,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13521,
+      "postings_freed": 3184522,
+      "rows_freed": 1144200,
+      "rows_fully_evicted": 4443,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 199945,
+      "infl_saturated": 0,
+      "blind_components": 104543791,
+      "blind_mass": 65697842.08262526,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 9.636764761000002,
+      "total_s": 28.951794854,
+      "plan_s": 6.839759867,
+      "logical_bytes": 58397561,
+      "write_ops": 4435334,
+      "wall_s_harness": 29.747559970999646,
+      "device_bytes_ru_oublock": 2709024768,
+      "inserted_by_len_decile": [
+       64975,
+       62018,
+       64220,
+       52960,
+       46707,
+       48313,
+       41545,
+       38231,
+       37223,
+       469515
+      ],
+      "dropped_by_len_decile": [
+       420382,
+       110899,
+       81919,
+       65188,
+       53031,
+       39241,
+       29438,
+       49618,
+       31048,
+       1192942
+      ],
+      "proc_self_io_write_bytes": 2709024768,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 11.017685591,
+        "marks": 3176283,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 7.0003e-05,
+        "write_s": 11.017614858
+       },
+       {
+        "epoch": 2,
+        "fills": 925707,
+        "flip_done_at_s": 20.654450352,
+        "marks": 21760,
+        "records_written": 29635,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 6.0742e-05,
+        "write_s": 9.289858071
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.3905698
+      }
+     },
+     {
+      "arm": "A2-2p/old-at-fill",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29635,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2520,
+      "postings_offered": 2999413,
+      "postings_inserted": 925707,
+      "postings_dropped_capacity": 2073706,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13521,
+      "postings_freed": 3184522,
+      "rows_freed": 1144200,
+      "rows_fully_evicted": 4443,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 199945,
+      "infl_saturated": 0,
+      "blind_components": 104543791,
+      "blind_mass": 65697842.08262526,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 8.669762717000001,
+      "total_s": 27.553828607,
+      "plan_s": 7.094027312,
+      "logical_bytes": 58397561,
+      "write_ops": 4435334,
+      "wall_s_harness": 28.424268891999418,
+      "device_bytes_ru_oublock": 2709254144,
+      "inserted_by_len_decile": [
+       64975,
+       62018,
+       64220,
+       52960,
+       46707,
+       48313,
+       41545,
+       38231,
+       37223,
+       469515
+      ],
+      "dropped_by_len_decile": [
+       420382,
+       110899,
+       81919,
+       65188,
+       53031,
+       39241,
+       29438,
+       49618,
+       31048,
+       1192942
+      ],
+      "proc_self_io_write_bytes": 2709254144,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 9.80697661,
+        "marks": 3176283,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 8.0672e-05,
+        "write_s": 9.806894748
+       },
+       {
+        "epoch": 2,
+        "fills": 925707,
+        "flip_done_at_s": 18.476739327,
+        "marks": 21760,
+        "records_written": 29635,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 4.8911e-05,
+        "write_s": 8.464156521
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.9184834560000001
+      }
+     },
+     {
+      "arm": "A2-2p/old-at-fill",
+      "safety": "dead-at-epoch only, no undo record",
+      "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+      "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+      "start_epoch": 0,
+      "end_epoch": 2,
+      "deletes_offered": 1131292,
+      "deletes_applied": 1131292,
+      "docs_offered": 32155,
+      "docs_placed": 29635,
+      "docs_unplaced_no_hole": 0,
+      "docs_unplaced_no_posting": 2520,
+      "postings_offered": 2999413,
+      "postings_inserted": 925707,
+      "postings_dropped_capacity": 2073706,
+      "postings_dropped_unplaced": 0,
+      "postings_evicted": 13521,
+      "postings_freed": 3184522,
+      "rows_freed": 1144200,
+      "rows_fully_evicted": 4443,
+      "lists_touched": 27611,
+      "infl_blocks_raised": 199945,
+      "infl_saturated": 0,
+      "blind_components": 104543791,
+      "blind_mass": 65697842.08262526,
+      "a2b_lists_rewritten": 0,
+      "heap_bytes_before": 0,
+      "heap_bytes_after": 0,
+      "heap_reserve": 1159213056,
+      "gap_s": 8.455934818,
+      "total_s": 26.118779818,
+      "plan_s": 6.945323737,
+      "logical_bytes": 58397561,
+      "write_ops": 4435334,
+      "wall_s_harness": 26.926663391000147,
+      "device_bytes_ru_oublock": 2709385216,
+      "inserted_by_len_decile": [
+       64975,
+       62018,
+       64220,
+       52960,
+       46707,
+       48313,
+       41545,
+       38231,
+       37223,
+       469515
+      ],
+      "dropped_by_len_decile": [
+       420382,
+       110899,
+       81919,
+       65188,
+       53031,
+       39241,
+       29438,
+       49618,
+       31048,
+       1192942
+      ],
+      "proc_self_io_write_bytes": 2709385216,
+      "phases": [
+       {
+        "epoch": 1,
+        "fills": 0,
+        "flip_done_at_s": 9.297831362,
+        "marks": 3176283,
+        "records_written": 0,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 5.5332e-05,
+        "write_s": 9.29777511
+       },
+       {
+        "epoch": 2,
+        "fills": 925707,
+        "flip_done_at_s": 17.75376618,
+        "marks": 21760,
+        "records_written": 29635,
+        "stale_reader_slots_cleared": 0,
+        "unit_bytes": 0,
+        "units_written": 0,
+        "wait_readers_s": 4.3132e-05,
+        "write_s": 8.256492399
+       }
+      ],
+      "recovery": {
+       "aborted_deletes_restored": 0,
+       "aborted_inserts_neutralised": 0,
+       "epoch": 0,
+       "free_list_holes": 0,
+       "free_list_rebuilt": false,
+       "free_list_trusted": true,
+       "list_min_recomputed": 0,
+       "overrides_cleared": 0,
+       "seconds": 1.358716031
+      }
+     }
+    ],
+    "median_wall_s": 27.553828607,
+    "median_device_bytes": 2709254144,
+    "median_logical_bytes": 58397561,
+    "verdict_vs_A1": "FAIL",
+    "wall_ok": false,
+    "bytes_ok": false
+   },
+   "A1(N=1)": {
+    "reps": [
+     {
+      "build_s": 13.7307867920008,
+      "docs": 32155,
+      "logical_bytes": 450162875,
+      "seismic_bytes": 413014269,
+      "proc_self_io_write_bytes": 486621184,
+      "gen": "/home/vscode/work/inplace_update/stage2/a1/root_rep0/g0001",
+      "wall_s_harness": 16.418421278000096,
+      "device_bytes_ru_oublock": 486621184,
+      "note": "build_generation (sections + meta + SEISMIC chain); deletions are masks, not built"
+     },
+     {
+      "build_s": 13.809202620999713,
+      "docs": 32155,
+      "logical_bytes": 450179197,
+      "seismic_bytes": 413034020,
+      "proc_self_io_write_bytes": 486379520,
+      "gen": "/home/vscode/work/inplace_update/stage2/a1/root_rep1/g0001",
+      "wall_s_harness": 15.9275691010007,
+      "device_bytes_ru_oublock": 486379520,
+      "note": "build_generation (sections + meta + SEISMIC chain); deletions are masks, not built"
+     },
+     {
+      "build_s": 14.689673025000047,
+      "docs": 32155,
+      "logical_bytes": 450199970,
+      "seismic_bytes": 413044746,
+      "proc_self_io_write_bytes": 486535168,
+      "gen": "/home/vscode/work/inplace_update/stage2/a1/root_rep2/g0001",
+      "wall_s_harness": 17.038195492999876,
+      "device_bytes_ru_oublock": 486535168,
+      "note": "build_generation (sections + meta + SEISMIC chain); deletions are masks, not built"
+     }
+    ],
+    "median_wall_s": 16.418421278000096,
+    "median_device_bytes": 486535168,
+    "median_logical_bytes": 450179197
+   }
+  },
+  "A3": "NOT RUN (run with --with-a3; heavy)",
+  "host_after": {
+   "loadavg": [
+    4.90966796875,
+    3.58203125,
+    2.48095703125
+   ],
+   "nproc": 16,
+   "lock_note": "run under flock /tmp/sfu_latency_measure.lock (caller)"
+  }
+ },
+ "baseline_b2": {
+  "checks": [
+   {
+    "when": "start b2",
+    "checked_utc": "2026-09-30T03:30:36.446487+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   },
+   {
+    "when": "end b2",
+    "checked_utc": "2026-09-30T03:47:51.482155+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   }
+  ]
+ },
+ "B5": {
+  "bar": "B5 publish",
+  "reader": "header poll (1 ms, CLOCK_MONOTONIC), not the v3 decoder",
+  "arms": {
+   "A2": {
+    "reps": [
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.494941,
+        "header_write_ms": 1.704415
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 9.791705218,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 0,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 0,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 14.310023203,
+       "plan_s": 3.016022335,
+       "logical_bytes": 34793104,
+       "write_ops": 3209320,
+       "wall_s_harness": 15.026644102000319,
+       "device_bytes_ru_oublock": 1280786432,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 1280786432,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 9.791705218,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 0,
+         "units_written": 0,
+         "wait_readers_s": 6.3483e-05,
+         "write_s": 9.791640865
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.445376275
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.323789,
+        "header_write_ms": 0.875315
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 9.407717221,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 0,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 0,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 13.408249091,
+       "plan_s": 2.766235805,
+       "logical_bytes": 34793104,
+       "write_ops": 3209320,
+       "wall_s_harness": 14.062108007999996,
+       "device_bytes_ru_oublock": 1280262144,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 1280262144,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 9.407717221,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 0,
+         "units_written": 0,
+         "wait_readers_s": 7.4442e-05,
+         "write_s": 9.407642159
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.195229151
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.369174,
+        "header_write_ms": 0.826405
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 9.767703578,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 0,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 0,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 13.879999327,
+       "plan_s": 2.82909887,
+       "logical_bytes": 34793104,
+       "write_ops": 3209320,
+       "wall_s_harness": 14.615280736999921,
+       "device_bytes_ru_oublock": 1280262144,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 1280262144,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 9.767703578,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 0,
+         "units_written": 0,
+         "wait_readers_s": 5.2982e-05,
+         "write_s": 9.767649916
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.229226146
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.945315,
+        "header_write_ms": 0.886172
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 13.075499431,
+      "resident_before": 1545372,
+      "resident_kept": 994069,
+      "kept_fraction": 0.6432554750571383,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 0,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 0,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 18.08354864,
+       "plan_s": 3.36480463,
+       "logical_bytes": 34793104,
+       "write_ops": 3209320,
+       "wall_s_harness": 18.84353611000006,
+       "device_bytes_ru_oublock": 1280303104,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 1280303104,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 13.075499431,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 0,
+         "units_written": 0,
+         "wait_readers_s": 0.000106104,
+         "write_s": 13.075392457
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.562978258
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 1.009186,
+        "header_write_ms": 0.945097
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 9.81542967,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 0,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 0,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 15.088100721,
+       "plan_s": 3.659265774,
+       "logical_bytes": 34793104,
+       "write_ops": 3209320,
+       "wall_s_harness": 15.833946644000207,
+       "device_bytes_ru_oublock": 1280303104,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 1280303104,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 9.81542967,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 0,
+         "units_written": 0,
+         "wait_readers_s": 6.2242e-05,
+         "write_s": 9.815366757
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.569313741
+       }
+      }
+     }
+    ],
+    "residency_verdict": "FAIL"
+   },
+   "A2b": {
+    "reps": [
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.91354,
+        "header_write_ms": 5.59936
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 232.26887462,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 24771,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 1088655296,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 236.683674338,
+       "plan_s": 2.9117516869999998,
+       "logical_bytes": 1098170392,
+       "write_ops": 74340,
+       "wall_s_harness": 237.50292930199976,
+       "device_bytes_ru_oublock": 2200166400,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 2200166400,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 232.26887462,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 1088655296,
+         "units_written": 24771,
+         "wait_readers_s": 7.6842e-05,
+         "write_s": 232.268796428
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.449563646
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.241493,
+        "header_write_ms": 0.814525
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 230.198573936,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 24771,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 1088655296,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 234.315769519,
+       "plan_s": 2.7741197890000002,
+       "logical_bytes": 1098170392,
+       "write_ops": 74340,
+       "wall_s_harness": 236.55162008599928,
+       "device_bytes_ru_oublock": 2200166400,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 2200166400,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 230.198573936,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 1088655296,
+         "units_written": 24771,
+         "wait_readers_s": 7.9502e-05,
+         "write_s": 230.198493634
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.303123946
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.922887,
+        "header_write_ms": 0.820216
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 232.79901102,
+      "resident_before": 1545372,
+      "resident_kept": 1545372,
+      "kept_fraction": 1.0,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 24771,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 1088655296,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 237.118889199,
+       "plan_s": 2.814879944,
+       "logical_bytes": 1098170392,
+       "write_ops": 74340,
+       "wall_s_harness": 241.62313989699942,
+       "device_bytes_ru_oublock": 2200166400,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 2200166400,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 232.79901102,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 1088655296,
+         "units_written": 24771,
+         "wait_readers_s": 7.0833e-05,
+         "write_s": 232.798939557
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.463184506
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.315031,
+        "header_write_ms": 0.948161
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 235.161255914,
+      "resident_before": 1545372,
+      "resident_kept": 1527321,
+      "kept_fraction": 0.9883193172905941,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 24771,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 1088655296,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 239.50257451,
+       "plan_s": 2.868754447,
+       "logical_bytes": 1098170392,
+       "write_ops": 74340,
+       "wall_s_harness": 240.43660891199943,
+       "device_bytes_ru_oublock": 2200166400,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 2200166400,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 235.161255914,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 1088655296,
+         "units_written": 24771,
+         "wait_readers_s": 6.0182e-05,
+         "write_s": 235.161194962
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.425684596
+       }
+      }
+     },
+     {
+      "flips": [
+       {
+        "epoch": 1,
+        "publish_to_first_seen_ms": 0.574521,
+        "header_write_ms": 0.840297
+       }
+      ],
+      "batch_start_to_inserts_visible_s": 239.889448558,
+      "resident_before": 1545372,
+      "resident_kept": 1527321,
+      "kept_fraction": 0.9883193172905941,
+      "re_mmap": false,
+      "apply": {
+       "arm": "A2b",
+       "safety": "dead-at-epoch only, no undo record",
+       "writer_io": "MAP_SHARED atomic 8-byte stores (words, dir, override, header), 1-byte stores (inflation), plain copies into mapped unreachable bytes (holes, heap past bump); msync(MS_SYNC)+fdatasync; write()+rename only for forward_free.bin",
+       "reuse_gate": "readers.bin, reuse iff freed epoch <= oldest live reader epoch; lease + same-namespace pid liveness",
+       "start_epoch": 0,
+       "end_epoch": 1,
+       "deletes_offered": 1131292,
+       "deletes_applied": 1131292,
+       "docs_offered": 32155,
+       "docs_placed": 0,
+       "docs_unplaced_no_hole": 32155,
+       "docs_unplaced_no_posting": 0,
+       "postings_offered": 2999413,
+       "postings_inserted": 0,
+       "postings_dropped_capacity": 0,
+       "postings_dropped_unplaced": 2999413,
+       "postings_evicted": 0,
+       "postings_freed": 3184522,
+       "rows_freed": 1139757,
+       "rows_fully_evicted": 0,
+       "lists_touched": 24771,
+       "infl_blocks_raised": 0,
+       "infl_saturated": 0,
+       "blind_components": 0,
+       "blind_mass": 0.0,
+       "a2b_lists_rewritten": 24771,
+       "heap_bytes_before": 0,
+       "heap_bytes_after": 1088655296,
+       "heap_reserve": 1159213056,
+       "gap_s": 0.0,
+       "total_s": 244.327078476,
+       "plan_s": 2.940574058,
+       "logical_bytes": 1098170392,
+       "write_ops": 74340,
+       "wall_s_harness": 245.43380600299952,
+       "device_bytes_ru_oublock": 2200166400,
+       "inserted_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "dropped_by_len_decile": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ],
+       "proc_self_io_write_bytes": 2200166400,
+       "phases": [
+        {
+         "epoch": 1,
+         "fills": 0,
+         "flip_done_at_s": 239.889448558,
+         "marks": 3184522,
+         "records_written": 0,
+         "stale_reader_slots_cleared": 0,
+         "unit_bytes": 1088655296,
+         "units_written": 24771,
+         "wait_readers_s": 4.9561e-05,
+         "write_s": 239.889398337
+        }
+       ],
+       "recovery": {
+        "aborted_deletes_restored": 0,
+        "aborted_inserts_neutralised": 0,
+        "epoch": 0,
+        "free_list_holes": 0,
+        "free_list_rebuilt": false,
+        "free_list_trusted": true,
+        "list_min_recomputed": 0,
+        "overrides_cleared": 0,
+        "seconds": 1.4530322230000001
+       }
+      }
+     }
+    ],
+    "residency_verdict": "FAIL"
+   }
+  }
+ },
+ "baseline_b5": {
+  "checks": [
+   {
+    "when": "start b5",
+    "checked_utc": "2026-09-30T03:47:53.736433+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   },
+   {
+    "when": "end b5",
+    "checked_utc": "2026-09-30T04:10:17.703361+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   }
+  ]
+ },
+ "B7": {
+  "bar": "B7 crash safety",
+  "checker": "updater exact reference search (bit-identical f32 scores); v3 decoder NOT used (not available for this arm)",
+  "arms": {
+   "A2": {
+    "T_apply_s": 15.312769996999123,
+    "sigkill": [
+     {
+      "trial": 0,
+      "t_kill_s": 12.930437592843205,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 1,
+      "t_kill_s": 11.606381440437648,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 2,
+      "t_kill_s": 6.440115884537055,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 3,
+      "t_kill_s": 3.964732645606603,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 4,
+      "t_kill_s": 7.829032213597315,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 5,
+      "t_kill_s": 6.200663310711422,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 6,
+      "t_kill_s": 12.002127517861911,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 7,
+      "t_kill_s": 4.644558011609414,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 8,
+      "t_kill_s": 7.2980195402053605,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 9,
+      "t_kill_s": 8.93319499055516,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 10,
+      "t_kill_s": 13.905723742307437,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 11,
+      "t_kill_s": 7.728153743640355,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 12,
+      "t_kill_s": 4.315718087742692,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 13,
+      "t_kill_s": 11.573455941024537,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 14,
+      "t_kill_s": 9.468942219364468,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 15,
+      "t_kill_s": 3.8359459880727997,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 16,
+      "t_kill_s": 13.930735173272751,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 17,
+      "t_kill_s": 15.049167950955875,
+      "a": true,
+      "b": true,
+      "epoch": 1,
+      "flips_done": 1,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 18,
+      "t_kill_s": 12.406670182420134,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 19,
+      "t_kill_s": 13.814659698205439,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 20,
+      "t_kill_s": 4.749218394115283,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 21,
+      "t_kill_s": 11.175745697615115,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 22,
+      "t_kill_s": 13.763703968150349,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 23,
+      "t_kill_s": 10.47368863106426,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 24,
+      "t_kill_s": 7.229812807486003,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 25,
+      "t_kill_s": 1.5420144375708378,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 26,
+      "t_kill_s": 6.648373455478739,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 27,
+      "t_kill_s": 9.354371718507846,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 28,
+      "t_kill_s": 13.980728262949857,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 29,
+      "t_kill_s": 14.801420987308376,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 30,
+      "t_kill_s": 7.304340994671701,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 31,
+      "t_kill_s": 13.250291900087047,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 32,
+      "t_kill_s": 3.988858835018979,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 33,
+      "t_kill_s": 12.327205956234408,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 34,
+      "t_kill_s": 8.402106237147917,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 35,
+      "t_kill_s": 0.2150173249784471,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 36,
+      "t_kill_s": 11.020672328666132,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 37,
+      "t_kill_s": 6.107093171468695,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 38,
+      "t_kill_s": 12.63066141825089,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 39,
+      "t_kill_s": 10.231276293222002,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 40,
+      "t_kill_s": 0.017499729309968445,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 41,
+      "t_kill_s": 7.558044344793062,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 42,
+      "t_kill_s": 13.285401749879021,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 43,
+      "t_kill_s": 3.7349511575390215,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 44,
+      "t_kill_s": 4.979779608771453,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 45,
+      "t_kill_s": 13.329325766284265,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 46,
+      "t_kill_s": 2.925766426171692,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 47,
+      "t_kill_s": 8.690161441950975,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 48,
+      "t_kill_s": 3.6538708325052283,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 49,
+      "t_kill_s": 14.81572131553193,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 50,
+      "t_kill_s": 12.298902479394473,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 51,
+      "t_kill_s": 6.859655013047157,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 52,
+      "t_kill_s": 1.2318483167152996,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 53,
+      "t_kill_s": 4.900922547831174,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 54,
+      "t_kill_s": 7.777978231045501,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 55,
+      "t_kill_s": 14.284269795807731,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 56,
+      "t_kill_s": 1.6699777111111573,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 57,
+      "t_kill_s": 8.441428546263724,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 58,
+      "t_kill_s": 10.819412358047108,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 59,
+      "t_kill_s": 8.382836762119744,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 60,
+      "t_kill_s": 12.471743747757555,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 61,
+      "t_kill_s": 8.273238606685643,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 62,
+      "t_kill_s": 14.759037968738879,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 63,
+      "t_kill_s": 9.23644278646814,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 64,
+      "t_kill_s": 8.99804495003033,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 65,
+      "t_kill_s": 6.814014610545579,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 66,
+      "t_kill_s": 9.130803563654558,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 67,
+      "t_kill_s": 5.893902719860734,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 68,
+      "t_kill_s": 8.814811578446221,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 69,
+      "t_kill_s": 4.445748893636638,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 70,
+      "t_kill_s": 2.900105853578948,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 71,
+      "t_kill_s": 2.859346317825464,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 72,
+      "t_kill_s": 9.383254763657748,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 73,
+      "t_kill_s": 10.055274189968165,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 24,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 74,
+      "t_kill_s": 7.297009477081474,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 75,
+      "t_kill_s": 1.375459783115499,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 76,
+      "t_kill_s": 11.601014605896518,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 77,
+      "t_kill_s": 13.42578302859278,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 32,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 78,
+      "t_kill_s": 14.139521116780774,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 79,
+      "t_kill_s": 12.900399628566172,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 48,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 80,
+      "t_kill_s": 13.753518424839982,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 81,
+      "t_kill_s": 14.134949089235151,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 82,
+      "t_kill_s": 8.278082311124546,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 32,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 83,
+      "t_kill_s": 5.991826417977025,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 84,
+      "t_kill_s": 10.799842484672087,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 85,
+      "t_kill_s": 4.220721902977557,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 86,
+      "t_kill_s": 12.428283736342589,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 87,
+      "t_kill_s": 13.007983200577643,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 88,
+      "t_kill_s": 13.705525846556267,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 89,
+      "t_kill_s": 9.031489867370517,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 90,
+      "t_kill_s": 14.54353105503249,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 91,
+      "t_kill_s": 8.876736367955399,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 92,
+      "t_kill_s": 6.899369220976269,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 93,
+      "t_kill_s": 10.110185624426244,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 94,
+      "t_kill_s": 15.25546715172856,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 95,
+      "t_kill_s": 14.040909971197639,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 96,
+      "t_kill_s": 12.148004546136102,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 32,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 97,
+      "t_kill_s": 1.261358622220785,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 98,
+      "t_kill_s": 9.38340674553538,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     },
+     {
+      "trial": 99,
+      "t_kill_s": 7.44880818112764,
+      "a": true,
+      "b": true,
+      "epoch": 0,
+      "flips_done": 0,
+      "c": {
+       "queries": 40,
+       "mismatches": 0,
+       "first_mismatches": [],
+       "errors": [],
+       "n_errors": 0,
+       "ok": true
+      },
+      "ok": true
+     }
+    ],
+    "powerloss": {
+     "drop": [
+      {
+       "trial": 0,
+       "cut": 2643029,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 1,
+       "cut": 1406226,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 2,
+       "cut": 798506,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 3,
+       "cut": 1019365,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 4,
+       "cut": 67985,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 5,
+       "cut": 3068088,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 6,
+       "cut": 1136815,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 7,
+       "cut": 491296,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 8,
+       "cut": 2958381,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 9,
+       "cut": 924678,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 10,
+       "cut": 1560533,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 11,
+       "cut": 715052,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 12,
+       "cut": 1394757,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 13,
+       "cut": 1787323,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 14,
+       "cut": 260854,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 15,
+       "cut": 421978,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 16,
+       "cut": 613871,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 17,
+       "cut": 2926242,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 18,
+       "cut": 917602,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 19,
+       "cut": 189725,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 20,
+       "cut": 2406968,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 21,
+       "cut": 2660054,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 22,
+       "cut": 2240588,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 23,
+       "cut": 2525686,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 24,
+       "cut": 2854597,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 25,
+       "cut": 310365,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 26,
+       "cut": 111974,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 27,
+       "cut": 521954,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 28,
+       "cut": 2663382,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 29,
+       "cut": 790712,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 30,
+       "cut": 2543167,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 31,
+       "cut": 2415721,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 32,
+       "cut": 502039,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 33,
+       "cut": 1640851,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 34,
+       "cut": 383912,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 35,
+       "cut": 1552479,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 36,
+       "cut": 486732,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 37,
+       "cut": 152639,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 38,
+       "cut": 2539668,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 39,
+       "cut": 90750,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 40,
+       "cut": 816173,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 41,
+       "cut": 775828,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 42,
+       "cut": 3011985,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 43,
+       "cut": 519653,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 44,
+       "cut": 2010051,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 45,
+       "cut": 883221,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 46,
+       "cut": 3049910,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 47,
+       "cut": 256208,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 48,
+       "cut": 2849388,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 49,
+       "cut": 95557,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 50,
+       "cut": 2282688,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 51,
+       "cut": 1785174,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 52,
+       "cut": 2602984,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 53,
+       "cut": 425722,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 54,
+       "cut": 1090183,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 55,
+       "cut": 293619,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 56,
+       "cut": 926225,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 57,
+       "cut": 301871,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 58,
+       "cut": 2713403,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 59,
+       "cut": 1262743,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 60,
+       "cut": 1469239,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 61,
+       "cut": 1829004,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 62,
+       "cut": 756308,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 63,
+       "cut": 256030,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 64,
+       "cut": 2112404,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 65,
+       "cut": 1959290,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 66,
+       "cut": 165166,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 67,
+       "cut": 2501839,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 68,
+       "cut": 423294,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 69,
+       "cut": 2933173,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 70,
+       "cut": 1641131,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 71,
+       "cut": 836158,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 72,
+       "cut": 1091077,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 73,
+       "cut": 1503889,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 74,
+       "cut": 3068545,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 75,
+       "cut": 1972229,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 76,
+       "cut": 2389782,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 77,
+       "cut": 710618,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 78,
+       "cut": 2926353,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 79,
+       "cut": 2821259,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 80,
+       "cut": 853183,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 81,
+       "cut": 243483,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 82,
+       "cut": 2836195,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 83,
+       "cut": 663575,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 84,
+       "cut": 679284,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 85,
+       "cut": 1435762,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 86,
+       "cut": 2220775,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 87,
+       "cut": 1051458,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 88,
+       "cut": 491626,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 89,
+       "cut": 2503124,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 90,
+       "cut": 1855199,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 91,
+       "cut": 2791753,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 92,
+       "cut": 733246,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 93,
+       "cut": 55380,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 94,
+       "cut": 1978140,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 95,
+       "cut": 2857498,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 96,
+       "cut": 1719267,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 97,
+       "cut": 2387031,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 98,
+       "cut": 2133223,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 99,
+       "cut": 1306299,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 0,
+        "ranges": 0
+       },
+       "verify_violations": [],
+       "ok": true
+      }
+     ],
+     "pages": [
+      {
+       "trial": 0,
+       "cut": 2721824,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 41402,
+        "pages_kept": 41164,
+        "ranges": 1363407
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 1,
+       "cut": 1498002,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 22916,
+        "pages_kept": 22721,
+        "ranges": 737048
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 2,
+       "cut": 1630083,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 24557,
+        "pages_kept": 25029,
+        "ranges": 815841
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 3,
+       "cut": 2758242,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 41678,
+        "pages_kept": 41927,
+        "ranges": 1385786
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 4,
+       "cut": 1052487,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 16217,
+        "pages_kept": 16058,
+        "ranges": 528437
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 5,
+       "cut": 643459,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 9433,
+        "pages_kept": 9325,
+        "ranges": 324257
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 6,
+       "cut": 2351327,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 35616,
+        "pages_kept": 35481,
+        "ranges": 1175536
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 7,
+       "cut": 2897520,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 43910,
+        "pages_kept": 44004,
+        "ranges": 1453126
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 8,
+       "cut": 52161,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 776,
+        "pages_kept": 815,
+        "ranges": 26633
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 9,
+       "cut": 1920799,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 29197,
+        "pages_kept": 29258,
+        "ranges": 963053
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 10,
+       "cut": 3110388,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 46955,
+        "pages_kept": 47452,
+        "ranges": 1559085
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 11,
+       "cut": 331659,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 5162,
+        "pages_kept": 4872,
+        "ranges": 160291
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 12,
+       "cut": 1408936,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 21545,
+        "pages_kept": 21412,
+        "ranges": 699348
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 13,
+       "cut": 3099658,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 47087,
+        "pages_kept": 46948,
+        "ranges": 1549745
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 14,
+       "cut": 191664,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 2850,
+        "pages_kept": 2836,
+        "ranges": 98105
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 15,
+       "cut": 2283041,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 34400,
+        "pages_kept": 34617,
+        "ranges": 1145027
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 16,
+       "cut": 1178109,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 18110,
+        "pages_kept": 18001,
+        "ranges": 586206
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 17,
+       "cut": 565549,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 8281,
+        "pages_kept": 8278,
+        "ranges": 286954
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 18,
+       "cut": 1007179,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 15265,
+        "pages_kept": 15518,
+        "ranges": 508805
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 19,
+       "cut": 3196758,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 48757,
+        "pages_kept": 48482,
+        "ranges": 1593213
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 20,
+       "cut": 2020929,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 30737,
+        "pages_kept": 30649,
+        "ranges": 1012183
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 21,
+       "cut": 1477341,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 22512,
+        "pages_kept": 22537,
+        "ranges": 738017
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 22,
+       "cut": 2559094,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 38878,
+        "pages_kept": 38764,
+        "ranges": 1271666
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 23,
+       "cut": 1207447,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 18442,
+        "pages_kept": 18503,
+        "ranges": 603255
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 24,
+       "cut": 2824458,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 42587,
+        "pages_kept": 43006,
+        "ranges": 1420615
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 25,
+       "cut": 1506599,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 23081,
+        "pages_kept": 22767,
+        "ranges": 747777
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 26,
+       "cut": 2475804,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 37557,
+        "pages_kept": 37387,
+        "ranges": 1231984
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 27,
+       "cut": 2658131,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 40252,
+        "pages_kept": 40344,
+        "ranges": 1334605
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 28,
+       "cut": 2604985,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 39788,
+        "pages_kept": 39279,
+        "ranges": 1297066
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 29,
+       "cut": 555092,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 8142,
+        "pages_kept": 8059,
+        "ranges": 271664
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 30,
+       "cut": 3001525,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 45668,
+        "pages_kept": 45409,
+        "ranges": 1494574
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 31,
+       "cut": 1301482,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 19868,
+        "pages_kept": 19773,
+        "ranges": 644082
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 32,
+       "cut": 1627462,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 24769,
+        "pages_kept": 24752,
+        "ranges": 812819
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 33,
+       "cut": 3139377,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 47775,
+        "pages_kept": 47635,
+        "ranges": 1569566
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 34,
+       "cut": 1738195,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 26326,
+        "pages_kept": 26677,
+        "ranges": 871509
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 35,
+       "cut": 2729790,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 41048,
+        "pages_kept": 41754,
+        "ranges": 1377297
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 36,
+       "cut": 338577,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 5083,
+        "pages_kept": 5017,
+        "ranges": 167077
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 37,
+       "cut": 6393,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 98,
+        "pages_kept": 98,
+        "ranges": 2996
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 38,
+       "cut": 2493836,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 38127,
+        "pages_kept": 37474,
+        "ranges": 1232274
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 39,
+       "cut": 806604,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 12113,
+        "pages_kept": 12098,
+        "ranges": 401966
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 40,
+       "cut": 2930068,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 44279,
+        "pages_kept": 44590,
+        "ranges": 1468473
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 41,
+       "cut": 1402582,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 21328,
+        "pages_kept": 21412,
+        "ranges": 702366
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 42,
+       "cut": 671423,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 9931,
+        "pages_kept": 9817,
+        "ranges": 332783
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 43,
+       "cut": 1004183,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 15480,
+        "pages_kept": 15220,
+        "ranges": 494613
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 44,
+       "cut": 935740,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 14284,
+        "pages_kept": 14142,
+        "ranges": 463269
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 45,
+       "cut": 2673446,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 40573,
+        "pages_kept": 40477,
+        "ranges": 1337819
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 46,
+       "cut": 1879615,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 28597,
+        "pages_kept": 28622,
+        "ranges": 944257
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 47,
+       "cut": 1588165,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 24166,
+        "pages_kept": 24193,
+        "ranges": 793833
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 48,
+       "cut": 2979423,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 45295,
+        "pages_kept": 45128,
+        "ranges": 1481983
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 49,
+       "cut": 2826018,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 43025,
+        "pages_kept": 42630,
+        "ranges": 1395744
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 50,
+       "cut": 2382999,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 36147,
+        "pages_kept": 35876,
+        "ranges": 1190199
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 51,
+       "cut": 1738146,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 26263,
+        "pages_kept": 26738,
+        "ranges": 880159
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 52,
+       "cut": 132311,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 1951,
+        "pages_kept": 1926,
+        "ranges": 65616
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 53,
+       "cut": 1687230,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 25754,
+        "pages_kept": 25618,
+        "ranges": 841742
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 54,
+       "cut": 2943686,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 44504,
+        "pages_kept": 44843,
+        "ranges": 1473123
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 55,
+       "cut": 2380151,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 35675,
+        "pages_kept": 36250,
+        "ranges": 1199784
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 56,
+       "cut": 1754169,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 26708,
+        "pages_kept": 26835,
+        "ranges": 877492
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 57,
+       "cut": 2777450,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 42103,
+        "pages_kept": 42070,
+        "ranges": 1389140
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 58,
+       "cut": 2973786,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 45189,
+        "pages_kept": 45062,
+        "ranges": 1480137
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 59,
+       "cut": 196208,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 2924,
+        "pages_kept": 2907,
+        "ranges": 96271
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 60,
+       "cut": 694891,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 10292,
+        "pages_kept": 10240,
+        "ranges": 349014
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 61,
+       "cut": 1867942,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 28535,
+        "pages_kept": 28364,
+        "ranges": 924804
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 62,
+       "cut": 267958,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 4130,
+        "pages_kept": 4060,
+        "ranges": 132201
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 63,
+       "cut": 1087276,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 16796,
+        "pages_kept": 16585,
+        "ranges": 543278
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 64,
+       "cut": 2942372,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 44871,
+        "pages_kept": 44414,
+        "ranges": 1467669
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 65,
+       "cut": 661385,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 9688,
+        "pages_kept": 9665,
+        "ranges": 329370
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 66,
+       "cut": 1872189,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 28636,
+        "pages_kept": 28364,
+        "ranges": 928143
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 67,
+       "cut": 2212802,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 33474,
+        "pages_kept": 33530,
+        "ranges": 1107316
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 68,
+       "cut": 2043740,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 31009,
+        "pages_kept": 31079,
+        "ranges": 1015586
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 69,
+       "cut": 2354702,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 35544,
+        "pages_kept": 35651,
+        "ranges": 1179571
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 70,
+       "cut": 2533264,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 38655,
+        "pages_kept": 38151,
+        "ranges": 1256955
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 71,
+       "cut": 3168732,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 48011,
+        "pages_kept": 48480,
+        "ranges": 1589554
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 72,
+       "cut": 290,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 0,
+        "pages_kept": 5,
+        "ranges": 290
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 73,
+       "cut": 163201,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 2424,
+        "pages_kept": 2362,
+        "ranges": 79915
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 74,
+       "cut": 2074430,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 31441,
+        "pages_kept": 31586,
+        "ranges": 1043026
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 75,
+       "cut": 1367107,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 20998,
+        "pages_kept": 20611,
+        "ranges": 682322
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 76,
+       "cut": 1308867,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 19890,
+        "pages_kept": 19916,
+        "ranges": 658138
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 77,
+       "cut": 1958287,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 29834,
+        "pages_kept": 29667,
+        "ranges": 977499
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 78,
+       "cut": 209115,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 3177,
+        "pages_kept": 3127,
+        "ranges": 102525
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 79,
+       "cut": 1741212,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 26502,
+        "pages_kept": 26621,
+        "ranges": 869742
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 80,
+       "cut": 788534,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 11760,
+        "pages_kept": 11938,
+        "ranges": 397160
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 81,
+       "cut": 2300836,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 34713,
+        "pages_kept": 34827,
+        "ranges": 1148358
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 82,
+       "cut": 2655366,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 40165,
+        "pages_kept": 40350,
+        "ranges": 1334895
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 83,
+       "cut": 350086,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 5142,
+        "pages_kept": 5060,
+        "ranges": 172229
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 84,
+       "cut": 3043195,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 46192,
+        "pages_kept": 46128,
+        "ranges": 1518480
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 85,
+       "cut": 547447,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 7929,
+        "pages_kept": 8017,
+        "ranges": 274979
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 86,
+       "cut": 61779,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 872,
+        "pages_kept": 926,
+        "ranges": 32706
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 87,
+       "cut": 1685341,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 25726,
+        "pages_kept": 25601,
+        "ranges": 837226
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 88,
+       "cut": 2845898,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 43254,
+        "pages_kept": 42959,
+        "ranges": 1426727
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 89,
+       "cut": 1751059,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 26495,
+        "pages_kept": 26953,
+        "ranges": 883889
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 90,
+       "cut": 1326143,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 20122,
+        "pages_kept": 20146,
+        "ranges": 665043
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 91,
+       "cut": 14230,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 209,
+        "pages_kept": 223,
+        "ranges": 7463
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 92,
+       "cut": 895587,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 13757,
+        "pages_kept": 13295,
+        "ranges": 439257
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 93,
+       "cut": 59942,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 850,
+        "pages_kept": 891,
+        "ranges": 30547
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 94,
+       "cut": 3008675,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 45459,
+        "pages_kept": 45844,
+        "ranges": 1507845
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 95,
+       "cut": 3165666,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 48407,
+        "pages_kept": 47953,
+        "ranges": 1568579
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 96,
+       "cut": 9888,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 160,
+        "pages_kept": 171,
+        "ranges": 5165
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 97,
+       "cut": 2834350,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 43039,
+        "pages_kept": 42854,
+        "ranges": 1415161
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 98,
+       "cut": 2216043,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 33379,
+        "pages_kept": 33697,
+        "ranges": 1108278
+       },
+       "verify_violations": [],
+       "ok": true
+      },
+      {
+       "trial": 99,
+       "cut": 2567173,
+       "n_ops": 3209320,
+       "a": true,
+       "b": true,
+       "epoch": 0,
+       "flips_done": 0,
+       "image": {
+        "durable_writes": 0,
+        "free_list_replaced": false,
+        "n_ops": 3209320,
+        "pages_dropped": 38737,
+        "pages_kept": 39156,
+        "ranges": 1295531
+       },
+       "verify_violations": [],
+       "ok": true
+      }
+     ]
+    },
+    "sigkill_pass": "100/100",
+    "powerloss_drop_pass": "100/100",
+    "powerloss_pages_pass": "100/100",
+    "verdict": "PASS",
+    "failing_trials": []
+   }
+  }
+ },
+ "baseline_b7": {
+  "checks": [
+   {
+    "when": "start b7",
+    "checked_utc": "2026-09-30T17:11:43.410300+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   },
+   {
+    "when": "end b7",
+    "checked_utc": "2026-09-30T21:20:53.190459+00:00",
+    "retries": 0,
+    "first": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "final": {
+     "missing": [],
+     "n_missing": 0,
+     "changed": [],
+     "n_changed": 0
+    },
+    "n_differences": 0
+   }
+  ]
+ }
+}

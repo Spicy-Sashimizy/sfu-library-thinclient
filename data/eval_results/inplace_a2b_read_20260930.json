@@ -1,0 +1,207 @@
+{
+  "what": "A2b heap-unit read path + readers.bin registration (decoder), synthetic shard; correctness test and cost probes, not a pre-registered bar",
+  "measured_utc": "2026-09-30 04:11",
+  "synthetic_source": "/home/vscode/work/inplace_update/m4/root_n1/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+  "encoder": {
+    "copied_bytes": [
+      [
+        "config.json",
+        312
+      ],
+      [
+        "forward_offsets.bin",
+        1282784
+      ],
+      [
+        "forward_data.bin",
+        30279872
+      ],
+      [
+        "forward_encoder.bin",
+        88694
+      ],
+      [
+        "posting_lists.bin",
+        78998640
+      ],
+      [
+        "token_to_id_map.bin",
+        496206
+      ],
+      [
+        "document_mapping_strings.bin",
+        1763800
+      ],
+      [
+        "document_mapping_offsets.bin",
+        1282784
+      ]
+    ],
+    "doc_ids": {
+      "bits": 33,
+      "max_numeric_id": 7213221597
+    },
+    "dst": "/home/vscode/work/inplace_update/stage1/synth/v3",
+    "empty_lists": 0,
+    "manifest_fnv64": "718fcd84d88e52b9",
+    "max_list_len": 5250,
+    "n_blocks_total": 183213,
+    "n_docs": 160347,
+    "n_posting_lists": 22167,
+    "n_postings": 3758807,
+    "posting_words_high16_nonzero": 0,
+    "seconds": {
+      "copy": 0.506452459,
+      "ids": 0.003572128,
+      "list_crc": 0.010740044,
+      "list_min": 2.379961421,
+      "scan": 0.025477749,
+      "side_files_and_sync": 0.250107501,
+      "total": 3.335761379
+    },
+    "side_file_bytes": {
+      "block_inflation.bin": 366426,
+      "forward_free.bin": 576,
+      "inplace_header.bin": 8192,
+      "list_crc.bin": 177336,
+      "list_dir.bin": 354672,
+      "list_min.bin": 177336,
+      "manifest.json": 16521551,
+      "posting_free.bin": 64,
+      "posting_heap.bin_apparent": 78999552,
+      "readers.bin": 16384,
+      "row_id_override.bin_apparent": 1282776
+    },
+    "source_manifest_fnv64": "d2798d917d97160e",
+    "spare_bits": {
+      "bits_forward_offsets_max": 22,
+      "bits_max_len": 7,
+      "bits_max_start": 22,
+      "forward_data_words": 3784984,
+      "forward_offsets_max": 3784984,
+      "len_bits_histogram": [
+        0,
+        0,
+        0,
+        19,
+        27005,
+        3178634,
+        444647,
+        108502,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_len_words": 71,
+      "max_range_end_words": 3784984,
+      "max_start_words": 3784929,
+      "min_len_words": 7,
+      "spare_in_len_field_16": 9,
+      "spare_in_offset_field_48": 26,
+      "spare_per_forward_offsets_entry": 42,
+      "spare_total_per_word": 35,
+      "start_headroom_bits_v3": 10,
+      "used_by_v3": 16
+    },
+    "src": "/home/vscode/work/inplace_update/stage1/synth/v2"
+  },
+  "chosen_list": {
+    "chosen_list": 742,
+    "chosen_list_queries": 250,
+    "chosen_list_blocks": 329
+  },
+  "fixture": {
+    "drop_block": 164,
+    "list": 742,
+    "native_list_bytes": 122352,
+    "new_blocks": 328,
+    "new_postings": 3832,
+    "old_blocks": 329,
+    "old_postings": 3837,
+    "oracle_dir": "/home/vscode/work/inplace_update/stage1/synth/oracle",
+    "poison_native_inflation": true,
+    "unit_body_bytes": 122176,
+    "unit_header_bytes": 256,
+    "unit_offset": 78998640
+  },
+  "header_info": [
+    0,
+    null,
+    329,
+    1
+  ],
+  "registration_state": [
+    true,
+    "readers.bin mapped read-write"
+  ],
+  "parity_unit_vs_oracle": {
+    "identical": 460,
+    "of": 460,
+    "first_difference": null
+  },
+  "queries_changed_vs_zero_patch_baseline": 0,
+  "readers_busy_after_queries": [],
+  "unit_cache_len": 1,
+  "verdict": "FAIL",
+  "cost_registration_ns_per_query": 297.43388,
+  "cost_unit_build_ns": {
+    "build_incl_checksum": 125949.965,
+    "checksum_only": 123183.485
+  },
+  "first_touch_minus_cached_ms": {
+    "n": 40,
+    "median": 0.1777985,
+    "mean": 0.16630499999999998
+  },
+  "registration_on_minus_off_us_per_query": {
+    "n": 460,
+    "median": 1.83400000000006,
+    "mean": 1.9279076086956546
+  },
+  "params": {
+    "k": 200,
+    "heap_factor": 0.8,
+    "query_cut": "len(terms)"
+  },
+  "wall_s": 15.5,
+  "live_index_guard": [
+    {
+      "tag": "a2b-start",
+      "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+      "data/seismic_150m": {
+        "files": 320,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      },
+      "/var/tmp/seismic_stage": {
+        "files": 96,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      }
+    },
+    {
+      "tag": "a2b-end",
+      "baseline": "/home/vscode/work/inplace_update/baseline_20260929T2015Z",
+      "data/seismic_150m": {
+        "files": 320,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      },
+      "/var/tmp/seismic_stage": {
+        "files": 96,
+        "missing_or_changed": 0,
+        "new_or_changed": 0,
+        "transient_rechecks": 0
+      }
+    }
+  ]
+}

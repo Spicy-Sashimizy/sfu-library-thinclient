@@ -126,7 +126,10 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
     """Copy a manifest's shard mmap dirs to a fast local `stage_dir` and return a
     new manifest path (written under stage_dir) whose `mmap_dir` fields point at
     the staged copies. Idempotent: a shard already present with a matching byte
-    size is not re-copied.
+    size is not re-copied. A shard whose source already IS its staged path (the
+    manifest given is a staged manifest) is left untouched. A re-copy goes to
+    `<name>.tmp-<pid>` first and replaces the old copy only once complete, so a
+    failed copy never removes a staged shard.
 
     Why: SEISMIC serves by mmap'ing the forward index; on a 9p/virtiofs/NFS mount
     each random page fault costs ~0.5 ms (measured 9p 2026-07-18: ~1830 faults/s),
@@ -156,6 +159,11 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
         if not src.is_absolute():
             src = repo_root / rel
         dst = stage / src.name
+        if src.resolve() == dst.resolve():
+            logger.info("SEISMIC stage: %s is already in the stage dir, left as is",
+                        dst.name)
+            s["mmap_dir"] = str(dst)
+            continue
         marker = dst / ".staged_ok"
         want = None
         if marker.is_file():
@@ -172,10 +180,18 @@ def _stage_shards_local(manifest_path: str, stage_dir: str) -> str:
         else:
             t0 = time.perf_counter()
             logger.info("SEISMIC stage: copying %s -> %s", src.name, stage)
+            tmp = stage / f"{src.name}.tmp-{os.getpid()}"
+            if tmp.exists():
+                shutil.rmtree(tmp)
+            try:
+                shutil.copytree(src, tmp)
+                (tmp / ".staged_ok").write_text(str(src_sz))
+            except BaseException:
+                shutil.rmtree(tmp, ignore_errors=True)
+                raise
             if dst.is_dir():
                 shutil.rmtree(dst)
-            shutil.copytree(src, dst)
-            marker.write_text(str(src_sz))
+            os.replace(tmp, dst)
             logger.info("SEISMIC stage: %s copied (%.1f GB) in %.0fs",
                         dst.name, src_sz / 1e9, time.perf_counter() - t0)
         s["mmap_dir"] = str(dst)
@@ -510,6 +526,7 @@ class ThinClientRetriever:
         self._bert_vocab = None
         self._seismic = None
         self._ordinals = None
+        self._delta = None
 
 
     def _manifest(self) -> dict:
@@ -567,6 +584,21 @@ class ThinClientRetriever:
                     abs_path = sdir / "abstracts.sqlite"
                     if abs_path.exists() or (sdir / "abstracts.sqlite.flat").is_dir():
                         self._abstract_stores[sdir.name] = AbstractStore(abs_path)
+            from lib.thinclient.delta_layer import DeltaLayer
+            self._delta = DeltaLayer.load_if_enabled(self.root)
+            if self._delta is not None:
+                for name, sdir, origin in self._delta.section_dirs():
+                    if not (sdir / "tantivy" / "meta.json").exists():
+                        continue
+                    idx = tantivy.Index.open(str(sdir / "tantivy"))
+                    idx.reload()
+                    self._sections[name] = {
+                        "index": idx, "searcher": idx.searcher(), "schema": idx.schema,
+                        "bmp": [], "delta_origin": origin,
+                    }
+                    abs_path = sdir / "abstracts.sqlite"
+                    if abs_path.exists() or (sdir / "abstracts.sqlite.flat").is_dir():
+                        self._abstract_stores[name] = AbstractStore(abs_path)
             meta_path = self.root / "meta.sqlite"
             if meta_path.exists():
                 try:
@@ -707,6 +739,7 @@ class ThinClientRetriever:
             "meta_staged": bool(self._meta_path
                                 and self._meta_path != self.root / "meta.sqlite"),
             "manifest": self._manifest(),
+            "delta": self._delta.info() if self._delta is not None else None,
         }
 
     def reload(self) -> dict:
@@ -717,9 +750,11 @@ class ThinClientRetriever:
             old = (self._sections, self._abstract_stores, self._meta,
                    self._dense, self._dense_cache)
             old_meta_path = self._meta_path
+            old_delta = self._delta
             self._sections, self._abstract_stores = {}, {}
             self._meta, self._dense, self._dense_cache = None, None, None
             self._meta_path = None
+            self._delta = None
             self._loaded = False
         try:
             self._load()
@@ -728,8 +763,19 @@ class ThinClientRetriever:
                 (self._sections, self._abstract_stores, self._meta,
                  self._dense, self._dense_cache) = old
                 self._meta_path = old_meta_path
+                self._delta = old_delta
                 self._loaded = True
             raise
+        old_stamp = (old_delta.stamp, old_delta.shard_manifest_path()) if old_delta else None
+        new_stamp = (self._delta.stamp, self._delta.shard_manifest_path()) if self._delta else None
+        if old_stamp != new_stamp:
+            self._seismic = None
+        elif getattr(self._seismic, "_shard_result_filter", None) is not None:
+            self._seismic._shard_result_filter = None
+            if self._delta is not None:
+                self._delta.attach_seismic(self._seismic, getattr(self, "_seismic_manifest", None))
+        if old_delta is not None:
+            old_delta.close()
         if old[2] is not None:
             try:
                 old[2].close()
@@ -939,14 +985,19 @@ class ThinClientRetriever:
     def _bm25f_leg(self, query: str, top_k: int,
                    f: dict | None) -> list[tuple[str, float]]:
         import tantivy
-        text = "".join(c if c.isalnum() or c.isspace() else " " for c in query)
+        text = bm25f_query_text(query)
         if not text.strip():
             return []
         merged: list[tuple[str, float]] = []
+        tagged: list[tuple[str, float, object]] = []
         for name, sec in self._sections.items():
             if _era_skip(name, f):
                 continue
             idx, searcher = sec["index"], sec["searcher"]
+            origin = sec.get("delta_origin")
+            if origin == "buffer":
+                idx.reload()
+                searcher = idx.searcher()
             qt = idx.parse_query(text, ["title"])
             qa = idx.parse_query(text, ["abstract"])
             clauses = [
@@ -967,7 +1018,9 @@ class ThinClientRetriever:
                     sec["schema"], "is_oa", True)))
             final = tantivy.Query.boolean_query(must) if len(must) > 1 else q
             for score, addr in searcher.search(final, top_k).hits:
-                merged.append((searcher.doc(addr)["id"][0], float(score)))
+                tagged.append((searcher.doc(addr)["id"][0], float(score), origin))
+        merged = (self._delta.filter_hits(tagged) if self._delta is not None
+                  else [(d, s) for d, s, _ in tagged])
         merged.sort(key=lambda t: -t[1])
         return merged[:top_k]
 
@@ -1072,6 +1125,11 @@ class ThinClientRetriever:
         if self._seismic is None:
             manifest = os.environ.get("SFU_SEISMIC_SHARD_MANIFEST")
             repo_root = Path(__file__).resolve().parents[3]
+            if not manifest and self._delta is not None:
+                manifest = self._delta.shard_manifest_path()
+            elif manifest and self._delta is not None and self._delta.shard_manifest_path():
+                logger.warning("SFU_SEISMIC_SHARD_MANIFEST is set; delta generations' SEISMIC "
+                               "shards are NOT served (env always wins)")
             if (not manifest
                     and self.root == repo_root / "data" / "thinclient_index"):
                 eval_dir = repo_root / "data" / "eval_results"
@@ -1087,6 +1145,7 @@ class ThinClientRetriever:
                 if default_manifest.exists():
                     manifest = str(default_manifest)
             if manifest:
+                requested_manifest = manifest
                 stage_dir = os.environ.get("SFU_SEISMIC_STAGE_DIR")
                 if stage_dir:
                     try:
@@ -1114,6 +1173,9 @@ class ThinClientRetriever:
                     self._seismic = ParallelSeismicBackend.from_manifest(
                         manifest, splade_model_path=self.splade_model_path,
                         load_mode=load_mode)
+                self._seismic_manifest = requested_manifest
+                if self._delta is not None:
+                    self._delta.attach_seismic(self._seismic, requested_manifest)
             else:
                 idx = os.environ.get("SFU_SEISMIC_INDEX")
                 if not idx:
@@ -1152,9 +1214,30 @@ class ThinClientRetriever:
         except Exception as exc:
             logger.warning("SEISMIC SPLADE leg failed (%s); falling back to BM25F leg", exc)
             return self._bm25f_leg(query, top_k, f)
+        if self._delta is not None:
+            res = self._delta_merge_sparse(query, res, fetch)
         if f:
             res = self._post_filter(res, f)
         return res[:top_k]
+
+    def _delta_merge_sparse(self, query: str, res: list[tuple[str, float]],
+                            fetch: int) -> list[tuple[str, float]]:
+        res = self._delta.filter_ids(res)
+        if self._delta.buffer_size() == 0:
+            return res
+        from lib.opensearch_retriever import encode_splade
+        try:
+            qvec = encode_splade(query, self.splade_model_path)
+        except Exception as exc:
+            logger.warning("delta buffer sparse encode failed (%s); buffer skipped", exc)
+            return res
+        extra = self._delta.buffer_search(qvec, fetch)
+        if not extra:
+            return res
+        seen = {d for d, _ in extra}
+        merged = extra + [(d, s) for d, s in res if d not in seen]
+        merged.sort(key=lambda t: -t[1])
+        return merged[:fetch]
 
     def _splade_leg(self, query: str, top_k: int,
                     f: dict | None) -> list[tuple[str, float]]:
@@ -1203,6 +1286,9 @@ class ThinClientRetriever:
         if not ids:
             return {}
         out: dict[str, tuple] = {}
+        if self._delta is not None and self._delta.superseded:
+            out.update(self._delta.meta_rows([i for i in ids if i in self._delta.superseded]))
+            ids = [i for i in ids if i not in out]
         if self._meta is None:
             if self._dense_cache is not None:
                 out.update(self._dense_cache.metadata_rows(ids))
@@ -1236,6 +1322,10 @@ class ThinClientRetriever:
             missing = [i for i in ids if i not in out]
             if missing:
                 out.update(self._dense_cache.metadata_rows(missing))
+        if self._delta is not None:
+            missing = [i for i in ids if i not in out]
+            if missing:
+                out.update(self._delta.meta_rows(missing))
         return out
 
     def _post_filter(self, ranked: list[tuple[str, float]],
@@ -1344,6 +1434,9 @@ class ThinClientRetriever:
                 break
             out.update(store.fetch(missing))
         missing = [i for i in ids if i not in out]
+        if missing and self._delta is not None:
+            out.update(self._delta.buffer_abstracts(missing))
+            missing = [i for i in ids if i not in out]
         if missing and self.remote_abstracts:
             out.update(self._fetch_remote_abstracts(missing))
         return out
@@ -1402,6 +1495,14 @@ def _invert_abstract(inv: dict[str, list[int]]) -> str:
         positions.extend((i, word) for i in idxs)
     positions.sort()
     return " ".join(w for _, w in positions)
+
+
+def bm25f_query_text(query: str) -> str:
+    """Query text handed to tantivy's parser for the BM25F leg: non-alphanumerics
+    become spaces and the result is lower-cased. Lower-casing changes no token
+    (title/abstract use the default tokenizer, which lower-cases) but stops the
+    parser from reading upper-case operator words such as ``IN`` as syntax."""
+    return "".join(c if c.isalnum() or c.isspace() else " " for c in query).lower()
 
 
 def _era_skip(section_name: str, f: dict | None) -> bool:

@@ -1,0 +1,1535 @@
+{
+ "measurement": "M5 reload cost after a delta publish (docs/delta_ingest/03_SPIKE_PLAN.md)",
+ "bar_preregistered": "03_SPIKE_PLAN.md M5: reload() wall time and the first-query latency after it, with the SEISMIC backend dropped, 5 reps -> reload <= 15 s; first-query p50 <= 2x warm p50 (page cache stays warm)",
+ "operational_definitions": "see the script header (fixed before the run)",
+ "script": "scripts/experiments/eval_delta_ingest_m5_reload.py",
+ "git_commit_measured_code": "ef48050d2a729248f1cc628a2fcbfaf5cc3e4bce",
+ "code_snapshot": "/home/vscode/work/inplace_update/m4/code_ef48050d",
+ "date_utc": "2026-09-30",
+ "roots": {
+  "n1": {
+   "root": "/home/vscode/work/inplace_update/m5/root_n1",
+   "n_gen": 1,
+   "shards_served": 9,
+   "warm_p50_ms": 5100.45,
+   "warm_p95_ms": 6599.87,
+   "warmup_pass_p50_ms": 5007.91,
+   "reload_s": [
+    1.527,
+    0.626,
+    0.596,
+    1.193,
+    1.32
+   ],
+   "reload_s_max": 1.527,
+   "reload_s_median": 1.193,
+   "backend_reopen_s": [
+    2.901,
+    1.212,
+    1.145,
+    2.153,
+    2.154
+   ],
+   "reload_plus_reopen_s": [
+    4.428,
+    1.838,
+    1.741,
+    3.346,
+    3.473
+   ],
+   "backend_dropped_all": true,
+   "first_query_ms": [
+    8023.83,
+    8350.65,
+    8179.15,
+    6513.52,
+    8636.07
+   ],
+   "first_query_p50_ms": 8179.15,
+   "first_query_ratio_vs_warm_p50": 1.604,
+   "first_query_paired_ratio_vs_same_topic_warm": [
+    1.736,
+    1.121,
+    1.347,
+    1.584,
+    1.42
+   ],
+   "first_query_paired_ratio_median": 1.42,
+   "recovery_p50_ms_queries_2_to_10": 4955.57,
+   "majflt_first_query": [
+    17430,
+    4146,
+    5876,
+    10685,
+    18319
+   ],
+   "publish_cli_s": [
+    0.42,
+    0.36,
+    0.36,
+    0.42,
+    0.39
+   ],
+   "controls_no_publish": [
+    {
+     "reload_s": 0.576,
+     "backend_dropped": false,
+     "first_query_ms": 4139.99
+    },
+    {
+     "reload_s": 0.637,
+     "backend_dropped": false,
+     "first_query_ms": 7914.56
+    }
+   ],
+   "verdict_reload_le_15s": "PASS",
+   "verdict_first_query_le_2x_warm": "PASS",
+   "quiet_gate": {
+    "quiet": true,
+    "waited_s": 1.0
+   },
+   "host_start": {
+    "utc": "2026-09-29T23:25:08Z",
+    "loadavg": [
+     1.5771484375,
+     1.9658203125,
+     2.23046875
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 29.34,
+     "Cached": 8.64,
+     "SwapTotal": 16.0,
+     "SwapFree": 13.86
+    },
+    "gpu": {
+     "util_pct": 0,
+     "mem_used_mib": 1145
+    },
+    "busy_procs_gt20pct": []
+   },
+   "host_end": {
+    "utc": "2026-09-29T23:53:55Z",
+    "loadavg": [
+     3.728515625,
+     3.03466796875,
+     2.68603515625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 28.59,
+     "Cached": 28.35,
+     "SwapTotal": 16.0,
+     "SwapFree": 12.35
+    },
+    "gpu": {
+     "util_pct": 0,
+     "mem_used_mib": 1597
+    },
+    "busy_procs_gt20pct": []
+   },
+   "reps": [
+    {
+     "rep": 1,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.42,
+      "stamp": "g0001-1790725645",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0001-1790723989",
+     "stamp_after": "g0001-1790725645",
+     "reload_s": 1.527,
+     "backend_dropped": true,
+     "backend_reopen_s": 2.901,
+     "reload_plus_reopen_s": 4.428,
+     "majflt_reload": 52943,
+     "first_query": {
+      "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "ms": 8023.83,
+      "majflt": 17430,
+      "n": 50,
+      "warm_ms": 4623.21
+     },
+     "recovery": [
+      {
+       "topic": "hospital emergency department overcrowding wait times patient outcomes",
+       "ms": 4903.5,
+       "majflt": 2794,
+       "n": 50,
+       "warm_ms": 3935.66
+      },
+      {
+       "topic": "childhood vaccination coverage school immunization programs uptake",
+       "ms": 5033.98,
+       "majflt": 3290,
+       "n": 50,
+       "warm_ms": 4854.98
+      },
+      {
+       "topic": "palliative care access rural communities end of life symptom management",
+       "ms": 5700.6,
+       "majflt": 3230,
+       "n": 50,
+       "warm_ms": 5915.93
+      },
+      {
+       "topic": "wearable device physical activity monitoring chronic disease self management",
+       "ms": 4762.03,
+       "majflt": 3370,
+       "n": 50,
+       "warm_ms": 5449.4
+      },
+      {
+       "topic": "Indigenous data sovereignty OCAP principles research governance",
+       "ms": 6304.29,
+       "majflt": 4150,
+       "n": 50,
+       "warm_ms": 8456.33
+      },
+      {
+       "topic": "urban Indigenous friendship centres community services identity",
+       "ms": 5429.86,
+       "majflt": 3489,
+       "n": 50,
+       "warm_ms": 6524.24
+      },
+      {
+       "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+       "ms": 4088.22,
+       "majflt": 2715,
+       "n": 50,
+       "warm_ms": 5124.32
+      },
+      {
+       "topic": "Metis identity scrip land dispossession prairie history",
+       "ms": 7032.04,
+       "majflt": 3611,
+       "n": 50,
+       "warm_ms": 7023.97
+      },
+      {
+       "topic": "Quebec language policy Bill 101 French minority rights",
+       "ms": 5571.58,
+       "majflt": 3319,
+       "n": 50,
+       "warm_ms": 5284.84
+      }
+     ]
+    },
+    {
+     "rep": 2,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.36,
+      "stamp": "g0001-1790725705",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0001-1790725645",
+     "stamp_after": "g0001-1790725705",
+     "reload_s": 0.626,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.212,
+     "reload_plus_reopen_s": 1.838,
+     "majflt_reload": 34127,
+     "first_query": {
+      "topic": "gait analysis prosthetic limb amputee walking energetics",
+      "ms": 8350.65,
+      "majflt": 4146,
+      "n": 50,
+      "warm_ms": 7446.93
+     },
+     "recovery": [
+      {
+       "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+       "ms": 7477.45,
+       "majflt": 4108,
+       "n": 50,
+       "warm_ms": 6468.66
+      },
+      {
+       "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+       "ms": 4701.63,
+       "majflt": 3627,
+       "n": 50,
+       "warm_ms": 4248.07
+      },
+      {
+       "topic": "mine tailings dam failure water quality remediation monitoring",
+       "ms": 7135.26,
+       "majflt": 4446,
+       "n": 50,
+       "warm_ms": 6344.21
+      },
+      {
+       "topic": "marine protected area network design fisheries spillover effects",
+       "ms": 5104.99,
+       "majflt": 3920,
+       "n": 50,
+       "warm_ms": 4946.93
+      },
+      {
+       "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+       "ms": 2730.05,
+       "majflt": 2530,
+       "n": 50,
+       "warm_ms": 2858.92
+      },
+      {
+       "topic": "household debt mortgage stress test housing finance Canada",
+       "ms": 4843.6,
+       "majflt": 2672,
+       "n": 50,
+       "warm_ms": 5791.25
+      },
+      {
+       "topic": "corporate bond liquidity credit spread market microstructure",
+       "ms": 4992.36,
+       "majflt": 2784,
+       "n": 50,
+       "warm_ms": 5889.14
+      },
+      {
+       "topic": "electoral turnout youth voter mobilization campaign contact",
+       "ms": 3832.83,
+       "majflt": 2732,
+       "n": 50,
+       "warm_ms": 4997.38
+      },
+      {
+       "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+       "ms": 4266.76,
+       "majflt": 2817,
+       "n": 50,
+       "warm_ms": 4769.25
+      }
+     ]
+    },
+    {
+     "rep": 3,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.36,
+      "stamp": "g0001-1790725761",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0001-1790725705",
+     "stamp_after": "g0001-1790725761",
+     "reload_s": 0.596,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.145,
+     "reload_plus_reopen_s": 1.741,
+     "majflt_reload": 55146,
+     "first_query": {
+      "topic": "early literacy phonics instruction reading intervention primary grades",
+      "ms": 8179.15,
+      "majflt": 5876,
+      "n": 50,
+      "warm_ms": 6073.03
+     },
+     "recovery": [
+      {
+       "topic": "graduate student supervision mentorship doctoral completion attrition",
+       "ms": 4859.29,
+       "majflt": 4175,
+       "n": 50,
+       "warm_ms": 4365.62
+      },
+      {
+       "topic": "sleep deprivation memory consolidation cognitive performance",
+       "ms": 4192.73,
+       "majflt": 2614,
+       "n": 50,
+       "warm_ms": 5177.27
+      },
+      {
+       "topic": "loneliness social isolation mental health older adults intervention",
+       "ms": 4840.94,
+       "majflt": 3367,
+       "n": 50,
+       "warm_ms": 5138.35
+      },
+      {
+       "topic": "implicit bias measurement predictive validity discrimination behaviour",
+       "ms": 2827.95,
+       "majflt": 3121,
+       "n": 50,
+       "warm_ms": 3268.13
+      },
+      {
+       "topic": "transgender healthcare access gender affirming care barriers",
+       "ms": 4018.02,
+       "majflt": 3170,
+       "n": 50,
+       "warm_ms": 4357.2
+      },
+      {
+       "topic": "unpaid care work gender division household labour time use",
+       "ms": 4316.21,
+       "majflt": 2456,
+       "n": 50,
+       "warm_ms": 4813.92
+      },
+      {
+       "topic": "5G millimeter wave antenna array beamforming design",
+       "ms": 3764.89,
+       "majflt": 2475,
+       "n": 50,
+       "warm_ms": 3980.9
+      },
+      {
+       "topic": "additive manufacturing metal 3D printing fatigue defects microstructure",
+       "ms": 5408.62,
+       "majflt": 3086,
+       "n": 50,
+       "warm_ms": 5373.24
+      },
+      {
+       "topic": "autonomous vehicle sensor fusion lidar camera perception",
+       "ms": 5575.98,
+       "majflt": 24630,
+       "n": 50,
+       "warm_ms": 4572.86
+      }
+     ]
+    },
+    {
+     "rep": 4,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.42,
+      "stamp": "g0001-1790725811",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0001-1790725761",
+     "stamp_after": "g0001-1790725811",
+     "reload_s": 1.193,
+     "backend_dropped": true,
+     "backend_reopen_s": 2.153,
+     "reload_plus_reopen_s": 3.346,
+     "majflt_reload": 106418,
+     "first_query": {
+      "topic": "workplace automation job displacement reskilling worker adjustment",
+      "ms": 6513.52,
+      "majflt": 10685,
+      "n": 50,
+      "warm_ms": 4112.94
+     },
+     "recovery": [
+      {
+       "topic": "code switching bilingual speakers sociolinguistic variation",
+       "ms": 3823.78,
+       "majflt": 4231,
+       "n": 50,
+       "warm_ms": 4045.96
+      },
+      {
+       "topic": "prosody intonation speech perception listener comprehension",
+       "ms": 3981.36,
+       "majflt": 2841,
+       "n": 50,
+       "warm_ms": 4006.41
+      },
+      {
+       "topic": "modernist poetry fragmentation form early twentieth century",
+       "ms": 6753.26,
+       "majflt": 6060,
+       "n": 50,
+       "warm_ms": 6209.7
+      },
+      {
+       "topic": "graphic novels comics studies narrative visual storytelling",
+       "ms": 6236.94,
+       "majflt": 3986,
+       "n": 50,
+       "warm_ms": 6523.88
+      },
+      {
+       "topic": "film festival circuit curation programming world cinema",
+       "ms": 4815.02,
+       "majflt": 2967,
+       "n": 50,
+       "warm_ms": 5258.46
+      },
+      {
+       "topic": "sound design film music affect audience emotional response",
+       "ms": 4614.99,
+       "majflt": 2476,
+       "n": 50,
+       "warm_ms": 5514.78
+      },
+      {
+       "topic": "glacier retreat mass balance monitoring mountain water supply",
+       "ms": 4474.28,
+       "majflt": 7991,
+       "n": 50,
+       "warm_ms": 3853.12
+      },
+      {
+       "topic": "coastal erosion sea level rise shoreline retreat adaptation",
+       "ms": 9261.42,
+       "majflt": 53843,
+       "n": 50,
+       "warm_ms": 6081.71
+      },
+      {
+       "topic": "falls prevention older adults balance training home hazards",
+       "ms": 5231.19,
+       "majflt": 6925,
+       "n": 50,
+       "warm_ms": 4708.66
+      }
+     ]
+    },
+    {
+     "rep": 5,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.39,
+      "stamp": "g0001-1790725869",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0001-1790725811",
+     "stamp_after": "g0001-1790725869",
+     "reload_s": 1.32,
+     "backend_dropped": true,
+     "backend_reopen_s": 2.154,
+     "reload_plus_reopen_s": 3.473,
+     "majflt_reload": 60101,
+     "first_query": {
+      "topic": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "ms": 8636.07,
+      "majflt": 18319,
+      "n": 50,
+      "warm_ms": 6080.19
+     },
+     "recovery": [
+      {
+       "topic": "jazz improvisation performance analysis interaction ensemble",
+       "ms": 5694.03,
+       "majflt": 7486,
+       "n": 50,
+       "warm_ms": 5558.39
+      },
+      {
+       "topic": "music streaming royalties artist income platform economics",
+       "ms": 4955.57,
+       "majflt": 4772,
+       "n": 50,
+       "warm_ms": 4876.87
+      },
+      {
+       "topic": "childcare policy universal early learning affordability workforce",
+       "ms": 5206.19,
+       "majflt": 4635,
+       "n": 50,
+       "warm_ms": 5865.51
+      },
+      {
+       "topic": "public procurement innovation policy government purchasing outcomes",
+       "ms": 5795.82,
+       "majflt": 3788,
+       "n": 50,
+       "warm_ms": 5164.37
+      },
+      {
+       "topic": "maternal mortality skilled birth attendance low resource settings",
+       "ms": 5186.53,
+       "majflt": 4153,
+       "n": 50,
+       "warm_ms": 5202.87
+      },
+      {
+       "topic": "neglected tropical disease mass drug administration elimination",
+       "ms": 4477.16,
+       "majflt": 4049,
+       "n": 50,
+       "warm_ms": 4694.67
+      },
+      {
+       "topic": "solar photovoltaic degradation module reliability field performance",
+       "ms": 6880.53,
+       "majflt": 3286,
+       "n": 50,
+       "warm_ms": 6093.58
+      },
+      {
+       "topic": "district heating waste heat recovery thermal network efficiency",
+       "ms": 6020.14,
+       "majflt": 2310,
+       "n": 50,
+       "warm_ms": 6522.65
+      },
+      {
+       "topic": "auditor independence non-audit services fee dependence quality",
+       "ms": 3526.9,
+       "majflt": 2173,
+       "n": 50,
+       "warm_ms": 4451.51
+      }
+     ]
+    },
+    {
+     "rep": 6,
+     "control_no_publish": true,
+     "publish": null,
+     "stamp_before": "g0001-1790725869",
+     "stamp_after": "g0001-1790725869",
+     "reload_s": 0.576,
+     "backend_dropped": false,
+     "backend_reopen_s": null,
+     "reload_plus_reopen_s": 0.576,
+     "majflt_reload": 36263,
+     "first_query": {
+      "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "ms": 4139.99,
+      "majflt": 2733,
+      "n": 50,
+      "warm_ms": 4623.21
+     },
+     "recovery": [
+      {
+       "topic": "hospital emergency department overcrowding wait times patient outcomes",
+       "ms": 3683.32,
+       "majflt": 1892,
+       "n": 50,
+       "warm_ms": 3935.66
+      },
+      {
+       "topic": "childhood vaccination coverage school immunization programs uptake",
+       "ms": 4706.86,
+       "majflt": 2786,
+       "n": 50,
+       "warm_ms": 4854.98
+      },
+      {
+       "topic": "palliative care access rural communities end of life symptom management",
+       "ms": 6407.14,
+       "majflt": 3208,
+       "n": 50,
+       "warm_ms": 5915.93
+      },
+      {
+       "topic": "wearable device physical activity monitoring chronic disease self management",
+       "ms": 5790.48,
+       "majflt": 6134,
+       "n": 50,
+       "warm_ms": 5449.4
+      },
+      {
+       "topic": "Indigenous data sovereignty OCAP principles research governance",
+       "ms": 7516.87,
+       "majflt": 5439,
+       "n": 50,
+       "warm_ms": 8456.33
+      },
+      {
+       "topic": "urban Indigenous friendship centres community services identity",
+       "ms": 5647.37,
+       "majflt": 4840,
+       "n": 50,
+       "warm_ms": 6524.24
+      },
+      {
+       "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+       "ms": 3459.75,
+       "majflt": 2461,
+       "n": 50,
+       "warm_ms": 5124.32
+      },
+      {
+       "topic": "Metis identity scrip land dispossession prairie history",
+       "ms": 6427.67,
+       "majflt": 3412,
+       "n": 50,
+       "warm_ms": 7023.97
+      },
+      {
+       "topic": "Quebec language policy Bill 101 French minority rights",
+       "ms": 4702.15,
+       "majflt": 3182,
+       "n": 50,
+       "warm_ms": 5284.84
+      }
+     ]
+    },
+    {
+     "rep": 7,
+     "control_no_publish": true,
+     "publish": null,
+     "stamp_before": "g0001-1790725869",
+     "stamp_after": "g0001-1790725869",
+     "reload_s": 0.637,
+     "backend_dropped": false,
+     "backend_reopen_s": null,
+     "reload_plus_reopen_s": 0.637,
+     "majflt_reload": 73750,
+     "first_query": {
+      "topic": "gait analysis prosthetic limb amputee walking energetics",
+      "ms": 7914.56,
+      "majflt": 4958,
+      "n": 50,
+      "warm_ms": 7446.93
+     },
+     "recovery": [
+      {
+       "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+       "ms": 8824.58,
+       "majflt": 39362,
+       "n": 50,
+       "warm_ms": 6468.66
+      },
+      {
+       "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+       "ms": 5134.58,
+       "majflt": 4859,
+       "n": 50,
+       "warm_ms": 4248.07
+      },
+      {
+       "topic": "mine tailings dam failure water quality remediation monitoring",
+       "ms": 6622.28,
+       "majflt": 4808,
+       "n": 50,
+       "warm_ms": 6344.21
+      },
+      {
+       "topic": "marine protected area network design fisheries spillover effects",
+       "ms": 5039.41,
+       "majflt": 4239,
+       "n": 50,
+       "warm_ms": 4946.93
+      },
+      {
+       "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+       "ms": 2514.32,
+       "majflt": 2616,
+       "n": 50,
+       "warm_ms": 2858.92
+      },
+      {
+       "topic": "household debt mortgage stress test housing finance Canada",
+       "ms": 5564.05,
+       "majflt": 3014,
+       "n": 50,
+       "warm_ms": 5791.25
+      },
+      {
+       "topic": "corporate bond liquidity credit spread market microstructure",
+       "ms": 4649.68,
+       "majflt": 2999,
+       "n": 50,
+       "warm_ms": 5889.14
+      },
+      {
+       "topic": "electoral turnout youth voter mobilization campaign contact",
+       "ms": 3781.77,
+       "majflt": 3160,
+       "n": 50,
+       "warm_ms": 4997.38
+      },
+      {
+       "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+       "ms": 4608.58,
+       "majflt": 3136,
+       "n": 50,
+       "warm_ms": 4769.25
+      }
+     ]
+    }
+   ]
+  },
+  "n8": {
+   "root": "/home/vscode/work/inplace_update/m5/root_n8",
+   "n_gen": 8,
+   "shards_served": 16,
+   "warm_p50_ms": 5515.26,
+   "warm_p95_ms": 7592.74,
+   "warmup_pass_p50_ms": 5443.71,
+   "reload_s": [
+    1.481,
+    0.898,
+    1.153,
+    0.766,
+    1.805
+   ],
+   "reload_s_max": 1.805,
+   "reload_s_median": 1.153,
+   "backend_reopen_s": [
+    3.653,
+    1.802,
+    2.618,
+    1.737,
+    3.456
+   ],
+   "reload_plus_reopen_s": [
+    5.134,
+    2.7,
+    3.772,
+    2.503,
+    5.261
+   ],
+   "backend_dropped_all": true,
+   "first_query_ms": [
+    9320.79,
+    10815.05,
+    10059.65,
+    6800.49,
+    10042.01
+   ],
+   "first_query_p50_ms": 10042.01,
+   "first_query_ratio_vs_warm_p50": 1.821,
+   "first_query_paired_ratio_vs_same_topic_warm": [
+    1.816,
+    1.562,
+    1.218,
+    1.667,
+    1.738
+   ],
+   "first_query_paired_ratio_median": 1.667,
+   "recovery_p50_ms_queries_2_to_10": 5334.79,
+   "majflt_first_query": [
+    19146,
+    8587,
+    16120,
+    6703,
+    20314
+   ],
+   "publish_cli_s": [
+    0.45,
+    0.46,
+    0.42,
+    0.4,
+    0.45
+   ],
+   "controls_no_publish": [
+    {
+     "reload_s": 0.816,
+     "backend_dropped": false,
+     "first_query_ms": 4172.66
+    },
+    {
+     "reload_s": 1.319,
+     "backend_dropped": false,
+     "first_query_ms": 8065.86
+    }
+   ],
+   "verdict_reload_le_15s": "PASS",
+   "verdict_first_query_le_2x_warm": "PASS",
+   "quiet_gate": {
+    "quiet": true,
+    "waited_s": 1.0
+   },
+   "host_start": {
+    "utc": "2026-09-30T00:09:57Z",
+    "loadavg": [
+     1.6533203125,
+     1.75341796875,
+     2.00830078125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 28.79,
+     "Cached": 8.33,
+     "SwapTotal": 16.0,
+     "SwapFree": 13.88
+    },
+    "gpu": {
+     "util_pct": 0,
+     "mem_used_mib": 1158
+    },
+    "busy_procs_gt20pct": []
+   },
+   "host_end": {
+    "utc": "2026-09-30T00:41:25Z",
+    "loadavg": [
+     1.73095703125,
+     2.20654296875,
+     2.2939453125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 28.25,
+     "Cached": 28.08,
+     "SwapTotal": 16.0,
+     "SwapFree": 12.19
+    },
+    "gpu": {
+     "util_pct": 1,
+     "mem_used_mib": 1912
+    },
+    "busy_procs_gt20pct": []
+   },
+   "reps": [
+    {
+     "rep": 1,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.45,
+      "stamp": "g0008-1790728457",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0008-1790726056",
+     "stamp_after": "g0008-1790728457",
+     "reload_s": 1.481,
+     "backend_dropped": true,
+     "backend_reopen_s": 3.653,
+     "reload_plus_reopen_s": 5.134,
+     "majflt_reload": 57873,
+     "first_query": {
+      "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "ms": 9320.79,
+      "majflt": 19146,
+      "n": 50,
+      "warm_ms": 5133.54
+     },
+     "recovery": [
+      {
+       "topic": "hospital emergency department overcrowding wait times patient outcomes",
+       "ms": 4986.78,
+       "majflt": 4583,
+       "n": 50,
+       "warm_ms": 4442.78
+      },
+      {
+       "topic": "childhood vaccination coverage school immunization programs uptake",
+       "ms": 5234.28,
+       "majflt": 3531,
+       "n": 50,
+       "warm_ms": 5132.98
+      },
+      {
+       "topic": "palliative care access rural communities end of life symptom management",
+       "ms": 7168.83,
+       "majflt": 3843,
+       "n": 50,
+       "warm_ms": 6285.63
+      },
+      {
+       "topic": "wearable device physical activity monitoring chronic disease self management",
+       "ms": 5449.26,
+       "majflt": 3595,
+       "n": 50,
+       "warm_ms": 5573.13
+      },
+      {
+       "topic": "Indigenous data sovereignty OCAP principles research governance",
+       "ms": 6777.39,
+       "majflt": 4141,
+       "n": 50,
+       "warm_ms": 7021.34
+      },
+      {
+       "topic": "urban Indigenous friendship centres community services identity",
+       "ms": 6325.03,
+       "majflt": 3645,
+       "n": 50,
+       "warm_ms": 6866.15
+      },
+      {
+       "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+       "ms": 4824.33,
+       "majflt": 2858,
+       "n": 50,
+       "warm_ms": 4369.74
+      },
+      {
+       "topic": "Metis identity scrip land dispossession prairie history",
+       "ms": 7519.3,
+       "majflt": 4362,
+       "n": 50,
+       "warm_ms": 6456.07
+      },
+      {
+       "topic": "Quebec language policy Bill 101 French minority rights",
+       "ms": 5805.32,
+       "majflt": 3641,
+       "n": 50,
+       "warm_ms": 5278.59
+      }
+     ]
+    },
+    {
+     "rep": 2,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.46,
+      "stamp": "g0008-1790728523",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0008-1790728457",
+     "stamp_after": "g0008-1790728523",
+     "reload_s": 0.898,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.802,
+     "reload_plus_reopen_s": 2.7,
+     "majflt_reload": 57930,
+     "first_query": {
+      "topic": "gait analysis prosthetic limb amputee walking energetics",
+      "ms": 10815.05,
+      "majflt": 8587,
+      "n": 50,
+      "warm_ms": 6925.07
+     },
+     "recovery": [
+      {
+       "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+       "ms": 7270.02,
+       "majflt": 4962,
+       "n": 50,
+       "warm_ms": 8030.54
+      },
+      {
+       "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+       "ms": 4845.53,
+       "majflt": 3238,
+       "n": 50,
+       "warm_ms": 4758.83
+      },
+      {
+       "topic": "mine tailings dam failure water quality remediation monitoring",
+       "ms": 8411.71,
+       "majflt": 10264,
+       "n": 50,
+       "warm_ms": 7146.06
+      },
+      {
+       "topic": "marine protected area network design fisheries spillover effects",
+       "ms": 6573.64,
+       "majflt": 9299,
+       "n": 50,
+       "warm_ms": 7540.36
+      },
+      {
+       "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+       "ms": 2812.6,
+       "majflt": 4363,
+       "n": 50,
+       "warm_ms": 4450.5
+      },
+      {
+       "topic": "household debt mortgage stress test housing finance Canada",
+       "ms": 5855.95,
+       "majflt": 4934,
+       "n": 50,
+       "warm_ms": 6941.37
+      },
+      {
+       "topic": "corporate bond liquidity credit spread market microstructure",
+       "ms": 4556.67,
+       "majflt": 3251,
+       "n": 50,
+       "warm_ms": 6186.73
+      },
+      {
+       "topic": "electoral turnout youth voter mobilization campaign contact",
+       "ms": 5651.81,
+       "majflt": 4652,
+       "n": 50,
+       "warm_ms": 5114.18
+      },
+      {
+       "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+       "ms": 4199.32,
+       "majflt": 3222,
+       "n": 50,
+       "warm_ms": 5006.66
+      }
+     ]
+    },
+    {
+     "rep": 3,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.42,
+      "stamp": "g0008-1790728587",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0008-1790728523",
+     "stamp_after": "g0008-1790728587",
+     "reload_s": 1.153,
+     "backend_dropped": true,
+     "backend_reopen_s": 2.618,
+     "reload_plus_reopen_s": 3.772,
+     "majflt_reload": 52069,
+     "first_query": {
+      "topic": "early literacy phonics instruction reading intervention primary grades",
+      "ms": 10059.65,
+      "majflt": 16120,
+      "n": 50,
+      "warm_ms": 8261.28
+     },
+     "recovery": [
+      {
+       "topic": "graduate student supervision mentorship doctoral completion attrition",
+       "ms": 5128.52,
+       "majflt": 5582,
+       "n": 50,
+       "warm_ms": 4643.53
+      },
+      {
+       "topic": "sleep deprivation memory consolidation cognitive performance",
+       "ms": 5333.43,
+       "majflt": 4238,
+       "n": 50,
+       "warm_ms": 4210.94
+      },
+      {
+       "topic": "loneliness social isolation mental health older adults intervention",
+       "ms": 4747.37,
+       "majflt": 3979,
+       "n": 50,
+       "warm_ms": 5205.35
+      },
+      {
+       "topic": "implicit bias measurement predictive validity discrimination behaviour",
+       "ms": 3153.53,
+       "majflt": 3115,
+       "n": 50,
+       "warm_ms": 2887.07
+      },
+      {
+       "topic": "transgender healthcare access gender affirming care barriers",
+       "ms": 3862.42,
+       "majflt": 2700,
+       "n": 50,
+       "warm_ms": 4378.29
+      },
+      {
+       "topic": "unpaid care work gender division household labour time use",
+       "ms": 4485.09,
+       "majflt": 2594,
+       "n": 50,
+       "warm_ms": 4481.58
+      },
+      {
+       "topic": "5G millimeter wave antenna array beamforming design",
+       "ms": 4197.5,
+       "majflt": 3177,
+       "n": 50,
+       "warm_ms": 4717.41
+      },
+      {
+       "topic": "additive manufacturing metal 3D printing fatigue defects microstructure",
+       "ms": 5472.71,
+       "majflt": 3846,
+       "n": 50,
+       "warm_ms": 6878.41
+      },
+      {
+       "topic": "autonomous vehicle sensor fusion lidar camera perception",
+       "ms": 4983.09,
+       "majflt": 3052,
+       "n": 50,
+       "warm_ms": 7692.58
+      }
+     ]
+    },
+    {
+     "rep": 4,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.4,
+      "stamp": "g0008-1790728641",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0008-1790728587",
+     "stamp_after": "g0008-1790728641",
+     "reload_s": 0.766,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.737,
+     "reload_plus_reopen_s": 2.503,
+     "majflt_reload": 74613,
+     "first_query": {
+      "topic": "workplace automation job displacement reskilling worker adjustment",
+      "ms": 6800.49,
+      "majflt": 6703,
+      "n": 50,
+      "warm_ms": 4078.66
+     },
+     "recovery": [
+      {
+       "topic": "code switching bilingual speakers sociolinguistic variation",
+       "ms": 4251.98,
+       "majflt": 2539,
+       "n": 50,
+       "warm_ms": 3937.93
+      },
+      {
+       "topic": "prosody intonation speech perception listener comprehension",
+       "ms": 4727.56,
+       "majflt": 2426,
+       "n": 50,
+       "warm_ms": 4215.03
+      },
+      {
+       "topic": "modernist poetry fragmentation form early twentieth century",
+       "ms": 7370.75,
+       "majflt": 4155,
+       "n": 50,
+       "warm_ms": 6709.19
+      },
+      {
+       "topic": "graphic novels comics studies narrative visual storytelling",
+       "ms": 6252.54,
+       "majflt": 4101,
+       "n": 50,
+       "warm_ms": 6519.71
+      },
+      {
+       "topic": "film festival circuit curation programming world cinema",
+       "ms": 5247.91,
+       "majflt": 3124,
+       "n": 50,
+       "warm_ms": 5869.93
+      },
+      {
+       "topic": "sound design film music affect audience emotional response",
+       "ms": 5405.61,
+       "majflt": 5957,
+       "n": 50,
+       "warm_ms": 5076.39
+      },
+      {
+       "topic": "glacier retreat mass balance monitoring mountain water supply",
+       "ms": 5071.42,
+       "majflt": 26304,
+       "n": 50,
+       "warm_ms": 4476.36
+      },
+      {
+       "topic": "coastal erosion sea level rise shoreline retreat adaptation",
+       "ms": 8233.0,
+       "majflt": 11226,
+       "n": 50,
+       "warm_ms": 6805.58
+      },
+      {
+       "topic": "falls prevention older adults balance training home hazards",
+       "ms": 5334.79,
+       "majflt": 7447,
+       "n": 50,
+       "warm_ms": 4460.73
+      }
+     ]
+    },
+    {
+     "rep": 5,
+     "control_no_publish": false,
+     "publish": {
+      "rc": 0,
+      "s": 0.45,
+      "stamp": "g0008-1790728702",
+      "stderr_tail": "",
+      "enomem": false
+     },
+     "stamp_before": "g0008-1790728641",
+     "stamp_after": "g0008-1790728702",
+     "reload_s": 1.805,
+     "backend_dropped": true,
+     "backend_reopen_s": 3.456,
+     "reload_plus_reopen_s": 5.261,
+     "majflt_reload": 70548,
+     "first_query": {
+      "topic": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+      "ms": 10042.01,
+      "majflt": 20314,
+      "n": 50,
+      "warm_ms": 5779.42
+     },
+     "recovery": [
+      {
+       "topic": "jazz improvisation performance analysis interaction ensemble",
+       "ms": 6212.83,
+       "majflt": 6960,
+       "n": 50,
+       "warm_ms": 6193.91
+      },
+      {
+       "topic": "music streaming royalties artist income platform economics",
+       "ms": 5539.22,
+       "majflt": 4726,
+       "n": 50,
+       "warm_ms": 5504.82
+      },
+      {
+       "topic": "childcare policy universal early learning affordability workforce",
+       "ms": 6858.22,
+       "majflt": 8769,
+       "n": 50,
+       "warm_ms": 5561.8
+      },
+      {
+       "topic": "public procurement innovation policy government purchasing outcomes",
+       "ms": 5496.09,
+       "majflt": 5368,
+       "n": 50,
+       "warm_ms": 4841.8
+      },
+      {
+       "topic": "maternal mortality skilled birth attendance low resource settings",
+       "ms": 4414.57,
+       "majflt": 3481,
+       "n": 50,
+       "warm_ms": 5555.47
+      },
+      {
+       "topic": "neglected tropical disease mass drug administration elimination",
+       "ms": 5138.75,
+       "majflt": 4068,
+       "n": 50,
+       "warm_ms": 5684.73
+      },
+      {
+       "topic": "solar photovoltaic degradation module reliability field performance",
+       "ms": 6215.2,
+       "majflt": 3026,
+       "n": 50,
+       "warm_ms": 6734.22
+      },
+      {
+       "topic": "district heating waste heat recovery thermal network efficiency",
+       "ms": 7009.19,
+       "majflt": 2742,
+       "n": 50,
+       "warm_ms": 8842.8
+      },
+      {
+       "topic": "auditor independence non-audit services fee dependence quality",
+       "ms": 3810.91,
+       "majflt": 2193,
+       "n": 50,
+       "warm_ms": 5818.1
+      }
+     ]
+    },
+    {
+     "rep": 6,
+     "control_no_publish": true,
+     "publish": null,
+     "stamp_before": "g0008-1790728702",
+     "stamp_after": "g0008-1790728702",
+     "reload_s": 0.816,
+     "backend_dropped": false,
+     "backend_reopen_s": null,
+     "reload_plus_reopen_s": 0.816,
+     "majflt_reload": 45820,
+     "first_query": {
+      "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+      "ms": 4172.66,
+      "majflt": 2717,
+      "n": 50,
+      "warm_ms": 5133.54
+     },
+     "recovery": [
+      {
+       "topic": "hospital emergency department overcrowding wait times patient outcomes",
+       "ms": 4455.06,
+       "majflt": 2214,
+       "n": 50,
+       "warm_ms": 4442.78
+      },
+      {
+       "topic": "childhood vaccination coverage school immunization programs uptake",
+       "ms": 5832.55,
+       "majflt": 4610,
+       "n": 50,
+       "warm_ms": 5132.98
+      },
+      {
+       "topic": "palliative care access rural communities end of life symptom management",
+       "ms": 6324.77,
+       "majflt": 3326,
+       "n": 50,
+       "warm_ms": 6285.63
+      },
+      {
+       "topic": "wearable device physical activity monitoring chronic disease self management",
+       "ms": 4660.14,
+       "majflt": 3586,
+       "n": 50,
+       "warm_ms": 5573.13
+      },
+      {
+       "topic": "Indigenous data sovereignty OCAP principles research governance",
+       "ms": 6522.15,
+       "majflt": 4615,
+       "n": 50,
+       "warm_ms": 7021.34
+      },
+      {
+       "topic": "urban Indigenous friendship centres community services identity",
+       "ms": 5440.94,
+       "majflt": 3200,
+       "n": 50,
+       "warm_ms": 6866.15
+      },
+      {
+       "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+       "ms": 3881.63,
+       "majflt": 2436,
+       "n": 50,
+       "warm_ms": 4369.74
+      },
+      {
+       "topic": "Metis identity scrip land dispossession prairie history",
+       "ms": 8056.64,
+       "majflt": 6098,
+       "n": 50,
+       "warm_ms": 6456.07
+      },
+      {
+       "topic": "Quebec language policy Bill 101 French minority rights",
+       "ms": 7936.43,
+       "majflt": 12574,
+       "n": 50,
+       "warm_ms": 5278.59
+      }
+     ]
+    },
+    {
+     "rep": 7,
+     "control_no_publish": true,
+     "publish": null,
+     "stamp_before": "g0008-1790728702",
+     "stamp_after": "g0008-1790728702",
+     "reload_s": 1.319,
+     "backend_dropped": false,
+     "backend_reopen_s": null,
+     "reload_plus_reopen_s": 1.319,
+     "majflt_reload": 81979,
+     "first_query": {
+      "topic": "gait analysis prosthetic limb amputee walking energetics",
+      "ms": 8065.86,
+      "majflt": 10739,
+      "n": 50,
+      "warm_ms": 6925.07
+     },
+     "recovery": [
+      {
+       "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+       "ms": 7826.92,
+       "majflt": 7764,
+       "n": 50,
+       "warm_ms": 8030.54
+      },
+      {
+       "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+       "ms": 5095.69,
+       "majflt": 7542,
+       "n": 50,
+       "warm_ms": 4758.83
+      },
+      {
+       "topic": "mine tailings dam failure water quality remediation monitoring",
+       "ms": 7883.11,
+       "majflt": 10565,
+       "n": 50,
+       "warm_ms": 7146.06
+      },
+      {
+       "topic": "marine protected area network design fisheries spillover effects",
+       "ms": 7754.96,
+       "majflt": 13456,
+       "n": 50,
+       "warm_ms": 7540.36
+      },
+      {
+       "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+       "ms": 2926.65,
+       "majflt": 5882,
+       "n": 50,
+       "warm_ms": 4450.5
+      },
+      {
+       "topic": "household debt mortgage stress test housing finance Canada",
+       "ms": 6050.8,
+       "majflt": 6199,
+       "n": 50,
+       "warm_ms": 6941.37
+      },
+      {
+       "topic": "corporate bond liquidity credit spread market microstructure",
+       "ms": 5414.66,
+       "majflt": 4580,
+       "n": 50,
+       "warm_ms": 6186.73
+      },
+      {
+       "topic": "electoral turnout youth voter mobilization campaign contact",
+       "ms": 5557.08,
+       "majflt": 5202,
+       "n": 50,
+       "warm_ms": 5114.18
+      },
+      {
+       "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+       "ms": 4403.68,
+       "majflt": 4677,
+       "n": 50,
+       "warm_ms": 5006.66
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "degraded_or_retried": [],
+ "log_scan": {
+  "n1.log": {
+   "path": "/home/vscode/work/inplace_update/m5/runs_main/n1.log",
+   "bytes": 734,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "n8.log": {
+   "path": "/home/vscode/work/inplace_update/m5/runs_main/n8.log",
+   "bytes": 737,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  }
+ },
+ "runs_dir": "/home/vscode/work/inplace_update/m5/runs_main"
+}

@@ -1,0 +1,302 @@
+From c704e5d4fb1765c418bf252f4f304890645f8a93 Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Tue, 29 Sep 2026 20:16:27 +0000
+Subject: [PATCH 1/2] fork: in-place v3 live-index guard (converter + fixture)
+
+Output canonicalised; refused unless under /home/vscode/work/inplace_update
+and outside <repo>/data, /var/tmp/seismic_stage and every mmap_dir of the
+served/staged manifests; no overlap with the source; sentinel
+.inplace_work_copy (canonical dst + source manifest FNV); byte copies with
+dev/inode + nlink check (no hard links, no reflink via copy_file_range);
+source opened read-only only. Fixture requires the sentinel.
+---
+ src/inplace_v3.rs | 151 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 144 insertions(+), 7 deletions(-)
+
+diff --git a/src/inplace_v3.rs b/src/inplace_v3.rs
+index 2c3a6b9..c1f030e 100644
+--- a/src/inplace_v3.rs
++++ b/src/inplace_v3.rs
+@@ -83,6 +83,124 @@ pub const COPIED_FILES: [&str; 8] = [
+     "document_mapping_offsets.bin",
+ ];
+ 
++/// Work root every v3 output must live under (live-index guard, 2026-09-29).
++pub const WORK_ROOT: &str = "/home/vscode/work/inplace_update";
++/// Roots an output may never be, or be inside.
++pub const FORBIDDEN_ROOTS: [&str; 2] = ["/workspaces/sfu-library-thinclient/data", "/var/tmp/seismic_stage"];
++/// Manifests whose `mmap_dir` entries are forbidden outputs.
++pub const SERVED_MANIFESTS: [&str; 3] = [
++    "/var/tmp/seismic_stage/staged_manifest.json",
++    "/workspaces/sfu-library-thinclient/data/thinclient_index/manifest.json",
++    "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/manifest.json",
++];
++/// Sentinel file marking a v3 work copy.
++pub const SENTINEL: &str = ".inplace_work_copy";
++
++fn canon_lenient(p: &Path) -> std::io::Result<std::path::PathBuf> {
++    if p.exists() {
++        return std::fs::canonicalize(p);
++    }
++    let parent = p.parent().ok_or_else(|| inval(format!("{p:?} has no parent")))?;
++    let name = p.file_name().ok_or_else(|| inval(format!("{p:?} has no file name")))?;
++    Ok(canon_lenient(parent)?.join(name))
++}
++
++fn collect_mmap_dirs(v: &serde_json::Value, out: &mut Vec<String>) {
++    match v {
++        serde_json::Value::Object(m) => {
++            for (k, x) in m {
++                if k == "mmap_dir" {
++                    if let Some(s) = x.as_str() {
++                        out.push(s.to_string());
++                    }
++                }
++                collect_mmap_dirs(x, out);
++            }
++        }
++        serde_json::Value::Array(a) => a.iter().for_each(|x| collect_mmap_dirs(x, out)),
++        _ => {}
++    }
++}
++
++/// Refuse any output that is, or is inside, the live index, the stage, or a
++/// served `mmap_dir`, or is not under WORK_ROOT; also refuse overlap with the
++/// source. Returns the canonical output path.
++pub fn guard_output_dir(dst: &Path, src: Option<&Path>) -> std::io::Result<std::path::PathBuf> {
++    let d = canon_lenient(dst)?;
++    let work = std::fs::canonicalize(WORK_ROOT)?;
++    if !d.starts_with(&work) || d == work {
++        return Err(inval(format!("GUARD: output {d:?} is not under {work:?}")));
++    }
++    let mut forbidden: Vec<std::path::PathBuf> = Vec::new();
++    for r in FORBIDDEN_ROOTS {
++        forbidden.push(canon_lenient(Path::new(r)).unwrap_or_else(|_| Path::new(r).to_path_buf()));
++    }
++    for m in SERVED_MANIFESTS {
++        if let Ok(b) = std::fs::read(m) {
++            if let Ok(v) = serde_json::from_slice::<serde_json::Value>(&b) {
++                let mut dirs = Vec::new();
++                collect_mmap_dirs(&v, &mut dirs);
++                for x in dirs {
++                    let p = Path::new(&x);
++                    let p = if p.is_absolute() { p.to_path_buf() } else { Path::new("/workspaces/sfu-library-thinclient").join(p) };
++                    forbidden.push(canon_lenient(&p).unwrap_or(p));
++                }
++            }
++        }
++    }
++    for f in &forbidden {
++        if d.starts_with(f) {
++            return Err(inval(format!("GUARD: output {d:?} is inside forbidden {f:?}")));
++        }
++    }
++    if let Some(src) = src {
++        let s = std::fs::canonicalize(src)?;
++        if d.starts_with(&s) || s.starts_with(&d) {
++            return Err(inval(format!("GUARD: output {d:?} overlaps source {s:?}")));
++        }
++    }
++    Ok(d)
++}
++
++/// Require the sentinel of a v3 work copy in `dir` (fixtures and updaters).
++pub fn require_work_copy(dir: &Path) -> std::io::Result<()> {
++    let d = guard_output_dir(dir, None)?;
++    let s = std::fs::read_to_string(d.join(SENTINEL))
++        .map_err(|e| inval(format!("GUARD: {d:?} has no {SENTINEL}: {e}")))?;
++    let v: serde_json::Value = serde_json::from_str(&s).map_err(|e| inval(e.to_string()))?;
++    if v.get("dst").and_then(|x| x.as_str()) != Some(&*d.to_string_lossy()) {
++        return Err(inval(format!("GUARD: {SENTINEL} of {d:?} names another dir")));
++    }
++    Ok(())
++}
++
++fn copy_bytes(src: &Path, dst: &Path) -> std::io::Result<u64> {
++    use std::io::Read;
++    let mut r = std::fs::OpenOptions::new().read(true).open(src)?;
++    let mut w = std::fs::OpenOptions::new().write(true).create_new(true).open(dst)?;
++    let mut buf = vec![0u8; 8 << 20];
++    let mut n: u64 = 0;
++    loop {
++        let k = r.read(&mut buf)?;
++        if k == 0 {
++            break;
++        }
++        w.write_all(&buf[..k])?;
++        n += k as u64;
++    }
++    w.sync_all()?;
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::MetadataExt;
++        let ms = std::fs::symlink_metadata(src)?;
++        let md = std::fs::symlink_metadata(dst)?;
++        if !md.file_type().is_file() || md.nlink() != 1 || (ms.dev() == md.dev() && ms.ino() == md.ino()) {
++            return Err(inval(format!("GUARD: {dst:?} is not an independent copy of {src:?}")));
++        }
++    }
++    Ok(n)
++}
++
+ /// FNV-1a 64 over a byte slice.
+ pub fn fnv1a64(bytes: &[u8]) -> u64 {
+     fnv1a64_update(0xcbf2_9ce4_8422_2325, bytes)
+@@ -221,15 +339,28 @@ pub fn convert_dv_v2_to_inplace_v3_with(
+     if man.get("has_knn").and_then(|x| x.as_bool()).unwrap_or(false) {
+         return Err(inval("knn-carrying source unsupported".into()));
+     }
+-    if dst.exists() && std::fs::read_dir(dst)?.next().is_some() {
+-        return Err(inval(format!("destination {dst:?} exists and is not empty")));
++    let dst_canon = guard_output_dir(dst, Some(src))?;
++    if dst.exists() {
++        return Err(inval(format!("destination {dst:?} exists")));
+     }
+-    std::fs::create_dir_all(dst)?;
++    std::fs::create_dir(&dst_canon)?;
++    let dst: &Path = &dst_canon;
++    write_all(
++        &dst.join(SENTINEL),
++        serde_json::to_string_pretty(&serde_json::json!({
++            "dst": dst.to_string_lossy(),
++            "source": std::fs::canonicalize(src)?.to_string_lossy(),
++            "source_manifest_fnv64": format!("{:016x}", fnv1a64(&man_bytes)),
++            "written_by": "convert_dv_v2_to_inplace_v3 (FORMAT_V3.md)",
++        }))
++        .map_err(|e| inval(e.to_string()))?
++        .as_bytes(),
++    )?;
+ 
+     let t_copy = Instant::now();
+     let mut copied: Vec<(String, u64)> = Vec::new();
+     for f in COPIED_FILES {
+-        let n = std::fs::copy(src.join(f), dst.join(f))?;
++        let n = copy_bytes(&src.join(f), &dst.join(f))?;
+         copied.push((f.to_string(), n));
+     }
+     let copy_s = t_copy.elapsed().as_secs_f64();
+@@ -1070,7 +1201,7 @@ impl Drop for ReaderGuard {
+ /// the remaining blocks), publish it in BOTH list_dir banks at epoch 0, and
+ /// write `oracle_dir`: a dv-v2 dir whose posting_lists.bin carries the SAME
+ /// list body natively (spliced in place of list t, manifest entry replaced;
+-/// other files hard-linked). The v3 decoder serving the unit and the v2
++/// other files byte-copied). The v3 decoder serving the unit and the v2
+ /// decoder serving the oracle must return identical results. With
+ /// `poison_native_inflation` the active bank's codes of list t's native
+ /// blocks are set to 255 (they must be ignored for a unit list). Offline
+@@ -1084,6 +1215,11 @@ pub fn a2b_fixture_rewrite_list(
+ ) -> std::io::Result<serde_json::Value> {
+     use std::os::unix::fs::FileExt;
+     use vectorium::DatasetGrowable as _;
++    require_work_copy(v3_dir)?;
++    let oracle_canon = guard_output_dir(oracle_dir, Some(v3_dir))?;
++    if oracle_canon.exists() {
++        return Err(inval(format!("oracle dir {oracle_canon:?} exists")));
++    }
+     let r = MmapSeismicIndexInplaceV3::from_mmap(v3_dir)?;
+     let e = r.published_epoch().ok_or_else(|| inval("no header".into()))?;
+     if e != 0 || r.non_native_lists() != Some(0) {
+@@ -1148,10 +1284,11 @@ pub fn a2b_fixture_rewrite_list(
+             bi.sync_all()?;
+         }
+     }
+-    std::fs::create_dir_all(oracle_dir)?;
++    std::fs::create_dir(&oracle_canon)?;
++    let oracle_dir: &Path = &oracle_canon;
+     for f in ["config.json", "forward_offsets.bin", "forward_data.bin", "forward_encoder.bin",
+               "token_to_id_map.bin", "document_mapping_strings.bin", "document_mapping_offsets.bin"] {
+-        std::fs::hard_link(v3_dir.join(f), oracle_dir.join(f))?;
++        copy_bytes(&v3_dir.join(f), &oracle_dir.join(f))?;
+     }
+     let pl = std::fs::read(v3_dir.join("posting_lists.bin"))?;
+     let pp_t = r.native_off[t] as usize;
+-- 
+2.55.0
+
+
+From 3157a951d68be667549d9391b045ee161aee6c3a Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Wed, 30 Sep 2026 00:18:18 +0000
+Subject: [PATCH 2/2] =?UTF-8?q?fork:=20in-place=20v3=20A2b=20line=20?=
+ =?UTF-8?q?=E2=80=94=20rename=20reserved=20identifier=20gen=20->=20generat?=
+ =?UTF-8?q?ion=20(edition=202024),=20zeroed=20timespec?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/inplace_v3.rs | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/src/inplace_v3.rs b/src/inplace_v3.rs
+index c1f030e..c8c5f3e 100644
+--- a/src/inplace_v3.rs
++++ b/src/inplace_v3.rs
+@@ -964,7 +964,7 @@ impl MmapSeismicIndexInplaceV3 {
+     pub fn begin_query(&self) -> Result<(u64, ReaderGuard), String> {
+         if !self.reg_enabled.load(Ordering::Relaxed) {
+             let e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
+-            return Ok((e, ReaderGuard { slot: None, gen: 0, pid: 0, last: std::cell::Cell::new(0) }));
++            return Ok((e, ReaderGuard { slot: None, generation: 0, pid: 0, last: std::cell::Cell::new(0) }));
+         }
+         let start = (self.pid as usize).wrapping_mul(2654435761) % READER_SLOTS;
+         let mut claimed = None;
+@@ -980,16 +980,16 @@ impl MmapSeismicIndexInplaceV3 {
+             }
+         }
+         let slot = claimed.ok_or_else(|| "reader table full".to_string())?;
+-        let gen = slot[7].load(Ordering::SeqCst).wrapping_add(1);
++        let generation = slot[7].load(Ordering::SeqCst).wrapping_add(1);
+         slot[1].store(READER_IDLE, Ordering::SeqCst);
+         slot[4].store(self.pidns, Ordering::SeqCst);
+         slot[5].store(0, Ordering::SeqCst);
+         slot[6].store(self.boot, Ordering::SeqCst);
+-        slot[7].store(gen, Ordering::SeqCst);
++        slot[7].store(generation, Ordering::SeqCst);
+         let t = monotonic_ns();
+         slot[2].store(t, Ordering::SeqCst);
+         slot[3].store(t, Ordering::SeqCst);
+-        let guard = ReaderGuard { slot: Some(slot), gen, pid: self.pid, last: std::cell::Cell::new(t) };
++        let guard = ReaderGuard { slot: Some(slot), generation, pid: self.pid, last: std::cell::Cell::new(t) };
+         let mut e = self.published_epoch().ok_or_else(|| "no valid header slot at query time".to_string())?;
+         loop {
+             slot[1].store(e, Ordering::SeqCst);
+@@ -1123,7 +1123,7 @@ const _START_MASK_IS_32: () = assert!(V3_START_MASK == 0xFFFF_FFFF);
+ pub fn monotonic_ns() -> u64 {
+     #[cfg(unix)]
+     {
+-        let mut ts = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++        let mut ts: libc::timespec = unsafe { std::mem::zeroed() };
+         unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut ts) };
+         (ts.tv_sec as u64).wrapping_mul(1_000_000_000).wrapping_add(ts.tv_nsec as u64)
+     }
+@@ -1161,7 +1161,7 @@ pub const HEARTBEAT_NS: u64 = 10_000_000_000;
+ /// A registered reader-table slot; cleared (epoch idle, then pid 0) on drop.
+ pub struct ReaderGuard {
+     slot: Option<&'static [AtomicU64]>,
+-    gen: u64,
++    generation: u64,
+     pid: u64,
+     last: std::cell::Cell<u64>,
+ }
+@@ -1175,7 +1175,7 @@ impl ReaderGuard {
+         if now.wrapping_sub(self.last.get()) < HEARTBEAT_NS {
+             return Ok(());
+         }
+-        if slot[0].load(Ordering::SeqCst) != self.pid || slot[7].load(Ordering::SeqCst) != self.gen {
++        if slot[0].load(Ordering::SeqCst) != self.pid || slot[7].load(Ordering::SeqCst) != self.generation {
+             return Err("reader-table slot reclaimed as stale during the query".into());
+         }
+         slot[3].store(now, Ordering::SeqCst);
+@@ -1187,7 +1187,7 @@ impl ReaderGuard {
+ impl Drop for ReaderGuard {
+     fn drop(&mut self) {
+         if let Some(slot) = self.slot {
+-            if slot[0].load(Ordering::SeqCst) == self.pid && slot[7].load(Ordering::SeqCst) == self.gen {
++            if slot[0].load(Ordering::SeqCst) == self.pid && slot[7].load(Ordering::SeqCst) == self.generation {
+                 slot[1].store(READER_IDLE, Ordering::SeqCst);
+                 slot[0].store(0, Ordering::SeqCst);
+             }
+-- 
+2.55.0
+
