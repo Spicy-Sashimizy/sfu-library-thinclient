@@ -1,0 +1,655 @@
+{
+  "item": "delta-ingest C livedocs bitset",
+  "date": "2026-10-01",
+  "topic_offset": 101,
+  "health": {
+    "checked": true,
+    "ok": true,
+    "problems": [],
+    "env": {
+      "SFU_SEISMIC_STAGE_DIR": "",
+      "SFU_META_STAGE_DIR": "",
+      "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "SFU_DELTA_ROOT": "",
+      "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+      "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+      "SFU_EMBEDDING_MODEL_PATH": "/home/vscode/work/delta_ingest/m1/models/sfu-academic-embed-v5",
+      "SFU_SEISMIC_FEDERATION": "parallel"
+    },
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "onnxruntime": "1.26.0",
+    "splade_terms": 43,
+    "cross_encoder": "CrossEncoder",
+    "embedding_model": "SentenceTransformer",
+    "backend_class": "ParallelSeismicBackend",
+    "n_shards": 8,
+    "warnings_at_load": []
+  },
+  "warning_signatures_during_run": [],
+  "n_warnings_during_run": 0,
+  "commit": "d069057f",
+  "script": "scripts/experiments/eval_delta_ingest_livedocs_bitset.py",
+  "delivered_path": "python per-shard post-filter before _merge_topk (no Rust gather-time skip)",
+  "backend": "ParallelSeismicBackend",
+  "n_shards": 8,
+  "topics_planned": 19,
+  "topics_done": 19,
+  "topics_done_keys": [
+    "maternal mortality skilled birth attendance low resource settings",
+    "neglected tropical disease mass drug administration elimination",
+    "solar photovoltaic degradation module reliability field performance",
+    "district heating waste heat recovery thermal network efficiency",
+    "auditor independence non-audit services fee dependence quality",
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "causal inference propensity score matching observational studies",
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "socially engaged art practice participation community collaboration",
+    "conservation of contemporary art materials degradation museum practice",
+    "dramaturgy new play development workshop process",
+    "puppetry object theatre performance materiality audience",
+    "audiobook market growth narration production publishing industry",
+    "peer review reform preprints open science scholarly communication",
+    "community land trust affordable housing stewardship models",
+    "participatory budgeting civic engagement municipal decision making",
+    "psychological safety team performance speaking up organizations",
+    "corporate social responsibility greenwashing stakeholder perception",
+    "forensic entomology postmortem interval insect succession estimation"
+  ],
+  "ordinal_dir": "/var/tmp/sfu_delta_C_20260929/ords",
+  "ordinal_dir_source": "/home/vscode/work/delta_ingest/livedocs_20261001/code_d069057f/spike/meta_consolidation/work_ordinals_full",
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "nbits": 150413098,
+  "G1_bit_identity_empty_bitset": {
+    "fused_identical_off1_vs_empty": 19,
+    "final_identical_off1_vs_empty": 19,
+    "fused_identical_off1_vs_off2_control": 19,
+    "final_identical_off1_vs_off2_control": 19,
+    "fused_identical_empty_vs_off2": 19,
+    "final_identical_empty_vs_off2": 19,
+    "n": 19
+  },
+  "G2_synthetic_delete": {
+    "design": "per topic: bitset = seeded 0.1% random ordinals + that topic's top-1 fused/BM25F/SPLADE ids",
+    "random_ordinals": 150413,
+    "seed_ids_total": 49,
+    "topics_with_seed_in_output": 0,
+    "topics_with_tombstoned_in_output": 0,
+    "tombstoned_in_output_examples": [],
+    "order_preserved_bm25f": 19,
+    "order_preserved_splade": 19,
+    "order_preserved_fused_report_only": 6,
+    "tombstoned_ids_in_off_outputs_total": 50,
+    "n": 19
+  },
+  "R1_overfetch": {
+    "seismic_calls_logged": 19,
+    "queries_with_drops": 19,
+    "candidates_dropped_total": 51,
+    "max_dropped_one_shard": 2,
+    "certified_exact_at_50": 19,
+    "certified_exact_at_10": 19
+  },
+  "R2_latency_warm_traverse_ms": {
+    "none": {
+      "p50": 1832.82,
+      "p95": 3156.29,
+      "n": 38
+    },
+    "empty": {
+      "p50": 328.59,
+      "p95": 862.72,
+      "n": 38
+    },
+    "synth": {
+      "p50": 47.56,
+      "p95": 208.53,
+      "n": 38
+    }
+  },
+  "R2_topics": 19,
+  "R2_filter_cost": {
+    "empty": {
+      "shard_filter_ms_p50": 23.271,
+      "shard_filter_ms_max": 812.534,
+      "shard_candidates_per_call": 800,
+      "bm25f_filter_hits_ms_per_call_50_hits": 0.264
+    },
+    "synth": {
+      "shard_filter_ms_p50": 35.821,
+      "shard_filter_ms_max": 458.188,
+      "shard_candidates_per_call": 800,
+      "bm25f_filter_hits_ms_per_call_50_hits": 0.265
+    }
+  },
+  "rows": [
+    {
+      "topic": "maternal mortality skilled birth attendance low resource settings",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7114987055",
+        "W2184164286",
+        "W4383117160"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5061.976608994883,
+        "splade": 7234.462727996288
+      },
+      "leg_ms_empty": {
+        "bm25f": 2558.9051569986623,
+        "splade": 417.0325309969485
+      }
+    },
+    {
+      "topic": "neglected tropical disease mass drug administration elimination",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4376870682",
+        "W2200372125",
+        "W4221143758"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4479.175615997519,
+        "splade": 5286.132250999799
+      },
+      "leg_ms_empty": {
+        "bm25f": 1624.465400003828,
+        "splade": 1603.5021410061745
+      }
+    },
+    {
+      "topic": "solar photovoltaic degradation module reliability field performance",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4210862225",
+        "W4205944588"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 6148.201967997011,
+        "splade": 4544.335967992083
+      },
+      "leg_ms_empty": {
+        "bm25f": 3407.6978040102404,
+        "splade": 1090.5922090023523
+      }
+    },
+    {
+      "topic": "district heating waste heat recovery thermal network efficiency",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4406889440",
+        "W4410474720",
+        "W2768927943"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 7248.291638999945,
+        "splade": 3453.98497399583
+      },
+      "leg_ms_empty": {
+        "bm25f": 3448.7249340018025,
+        "splade": 1461.178818004555
+      }
+    },
+    {
+      "topic": "auditor independence non-audit services fee dependence quality",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3186834802",
+        "W3153249265"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 3629.150218999712,
+        "splade": 4878.861898003379
+      },
+      "leg_ms_empty": {
+        "bm25f": 2151.878916003625,
+        "splade": 530.9698619967094
+      }
+    },
+    {
+      "topic": "revenue recognition standard IFRS 15 adoption financial reporting",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7136005161",
+        "W4414693935",
+        "W1908103988"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4384.120401009568,
+        "splade": 3427.906103999703
+      },
+      "leg_ms_empty": {
+        "bm25f": 1808.318106996012,
+        "splade": 747.3585950065171
+      }
+    },
+    {
+      "topic": "causal inference propensity score matching observational studies",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7117117856",
+        "W4318426914",
+        "W4294572116"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5846.762433007825,
+        "splade": 1829.0810309990775
+      },
+      "leg_ms_empty": {
+        "bm25f": 2631.724040998961,
+        "splade": 1037.1952410059748
+      }
+    },
+    {
+      "topic": "extreme value theory tail risk catastrophe insurance modelling",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7009802778",
+        "W3142891152",
+        "W7015092056"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3172.7573910029605,
+        "splade": 4070.7392409967724
+      },
+      "leg_ms_empty": {
+        "bm25f": 1891.586911995546,
+        "splade": 1528.4088299958967
+      }
+    },
+    {
+      "topic": "socially engaged art practice participation community collaboration",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2543081593",
+        "W3160148339"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4156.797267991351,
+        "splade": 5847.281847993145
+      },
+      "leg_ms_empty": {
+        "bm25f": 3503.6734380119015,
+        "splade": 2263.991410000017
+      }
+    },
+    {
+      "topic": "conservation of contemporary art materials degradation museum practice",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2789104085",
+        "W6999183331"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 2709.2484239983605,
+        "splade": 5121.251156000653
+      },
+      "leg_ms_empty": {
+        "bm25f": 1071.7026499914937,
+        "splade": 3384.4431990000885
+      }
+    },
+    {
+      "topic": "dramaturgy new play development workshop process",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4311005535",
+        "W2969760857"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 6880.35901200783,
+        "splade": 4179.7733979910845
+      },
+      "leg_ms_empty": {
+        "bm25f": 3647.940070994082,
+        "splade": 1282.1369559969753
+      }
+    },
+    {
+      "topic": "puppetry object theatre performance materiality audience",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4221047592",
+        "W4401911398",
+        "W4377818689"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4507.025997998426,
+        "splade": 3324.9758439924335
+      },
+      "leg_ms_empty": {
+        "bm25f": 2823.7394590105396,
+        "splade": 2470.596019993536
+      }
+    },
+    {
+      "topic": "audiobook market growth narration production publishing industry",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7113530172",
+        "W7129341698"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5026.926805003313,
+        "splade": 4923.339462009608
+      },
+      "leg_ms_empty": {
+        "bm25f": 2798.6910220060963,
+        "splade": 1104.3821810017107
+      }
+    },
+    {
+      "topic": "peer review reform preprints open science scholarly communication",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3118339385",
+        "W6966746736"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 4153.246792993741,
+        "splade": 4844.69288100081
+      },
+      "leg_ms_empty": {
+        "bm25f": 2286.0536049993243,
+        "splade": 1829.97516800242
+      }
+    },
+    {
+      "topic": "community land trust affordable housing stewardship models",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7046967415",
+        "W6887702049",
+        "W2916760425"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 1860.5155419936636,
+        "splade": 5644.0629130083835
+      },
+      "leg_ms_empty": {
+        "bm25f": 535.550125001464,
+        "splade": 2770.384956995258
+      }
+    },
+    {
+      "topic": "participatory budgeting civic engagement municipal decision making",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W2519450332",
+        "W4362552713",
+        "W4401174179"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": true,
+      "leg_ms_off1": {
+        "bm25f": 5773.030858996208,
+        "splade": 4001.7082819977077
+      },
+      "leg_ms_empty": {
+        "bm25f": 1830.1699830044527,
+        "splade": 1517.6555969956098
+      }
+    },
+    {
+      "topic": "psychological safety team performance speaking up organizations",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W3134775844",
+        "W7037969218",
+        "W2965019228"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 3992.72761400789,
+        "splade": 3268.356199012487
+      },
+      "leg_ms_empty": {
+        "bm25f": 2053.580260995659,
+        "splade": 446.67096399643924
+      }
+    },
+    {
+      "topic": "corporate social responsibility greenwashing stakeholder perception",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W4414509501",
+        "W7112264467"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 2,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 2961.220185010461,
+        "splade": 4623.4592530090595
+      },
+      "leg_ms_empty": {
+        "bm25f": 1443.9015879906947,
+        "splade": 1175.1303510100115
+      }
+    },
+    {
+      "topic": "forensic entomology postmortem interval insect succession estimation",
+      "g1_fused": true,
+      "g1_final": true,
+      "ctl_fused": true,
+      "ctl_final": true,
+      "g1_vs_off2_fused": true,
+      "g1_vs_off2_final": true,
+      "seed": [
+        "W7135892396",
+        "W7019029161",
+        "W7028604548"
+      ],
+      "seed_in_output": [],
+      "dead_in_output": [],
+      "dead_in_off_outputs": 3,
+      "order_bm25f": true,
+      "order_splade": true,
+      "order_fused": false,
+      "leg_ms_off1": {
+        "bm25f": 5641.4389760029735,
+        "splade": 5256.629854004132
+      },
+      "leg_ms_empty": {
+        "bm25f": 2494.7875759971794,
+        "splade": 694.4528790045297
+      }
+    }
+  ],
+  "wall_s": 707.6,
+  "verdicts": {
+    "G1": "PASS",
+    "G2": "PASS"
+  }
+}

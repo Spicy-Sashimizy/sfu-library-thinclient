@@ -1,0 +1,271 @@
+{
+ "date": "2026-10-01",
+ "script": "scripts/experiments/eval_delta_ingest_o17_ingest_seed.py",
+ "git_commit_at_run": "3eee21af43b825299b0e2ce3ca1d1356558ef845",
+ "file": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+ "bitmap": "/home/vscode/work/delta_ingest/oa/bitmap",
+ "bitmap_id": "7745356383de5c50",
+ "bitmap_coverage": {
+  "known": 141288198,
+  "oa": 110525184,
+  "not_oa": 30763014,
+  "unknown": 9124900,
+  "units": 2040,
+  "repeat_hits": 0
+ },
+ "bitmap_source": {
+  "work": "/home/vscode/work/delta_ingest/oa/work",
+  "note": "OpenAlex works snapshot 2026-09-23 (manifest fetched 2026-10-01 15:31Z), 2,040 partitions, full pass"
+ },
+ "seed_set": 9971,
+ "seed_set_bitmap_states": {
+  "oa": 7224,
+  "not_oa": 2747,
+  "unknown": 0
+ },
+ "m7seed_reference": {
+  "hot_compared": 9965,
+  "encode_changed": 2517,
+  "content_changed": 8047,
+  "ratio": 3.959
+ },
+ "timings_valid": false,
+ "arms": {
+  "bitmap_off": {
+   "seed_stats": {
+    "meta_rows": 9971,
+    "meta_missing": 0,
+    "seeded": 9971
+   },
+   "classify": {
+    "2015": {
+     "min_year": 2015,
+     "classify_all_in_slice": {
+      "new": 160347,
+      "updated": 32666,
+      "unchanged": 1918
+     },
+     "seeded_subset": {
+      "updated": 8047,
+      "encode_changed": 2517,
+      "updated_content_only": 5530,
+      "unchanged": 1918
+     },
+     "seeded_subset_touched": 9965,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 28,
+      "content_only_type_differs": 1034,
+      "content_only_is_oa_differs": 5225,
+      "content_only_doi_differs": 13,
+      "content_only_combo:is_oa": 4465,
+      "content_only_combo:type+is_oa": 727,
+      "content_only_combo:type": 302,
+      "content_only_combo:type+is_oa+doi": 2,
+      "content_only_combo:year+is_oa": 22,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:year+type": 1,
+      "content_only_combo:is_oa+doi": 5,
+      "content_only_combo:year+is_oa+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34584,
+      "doi_diff_raw_base_vs_normalized_record": 33600,
+      "doi_diff_both_normalize_doi": 379
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9591,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2383,
+     "in_slice_touched": 194931,
+     "must_encode_as_coded": 193013,
+     "must_encode_encode_aware": 187483,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0099,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0397,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    },
+    "2010": {
+     "min_year": 2010,
+     "classify_all_in_slice": {
+      "new": 170738,
+      "updated": 32702,
+      "unchanged": 1918
+     },
+     "seeded_subset": {
+      "updated": 8053,
+      "encode_changed": 2520,
+      "updated_content_only": 5533,
+      "unchanged": 1918
+     },
+     "seeded_subset_touched": 9971,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 31,
+      "content_only_type_differs": 1035,
+      "content_only_is_oa_differs": 5227,
+      "content_only_doi_differs": 13,
+      "content_only_combo:is_oa": 4465,
+      "content_only_combo:type+is_oa": 727,
+      "content_only_combo:type": 302,
+      "content_only_combo:year+type": 2,
+      "content_only_combo:type+is_oa+doi": 2,
+      "content_only_combo:year+is_oa": 24,
+      "content_only_combo:type+doi": 1,
+      "content_only_combo:is_oa+doi": 5,
+      "content_only_combo:year+is_oa+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34620,
+      "doi_diff_raw_base_vs_normalized_record": 33631,
+      "doi_diff_both_normalize_doi": 405
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9567,
+     "ratio_seeded_touched_to_content_changed_as_coded": 1.2382,
+     "in_slice_touched": 205358,
+     "must_encode_as_coded": 203440,
+     "must_encode_encode_aware": 197907,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0094,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0376,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    }
+   }
+  },
+  "bitmap_on": {
+   "seed_stats": {
+    "meta_rows": 9971,
+    "meta_missing": 0,
+    "is_oa_from_bitmap": 9971,
+    "seeded": 9971
+   },
+   "classify": {
+    "2015": {
+     "min_year": 2015,
+     "classify_all_in_slice": {
+      "new": 160347,
+      "updated": 28201,
+      "unchanged": 6383
+     },
+     "seeded_subset": {
+      "updated": 3582,
+      "encode_changed": 2517,
+      "updated_content_only": 1065,
+      "unchanged": 6383
+     },
+     "seeded_subset_touched": 9965,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 28,
+      "content_only_type_differs": 1034,
+      "content_only_is_oa_differs": 0,
+      "content_only_doi_differs": 13,
+      "content_only_combo:type": 1029,
+      "content_only_combo:type+doi": 3,
+      "content_only_combo:year": 22,
+      "content_only_combo:year+type": 1,
+      "content_only_combo:doi": 5,
+      "content_only_combo:year+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34584,
+      "doi_diff_raw_base_vs_normalized_record": 33600,
+      "doi_diff_both_normalize_doi": 379
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9591,
+     "ratio_seeded_touched_to_content_changed_as_coded": 2.782,
+     "in_slice_touched": 194931,
+     "must_encode_as_coded": 188548,
+     "must_encode_encode_aware": 187483,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0339,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0397,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    },
+    "2010": {
+     "min_year": 2010,
+     "classify_all_in_slice": {
+      "new": 170738,
+      "updated": 28237,
+      "unchanged": 6383
+     },
+     "seeded_subset": {
+      "updated": 3588,
+      "encode_changed": 2520,
+      "updated_content_only": 1068,
+      "unchanged": 6383
+     },
+     "seeded_subset_touched": 9971,
+     "content_only_field_attribution": {
+      "content_only_year_differs": 31,
+      "content_only_type_differs": 1035,
+      "content_only_is_oa_differs": 0,
+      "content_only_doi_differs": 13,
+      "content_only_combo:type": 1029,
+      "content_only_combo:year+type": 2,
+      "content_only_combo:type+doi": 3,
+      "content_only_combo:year": 24,
+      "content_only_combo:doi": 5,
+      "content_only_combo:year+doi": 4,
+      "content_only_combo:year+type+doi": 1
+     },
+     "o5_doi_all_in_base": {
+      "in_base_compared": 34620,
+      "doi_diff_raw_base_vs_normalized_record": 33631,
+      "doi_diff_both_normalize_doi": 405
+     },
+     "ratio_seeded_touched_to_encode_changed": 3.9567,
+     "ratio_seeded_touched_to_content_changed_as_coded": 2.779,
+     "in_slice_touched": 205358,
+     "must_encode_as_coded": 198975,
+     "must_encode_encode_aware": 197907,
+     "ratio_in_slice_touched_to_must_encode_as_coded": 1.0321,
+     "ratio_in_slice_touched_to_must_encode_encode_aware": 1.0376,
+     "note": "only the hot section is seeded: in-base ids outside it have no base hash and stay 'updated' (as coded); whole-partition ratios are therefore partial-seed numbers"
+    }
+   }
+  }
+ },
+ "summary_min_year_2015": {
+  "seeded_updated": [
+   8047,
+   3582
+  ],
+  "seeded_unchanged": [
+   1918,
+   6383
+  ],
+  "seeded_content_only_updates": [
+   5530,
+   1065
+  ],
+  "content_only_combo_is_oa": [
+   4465,
+   0
+  ],
+  "content_only_is_oa_differs": [
+   5225,
+   0
+  ],
+  "order": "[bitmap_off, bitmap_on]"
+ },
+ "summary_min_year_2010": {
+  "seeded_updated": [
+   8053,
+   3588
+  ],
+  "seeded_unchanged": [
+   1918,
+   6383
+  ],
+  "seeded_content_only_updates": [
+   5533,
+   1068
+  ],
+  "content_only_combo_is_oa": [
+   4465,
+   0
+  ],
+  "content_only_is_oa_differs": [
+   5227,
+   0
+  ],
+  "order": "[bitmap_off, bitmap_on]"
+ },
+ "wall_s": 280.0
+}

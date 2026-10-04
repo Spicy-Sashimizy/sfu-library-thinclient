@@ -1,0 +1,163 @@
+{
+ "measurement": "O14 base-vector reuse: encode time saved, served dotvbyte code equality, locators for shards 1-7",
+ "script": "scripts/experiments/eval_delta_ingest_o14_reuse_saving.py",
+ "bar": "none pre-registered",
+ "prepare": {
+  "date": "2026-10-01T15:48:20Z",
+  "head": "36dc0220",
+  "partition": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+  "min_year": 2015,
+  "seed_ledger": "/home/vscode/work/delta_ingest/seed/ledger_primary.sqlite",
+  "seeded_ids": 9971,
+  "records": 9965,
+  "records_file": "/home/vscode/work/delta_ingest/fix/o14/primary_seeded_2015.jsonl",
+  "seconds": 56.2
+ },
+ "served_codes": {
+  "date": "2026-10-01T16:10:07Z",
+  "head": "9f6e73f8",
+  "sample_rows": 20000,
+  "seed": 20261001,
+  "twin": "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+  "served_shard_read": "/var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap",
+  "authority_shard": "/workspaces/sfu-library-thinclient/data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap",
+  "records_checked_byte_equal_vs_authority": 20000,
+  "records_byte_mismatch_vs_authority": 0,
+  "reused_exact": 20000,
+  "refused": {},
+  "compared": 20000,
+  "missing": 0,
+  "docs_codes_equal": 20000,
+  "docs_differ": 0,
+  "differ_vmax": 0,
+  "differ_nnz": 0,
+  "differ_token_set": 0,
+  "differ_u8_value": 0,
+  "python_quantiser_equals_served": 20000,
+  "examples": [],
+  "delta_chain": {
+   "jsonl": "/home/vscode/work/delta_ingest/fix/o14/codes/reused.jsonl",
+   "stock": "/home/vscode/work/delta_ingest/fix/o14/codes/reused.index.seismic",
+   "mmap_dir": "/home/vscode/work/delta_ingest/fix/o14/codes/reused.dotvbyte.v2.mmap",
+   "format": "dotvbyte_fixedu8_v2",
+   "stages": {
+    "build": {
+     "seconds": 9.46,
+     "docs": 20000,
+     "dim": 22364,
+     "nnz": 1766105
+    },
+    "mmap": {
+     "seconds": 0.72
+    },
+    "dotvbyte": {
+     "seconds": 1.03
+    }
+   }
+  },
+  "read_seconds": 25.33,
+  "build_seconds": 11.24,
+  "compare_seconds": 60.01,
+  "timings_valid": false,
+  "peak_rss_gb": 1.244,
+  "method": "decode dotvbyte v2 records of both shards (decode_v2) -> {token: u8} + vmax bits"
+ },
+ "encode_saving": {
+  "date_start": "2026-10-02T01:18:51Z",
+  "head": "aaabe1a7",
+  "encoder_class": "SpladeDocEncoderTRT",
+  "encoder_backend_label": "onnxruntime_trt_iob_fp16",
+  "encoder_runtime_backend": "onnxruntime_cuda_iob_fp16",
+  "batch": 64,
+  "encoder_init_seconds": 12.27,
+  "warmup_docs": 640,
+  "warmup_seconds": 1.52,
+  "base_shards": [
+   "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap"
+  ],
+  "gpu_apps_before": [
+   "2851409, [Not Found], [N/A]",
+   "2851411, [Not Found], [N/A]"
+  ],
+  "gpu_util_after": "39 %, 8578 MiB",
+  "arms": [
+   {
+    "arm": "off_0",
+    "records": 9965,
+    "unchanged": 1918,
+    "updated": 8047,
+    "new": 0,
+    "todo": 8047,
+    "reused_ledger": 0,
+    "reused_base": 0,
+    "base_refusals": {},
+    "encoded": 8047,
+    "missing": 0,
+    "encode_seconds": 12.803,
+    "base_lookup_seconds": 0.0,
+    "classify_to_vectors_seconds": 13.031,
+    "encode_docs_per_s": 628.5,
+    "gpu_apps_during": [
+     "2851409, [Not Found], [N/A]",
+     "2851411, [Not Found], [N/A]"
+    ]
+   },
+   {
+    "arm": "on_1",
+    "records": 9965,
+    "unchanged": 1918,
+    "updated": 8047,
+    "new": 0,
+    "todo": 8047,
+    "reused_ledger": 0,
+    "reused_base": 704,
+    "base_refusals": {
+     "encode_text_changed": 2517,
+     "not_in_base_shards": 4826
+    },
+    "encoded": 7343,
+    "missing": 0,
+    "encode_seconds": 12.243,
+    "base_lookup_seconds": 1.205,
+    "classify_to_vectors_seconds": 13.662,
+    "encode_docs_per_s": 599.8,
+    "gpu_apps_during": [
+     "2851409, [Not Found], [N/A]",
+     "2851411, [Not Found], [N/A]"
+    ]
+   },
+   {
+    "arm": "off_2",
+    "records": 9965,
+    "unchanged": 1918,
+    "updated": 8047,
+    "new": 0,
+    "todo": 8047,
+    "reused_ledger": 0,
+    "reused_base": 0,
+    "base_refusals": {},
+    "encoded": 8047,
+    "missing": 0,
+    "encode_seconds": 12.969,
+    "base_lookup_seconds": 0.0,
+    "classify_to_vectors_seconds": 13.229,
+    "encode_docs_per_s": 620.5,
+    "gpu_apps_during": [
+     "2851409, [Not Found], [N/A]",
+     "2851411, [Not Found], [N/A]"
+    ]
+   }
+  ],
+  "off_mean_encode_seconds": 12.886,
+  "on_mean_encode_seconds": 12.243,
+  "off_mean_end_to_end_seconds": 13.13,
+  "on_mean_end_to_end_seconds": 13.662,
+  "end_to_end_saving_fraction": -0.0405,
+  "encoded_off": 8047,
+  "encoded_on": 7343,
+  "peak_rss_gb": 1.597,
+  "device": "cuda",
+  "records_limit": null,
+  "lock": "flock -s acquired 2026-10-02T01:17:56Z, nice 10, cores 12-15"
+ }
+}

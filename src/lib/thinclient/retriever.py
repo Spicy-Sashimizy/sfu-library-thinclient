@@ -526,7 +526,10 @@ class ThinClientRetriever:
         self._bert_vocab = None
         self._seismic = None
         self._ordinals = None
+        self._oa = None
         self._delta = None
+        self._bm25f_parse_once = False
+        self._delta_abs_route = False
 
 
     def _manifest(self) -> dict:
@@ -584,6 +587,8 @@ class ThinClientRetriever:
                     abs_path = sdir / "abstracts.sqlite"
                     if abs_path.exists() or (sdir / "abstracts.sqlite.flat").is_dir():
                         self._abstract_stores[sdir.name] = AbstractStore(abs_path)
+            self._bm25f_parse_once = os.environ.get("SFU_BM25F_PARSE_ONCE", "") == "1"
+            self._delta_abs_route = os.environ.get("SFU_DELTA_ABS_ROUTE", "") == "1"
             from lib.thinclient.delta_layer import DeltaLayer
             self._delta = DeltaLayer.load_if_enabled(self.root)
             if self._delta is not None:
@@ -635,6 +640,8 @@ class ThinClientRetriever:
                     self._dense_cache = None
             from lib.thinclient.ordinals import load_if_enabled
             self._ordinals = load_if_enabled(self.root, self._manifest())
+            from lib.thinclient.oa_overlay import load_if_enabled as load_oa
+            self._oa = load_oa(self.root, self._manifest())
 
             self._loaded = True
             logger.info("thinclient: loaded %d live sections %s, dense=%s, "
@@ -990,6 +997,9 @@ class ThinClientRetriever:
             return []
         merged: list[tuple[str, float]] = []
         tagged: list[tuple[str, float, object]] = []
+        if self._delta is not None:
+            self._delta_attach_buffer_section()
+        parsed: list[tuple] = []
         for name, sec in self._sections.items():
             if _era_skip(name, f):
                 continue
@@ -998,8 +1008,20 @@ class ThinClientRetriever:
             if origin == "buffer":
                 idx.reload()
                 searcher = idx.searcher()
-            qt = idx.parse_query(text, ["title"])
-            qa = idx.parse_query(text, ["abstract"])
+            try:
+                if self._bm25f_parse_once:
+                    hit = next((p for p in parsed if p[0] == sec["schema"]), None)
+                    if hit is None:
+                        hit = (sec["schema"], idx.parse_query(text, ["title"]),
+                               idx.parse_query(text, ["abstract"]))
+                        parsed.append(hit)
+                    qt, qa = hit[1], hit[2]
+                else:
+                    qt = idx.parse_query(text, ["title"])
+                    qa = idx.parse_query(text, ["abstract"])
+            except ValueError as exc:
+                logger.debug("BM25F query not parseable in %s (%s); no lexical hits", name, exc)
+                continue
             clauses = [
                 (tantivy.Occur.Should, tantivy.Query.boost_query(qt, 3.0)),
                 (tantivy.Occur.Should, qa),
@@ -1013,12 +1035,14 @@ class ThinClientRetriever:
             if f and f.get("type"):
                 must.append((tantivy.Occur.Must, tantivy.Query.term_query(
                     sec["schema"], "doctype", f["type"])))
-            if f and f.get("is_oa"):
+            oa_base = bool(f and f.get("is_oa")) and self._oa is not None and origin is None
+            if f and f.get("is_oa") and not oa_base:
                 must.append((tantivy.Occur.Must, tantivy.Query.term_query(
                     sec["schema"], "is_oa", True)))
             final = tantivy.Query.boolean_query(must) if len(must) > 1 else q
-            for score, addr in searcher.search(final, top_k).hits:
-                tagged.append((searcher.doc(addr)["id"][0], float(score), origin))
+            hits = [(searcher.doc(addr)["id"][0], float(score), origin) for score, addr in
+                    searcher.search(final, top_k * OVERFETCH_FILTERED if oa_base else top_k).hits]
+            tagged.extend(self._oa.keep_oa(hits) if oa_base else hits)
         merged = (self._delta.filter_hits(tagged) if self._delta is not None
                   else [(d, s) for d, s, _ in tagged])
         merged.sort(key=lambda t: -t[1])
@@ -1220,6 +1244,31 @@ class ThinClientRetriever:
             res = self._post_filter(res, f)
         return res[:top_k]
 
+    def _delta_attach_buffer_section(self) -> None:
+        """Open the delta buffer's tantivy section if it appeared after load
+        (copy-on-write rebind of `_sections`, so in-flight iterations keep the
+        old dict). No-op without a delta layer or once the section is open."""
+        delta = self._delta
+        if delta is None:
+            return
+        from lib.thinclient.delta_layer import BUFFER_ORIGIN, BUFFER_SECTION
+        if BUFFER_SECTION in self._sections:
+            return
+        sdir = delta.buffer_section_dir()
+        if sdir is None:
+            return
+        import tantivy
+        with self._lock:
+            if self._delta is not delta or BUFFER_SECTION in self._sections:
+                return
+            idx = tantivy.Index.open(str(sdir / "tantivy"))
+            idx.reload()
+            sections = dict(self._sections)
+            sections[BUFFER_SECTION] = {"index": idx, "searcher": idx.searcher(),
+                                        "schema": idx.schema, "bmp": [],
+                                        "delta_origin": BUFFER_ORIGIN}
+            self._sections = sections
+
     def _delta_merge_sparse(self, query: str, res: list[tuple[str, float]],
                             fetch: int) -> list[tuple[str, float]]:
         res = self._delta.filter_ids(res)
@@ -1318,6 +1367,8 @@ class ThinClientRetriever:
                     _query("docs", list(enc), enc)
                 if other:
                     _query("docs_other", other, None)
+        if self._oa is not None:
+            self._oa.apply_rows(out, ids)
         if self._dense_cache is not None:
             missing = [i for i in ids if i not in out]
             if missing:
@@ -1349,7 +1400,7 @@ class ThinClientRetriever:
         Note only the SPLADE and dense legs reach here: `_bm25f_leg` pushes
         filters into tantivy as boolean clauses instead.
         """
-        if self._ordinals is not None:
+        if self._ordinals is not None and not (self._oa is not None and f.get("is_oa")):
             kept, unresolved = self._ordinals.post_filter(ranked, f)
             if not unresolved:
                 return kept
@@ -1405,7 +1456,8 @@ class ThinClientRetriever:
         for did, score in ranked:
             row = rows.get(did)
             title, doi, year, dtype, is_oa = (
-                (row[1], row[2], row[3], row[4], bool(row[5])) if row
+                (row[1], row[2], row[3], row[4],
+                 None if row[5] is None and self._oa is not None else bool(row[5])) if row
                 else ("", "", None, "", False))
             results.append({
                 "doi": doi,
@@ -1428,17 +1480,49 @@ class ThinClientRetriever:
         """Hot-section sidecars first; missing ids via OpenAlex API (cold-section
         policy: fetch BEFORE rerank, ~100 docs ≈ one mget)."""
         out: dict[str, str] = {}
-        for store in self._abstract_stores.values():
+        delta = self._delta
+        routed = self._delta_abs_route and delta is not None
+        stores, sections = self._abstract_stores, self._sections
+        for name, store in stores.items():
+            if routed and "delta_origin" in sections.get(name, ()):
+                continue
             missing = [i for i in ids if i not in out]
             if not missing:
                 break
             out.update(store.fetch(missing))
+        if routed:
+            missing = [i for i in ids if i not in out]
+            if missing:
+                out.update(self._fetch_delta_abstracts_routed(delta, stores, missing))
         missing = [i for i in ids if i not in out]
         if missing and self._delta is not None:
             out.update(self._delta.buffer_abstracts(missing))
             missing = [i for i in ids if i not in out]
         if missing and self.remote_abstracts:
             out.update(self._fetch_remote_abstracts(missing))
+        return out
+
+    @staticmethod
+    def _fetch_delta_abstracts_routed(delta, stores: dict, ids: list[str]) -> dict[str, str]:
+        """Lever L3: probe only the owning `(generation, section)` store of
+        each id (`DeltaLayer.abstract_owner`); every store of the generation
+        when the owner's section has no store. Unowned ids probe nothing."""
+        groups: dict[tuple[int, str], list[str]] = {}
+        for did, owner in delta.abstract_owner(ids).items():
+            groups.setdefault(owner, []).append(did)
+        out: dict[str, str] = {}
+        for (gen, section), want in groups.items():
+            store = stores.get(delta.section_key(gen, section))
+            if store is not None:
+                out.update(store.fetch(want))
+                continue
+            prefix = delta.section_key(gen, "")
+            for name, st in stores.items():
+                miss = [i for i in want if i not in out]
+                if not miss:
+                    break
+                if name.startswith(prefix):
+                    out.update(st.fetch(miss))
         return out
 
     def _fetch_remote_abstracts(self, ids: list[str]) -> dict[str, str]:
@@ -1498,11 +1582,23 @@ def _invert_abstract(inv: dict[str, list[int]]) -> str:
 
 
 def bm25f_query_text(query: str) -> str:
-    """Query text handed to tantivy's parser for the BM25F leg: non-alphanumerics
-    become spaces and the result is lower-cased. Lower-casing changes no token
-    (title/abstract use the default tokenizer, which lower-cases) but stops the
-    parser from reading upper-case operator words such as ``IN`` as syntax."""
-    return "".join(c if c.isalnum() or c.isspace() else " " for c in query).lower()
+    """Query text handed to tantivy's parser for the BM25F leg: every
+    non-alphanumeric character, Unicode whitespace included, becomes an ASCII
+    space, and each alphanumeric is lower-cased unless lower-casing would turn
+    it into several code points (``'İ'`` -> ``'i'`` + U+0307, which the parser
+    rejects; the field tokenizer lower-cases it as at index time). Lower-casing
+    stops the parser from reading upper-case operator words (``IN`` raises,
+    ``AND``/``OR``/``NOT`` become boolean operators) and makes a word repeated
+    in two case variants one term clause, as a same-case repeat already is
+    (the parser collapses repeats by surface form only; O19, 2026-10-01)."""
+    out = []
+    for c in query:
+        if c.isalnum():
+            low = c.lower()
+            out.append(low if len(low) == 1 else c)
+        else:
+            out.append(" ")
+    return "".join(out)
 
 
 def _era_skip(section_name: str, f: dict | None) -> bool:

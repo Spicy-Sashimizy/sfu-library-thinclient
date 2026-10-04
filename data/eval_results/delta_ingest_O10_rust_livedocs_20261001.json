@@ -1,0 +1,451 @@
+{
+ "item": "delta-ingest O10 Rust gather-time livedocs skip",
+ "date": "2026-10-01",
+ "script": "scripts/experiments/eval_delta_ingest_o10_rust_livedocs.py",
+ "findings": "spike/delta_ingest/O10_RUST_LIVEDOCS_FINDINGS.md",
+ "patch": "spike/delta_ingest/patches/seismic_livedocs_skip.patch",
+ "fork_branch": "livedocs-skip",
+ "fork_commit": "620f1d2",
+ "fork_base": "main 2c4d863",
+ "build": "maturin build --release, RUSTFLAGS=-C target-cpu=x86-64-v3, side path /home/vscode/work/delta_ingest/rust/so/{branch,ctl}; ctl = fork main 2c4d863, same toolchain/flags",
+ "P1_no_bitset_parity": {
+  "item": "O10 P1 no-bitset parity",
+  "date_utc": "2026-10-01T16:55:36Z",
+  "queries_file": "/home/vscode/work/delta_ingest/rust/queries.json",
+  "queries_sha256": "db648ae523d42656e5c34e3143838fcc897526ca5fd93f1335c86e209ff66e98",
+  "queries_created_utc": "2026-10-01T04:13:48Z",
+  "shard": "/var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap",
+  "so_sha256": {
+   "installed": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6",
+   "branch": "57b2cc315db6c42cc504378f8b8e509338ac3d954a480c61e76039250a875cb0",
+   "ctl": "d011fd187bbbcbca7a5b434cc30a42e3beab24d15bc010e6ca66d34a55a25acd"
+  },
+  "so_files": {
+   "installed": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "branch": "/home/vscode/work/delta_ingest/rust/so/branch/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "ctl": "/home/vscode/work/delta_ingest/rust/so/ctl/seismic/seismic.cpython-311-x86_64-linux-gnu.so"
+  },
+  "fork_head": "620f1d25c0b1d05660d5ee152d7cea2d82af1b96",
+  "repo_head": "8d94fa6eda66800f8f1d29d504517547d16fe6a2",
+  "kprime": 100,
+  "heap_factor": 0.8,
+  "n": 220,
+  "branch_vs_installed_identical": 220,
+  "skip_empty_vs_search_identical": 220,
+  "verdict": "PASS",
+  "walls": {
+   "installed": 2.8,
+   "branch": 3.0
+  },
+  "has_search_skip": {
+   "installed": false,
+   "branch": true
+  },
+  "ctl_vs_installed_identical": 220
+ },
+ "S1_skip_correctness": {
+  "item": "O10 S1 skip correctness",
+  "date_utc": "2026-10-01T16:55:48Z",
+  "queries_file": "/home/vscode/work/delta_ingest/rust/queries.json",
+  "queries_sha256": "db648ae523d42656e5c34e3143838fcc897526ca5fd93f1335c86e209ff66e98",
+  "queries_created_utc": "2026-10-01T04:13:48Z",
+  "shard": "/var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap",
+  "so_sha256": {
+   "installed": "62639335d76a84666a416e7f77cf11208b630beb49423fd73a44617ccb21d6c6",
+   "branch": "57b2cc315db6c42cc504378f8b8e509338ac3d954a480c61e76039250a875cb0",
+   "ctl": "d011fd187bbbcbca7a5b434cc30a42e3beab24d15bc010e6ca66d34a55a25acd"
+  },
+  "so_files": {
+   "installed": "/workspaces/sfu-library-thinclient/.venv/lib/python3.11/site-packages/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "branch": "/home/vscode/work/delta_ingest/rust/so/branch/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "ctl": "/home/vscode/work/delta_ingest/rust/so/ctl/seismic/seismic.cpython-311-x86_64-linux-gnu.so"
+  },
+  "fork_head": "620f1d25c0b1d05660d5ee152d7cea2d82af1b96",
+  "repo_head": "8d94fa6eda66800f8f1d29d504517547d16fe6a2",
+  "kprime": 100,
+  "heap_factor": 0.8,
+  "wall_s": 13.9,
+  "F1_synth": {
+   "root": "/var/tmp/sfu_delta_C_20260929/synth",
+   "popcount": 150415,
+   "build": {
+    "ids_in": 150415,
+    "in_shard": 18884,
+    "counts_requested_seeded_oob_empty": [
+     18884,
+     18884,
+     0,
+     0
+    ],
+    "resolve_s": 0.432,
+    "dead_set_s": 0.0454
+   },
+   "n": 220,
+   "dead_in_skip_total": 0,
+   "dead_in_py_total": 0,
+   "queries_with_dead_in_unmasked": 15,
+   "dead_in_unmasked_total": 15,
+   "skip_len_min": 100,
+   "py_len_min": 99,
+   "skip_vs_py_overlap10_mean": 1.0,
+   "skip_vs_py_overlap10_min": 1.0,
+   "skip_vs_py_top10_identical": 220,
+   "skip_vs_py_common_prefix_identical": 220,
+   "skip_vs_ref_overlap10_mean": 0.97955,
+   "skip_vs_ref_overlap10_min": 0.7,
+   "skip_vs_ref_top10_identical": 186,
+   "skip_vs_ref_common_prefix_identical": 26,
+   "py_vs_ref_overlap10_mean": 0.97955,
+   "py_vs_ref_overlap10_min": 0.7,
+   "py_vs_ref_top10_identical": 186,
+   "py_vs_ref_common_prefix_identical": 26,
+   "py_is_prefix_of_skip": 220,
+   "skip_full_identical_to_ref": 26,
+   "verdict_S1": "PASS"
+  },
+  "F2_bite": {
+   "root": "/home/vscode/work/delta_ingest/rust/fixtures/bite",
+   "popcount": 150884,
+   "build": {
+    "ids_in": 150884,
+    "in_shard": 19353,
+    "counts_requested_seeded_oob_empty": [
+     19353,
+     19353,
+     0,
+     0
+    ],
+    "resolve_s": 0.346,
+    "dead_set_s": 0.0032
+   },
+   "n": 220,
+   "dead_in_skip_total": 0,
+   "dead_in_py_total": 0,
+   "queries_with_dead_in_unmasked": 220,
+   "dead_in_unmasked_total": 1099,
+   "skip_len_min": 100,
+   "py_len_min": 86,
+   "skip_vs_py_overlap10_mean": 0.99909,
+   "skip_vs_py_overlap10_min": 0.9,
+   "skip_vs_py_top10_identical": 218,
+   "skip_vs_py_common_prefix_identical": 190,
+   "skip_vs_ref_overlap10_mean": 0.97545,
+   "skip_vs_ref_overlap10_min": 0.7,
+   "skip_vs_ref_top10_identical": 179,
+   "skip_vs_ref_common_prefix_identical": 23,
+   "py_vs_ref_overlap10_mean": 0.97455,
+   "py_vs_ref_overlap10_min": 0.7,
+   "py_vs_ref_top10_identical": 177,
+   "py_vs_ref_common_prefix_identical": 27,
+   "py_is_prefix_of_skip": 190,
+   "skip_full_identical_to_ref": 23,
+   "verdict_S1": "PASS"
+  }
+ },
+ "disassembly_ctl_vs_branch": {
+  "<seismic::pylib::mmap_index::PyMmapIndex>::search": {
+   "size_ctl": 4734,
+   "size_branch": 4811,
+   "n_ins": [
+    1018,
+    1026
+   ],
+   "identical_normalised": false,
+   "n_diff_lines": 1013
+  },
+  "<seismic::pylib::mmap_index::PyMmapIndex>::__pymethod_search__": {
+   "size_ctl": 2076,
+   "size_branch": 2435,
+   "n_ins": [
+    407,
+    474
+   ],
+   "identical_normalised": false,
+   "n_diff_lines": 436
+  },
+  "<seismic::mmap_io::MmapSeismicIndexDotVByte>::search_raw_visited": {
+   "size_ctl": 3654,
+   "size_branch": 3654,
+   "n_ins": [
+    837,
+    837
+   ],
+   "identical_normalised": true,
+   "n_diff_lines": 0
+  },
+  "<seismic::mmap_index::MmapPostingList>::search::<vectorium::datasets::packed_dataset::Pack": {
+   "size_ctl": 778,
+   "size_branch": 778,
+   "n_ins": [
+    186,
+    186
+   ],
+   "identical_normalised": true,
+   "n_diff_lines": 0
+  },
+  "<seismic::mmap_index::MmapPostingList>::sort_and_search::<vectorium::datasets::packed_data": {
+   "size_ctl": 1031,
+   "size_branch": 1031,
+   "n_ins": [
+    230,
+    230
+   ],
+   "identical_normalised": true,
+   "n_diff_lines": 0
+  },
+  "<seismic::mmap_index::MmapPostingList>::evaluate_posting_block::<vectorium::datasets::pack": {
+   "size_ctl": 4982,
+   "size_branch": 4982,
+   "n_ins": [
+    1118,
+    1118
+   ],
+   "identical_normalised": true,
+   "n_diff_lines": 0
+  }
+ },
+ "C1_cost": {
+  "shared_F1": {
+   "status": "INVALID/indicative: shared lock, SERVE shared job concurrent; arms in fixed order plain -> filter -> skip (skip ran second on a warm query: order bias)",
+   "date_utc": "2026-10-01T16:56:22Z",
+   "fixture": "F1_synth",
+   "reps": 2,
+   "rounds": 2,
+   "summary": {
+    "ctl": {
+     "n": 880,
+     "plain_p50": 3.693,
+     "plain_p95": 7.211
+    },
+    "branch": {
+     "n": 880,
+     "plain_p50": 4.012,
+     "plain_p95": 9.46,
+     "filter_p50": 0.512,
+     "filter_p95": 0.849,
+     "plain_plus_filter_p50": 4.538,
+     "plain_plus_filter_p95": 10.237,
+     "skip_p50": 3.463,
+     "skip_p95": 6.506,
+     "skip_minus_plain_p50": -0.533,
+     "skip_minus_plainfilter_p50": -1.032
+    },
+    "branch_over_ctl_plain_p50": 1.0864
+   },
+   "dead_set_builds": [
+    {
+     "ids_in": 150415,
+     "in_shard": 18884,
+     "counts_requested_seeded_oob_empty": [
+      18884,
+      18884,
+      0,
+      0
+     ],
+     "resolve_s": 0.449,
+     "dead_set_s": 0.0225
+    },
+    {
+     "ids_in": 150415,
+     "in_shard": 18884,
+     "counts_requested_seeded_oob_empty": [
+      18884,
+      18884,
+      0,
+      0
+     ],
+     "resolve_s": 0.407,
+     "dead_set_s": 0.0164
+    }
+   ]
+  },
+  "shared_F2": {
+   "status": "INVALID/indicative: as shared_F1",
+   "date_utc": "2026-10-01T16:56:45Z",
+   "fixture": "F2_bite",
+   "reps": 2,
+   "rounds": 2,
+   "summary": {
+    "ctl": {
+     "n": 880,
+     "plain_p50": 3.164,
+     "plain_p95": 6.223
+    },
+    "branch": {
+     "n": 880,
+     "plain_p50": 2.945,
+     "plain_p95": 5.446,
+     "filter_p50": 0.407,
+     "filter_p95": 0.599,
+     "plain_plus_filter_p50": 3.355,
+     "plain_plus_filter_p95": 5.858,
+     "skip_p50": 2.486,
+     "skip_p95": 4.577,
+     "skip_minus_plain_p50": -0.381,
+     "skip_minus_plainfilter_p50": -0.804
+    },
+    "branch_over_ctl_plain_p50": 0.9308
+   },
+   "dead_set_builds": [
+    {
+     "ids_in": 150884,
+     "in_shard": 19353,
+     "counts_requested_seeded_oob_empty": [
+      19353,
+      19353,
+      0,
+      0
+     ],
+     "resolve_s": 0.276,
+     "dead_set_s": 0.0142
+    },
+    {
+     "ids_in": 150884,
+     "in_shard": 19353,
+     "counts_requested_seeded_oob_empty": [
+      19353,
+      19353,
+      0,
+      0
+     ],
+     "resolve_s": 0.319,
+     "dead_set_s": 0.0136
+    }
+   ]
+  },
+  "shared_F1b": {
+   "status": "INVALID/indicative: shared lock; skip-first/plain-first alternated per rep",
+   "date_utc": "2026-10-02T01:27:02Z",
+   "fixture": "F1_synth",
+   "reps": 4,
+   "rounds": 2,
+   "summary": {
+    "ctl": {
+     "n": 1760,
+     "plain_p50": 2.495,
+     "plain_p95": 4.528
+    },
+    "branch": {
+     "n": 1760,
+     "plain_p50": 2.268,
+     "plain_p95": 4.287,
+     "filter_p50": 0.372,
+     "filter_p95": 0.478,
+     "plain_plus_filter_p50": 2.641,
+     "plain_plus_filter_p95": 4.69,
+     "skip_p50": 2.274,
+     "skip_p95": 4.097,
+     "skip_minus_plain_p50": 0.054,
+     "skip_minus_plainfilter_p50": -0.317,
+     "skip_first_False": {
+      "n": 880,
+      "plain_p50": 2.55,
+      "skip_p50": 2.052,
+      "skip_minus_plain_p50": -0.437
+     },
+     "skip_first_True": {
+      "n": 880,
+      "plain_p50": 1.962,
+      "skip_p50": 2.47,
+      "skip_minus_plain_p50": 0.483
+     }
+    },
+    "branch_over_ctl_plain_p50": 0.909
+   },
+   "dead_set_builds": [
+    {
+     "ids_in": 150416,
+     "in_shard": 18884,
+     "counts_requested_seeded_oob_empty": [
+      18884,
+      18884,
+      0,
+      0
+     ],
+     "resolve_s": 0.291,
+     "dead_set_s": 0.0344
+    },
+    {
+     "ids_in": 150416,
+     "in_shard": 18884,
+     "counts_requested_seeded_oob_empty": [
+      18884,
+      18884,
+      0,
+      0
+     ],
+     "resolve_s": 0.299,
+     "dead_set_s": 0.0157
+    }
+   ]
+  },
+  "shared_F2b": {
+   "status": "INVALID/indicative: shared lock; skip-first/plain-first alternated per rep",
+   "date_utc": "2026-10-02T01:27:25Z",
+   "fixture": "F2_bite",
+   "reps": 4,
+   "rounds": 2,
+   "summary": {
+    "ctl": {
+     "n": 1760,
+     "plain_p50": 2.482,
+     "plain_p95": 4.353
+    },
+    "branch": {
+     "n": 1760,
+     "plain_p50": 2.298,
+     "plain_p95": 4.23,
+     "filter_p50": 0.357,
+     "filter_p95": 0.468,
+     "plain_plus_filter_p50": 2.668,
+     "plain_plus_filter_p95": 4.625,
+     "skip_p50": 2.298,
+     "skip_p95": 4.159,
+     "skip_minus_plain_p50": 0.053,
+     "skip_minus_plainfilter_p50": -0.299,
+     "skip_first_False": {
+      "n": 880,
+      "plain_p50": 2.534,
+      "skip_p50": 2.067,
+      "skip_minus_plain_p50": -0.399
+     },
+     "skip_first_True": {
+      "n": 880,
+      "plain_p50": 2.044,
+      "skip_p50": 2.558,
+      "skip_minus_plain_p50": 0.494
+     }
+    },
+    "branch_over_ctl_plain_p50": 0.9259
+   },
+   "dead_set_builds": [
+    {
+     "ids_in": 150884,
+     "in_shard": 19353,
+     "counts_requested_seeded_oob_empty": [
+      19353,
+      19353,
+      0,
+      0
+     ],
+     "resolve_s": 0.267,
+     "dead_set_s": 0.0129
+    },
+    {
+     "ids_in": 150884,
+     "in_shard": 19353,
+     "counts_requested_seeded_oob_empty": [
+      19353,
+      19353,
+      0,
+      0
+     ],
+     "resolve_s": 0.257,
+     "dead_set_s": 0.0129
+    }
+   ]
+  }
+ },
+ "efficacy": "IMPLEMENTED, EFFICACY UNMEASURED (no exclusive-lock timing; all cost numbers INVALID/indicative)",
+ "finalized_utc": "2026-10-02T01:27:47Z"
+}

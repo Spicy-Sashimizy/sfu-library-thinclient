@@ -64,10 +64,25 @@ def _guard_rss(profile: IngestProfile, stage: str) -> None:
 
 
 # ── SEISMIC chain ───────────────────────────────────────────────────────────
-def build_seismic_shard(jsonl: Path, stem: Path, threads: int, *, want_dotvbyte: bool = True) -> dict:
+def _release_freed_heap() -> None:
+    """Hand the allocator's freed pages back to the OS (glibc `malloc_trim`;
+    no-op elsewhere). After a shard build the freed index otherwise stays in
+    this process's RSS while the converter children run (doc 10 F4)."""
+    import ctypes
+    import gc
+    gc.collect()
+    try:
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except (OSError, AttributeError):
+        pass
+
+
+def build_seismic_shard(jsonl: Path, stem: Path, threads: int, *, want_dotvbyte: bool = True,
+                        build_kwargs: dict | None = None) -> dict:
     """jsonl -> stock index -> f16 mmap -> dotvbyte v2 (perdoc scale).
     Each stage records success or the reason it was skipped; the served
-    `mmap_dir` is the most advanced layout that exists."""
+    `mmap_dir` is the most advanced layout that exists. `build_kwargs` go to
+    `SeismicIndex.build` (the fold passes `input_token_to_id_map`, foldin.py)."""
     info: dict = {"jsonl": str(jsonl), "stock": None, "mmap_dir": None, "format": None, "stages": {}}
     try:
         import seismic
@@ -75,13 +90,15 @@ def build_seismic_shard(jsonl: Path, stem: Path, threads: int, *, want_dotvbyte:
         info["stages"]["build"] = f"skipped: seismic not importable ({exc})"
         return info
     t0 = time.perf_counter()
-    idx = seismic.SeismicIndex.build(str(jsonl), num_threads=threads, **SEISMIC_PARAMS)
+    idx = seismic.SeismicIndex.build(str(jsonl), num_threads=threads, **SEISMIC_PARAMS,
+                                     **(build_kwargs or {}))
     idx.save(str(stem))
     stock = Path(f"{stem}.index.seismic")
     info["stock"] = str(stock)
     info["stages"]["build"] = {"seconds": round(time.perf_counter() - t0, 2), "docs": idx.len,
                                "dim": idx.dim, "nnz": idx.nnz}
     del idx
+    _release_freed_heap()
     if not C1A_BIN.is_file():
         info["stages"]["mmap"] = f"skipped: {C1A_BIN} not built"
         return info
@@ -115,10 +132,60 @@ def build_seismic_shard(jsonl: Path, stem: Path, threads: int, *, want_dotvbyte:
 
 
 # ── generation build ────────────────────────────────────────────────────────
+def _jsonl_ids(jsonl: Path) -> list[str]:
+    """Ids of a SEISMIC input jsonl written by `DocRecord.seismic_line`
+    (`{"id":"...","vector":...}`), read without parsing the vectors."""
+    out = []
+    with open(jsonl) as fh:
+        for line in fh:
+            if line.startswith('{"id":"'):
+                out.append(line[7:line.index('"', 7)])
+            elif line.strip():
+                out.append(json.loads(line)["id"])
+    return out
+
+
+def _reuse_seismic(src_gen_dir: Path, staging: Path, records: list[DocRecord]) -> tuple[dict, int]:
+    """Copy the SEISMIC dir of an already-built generation whose vector docs
+    are exactly `records`' vector docs (asserted on the id SET of the source
+    jsonl), so a layout-only rebuild (09 L2 roots) serves the identical shard."""
+    src_info = json.loads((src_gen_dir / "generation.json").read_text())["seismic"]
+    if not src_info.get("mmap_dir"):
+        raise ValueError(f"{src_gen_dir}: source generation has no served SEISMIC shard")
+    src_sdir = src_gen_dir / "seismic"
+    jsonls = sorted(src_sdir.glob("*.jsonl"))
+    if len(jsonls) != 1:
+        raise ValueError(f"{src_sdir}: expected one jsonl, found {len(jsonls)}")
+    src_ids = _jsonl_ids(jsonls[0])
+    want = {r.id for r in records if r.sparse_field}
+    if len(src_ids) != len(set(src_ids)) or set(src_ids) != want:
+        raise ValueError(f"{src_gen_dir}: SEISMIC doc-id set differs from the generation's records "
+                         f"(source {len(src_ids)} ids, records {len(want)} with vectors, "
+                         f"symmetric difference {len(set(src_ids) ^ want)})")
+    t0 = time.perf_counter()
+    shutil.copytree(src_sdir, staging / "seismic", symlinks=False)
+    info = {k: v for k, v in src_info.items() if k not in ("jsonl", "stock")}
+    info["jsonl"] = str(Path("seismic") / jsonls[0].name)
+    if src_info.get("stock"):
+        info["stock"] = str(Path("seismic") / Path(src_info["stock"]).name)
+    info["reused_from"] = str(src_gen_dir)
+    info["reuse_copy_seconds"] = round(time.perf_counter() - t0, 2)
+    info["reuse_ids_checked"] = len(src_ids)
+    return info, len(src_ids)
+
+
 def build_generation(delta_root: Path, gen: int, records: list[DocRecord],
-                     profile: IngestProfile, *, seismic: bool = True) -> Path:
+                     profile: IngestProfile, *, seismic: bool = True, layout: str | None = None,
+                     seismic_from: Path | None = None) -> Path:
     """Write <delta_root>/gNNNN.building/ from `records`, then rename it to
-    gNNNN/ (the rename is the only publish-visible step)."""
+    gNNNN/ (the rename is the only publish-visible step).
+
+    `layout` (09 L2) picks the section names (`DocRecord.section`); None means
+    `profile.layout`, whose default `per_base_section` is the original
+    behaviour. `seismic_from` (a published generation dir) copies that
+    generation's SEISMIC shard instead of building one, after asserting its
+    doc-id set equals these records' vector docs."""
+    layout = layout or profile.layout
     staging = delta_root / f"{gen_name(gen)}.building"
     final = delta_root / gen_name(gen)
     if final.exists():
@@ -130,7 +197,7 @@ def build_generation(delta_root: Path, gen: int, records: list[DocRecord],
 
     by_section: dict[str, list[DocRecord]] = defaultdict(list)
     for r in records:
-        by_section[r.section()].append(r)
+        by_section[r.section(layout)].append(r)
     meta = open_meta_db(staging)
     sections_info: dict[str, dict] = {}
     for name, recs in sorted(by_section.items()):
@@ -145,7 +212,10 @@ def build_generation(delta_root: Path, gen: int, records: list[DocRecord],
 
     seismic_info: dict = {"status": "disabled"}
     n_vec = 0
-    if seismic:
+    if seismic and seismic_from is not None:
+        seismic_info, n_vec = _reuse_seismic(Path(seismic_from), staging, records)
+        seismic_info["status"] = "served"
+    elif seismic:
         sdir = staging / "seismic"
         sdir.mkdir()
         jsonl = sdir / f"delta_{gen_name(gen)}.jsonl"
@@ -162,12 +232,13 @@ def build_generation(delta_root: Path, gen: int, records: list[DocRecord],
             _guard_rss(profile, "seismic")
         else:
             seismic_info = {"status": "no_vectors"}
-        if seismic_info.get("mmap_dir"):
-            seismic_info["mmap_dir"] = str(Path(seismic_info["mmap_dir"]).relative_to(staging))
+        for key in ("jsonl", "stock", "mmap_dir"):
+            if seismic_info.get(key):
+                seismic_info[key] = str(Path(seismic_info[key]).relative_to(staging))
 
     info = {
         "generation": gen, "created": t_start, "seconds": round(time.time() - t_start, 2),
-        "docs": len(records), "docs_with_vectors": n_vec,
+        "docs": len(records), "docs_with_vectors": n_vec, "layout": layout,
         "sections": sections_info, "seismic": seismic_info, "profile": profile.as_dict(),
         "sources": sorted({r.source for r in records}),
     }
@@ -190,7 +261,13 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
     and base copies superseded by a delta/buffer copy go into a livedocs
     bitset (`livedocs.py`) written BEFORE generations.json; `mask.deleted` then
     keeps only ids with no base ordinal. Without ordinals the JSON lists are
-    written exactly as before."""
+    written exactly as before.
+
+    Fold-in (doc 10 G3, `foldin.py`): with no explicit `base_shard_manifest`,
+    the composed manifest of the newest published fold (if any) is the base;
+    a base whose records carry `fold_origin` always gets a composed
+    `shard_manifest.json`, even with no delta SEISMIC shard. With no
+    published fold both are exactly as before."""
     gens = ledger.published_generations()
     entries = []
     delta_shards = []
@@ -206,10 +283,10 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
                                  "mmap_dir": str(d / gi["seismic"]["mmap_dir"]),
                                  "n_docs": gi.get("docs_with_vectors", 0),
                                  "forward_format": gi["seismic"].get("format")})
-    base_manifest = base.shard_manifest(base_shard_manifest)
+    base_manifest = base.shard_manifest(base_shard_manifest or ledger.active_fold_manifest())
     base_records = BaseIndex.shard_records(base_manifest)
     shard_manifest_path = None
-    if delta_shards:
+    if delta_shards or any(r.get("fold_origin") for r in base_records):
         records = base_records + delta_shards
         shard_manifest_path = delta_root / "shard_manifest.json"
         atomic_write_json(shard_manifest_path, {
@@ -244,14 +321,16 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
 # ── freeze + compact ────────────────────────────────────────────────────────
 def freeze_buffer(delta_root: Path, ledger: IngestLedger, base: BaseIndex, profile: IngestProfile,
                   *, seismic: bool = True, base_shard_manifest: str | None = None,
-                  ordinal_dir: str | None = None) -> dict | None:
+                  ordinal_dir: str | None = None, layout: str | None = None,
+                  seismic_from: Path | None = None) -> dict | None:
     records = [r for _, r in ledger.buffer_records()]
     if not records:
         return None
     gen = ledger.next_generation()
     ledger.open_generation(gen, records)
     try:
-        build_generation(delta_root, gen, records, profile, seismic=seismic)
+        build_generation(delta_root, gen, records, profile, seismic=seismic, layout=layout,
+                         seismic_from=seismic_from)
     except Exception:
         ledger.abort_generation(gen)
         shutil.rmtree(delta_root / f"{gen_name(gen)}.building", ignore_errors=True)
@@ -266,7 +345,7 @@ def freeze_buffer(delta_root: Path, ledger: IngestLedger, base: BaseIndex, profi
 
 def compact(delta_root: Path, ledger: IngestLedger, base: BaseIndex, profile: IngestProfile,
             gens: list[int], *, seismic: bool = True, base_shard_manifest: str | None = None,
-            ordinal_dir: str | None = None) -> dict:
+            ordinal_dir: str | None = None, layout: str | None = None) -> dict:
     """Merge published generations `gens` into one new generation (a rebuild
     from the ledger's stored records — SEISMIC has no merge; tantivy-py has no
     merge control). Old dirs are renamed *.compacted for the operator to
@@ -279,7 +358,7 @@ def compact(delta_root: Path, ledger: IngestLedger, base: BaseIndex, profile: In
     gen = ledger.next_generation()
     ledger.open_generation(gen, records, from_gens=gens)
     try:
-        build_generation(delta_root, gen, records, profile, seismic=seismic)
+        build_generation(delta_root, gen, records, profile, seismic=seismic, layout=layout)
     except Exception:
         ledger.abort_generation(gen)
         for g in gens:
@@ -299,13 +378,28 @@ def compact(delta_root: Path, ledger: IngestLedger, base: BaseIndex, profile: In
     return out
 
 
+COMPACT_POLICIES = ("tiered", "compact_all")
+
+
 def auto_compact_plan(delta_root: Path, ledger: IngestLedger, *, tier_ratio: int = 10,
-                      max_gens: int = 8) -> list[int]:
-    """TieredMergePolicy-lite: when more than `max_gens` generations are live,
-    merge the smallest run whose sizes are within `tier_ratio` of each other."""
+                      max_gens: int = 8, policy: str = "tiered") -> list[int]:
+    """Which published generations to merge now, or [] for none.
+
+    `tiered` (default) — TieredMergePolicy-lite: when more than `max_gens`
+    generations are live, merge the smallest run whose sizes are within
+    `tier_ratio` of each other.
+    `compact_all` (09 lever L1, cap G_max = `max_gens`) — when more than
+    `max_gens` generations are live, merge ALL of them into one, so no more
+    than `max_gens` are ever served after the compaction publishes."""
+    if policy not in COMPACT_POLICIES:
+        raise ValueError(f"unknown compaction policy {policy!r}; expected one of {COMPACT_POLICIES}")
+    if max_gens < 1:
+        raise ValueError(f"max_gens must be >= 1, got {max_gens}")
     gens = ledger.published_generations()
     if len(gens) <= max_gens:
         return []
+    if policy == "compact_all":
+        return sorted(gens)
     sizes = []
     for g in gens:
         gi = json.loads((delta_root / gen_name(g) / "generation.json").read_text())

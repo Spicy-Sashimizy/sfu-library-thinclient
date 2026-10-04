@@ -125,6 +125,9 @@ Run:
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py prepare
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py build --n 1   (4, 8)
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py compact --n 8 (4)
+  09 follow-up roots (docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md section 3, added 2026-10-01):
+  ... build --n 1 --layout single --reuse-seismic-from root_n1     (-> root_s1; per_era -> root_e1)
+  ... compact --n 8 --layout single --seismic-threads 4            (-> root_s8c, log compact_s8.json)
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py drive --rounds 3   (fallback)
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m4_read_amp.py inproc-drive           (primary)
 """
@@ -356,23 +359,63 @@ def split_even(ids: list[str], n: int) -> list[list[str]]:
     return out
 
 
+LAYOUT_PREFIX = {"per_base_section": "n", "per_era": "e", "single": "s"}
+
+
+def root_tag(layout: str, n: int, compacted: bool = False) -> str:
+    """09 section 3 root names: n (per_base_section, M4), e (per_era), s (single)."""
+    return f"{LAYOUT_PREFIX[layout]}{n}{'c' if compacted else ''}"
+
+
+def _profile(m, args):
+    over = {"layout": args.layout}
+    if getattr(args, "seismic_threads", None):
+        over["seismic_threads"] = args.seismic_threads
+    return m["PROFILES"]["desktop_gpu"].with_overrides(**over)
+
+
+def _source_gen_ids(src_root: Path, gen: int) -> set[str]:
+    con = sqlite3.connect(f"file:{src_root / 'ledger.sqlite'}?mode=ro", uri=True)
+    ids = {r[0] for r in con.execute("SELECT id FROM docs WHERE generation=? AND status='live'", (gen,))}
+    con.close()
+    return ids
+
+
 def build(args) -> int:
-    """Build root_n{N}: N freezes of an evenly split corpus (b)."""
+    """Build root_<tag>{N}: N freezes of an evenly split corpus (b), with the
+    09 L2 `--layout`; `--reuse-seismic-from root_nN` copies each generation's
+    SEISMIC dir from the matching generation of that root (doc-id sets
+    asserted against its ledger and its jsonl) instead of building it."""
     m = _spike_imports()
-    profile = m["PROFILES"]["desktop_gpu"]
+    profile = _profile(m, args)
     m["apply_nice"](profile)
-    root = WORK / f"root_n{args.n}"
+    tag = root_tag(args.layout, args.n)
+    root = WORK / f"root_{tag}"
     if root.exists():
         print(f"{root} exists; refusing to rebuild", file=sys.stderr)
         return 2
-    root.mkdir(parents=True)
+    src_root = None
+    if args.reuse_seismic_from:
+        src_root = WORK / args.reuse_seismic_from
+        src_gens = json.loads((src_root / "generations.json").read_text())["generations"]
+        if [g["gen"] for g in src_gens] != list(range(1, args.n + 1)):
+            print(f"{src_root} does not hold generations 1..{args.n}", file=sys.stderr)
+            return 2
     corpus = json.loads(CORPUS.read_text())
     chunks = split_even(corpus["ids"], args.n)
+    if src_root is not None:
+        for k, chunk in enumerate(chunks):
+            if _source_gen_ids(src_root, k + 1) != set(chunk):
+                print(f"{src_root} g{k + 1:04d} doc ids differ from chunk {k}", file=sys.stderr)
+                return 2
+    root.mkdir(parents=True)
     ledger = m["IngestLedger"](root / "ledger.sqlite")
     base = m["BaseIndex"](m["DEFAULT_INDEX_ROOT"])
     writer = m["BufferWriter"](root)
-    log = {"root": str(root), "n": args.n, "chunk_sizes": [len(c) for c in chunks], "freezes": [],
-           "profile": profile.as_dict(), "started": utc(), "host_start": host_state()}
+    log = {"root": str(root), "n": args.n, "layout": args.layout, "chunk_sizes": [len(c) for c in chunks],
+           "reuse_seismic_from": str(src_root) if src_root else None, "freezes": [],
+           "profile": profile.as_dict(), "commit": git_commit(), "started": utc(), "host_start": host_state()}
+    t_all = time.time()
     for k, chunk in enumerate(chunks):
         t0 = time.time()
         recs = _records(chunk, m["DocRecord"])
@@ -380,28 +423,34 @@ def build(args) -> int:
         writer.upsert(recs)
         writer.commit()
         out = m["freeze_buffer"](root, ledger, base, profile, seismic=True,
-                                 base_shard_manifest=str(BASE_MANIFEST))
+                                 base_shard_manifest=str(BASE_MANIFEST), layout=args.layout,
+                                 seismic_from=(src_root / f"g{k + 1:04d}") if src_root else None)
         writer.delete(chunk)
         writer.commit()
         gi = json.loads((root / f"g{out['frozen_generation']:04d}" / "generation.json").read_text())
         log["freezes"].append({"k": k, "gen": out["frozen_generation"], "docs": out["frozen_docs"],
                                "wall_s": round(time.time() - t0, 1), "seismic": gi["seismic"].get("status"),
-                               "format": gi["seismic"].get("format"), "stages": gi["seismic"].get("stages")})
+                               "format": gi["seismic"].get("format"), "stages": gi["seismic"].get("stages"),
+                               "sections": sorted(gi["sections"]), "layout": gi.get("layout"),
+                               "seismic_reused_from": gi["seismic"].get("reused_from"),
+                               "reuse_ids_checked": gi["seismic"].get("reuse_ids_checked")})
         print(json.dumps(log["freezes"][-1]), flush=True)
     writer.close()
     ledger.close()
     base.close()
+    log["build_wall_s"] = round(time.time() - t_all, 1)
     log["finished"] = utc()
-    (WORK / f"build_n{args.n}.json").write_text(json.dumps(log, indent=1, default=str))
+    log["host_end"] = host_state()
+    (WORK / f"build_{tag}.json").write_text(json.dumps(log, indent=1, default=str))
     return 0
 
 
 def compact_root(args) -> int:
     """root_n{N} -> copy root_n{N}c -> publish (repoint) -> compact all gens."""
     m = _spike_imports()
-    profile = m["PROFILES"]["desktop_gpu"]
+    profile = _profile(m, args)
     m["apply_nice"](profile)
-    src, dst = WORK / f"root_n{args.n}", WORK / f"root_n{args.n}c"
+    src, dst = WORK / f"root_{root_tag(args.layout, args.n)}", WORK / f"root_{root_tag(args.layout, args.n, True)}"
     if dst.exists():
         print(f"{dst} exists; refusing", file=sys.stderr)
         return 2
@@ -413,13 +462,20 @@ def compact_root(args) -> int:
     m["publish"](dst, ledger, base, str(BASE_MANIFEST))
     gens = ledger.published_generations()
     t0 = time.time()
-    out = m["compact"](dst, ledger, base, profile, gens, seismic=True, base_shard_manifest=str(BASE_MANIFEST))
+    host_before = host_state()
+    out = m["compact"](dst, ledger, base, profile, gens, seismic=True, base_shard_manifest=str(BASE_MANIFEST),
+                       layout=args.layout)
     rec = {"root": str(dst), "from": str(src), "copy_s": round(copy_s, 1), "compacted": out.get("compacted"),
            "into": out.get("into"), "compact_wall_s": round(time.time() - t0, 1), "utc": utc(),
-           "published_after": ledger.published_generations()}
+           "published_after": ledger.published_generations(), "layout": args.layout,
+           "profile": profile.as_dict(), "commit": git_commit(), "host_before": host_before,
+           "host_after": host_state()}
+    gi = json.loads((dst / f"g{out['into']:04d}" / "generation.json").read_text())
+    rec["sections"] = sorted(gi["sections"])
+    rec["seismic_stages"] = gi["seismic"].get("stages")
     ledger.close()
     base.close()
-    (WORK / f"compact_n{args.n}.json").write_text(json.dumps(rec, indent=1, default=str))
+    (WORK / f"compact_{root_tag(args.layout, args.n)}.json").write_text(json.dumps(rec, indent=1, default=str))
     print(json.dumps(rec))
     return 0
 
@@ -1268,7 +1324,7 @@ def inproc_summarize(args, commit: str, snap: Path, runs_dir: Path) -> int:
         fd["slope_primary_per_pass"] = []
         for ps in mp:
             pp = [(ARMS[a], pct([r["ms"] for r in ps["rows"] if r["arm"] == a and not r.get("prime")], 50))
-                  for a in ("n0", "n1", "n4", "n8")]
+                  for a in ("n0", "n1", "n4", "n8") if a in fd["arms"]]
             fd["slope_primary_per_pass"].append({"pass": ps["pass"], "slope": ols([x for x, _ in pp], [y for _, y in pp]),
                                                  "p50s": {str(x): y for x, y in pp}})
         pts148 = [p_ for p_ in pts if p_[0] > 0]
@@ -1480,8 +1536,15 @@ def main() -> int:
     sub.add_parser("prepare")
     b = sub.add_parser("build")
     b.add_argument("--n", type=int, required=True)
+    b.add_argument("--reuse-seismic-from", default="",
+                   help="root dir name under WORK (e.g. root_n4) whose generation SEISMIC dirs are copied")
     c = sub.add_parser("compact")
     c.add_argument("--n", type=int, required=True)
+    for sp in (b, c):
+        sp.add_argument("--layout", choices=sorted(LAYOUT_PREFIX), default="per_base_section",
+                        help="09 L2 generation layout; roots are named root_{n,e,s}<N>[c]")
+        sp.add_argument("--seismic-threads", type=int, default=0,
+                        help="override the desktop_gpu profile's SEISMIC build threads (0 = profile)")
     d = sub.add_parser("drive")
     d.add_argument("--rounds", type=int, default=3)
     d.add_argument("--passes", type=int, default=2)

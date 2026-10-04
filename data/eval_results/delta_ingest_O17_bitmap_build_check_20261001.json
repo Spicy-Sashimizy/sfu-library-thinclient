@@ -1,0 +1,68 @@
+{
+ "date": "2026-10-01",
+ "bitmap_id": "7745356383de5c50",
+ "coverage": {
+  "known": 141288198,
+  "oa": 110525184,
+  "not_oa": 30763014,
+  "unknown": 9124900,
+  "units": 2040,
+  "repeat_hits": 0
+ },
+ "random_base_sample": {
+  "n": 100000,
+  "agree": 100000,
+  "known_oa": 73613,
+  "known_not_oa": 20301,
+  "unknown": 6086
+ },
+ "raw_units_totals": {
+  "known": 141288198,
+  "oa": 110525184
+ },
+ "wall_s": 7.0,
+ "build": {
+  "format": "oa_bitmap/1",
+  "rows": 150413098,
+  "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+  "ordinal_dir": "/home/vscode/work/delta_ingest/oa/ords",
+  "meta_source": {
+   "bytes": 24908001280,
+   "mtime_ns": 1781573592207934800
+  },
+  "bitmap_id": "7745356383de5c50",
+  "built_utc": "2026-10-01T23:00:57Z",
+  "coverage": {
+   "known": 141288198,
+   "oa": 110525184,
+   "not_oa": 30763014,
+   "unknown": 9124900,
+   "units": 2040,
+   "repeat_hits": 0
+  },
+  "source": {
+   "work": "/home/vscode/work/delta_ingest/oa/work",
+   "note": "OpenAlex works snapshot 2026-09-23 (manifest fetched 2026-10-01 15:31Z), 2,040 partitions, full pass"
+  },
+  "finalize_s": 7.061
+ },
+ "scan": {
+  "partitions": 2040,
+  "failed": 0,
+  "retries": 0,
+  "records": 476196327,
+  "manifest_records": 476196327,
+  "base_hits": 141288198,
+  "json_fallback": 0,
+  "gzip_bytes": 659026072445,
+  "start_utc": "2026-10-01T15:35:20Z",
+  "end_utc": "2026-10-01T23:00:14Z",
+  "wall_h": 7.42,
+  "mean_link_MBps": 24.7,
+  "workers": 2,
+  "cpu": "nice -n 19 taskset -c 12-15",
+  "snapshot_date": "2026-09-23",
+  "units_dir_bytes_du": "680M",
+  "script": "spike/delta_ingest/oa_bitmap.py scan"
+ }
+}

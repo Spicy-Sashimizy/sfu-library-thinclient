@@ -1,0 +1,7362 @@
+{
+ "measurement": "09 M4 follow-up (docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md)",
+ "results_file_rule": "one key per run: parity, R1, R2, R3",
+ "parity": {
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_p_a396eec9b143ccddf11ed80c560a0c1816f71ccc/parity.json",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 1.39,
+     "backend_load_s": 2.48,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "n8+L3+L4+L5": {
+     "spec": {
+      "name": "n8+L3+L4+L5",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.67,
+     "backend_load_s": 2.24,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "n1": {
+     "spec": {
+      "name": "n1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 2.82,
+     "backend_load_s": 3.6,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "n1+L3+L4+L5": {
+     "spec": {
+      "name": "n1+L3+L4+L5",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.6,
+     "backend_load_s": 4.06,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer"
+  },
+  "src": "/home/vscode/work/delta_ingest/serve/code_a396eec9b143ccddf11ed80c560a0c1816f71ccc/src",
+  "git_commit_measured_code": "a396eec9b143ccddf11ed80c560a0c1816f71ccc",
+  "started_utc": "2026-10-01T16:47:36Z",
+  "finished_utc": "2026-10-01T19:11:29Z",
+  "partial": false,
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 25.02,
+   "max_vmswap_growth_gb": 1.89,
+   "vmswap_start_gb": 0.0
+  },
+  "timings": "INVALID by declaration (shared lock)",
+  "roots": {
+   "n8": {
+    "n": 120,
+    "L3": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L4_none": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L4_year": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L5": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "rrf_off_vs_on": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L3_ids_total": 11425,
+    "L3_ids_delta_owned": 4,
+    "L4_hits_mean": {
+     "none": 100.0,
+     "year": 100.0
+    }
+   },
+   "n1": {
+    "n": 120,
+    "L3": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L4_none": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L4_year": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L5": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "rrf_off_vs_on": {
+     "identical": 120,
+     "first_diff_topic": null
+    },
+    "L3_ids_total": 11425,
+    "L3_ids_delta_owned": 4,
+    "L4_hits_mean": {
+     "none": 100.0,
+     "year": 100.0
+    }
+   }
+  },
+  "verdicts": {
+   "L3": "PASS",
+   "L4": "PASS",
+   "L5": "PASS",
+   "all_gates_unset_vs_prelever": "PASS"
+  },
+  "all_gates_unset_vs_prelever": {
+   "a": "/home/vscode/work/delta_ingest/serve/run_p_a396eec9b143ccddf11ed80c560a0c1816f71ccc/dump_lever.json",
+   "b": "/home/vscode/work/delta_ingest/serve/run_p_a396eec9b143ccddf11ed80c560a0c1816f71ccc/dump_prelever.json",
+   "health_ok": [
+    true,
+    true
+   ],
+   "partial": [
+    false,
+    false
+   ],
+   "roots": {
+    "n8": {
+     "n": 120,
+     "identical": {
+      "fused": 120,
+      "fused10": 120,
+      "final10": 120
+     },
+     "first_diff_topic": null,
+     "verdict": "PASS"
+    },
+    "n1": {
+     "n": 120,
+     "identical": {
+      "fused": 120,
+      "fused10": 120,
+      "final10": 120
+     },
+     "first_diff_topic": null,
+     "verdict": "PASS"
+    }
+   }
+  },
+  "method": "09 \u00a74 Run P, 1 pass, 120 natural topics of dense_ablation_qrels_20260817.json, parallel federation, shared lock (timings INVALID). Per root one OFF retriever (no lever gate) and one ON retriever (L3+L4+L5); each lever compared on the only path its gate touches: L3 fetch_abstracts(ids hydrated by OFF.search_rrf), L4 _bm25f_leg(q,100,f) f in {None, year 2015-2026}, L5 _splade_leg_seismic(q,50,None). all-unset row: rrf-dump (fused top-50 + tools._maybe_rerank final top-10) on snapshot a396eec9 vs the same snapshot with the src diffs of 10bc02a5, fbde17bb, 930b5a71 reverse-applied.",
+  "measured_utc": "2026-10-01 16:47Z-20:27Z",
+  "stack_x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ]
+ },
+ "R1": {
+  "run": "R1",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R1_20261003/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 2.56,
+     "backend_load_s": 1.45,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.7,
+     "backend_load_s": 1.53,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n0x": {
+     "spec": {
+      "name": "n0x",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": [
+       "L4"
+      ]
+     },
+     "load_s": 0.39,
+     "backend_load_s": 1.12,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "x1": {
+     "spec": {
+      "name": "x1",
+      "tag": "s1",
+      "root": "/home/vscode/work/inplace_update/m4/root_s1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.39,
+     "backend_load_s": 1.15,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 12,
+     "abstract_stores": 2,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790868817",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 2,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 1,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 1
+     }
+    },
+    "x4": {
+     "spec": {
+      "name": "x4",
+      "tag": "s4",
+      "root": "/home/vscode/work/inplace_update/m4/root_s4",
+      "n_gen": 4,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.42,
+     "backend_load_s": 1.32,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 12,
+     "sections": 15,
+     "abstract_stores": 5,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "delta_stamp": "g0004-1790868957",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s4/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 5,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 4,
+      "buffer": 1,
+      "shards": 12,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 4
+     }
+    },
+    "x8": {
+     "spec": {
+      "name": "x8",
+      "tag": "s8",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8",
+      "n_gen": 8,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.45,
+     "backend_load_s": 1.6,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 19,
+     "abstract_stores": 9,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869150",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 9,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 8,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 8
+     }
+    },
+    "x8c": {
+     "spec": {
+      "name": "x8c",
+      "tag": "s8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8c",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.39,
+     "backend_load_s": 1.16,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 12,
+     "abstract_stores": 2,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790869314",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 2,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 1,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 1
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.37,
+     "backend_load_s": 1.06,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 50.55,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "single",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_a9380ffb707819e2e680bfddb043019444672ced/src",
+  "git_commit_measured_code": "a9380ffb707819e2e680bfddb043019444672ced",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1990.2,
+   2153.9,
+   2111.0
+  ],
+  "wall_s": 6284.9,
+  "host_start": {
+   "utc": "2026-10-03T19:06:42Z",
+   "loadavg": [
+    0.48388671875,
+    0.39794921875,
+    0.326171875
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 52.57,
+    "Cached": 3.0,
+    "SwapTotal": 16.0,
+    "SwapFree": 16.0
+   },
+   "gpu": {
+    "util_pct": 2,
+    "mem_used_mib": 1682
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-03T20:51:26Z",
+   "loadavg": [
+    3.2333984375,
+    2.830078125,
+    2.947265625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 48.68,
+    "Cached": 47.23,
+    "SwapTotal": 16.0,
+    "SwapFree": 16.0
+   },
+   "gpu": {
+    "util_pct": 1,
+    "mem_used_mib": 1789
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0,
+   "samples": [
+    {
+     "utc": "2026-10-03T19:07:10Z",
+     "load1": 0.8212890625,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-03T19:40:21Z",
+    "load1": 2.705078125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-03T19:43:40Z",
+    "load1": 1.611328125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.87,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-03T19:47:02Z",
+    "load1": 2.8623046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.83,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-03T19:50:22Z",
+    "load1": 4.09033203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.83,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-03T19:53:02Z",
+    "load1": 2.87841796875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.84,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-03T19:56:06Z",
+    "load1": 2.20703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.81,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-03T19:58:34Z",
+    "load1": 3.365234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.83,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-03T20:01:35Z",
+    "load1": 1.79345703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.84,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-03T20:04:24Z",
+    "load1": 2.55322265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.81,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-03T20:07:31Z",
+    "load1": 1.6953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.76,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-03T20:10:19Z",
+    "load1": 1.72900390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.8,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-03T20:13:25Z",
+    "load1": 2.0146484375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.82,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-03T20:16:15Z",
+    "load1": 2.55126953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.63,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-03T20:19:26Z",
+    "load1": 2.232421875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.68,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-03T20:22:46Z",
+    "load1": 1.7666015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.63,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-03T20:26:06Z",
+    "load1": 4.041015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.66,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-03T20:28:44Z",
+    "load1": 3.08642578125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.72,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-03T20:31:46Z",
+    "load1": 2.6611328125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.71,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-03T20:34:12Z",
+    "load1": 2.67626953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.7,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-03T20:37:13Z",
+    "load1": 3.64697265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.72,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-03T20:40:06Z",
+    "load1": 5.80029296875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 12.1,
+    "mem_avail_gb": 48.73,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-03T20:43:08Z",
+    "load1": 3.07275390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.67,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-03T20:45:50Z",
+    "load1": 2.3193359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.75,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-03T20:48:48Z",
+    "load1": 2.98388671875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.68,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 48.6,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 230.62,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2131.72,
+    "p95_ms": 3215.73,
+    "mean_ms": 2170.73,
+    "per_pass_p50_ms": [
+     2160.08,
+     2121.91
+    ],
+    "legs_mean_ms": {
+     "total": 2170.734,
+     "bm25f_base_sections": 2028.431,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.495,
+     "seismic_traverse": 37.513,
+     "seismic_base_max_shard": 23.731,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.449,
+     "splade_other_delta_merge": 0.033,
+     "hydrate_abstracts_base": 30.983,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.83
+    },
+    "legs_median_ms": {
+     "total": 2138.64,
+     "bm25f_base_sections": 2002.08,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.46,
+     "seismic_traverse": 37.01,
+     "seismic_base_max_shard": 21.45,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.74,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.995,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.395
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8": {
+    "spec": {
+     "name": "n8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2199.6,
+    "p95_ms": 3237.13,
+    "mean_ms": 2199.02,
+    "per_pass_p50_ms": [
+     2230.64,
+     2161.91
+    ],
+    "legs_mean_ms": {
+     "total": 2199.02,
+     "bm25f_base_sections": 2017.743,
+     "bm25f_delta_sections": 8.123,
+     "bm25f_other_parse_merge_masks": 20.979,
+     "seismic_traverse": 44.655,
+     "seismic_base_max_shard": 27.029,
+     "seismic_delta_shard_sum": 11.533,
+     "splade_encode": 31.856,
+     "splade_other_delta_merge": 0.134,
+     "hydrate_abstracts_base": 30.751,
+     "hydrate_abstracts_delta": 6.223,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.02,
+     "delta_masks": 10.958,
+     "hydrate_other_base_meta_fuse": 38.45
+    },
+    "legs_median_ms": {
+     "total": 2209.915,
+     "bm25f_base_sections": 2025.74,
+     "bm25f_delta_sections": 8.21,
+     "bm25f_other_parse_merge_masks": 10.655,
+     "seismic_traverse": 45.045,
+     "seismic_base_max_shard": 27.195,
+     "seismic_delta_shard_sum": 10.03,
+     "splade_encode": 30.55,
+     "splade_other_delta_merge": 0.09,
+     "hydrate_abstracts_base": 30.95,
+     "hydrate_abstracts_delta": 5.915,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.69,
+     "hydrate_other_base_meta_fuse": 38.515
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n0x": {
+    "spec": {
+     "name": "n0x",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": [
+      "L4"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2144.79,
+    "p95_ms": 3178.28,
+    "mean_ms": 2171.5,
+    "per_pass_p50_ms": [
+     2176.02,
+     2111.99
+    ],
+    "legs_mean_ms": {
+     "total": 2171.498,
+     "bm25f_base_sections": 2031.636,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.931,
+     "seismic_traverse": 35.199,
+     "seismic_base_max_shard": 22.578,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.813,
+     "splade_other_delta_merge": 0.034,
+     "hydrate_abstracts_base": 30.849,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 39.036
+    },
+    "legs_median_ms": {
+     "total": 2150.125,
+     "bm25f_base_sections": 2014.38,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.92,
+     "seismic_traverse": 33.725,
+     "seismic_base_max_shard": 22.045,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.54,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.745,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.415
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x1": {
+    "spec": {
+     "name": "x1",
+     "tag": "s1",
+     "root": "/home/vscode/work/inplace_update/m4/root_s1",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2153.57,
+    "p95_ms": 3254.43,
+    "mean_ms": 2169.66,
+    "per_pass_p50_ms": [
+     2172.01,
+     2130.55
+    ],
+    "legs_mean_ms": {
+     "total": 2169.662,
+     "bm25f_base_sections": 2022.659,
+     "bm25f_delta_sections": 2.358,
+     "bm25f_other_parse_merge_masks": 2.295,
+     "seismic_traverse": 39.384,
+     "seismic_base_max_shard": 24.914,
+     "seismic_delta_shard_sum": 3.764,
+     "splade_encode": 33.279,
+     "splade_other_delta_merge": 0.118,
+     "hydrate_abstracts_base": 30.946,
+     "hydrate_abstracts_delta": 0.154,
+     "hydrate_abs_owner_lookup": 0.151,
+     "hydrate_delta_meta": 0.001,
+     "delta_masks": 0.269,
+     "hydrate_other_base_meta_fuse": 38.374
+    },
+    "legs_median_ms": {
+     "total": 2154.665,
+     "bm25f_base_sections": 2002.91,
+     "bm25f_delta_sections": 2.485,
+     "bm25f_other_parse_merge_masks": 2.28,
+     "seismic_traverse": 39.535,
+     "seismic_base_max_shard": 23.55,
+     "seismic_delta_shard_sum": 2.46,
+     "splade_encode": 32.71,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.69,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.26,
+     "hydrate_other_base_meta_fuse": 38.25
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x4": {
+    "spec": {
+     "name": "x4",
+     "tag": "s4",
+     "root": "/home/vscode/work/inplace_update/m4/root_s4",
+     "n_gen": 4,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2149.53,
+    "p95_ms": 3193.65,
+    "mean_ms": 2164.04,
+    "per_pass_p50_ms": [
+     2168.03,
+     2141.03
+    ],
+    "legs_mean_ms": {
+     "total": 2164.038,
+     "bm25f_base_sections": 2014.657,
+     "bm25f_delta_sections": 3.325,
+     "bm25f_other_parse_merge_masks": 2.679,
+     "seismic_traverse": 40.858,
+     "seismic_base_max_shard": 24.184,
+     "seismic_delta_shard_sum": 12.442,
+     "splade_encode": 32.708,
+     "splade_other_delta_merge": 0.102,
+     "hydrate_abstracts_base": 30.77,
+     "hydrate_abstracts_delta": 0.463,
+     "hydrate_abs_owner_lookup": 0.459,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.314,
+     "hydrate_other_base_meta_fuse": 38.384
+    },
+    "legs_median_ms": {
+     "total": 2154.48,
+     "bm25f_base_sections": 1996.155,
+     "bm25f_delta_sections": 3.52,
+     "bm25f_other_parse_merge_masks": 2.65,
+     "seismic_traverse": 40.535,
+     "seismic_base_max_shard": 23.12,
+     "seismic_delta_shard_sum": 5.165,
+     "splade_encode": 32.8,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.79,
+     "hydrate_abstracts_delta": 0.38,
+     "hydrate_abs_owner_lookup": 0.38,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.3,
+     "hydrate_other_base_meta_fuse": 38.125
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8": {
+    "spec": {
+     "name": "x8",
+     "tag": "s8",
+     "root": "/home/vscode/work/inplace_update/m4/root_s8",
+     "n_gen": 8,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2155.98,
+    "p95_ms": 3164.37,
+    "mean_ms": 2179.55,
+    "per_pass_p50_ms": [
+     2173.02,
+     2142.78
+    ],
+    "legs_mean_ms": {
+     "total": 2179.55,
+     "bm25f_base_sections": 2024.169,
+     "bm25f_delta_sections": 4.407,
+     "bm25f_other_parse_merge_masks": 3.148,
+     "seismic_traverse": 45.446,
+     "seismic_base_max_shard": 24.614,
+     "seismic_delta_shard_sum": 26.335,
+     "splade_encode": 32.545,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.83,
+     "hydrate_abstracts_delta": 0.662,
+     "hydrate_abs_owner_lookup": 0.658,
+     "hydrate_delta_meta": 0.003,
+     "delta_masks": 0.35,
+     "hydrate_other_base_meta_fuse": 38.149
+    },
+    "legs_median_ms": {
+     "total": 2156.87,
+     "bm25f_base_sections": 2008.085,
+     "bm25f_delta_sections": 4.535,
+     "bm25f_other_parse_merge_masks": 3.1,
+     "seismic_traverse": 45.515,
+     "seismic_base_max_shard": 23.845,
+     "seismic_delta_shard_sum": 24.36,
+     "splade_encode": 32.505,
+     "splade_other_delta_merge": 0.09,
+     "hydrate_abstracts_base": 30.61,
+     "hydrate_abstracts_delta": 0.64,
+     "hydrate_abs_owner_lookup": 0.64,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.34,
+     "hydrate_other_base_meta_fuse": 38.045
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8c": {
+    "spec": {
+     "name": "x8c",
+     "tag": "s8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_s8c",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2176.69,
+    "p95_ms": 3178.72,
+    "mean_ms": 2162.63,
+    "per_pass_p50_ms": [
+     2178.62,
+     2120.44
+    ],
+    "legs_mean_ms": {
+     "total": 2162.628,
+     "bm25f_base_sections": 2017.601,
+     "bm25f_delta_sections": 2.31,
+     "bm25f_other_parse_merge_masks": 2.32,
+     "seismic_traverse": 38.307,
+     "seismic_base_max_shard": 24.033,
+     "seismic_delta_shard_sum": 3.106,
+     "splade_encode": 32.273,
+     "splade_other_delta_merge": 0.411,
+     "hydrate_abstracts_base": 30.782,
+     "hydrate_abstracts_delta": 0.148,
+     "hydrate_abs_owner_lookup": 0.145,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.547,
+     "hydrate_other_base_meta_fuse": 38.384
+    },
+    "legs_median_ms": {
+     "total": 2177.655,
+     "bm25f_base_sections": 2013.885,
+     "bm25f_delta_sections": 2.46,
+     "bm25f_other_parse_merge_masks": 2.285,
+     "seismic_traverse": 37.14,
+     "seismic_base_max_shard": 23.35,
+     "seismic_delta_shard_sum": 2.31,
+     "splade_encode": 32.785,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.855,
+     "hydrate_abstracts_delta": 0.14,
+     "hydrate_abs_owner_lookup": 0.14,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.26,
+     "hydrate_other_base_meta_fuse": 38.085
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2427.66,
+  "p50_by_position": {
+   "0": 2159.09,
+   "1": 2148.37,
+   "2": 2157.76,
+   "3": 2131.72,
+   "4": 2159.43,
+   "5": 2172.01,
+   "6": 2174.73
+  },
+  "date_utc": "2026-10-03",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R1_20261003/child.log",
+   "bytes": 651,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "bars": {
+   "F-SLOPE": {
+    "paired_slope": {
+     "n": 240,
+     "median": 1.478,
+     "ci95": [
+      0.603,
+      2.513
+     ]
+    },
+    "pooled_slope": 0.954,
+    "threshold_ms_per_gen": 8.0,
+    "verdict": "PASS"
+   },
+   "F-CAD": {
+    "per_G_max": {
+     "G_max=1": {
+      "paired_diff": {
+       "n": 240,
+       "median": 6.8,
+       "ci95": [
+        -3.905,
+        15.75
+       ]
+      },
+      "pooled_p50_diff": 8.78,
+      "threshold_ms": 8.0,
+      "verdict": "FAIL"
+     },
+     "G_max=4": {
+      "paired_diff": {
+       "n": 240,
+       "median": 5.625,
+       "ci95": [
+        0.895,
+        11.64
+       ]
+      },
+      "pooled_p50_diff": 4.74,
+      "threshold_ms": 32.0,
+      "verdict": "PASS"
+     },
+     "G_max=8": {
+      "paired_diff": {
+       "n": 240,
+       "median": 20.3,
+       "ci95": [
+        11.315,
+        26.015
+       ]
+      },
+      "pooled_p50_diff": 11.19,
+      "threshold_ms": 64.0,
+      "verdict": "PASS"
+     }
+    },
+    "smallest_passing_G_max": 4,
+    "verdict": "PASS at G_max=4"
+   },
+   "F-COMP": {
+    "p50_ratio_x8c_x1": 1.0107,
+    "paired_diff_x8c_minus_x1": {
+     "n": 240,
+     "median": 1.92,
+     "ci95": [
+      -6.99,
+      6.49
+     ]
+    },
+    "rule": "|ratio-1| <= 0.05 AND CI within [-8, +8] ms",
+    "verdict": "PASS"
+   },
+   "REPL": {
+    "paired_diff_n8_minus_n0": {
+     "n": 240,
+     "median": 21.09,
+     "ci95": [
+      8.4,
+      31.28
+     ]
+    },
+    "m4_reference": "+123 ms (CI 112-137)",
+    "window_ms": [
+     60,
+     250
+    ],
+    "flag": "OUTSIDE (repeat R1 once before reading verdicts)"
+   }
+  }
+ },
+ "R1_repeat": {
+  "run": "R1",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R1b_20261003/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.7,
+     "backend_load_s": 1.59,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.73,
+     "backend_load_s": 1.69,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n0x": {
+     "spec": {
+      "name": "n0x",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": [
+       "L4"
+      ]
+     },
+     "load_s": 0.38,
+     "backend_load_s": 1.43,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "x1": {
+     "spec": {
+      "name": "x1",
+      "tag": "s1",
+      "root": "/home/vscode/work/inplace_update/m4/root_s1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.41,
+     "backend_load_s": 1.26,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 12,
+     "abstract_stores": 2,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790868817",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 2,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 1,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 1
+     }
+    },
+    "x4": {
+     "spec": {
+      "name": "x4",
+      "tag": "s4",
+      "root": "/home/vscode/work/inplace_update/m4/root_s4",
+      "n_gen": 4,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.45,
+     "backend_load_s": 1.72,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 12,
+     "sections": 15,
+     "abstract_stores": 5,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "delta_stamp": "g0004-1790868957",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s4/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 5,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 4,
+      "buffer": 1,
+      "shards": 12,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 4
+     }
+    },
+    "x8": {
+     "spec": {
+      "name": "x8",
+      "tag": "s8",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8",
+      "n_gen": 8,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.5,
+     "backend_load_s": 1.97,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 19,
+     "abstract_stores": 9,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869150",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 9,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 8,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 8
+     }
+    },
+    "x8c": {
+     "spec": {
+      "name": "x8c",
+      "tag": "s8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8c",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.42,
+     "backend_load_s": 1.47,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 12,
+     "abstract_stores": 2,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790869314",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 2,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 1,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 1
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.37,
+     "backend_load_s": 1.17,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 51.09,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "single",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_189e41073de788d67153c05d52a12c246da9a996/src",
+  "git_commit_measured_code": "189e41073de788d67153c05d52a12c246da9a996",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   2135.8,
+   2081.6,
+   2076.3
+  ],
+  "wall_s": 6325.8,
+  "host_start": {
+   "utc": "2026-10-03T21:43:40Z",
+   "loadavg": [
+    0.76611328125,
+    1.673828125,
+    1.9033203125
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 53.01,
+    "Cached": 17.29,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.5
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 1335
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-03T23:29:05Z",
+   "loadavg": [
+    1.66748046875,
+    1.96337890625,
+    2.306640625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 48.83,
+    "Cached": 48.52,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.51
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 1789
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0,
+   "samples": [
+    {
+     "utc": "2026-10-03T21:44:10Z",
+     "load1": 1.02392578125,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-03T22:19:47Z",
+    "load1": 2.8505859375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 49.14,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-03T22:22:55Z",
+    "load1": 1.4208984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.0,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-03T22:26:12Z",
+    "load1": 5.9072265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.99,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-03T22:29:26Z",
+    "load1": 4.9873046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.98,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-03T22:32:03Z",
+    "load1": 3.759765625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.0,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-03T22:35:05Z",
+    "load1": 1.82666015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.98,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-03T22:37:31Z",
+    "load1": 3.1220703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.0,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-03T22:40:29Z",
+    "load1": 2.87548828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.05,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-03T22:43:10Z",
+    "load1": 3.34228515625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.04,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-03T22:46:11Z",
+    "load1": 2.5712890625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-03T22:48:53Z",
+    "load1": 3.5068359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.03,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-03T22:51:50Z",
+    "load1": 2.50732421875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-03T22:54:28Z",
+    "load1": 2.86083984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.05,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-03T22:57:37Z",
+    "load1": 3.21875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.05,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-03T23:00:54Z",
+    "load1": 3.244140625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.04,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-03T23:04:08Z",
+    "load1": 2.3935546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.06,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-03T23:06:44Z",
+    "load1": 3.15869140625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.02,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-03T23:09:44Z",
+    "load1": 2.54443359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.04,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-03T23:12:09Z",
+    "load1": 3.81787109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-03T23:15:06Z",
+    "load1": 1.79443359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.03,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-03T23:17:47Z",
+    "load1": 2.62255859375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-03T23:20:48Z",
+    "load1": 2.06591796875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-03T23:23:29Z",
+    "load1": 2.080078125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.02,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-03T23:26:26Z",
+    "load1": 1.9365234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.8,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 48.8,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 182.51,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2133.02,
+    "p95_ms": 3126.08,
+    "mean_ms": 2141.36,
+    "per_pass_p50_ms": [
+     2143.25,
+     2125.86
+    ],
+    "legs_mean_ms": {
+     "total": 2141.363,
+     "bm25f_base_sections": 2003.141,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.406,
+     "seismic_traverse": 33.425,
+     "seismic_base_max_shard": 21.567,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.671,
+     "splade_other_delta_merge": 0.035,
+     "hydrate_abstracts_base": 30.732,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.952
+    },
+    "legs_median_ms": {
+     "total": 2134.895,
+     "bm25f_base_sections": 1994.695,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.385,
+     "seismic_traverse": 32.765,
+     "seismic_base_max_shard": 20.085,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.845,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.805,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.485
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8": {
+    "spec": {
+     "name": "n8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2147.55,
+    "p95_ms": 3159.89,
+    "mean_ms": 2173.49,
+    "per_pass_p50_ms": [
+     2163.97,
+     2129.29
+    ],
+    "legs_mean_ms": {
+     "total": 2173.486,
+     "bm25f_base_sections": 2004.138,
+     "bm25f_delta_sections": 8.338,
+     "bm25f_other_parse_merge_masks": 13.451,
+     "seismic_traverse": 40.38,
+     "seismic_base_max_shard": 24.449,
+     "seismic_delta_shard_sum": 8.495,
+     "splade_encode": 31.769,
+     "splade_other_delta_merge": 0.104,
+     "hydrate_abstracts_base": 30.712,
+     "hydrate_abstracts_delta": 5.573,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 3.272,
+     "hydrate_other_base_meta_fuse": 38.935
+    },
+    "legs_median_ms": {
+     "total": 2147.73,
+     "bm25f_base_sections": 1973.395,
+     "bm25f_delta_sections": 8.255,
+     "bm25f_other_parse_merge_masks": 10.715,
+     "seismic_traverse": 40.055,
+     "seismic_base_max_shard": 23.915,
+     "seismic_delta_shard_sum": 7.76,
+     "splade_encode": 30.275,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.685,
+     "hydrate_abstracts_delta": 5.535,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.69,
+     "hydrate_other_base_meta_fuse": 38.46
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n0x": {
+    "spec": {
+     "name": "n0x",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": [
+      "L4"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2118.75,
+    "p95_ms": 3142.83,
+    "mean_ms": 2141.67,
+    "per_pass_p50_ms": [
+     2098.42,
+     2122.11
+    ],
+    "legs_mean_ms": {
+     "total": 2141.668,
+     "bm25f_base_sections": 2006.156,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.893,
+     "seismic_traverse": 32.705,
+     "seismic_base_max_shard": 20.331,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 31.666,
+     "splade_other_delta_merge": 0.034,
+     "hydrate_abstracts_base": 30.58,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.635
+    },
+    "legs_median_ms": {
+     "total": 2120.43,
+     "bm25f_base_sections": 1986.625,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.88,
+     "seismic_traverse": 32.29,
+     "seismic_base_max_shard": 20.16,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.735,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.47,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.31
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x1": {
+    "spec": {
+     "name": "x1",
+     "tag": "s1",
+     "root": "/home/vscode/work/inplace_update/m4/root_s1",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2106.19,
+    "p95_ms": 3136.5,
+    "mean_ms": 2146.22,
+    "per_pass_p50_ms": [
+     2087.89,
+     2129.2
+    ],
+    "legs_mean_ms": {
+     "total": 2146.224,
+     "bm25f_base_sections": 2002.857,
+     "bm25f_delta_sections": 2.206,
+     "bm25f_other_parse_merge_masks": 2.218,
+     "seismic_traverse": 36.415,
+     "seismic_base_max_shard": 23.21,
+     "seismic_delta_shard_sum": 2.426,
+     "splade_encode": 32.936,
+     "splade_other_delta_merge": 0.107,
+     "hydrate_abstracts_base": 30.799,
+     "hydrate_abstracts_delta": 0.146,
+     "hydrate_abs_owner_lookup": 0.145,
+     "hydrate_delta_meta": 0.001,
+     "delta_masks": 0.276,
+     "hydrate_other_base_meta_fuse": 38.407
+    },
+    "legs_median_ms": {
+     "total": 2109.71,
+     "bm25f_base_sections": 1968.7,
+     "bm25f_delta_sections": 2.36,
+     "bm25f_other_parse_merge_masks": 2.2,
+     "seismic_traverse": 35.98,
+     "seismic_base_max_shard": 21.605,
+     "seismic_delta_shard_sum": 2.065,
+     "splade_encode": 33.155,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.72,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.145,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.27,
+     "hydrate_other_base_meta_fuse": 37.925
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x4": {
+    "spec": {
+     "name": "x4",
+     "tag": "s4",
+     "root": "/home/vscode/work/inplace_update/m4/root_s4",
+     "n_gen": 4,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2141.4,
+    "p95_ms": 3116.69,
+    "mean_ms": 2150.06,
+    "per_pass_p50_ms": [
+     2141.4,
+     2139.11
+    ],
+    "legs_mean_ms": {
+     "total": 2150.057,
+     "bm25f_base_sections": 2004.043,
+     "bm25f_delta_sections": 3.242,
+     "bm25f_other_parse_merge_masks": 2.608,
+     "seismic_traverse": 38.401,
+     "seismic_base_max_shard": 23.302,
+     "seismic_delta_shard_sum": 7.683,
+     "splade_encode": 32.289,
+     "splade_other_delta_merge": 0.106,
+     "hydrate_abstracts_base": 30.47,
+     "hydrate_abstracts_delta": 0.387,
+     "hydrate_abs_owner_lookup": 0.386,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.311,
+     "hydrate_other_base_meta_fuse": 38.416
+    },
+    "legs_median_ms": {
+     "total": 2142.755,
+     "bm25f_base_sections": 1997.785,
+     "bm25f_delta_sections": 3.45,
+     "bm25f_other_parse_merge_masks": 2.59,
+     "seismic_traverse": 38.51,
+     "seismic_base_max_shard": 22.67,
+     "seismic_delta_shard_sum": 4.17,
+     "splade_encode": 32.895,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.5,
+     "hydrate_abstracts_delta": 0.39,
+     "hydrate_abs_owner_lookup": 0.385,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.3,
+     "hydrate_other_base_meta_fuse": 38.045
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8": {
+    "spec": {
+     "name": "x8",
+     "tag": "s8",
+     "root": "/home/vscode/work/inplace_update/m4/root_s8",
+     "n_gen": 8,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2135.98,
+    "p95_ms": 3154.17,
+    "mean_ms": 2153.15,
+    "per_pass_p50_ms": [
+     2135.98,
+     2135.03
+    ],
+    "legs_mean_ms": {
+     "total": 2153.148,
+     "bm25f_base_sections": 2002.909,
+     "bm25f_delta_sections": 4.362,
+     "bm25f_other_parse_merge_masks": 3.06,
+     "seismic_traverse": 40.592,
+     "seismic_base_max_shard": 22.701,
+     "seismic_delta_shard_sum": 18.45,
+     "splade_encode": 32.38,
+     "splade_other_delta_merge": 0.106,
+     "hydrate_abstracts_base": 30.755,
+     "hydrate_abstracts_delta": 0.646,
+     "hydrate_abs_owner_lookup": 0.645,
+     "hydrate_delta_meta": 0.003,
+     "delta_masks": 0.353,
+     "hydrate_other_base_meta_fuse": 38.245
+    },
+    "legs_median_ms": {
+     "total": 2136.8,
+     "bm25f_base_sections": 1983.445,
+     "bm25f_delta_sections": 4.51,
+     "bm25f_other_parse_merge_masks": 3.045,
+     "seismic_traverse": 40.5,
+     "seismic_base_max_shard": 21.765,
+     "seismic_delta_shard_sum": 15.905,
+     "splade_encode": 33.16,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.675,
+     "hydrate_abstracts_delta": 0.645,
+     "hydrate_abs_owner_lookup": 0.64,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.34,
+     "hydrate_other_base_meta_fuse": 38.215
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8c": {
+    "spec": {
+     "name": "x8c",
+     "tag": "s8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_s8c",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2122.73,
+    "p95_ms": 3127.03,
+    "mean_ms": 2145.5,
+    "per_pass_p50_ms": [
+     2086.34,
+     2130.95
+    ],
+    "legs_mean_ms": {
+     "total": 2145.499,
+     "bm25f_base_sections": 2002.854,
+     "bm25f_delta_sections": 2.166,
+     "bm25f_other_parse_merge_masks": 2.23,
+     "seismic_traverse": 36.099,
+     "seismic_base_max_shard": 22.906,
+     "seismic_delta_shard_sum": 2.199,
+     "splade_encode": 32.544,
+     "splade_other_delta_merge": 0.107,
+     "hydrate_abstracts_base": 30.61,
+     "hydrate_abstracts_delta": 0.145,
+     "hydrate_abs_owner_lookup": 0.144,
+     "hydrate_delta_meta": 0.001,
+     "delta_masks": 0.272,
+     "hydrate_other_base_meta_fuse": 38.65
+    },
+    "legs_median_ms": {
+     "total": 2126.84,
+     "bm25f_base_sections": 1986.845,
+     "bm25f_delta_sections": 2.37,
+     "bm25f_other_parse_merge_masks": 2.24,
+     "seismic_traverse": 35.63,
+     "seismic_base_max_shard": 21.065,
+     "seismic_delta_shard_sum": 1.96,
+     "splade_encode": 32.945,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.64,
+     "hydrate_abstracts_delta": 0.14,
+     "hydrate_abs_owner_lookup": 0.14,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.26,
+     "hydrate_other_base_meta_fuse": 38.715
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2154.43,
+  "p50_by_position": {
+   "0": 2123.25,
+   "1": 2133.02,
+   "2": 2135.98,
+   "3": 2128.78,
+   "4": 2132.05,
+   "5": 2135.03,
+   "6": 2129.29
+  },
+  "date_utc": "2026-10-03",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R1b_20261003/child.log",
+   "bytes": 651,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "bars": {
+   "F-SLOPE": {
+    "paired_slope": {
+     "n": 240,
+     "median": 1.278,
+     "ci95": [
+      0.732,
+      2.085
+     ]
+    },
+    "pooled_slope": 3.28,
+    "threshold_ms_per_gen": 8.0,
+    "verdict": "PASS"
+   },
+   "F-CAD": {
+    "per_G_max": {
+     "G_max=1": {
+      "paired_diff": {
+       "n": 240,
+       "median": 2.71,
+       "ci95": [
+        -4.64,
+        11.19
+       ]
+      },
+      "pooled_p50_diff": -12.56,
+      "threshold_ms": 8.0,
+      "verdict": "FAIL"
+     },
+     "G_max=4": {
+      "paired_diff": {
+       "n": 240,
+       "median": 12.565,
+       "ci95": [
+        6.39,
+        18.215
+       ]
+      },
+      "pooled_p50_diff": 22.65,
+      "threshold_ms": 32.0,
+      "verdict": "PASS"
+     },
+     "G_max=8": {
+      "paired_diff": {
+       "n": 240,
+       "median": 12.26,
+       "ci95": [
+        7.35,
+        17.075
+       ]
+      },
+      "pooled_p50_diff": 17.23,
+      "threshold_ms": 64.0,
+      "verdict": "PASS"
+     }
+    },
+    "smallest_passing_G_max": 4,
+    "verdict": "PASS at G_max=4"
+   },
+   "F-COMP": {
+    "p50_ratio_x8c_x1": 1.0079,
+    "paired_diff_x8c_minus_x1": {
+     "n": 240,
+     "median": 2.215,
+     "ci95": [
+      -4.24,
+      8.705
+     ]
+    },
+    "rule": "|ratio-1| <= 0.05 AND CI within [-8, +8] ms",
+    "verdict": "FAIL"
+   },
+   "REPL": {
+    "paired_diff_n8_minus_n0": {
+     "n": 240,
+     "median": 28.52,
+     "ci95": [
+      24.15,
+      32.35
+     ]
+    },
+    "m4_reference": "+123 ms (CI 112-137)",
+    "window_ms": [
+     60,
+     250
+    ],
+    "flag": "OUTSIDE (repeat R1 once before reading verdicts)"
+   }
+  }
+ },
+ "R2": {
+  "run": "R2",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R2_20261003/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.73,
+     "backend_load_s": 1.87,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.66,
+     "backend_load_s": 1.97,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n8+L3": {
+     "spec": {
+      "name": "n8+L3",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L3"
+      ]
+     },
+     "load_s": 0.43,
+     "backend_load_s": 1.88,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": true,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n8+L4": {
+     "spec": {
+      "name": "n8+L4",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L4"
+      ]
+     },
+     "load_s": 0.47,
+     "backend_load_s": 1.94,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n8+L5": {
+     "spec": {
+      "name": "n8+L5",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L5"
+      ]
+     },
+     "load_s": 0.44,
+     "backend_load_s": 1.95,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "e8": {
+     "spec": {
+      "name": "e8",
+      "tag": "e8",
+      "root": "/home/vscode/work/inplace_update/m4/root_e8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.58,
+     "backend_load_s": 2.17,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 27,
+     "abstract_stores": 17,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869895",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_e8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 17,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 16,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 16
+     }
+    },
+    "s8": {
+     "spec": {
+      "name": "s8",
+      "tag": "s8",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.5,
+     "backend_load_s": 2.23,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 19,
+     "abstract_stores": 9,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869150",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 9,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 8,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 8
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.4,
+     "backend_load_s": 1.4,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 50.7,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "single",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_865b7c74e485518ff3fae8797a361e0cce4af0e6/src",
+  "git_commit_measured_code": "865b7c74e485518ff3fae8797a361e0cce4af0e6",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1986.5,
+   2088.1,
+   2086.8
+  ],
+  "wall_s": 6197.8,
+  "host_start": {
+   "utc": "2026-10-03T23:49:46Z",
+   "loadavg": [
+    1.32666015625,
+    3.2685546875,
+    3.09619140625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 52.84,
+    "Cached": 20.77,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.44
+   },
+   "gpu": {
+    "util_pct": 2,
+    "mem_used_mib": 1336
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-04T01:33:02Z",
+   "loadavg": [
+    3.52978515625,
+    2.90966796875,
+    2.7333984375
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 48.33,
+    "Cached": 36.16,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.44
+   },
+   "gpu": {
+    "util_pct": 1,
+    "mem_used_mib": 1895
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.1,
+   "samples": [
+    {
+     "utc": "2026-10-03T23:50:20Z",
+     "load1": 1.35693359375,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-04T00:23:27Z",
+    "load1": 1.93310546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.6,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-04T00:26:37Z",
+    "load1": 2.8251953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.46,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-04T00:29:55Z",
+    "load1": 3.06396484375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.49,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-04T00:33:11Z",
+    "load1": 2.13623046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.49,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-04T00:35:48Z",
+    "load1": 2.654296875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.47,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-04T00:38:49Z",
+    "load1": 3.453125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.48,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-04T00:41:15Z",
+    "load1": 3.6552734375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.43,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-04T00:44:13Z",
+    "load1": 3.12109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.46,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-04T00:46:55Z",
+    "load1": 2.83447265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.48,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-04T00:49:56Z",
+    "load1": 2.4658203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.47,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-04T00:52:38Z",
+    "load1": 2.2421875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.49,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-04T00:55:37Z",
+    "load1": 2.23388671875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.48,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-04T00:58:16Z",
+    "load1": 3.91650390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.48,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-04T01:01:26Z",
+    "load1": 1.61376953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.42,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-04T01:04:43Z",
+    "load1": 3.0634765625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.43,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-04T01:07:57Z",
+    "load1": 3.85595703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.46,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-04T01:10:34Z",
+    "load1": 3.3486328125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.47,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-04T01:13:35Z",
+    "load1": 2.51171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.52,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-04T01:16:00Z",
+    "load1": 2.14892578125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.45,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-04T01:18:59Z",
+    "load1": 2.0537109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.53,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-04T01:21:41Z",
+    "load1": 3.154296875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.43,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-04T01:24:42Z",
+    "load1": 1.962890625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.5,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-04T01:27:24Z",
+    "load1": 4.4306640625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.47,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-04T01:30:23Z",
+    "load1": 2.0048828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.29,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 48.25,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 186.55,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2129.63,
+    "p95_ms": 3123.92,
+    "mean_ms": 2137.38,
+    "per_pass_p50_ms": [
+     2129.63,
+     2128.0
+    ],
+    "legs_mean_ms": {
+     "total": 2137.384,
+     "bm25f_base_sections": 1998.263,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.616,
+     "seismic_traverse": 34.075,
+     "seismic_base_max_shard": 21.539,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.821,
+     "splade_other_delta_merge": 0.051,
+     "hydrate_abstracts_base": 30.815,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.742
+    },
+    "legs_median_ms": {
+     "total": 2131.8,
+     "bm25f_base_sections": 1998.74,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.61,
+     "seismic_traverse": 32.905,
+     "seismic_base_max_shard": 20.03,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.335,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.885,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.36
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8": {
+    "spec": {
+     "name": "n8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2162.48,
+    "p95_ms": 3142.22,
+    "mean_ms": 2177.2,
+    "per_pass_p50_ms": [
+     2138.07,
+     2162.48
+    ],
+    "legs_mean_ms": {
+     "total": 2177.198,
+     "bm25f_base_sections": 2005.451,
+     "bm25f_delta_sections": 8.595,
+     "bm25f_other_parse_merge_masks": 11.697,
+     "seismic_traverse": 42.948,
+     "seismic_base_max_shard": 26.746,
+     "seismic_delta_shard_sum": 9.118,
+     "splade_encode": 32.943,
+     "splade_other_delta_merge": 0.105,
+     "hydrate_abstracts_base": 30.785,
+     "hydrate_abstracts_delta": 5.695,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.712,
+     "hydrate_other_base_meta_fuse": 38.888
+    },
+    "legs_median_ms": {
+     "total": 2164.485,
+     "bm25f_base_sections": 1991.7,
+     "bm25f_delta_sections": 8.685,
+     "bm25f_other_parse_merge_masks": 11.535,
+     "seismic_traverse": 42.6,
+     "seismic_base_max_shard": 25.91,
+     "seismic_delta_shard_sum": 8.49,
+     "splade_encode": 32.745,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.98,
+     "hydrate_abstracts_delta": 5.69,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.7,
+     "hydrate_other_base_meta_fuse": 38.73
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8+L3": {
+    "spec": {
+     "name": "n8+L3",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": [
+      "L3"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2122.79,
+    "p95_ms": 3142.19,
+    "mean_ms": 2166.25,
+    "per_pass_p50_ms": [
+     2118.54,
+     2122.79
+    ],
+    "legs_mean_ms": {
+     "total": 2166.255,
+     "bm25f_base_sections": 1999.614,
+     "bm25f_delta_sections": 8.622,
+     "bm25f_other_parse_merge_masks": 11.706,
+     "seismic_traverse": 42.536,
+     "seismic_base_max_shard": 25.581,
+     "seismic_delta_shard_sum": 9.026,
+     "splade_encode": 33.877,
+     "splade_other_delta_merge": 0.106,
+     "hydrate_abstracts_base": 30.823,
+     "hydrate_abstracts_delta": 0.665,
+     "hydrate_abs_owner_lookup": 0.664,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.698,
+     "hydrate_other_base_meta_fuse": 38.208
+    },
+    "legs_median_ms": {
+     "total": 2126.215,
+     "bm25f_base_sections": 1958.155,
+     "bm25f_delta_sections": 8.625,
+     "bm25f_other_parse_merge_masks": 11.56,
+     "seismic_traverse": 43.105,
+     "seismic_base_max_shard": 24.26,
+     "seismic_delta_shard_sum": 8.35,
+     "splade_encode": 33.54,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.74,
+     "hydrate_abstracts_delta": 0.66,
+     "hydrate_abs_owner_lookup": 0.66,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.69,
+     "hydrate_other_base_meta_fuse": 37.98
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8+L4": {
+    "spec": {
+     "name": "n8+L4",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": [
+      "L4"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2132.96,
+    "p95_ms": 3191.35,
+    "mean_ms": 2168.99,
+    "per_pass_p50_ms": [
+     2132.96,
+     2132.64
+    ],
+    "legs_mean_ms": {
+     "total": 2168.992,
+     "bm25f_base_sections": 2003.464,
+     "bm25f_delta_sections": 8.326,
+     "bm25f_other_parse_merge_masks": 7.842,
+     "seismic_traverse": 41.375,
+     "seismic_base_max_shard": 25.142,
+     "seismic_delta_shard_sum": 8.926,
+     "splade_encode": 32.563,
+     "splade_other_delta_merge": 0.121,
+     "hydrate_abstracts_base": 30.703,
+     "hydrate_abstracts_delta": 5.607,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.725,
+     "hydrate_other_base_meta_fuse": 38.899
+    },
+    "legs_median_ms": {
+     "total": 2137.335,
+     "bm25f_base_sections": 1979.545,
+     "bm25f_delta_sections": 8.335,
+     "bm25f_other_parse_merge_masks": 7.705,
+     "seismic_traverse": 40.235,
+     "seismic_base_max_shard": 24.9,
+     "seismic_delta_shard_sum": 7.71,
+     "splade_encode": 33.125,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.83,
+     "hydrate_abstracts_delta": 5.605,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.73,
+     "hydrate_other_base_meta_fuse": 38.605
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8+L5": {
+    "spec": {
+     "name": "n8+L5",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": [
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2150.74,
+    "p95_ms": 3150.33,
+    "mean_ms": 2167.15,
+    "per_pass_p50_ms": [
+     2135.96,
+     2150.74
+    ],
+    "legs_mean_ms": {
+     "total": 2167.147,
+     "bm25f_base_sections": 1998.268,
+     "bm25f_delta_sections": 8.61,
+     "bm25f_other_parse_merge_masks": 11.628,
+     "seismic_traverse": 41.187,
+     "seismic_base_max_shard": 23.6,
+     "seismic_delta_shard_sum": 18.622,
+     "splade_encode": 32.319,
+     "splade_other_delta_merge": 0.104,
+     "hydrate_abstracts_base": 30.689,
+     "hydrate_abstracts_delta": 5.59,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.72,
+     "hydrate_other_base_meta_fuse": 38.663
+    },
+    "legs_median_ms": {
+     "total": 2151.24,
+     "bm25f_base_sections": 1978.08,
+     "bm25f_delta_sections": 8.675,
+     "bm25f_other_parse_merge_masks": 11.46,
+     "seismic_traverse": 41.07,
+     "seismic_base_max_shard": 23.035,
+     "seismic_delta_shard_sum": 15.455,
+     "splade_encode": 31.76,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.815,
+     "hydrate_abstracts_delta": 5.59,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.715,
+     "hydrate_other_base_meta_fuse": 38.365
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "e8": {
+    "spec": {
+     "name": "e8",
+     "tag": "e8",
+     "root": "/home/vscode/work/inplace_update/m4/root_e8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2108.73,
+    "p95_ms": 3163.51,
+    "mean_ms": 2156.06,
+    "per_pass_p50_ms": [
+     2100.89,
+     2108.73
+    ],
+    "legs_mean_ms": {
+     "total": 2156.061,
+     "bm25f_base_sections": 2001.256,
+     "bm25f_delta_sections": 5.388,
+     "bm25f_other_parse_merge_masks": 5.296,
+     "seismic_traverse": 41.041,
+     "seismic_base_max_shard": 24.199,
+     "seismic_delta_shard_sum": 8.885,
+     "splade_encode": 32.63,
+     "splade_other_delta_merge": 0.151,
+     "hydrate_abstracts_base": 30.761,
+     "hydrate_abstracts_delta": 1.393,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.419,
+     "hydrate_other_base_meta_fuse": 38.053
+    },
+    "legs_median_ms": {
+     "total": 2115.28,
+     "bm25f_base_sections": 1962.605,
+     "bm25f_delta_sections": 5.53,
+     "bm25f_other_parse_merge_masks": 5.215,
+     "seismic_traverse": 41.98,
+     "seismic_base_max_shard": 23.465,
+     "seismic_delta_shard_sum": 8.105,
+     "splade_encode": 33.195,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.86,
+     "hydrate_abstracts_delta": 1.39,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.38,
+     "hydrate_other_base_meta_fuse": 37.93
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "s8": {
+    "spec": {
+     "name": "s8",
+     "tag": "s8",
+     "root": "/home/vscode/work/inplace_update/m4/root_s8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2142.2,
+    "p95_ms": 3152.72,
+    "mean_ms": 2154.56,
+    "per_pass_p50_ms": [
+     2109.35,
+     2146.63
+    ],
+    "legs_mean_ms": {
+     "total": 2154.556,
+     "bm25f_base_sections": 2000.295,
+     "bm25f_delta_sections": 4.516,
+     "bm25f_other_parse_merge_masks": 4.367,
+     "seismic_traverse": 42.11,
+     "seismic_base_max_shard": 25.578,
+     "seismic_delta_shard_sum": 8.994,
+     "splade_encode": 33.145,
+     "splade_other_delta_merge": 0.125,
+     "hydrate_abstracts_base": 30.785,
+     "hydrate_abstracts_delta": 0.795,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.003,
+     "delta_masks": 0.359,
+     "hydrate_other_base_meta_fuse": 38.329
+    },
+    "legs_median_ms": {
+     "total": 2144.415,
+     "bm25f_base_sections": 1979.21,
+     "bm25f_delta_sections": 4.715,
+     "bm25f_other_parse_merge_masks": 4.39,
+     "seismic_traverse": 42.435,
+     "seismic_base_max_shard": 24.5,
+     "seismic_delta_shard_sum": 8.285,
+     "splade_encode": 33.45,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.91,
+     "hydrate_abstracts_delta": 0.79,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.34,
+     "hydrate_other_base_meta_fuse": 38.23
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2141.92,
+  "p50_by_position": {
+   "0": 2144.55,
+   "1": 2125.2,
+   "2": 2135.93,
+   "3": 2158.99,
+   "4": 2133.29,
+   "5": 2128.79,
+   "6": 2132.96
+  },
+  "date_utc": "2026-10-04",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R2_20261003/child.log",
+   "bytes": 651,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "paired_differences": {
+   "n8+L3_minus_n8": {
+    "n": 240,
+    "median": -9.615,
+    "ci95": [
+     -14.85,
+     -0.81
+    ]
+   },
+   "n8+L4_minus_n8": {
+    "n": 240,
+    "median": -8.04,
+    "ci95": [
+     -11.95,
+     -2.04
+    ]
+   },
+   "n8+L5_minus_n8": {
+    "n": 240,
+    "median": -4.66,
+    "ci95": [
+     -11.775,
+     0.99
+    ]
+   },
+   "e8_minus_n8": {
+    "n": 240,
+    "median": -14.76,
+    "ci95": [
+     -23.52,
+     -10.49
+    ]
+   },
+   "s8_minus_n8": {
+    "n": 240,
+    "median": -17.875,
+    "ci95": [
+     -22.815,
+     -12.27
+    ]
+   },
+   "n8_minus_n0": {
+    "n": 240,
+    "median": 34.12,
+    "ci95": [
+     29.005,
+     41.71
+    ]
+   }
+  },
+  "lever_gain_rule": {
+   "n8+L3_minus_n8": {
+    "median": -9.615,
+    "ci95": [
+     -14.85,
+     -0.81
+    ],
+    "verdict": "KEEP"
+   },
+   "n8+L4_minus_n8": {
+    "median": -8.04,
+    "ci95": [
+     -11.95,
+     -2.04
+    ],
+    "verdict": "KEEP"
+   },
+   "n8+L5_minus_n8": {
+    "median": -4.66,
+    "ci95": [
+     -11.775,
+     0.99
+    ],
+    "verdict": "KEEP ; CI includes 0"
+   }
+  }
+ },
+ "R1_per_base_section": {
+  "run": "R1",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R1n_20261004/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.7,
+     "backend_load_s": 1.98,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.48,
+     "backend_load_s": 1.9,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n0x": {
+     "spec": {
+      "name": "n0x",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": [
+       "L4"
+      ]
+     },
+     "load_s": 0.35,
+     "backend_load_s": 1.29,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "x1": {
+     "spec": {
+      "name": "x1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.39,
+     "backend_load_s": 1.37,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "x4": {
+     "spec": {
+      "name": "x4",
+      "tag": "n4",
+      "root": "/home/vscode/work/inplace_update/m4/root_n4",
+      "n_gen": 4,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.57,
+     "backend_load_s": 1.69,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 12,
+     "sections": 49,
+     "abstract_stores": 39,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "delta_stamp": "g0004-1790672198",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n4/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 39,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 38,
+      "buffer": 1,
+      "shards": 12,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 38
+     }
+    },
+    "x8": {
+     "spec": {
+      "name": "x8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.45,
+     "backend_load_s": 1.86,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "x8c": {
+     "spec": {
+      "name": "x8c",
+      "tag": "n8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.46,
+     "backend_load_s": 1.4,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790672554",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.36,
+     "backend_load_s": 1.16,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 51.03,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "per_base_section",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_425346ad93446037d68b17316e52ee2e750ad3a9/src",
+  "git_commit_measured_code": "425346ad93446037d68b17316e52ee2e750ad3a9",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1961.7,
+   2110.1,
+   2105.6
+  ],
+  "wall_s": 6210.1,
+  "host_start": {
+   "utc": "2026-10-04T05:26:16Z",
+   "loadavg": [
+    0.66943359375,
+    1.65966796875,
+    2.24072265625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 53.03,
+    "Cached": 36.4,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.41
+   },
+   "gpu": {
+    "util_pct": 1,
+    "mem_used_mib": 1458
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-04T07:09:45Z",
+   "loadavg": [
+    2.36083984375,
+    3.13037109375,
+    3.07666015625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 47.87,
+    "Cached": 45.88,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.41
+   },
+   "gpu": {
+    "util_pct": 1,
+    "mem_used_mib": 1912
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0,
+   "samples": [
+    {
+     "utc": "2026-10-04T05:26:47Z",
+     "load1": 1.009765625,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-04T05:59:30Z",
+    "load1": 3.0185546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.11,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-04T06:02:42Z",
+    "load1": 2.39306640625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.52,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-04T06:06:01Z",
+    "load1": 2.2197265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.35,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-04T06:09:17Z",
+    "load1": 3.10546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.8,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-04T06:11:56Z",
+    "load1": 4.69873046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.8,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-04T06:14:59Z",
+    "load1": 1.49072265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.8,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-04T06:17:26Z",
+    "load1": 3.15087890625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.88,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-04T06:20:27Z",
+    "load1": 2.1513671875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.81,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-04T06:23:10Z",
+    "load1": 2.6083984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.82,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-04T06:26:14Z",
+    "load1": 1.5703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.95,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-04T06:28:59Z",
+    "load1": 2.37060546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.98,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-04T06:31:58Z",
+    "load1": 2.12548828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.01,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-04T06:34:40Z",
+    "load1": 4.50390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.82,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-04T06:37:51Z",
+    "load1": 1.99951171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.83,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-04T06:41:11Z",
+    "load1": 1.919921875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.86,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-04T06:44:28Z",
+    "load1": 2.115234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.85,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-04T06:47:07Z",
+    "load1": 3.0859375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.89,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-04T06:50:10Z",
+    "load1": 2.34716796875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.81,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-04T06:52:36Z",
+    "load1": 4.53369140625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.82,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-04T06:55:37Z",
+    "load1": 2.0986328125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.81,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-04T06:58:20Z",
+    "load1": 2.6142578125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.82,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-04T07:01:23Z",
+    "load1": 5.1240234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.86,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-04T07:04:07Z",
+    "load1": 5.03173828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.96,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-04T07:07:07Z",
+    "load1": 2.2265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.86,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 47.8,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 230.59,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2151.57,
+    "p95_ms": 3168.53,
+    "mean_ms": 2171.96,
+    "per_pass_p50_ms": [
+     2152.17,
+     2139.48
+    ],
+    "legs_mean_ms": {
+     "total": 2171.955,
+     "bm25f_base_sections": 2028.676,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.527,
+     "seismic_traverse": 35.6,
+     "seismic_base_max_shard": 23.18,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 34.21,
+     "splade_other_delta_merge": 0.035,
+     "hydrate_abstracts_base": 31.42,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 39.487
+    },
+    "legs_median_ms": {
+     "total": 2151.84,
+     "bm25f_base_sections": 2007.485,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.53,
+     "seismic_traverse": 34.455,
+     "seismic_base_max_shard": 21.975,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.905,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 31.465,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.78
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8": {
+    "spec": {
+     "name": "n8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2168.92,
+    "p95_ms": 3206.34,
+    "mean_ms": 2201.21,
+    "per_pass_p50_ms": [
+     2135.8,
+     2172.09
+    ],
+    "legs_mean_ms": {
+     "total": 2201.209,
+     "bm25f_base_sections": 2027.52,
+     "bm25f_delta_sections": 8.599,
+     "bm25f_other_parse_merge_masks": 11.195,
+     "seismic_traverse": 43.509,
+     "seismic_base_max_shard": 26.548,
+     "seismic_delta_shard_sum": 9.682,
+     "splade_encode": 33.888,
+     "splade_other_delta_merge": 0.106,
+     "hydrate_abstracts_base": 31.164,
+     "hydrate_abstracts_delta": 5.67,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.771,
+     "hydrate_other_base_meta_fuse": 39.467
+    },
+    "legs_median_ms": {
+     "total": 2170.505,
+     "bm25f_base_sections": 1981.66,
+     "bm25f_delta_sections": 8.64,
+     "bm25f_other_parse_merge_masks": 11.06,
+     "seismic_traverse": 43.665,
+     "seismic_base_max_shard": 25.625,
+     "seismic_delta_shard_sum": 8.625,
+     "splade_encode": 34.945,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 31.16,
+     "hydrate_abstracts_delta": 5.665,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.77,
+     "hydrate_other_base_meta_fuse": 39.19
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n0x": {
+    "spec": {
+     "name": "n0x",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": [
+      "L4"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2140.69,
+    "p95_ms": 3161.04,
+    "mean_ms": 2165.47,
+    "per_pass_p50_ms": [
+     2162.91,
+     2120.28
+    ],
+    "legs_mean_ms": {
+     "total": 2165.469,
+     "bm25f_base_sections": 2024.49,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.989,
+     "seismic_traverse": 34.349,
+     "seismic_base_max_shard": 21.507,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.77,
+     "splade_other_delta_merge": 0.052,
+     "hydrate_abstracts_base": 31.248,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 39.571
+    },
+    "legs_median_ms": {
+     "total": 2151.8,
+     "bm25f_base_sections": 1997.715,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.975,
+     "seismic_traverse": 33.585,
+     "seismic_base_max_shard": 20.255,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.75,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 31.235,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 39.145
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x1": {
+    "spec": {
+     "name": "x1",
+     "tag": "n1",
+     "root": "/home/vscode/work/inplace_update/m4/root_n1",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2143.45,
+    "p95_ms": 3170.86,
+    "mean_ms": 2171.9,
+    "per_pass_p50_ms": [
+     2140.4,
+     2143.45
+    ],
+    "legs_mean_ms": {
+     "total": 2171.904,
+     "bm25f_base_sections": 2023.146,
+     "bm25f_delta_sections": 2.964,
+     "bm25f_other_parse_merge_masks": 3.095,
+     "seismic_traverse": 37.965,
+     "seismic_base_max_shard": 24.51,
+     "seismic_delta_shard_sum": 2.37,
+     "splade_encode": 33.913,
+     "splade_other_delta_merge": 0.11,
+     "hydrate_abstracts_base": 31.26,
+     "hydrate_abstracts_delta": 0.155,
+     "hydrate_abs_owner_lookup": 0.153,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.351,
+     "hydrate_other_base_meta_fuse": 39.204
+    },
+    "legs_median_ms": {
+     "total": 2144.84,
+     "bm25f_base_sections": 1997.995,
+     "bm25f_delta_sections": 3.15,
+     "bm25f_other_parse_merge_masks": 3.08,
+     "seismic_traverse": 37.905,
+     "seismic_base_max_shard": 24.055,
+     "seismic_delta_shard_sum": 2.135,
+     "splade_encode": 34.125,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 31.51,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.34,
+     "hydrate_other_base_meta_fuse": 38.925
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x4": {
+    "spec": {
+     "name": "x4",
+     "tag": "n4",
+     "root": "/home/vscode/work/inplace_update/m4/root_n4",
+     "n_gen": 4,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2149.91,
+    "p95_ms": 3170.3,
+    "mean_ms": 2184.16,
+    "per_pass_p50_ms": [
+     2129.84,
+     2159.37
+    ],
+    "legs_mean_ms": {
+     "total": 2184.157,
+     "bm25f_base_sections": 2027.765,
+     "bm25f_delta_sections": 5.619,
+     "bm25f_other_parse_merge_masks": 5.134,
+     "seismic_traverse": 40.373,
+     "seismic_base_max_shard": 24.656,
+     "seismic_delta_shard_sum": 11.169,
+     "splade_encode": 34.504,
+     "splade_other_delta_merge": 0.14,
+     "hydrate_abstracts_base": 31.211,
+     "hydrate_abstracts_delta": 0.414,
+     "hydrate_abs_owner_lookup": 0.413,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.506,
+     "hydrate_other_base_meta_fuse": 38.905
+    },
+    "legs_median_ms": {
+     "total": 2152.115,
+     "bm25f_base_sections": 2006.605,
+     "bm25f_delta_sections": 5.595,
+     "bm25f_other_parse_merge_masks": 5.08,
+     "seismic_traverse": 40.485,
+     "seismic_base_max_shard": 23.49,
+     "seismic_delta_shard_sum": 4.705,
+     "splade_encode": 34.12,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 31.14,
+     "hydrate_abstracts_delta": 0.42,
+     "hydrate_abs_owner_lookup": 0.42,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.49,
+     "hydrate_other_base_meta_fuse": 38.725
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8": {
+    "spec": {
+     "name": "x8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2168.46,
+    "p95_ms": 3180.42,
+    "mean_ms": 2187.21,
+    "per_pass_p50_ms": [
+     2178.37,
+     2130.69
+    ],
+    "legs_mean_ms": {
+     "total": 2187.209,
+     "bm25f_base_sections": 2022.466,
+     "bm25f_delta_sections": 8.354,
+     "bm25f_other_parse_merge_masks": 8.243,
+     "seismic_traverse": 43.02,
+     "seismic_base_max_shard": 24.483,
+     "seismic_delta_shard_sum": 20.232,
+     "splade_encode": 34.286,
+     "splade_other_delta_merge": 0.122,
+     "hydrate_abstracts_base": 31.242,
+     "hydrate_abstracts_delta": 0.689,
+     "hydrate_abs_owner_lookup": 0.688,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 1.358,
+     "hydrate_other_base_meta_fuse": 38.673
+    },
+    "legs_median_ms": {
+     "total": 2170.695,
+     "bm25f_base_sections": 2013.935,
+     "bm25f_delta_sections": 8.285,
+     "bm25f_other_parse_merge_masks": 7.555,
+     "seismic_traverse": 42.425,
+     "seismic_base_max_shard": 23.375,
+     "seismic_delta_shard_sum": 18.09,
+     "splade_encode": 33.885,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 31.115,
+     "hydrate_abstracts_delta": 0.68,
+     "hydrate_abs_owner_lookup": 0.68,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.71,
+     "hydrate_other_base_meta_fuse": 38.445
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8c": {
+    "spec": {
+     "name": "x8c",
+     "tag": "n8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2134.67,
+    "p95_ms": 3183.56,
+    "mean_ms": 2174.46,
+    "per_pass_p50_ms": [
+     2134.67,
+     2128.4
+    ],
+    "legs_mean_ms": {
+     "total": 2174.46,
+     "bm25f_base_sections": 2026.029,
+     "bm25f_delta_sections": 2.951,
+     "bm25f_other_parse_merge_masks": 3.112,
+     "seismic_traverse": 37.336,
+     "seismic_base_max_shard": 23.397,
+     "seismic_delta_shard_sum": 2.458,
+     "splade_encode": 34.084,
+     "splade_other_delta_merge": 0.109,
+     "hydrate_abstracts_base": 31.406,
+     "hydrate_abstracts_delta": 0.153,
+     "hydrate_abs_owner_lookup": 0.152,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.345,
+     "hydrate_other_base_meta_fuse": 39.186
+    },
+    "legs_median_ms": {
+     "total": 2136.235,
+     "bm25f_base_sections": 1991.675,
+     "bm25f_delta_sections": 3.115,
+     "bm25f_other_parse_merge_masks": 3.095,
+     "seismic_traverse": 36.4,
+     "seismic_base_max_shard": 21.535,
+     "seismic_delta_shard_sum": 2.18,
+     "splade_encode": 33.815,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 31.58,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.33,
+     "hydrate_other_base_meta_fuse": 38.765
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2167.96,
+  "p50_by_position": {
+   "0": 2159.37,
+   "1": 2156.13,
+   "2": 2145.55,
+   "3": 2143.45,
+   "4": 2150.16,
+   "5": 2140.4,
+   "6": 2152.11
+  },
+  "date_utc": "2026-10-04",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R1n_20261004/child.log",
+   "bytes": 651,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "bars": {
+   "F-SLOPE": {
+    "paired_slope": {
+     "n": 240,
+     "median": 2.488,
+     "ci95": [
+      1.752,
+      3.696
+     ]
+    },
+    "pooled_slope": 3.422,
+    "threshold_ms_per_gen": 8.0,
+    "verdict": "PASS"
+   },
+   "F-CAD": {
+    "per_G_max": {
+     "G_max=1": {
+      "paired_diff": {
+       "n": 240,
+       "median": 9.32,
+       "ci95": [
+        0.09,
+        14.82
+       ]
+      },
+      "pooled_p50_diff": 2.76,
+      "threshold_ms": 8.0,
+      "verdict": "FAIL"
+     },
+     "G_max=4": {
+      "paired_diff": {
+       "n": 240,
+       "median": 20.595,
+       "ci95": [
+        10.33,
+        25.95
+       ]
+      },
+      "pooled_p50_diff": 9.22,
+      "threshold_ms": 32.0,
+      "verdict": "PASS"
+     },
+     "G_max=8": {
+      "paired_diff": {
+       "n": 240,
+       "median": 26.59,
+       "ci95": [
+        18.88,
+        34.82
+       ]
+      },
+      "pooled_p50_diff": 27.77,
+      "threshold_ms": 64.0,
+      "verdict": "PASS"
+     }
+    },
+    "smallest_passing_G_max": 4,
+    "verdict": "PASS at G_max=4"
+   },
+   "F-COMP": {
+    "p50_ratio_x8c_x1": 0.9959,
+    "paired_diff_x8c_minus_x1": {
+     "n": 240,
+     "median": -1.27,
+     "ci95": [
+      -8.985,
+      4.59
+     ]
+    },
+    "rule": "|ratio-1| <= 0.05 AND CI within [-8, +8] ms",
+    "verdict": "FAIL"
+   },
+   "REPL": {
+    "paired_diff_n8_minus_n0": {
+     "n": 240,
+     "median": 25.175,
+     "ci95": [
+      16.83,
+      36.23
+     ]
+    },
+    "m4_reference": "+123 ms (CI 112-137)",
+    "window_ms": [
+     60,
+     250
+    ],
+    "flag": "OUTSIDE (repeat R1 once before reading verdicts)"
+   }
+  }
+ },
+ "R1_per_base_section_repeat": {
+  "run": "R1",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R1nb_20261004/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 2.34,
+     "backend_load_s": 1.13,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.45,
+     "backend_load_s": 1.49,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "n0x": {
+     "spec": {
+      "name": "n0x",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": [
+       "L4"
+      ]
+     },
+     "load_s": 0.36,
+     "backend_load_s": 1.05,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "x1": {
+     "spec": {
+      "name": "x1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.37,
+     "backend_load_s": 1.07,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "x4": {
+     "spec": {
+      "name": "x4",
+      "tag": "n4",
+      "root": "/home/vscode/work/inplace_update/m4/root_n4",
+      "n_gen": 4,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.39,
+     "backend_load_s": 1.27,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 12,
+     "sections": 49,
+     "abstract_stores": 39,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "delta_stamp": "g0004-1790672198",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n4/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 39,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 38,
+      "buffer": 1,
+      "shards": 12,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 38
+     }
+    },
+    "x8": {
+     "spec": {
+      "name": "x8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.44,
+     "backend_load_s": 1.52,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 72,
+      "buffer": 1,
+      "shards": 16,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 72
+     }
+    },
+    "x8c": {
+     "spec": {
+      "name": "x8c",
+      "tag": "n8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.37,
+     "backend_load_s": 1.09,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790672554",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.37,
+     "backend_load_s": 1.0,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 49.85,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "per_base_section",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_425346ad93446037d68b17316e52ee2e750ad3a9/src",
+  "git_commit_measured_code": "425346ad93446037d68b17316e52ee2e750ad3a9",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1909.6,
+   2082.4,
+   2106.0
+  ],
+  "wall_s": 6123.4,
+  "host_start": {
+   "utc": "2026-10-04T07:11:19Z",
+   "loadavg": [
+    1.22900390625,
+    2.50927734375,
+    2.85693359375
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 51.42,
+    "Cached": 37.6,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.41
+   },
+   "gpu": {
+    "util_pct": 3,
+    "mem_used_mib": 1459
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-04T08:53:21Z",
+   "loadavg": [
+    3.96240234375,
+    2.73974609375,
+    2.44091796875
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 47.94,
+    "Cached": 45.89,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.41
+   },
+   "gpu": {
+    "util_pct": 6,
+    "mem_used_mib": 1914
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0,
+   "samples": [
+    {
+     "utc": "2026-10-04T07:11:42Z",
+     "load1": 1.1728515625,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-04T07:43:32Z",
+    "load1": 2.82373046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.1,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-04T07:46:41Z",
+    "load1": 2.59912109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.85,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-04T07:49:58Z",
+    "load1": 4.73486328125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.63,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-04T07:53:12Z",
+    "load1": 1.70947265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.59,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-04T07:55:49Z",
+    "load1": 2.1455078125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.42,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-04T07:58:49Z",
+    "load1": 3.68212890625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.3,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-04T08:01:13Z",
+    "load1": 2.171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.26,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-04T08:04:10Z",
+    "load1": 2.74365234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.25,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-04T08:06:52Z",
+    "load1": 2.224609375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.14,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-04T08:09:53Z",
+    "load1": 2.4970703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.08,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-04T08:12:36Z",
+    "load1": 1.51171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.18,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-04T08:15:35Z",
+    "load1": 2.81884765625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.17,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-04T08:18:15Z",
+    "load1": 1.71484375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.11,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-04T08:21:25Z",
+    "load1": 2.439453125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.92,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-04T08:24:42Z",
+    "load1": 1.87353515625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.88,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-04T08:27:58Z",
+    "load1": 3.076171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.88,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-04T08:30:34Z",
+    "load1": 1.81689453125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 47.95,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-04T08:33:35Z",
+    "load1": 1.27880859375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.12,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-04T08:36:01Z",
+    "load1": 2.1123046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.39,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-04T08:39:01Z",
+    "load1": 2.8134765625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.56,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-04T08:41:45Z",
+    "load1": 2.30126953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.52,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-04T08:44:49Z",
+    "load1": 2.41650390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.4,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-04T08:47:36Z",
+    "load1": 2.150390625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.21,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-04T08:50:37Z",
+    "load1": 2.0576171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.18,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 47.87,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 230.6,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2137.8,
+    "p95_ms": 3165.84,
+    "mean_ms": 2159.13,
+    "per_pass_p50_ms": [
+     2137.8,
+     2127.79
+    ],
+    "legs_mean_ms": {
+     "total": 2159.135,
+     "bm25f_base_sections": 2018.969,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.453,
+     "seismic_traverse": 35.948,
+     "seismic_base_max_shard": 23.122,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 32.403,
+     "splade_other_delta_merge": 0.036,
+     "hydrate_abstracts_base": 30.873,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.451
+    },
+    "legs_median_ms": {
+     "total": 2139.675,
+     "bm25f_base_sections": 1999.38,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.45,
+     "seismic_traverse": 35.15,
+     "seismic_base_max_shard": 21.13,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.345,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 31.025,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.11
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8": {
+    "spec": {
+     "name": "n8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2185.97,
+    "p95_ms": 3128.72,
+    "mean_ms": 2184.98,
+    "per_pass_p50_ms": [
+     2174.19,
+     2209.99
+    ],
+    "legs_mean_ms": {
+     "total": 2184.981,
+     "bm25f_base_sections": 2015.296,
+     "bm25f_delta_sections": 8.361,
+     "bm25f_other_parse_merge_masks": 10.854,
+     "seismic_traverse": 42.885,
+     "seismic_base_max_shard": 26.034,
+     "seismic_delta_shard_sum": 9.419,
+     "splade_encode": 32.396,
+     "splade_other_delta_merge": 0.102,
+     "hydrate_abstracts_base": 30.749,
+     "hydrate_abstracts_delta": 5.695,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 0.751,
+     "hydrate_other_base_meta_fuse": 38.556
+    },
+    "legs_median_ms": {
+     "total": 2186.095,
+     "bm25f_base_sections": 2017.56,
+     "bm25f_delta_sections": 8.37,
+     "bm25f_other_parse_merge_masks": 10.78,
+     "seismic_traverse": 42.115,
+     "seismic_base_max_shard": 24.125,
+     "seismic_delta_shard_sum": 8.985,
+     "splade_encode": 30.555,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.825,
+     "hydrate_abstracts_delta": 5.695,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.75,
+     "hydrate_other_base_meta_fuse": 38.435
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n0x": {
+    "spec": {
+     "name": "n0x",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "levers": [
+      "L4"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2138.92,
+    "p95_ms": 3140.3,
+    "mean_ms": 2161.02,
+    "per_pass_p50_ms": [
+     2124.27,
+     2142.47
+    ],
+    "legs_mean_ms": {
+     "total": 2161.015,
+     "bm25f_base_sections": 2020.823,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.953,
+     "seismic_traverse": 35.318,
+     "seismic_base_max_shard": 22.34,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.26,
+     "splade_other_delta_merge": 0.034,
+     "hydrate_abstracts_base": 30.799,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.828
+    },
+    "legs_median_ms": {
+     "total": 2140.695,
+     "bm25f_base_sections": 2001.49,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.94,
+     "seismic_traverse": 35.54,
+     "seismic_base_max_shard": 21.39,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.45,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 30.815,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.69
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x1": {
+    "spec": {
+     "name": "x1",
+     "tag": "n1",
+     "root": "/home/vscode/work/inplace_update/m4/root_n1",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2136.81,
+    "p95_ms": 3153.29,
+    "mean_ms": 2160.78,
+    "per_pass_p50_ms": [
+     2125.38,
+     2154.55
+    ],
+    "legs_mean_ms": {
+     "total": 2160.777,
+     "bm25f_base_sections": 2014.849,
+     "bm25f_delta_sections": 2.982,
+     "bm25f_other_parse_merge_masks": 3.04,
+     "seismic_traverse": 37.425,
+     "seismic_base_max_shard": 23.216,
+     "seismic_delta_shard_sum": 2.461,
+     "splade_encode": 32.534,
+     "splade_other_delta_merge": 0.108,
+     "hydrate_abstracts_base": 30.952,
+     "hydrate_abstracts_delta": 0.154,
+     "hydrate_abs_owner_lookup": 0.153,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.334,
+     "hydrate_other_base_meta_fuse": 38.635
+    },
+    "legs_median_ms": {
+     "total": 2137.45,
+     "bm25f_base_sections": 1986.295,
+     "bm25f_delta_sections": 3.13,
+     "bm25f_other_parse_merge_masks": 3.03,
+     "seismic_traverse": 37.51,
+     "seismic_base_max_shard": 21.885,
+     "seismic_delta_shard_sum": 2.165,
+     "splade_encode": 33.31,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.92,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.33,
+     "hydrate_other_base_meta_fuse": 38.32
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x4": {
+    "spec": {
+     "name": "x4",
+     "tag": "n4",
+     "root": "/home/vscode/work/inplace_update/m4/root_n4",
+     "n_gen": 4,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2167.21,
+    "p95_ms": 3122.09,
+    "mean_ms": 2167.66,
+    "per_pass_p50_ms": [
+     2167.21,
+     2141.17
+    ],
+    "legs_mean_ms": {
+     "total": 2167.659,
+     "bm25f_base_sections": 2012.846,
+     "bm25f_delta_sections": 5.471,
+     "bm25f_other_parse_merge_masks": 5.01,
+     "seismic_traverse": 40.796,
+     "seismic_base_max_shard": 25.302,
+     "seismic_delta_shard_sum": 10.126,
+     "splade_encode": 33.58,
+     "splade_other_delta_merge": 0.107,
+     "hydrate_abstracts_base": 30.873,
+     "hydrate_abstracts_delta": 0.398,
+     "hydrate_abs_owner_lookup": 0.397,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.486,
+     "hydrate_other_base_meta_fuse": 38.486
+    },
+    "legs_median_ms": {
+     "total": 2168.28,
+     "bm25f_base_sections": 2004.845,
+     "bm25f_delta_sections": 5.615,
+     "bm25f_other_parse_merge_masks": 4.995,
+     "seismic_traverse": 40.94,
+     "seismic_base_max_shard": 24.475,
+     "seismic_delta_shard_sum": 4.8,
+     "splade_encode": 33.475,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.845,
+     "hydrate_abstracts_delta": 0.395,
+     "hydrate_abs_owner_lookup": 0.39,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.48,
+     "hydrate_other_base_meta_fuse": 38.37
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8": {
+    "spec": {
+     "name": "x8",
+     "tag": "n8",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "n_gen": 8,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2190.99,
+    "p95_ms": 3170.53,
+    "mean_ms": 2177.9,
+    "per_pass_p50_ms": [
+     2156.56,
+     2201.93
+    ],
+    "legs_mean_ms": {
+     "total": 2177.9,
+     "bm25f_base_sections": 2014.737,
+     "bm25f_delta_sections": 8.208,
+     "bm25f_other_parse_merge_masks": 8.117,
+     "seismic_traverse": 43.325,
+     "seismic_base_max_shard": 23.499,
+     "seismic_delta_shard_sum": 22.204,
+     "splade_encode": 33.721,
+     "splade_other_delta_merge": 0.105,
+     "hydrate_abstracts_base": 30.856,
+     "hydrate_abstracts_delta": 0.668,
+     "hydrate_abs_owner_lookup": 0.666,
+     "hydrate_delta_meta": 0.004,
+     "delta_masks": 1.271,
+     "hydrate_other_base_meta_fuse": 38.067
+    },
+    "legs_median_ms": {
+     "total": 2191.51,
+     "bm25f_base_sections": 2021.84,
+     "bm25f_delta_sections": 8.28,
+     "bm25f_other_parse_merge_masks": 7.5,
+     "seismic_traverse": 42.78,
+     "seismic_base_max_shard": 22.87,
+     "seismic_delta_shard_sum": 19.905,
+     "splade_encode": 33.505,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.885,
+     "hydrate_abstracts_delta": 0.67,
+     "hydrate_abs_owner_lookup": 0.67,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.7,
+     "hydrate_other_base_meta_fuse": 38.09
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8c": {
+    "spec": {
+     "name": "x8c",
+     "tag": "n8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2136.47,
+    "p95_ms": 3166.95,
+    "mean_ms": 2162.81,
+    "per_pass_p50_ms": [
+     2132.46,
+     2153.83
+    ],
+    "legs_mean_ms": {
+     "total": 2162.811,
+     "bm25f_base_sections": 2015.647,
+     "bm25f_delta_sections": 2.935,
+     "bm25f_other_parse_merge_masks": 3.048,
+     "seismic_traverse": 38.417,
+     "seismic_base_max_shard": 24.559,
+     "seismic_delta_shard_sum": 3.508,
+     "splade_encode": 32.669,
+     "splade_other_delta_merge": 0.133,
+     "hydrate_abstracts_base": 30.932,
+     "hydrate_abstracts_delta": 0.153,
+     "hydrate_abs_owner_lookup": 0.152,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.358,
+     "hydrate_other_base_meta_fuse": 38.781
+    },
+    "legs_median_ms": {
+     "total": 2139.99,
+     "bm25f_base_sections": 1987.885,
+     "bm25f_delta_sections": 3.12,
+     "bm25f_other_parse_merge_masks": 3.035,
+     "seismic_traverse": 39.025,
+     "seismic_base_max_shard": 23.555,
+     "seismic_delta_shard_sum": 2.27,
+     "splade_encode": 33.455,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.77,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.32,
+     "hydrate_other_base_meta_fuse": 38.635
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2155.63,
+  "p50_by_position": {
+   "0": 2150.14,
+   "1": 2159.6,
+   "2": 2141.55,
+   "3": 2136.47,
+   "4": 2158.43,
+   "5": 2173.02,
+   "6": 2167.21
+  },
+  "date_utc": "2026-10-04",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R1nb_20261004/child.log",
+   "bytes": 651,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "bars": {
+   "F-SLOPE": {
+    "paired_slope": {
+     "n": 240,
+     "median": 1.308,
+     "ci95": [
+      0.43,
+      2.386
+     ]
+    },
+    "pooled_slope": 7.053,
+    "threshold_ms_per_gen": 8.0,
+    "verdict": "PASS"
+   },
+   "F-CAD": {
+    "per_G_max": {
+     "G_max=1": {
+      "paired_diff": {
+       "n": 240,
+       "median": -5.3,
+       "ci95": [
+        -11.955,
+        4.6
+       ]
+      },
+      "pooled_p50_diff": -2.11,
+      "threshold_ms": 8.0,
+      "verdict": "PASS"
+     },
+     "G_max=4": {
+      "paired_diff": {
+       "n": 240,
+       "median": 7.655,
+       "ci95": [
+        0.64,
+        12.77
+       ]
+      },
+      "pooled_p50_diff": 28.29,
+      "threshold_ms": 32.0,
+      "verdict": "PASS"
+     },
+     "G_max=8": {
+      "paired_diff": {
+       "n": 240,
+       "median": 15.89,
+       "ci95": [
+        9.93,
+        20.45
+       ]
+      },
+      "pooled_p50_diff": 52.07,
+      "threshold_ms": 64.0,
+      "verdict": "PASS"
+     }
+    },
+    "smallest_passing_G_max": 1,
+    "verdict": "PASS at G_max=1"
+   },
+   "F-COMP": {
+    "p50_ratio_x8c_x1": 0.9998,
+    "paired_diff_x8c_minus_x1": {
+     "n": 240,
+     "median": 6.515,
+     "ci95": [
+      -1.09,
+      10.74
+     ]
+    },
+    "rule": "|ratio-1| <= 0.05 AND CI within [-8, +8] ms",
+    "verdict": "FAIL"
+   },
+   "REPL": {
+    "paired_diff_n8_minus_n0": {
+     "n": 240,
+     "median": 28.74,
+     "ci95": [
+      23.05,
+      33.1
+     ]
+    },
+    "m4_reference": "+123 ms (CI 112-137)",
+    "window_ms": [
+     60,
+     250
+    ],
+    "flag": "OUTSIDE (repeat R1 once before reading verdicts)"
+   }
+  }
+ },
+ "R3_per_base_section": {
+  "run": "R3",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/serve/run_R3_20261004/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "x1": {
+     "spec": {
+      "name": "x1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 1.38,
+     "backend_load_s": 1.3,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "x8c": {
+     "spec": {
+      "name": "x8c",
+      "tag": "n8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+      "n_gen": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ]
+     },
+     "load_s": 0.46,
+     "backend_load_s": 1.12,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790672554",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "n1": {
+     "spec": {
+      "name": "n1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 0.38,
+     "backend_load_s": 1.25,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "n8c": {
+     "spec": {
+      "name": "n8c",
+      "tag": "n8c",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 0.36,
+     "backend_load_s": 1.21,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790672554",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.41,
+     "backend_load_s": 1.04,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 50.93,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "per_base_section",
+  "x_levers": [
+   "L3",
+   "L4",
+   "L5"
+  ],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/serve/code_9f677a214be4fea3b0a081b0235fbcde56c4e701/src",
+  "git_commit_measured_code": "9f677a214be4fea3b0a081b0235fbcde56c4e701",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1170.8,
+   1295.9,
+   1291.1
+  ],
+  "wall_s": 3779.4,
+  "host_start": {
+   "utc": "2026-10-04T22:33:05Z",
+   "loadavg": [
+    1.88671875,
+    2.3916015625,
+    2.27685546875
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 52.04,
+    "Cached": 29.3,
+    "SwapTotal": 16.0,
+    "SwapFree": 16.0
+   },
+   "gpu": {
+    "util_pct": 8,
+    "mem_used_mib": 1199
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-04T23:36:04Z",
+   "loadavg": [
+    3.349609375,
+    2.87109375,
+    2.70458984375
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 50.85,
+    "Cached": 50.49,
+    "SwapTotal": 16.0,
+    "SwapFree": 14.76
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 1653
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0,
+   "samples": [
+    {
+     "utc": "2026-10-04T22:33:25Z",
+     "load1": 1.7880859375,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-04T22:52:57Z",
+    "load1": 2.21923828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 51.26,
+    "vmswap_gb": 0.998
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-04T22:54:57Z",
+    "load1": 2.3798828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.99,
+    "vmswap_gb": 0.951
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-04T22:57:00Z",
+    "load1": 2.6923828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 51.0,
+    "vmswap_gb": 0.938
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-04T22:59:01Z",
+    "load1": 1.93310546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.98,
+    "vmswap_gb": 0.918
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-04T23:00:39Z",
+    "load1": 1.48583984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.88,
+    "vmswap_gb": 0.911
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-04T23:02:31Z",
+    "load1": 1.42626953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.9,
+    "vmswap_gb": 0.905
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-04T23:04:01Z",
+    "load1": 1.5595703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.9,
+    "vmswap_gb": 0.903
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-04T23:05:51Z",
+    "load1": 1.38134765625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.89,
+    "vmswap_gb": 0.901
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-04T23:07:32Z",
+    "load1": 2.71142578125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.9
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-04T23:09:24Z",
+    "load1": 2.3994140625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.898
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-04T23:11:05Z",
+    "load1": 3.36474609375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.897
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-04T23:12:54Z",
+    "load1": 1.86376953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.896
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-04T23:14:33Z",
+    "load1": 1.7783203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.895
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-04T23:16:30Z",
+    "load1": 2.033203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.9,
+    "vmswap_gb": 0.891
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-04T23:18:32Z",
+    "load1": 1.60693359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.891
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-04T23:20:33Z",
+    "load1": 4.18408203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-04T23:22:10Z",
+    "load1": 2.72314453125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.91,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-04T23:24:02Z",
+    "load1": 4.0126953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.92,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-04T23:25:32Z",
+    "load1": 3.12109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.83,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-04T23:27:22Z",
+    "load1": 1.94921875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.84,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-04T23:29:02Z",
+    "load1": 3.21240234375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.85,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-04T23:30:55Z",
+    "load1": 3.54248046875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.84,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-04T23:32:36Z",
+    "load1": 3.57470703125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.87,
+    "vmswap_gb": 0.887
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-04T23:34:25Z",
+    "load1": 2.60791015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 50.86,
+    "vmswap_gb": 0.887
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 50.3,
+   "max_vmswap_growth_gb": 1.17,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 143.6,
+  "stop": null,
+  "arms": {
+   "x1": {
+    "spec": {
+     "name": "x1",
+     "tag": "n1",
+     "root": "/home/vscode/work/inplace_update/m4/root_n1",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2104.84,
+    "p95_ms": 3141.44,
+    "mean_ms": 2133.91,
+    "per_pass_p50_ms": [
+     2098.3,
+     2129.68
+    ],
+    "legs_mean_ms": {
+     "total": 2133.909,
+     "bm25f_base_sections": 1988.126,
+     "bm25f_delta_sections": 2.886,
+     "bm25f_other_parse_merge_masks": 2.828,
+     "seismic_traverse": 38.477,
+     "seismic_base_max_shard": 23.979,
+     "seismic_delta_shard_sum": 3.074,
+     "splade_encode": 32.022,
+     "splade_other_delta_merge": 0.104,
+     "hydrate_abstracts_base": 30.718,
+     "hydrate_abstracts_delta": 0.157,
+     "hydrate_abs_owner_lookup": 0.147,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.323,
+     "hydrate_other_base_meta_fuse": 38.497
+    },
+    "legs_median_ms": {
+     "total": 2107.98,
+     "bm25f_base_sections": 1963.735,
+     "bm25f_delta_sections": 3.055,
+     "bm25f_other_parse_merge_masks": 2.82,
+     "seismic_traverse": 36.96,
+     "seismic_base_max_shard": 21.93,
+     "seismic_delta_shard_sum": 2.22,
+     "splade_encode": 32.79,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.885,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.14,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.31,
+     "hydrate_other_base_meta_fuse": 38.29
+    },
+    "majflt_mean": 13.3,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "x8c": {
+    "spec": {
+     "name": "x8c",
+     "tag": "n8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+     "n_gen": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2109.9,
+    "p95_ms": 3111.99,
+    "mean_ms": 2128.24,
+    "per_pass_p50_ms": [
+     2109.9,
+     2109.71
+    ],
+    "legs_mean_ms": {
+     "total": 2128.244,
+     "bm25f_base_sections": 1983.917,
+     "bm25f_delta_sections": 2.856,
+     "bm25f_other_parse_merge_masks": 2.793,
+     "seismic_traverse": 37.426,
+     "seismic_base_max_shard": 23.391,
+     "seismic_delta_shard_sum": 3.773,
+     "splade_encode": 31.902,
+     "splade_other_delta_merge": 0.102,
+     "hydrate_abstracts_base": 30.576,
+     "hydrate_abstracts_delta": 0.143,
+     "hydrate_abs_owner_lookup": 0.141,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.324,
+     "hydrate_other_base_meta_fuse": 38.439
+    },
+    "legs_median_ms": {
+     "total": 2110.875,
+     "bm25f_base_sections": 1962.16,
+     "bm25f_delta_sections": 3.03,
+     "bm25f_other_parse_merge_masks": 2.79,
+     "seismic_traverse": 36.335,
+     "seismic_base_max_shard": 21.835,
+     "seismic_delta_shard_sum": 2.14,
+     "splade_encode": 32.62,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.665,
+     "hydrate_abstracts_delta": 0.14,
+     "hydrate_abs_owner_lookup": 0.14,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.31,
+     "hydrate_other_base_meta_fuse": 38.145
+    },
+    "majflt_mean": 13.5,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n1": {
+    "spec": {
+     "name": "n1",
+     "tag": "n1",
+     "root": "/home/vscode/work/inplace_update/m4/root_n1",
+     "n_gen": 1,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2096.02,
+    "p95_ms": 3135.21,
+    "mean_ms": 2132.54,
+    "per_pass_p50_ms": [
+     2097.86,
+     2088.15
+    ],
+    "legs_mean_ms": {
+     "total": 2132.544,
+     "bm25f_base_sections": 1985.94,
+     "bm25f_delta_sections": 2.885,
+     "bm25f_other_parse_merge_masks": 3.704,
+     "seismic_traverse": 37.549,
+     "seismic_base_max_shard": 24.381,
+     "seismic_delta_shard_sum": 2.339,
+     "splade_encode": 32.186,
+     "splade_other_delta_merge": 0.104,
+     "hydrate_abstracts_base": 30.869,
+     "hydrate_abstracts_delta": 0.902,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.324,
+     "hydrate_other_base_meta_fuse": 38.324
+    },
+    "legs_median_ms": {
+     "total": 2096.94,
+     "bm25f_base_sections": 1953.705,
+     "bm25f_delta_sections": 3.05,
+     "bm25f_other_parse_merge_masks": 3.69,
+     "seismic_traverse": 35.81,
+     "seismic_base_max_shard": 22.485,
+     "seismic_delta_shard_sum": 2.055,
+     "splade_encode": 32.925,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.79,
+     "hydrate_abstracts_delta": 0.895,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.32,
+     "hydrate_other_base_meta_fuse": 38.015
+    },
+    "majflt_mean": 14.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n8c": {
+    "spec": {
+     "name": "n8c",
+     "tag": "n8c",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+     "n_gen": 1,
+     "levers": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2085.84,
+    "p95_ms": 3131.0,
+    "mean_ms": 2132.58,
+    "per_pass_p50_ms": [
+     2112.68,
+     2079.96
+    ],
+    "legs_mean_ms": {
+     "total": 2132.577,
+     "bm25f_base_sections": 1983.709,
+     "bm25f_delta_sections": 2.926,
+     "bm25f_other_parse_merge_masks": 3.749,
+     "seismic_traverse": 38.479,
+     "seismic_base_max_shard": 24.505,
+     "seismic_delta_shard_sum": 2.201,
+     "splade_encode": 32.741,
+     "splade_other_delta_merge": 0.103,
+     "hydrate_abstracts_base": 30.94,
+     "hydrate_abstracts_delta": 0.907,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.327,
+     "hydrate_other_base_meta_fuse": 38.939
+    },
+    "legs_median_ms": {
+     "total": 2094.1,
+     "bm25f_base_sections": 1946.075,
+     "bm25f_delta_sections": 3.025,
+     "bm25f_other_parse_merge_masks": 3.725,
+     "seismic_traverse": 37.395,
+     "seismic_base_max_shard": 21.825,
+     "seismic_delta_shard_sum": 1.95,
+     "splade_encode": 32.89,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.845,
+     "hydrate_abstracts_delta": 0.9,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.32,
+     "hydrate_other_base_meta_fuse": 38.625
+    },
+    "majflt_mean": 13.8,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2129.2,
+  "p50_by_position": {
+   "0": 2090.94,
+   "1": 2115.91,
+   "2": 2097.86,
+   "3": 2107.76
+  },
+  "date_utc": "2026-10-04",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/serve/run_R3_20261004/child.log",
+   "bytes": 647,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "paired_differences": {
+   "x8c_minus_x1": {
+    "n": 240,
+    "median": -5.505,
+    "ci95": [
+     -15.665,
+     4.845
+    ]
+   },
+   "n8c_minus_n1": {
+    "n": 240,
+    "median": 0.585,
+    "ci95": [
+     -4.69,
+     6.895
+    ]
+   },
+   "x1_minus_n1": {
+    "n": 240,
+    "median": -1.285,
+    "ci95": [
+     -6.37,
+     5.65
+    ]
+   },
+   "x8c_minus_n8c": {
+    "n": 240,
+    "median": -4.085,
+    "ci95": [
+     -10.58,
+     5.38
+    ]
+   }
+  }
+ }
+}

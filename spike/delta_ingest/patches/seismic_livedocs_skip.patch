@@ -1,0 +1,462 @@
+From 620f1d25c0b1d05660d5ee152d7cea2d82af1b96 Mon Sep 17 00:00:00 2001
+From: ClaudeBox <claudebox@local>
+Date: Thu, 1 Oct 2026 16:49:05 +0000
+Subject: [PATCH] fork: O10 livedocs gather-time skip (search_skip / dead_set /
+ doc_indices_for_ids) on dotvbyte mmap shards
+
+Separate search_raw_skip body seeds the traversal's visited set with dead
+forward-range starts; search/search_raw/search_raw_visited untouched.
+Unit test livedocs_skip_exact_and_bound.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/lib.rs              |   2 +
+ src/mmap_io.rs          | 281 ++++++++++++++++++++++++++++++++++++++++
+ src/pylib/mmap_index.rs | 102 +++++++++++++++
+ src/pylib/mod.rs        |   2 +-
+ 4 files changed, 386 insertions(+), 1 deletion(-)
+
+diff --git a/src/lib.rs b/src/lib.rs
+index cd53ef9..ae8d49f 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -55,6 +55,7 @@ use {
+     pylib::SeismicIndexRawLV,
+     pylib::get_seismic_string,
+     pylib::PyMmapIndex,
++    pylib::PyDeadSet,
+     pyo3::prelude::PyModule,
+     pyo3::prelude::*,
+     pyo3::{Bound, PyResult, pymodule},
+@@ -72,6 +73,7 @@ fn seismic(m: &Bound<'_, PyModule>) -> PyResult<()> {
+     m.add_class::<SeismicIndexRawLV>()?;
+     m.add_class::<SeismicIndexDotVByte>()?;
+     m.add_class::<PyMmapIndex>()?;
++    m.add_class::<PyDeadSet>()?;
+     m.add_class::<PySeismicDataset>()?;
+     m.add_class::<PySeismicDatasetLV>()?;
+     Ok(())
+diff --git a/src/mmap_io.rs b/src/mmap_io.rs
+index 339806e..1794a73 100644
+--- a/src/mmap_io.rs
++++ b/src/mmap_io.rs
+@@ -1986,6 +1986,207 @@ impl MmapSeismicIndexDotVByte {
+     }
+ }
+ 
++/// O10 (delta-ingest, 2026-10-01): a shard's livedocs dead set, expressed as
++/// the forward-range STARTS of its dead documents — the exact key the
++/// traversal's `visited` dedup set uses (`evaluate_posting_block`:
++/// `visited.insert(range.start)`). Seeding `visited` with these starts makes
++/// every dead candidate fail its first `visited.insert`, so it is neither
++/// decoded, scored nor pushed: the skip happens at candidate GATHER time with
++/// zero new instructions in the posting-block loop.
++///
++/// Built once per shard per published mask (`dead_starts_for`), bound to the
++/// shard it was built from (`owner` = the forward data base address, checked
++/// on every `search_raw_skip` — a set from another shard is refused, never
++/// silently applied). Empty documents (zero-length range) are left out: their
++/// start equals the next document's start, and they never appear in a posting
++/// list, so seeding them would kill a live neighbour.
++pub struct DeadStarts {
++    starts: Vec<usize>,
++    owner: usize,
++    n_requested: usize,
++    n_out_of_range: usize,
++    n_empty: usize,
++}
++
++impl DeadStarts {
++    /// Number of seeded range starts (dead, non-empty, in-range docs, deduplicated).
++    pub fn len(&self) -> usize {
++        self.starts.len()
++    }
++
++    pub fn is_empty(&self) -> bool {
++        self.starts.is_empty()
++    }
++
++    /// (requested, seeded, out_of_range, empty) counts for the caller's log.
++    pub fn counts(&self) -> (usize, usize, usize, usize) {
++        (self.n_requested, self.starts.len(), self.n_out_of_range, self.n_empty)
++    }
++}
++
++impl MmapSeismicIndexDotVByte {
++    fn forward_owner(&self) -> usize {
++        self._fwd_data_mmap.as_ptr() as usize
++    }
++
++    /// O10: resolve doc-id strings to this shard's internal doc indices with one
++    /// linear pass over the doc-mapping slab (O(n_docs), run once per mask
++    /// publish, never per query). `-1` = the id is not in this shard. Ids
++    /// repeated in the input all receive the index.
++    pub fn doc_indices_for_ids(&self, ids: &[String]) -> Vec<i64> {
++        use rustc_hash::FxHashMap;
++        let mut out = vec![-1_i64; ids.len()];
++        let Some(mapping) = self.doc_mapping.as_ref() else {
++            return out;
++        };
++        let mut want: FxHashMap<&str, Vec<usize>> = FxHashMap::default();
++        for (pos, id) in ids.iter().enumerate() {
++            want.entry(id.as_str()).or_default().push(pos);
++        }
++        let mut remaining = want.len();
++        for doc_idx in 0..mapping.len() {
++            if remaining == 0 {
++                break;
++            }
++            if let Some(s) = mapping.get(doc_idx) {
++                if let Some(positions) = want.get_mut(s) {
++                    if !positions.is_empty() {
++                        for &p in positions.iter() {
++                            out[p] = doc_idx as i64;
++                        }
++                        positions.clear();
++                        remaining -= 1;
++                    }
++                }
++            }
++        }
++        out
++    }
++
++    /// O10: build the dead set for this shard from internal doc indices.
++    /// Out-of-range indices are counted and ignored; negative indices are not
++    /// representable here (the Python wrapper drops `-1` = not-in-shard).
++    pub fn dead_starts_for(&self, doc_indices: &[u64]) -> DeadStarts {
++        let n_docs = self.forward.len();
++        let mut starts = Vec::with_capacity(doc_indices.len());
++        let mut n_out_of_range = 0usize;
++        let mut n_empty = 0usize;
++        for &d in doc_indices {
++            let d = d as usize;
++            if d >= n_docs {
++                n_out_of_range += 1;
++                continue;
++            }
++            let r = self.forward.range_from_id(d as u64);
++            if r.is_empty() {
++                n_empty += 1;
++                continue;
++            }
++            starts.push(r.start);
++        }
++        starts.sort_unstable();
++        starts.dedup();
++        DeadStarts {
++            starts,
++            owner: self.forward_owner(),
++            n_requested: doc_indices.len(),
++            n_out_of_range,
++            n_empty,
++        }
++    }
++
++    /// O10: `search_raw` with the livedocs gather-time skip. A SEPARATE body,
++    /// not a flag on `search_raw_visited`: the served no-livedocs path keeps its
++    /// exact source and machine code (owner bar 2026-09-30: no per-query cost
++    /// on the serving path). The only difference from `search_raw_visited` is
++    /// the `visited` initialisation (pre-seeded with `dead.starts`); the
++    /// posting-list scan (`PostingList::search` / `sort_and_search` /
++    /// `evaluate_posting_block`) is the same shared code, untouched.
++    ///
++    /// Semantics: the heap only ever holds live docs, so the result is the
++    /// top-k of LIVE docs among the candidates this traversal scored, and the
++    /// heap-threshold block skip is driven by live scores only — what the
++    /// approximate search would return on an index from which the dead docs
++    /// were removed (block summaries still include them; they are upper
++    /// bounds, so this can only make the skip test more permissive).
++    /// Returns `Err` when `dead` was built from another shard.
++    #[allow(clippy::too_many_arguments)]
++    pub fn search_raw_skip(
++        &self,
++        query_components_original: &[String],
++        query_values: &[f32],
++        k: usize,
++        query_cut: usize,
++        heap_factor: f32,
++        first_sorted: bool,
++        dead: &DeadStarts,
++    ) -> Result<Vec<ScoredVectorDotProduct>, String> {
++        use crate::utils::KHeap;
++        use rustc_hash::FxHashSet;
++
++        if dead.owner != self.forward_owner() {
++            return Err("dead set was built from a different shard".to_string());
++        }
++
++        let (filtered_components, filtered_values) = resolve_query_tokens::<u16>(
++            query_components_original,
++            query_values,
++            &self.token_to_id_map,
++        );
++        let query = SparseVectorView::new(
++            filtered_components.as_slice(),
++            filtered_values.as_slice(),
++        );
++
++        let query_components = query.components();
++        let query_values_slice = query.values();
++
++        assert!(
++            query_components.is_sorted(),
++            "Query components must be sorted in ascending order."
++        );
++
++        let mut evaluator = self.forward.encoder().query_evaluator(query);
++
++        let mut heap = KHeap::new(k);
++        let mut visited = FxHashSet::with_capacity_and_hasher(
++            query_cut.min(query_components.len()) * 5000 + dead.starts.len(),
++            Default::default(),
++        );
++        visited.extend(dead.starts.iter().copied());
++
++        let mut iter = query_components
++            .iter()
++            .zip(query_values_slice)
++            .k_largest_by(query_cut, |a, b| a.1.total_cmp(b.1));
++        if first_sorted {
++            if let Some((&component_id, _value)) = iter.next() {
++                let component_idx: usize = component_id.as_();
++                self.posting_lists[component_idx].sort_and_search(
++                    &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited,
++                    &self.forward, None,
++                );
++            }
++        }
++        for (&component_id, _value) in iter {
++            let component_idx: usize = component_id.as_();
++            self.posting_lists[component_idx].search(
++                &mut evaluator, &query, k, heap_factor, &mut heap, &mut visited,
++                &self.forward, None,
++            );
++        }
++
++        Ok(heap
++            .into_sorted_vec()
++            .into_iter()
++            .map(|scored| ScoredVectorDotProduct {
++                distance: scored.distance,
++                vector: self.forward.id_from_range(scored.range),
++            })
++            .collect())
++    }
++}
++
+ /// E7: advance a walk cursor past `n` elements of `T` with the same alignment
+ /// rule as `read_pod` (align to `T` first). Used by the converter to locate
+ /// each list's packed-posting words without materializing the tail slices.
+@@ -3444,4 +3645,84 @@ mod tests {
+         let _ = std::fs::remove_dir_all(&base);
+         eprintln!("m8_env_gate_is_live_and_covers_multi_term_queries OK: block_stats={stats:?}");
+     }
++
++    /// O10 (2026-10-01): livedocs gather-time skip. On an exhaustive traversal
++    /// (single term, heap_factor 0 ⇒ no block pruned) `search_raw_skip` must
++    /// return EXACTLY the unmasked ranking with the dead docs removed and the
++    /// next live docs pulled up (exact-then-filter at depth k); no dead doc may
++    /// appear on a pruned multi-term query either; an empty dead set must
++    /// reproduce `search_raw` bit-for-bit; a set from another shard is refused.
++    #[test]
++    fn livedocs_skip_exact_and_bound() {
++        let _guard = M8_ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
++        let base = std::path::PathBuf::from(format!("/tmp/seismic_o10_test_{}", std::process::id()));
++        let _ = std::fs::remove_dir_all(&base);
++        let n_docs = 120usize;
++        let owned = build_fixed_block_index(6, n_docs);
++        let f16_dir = base.join("f16");
++        let dv_dir = base.join("dv");
++        std::fs::create_dir_all(&f16_dir).expect("create test dir");
++        write_mmap_index(&owned, &f16_dir).expect("write_mmap_index");
++        convert_f16_dir_to_dotvbyte(&f16_dir, &dv_dir, n_docs, false, ValueScale::PerDocLinear)
++            .expect("convert");
++        let idx = MmapSeismicIndexDotVByte::from_mmap(&dv_dir).expect("dv from_mmap");
++
++        let toks = vec!["t0".to_string()];
++        let vals = vec![1.0_f32];
++        let k = 10usize;
++        let full = with_m8_env(None, || idx.search_raw(&toks, &vals, n_docs, 1, 0.0, true));
++        assert_eq!(full.len(), n_docs);
++
++        let empty = idx.dead_starts_for(&[]);
++        for first_sorted in [true, false] {
++            let a = idx.search_raw(&toks, &vals, k, 1, 0.0, first_sorted);
++            let b = idx.search_raw_skip(&toks, &vals, k, 1, 0.0, first_sorted, &empty).unwrap();
++            assert_eq!(m8_fingerprint(&a), m8_fingerprint(&b), "empty dead set must be a no-op");
++        }
++
++        let dead_ids: Vec<String> = [0usize, 2, 3, 7, 40, 119]
++            .iter()
++            .map(|&r| format!("doc{}", full[r].vector))
++            .chain(std::iter::once("not_in_shard".to_string()))
++            .collect();
++        let resolved = idx.doc_indices_for_ids(&dead_ids);
++        assert_eq!(*resolved.last().unwrap(), -1);
++        let dead_idx: Vec<u64> = resolved.iter().filter(|&&d| d >= 0).map(|&d| d as u64).collect();
++        assert_eq!(dead_idx.len(), 6);
++        let mut with_oob = dead_idx.clone();
++        with_oob.push(n_docs as u64 + 5);
++        with_oob.push(dead_idx[0]);
++        let dead = idx.dead_starts_for(&with_oob);
++        assert_eq!(dead.counts(), (8, 6, 1, 0));
++        let dead_set: std::collections::HashSet<u64> = dead_idx.iter().copied().collect();
++
++        let expect: Vec<(u64, u32)> = m8_fingerprint(&full)
++            .into_iter()
++            .filter(|(d, _)| !dead_set.contains(d))
++            .take(k)
++            .collect();
++        for gate in [Some("1"), Some("0")] {
++            for first_sorted in [true, false] {
++                let got = with_m8_env(gate, || {
++                    idx.search_raw_skip(&toks, &vals, k, 1, 0.0, first_sorted, &dead).unwrap()
++                });
++                assert_eq!(m8_fingerprint(&got), expect,
++                    "skip != exact-then-filter (gate={gate:?}, first_sorted={first_sorted})");
++            }
++        }
++
++        let toks2: Vec<String> = (0..16).map(|i| format!("t{i}")).collect();
++        let vals2: Vec<f32> = (0..16).map(|i| 1.0 / (1.0 + i as f32)).collect();
++        let got2 = idx.search_raw_skip(&toks2, &vals2, k, 16, 0.8, true, &dead).unwrap();
++        assert_eq!(got2.len(), k);
++        assert!(got2.iter().all(|s| !dead_set.contains(&s.vector)), "dead doc returned");
++
++        let other = MmapSeismicIndexDotVByte::from_mmap(&dv_dir).expect("second load");
++        let foreign = other.dead_starts_for(&dead_idx);
++        assert!(idx.search_raw_skip(&toks, &vals, k, 1, 0.0, true, &foreign).is_err(),
++            "a dead set from another shard instance must be refused");
++
++        let _ = std::fs::remove_dir_all(&base);
++        eprintln!("livedocs_skip_exact_and_bound OK");
++    }
+ }
+diff --git a/src/pylib/mmap_index.rs b/src/pylib/mmap_index.rs
+index 591868c..b6d45aa 100644
+--- a/src/pylib/mmap_index.rs
++++ b/src/pylib/mmap_index.rs
+@@ -522,4 +522,106 @@ impl PyMmapIndex {
+             AnyMmapIndex::DotVByte(_) => "dotvbyte_fixedu8",
+         })
+     }
++
++    /// O10 (2026-10-01): resolve doc-id strings to this shard's internal doc
++    /// indices (one linear pass over the doc-mapping slab; run once per mask
++    /// publish). Returns a list with `-1` for ids not in this shard.
++    /// dotvbyte shards only (the served layout); f16 raises NotImplementedError.
++    pub fn doc_indices_for_ids(&self, ids: Vec<String>) -> PyResult<Vec<i64>> {
++        match &self.idx {
++            AnyMmapIndex::DotVByte(i) => Ok(i.doc_indices_for_ids(&ids)),
++            AnyMmapIndex::F16(_) => Err(pyo3::exceptions::PyNotImplementedError::new_err(
++                "livedocs skip is implemented for dotvbyte shards only",
++            )),
++        }
++    }
++
++    /// O10: build this shard's livedocs dead set from internal doc indices
++    /// (negative entries are ignored = not in this shard). The returned
++    /// `MmapDeadSet` is bound to this shard; pass it to `search_skip`.
++    pub fn dead_set(&self, doc_indices: Vec<i64>) -> PyResult<PyDeadSet> {
++        match &self.idx {
++            AnyMmapIndex::DotVByte(i) => {
++                let idx: Vec<u64> = doc_indices
++                    .into_iter()
++                    .filter(|&d| d >= 0)
++                    .map(|d| d as u64)
++                    .collect();
++                Ok(PyDeadSet { inner: i.dead_starts_for(&idx) })
++            }
++            AnyMmapIndex::F16(_) => Err(pyo3::exceptions::PyNotImplementedError::new_err(
++                "livedocs skip is implemented for dotvbyte shards only",
++            )),
++        }
++    }
++
++    /// O10: `search` with the livedocs gather-time skip — dead docs of `dead`
++    /// are never scored or pushed, so the k results are all live. Same
++    /// arguments and return shape as `search` plus `dead`; no knn arm.
++    /// `search` itself is unchanged (separate Rust body).
++    #[pyo3(signature = (
++        query_id, query_components, query_values, k, query_cut, heap_factor, dead,
++        sorted=true
++    ))]
++    #[allow(clippy::too_many_arguments)]
++    pub fn search_skip<'py>(
++        &self,
++        query_id: String,
++        query_components: PyReadonlyArrayDyn<'py, PyFixedUnicode<MAX_TOKEN_LEN>>,
++        query_values: PyReadonlyArrayDyn<'py, f32>,
++        k: usize,
++        query_cut: usize,
++        heap_factor: f32,
++        dead: PyRef<'py, PyDeadSet>,
++        sorted: bool,
++    ) -> PyResult<Vec<(String, f32, String)>> {
++        let AnyMmapIndex::DotVByte(i) = &self.idx else {
++            return Err(pyo3::exceptions::PyNotImplementedError::new_err(
++                "livedocs skip is implemented for dotvbyte shards only",
++            ));
++        };
++        let components: Vec<String> = query_components
++            .to_vec()
++            .unwrap_or_default()
++            .iter()
++            .map(|x| x.to_string())
++            .collect();
++        let values: Vec<f32> = query_values.to_vec().unwrap_or_default();
++        let results = i
++            .search_raw_skip(&components, &values, k, query_cut, heap_factor, sorted, &dead.inner)
++            .map_err(pyo3::exceptions::PyValueError::new_err)?;
++        Ok(results
++            .into_iter()
++            .map(|scored| {
++                let score = scored.distance.distance();
++                let doc_idx = scored.vector as usize;
++                let doc_id = i
++                    .doc_id(doc_idx)
++                    .map(|s| s.to_owned())
++                    .unwrap_or_else(|| doc_idx.to_string());
++                (query_id.clone(), score, doc_id)
++            })
++            .collect())
++    }
++}
++
++/// O10 (2026-10-01): one shard's livedocs dead set for `MmapSeismicIndex.search_skip`
++/// (opaque; built by `MmapSeismicIndex.dead_set`, bound to that shard).
++#[pyclass(name = "MmapDeadSet", frozen)]
++pub struct PyDeadSet {
++    inner: crate::mmap_io::DeadStarts,
++}
++
++#[pymethods]
++impl PyDeadSet {
++    /// Number of seeded dead docs (deduplicated, in range, non-empty).
++    #[getter]
++    pub fn get_len(&self) -> usize {
++        self.inner.len()
++    }
++
++    /// (requested, seeded, out_of_range, empty) counts.
++    pub fn counts(&self) -> (usize, usize, usize, usize) {
++        self.inner.counts()
++    }
+ }
+diff --git a/src/pylib/mod.rs b/src/pylib/mod.rs
+index 93cd0c2..ffdf437 100644
+--- a/src/pylib/mod.rs
++++ b/src/pylib/mod.rs
+@@ -1206,7 +1206,7 @@ pub use dotvbyte::SeismicIndexDotVByte;
+ // C2.5 (2026-06-28): pyo3 exposure of the C2 mmap reader (`MmapSeismicIndex`).
+ // See `pylib/mmap_index.rs` + `.claude/plans/seismic-c25-pyo3-mmap-binding.md`.
+ mod mmap_index;
+-pub use mmap_index::PyMmapIndex;
++pub use mmap_index::{PyDeadSet, PyMmapIndex};
+ 
+ impl_seismic_dataset!(SeismicDataset, "SeismicDataset", u16);
+ impl_seismic_dataset!(SeismicDatasetLV, "SeismicDatasetLV", u32);
+-- 
+2.55.0
+

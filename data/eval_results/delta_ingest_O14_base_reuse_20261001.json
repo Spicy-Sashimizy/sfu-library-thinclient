@@ -1,0 +1,93 @@
+{
+ "measurement": "O14 base-vector reuse (docs/delta_ingest/02_DESIGN.md \u00a73.1 O14)",
+ "bar": "none pre-registered; exact-or-refuse is a correctness property, recorded",
+ "script": "scripts/experiments/eval_delta_ingest_o14_base_reuse.py",
+ "code": "spike/delta_ingest/base_vectors.py",
+ "twin": "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+ "locator": {
+  "shard": "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+  "docs": 18799322,
+  "w_ids": 18799322,
+  "non_w": 0,
+  "duplicate_ids": 0,
+  "locator": "/home/vscode/work/delta_ingest/O14/locators/global_shard0of8.mmap.locator",
+  "seconds": 6.9,
+  "peak_rss_gb": 0.789,
+  "date": "2026-10-01T04:20:53Z",
+  "git_head": "c4cc2c5cc5ae3e6aad7c3b99be1c29170b280d1c",
+  "timings_valid": false
+ },
+ "verify_reader": {
+  "date": "2026-10-01T04:22:38Z",
+  "git_head": "c4cc2c5cc5ae3e6aad7c3b99be1c29170b280d1c",
+  "sample_rows": 20000,
+  "seed": 20261001,
+  "shard_docs": 18799322,
+  "sha256_vs_2026_09_29_listing": {
+   "token_to_id_map.bin": {
+    "got": "4572d9c31686760371946567829d2d7857ef16eef4c849642b479fcd07cb7086",
+    "want": "4572d9c31686760371946567829d2d7857ef16eef4c849642b479fcd07cb7086",
+    "match": true
+   },
+   "document_mapping_offsets.bin": {
+    "got": "3363271900c6cf903abc5e18d00d9aa8b5deb614db376cf94d5dd9e568017dcf",
+    "want": "3363271900c6cf903abc5e18d00d9aa8b5deb614db376cf94d5dd9e568017dcf",
+    "match": true
+   },
+   "document_mapping_strings.bin": {
+    "got": "a7a5e39aa9d7cd39c7af9d81ed1d1c151e4b38afc7725a94b8ae39c2f4ae4196",
+    "want": "a7a5e39aa9d7cd39c7af9d81ed1d1c151e4b38afc7725a94b8ae39c2f4ae4196",
+    "match": true
+   },
+   "forward_offsets.bin": {
+    "got": "668d50c5e08e48291336abf761486551d8fee70a6e0d227dbbfac7feb2e824f8",
+    "want": "668d50c5e08e48291336abf761486551d8fee70a6e0d227dbbfac7feb2e824f8",
+    "match": true
+   },
+   "config.json": {
+    "got": "b9dddeb2e8c514e67d5d8476fcf808a19ca6926023add775c0b911b8b4b71a9f",
+    "want": "b9dddeb2e8c514e67d5d8476fcf808a19ca6926023add775c0b911b8b4b71a9f",
+    "match": true
+   }
+  },
+  "reused_exact": 20000,
+  "refused": {},
+  "bit_equal_to_direct_read": 20000,
+  "direct_read": "np.fromfile at the row offsets (independent of the store pread path)",
+  "mismatch": 0,
+  "nnz_mean": 88.31,
+  "nnz_max": 255,
+  "lookup_seconds": 18.56,
+  "per_doc_ms": 0.928,
+  "peak_rss_gb": 0.351,
+  "timings_valid": false
+ },
+ "gpu_check": {
+  "date": "2026-10-01T06:10:30Z",
+  "git_head": "d7ac191d785aefd222682a1ba784c9231bcfb203",
+  "section": "social_sciences__recent",
+  "rows_scanned": 60000,
+  "selection": "meta rows id > 4000000000 in id order (LIMIT scan), kept if in shard 0 and in section",
+  "meta_rows_in_shard0": 7505,
+  "in_section": 1882,
+  "docs_compared": 1882,
+  "store_refusals": {},
+  "encoder_backend_requested": "auto",
+  "encoder_class": "SpladeDocEncoderTRT",
+  "text": "DocRecord.encoder_text() of the seed's base record (meta title + sidecar abstract)",
+  "nnz_base_mean": 83.0,
+  "nnz_reencode_mean": 83.18,
+  "nnz_ratio_reencode_over_base": 1.0022,
+  "term_jaccard_mean": 0.9935,
+  "term_jaccard_p5": 0.9756,
+  "cosine_mean": 0.99998,
+  "cosine_p1": 0.99996,
+  "docs_bit_identical": 0,
+  "shared_term_values_f16_equal": 8304,
+  "shared_terms": 155859,
+  "max_abs_diff_shared_terms": 0.07495,
+  "encode_seconds": 4.21,
+  "timings_valid": false,
+  "peak_rss_gb": 1.426
+ }
+}

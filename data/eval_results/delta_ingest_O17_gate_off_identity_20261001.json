@@ -1,0 +1,147 @@
+{
+ "date": "2026-10-01",
+ "script": "scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py",
+ "topics_file": "data/eval_results/dense_ablation_qrels_20260817.json",
+ "timings_valid": false,
+ "timing_note": "children ran under flock -s (shared) with other agents' jobs: latency INVALID by declaration",
+ "drive": {
+  "start_utc": "2026-10-01T17:09:04Z",
+  "head": "d65a8f82e13665f69f3e9b1301360bd26b89286a",
+  "snap": "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82",
+  "pre": "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82_pre_o17",
+  "lock": "flock -s /tmp/sfu_latency_measure.lock",
+  "timings_valid": false,
+  "bitmap": "",
+  "arms": {
+   "pre": {
+    "cmd": [
+     "flock",
+     "-s",
+     "/tmp/sfu_latency_measure.lock",
+     "nice",
+     "-n",
+     "10",
+     "taskset",
+     "-c",
+     "0-3",
+     "/home/vscode/work/venv_local/bin/python3",
+     "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py",
+     "child",
+     "--arm",
+     "pre",
+     "--src",
+     "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82_pre_o17/src",
+     "--scratch",
+     "/home/vscode/work/delta_ingest/oa/eval",
+     "--limit-topics",
+     "0",
+     "--deadline",
+     "2026-10-01T19:15:00Z"
+    ],
+    "rc": 0
+   },
+   "offon": {
+    "cmd": [
+     "flock",
+     "-s",
+     "/tmp/sfu_latency_measure.lock",
+     "nice",
+     "-n",
+     "10",
+     "taskset",
+     "-c",
+     "4-7",
+     "/home/vscode/work/venv_local/bin/python3",
+     "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py",
+     "child",
+     "--arm",
+     "offon",
+     "--src",
+     "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82/src",
+     "--scratch",
+     "/home/vscode/work/delta_ingest/oa/eval",
+     "--limit-topics",
+     "0",
+     "--deadline",
+     "2026-10-01T19:15:00Z"
+    ],
+    "rc": 0
+   }
+  },
+  "end_utc": "2026-10-01T18:26:09Z"
+ },
+ "meta_pre": {
+  "arm": "pre",
+  "start_utc": "2026-10-01T17:09:04Z",
+  "src": "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82_pre_o17/src",
+  "timings_valid": false,
+  "problems": [],
+  "code": {
+   "lib.tools": "4b48cb9364a3101615f12e0d38f009b51458788ca745bdd28e372280b031efc0",
+   "lib.thinclient.retriever": "32f0ef1426986608f04753707b0ff0d1f6a33b6935e79ee39db1f8e35ddf9410"
+  },
+  "load_s": 0.9,
+  "backend": "SequentialSeismicBackend",
+  "warnings_at_load": [],
+  "stopped": null,
+  "end_utc": "2026-10-01T18:25:47Z"
+ },
+ "meta_offon": {
+  "arm": "offon",
+  "start_utc": "2026-10-01T17:09:04Z",
+  "src": "/home/vscode/work/delta_ingest/oa/eval/code_d65a8f82/src",
+  "timings_valid": false,
+  "problems": [],
+  "code": {
+   "lib.tools": "4b48cb9364a3101615f12e0d38f009b51458788ca745bdd28e372280b031efc0",
+   "lib.thinclient.retriever": "d9fe7a8083155d2bc442d3b02a59c75c90aba55fc4b530f4a9064fdfaf26f4a7"
+  },
+  "load_s": 0.91,
+  "backend": "SequentialSeismicBackend",
+  "warnings_at_load": [],
+  "stopped": null,
+  "end_utc": "2026-10-01T18:25:47Z"
+ },
+ "M_id_pre_vs_off": {
+  "n": 120,
+  "byte_identical": {
+   "fused": 120,
+   "final": 120,
+   "fused_oa": 120,
+   "final_oa": 120
+  },
+  "degraded_rows": 0,
+  "bar": "120/120 byte-identical (fused, final; also OA-filtered)",
+  "verdict": "PASS"
+ },
+ "M_oa_counts": {
+  "pre": {
+   "topics": 120,
+   "fused_oa_total": 0,
+   "final_oa_total": 0,
+   "topics_with_zero_oa": 120,
+   "legs_oa_total": {
+    "bm25f": 0,
+    "splade": 0
+   }
+  },
+  "off": {
+   "topics": 120,
+   "fused_oa_total": 0,
+   "final_oa_total": 0,
+   "topics_with_zero_oa": 120,
+   "legs_oa_total": {
+    "bm25f": 0,
+    "splade": 0
+   }
+  },
+  "on": {
+   "topics": 0,
+   "fused_oa_total": 0,
+   "final_oa_total": 0,
+   "topics_with_zero_oa": 0,
+   "legs_oa_total": {}
+  }
+ },
+ "generated_utc": "2026-10-01T18:26:13Z"
+}

@@ -35,6 +35,9 @@ When ``SFU_DELTA_ROOT`` loaded a delta layer, ``@delta=<_delta_stamp>`` is
 appended to the stamp so a delta publish + reload or a buffer write rotates
 the key; with the layer off the key is byte-identical to the pre-2026-09-29
 recipe (docs/CODE_INVARIANTS.md §"result_cache").
+When ``SFU_OA_BITMAP`` loaded a base is_oa bitmap (O17), ``@oa=<bitmap_id>``
+is appended after any delta suffix, so a new bitmap rotates the key; with the
+gate off the key is unchanged.
 Only parameters that affect the result set are hashed; e.g. ``page`` is
 included because it selects a different result page even for an identical
 query+limit.
@@ -77,9 +80,13 @@ def _manifest_stamp() -> str:
         built = str(manifest.get("built", "?"))
         engines = str(manifest.get("engines", "?"))
         delta = getattr(tc, "_delta", None)
-        if delta is None:
-            return f"{built}@{engines}"
-        return f"{built}@{engines}@delta={_delta_stamp(delta)}"
+        oa = getattr(tc, "_oa", None)
+        stamp = f"{built}@{engines}"
+        if delta is not None:
+            stamp += f"@delta={_delta_stamp(delta)}"
+        if oa is not None:
+            stamp += f"@oa={oa.bitmap_id}"
+        return stamp
     except Exception:
         return "unknown"
 

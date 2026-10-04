@@ -51,6 +51,17 @@ Run (the whole run holds the shared latency lock):
   flock /tmp/sfu_latency_measure.lock env -u SFU_DELTA_ROOT -u SFU_SEISMIC_SHARD_MANIFEST \
     -u SFU_SEARCH_SPECULATIVE_RERANK .venv/bin/python3 \
     scripts/experiments/eval_delta_ingest_livedocs_bitset.py
+
+ADDITION 2026-10-01 (flags only, bars and per-topic method unchanged; written
+before the remainder run): --topic-offset N measures topics [N:] of the same
+120-topic list (the 2026-09-29 run stopped after 101, so the remainder is
+--topic-offset 101); the 10-topic warm pass stays on topics [:10] as before.
+--out / --date write a new dated results file instead of the 2026-09-29 one
+(the default path is unchanged). --health asserts, before the first measured
+topic, that the SPLADE encoder returns terms, the cross-encoder and the
+embedding model load and no O12/fallback signature was logged; warnings
+logged during the run are scanned afterwards (result fields `health`,
+`warning_signatures_during_run`). Partial rows go to <out>.rows_partial.json.
 """
 from __future__ import annotations
 
@@ -141,23 +152,106 @@ def main() -> int:
     ap.add_argument("--lat-reps", type=int, default=2)
     ap.add_argument("--stop-at", default="2026-09-29T06:50:00Z",
                     help="UTC time after which no new topic starts (hard deadline of the run)")
+    ap.add_argument("--topic-offset", type=int, default=0,
+                    help="measure topics [offset:] of the 120 (warm pass stays on topics [:10])")
+    ap.add_argument("--out", default="", help="results path (default: the 2026-09-29 file)")
+    ap.add_argument("--date", default="2026-09-29")
+    ap.add_argument("--health", action="store_true", help="assert models loaded before measuring")
     args = ap.parse_args()
+    global OUT
+    if args.out:
+        OUT = Path(args.out)
     from datetime import datetime, timezone
     stop_at = datetime.fromisoformat(args.stop_at.replace("Z", "+00:00")).timestamp()
     SCRATCH.mkdir(parents=True, exist_ok=True)
     t_start = time.time()
+    import logging
+
+    class _Cap(logging.Handler):
+        def __init__(self):
+            super().__init__(level=logging.WARNING)
+            self.records: list[str] = []
+
+        def emit(self, record):
+            try:
+                self.records.append(f"{record.name}: {record.getMessage()}"[:400])
+            except Exception:
+                pass
+    cap = _Cap()
+    logging.getLogger().addHandler(cap)
+    sigs = ("Cannot allocate memory", "CrossEncoder unavailable", "Failed to load embedding model",
+            "falling back to BM25F", "SPLADE encoder failed", "SEISMIC SPLADE leg failed", "MemoryError",
+            "Traceback")
     import lib.tools as tools
     from lib.thinclient.livedocs import payload_len
     from spike.delta_ingest.livedocs import build_bits, open_ordinals, write_livedocs
+    if logging.getLogger("sfu_library_mcp").propagate is False:
+        logging.getLogger("sfu_library_mcp").addHandler(cap)
     retriever = tools._get_thinclient_retriever()
     retriever._fetch_remote_abstracts = lambda ids: {}
     retriever._load()
     assert retriever._delta is None, "run with SFU_DELTA_ROOT unset"
     backend = retriever._seismic_backend()
+    health: dict = {"checked": bool(args.health), "ok": True, "problems": [],
+                    "env": {k: os.environ.get(k) for k in ("SFU_SEISMIC_STAGE_DIR", "SFU_META_STAGE_DIR",
+                                                           "SFU_SEISMIC_SHARD_MANIFEST", "SFU_DELTA_ROOT",
+                                                           "SFU_SPLADE_MODEL_PATH", "SFU_CE_MODEL_PATH",
+                                                           "SFU_EMBEDDING_MODEL_PATH", "SFU_SEISMIC_FEDERATION")},
+                    "python": sys.executable}
+    if args.health:
+        def bad(msg):
+            health["ok"] = False
+            health["problems"].append(msg)
+        if os.environ.get("SFU_SEISMIC_STAGE_DIR") or os.environ.get("SFU_META_STAGE_DIR"):
+            bad("a stage dir is set")
+        try:
+            import onnxruntime
+            health["onnxruntime"] = onnxruntime.__version__
+        except Exception as exc:
+            bad(f"onnxruntime import failed: {exc!r}")
+        from lib.opensearch_retriever import encode_splade
+        from lib.reranker import _get_cross_encoder
+        try:
+            qv = encode_splade("warm up query for sparse encoder", retriever.splade_model_path)
+            health["splade_terms"] = len(qv or {})
+            if not qv:
+                bad("encode_splade returned empty")
+        except Exception as exc:
+            bad(f"encode_splade raised {exc!r}")
+        try:
+            ce = _get_cross_encoder()
+            health["cross_encoder"] = type(ce).__name__ if ce is not None else None
+            if ce is None:
+                bad("cross-encoder not loaded")
+        except Exception as exc:
+            bad(f"cross-encoder load raised {exc!r}")
+        try:
+            from lib.embedding import _load_model
+            em = _load_model(os.environ.get("SFU_EMBEDDING_MODEL_PATH") or None)
+            health["embedding_model"] = type(em).__name__ if em is not None else None
+            if em is None:
+                bad("embedding model not loaded")
+        except Exception as exc:
+            bad(f"embedding model load raised {exc!r}")
+        health["backend_class"] = type(backend).__name__
+        health["n_shards"] = len(getattr(backend, "shards", []) or [])
+        if health["n_shards"] != 8 or any(s is None for s in backend.shards):
+            bad(f"backend shards {health['n_shards']} != 8 or a shard is None")
+        health["warnings_at_load"] = list(cap.records)
+        if any(any(s in w for s in sigs) for w in cap.records):
+            bad("failure signature in warnings during load")
+        print(f"HEALTH {'OK' if health['ok'] else 'FAIL'} {json.dumps(health, default=str)}", flush=True)
+        if not health["ok"]:
+            return 3
+    n_warn0 = len(cap.records)
     topics = json.loads(TOPICS.read_text())["topics"]
-    items = [(k, v["natural"]) for k, v in topics.items()]
+    all_items = [(k, v["natural"]) for k, v in topics.items()]
+    items = all_items
     if args.limit_topics:
         items = items[:args.limit_topics]
+    warm_items = all_items[:min(10, len(items))]
+    if args.topic_offset:
+        items = items[args.topic_offset:]
     print(f"loaded {type(backend).__name__} shards={len(backend.shards)} topics={len(items)} "
           f"t={time.time()-t_start:.0f}s", flush=True)
 
@@ -195,8 +289,8 @@ def main() -> int:
             return out
         return _f
 
-    warm_n = min(10, len(items))
-    run_arm(retriever, tools, items[:warm_n], rerank=True)
+    warm_n = len(warm_items)
+    run_arm(retriever, tools, warm_items, rerank=True)
     print(f"warm {warm_n} topics done t={time.time()-t_start:.0f}s", flush=True)
 
     rows = []
@@ -243,7 +337,8 @@ def main() -> int:
               f"ctl={rows[-1]['ctl_fused']}/{rows[-1]['ctl_final']} dead_out={len(dead_out)} "
               f"order={rows[-1]['order_bm25f']}/{rows[-1]['order_splade']}", flush=True)
         if (ti + 1) % 10 == 0:
-            (SCRATCH / "rows_partial.json").write_text(json.dumps(rows))
+            (Path(str(OUT) + ".rows_partial.json") if args.out else SCRATCH / "rows_partial.json").write_text(
+                json.dumps(rows))
     set_arm(retriever, backend, None)
     done = [k for k, _ in items[:len(rows)]]
 
@@ -306,8 +401,11 @@ def main() -> int:
     n = len(rows)
     cnt = lambda k: sum(1 for r in rows if r[k])  # noqa: E731
     res = {
-        "item": "delta-ingest C livedocs bitset", "date": "2026-09-29",
-        "commit": subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
+        "item": "delta-ingest C livedocs bitset", "date": args.date, "topic_offset": args.topic_offset,
+        "health": health,
+        "warning_signatures_during_run": [w for w in cap.records[n_warn0:] if any(s in w for s in sigs)][:20],
+        "n_warnings_during_run": len(cap.records) - n_warn0,
+        "commit": (os.environ.get("SFU_EVAL_COMMIT") or (subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True, capture_output=True).stdout.strip() if (REPO / ".git").exists() else REPO.name)),
         "script": "scripts/experiments/eval_delta_ingest_livedocs_bitset.py",
         "delivered_path": "python per-shard post-filter before _merge_topk (no Rust gather-time skip)",
         "backend": type(backend).__name__, "n_shards": len(backend.shards),

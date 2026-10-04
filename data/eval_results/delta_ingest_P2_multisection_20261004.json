@@ -1,0 +1,1303 @@
+{
+ "item": "doc 11 P2 on a multi-section fixture",
+ "date_utc": "2026-10-04T05:24:49Z",
+ "script": "scripts/experiments/eval_delta_ingest_p2_multisection.py",
+ "preregistration": "docs/delta_ingest/11_P2_MULTISECTION_PREREGISTRATION.md \u00a72",
+ "bars": {
+  "A_median": 0,
+  "A2_recall_drop": 0.01,
+  "B_displaced": 60,
+  "C_displaced": 300,
+  "C_rank_median": 0,
+  "D": 0
+ },
+ "contrasts": {
+  "1": {
+   "rows_file": "/home/vscode/work/delta_ingest/p2_multisection/rows_c1.json",
+   "git_head": "e3fb5ad01875f6303b67d9bf93e27fc826561190",
+   "src": "/home/vscode/work/delta_ingest/p2_multisection/code_e3fb5ad01875f6303b67d9bf93e27fc826561190/src",
+   "start_utc": "2026-10-04T01:39:12Z",
+   "end_utc": "2026-10-04T03:33:13Z",
+   "wall_s": 6848.4,
+   "lock": {
+    "mode": "shared",
+    "acquired_utc": "2026-10-04T01:39:05Z",
+    "waited_s": 0
+   },
+   "fixture": {
+    "n1": {
+     "root": "/home/vscode/work/inplace_update/m4/root_n1",
+     "generations": [
+      [
+       1,
+       160347,
+       10
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_n1/g0001/seismic/delta_g0001.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    },
+    "s1": {
+     "root": "/home/vscode/work/inplace_update/m4/root_s1",
+     "generations": [
+      [
+       1,
+       160347,
+       1
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_s1/g0001/seismic/delta_g0001.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    },
+    "e1": {
+     "root": "/home/vscode/work/inplace_update/m4/root_e1",
+     "generations": [
+      [
+       1,
+       160347,
+       2
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_e1/g0001/seismic/delta_g0001.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    }
+   },
+   "health": {
+    "ok": true,
+    "problems": [],
+    "onnxruntime": "1.26.0",
+    "splade_terms": 43,
+    "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+    "cross_encoder": "CrossEncoder",
+    "embedding_model": "SentenceTransformer"
+   },
+   "mem": {
+    "tripped": null,
+    "min_mem_available_gb": 47.61,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "stop": null,
+   "limit": 0,
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "levers": []
+     },
+     "load_s": 0.62,
+     "backend_load_s": 1.03,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     }
+    },
+    "n1": {
+     "spec": {
+      "name": "n1",
+      "tag": "n1",
+      "root": "/home/vscode/work/inplace_update/m4/root_n1",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 0.36,
+     "backend_load_s": 1.13,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790671955",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "s1": {
+     "spec": {
+      "name": "s1",
+      "tag": "s1",
+      "root": "/home/vscode/work/inplace_update/m4/root_s1",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 0.38,
+     "backend_load_s": 1.09,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 12,
+     "abstract_stores": 2,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790868817",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 2,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "e1": {
+     "spec": {
+      "name": "e1",
+      "tag": "e1",
+      "root": "/home/vscode/work/inplace_update/m4/root_e1",
+      "n_gen": 1,
+      "levers": []
+     },
+     "load_s": 0.36,
+     "backend_load_s": 1.06,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 13,
+     "abstract_stores": 3,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1
+     ],
+     "delta_stamp": "g0001-1790869503",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_e1/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 3,
+     "delta_shard_positions": [
+      8
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    }
+   },
+   "single_vs_per_base_section": {
+    "A": {
+     "median_overall": 0,
+     "median_by_stratum": {
+      "cs_math__recent": 0.0,
+      "med_bio__recent": 0.0,
+      "other__recent": -13.5,
+      "phys_eng__recent": 0,
+      "social_sciences__recent": 0.0
+     },
+     "present_in_both": 217,
+     "absent_ref_only": 48,
+     "absent_test_only": 0,
+     "absent_both": 335,
+     "quantiles_overall": {
+      "n": 217,
+      "min": -59.0,
+      "p5": -16.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 1.0,
+      "better": 45,
+      "same": 166,
+      "worse": 6
+     },
+     "quantiles_by_stratum": {
+      "cs_math__recent": {
+       "n": 16,
+       "min": -2.0,
+       "p5": -1.25,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.25,
+       "max": 1.0,
+       "better": 3,
+       "same": 12,
+       "worse": 1
+      },
+      "med_bio__recent": {
+       "n": 60,
+       "min": -16.0,
+       "p5": -6.05,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 13,
+       "same": 45,
+       "worse": 2
+      },
+      "other__recent": {
+       "n": 20,
+       "min": -59.0,
+       "p5": -47.6,
+       "p25": -23.25,
+       "p50": -13.5,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 14,
+       "same": 6,
+       "worse": 0
+      },
+      "phys_eng__recent": {
+       "n": 5,
+       "min": -15.0,
+       "p5": -12.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.7999999999999998,
+       "max": 1.0,
+       "better": 1,
+       "same": 3,
+       "worse": 1
+      },
+      "social_sciences__recent": {
+       "n": 116,
+       "min": -36.0,
+       "p5": -2.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 14,
+       "same": 100,
+       "worse": 2
+      }
+     },
+     "score_ratio_test_over_ref": {
+      "n": 217,
+      "min": 0.8016586393010631,
+      "p5": 0.9309572784159387,
+      "p25": 1.0353754161680835,
+      "p50": 1.1112123786878851,
+      "p75": 1.1835811656777837,
+      "p95": 1.3001860665372078,
+      "max": 1.3980342383968747,
+      "better": 0,
+      "same": 0,
+      "worse": 217
+     },
+     "delta_docs_in_leg_top100_mean": {
+      "n1": 1.1266666666666667,
+      "s1": 1.4266666666666667
+     },
+     "pass": false
+    },
+    "A2": {
+     "recall100_ref": 0.3616666666666667,
+     "recall100_test": 0.44166666666666665,
+     "pass": true
+    },
+    "B": {
+     "displaced_fused_top10": 1,
+     "slots": 1200,
+     "bar": 60,
+     "identical_fused_top10": 118,
+     "displaced_bm25f_leg_top10": 0,
+     "displaced_final_top10": 0,
+     "pass": true
+    },
+    "C": {
+     "displaced_fused_top10": 122,
+     "slots": 6000,
+     "bar": 300,
+     "own_rank_median_change": 0.0,
+     "own_rank_quantiles": {
+      "n": 290,
+      "min": -47.0,
+      "p5": -6.549999999999999,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 2.0,
+      "better": 36,
+      "same": 248,
+      "worse": 6
+     },
+     "own_in_fused50_ref": 290,
+     "own_in_fused50_test": 321,
+     "displaced_bm25f_leg_top10": 131,
+     "displaced_final_top10": 69,
+     "pass": true
+    },
+    "D": {
+     "duplicates": 0,
+     "wrong_origin_hits": 0,
+     "pass": true
+    },
+    "done": {
+     "A": 600,
+     "B": 120,
+     "C": 600
+    },
+    "complete": true,
+    "healthy": true,
+    "all_bars": false
+   },
+   "per_era_vs_per_base_section_recorded": {
+    "A": {
+     "median_overall": 0,
+     "median_by_stratum": {
+      "cs_math__recent": 0.0,
+      "med_bio__recent": 0.0,
+      "other__recent": -13.5,
+      "phys_eng__recent": 0,
+      "social_sciences__recent": 0.0
+     },
+     "present_in_both": 217,
+     "absent_ref_only": 45,
+     "absent_test_only": 0,
+     "absent_both": 338,
+     "quantiles_overall": {
+      "n": 217,
+      "min": -58.0,
+      "p5": -16.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 1.0,
+      "better": 45,
+      "same": 168,
+      "worse": 4
+     },
+     "quantiles_by_stratum": {
+      "cs_math__recent": {
+       "n": 16,
+       "min": -1.0,
+       "p5": -0.25,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 1,
+       "same": 15,
+       "worse": 0
+      },
+      "med_bio__recent": {
+       "n": 60,
+       "min": -15.0,
+       "p5": -6.1499999999999995,
+       "p25": -1.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 16,
+       "same": 42,
+       "worse": 2
+      },
+      "other__recent": {
+       "n": 20,
+       "min": -58.0,
+       "p5": -47.55,
+       "p25": -22.5,
+       "p50": -13.5,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 14,
+       "same": 6,
+       "worse": 0
+      },
+      "phys_eng__recent": {
+       "n": 5,
+       "min": -15.0,
+       "p5": -12.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.7999999999999998,
+       "max": 1.0,
+       "better": 1,
+       "same": 3,
+       "worse": 1
+      },
+      "social_sciences__recent": {
+       "n": 116,
+       "min": -36.0,
+       "p5": -1.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 13,
+       "same": 102,
+       "worse": 1
+      }
+     },
+     "score_ratio_test_over_ref": {
+      "n": 217,
+      "min": 0.8036892577119539,
+      "p5": 0.9321561125818466,
+      "p25": 1.0354901813031772,
+      "p50": 1.1117993337542145,
+      "p75": 1.184341327779725,
+      "p95": 1.301213888505345,
+      "max": 1.3968611409525384,
+      "better": 0,
+      "same": 0,
+      "worse": 217
+     },
+     "delta_docs_in_leg_top100_mean": {
+      "n1": 1.1266666666666667,
+      "e1": 1.4233333333333333
+     },
+     "pass": false
+    },
+    "A2": {
+     "recall100_ref": 0.3616666666666667,
+     "recall100_test": 0.43666666666666665,
+     "pass": true
+    },
+    "B": {
+     "displaced_fused_top10": 1,
+     "slots": 1200,
+     "bar": 60,
+     "identical_fused_top10": 118,
+     "displaced_bm25f_leg_top10": 0,
+     "displaced_final_top10": 0,
+     "pass": true
+    },
+    "C": {
+     "displaced_fused_top10": 120,
+     "slots": 6000,
+     "bar": 300,
+     "own_rank_median_change": 0.0,
+     "own_rank_quantiles": {
+      "n": 290,
+      "min": -47.0,
+      "p5": -6.549999999999999,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 1.0,
+      "better": 35,
+      "same": 252,
+      "worse": 3
+     },
+     "own_in_fused50_ref": 290,
+     "own_in_fused50_test": 317,
+     "displaced_bm25f_leg_top10": 129,
+     "displaced_final_top10": 67,
+     "pass": true
+    },
+    "D": {
+     "duplicates": 0,
+     "wrong_origin_hits": 0,
+     "pass": true
+    },
+    "done": {
+     "A": 600,
+     "B": 120,
+     "C": 600
+    },
+    "complete": true,
+    "healthy": true,
+    "all_bars": false
+   },
+   "B_vs_gate_off_recorded": {
+    "n1": {
+     "base_docs_leaving_fused_top10": 1,
+     "identical_fused_top10": 119
+    },
+    "s1": {
+     "base_docs_leaving_fused_top10": 2,
+     "identical_fused_top10": 118
+    },
+    "e1": {
+     "base_docs_leaving_fused_top10": 2,
+     "identical_fused_top10": 118
+    }
+   },
+   "log_scan": {
+    "path": "/home/vscode/work/delta_ingest/p2_multisection/measure_c1.log",
+    "bytes": 5110,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  },
+  "8": {
+   "rows_file": "/home/vscode/work/delta_ingest/p2_multisection/rows_c8.json",
+   "git_head": "0785d09c7e9c8f4e6d850b3bc9bd304858925185",
+   "src": "/home/vscode/work/delta_ingest/p2_multisection/code_e3fb5ad01875f6303b67d9bf93e27fc826561190/src",
+   "start_utc": "2026-10-04T03:33:38Z",
+   "end_utc": "2026-10-04T05:24:40Z",
+   "wall_s": 6676.1,
+   "lock": {
+    "mode": "shared",
+    "acquired_utc": "2026-10-04T03:33:24Z",
+    "waited_s": 0
+   },
+   "fixture": {
+    "n8": {
+     "root": "/home/vscode/work/inplace_update/m4/root_n8",
+     "generations": [
+      [
+       1,
+       20044,
+       9
+      ],
+      [
+       2,
+       20044,
+       10
+      ],
+      [
+       3,
+       20044,
+       9
+      ],
+      [
+       4,
+       20043,
+       9
+      ],
+      [
+       5,
+       20043,
+       9
+      ],
+      [
+       6,
+       20043,
+       9
+      ],
+      [
+       7,
+       20043,
+       8
+      ],
+      [
+       8,
+       20043,
+       9
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_n8/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0002/seismic/delta_g0002.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0003/seismic/delta_g0003.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0004/seismic/delta_g0004.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0005/seismic/delta_g0005.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0006/seismic/delta_g0006.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0007/seismic/delta_g0007.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_n8/g0008/seismic/delta_g0008.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    },
+    "s8": {
+     "root": "/home/vscode/work/inplace_update/m4/root_s8",
+     "generations": [
+      [
+       1,
+       20044,
+       1
+      ],
+      [
+       2,
+       20044,
+       1
+      ],
+      [
+       3,
+       20044,
+       1
+      ],
+      [
+       4,
+       20043,
+       1
+      ],
+      [
+       5,
+       20043,
+       1
+      ],
+      [
+       6,
+       20043,
+       1
+      ],
+      [
+       7,
+       20043,
+       1
+      ],
+      [
+       8,
+       20043,
+       1
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_s8/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0002/seismic/delta_g0002.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0003/seismic/delta_g0003.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0004/seismic/delta_g0004.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0005/seismic/delta_g0005.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0006/seismic/delta_g0006.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0007/seismic/delta_g0007.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_s8/g0008/seismic/delta_g0008.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    },
+    "e8": {
+     "root": "/home/vscode/work/inplace_update/m4/root_e8",
+     "generations": [
+      [
+       1,
+       20044,
+       2
+      ],
+      [
+       2,
+       20044,
+       2
+      ],
+      [
+       3,
+       20044,
+       2
+      ],
+      [
+       4,
+       20043,
+       2
+      ],
+      [
+       5,
+       20043,
+       2
+      ],
+      [
+       6,
+       20043,
+       2
+      ],
+      [
+       7,
+       20043,
+       2
+      ],
+      [
+       8,
+       20043,
+       2
+      ]
+     ],
+     "mask": {
+      "deleted": 0,
+      "superseded": 0,
+      "tombstones": 0
+     },
+     "livedocs": false,
+     "seismic_dirs": [
+      "/home/vscode/work/inplace_update/m4/root_e8/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0002/seismic/delta_g0002.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0003/seismic/delta_g0003.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0004/seismic/delta_g0004.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0005/seismic/delta_g0005.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0006/seismic/delta_g0006.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0007/seismic/delta_g0007.dotvbyte.v2.mmap",
+      "/home/vscode/work/inplace_update/m4/root_e8/g0008/seismic/delta_g0008.dotvbyte.v2.mmap"
+     ],
+     "live_docs": 160347
+    }
+   },
+   "health": {
+    "ok": true,
+    "problems": [],
+    "onnxruntime": "1.26.0",
+    "splade_terms": 43,
+    "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+    "cross_encoder": "CrossEncoder",
+    "embedding_model": "SentenceTransformer"
+   },
+   "mem": {
+    "tripped": null,
+    "min_mem_available_gb": 50.12,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "stop": null,
+   "limit": 0,
+   "arms": {
+    "n8": {
+     "spec": {
+      "name": "n8",
+      "tag": "n8",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.89,
+     "backend_load_s": 2.79,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 83,
+     "abstract_stores": 73,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790672425",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 73,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "s8": {
+     "spec": {
+      "name": "s8",
+      "tag": "s8",
+      "root": "/home/vscode/work/inplace_update/m4/root_s8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.42,
+     "backend_load_s": 2.23,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 19,
+     "abstract_stores": 9,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869150",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_s8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 9,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    },
+    "e8": {
+     "spec": {
+      "name": "e8",
+      "tag": "e8",
+      "root": "/home/vscode/work/inplace_update/m4/root_e8",
+      "n_gen": 8,
+      "levers": []
+     },
+     "load_s": 0.41,
+     "backend_load_s": 2.27,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 16,
+     "sections": 27,
+     "abstract_stores": 17,
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "delta_stamp": "g0008-1790869895",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_e8/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 17,
+     "delta_shard_positions": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ],
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0
+    }
+   },
+   "single_vs_per_base_section": {
+    "A": {
+     "median_overall": 0.0,
+     "median_by_stratum": {
+      "cs_math__recent": 0.0,
+      "med_bio__recent": 0,
+      "other__recent": -1.0,
+      "phys_eng__recent": 0,
+      "social_sciences__recent": 0.0
+     },
+     "present_in_both": 210,
+     "absent_ref_only": 47,
+     "absent_test_only": 0,
+     "absent_both": 343,
+     "quantiles_overall": {
+      "n": 210,
+      "min": -90.0,
+      "p5": -17.849999999999994,
+      "p25": -1.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 2.0,
+      "better": 55,
+      "same": 146,
+      "worse": 9
+     },
+     "quantiles_by_stratum": {
+      "cs_math__recent": {
+       "n": 16,
+       "min": -8.0,
+       "p5": -5.0,
+       "p25": -0.25,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 4,
+       "same": 12,
+       "worse": 0
+      },
+      "med_bio__recent": {
+       "n": 59,
+       "min": -42.0,
+       "p5": -7.6999999999999975,
+       "p25": -1.5,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 1.0,
+       "max": 2.0,
+       "better": 21,
+       "same": 34,
+       "worse": 4
+      },
+      "other__recent": {
+       "n": 14,
+       "min": -33.0,
+       "p5": -31.7,
+       "p25": -30.75,
+       "p50": -1.0,
+       "p75": 0.0,
+       "p95": 0.34999999999999964,
+       "max": 1.0,
+       "better": 8,
+       "same": 5,
+       "worse": 1
+      },
+      "phys_eng__recent": {
+       "n": 5,
+       "min": 0.0,
+       "p5": 0.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 0,
+       "same": 5,
+       "worse": 0
+      },
+      "social_sciences__recent": {
+       "n": 116,
+       "min": -90.0,
+       "p5": -2.75,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 22,
+       "same": 90,
+       "worse": 4
+      }
+     },
+     "score_ratio_test_over_ref": {
+      "n": 210,
+      "min": 0.8274070895344414,
+      "p5": 1.0105247764551695,
+      "p25": 1.1236277469181921,
+      "p50": 1.1860768417988683,
+      "p75": 1.2728428451921312,
+      "p95": 1.395763983232638,
+      "max": 1.4863473473285596,
+      "better": 0,
+      "same": 0,
+      "worse": 210
+     },
+     "delta_docs_in_leg_top100_mean": {
+      "n8": 1.075,
+      "s8": 1.4033333333333333
+     },
+     "pass": false
+    },
+    "A2": {
+     "recall100_ref": 0.35,
+     "recall100_test": 0.42833333333333334,
+     "pass": true
+    },
+    "B": {
+     "displaced_fused_top10": 0,
+     "slots": 1200,
+     "bar": 60,
+     "identical_fused_top10": 119,
+     "displaced_bm25f_leg_top10": 0,
+     "displaced_final_top10": 0,
+     "pass": true
+    },
+    "C": {
+     "displaced_fused_top10": 128,
+     "slots": 6000,
+     "bar": 300,
+     "own_rank_median_change": 0,
+     "own_rank_quantiles": {
+      "n": 285,
+      "min": -25.0,
+      "p5": -4.799999999999999,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 3.0,
+      "better": 39,
+      "same": 240,
+      "worse": 6
+     },
+     "own_in_fused50_ref": 285,
+     "own_in_fused50_test": 303,
+     "displaced_bm25f_leg_top10": 153,
+     "displaced_final_top10": 53,
+     "pass": true
+    },
+    "D": {
+     "duplicates": 0,
+     "wrong_origin_hits": 0,
+     "pass": true
+    },
+    "done": {
+     "A": 600,
+     "B": 120,
+     "C": 600
+    },
+    "complete": true,
+    "healthy": true,
+    "all_bars": false
+   },
+   "per_era_vs_per_base_section_recorded": {
+    "A": {
+     "median_overall": 0.0,
+     "median_by_stratum": {
+      "cs_math__recent": 0.0,
+      "med_bio__recent": 0,
+      "other__recent": -1.0,
+      "phys_eng__recent": 0,
+      "social_sciences__recent": 0.0
+     },
+     "present_in_both": 210,
+     "absent_ref_only": 47,
+     "absent_test_only": 0,
+     "absent_both": 343,
+     "quantiles_overall": {
+      "n": 210,
+      "min": -90.0,
+      "p5": -18.299999999999994,
+      "p25": -1.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 2.0,
+      "better": 54,
+      "same": 147,
+      "worse": 9
+     },
+     "quantiles_by_stratum": {
+      "cs_math__recent": {
+       "n": 16,
+       "min": -8.0,
+       "p5": -5.0,
+       "p25": -0.25,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 4,
+       "same": 12,
+       "worse": 0
+      },
+      "med_bio__recent": {
+       "n": 59,
+       "min": -42.0,
+       "p5": -8.699999999999998,
+       "p25": -1.5,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 1.0,
+       "max": 2.0,
+       "better": 21,
+       "same": 34,
+       "worse": 4
+      },
+      "other__recent": {
+       "n": 14,
+       "min": -32.0,
+       "p5": -31.35,
+       "p25": -29.75,
+       "p50": -1.0,
+       "p75": 0.0,
+       "p95": 0.34999999999999964,
+       "max": 1.0,
+       "better": 8,
+       "same": 5,
+       "worse": 1
+      },
+      "phys_eng__recent": {
+       "n": 5,
+       "min": 0.0,
+       "p5": 0.0,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 0.0,
+       "better": 0,
+       "same": 5,
+       "worse": 0
+      },
+      "social_sciences__recent": {
+       "n": 116,
+       "min": -90.0,
+       "p5": -2.75,
+       "p25": 0.0,
+       "p50": 0.0,
+       "p75": 0.0,
+       "p95": 0.0,
+       "max": 1.0,
+       "better": 21,
+       "same": 91,
+       "worse": 4
+      }
+     },
+     "score_ratio_test_over_ref": {
+      "n": 210,
+      "min": 0.8244998202633578,
+      "p5": 1.0110736202056183,
+      "p25": 1.122053880577316,
+      "p50": 1.1831960154259376,
+      "p75": 1.2706804729672334,
+      "p95": 1.3945970280016007,
+      "max": 1.507074464478706,
+      "better": 0,
+      "same": 0,
+      "worse": 210
+     },
+     "delta_docs_in_leg_top100_mean": {
+      "n8": 1.075,
+      "e8": 1.4416666666666667
+     },
+     "pass": false
+    },
+    "A2": {
+     "recall100_ref": 0.35,
+     "recall100_test": 0.42833333333333334,
+     "pass": true
+    },
+    "B": {
+     "displaced_fused_top10": 0,
+     "slots": 1200,
+     "bar": 60,
+     "identical_fused_top10": 119,
+     "displaced_bm25f_leg_top10": 0,
+     "displaced_final_top10": 0,
+     "pass": true
+    },
+    "C": {
+     "displaced_fused_top10": 131,
+     "slots": 6000,
+     "bar": 300,
+     "own_rank_median_change": 0,
+     "own_rank_quantiles": {
+      "n": 285,
+      "min": -25.0,
+      "p5": -4.799999999999999,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p95": 0.0,
+      "max": 3.0,
+      "better": 40,
+      "same": 240,
+      "worse": 5
+     },
+     "own_in_fused50_ref": 285,
+     "own_in_fused50_test": 303,
+     "displaced_bm25f_leg_top10": 152,
+     "displaced_final_top10": 58,
+     "pass": true
+    },
+    "D": {
+     "duplicates": 0,
+     "wrong_origin_hits": 0,
+     "pass": true
+    },
+    "done": {
+     "A": 600,
+     "B": 120,
+     "C": 600
+    },
+    "complete": true,
+    "healthy": true,
+    "all_bars": false
+   },
+   "log_scan": {
+    "path": "/home/vscode/work/delta_ingest/p2_multisection/measure_c8.log",
+    "bytes": 4967,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  }
+ },
+ "timings_valid": false,
+ "verdict": "FAIL",
+ "per_era_same_rule_recorded": "does not hold"
+}

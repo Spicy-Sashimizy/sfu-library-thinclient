@@ -27,6 +27,8 @@ OPENALEX_PREFIX = "https://openalex.org/"
 DOI_PREFIXES = ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/",
                 "http://dx.doi.org/", "doi.org/", "dx.doi.org/", "doi:")
 BASE_MIN_YEAR = 2010
+LAYOUTS = ("per_base_section", "per_era", "single")
+DELTA_SECTION = "delta"
 
 # Fields whose change must re-emit an artifact (title/abstract → re-encode +
 # re-index; year/type/is_oa/doi → meta + tantivy fast fields). Citation counts
@@ -70,8 +72,21 @@ class DocRecord:
         # so delta vectors live in the same score space as the 150M base.
         return f"{self.title or ''} {self.abstract or ''}".strip()
 
-    def section(self) -> str:
-        return f"{classify_doc(self.title, self.abstract)}__{era_of(self.year)}"
+    def section(self, layout: str = "per_base_section") -> str:
+        """Section this record is written to in a delta generation.
+
+        `layout` (09 lever L2, a profile dial): `per_base_section` (default,
+        `<base>__<era>` as the served base), `per_era` (`delta__<era>`, keeps
+        the retriever's era-suffix skip) or `single` (`delta`, never
+        era-skipped). The ledger keeps the default name; only the generation
+        build passes a layout."""
+        if layout == "per_base_section":
+            return f"{classify_doc(self.title, self.abstract)}__{era_of(self.year)}"
+        if layout == "per_era":
+            return f"{DELTA_SECTION}__{era_of(self.year)}"
+        if layout == "single":
+            return DELTA_SECTION
+        raise ValueError(f"unknown layout {layout!r}; expected one of {LAYOUTS}")
 
     def builder_doc(self) -> dict:
         """The dict `SectionBuilder.add` expects. `sparse_field` is deliberately

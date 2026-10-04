@@ -59,6 +59,28 @@ class BufferWriter:
         for wid in ids:
             self.writer.delete_documents_by_term("id", wid)
 
+    def ids(self) -> set[str]:
+        """Every doc id in the committed buffer index (bounded by the buffer
+        size: gen 0 plus the last frozen generation)."""
+        self.index.reload()
+        s = self.index.searcher()
+        if not s.num_docs:
+            return set()
+        hits = s.search(self._tantivy.Query.all_query(), s.num_docs).hits
+        return {s.doc(a)["id"][0] for _, a in hits}
+
+    def retain_only(self, keep: set[str]) -> int:
+        """O2 BM25F residual: delete every buffered doc not in `keep` and
+        commit. Called after a freeze with keep = buffer view (gen 0 +
+        building) + the just-frozen generation, so the frozen docs stay
+        searchable until serving reloads, and older frozen generations are
+        garbage-collected (serving drops buffer hits outside its buffer view,
+        `DeltaLayer.keep_hit`)."""
+        gone = sorted(self.ids() - keep)
+        self.delete(gone)
+        self.commit()
+        return len(gone)
+
     def commit(self) -> int:
         stamp = self.writer.commit()
         self.writer.wait_merging_threads()

@@ -32,6 +32,27 @@ ONNX_CACHE_DIR = _REPO_ROOT / "models" / "splade_onnx_fp16"
 TRT_ENGINE_CACHE = _REPO_ROOT / "models" / "trt_engine_cache"
 
 
+_TORCH_DTYPE_TAGS = {"float16": "fp16", "float32": "fp32", "bfloat16": "bf16", "float64": "fp64"}
+_ORT_PROVIDER_TAGS = {"TensorrtExecutionProvider": "trt", "CUDAExecutionProvider": "cuda",
+                      "CPUExecutionProvider": "cpu"}
+
+
+def torch_runtime_label(device: str, dtype) -> str:
+    """Label of what an eager PyTorch encoder actually runs: parameter dtype
+    plus device type, e.g. `pytorch_fp32_cpu`, `pytorch_fp16_cuda`."""
+    name = str(dtype).rsplit(".", 1)[-1]
+    return f"pytorch_{_TORCH_DTYPE_TAGS.get(name, name)}_{str(device).split(':', 1)[0]}"
+
+
+def ort_runtime_label(providers: list[str]) -> str:
+    """Label of what an ORT IO-binding encoder actually runs: the first active
+    provider of the session (the fp16 ONNX graph runs on it), e.g.
+    `onnxruntime_cuda_iob_fp16` when TensorRT failed to load."""
+    first = providers[0] if providers else "none"
+    tag = _ORT_PROVIDER_TAGS.get(first, first.replace("ExecutionProvider", "").lower() or "none")
+    return f"onnxruntime_{tag}_iob_fp16"
+
+
 def _ensure_onnx_export(model_name: str) -> Path:
     """Export the SPLADE model to ONNX (FP16) on first use; cache afterwards."""
     onnx_path = ONNX_CACHE_DIR / "model.onnx"
@@ -114,6 +135,7 @@ class SpladeDocEncoder:
             self.model = self.model.half()
             torch.set_float32_matmul_precision("high")
         self.model.to(self.device).eval()
+        self.runtime_backend = torch_runtime_label(self.device, next(self.model.parameters()).dtype)
         self.max_length = max_length
         self.batch_size = batch_size
         self.vocab = self.tokenizer.get_vocab()
@@ -219,7 +241,9 @@ class SpladeDocEncoderTRT(SpladeDocEncoder):
         )
         self._input_names = [i.name for i in self.session.get_inputs()]
         self._logits_name = self.session.get_outputs()[0].name
-        logger.info("ORT active providers: %s", self.session.get_providers())
+        self._set_runtime_label()
+        logger.info("ORT active providers: %s (runtime_backend %s)", self.session.get_providers(),
+                    self.runtime_backend)
 
         self._in_input_ids = torch.zeros(batch_size, max_length, dtype=torch.int64, device="cuda")
         self._in_attn_mask = torch.zeros(batch_size, max_length, dtype=torch.int64, device="cuda")
@@ -245,6 +269,9 @@ class SpladeDocEncoderTRT(SpladeDocEncoder):
             buffer_ptr=self._out_logits.data_ptr(),
         )
         logger.info("TRT engine cache: %s (1st batch builds ~30-60s)", TRT_ENGINE_CACHE)
+
+    def _set_runtime_label(self) -> None:
+        self.runtime_backend = ort_runtime_label(list(self.session.get_providers()))
 
     def encode_batch(self, texts: list[str]) -> list[dict[str, float]]:
         import torch

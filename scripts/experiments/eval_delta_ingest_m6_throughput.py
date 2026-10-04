@@ -288,6 +288,7 @@ def cmd_encode(args) -> dict:
         owner = getattr(enc_fn, "__self__", None)
         out["encoder_class"] = type(owner).__name__ if owner is not None else None
         out["encoder_backend"] = getattr(owner, "backend", None)
+        out["encoder_runtime_backend"] = getattr(owner, "runtime_backend", None)
         out["encoder_device"] = getattr(owner, "device", None)
         sess = getattr(owner, "session", None)
         out["ort_providers_in_use"] = sess.get_providers() if sess is not None else None

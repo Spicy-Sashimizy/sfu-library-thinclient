@@ -679,7 +679,8 @@ class AbstractStore:
                     f"Run build_ordinal_locator before deleting abstracts.sqlite.")
             return
 
-        self._db = sqlite3.connect(str(self.path), check_same_thread=False)
+        self._db = sqlite3.connect(Path(self.path).resolve().as_uri() + "?mode=ro", uri=True,
+                                   check_same_thread=False)
         tables = {r[0] for r in self._db.execute(
             "SELECT name FROM sqlite_master WHERE type='table'")}
         self._v3 = "docs" in tables or "blocks" in tables

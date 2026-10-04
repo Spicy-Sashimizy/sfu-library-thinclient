@@ -179,6 +179,23 @@ delta:A never starts) and base:A is stopped at its next flush
 (m3/fallback_2305.sh): Part A = base-only, delta NOT RUN, and the median
 bar is NOT RUN.
 
+ADDITION 2026-10-01 (agent EVAL, flags only; every default keeps the
+2026-09-30 behaviour; statistics, sample and bars unchanged): `child
+--a-start K` skips Part A sample rows i < K (rows keep their absolute index
+i), so titles 351-600 can be measured as a continuation of the 2026-09-30
+rows (prefix 0-349). `drive --a-start K` passes it through; `drive
+--runs-dir D` writes the per-arm files under D instead of WORK/runs;
+`drive --commit C` snapshots src at C instead of HEAD (the continuation and
+the gate-off noise control re-use the 2026-09-30 measured src).
+
+ADDITION 2026-10-01 (agent BUILD, 09 P2, flags only; defaults keep the
+2026-09-30 behaviour; statistics, sample and bars unchanged): `--ready PATH`
+on child/drive/summarize points at another fixture's READY.json (the 09 L2
+re-laid-out corpus (a) of scripts/experiments/delta_ingest_m4f_p2_fixture.py;
+same ids, same title sample, root repointed); drive passes it to every
+child. `summarize --runs-dir D --out F --date YYYY-MM-DD` reads the per-arm
+files from D and writes F instead of the 2026-09-30 results file.
+
 Run:
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z
   .venv/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py summarize
@@ -513,6 +530,8 @@ def child(args) -> int:
     sample = ready["sample"][:args.n_a]
     if "A" in args.parts:
         for i, (did, title) in enumerate(sample):
+            if i < args.a_start:
+                continue
             if time.time() > deadline:
                 rec["part_a_stopped_at_deadline"] = i
                 break
@@ -593,12 +612,12 @@ def scan_log(path: Path) -> dict:
 
 def drive(args) -> int:
     ready = load_ready()
-    commit = git_commit()
+    commit = args.commit or git_commit()
     snap = snapshot_src(commit)
     local_harness = snap / "scripts" / "experiments" / Path(__file__).name
     local_harness.parent.mkdir(parents=True, exist_ok=True)
     local_harness.write_bytes(Path(__file__).read_bytes())
-    runs = WORK / "runs"
+    runs = Path(args.runs_dir) if args.runs_dir else WORK / "runs"
     runs.mkdir(parents=True, exist_ok=True)
     deadline = parse_utc(args.deadline)
     drive_rec = {"commit": commit, "snapshot": str(snap), "start": utc(), "arms": {},
@@ -622,7 +641,9 @@ def drive(args) -> int:
         cmd = ["nice", "-n", "10", "taskset", "-c", cpus, sys.executable, str(local_harness),
                "child", "--arm", arm.split(":")[0], "--src", str(snap / "src"),
                "--out", str(runs / f"{arm.replace(':', '_')}.json"),
-               "--deadline", args.deadline, "--n-a", str(args.n_a), "--parts", part]
+               "--deadline", args.deadline, "--n-a", str(args.n_a), "--parts", part, "--ready", str(READY)]
+        if args.a_start:
+            cmd += ["--a-start", str(args.a_start)]
         t0 = time.time()
         attempts = []
         for attempt in range(args.retries + 1):
@@ -708,7 +729,7 @@ def top10_displaced(base_lists, delta_lists, updated) -> tuple[int, list]:
 def summarize(args) -> int:
     ready = load_ready()
     updated = set(ready["updated_ids"])
-    runs = WORK / "runs"
+    runs = Path(args.runs_dir) if getattr(args, "runs_dir", "") else WORK / "runs"
     drvs = [json.loads(p.read_text()) for p in sorted(runs.glob("drive*.json"))]
     drv = {"commit": drvs[-1]["commit"], "snapshot": drvs[-1]["snapshot"], "arms": {}, "launches": drvs}
     for x in drvs:
@@ -723,7 +744,7 @@ def summarize(args) -> int:
     procs = {n: ld(n) for n in ("base_B", "delta_B", "base_A", "delta_A")}
     degraded = {n: r["health"]["ok"] is False for n, r in procs.items()}
     bB, dB, bA, dA = procs["base_B"], procs["delta_B"], procs["base_A"], procs["delta_A"]
-    res = {"item": "M3 BM25F score drift (T1)", "date": "2026-09-30",
+    res = {"item": "M3 BM25F score drift (T1)", "date": getattr(args, "date", "") or "2026-09-30",
            "plan_row": {"metric": "for corpus (a): rank of each updated doc for its title-as-query with the update "
                                   "served from a delta section vs from the base; and the number of NON-updated base "
                                   "docs displaced out of the fused top-10 across the 120 topics",
@@ -857,7 +878,7 @@ def summarize(args) -> int:
                              "FAIL" if "FAIL" in (part_a["verdict"] + part_b["verdict"]) else
                              f"{part_a['verdict']} / {part_b['verdict']}")}
     res["drive"] = drv
-    OUT.write_text(json.dumps(res, indent=1, default=str) + "\n")
+    (Path(args.out) if getattr(args, "out", "") else OUT).write_text(json.dumps(res, indent=1, default=str) + "\n")
     print(json.dumps({k: res[k] for k in ("verdict",)}, indent=1))
     print(json.dumps({k: v for k, v in part_a.items() if k != "worst_20"}, indent=1, default=str))
     print(json.dumps({k: v for k, v in part_b.items() if k != "displaced_examples"}, indent=1, default=str))
@@ -874,6 +895,7 @@ def main() -> int:
     c.add_argument("--deadline", required=True)
     c.add_argument("--n-a", type=int, default=N_A)
     c.add_argument("--parts", default="BA")
+    c.add_argument("--a-start", type=int, default=0)
     dv = sub.add_parser("drive")
     dv.add_argument("--deadline", default="2026-09-30T23:25:00Z")
     dv.add_argument("--schedule", default="base:B,delta:B,base:A,delta:A")
@@ -881,8 +903,19 @@ def main() -> int:
     dv.add_argument("--min-mem-gb", type=float, default=18.0)
     dv.add_argument("--retries", type=int, default=6)
     dv.add_argument("--n-a", type=int, default=N_A)
-    sub.add_parser("summarize")
+    dv.add_argument("--a-start", type=int, default=0)
+    dv.add_argument("--runs-dir", default="")
+    dv.add_argument("--commit", default="")
+    sm = sub.add_parser("summarize")
+    sm.add_argument("--runs-dir", default="")
+    sm.add_argument("--out", default="")
+    sm.add_argument("--date", default="")
+    for sp in (c, dv, sm):
+        sp.add_argument("--ready", default="")
     args = ap.parse_args()
+    if args.ready:
+        global READY
+        READY = Path(args.ready)
     return {"child": child, "drive": drive, "summarize": summarize}[args.cmd](args)
 
 

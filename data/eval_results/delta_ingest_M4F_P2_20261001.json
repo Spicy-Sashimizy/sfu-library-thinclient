@@ -1,0 +1,126 @@
+{
+ "item": "09 P2 \u2014 quality re-check on the L2 layout `single` (M3 bars + M2 overlap vs exact + mask leak)",
+ "date": "2026-10-01",
+ "layout": "single",
+ "bars": "09 \u00a76 P2: M3 median rank change 0 AND displaced base docs <= 5% of fused top-10 slots, N_A >= 600 titles; M2 overlap@10 vs exact >= 0.99; mask leak 0",
+ "run": "unattended script /home/vscode/work/delta_ingest/BUILD/p2_run.sh single (written by agent BUILD, which was stopped before the run); shared lock, timings invalid; verdict read by the coordinator 2026-10-01 21:20Z",
+ "m3": {
+  "harness": "scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py",
+  "code_commit": "a18d82957b45147c54b794182b31037873a443f9",
+  "fixture": "/home/vscode/work/delta_ingest/BUILD/corpus_a_single/root",
+  "part_a": {
+   "n_compared": 600,
+   "partial": false,
+   "median_rank_change": 0,
+   "n_present_both": 587,
+   "share_same": 0.8978,
+   "share_worse": 0.0937,
+   "share_improved": 0.0085,
+   "mask_leak_own_doc_base_copy_postmask": 0,
+   "mask_leak_any_updated_base_copy_postmask": 0,
+   "verdict": "PASS"
+  },
+  "part_b": {
+   "n_topics": 120,
+   "slots": 1200,
+   "displaced_fused_top10": 1,
+   "displaced_share": 0.0008,
+   "fused_top10_idlist_identical": 118,
+   "final_top10_changed_topics": 2,
+   "displaced_final_top10": 0,
+   "verdict": "PASS"
+  },
+  "verdict": {
+   "median_rank_change_0": "PASS",
+   "displaced_le_5pct": "PASS",
+   "M3": "PASS"
+  },
+  "degraded": {
+   "base_B": false,
+   "delta_B": false,
+   "base_A": false,
+   "delta_A": false
+  }
+ },
+ "m2_exact": {
+  "e8": {
+   "sets": {
+    "topics120": {
+     "n": 120,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9975,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 96,
+     "identical_top10_set": 117,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "diverse100": {
+     "n": 100,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 1.0,
+     "overlap10_min": 1.0,
+     "identical_top10_ordered": 81,
+     "identical_top10_set": 100,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "titles1000": {
+     "n": 1000,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9968,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 819,
+     "identical_top10_set": 968,
+     "denominator_lt10": 0,
+     "pass": true
+    }
+   },
+   "verdict": "PASS"
+  },
+  "served": {
+   "sets": {
+    "topics120": {
+     "n": 120,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9975,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 96,
+     "identical_top10_set": 117,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "diverse100": {
+     "n": 100,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 1.0,
+     "overlap10_min": 1.0,
+     "identical_top10_ordered": 81,
+     "identical_top10_set": 100,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "titles1000": {
+     "n": 1000,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9968,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 819,
+     "identical_top10_set": 968,
+     "denominator_lt10": 0,
+     "pass": true
+    }
+   },
+   "verdict": "PASS"
+  }
+ },
+ "m2_delta_arm": {
+  "n": 600,
+  "captured": 600,
+  "base_copy_in_pre_filter_topk": 465,
+  "mask_leak_post_filter": 0,
+  "code_commit": "12e32dff"
+ },
+ "verdict": "PASS",
+ "adopted_layout": "single"
+}

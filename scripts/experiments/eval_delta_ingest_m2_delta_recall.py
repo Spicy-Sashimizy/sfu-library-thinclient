@@ -138,6 +138,15 @@ are resumable), and the DELTA arm then runs the same permuted order until
 23:15Z. The verdict is computed on the common completed prefix (as
 pre-registered for a deadline stop) and is PARTIAL if that prefix < 2,000.
 
+ADDITION 2026-10-01 (agent EVAL, flags only; defaults keep the 2026-09-30
+behaviour; metric, sample order, N=2,000 and bars unchanged): resume to the
+pre-registered N. `arm --tag T` names the run's health/status/drive/log files
+T while `--rows-tag` (default = arm) keeps appending to rows_<arm>.jsonl, whose
+completed ids are skipped (run_queries was resumable from the start);
+`arm --python P` launches the child with interpreter P (local venv mirror,
+O12); `record --result R --date D --extra-tags base_r2,delta_r2` writes a new
+dated results file and also records the resumed runs' health/status/drive.
+
 Run (all under nice -n 10 taskset -c 8-15):
   eval_delta_ingest_m2_delta_recall.py build-fixture
   eval_delta_ingest_m2_delta_recall.py probe
@@ -146,6 +155,12 @@ Run (all under nice -n 10 taskset -c 8-15):
   eval_delta_ingest_m2_delta_recall.py exact --params e8
   eval_delta_ingest_m2_delta_recall.py exact --params served
   eval_delta_ingest_m2_delta_recall.py record
+
+ADDITION 2026-10-01 (agent BUILD, 09 P2; defaults unchanged): env
+M2_FIXTURE_DIR / M2_WORK_DIR override the fixture dir (READY.json, sample.json,
+root/) and the work dir (rows, health, exact_*.json); children inherit them.
+Used to run `exact` and the delta arm on the 09 L2 re-laid-out corpus (a)
+(scripts/experiments/delta_ingest_m4f_p2_fixture.py).
 """
 from __future__ import annotations
 
@@ -162,9 +177,9 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-FIX = Path("/home/vscode/work/delta_ingest/corpus_a")
+FIX = Path(os.environ.get("M2_FIXTURE_DIR") or "/home/vscode/work/delta_ingest/corpus_a")
 ROOT = FIX / "root"
-WORK = Path("/home/vscode/work/delta_ingest/m2")
+WORK = Path(os.environ.get("M2_WORK_DIR") or "/home/vscode/work/delta_ingest/m2")
 ORDS = Path("/var/tmp/sfu_delta_C_20260929/ords")
 BASE_MANIFEST = Path("/home/vscode/work/inplace_update/m4/base_manifest.json")
 INDEX_ROOT = REPO / "data/thinclient_index"
@@ -664,7 +679,8 @@ def arm_child(args) -> int:
     ids = order[-50:] if args.probe else order[:args.n]
     deadline = ts(args.deadline) if args.deadline else None
     t0 = time.time()
-    st = run_queries(retriever, backend, ids, info["titles"], WORK / f"rows_{tag}.jsonl", args.arm, deadline)
+    st = run_queries(retriever, backend, ids, info["titles"], WORK / f"rows_{args.rows_tag or tag}.jsonl",
+                     args.arm, deadline)
     st.update({"wall_s": round(time.time() - t0, 1), "finished": utc(), "warnings_tail": cap.records[-30:],
                "warning_signatures": [w for w in cap.records if any(s in w for s in SIGNATURES)][:20]})
     (WORK / f"status_{tag}.json").write_text(json.dumps(st, indent=1, default=str))
@@ -676,10 +692,12 @@ def drive_arm(args) -> int:
     mem_ok()
     commit = args.commit or git_commit()
     snap = snapshot(commit)
-    tag = "probe" if args.probe else args.arm
+    tag = "probe" if args.probe else (args.tag or args.arm)
     log = WORK / f"log_{tag}.txt"
-    cmd = ["nice", "-n", "10", "taskset", "-c", "8-15", str(REPO / ".venv/bin/python3"), __file__,
+    cmd = ["nice", "-n", "10", "taskset", "-c", "8-15", args.python or str(REPO / ".venv/bin/python3"), __file__,
            "arm-child", "--arm", args.arm, "--src", str(snap / "src"), "--n", str(args.n), "--tag", tag]
+    if args.rows_tag:
+        cmd += ["--rows-tag", args.rows_tag]
     if args.probe:
         cmd.append("--probe")
     if args.deadline:
@@ -831,6 +849,7 @@ def summarise_arm(rows: list[dict], arm: str) -> dict:
 
 
 def record(args) -> int:
+    extra = tuple(x for x in (args.extra_tags or "").split(",") if x)
     fix = json.loads((FIX / "build_fixture.json").read_text())
     ready = json.loads((FIX / "READY.json").read_text()) if (FIX / "READY.json").exists() else None
     load = lambda p: [json.loads(x) for x in p.open()] if p.exists() else []  # noqa: E731
@@ -855,7 +874,7 @@ def record(args) -> int:
     v1 = None if ratio is None else ("PASS" if ratio >= 0.95 else "FAIL")
     leak = sd.get("mask_leak_base_shard_post_filter")
     out = {
-        "item": "delta-ingest M2: delta-shard recall on corpus (a)", "date": "2026-09-30",
+        "item": "delta-ingest M2: delta-shard recall on corpus (a)", "date": args.date,
         "harness": "scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
         "plan_row": "docs/delta_ingest/03_SPIKE_PLAN.md M2",
         "metric_verbatim": "for corpus (a): fraction of updated docs returned by the SPLADE leg from the delta shard "
@@ -884,11 +903,11 @@ def record(args) -> int:
                         sorted(((fix.get("flush") or {}).get("out") or {}).keys()),
                     "ingest_scan": (fix.get("ingest") or {}).get("scan"),
                     "flush_scan": (fix.get("flush") or {}).get("scan"), "smoke": fix.get("smoke")},
-        "health": {t: json.loads((WORK / f"health_{t}.json").read_text()) for t in ("base", "delta", "probe")
+        "health": {t: json.loads((WORK / f"health_{t}.json").read_text()) for t in ("base", "delta", "probe", *extra)
                    if (WORK / f"health_{t}.json").exists()},
-        "drives": {t: json.loads((WORK / f"drive_{t}.json").read_text()) for t in ("base", "delta", "probe")
+        "drives": {t: json.loads((WORK / f"drive_{t}.json").read_text()) for t in ("base", "delta", "probe", *extra)
                    if (WORK / f"drive_{t}.json").exists()},
-        "status": {t: json.loads((WORK / f"status_{t}.json").read_text()) for t in ("base", "delta", "probe")
+        "status": {t: json.loads((WORK / f"status_{t}.json").read_text()) for t in ("base", "delta", "probe", *extra)
                    if (WORK / f"status_{t}.json").exists()},
         "timings_valid": False,
         "timings_note": "host shared with the in-place spike's B7 (cores 0-7, latency lock) and S0-2 (~19 GB), and "
@@ -896,9 +915,10 @@ def record(args) -> int:
         "notes": args.note or [],
         "recorded_utc": utc(), "record_commit": git_commit(),
     }
-    RESULT.write_text(json.dumps(out, indent=1, default=str))
+    result = Path(args.result) if args.result else RESULT
+    result.write_text(json.dumps(out, indent=1, default=str))
     print(json.dumps(out["verdicts"], indent=1))
-    print(RESULT)
+    print(result)
     return 0
 
 
@@ -914,6 +934,9 @@ def main(argv=None) -> int:
         a.add_argument("--n", type=int, default=QUERY_N_MAX)
         a.add_argument("--deadline", default="2026-09-30T23:15:00Z")
         a.add_argument("--commit", default=None)
+        a.add_argument("--tag", default=None)
+        a.add_argument("--rows-tag", default=None)
+        a.add_argument("--python", default=None)
     c = sub.add_parser("arm-child")
     c.add_argument("--arm", choices=["base", "delta"], required=True)
     c.add_argument("--src", required=True)
@@ -921,6 +944,7 @@ def main(argv=None) -> int:
     c.add_argument("--tag", default=None)
     c.add_argument("--probe", action="store_true")
     c.add_argument("--deadline", default=None)
+    c.add_argument("--rows-tag", default=None)
     e = sub.add_parser("exact")
     e.add_argument("--params", choices=["e8", "served"], required=True)
     e.add_argument("--commit", default=None)
@@ -929,6 +953,9 @@ def main(argv=None) -> int:
     ec.add_argument("--src", required=True)
     r = sub.add_parser("record")
     r.add_argument("--note", action="append")
+    r.add_argument("--result", default=None)
+    r.add_argument("--date", default="2026-09-30")
+    r.add_argument("--extra-tags", default="")
     args = ap.parse_args(argv)
     if args.cmd == "build-fixture":
         return build_fixture(args)

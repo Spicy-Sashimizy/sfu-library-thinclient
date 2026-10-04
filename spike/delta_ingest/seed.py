@@ -18,6 +18,13 @@ Sources (read-only, never written):
             sections must be unpacked to a local root first. Docs whose
             section has no sidecar are skipped and counted, never guessed.
 
+is_oa (issue O17 option (a)): meta's `is_oa` was never populated. When an
+`OAOverlay` is passed (or `SFU_OA_BITMAP` names one and `oa_overlay` is left
+None), each base doc's `is_oa` is the bitmap state where it is known, so the
+seeded hash matches a snapshot record whose only difference from meta was the
+never-populated flag (no delta copy for that). Unknown docs keep meta's value
+(the pre-bitmap behaviour). `oa_overlay=False` disables the lookup.
+
 Modes: `seed_ids` (an explicit id list) and `seed_range` (meta id range
 [lo, hi), resumable through the ledger `sources` cursor, committed together
 with each batch's hashes). Memory is bounded by `batch` rows plus the
@@ -73,8 +80,13 @@ def _proc_io() -> dict:
 class BaseSeeder:
     def __init__(self, index_root: str | Path, ledger: IngestLedger, *,
                  sidecar_roots: list[str | Path] | None = None,
-                 meta_path: str | Path | None = None, batch: int = 5000):
+                 meta_path: str | Path | None = None, batch: int = 5000,
+                 oa_overlay=None):
         self.index_root = Path(index_root)
+        if oa_overlay is None:
+            from lib.thinclient.oa_overlay import load_if_enabled
+            oa_overlay = load_if_enabled(self.index_root, None)
+        self.oa = oa_overlay or None
         self.ledger = ledger
         self.meta_path = Path(meta_path) if meta_path else resolve_meta(self.index_root)
         self.db = sqlite3.connect(f"file:{self.meta_path}?mode=ro", uri=True, timeout=60)
@@ -115,12 +127,17 @@ class BaseSeeder:
             t = time.perf_counter()
             abstracts = store.fetch(ids)
             self.timers["abstract_fetch_s"] += time.perf_counter() - t
-            for wid, r in zip(ids, sec_rows):
+            oa_states = self.oa.states(ids) if self.oa is not None else [None] * len(ids)
+            for wid, r, st in zip(ids, sec_rows, oa_states):
                 ab = abstracts.get(wid)
                 if ab is None:
                     self.stats["skipped_abstract_missing"] += 1
                     continue
-                out.append(base_record(wid, r[1], r[2], r[3], r[4], r[5], ab))
+                if st is not None:
+                    self.stats["is_oa_from_bitmap"] += 1
+                elif self.oa is not None:
+                    self.stats["is_oa_bitmap_unknown"] += 1
+                out.append(base_record(wid, r[1], r[2], r[3], r[4], r[5] if st is None else st, ab))
         return out
 
     def _write(self, recs: list[DocRecord], state: tuple[str, dict] | None) -> None:

@@ -14,6 +14,15 @@ switch (`--profile`) plus overrides, not a different code path:
   seismic_threads SEISMIC build threads; the c1a/dotvbyte converters are serial
   parts_per_run   snapshot parts (≤400k records each) per invocation
   nice            os.nice() increment for the ingest process
+  layout          delta generation section layout (09 lever L2):
+                  per_base_section (default, one section + abstract store per
+                  <base>__<era>), per_era (delta__recent / delta__archive) or
+                  single (one `delta` section per generation)
+  compact_policy  auto-compaction plan (09 lever L1): tiered (default, merge
+                  the smallest similar-size run above max_live_gens) or
+                  compact_all (merge every live generation into one as soon
+                  as more than max_live_gens are live)
+  max_live_gens   G_max, the live-generation cap the plan enforces (default 8)
 """
 from __future__ import annotations
 
@@ -36,6 +45,9 @@ class IngestProfile:
     seismic_threads: int = 8
     parts_per_run: int | None = None
     nice: int = 0
+    layout: str = "per_base_section"
+    compact_policy: str = "tiered"
+    max_live_gens: int = 8
 
     def with_overrides(self, **kw) -> "IngestProfile":
         return replace(self, **{k: v for k, v in kw.items() if v is not None})

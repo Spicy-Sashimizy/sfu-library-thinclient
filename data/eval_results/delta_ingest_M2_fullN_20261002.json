@@ -1,0 +1,1159 @@
+{
+ "item": "delta-ingest M2: delta-shard recall on corpus (a)",
+ "date": "2026-10-02",
+ "harness": "scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+ "plan_row": "docs/delta_ingest/03_SPIKE_PLAN.md M2",
+ "metric_verbatim": "for corpus (a): fraction of updated docs returned by the SPLADE leg from the delta shard for their own title-as-query, vs the same docs served from the base shard before the update",
+ "bar_verbatim": ">= 0.95 of the base's own-recall; per-shard overlap@10 vs an exact dot product >= 0.99 (the E8 bar)",
+ "verdicts": {
+  "bar1_own_recall_ratio@10": {
+   "value": 1.15864,
+   "bar": 0.95,
+   "verdict": "PASS"
+  },
+  "bar2_exact_overlap@10_e8": {
+   "verdict": "PASS",
+   "per_set": {
+    "topics120": 0.9975,
+    "diverse100": 1.0,
+    "titles1000": 0.9968
+   }
+  },
+  "mask_leak": {
+   "value": 0,
+   "must_be": 0,
+   "verdict": "PASS"
+  }
+ },
+ "own_recall": {
+  "n_target": 2000,
+  "n_common": 2000,
+  "base": {
+   "n": 2000,
+   "empty_results": 0,
+   "capture_missing": 0,
+   "any_copy_hits@10": 1412,
+   "recall@10": 0.706,
+   "any_copy_hits@50": 1490,
+   "recall@50": 0.745,
+   "held_by_base_shard": 1542
+  },
+  "delta": {
+   "n": 2000,
+   "empty_results": 0,
+   "capture_missing": 0,
+   "any_copy_hits@10": 1636,
+   "delta_copy_hits@10": 1636,
+   "recall@10": 0.818,
+   "any_copy_hits@50": 1756,
+   "delta_copy_hits@50": 1756,
+   "recall@50": 0.878,
+   "mask_leak_base_shard_post_filter": 0,
+   "base_copy_seen_pre_filter": 1542,
+   "delta_copy_in_delta_shard_topk'": 1935
+  },
+  "ratio@10": 1.15864,
+  "ratio@50": 1.17852,
+  "delta_any_copy_hits@10": 1636,
+  "transitions": {
+   "base_hit_delta_miss@10": 4,
+   "base_miss_delta_hit@10": 228
+  },
+  "rows_files": [
+   "/home/vscode/work/delta_ingest/m2/rows_base.jsonl",
+   "/home/vscode/work/delta_ingest/m2/rows_delta.jsonl"
+  ]
+ },
+ "exact_overlap": {
+  "e8": {
+   "params": "e8",
+   "utc": "2026-09-30T18:23:10Z",
+   "mmap_dir": "/home/vscode/work/delta_ingest/corpus_a/root/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+   "jsonl": "/home/vscode/work/delta_ingest/corpus_a/root/g0001/seismic/delta_g0001.jsonl",
+   "forward_format": "dotvbyte_fixedu8_v2",
+   "shard_len": 50000,
+   "jsonl_docs": 50000,
+   "vocab": 25099,
+   "nnz": 4238135,
+   "search": {
+    "engine": "MmapSeismicIndex",
+    "k": 200,
+    "k_prime": 200,
+    "query_cut": "len(terms)",
+    "heap_factor": 0.8,
+    "query_terms": 64,
+    "SFU_SEISMIC_PREFLOOR": "2"
+   },
+   "value_scale_note": "jsonl = float SPLADE weights (DocRecord.sparse_field); served shard = dotvbyte v2 --value-scale perdoc (generation.build_seismic_shard)",
+   "sets": {
+    "topics120": {
+     "n": 120,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9975,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 96,
+     "identical_top10_set": 117,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "diverse100": {
+     "n": 100,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 1.0,
+     "overlap10_min": 1.0,
+     "identical_top10_ordered": 81,
+     "identical_top10_set": 100,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "titles1000": {
+     "n": 1000,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9968,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 819,
+     "identical_top10_set": 968,
+     "denominator_lt10": 0,
+     "pass": true
+    }
+   },
+   "verdict": "PASS",
+   "finished": "2026-09-30T18:23:41Z"
+  },
+  "served": {
+   "params": "served",
+   "utc": "2026-09-30T18:26:42Z",
+   "mmap_dir": "/home/vscode/work/delta_ingest/corpus_a/root/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+   "jsonl": "/home/vscode/work/delta_ingest/corpus_a/root/g0001/seismic/delta_g0001.jsonl",
+   "forward_format": "dotvbyte_fixedu8_v2",
+   "shard_len": 50000,
+   "jsonl_docs": 50000,
+   "vocab": 25099,
+   "nnz": 4238135,
+   "search": {
+    "engine": "MmapSeismicIndex",
+    "k": 100,
+    "k_prime": 100,
+    "query_cut": "len(terms)",
+    "heap_factor": 0.8,
+    "query_terms": 64,
+    "SFU_SEISMIC_PREFLOOR": null
+   },
+   "value_scale_note": "jsonl = float SPLADE weights (DocRecord.sparse_field); served shard = dotvbyte v2 --value-scale perdoc (generation.build_seismic_shard)",
+   "sets": {
+    "topics120": {
+     "n": 120,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9975,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 96,
+     "identical_top10_set": 117,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "diverse100": {
+     "n": 100,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 1.0,
+     "overlap10_min": 1.0,
+     "identical_top10_ordered": 81,
+     "identical_top10_set": 100,
+     "denominator_lt10": 0,
+     "pass": true
+    },
+    "titles1000": {
+     "n": 1000,
+     "empty_or_no_positive": 0,
+     "overlap10_mean": 0.9968,
+     "overlap10_min": 0.9,
+     "identical_top10_ordered": 819,
+     "identical_top10_set": 968,
+     "denominator_lt10": 0,
+     "pass": true
+    }
+   },
+   "verdict": "PASS",
+   "finished": "2026-09-30T18:27:16Z"
+  }
+ },
+ "probe": {
+  "n_probe": 50,
+  "p50_s": 4.5678,
+  "avail_s": 13836,
+  "N": 2000,
+  "utc": "2026-09-30T18:19:23Z",
+  "timings_valid": false
+ },
+ "fixture": {
+  "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+  "ready": {
+   "published_utc": "2026-09-30T18:13:04Z",
+   "fixture_commit": "885c29e741c834ca53c98143b132056836b9820b",
+   "doc_ids_sha256": "92230a25297a87e7b838a1ea6049c75b08dcdec3ee0826f55dc3561db22e7d8d",
+   "population": {
+    "section": "social_sciences__recent",
+    "size": 23398073,
+    "walked": 50203,
+    "rejections": {
+     "no_meta_row": 0,
+     "empty_title": 203,
+     "no_abstract": 0,
+     "section_mismatch": 0
+    }
+   },
+   "appended_sentence": "This record was updated after publication.",
+   "verify": {
+    "gens": [
+     [
+      1,
+      50000,
+      50000,
+      "served"
+     ]
+    ],
+    "g0001_50000": true,
+    "livedocs": {
+     "format": 1,
+     "path": "livedocs/base-g0001-1790791831.liv",
+     "ordinal_dir": "/var/tmp/sfu_delta_C_20260929/ords",
+     "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+     "deleted_in_base": 0,
+     "superseded_in_base": 50000,
+     "deleted_without_ordinal": 0,
+     "nbits": 150413098,
+     "popcount": 50000,
+     "crc32": 2245542445,
+     "bytes": 18801718
+    },
+    "liv_header": {
+     "version": 1,
+     "nbits": 150413098,
+     "popcount": 50000,
+     "crc32": 2245542445,
+     "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3"
+    },
+    "liv_popcount_50000": true,
+    "superseded_json": 50000,
+    "deleted_json": 0,
+    "shards": [
+     "global_shard0of8.dotvbyte.e5.v2.mmap",
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     "delta_g0001"
+    ],
+    "shards_8_plus_1": true,
+    "buffer_live": 0,
+    "buffer_empty": true,
+    "ledger_in_base_live": 50000,
+    "ok": true
+   }
+  },
+  "build": {
+   "commit": "885c29e741c834ca53c98143b132056836b9820b",
+   "started": "2026-09-30T18:03:36Z",
+   "finished": "2026-09-30T18:13:04Z",
+   "sample": {
+    "utc": "2026-09-30T18:04:46Z",
+    "seed": "sfu-delta-m2-2026-09-30",
+    "population_section": "social_sciences__recent",
+    "population_size": 23398073,
+    "walked": 50203,
+    "rejections": {
+     "no_meta_row": 0,
+     "empty_title": 203,
+     "no_abstract": 0,
+     "section_mismatch": 0
+    },
+    "kept": 50000,
+    "sample_seconds": 67.1,
+    "appended_sentence": "This record was updated after publication.",
+    "ids_sha256": "92230a25297a87e7b838a1ea6049c75b08dcdec3ee0826f55dc3561db22e7d8d",
+    "query_order_seed": "sfu-delta-m2-2026-09-30:queries"
+   },
+   "verify": {
+    "gens": [
+     [
+      1,
+      50000,
+      50000,
+      "served"
+     ]
+    ],
+    "g0001_50000": true,
+    "livedocs": {
+     "format": 1,
+     "path": "livedocs/base-g0001-1790791831.liv",
+     "ordinal_dir": "/var/tmp/sfu_delta_C_20260929/ords",
+     "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3",
+     "deleted_in_base": 0,
+     "superseded_in_base": 50000,
+     "deleted_without_ordinal": 0,
+     "nbits": 150413098,
+     "popcount": 50000,
+     "crc32": 2245542445,
+     "bytes": 18801718
+    },
+    "liv_header": {
+     "version": 1,
+     "nbits": 150413098,
+     "popcount": 50000,
+     "crc32": 2245542445,
+     "ordinal_space_id": "7012d0ed-52a2-4899-a8ec-f188e53b8cf3"
+    },
+    "liv_popcount_50000": true,
+    "superseded_json": 50000,
+    "deleted_json": 0,
+    "shards": [
+     "global_shard0of8.dotvbyte.e5.v2.mmap",
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     "delta_g0001"
+    ],
+    "shards_8_plus_1": true,
+    "buffer_live": 0,
+    "buffer_empty": true,
+    "ledger_in_base_live": 50000,
+    "ok": true
+   }
+  },
+  "ingest_out": {
+   "seen": 50000,
+   "new": 0,
+   "updated": 50000,
+   "unchanged": 0,
+   "deleted": 0,
+   "encoded": 50000,
+   "reused": 0,
+   "batches": 25,
+   "started": 1790791608.9583228,
+   "seconds": 136.8
+  },
+  "flush_out_keys": [
+   "base_shard_manifest",
+   "buffer",
+   "format",
+   "frozen_docs",
+   "frozen_generation",
+   "generations",
+   "livedocs",
+   "mask",
+   "published",
+   "shard_manifest",
+   "stamp"
+  ],
+  "ingest_scan": {
+   "path": "/home/vscode/work/delta_ingest/corpus_a/ingest.log",
+   "bytes": 2434,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "flush_scan": {
+   "path": "/home/vscode/work/delta_ingest/corpus_a/flush.log",
+   "bytes": 1052118,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "smoke": {
+   "rc": 0,
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/corpus_a/smoke.log",
+    "bytes": 1572,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   },
+   "result": {
+    "utc": "2026-09-30T18:12:28Z",
+    "health": {
+     "ok": true,
+     "problems": [],
+     "arm": "delta",
+     "env": {
+      "SFU_SEISMIC_STAGE_DIR": "",
+      "SFU_META_STAGE_DIR": "",
+      "SFU_THINCLIENT_ORDINALS": "",
+      "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+      "SFU_SEISMIC_SHARD_MANIFEST": "",
+      "SFU_SEARCH_SPECULATIVE_RERANK": "",
+      "SFU_SEISMIC_K_PRIME": "",
+      "SFU_SEISMIC_QUERY_CUT": "",
+      "SFU_SEISMIC_PREFLOOR": "",
+      "SFU_SEISMIC_FEDERATION": "parallel",
+      "SFU_SPLADE_BACKEND": "seismic"
+     },
+     "load_s": 1.2,
+     "splade_terms": 43,
+     "cross_encoder": "CrossEncoder",
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+     "delta_info": {
+      "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+      "stamp": "g0001-1790791831",
+      "generations": [
+       {
+        "gen": 1,
+        "docs": 50000,
+        "seismic": "served"
+       }
+      ],
+      "buffer_docs": 0,
+      "buffer_vectors": 0,
+      "deleted": 0,
+      "superseded": 50000,
+      "livedocs": {
+       "path": "/home/vscode/work/delta_ingest/corpus_a/root/livedocs/base-g0001-1790791831.liv",
+       "popcount": 50000,
+       "nbits": 150413098,
+       "per_shard": true
+      },
+      "shard_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json"
+     },
+     "shard_origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      1
+     ]
+    },
+    "search_rrf": {
+     "query": "\"Reay, Diane\",\" Miseducation: Inequality, education and the working classes. Bristol: Policy Press, 2017\"",
+     "target": "W2890287739",
+     "n": 50,
+     "top5": [
+      "W2890287739",
+      "W7017529103",
+      "W3007011187",
+      "W2912586968",
+      "W2911669631"
+     ],
+     "target_rank": 0,
+     "wall_s": 34.17,
+     "timings_valid": false
+    },
+    "warnings": []
+   }
+  }
+ },
+ "health": {
+  "base": {
+   "ok": true,
+   "problems": [],
+   "arm": "base",
+   "env": {
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_THINCLIENT_ORDINALS": "",
+    "SFU_DELTA_ROOT": "",
+    "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+    "SFU_SEARCH_SPECULATIVE_RERANK": "",
+    "SFU_SEISMIC_K_PRIME": "",
+    "SFU_SEISMIC_QUERY_CUT": "",
+    "SFU_SEISMIC_PREFLOOR": "",
+    "SFU_SEISMIC_FEDERATION": "parallel",
+    "SFU_SPLADE_BACKEND": "seismic"
+   },
+   "load_s": 1.2,
+   "splade_terms": 43,
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 8,
+   "manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json"
+  },
+  "delta": {
+   "ok": true,
+   "problems": [],
+   "arm": "delta",
+   "env": {
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_THINCLIENT_ORDINALS": "",
+    "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "SFU_SEISMIC_SHARD_MANIFEST": "",
+    "SFU_SEARCH_SPECULATIVE_RERANK": "",
+    "SFU_SEISMIC_K_PRIME": "",
+    "SFU_SEISMIC_QUERY_CUT": "",
+    "SFU_SEISMIC_PREFLOOR": "",
+    "SFU_SEISMIC_FEDERATION": "parallel",
+    "SFU_SPLADE_BACKEND": "seismic"
+   },
+   "load_s": 2.7,
+   "splade_terms": 43,
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 9,
+   "manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+   "delta_info": {
+    "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "stamp": "g0001-1790791831",
+    "generations": [
+     {
+      "gen": 1,
+      "docs": 50000,
+      "seismic": "served"
+     }
+    ],
+    "buffer_docs": 0,
+    "buffer_vectors": 0,
+    "deleted": 0,
+    "superseded": 50000,
+    "livedocs": {
+     "path": "/home/vscode/work/delta_ingest/corpus_a/root/livedocs/base-g0001-1790791831.liv",
+     "popcount": 50000,
+     "nbits": 150413098,
+     "per_shard": true
+    },
+    "shard_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json"
+   },
+   "shard_origins": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    1
+   ]
+  },
+  "probe": {
+   "ok": true,
+   "problems": [],
+   "arm": "delta",
+   "env": {
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_THINCLIENT_ORDINALS": "",
+    "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "SFU_SEISMIC_SHARD_MANIFEST": "",
+    "SFU_SEARCH_SPECULATIVE_RERANK": "",
+    "SFU_SEISMIC_K_PRIME": "",
+    "SFU_SEISMIC_QUERY_CUT": "",
+    "SFU_SEISMIC_PREFLOOR": "",
+    "SFU_SEISMIC_FEDERATION": "parallel",
+    "SFU_SPLADE_BACKEND": "seismic"
+   },
+   "load_s": 1.3,
+   "splade_terms": 43,
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 9,
+   "manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+   "delta_info": {
+    "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "stamp": "g0001-1790791831",
+    "generations": [
+     {
+      "gen": 1,
+      "docs": 50000,
+      "seismic": "served"
+     }
+    ],
+    "buffer_docs": 0,
+    "buffer_vectors": 0,
+    "deleted": 0,
+    "superseded": 50000,
+    "livedocs": {
+     "path": "/home/vscode/work/delta_ingest/corpus_a/root/livedocs/base-g0001-1790791831.liv",
+     "popcount": 50000,
+     "nbits": 150413098,
+     "per_shard": true
+    },
+    "shard_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json"
+   },
+   "shard_origins": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    1
+   ]
+  },
+  "base_r2": {
+   "ok": true,
+   "problems": [],
+   "arm": "base",
+   "env": {
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_THINCLIENT_ORDINALS": "",
+    "SFU_DELTA_ROOT": "",
+    "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+    "SFU_SEARCH_SPECULATIVE_RERANK": "",
+    "SFU_SEISMIC_K_PRIME": "",
+    "SFU_SEISMIC_QUERY_CUT": "",
+    "SFU_SEISMIC_PREFLOOR": "",
+    "SFU_SEISMIC_FEDERATION": "parallel",
+    "SFU_SPLADE_BACKEND": "seismic"
+   },
+   "load_s": 0.5,
+   "splade_terms": 43,
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 8,
+   "manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json"
+  },
+  "delta_r2": {
+   "ok": true,
+   "problems": [],
+   "arm": "delta",
+   "env": {
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_THINCLIENT_ORDINALS": "",
+    "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "SFU_SEISMIC_SHARD_MANIFEST": "",
+    "SFU_SEARCH_SPECULATIVE_RERANK": "",
+    "SFU_SEISMIC_K_PRIME": "",
+    "SFU_SEISMIC_QUERY_CUT": "",
+    "SFU_SEISMIC_PREFLOOR": "",
+    "SFU_SEISMIC_FEDERATION": "parallel",
+    "SFU_SPLADE_BACKEND": "seismic"
+   },
+   "load_s": 0.7,
+   "splade_terms": 43,
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 9,
+   "manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+   "delta_info": {
+    "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+    "stamp": "g0001-1790791831",
+    "generations": [
+     {
+      "gen": 1,
+      "docs": 50000,
+      "seismic": "served"
+     }
+    ],
+    "buffer_docs": 0,
+    "buffer_vectors": 0,
+    "deleted": 0,
+    "superseded": 50000,
+    "livedocs": {
+     "path": "/home/vscode/work/delta_ingest/corpus_a/root/livedocs/base-g0001-1790791831.liv",
+     "popcount": 50000,
+     "nbits": 150413098,
+     "per_shard": true
+    },
+    "shard_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json"
+   },
+   "shard_origins": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    1
+   ]
+  }
+ },
+ "drives": {
+  "base": {
+   "started": "2026-09-30T18:27:28Z",
+   "commit": "885c29e7c",
+   "cmd": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8-15",
+    "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+    "arm-child",
+    "--arm",
+    "base",
+    "--src",
+    "/home/vscode/work/delta_ingest/m2/code_885c29e7/src",
+    "--n",
+    "2000",
+    "--tag",
+    "base",
+    "--deadline",
+    "2026-09-30T23:15:00Z"
+   ],
+   "host_start": {
+    "utc": "2026-09-30T18:27:28Z",
+    "loadavg": [
+     14.13623046875,
+     13.15087890625,
+     10.45068359375
+    ],
+    "MemAvailable_gb": 16.92,
+    "SwapFree_gb": 12.39,
+    "gpu": "5, 1649",
+    "top_procs": [
+     " 540418   1  168 5787140 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater apply --dir /home/vscode/work/inplace_update/stage2/work_a2 --ba",
+     " 540417   3 97.1 2832732 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 512691  11 67.1 13960400 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 540416   5 46.4 2774772 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 540489   9 26.0 22540 .venv/bin/python3 scripts/experiments/eval_delta_ingest_m2_delta_recall.py arm --arm base --n 2000 --commit 885c29e7c --deadline 2026-09-",
+     " 459179   2  7.2 309760 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "rc": -2,
+   "finished": "2026-09-30T20:50:29Z",
+   "host_end": {
+    "utc": "2026-09-30T20:50:29Z",
+    "loadavg": [
+     11.70263671875,
+     11.2451171875,
+     10.89111328125
+    ],
+    "MemAvailable_gb": 24.98,
+    "SwapFree_gb": 0.55,
+    "gpu": "38, 3247",
+    "top_procs": [
+     " 788817   7 83.4 542964 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater crash --dir /home/vscode/work/inplace_update/stage2/work_a2 --log",
+     " 512691  11 34.9 5926972 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 788750  13 22.1 417088 /workspaces/sfu-library-thinclient/.venv/bin/python3 /home/vscode/work/delta_ingest/m3/code_dfc06e6e/scripts/experiments/eval_delta_inge",
+     " 779778  15 11.5  5216 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 779780   2  6.3 73016 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 459179   6  5.6 354628 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/m2/log_base.txt",
+    "bytes": 2961,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 1,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  },
+  "delta": {
+   "started": "2026-09-30T20:50:30Z",
+   "commit": "885c29e7c",
+   "cmd": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8-15",
+    "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+    "arm-child",
+    "--arm",
+    "delta",
+    "--src",
+    "/home/vscode/work/delta_ingest/m2/code_885c29e7/src",
+    "--n",
+    "2000",
+    "--tag",
+    "delta",
+    "--deadline",
+    "2026-09-30T23:15:00Z"
+   ],
+   "host_start": {
+    "utc": "2026-09-30T20:50:30Z",
+    "loadavg": [
+     11.24560546875,
+     11.15771484375,
+     10.86474609375
+    ],
+    "MemAvailable_gb": 25.05,
+    "SwapFree_gb": 0.56,
+    "gpu": "38, 3247",
+    "top_procs": [
+     " 788817   7 84.1 544132 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater crash --dir /home/vscode/work/inplace_update/stage2/work_a2 --log",
+     " 512691  10 34.9 5992836 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 788858  14 25.0 22852 .venv/bin/python3 scripts/experiments/eval_delta_ingest_m2_delta_recall.py arm --arm delta --n 2000 --commit 885c29e7c --deadline 2026-09",
+     " 788750  13 21.8 419776 /workspaces/sfu-library-thinclient/.venv/bin/python3 /home/vscode/work/delta_ingest/m3/code_dfc06e6e/scripts/experiments/eval_delta_inge",
+     " 779778  15 11.5  5216 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 779780   2  6.3 73016 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/"
+    ]
+   },
+   "rc": -2,
+   "finished": "2026-09-30T22:53:53Z",
+   "host_end": {
+    "utc": "2026-09-30T22:53:53Z",
+    "loadavg": [
+     5.111328125,
+     5.85595703125,
+     5.8818359375
+    ],
+    "MemAvailable_gb": 19.7,
+    "SwapFree_gb": 13.47,
+    "gpu": "5, 2415",
+    "top_procs": [
+     " 999834  11 98.1 11688428 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 960277   3 56.4 2800372 /home/vscode/work/venv_local/bin/python3 /home/vscode/work/delta_ingest/m3/code_e0e3a8f4/scripts/experiments/eval_delta_ingest_m3_bm25f",
+     " 459179  15  5.2 306620 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402  14  2.6 119552 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108  10  0.5  1524 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     " 956097  13  0.2  2096 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclud"
+    ]
+   },
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/m2/log_delta.txt",
+    "bytes": 3200,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 1,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  },
+  "probe": {
+   "started": "2026-09-30T18:13:27Z",
+   "commit": "885c29e7c",
+   "cmd": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8-15",
+    "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+    "arm-child",
+    "--arm",
+    "delta",
+    "--src",
+    "/home/vscode/work/delta_ingest/m2/code_885c29e7/src",
+    "--n",
+    "10000",
+    "--tag",
+    "probe",
+    "--probe",
+    "--deadline",
+    "2026-09-30T23:15:00Z"
+   ],
+   "host_start": {
+    "utc": "2026-09-30T18:13:27Z",
+    "loadavg": [
+     8.98681640625,
+     8.54736328125,
+     7.71923828125
+    ],
+    "MemAvailable_gb": 27.54,
+    "SwapFree_gb": 15.2,
+    "gpu": "6, 2326",
+    "top_procs": [
+     " 512166   2  262 3117956 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater apply --dir /home/vscode/work/inplace_update/stage2/work_a2 --ba",
+     " 512165   0 94.8 2822136 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 499603  11 68.3 380076 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m7_seed.py",
+     " 512164   5 45.2 2635208 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 512198   5 29.6 22748 .venv/bin/python3 scripts/experiments/eval_delta_ingest_m2_delta_recall.py probe --commit 885c29e7c",
+     " 459179   8  8.7 342552 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "rc": 0,
+   "finished": "2026-09-30T18:19:23Z",
+   "host_end": {
+    "utc": "2026-09-30T18:19:23Z",
+    "loadavg": [
+     10.24169921875,
+     9.4423828125,
+     8.3193359375
+    ],
+    "MemAvailable_gb": 26.72,
+    "SwapFree_gb": 6.24,
+    "gpu": "3, 1745",
+    "top_procs": [
+     " 521969   7 94.4 2769212 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 521968   5 48.2 2747004 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --q",
+     " 512691   8 46.2 2775652 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 459179  14  8.2 259028 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402   1  3.0 80488 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108   2  0.5  2804 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh"
+    ]
+   },
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/m2/log_probe.txt",
+    "bytes": 147,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  },
+  "base_r2": {
+   "started": "2026-10-01T23:59:48Z",
+   "commit": "885c29e7",
+   "cmd": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/vscode/work/venv_local/bin/python3",
+    "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+    "arm-child",
+    "--arm",
+    "base",
+    "--src",
+    "/home/vscode/work/delta_ingest/m2/code_885c29e7/src",
+    "--n",
+    "2000",
+    "--tag",
+    "base_r2",
+    "--rows-tag",
+    "base",
+    "--deadline",
+    "2026-10-02T02:50:00Z"
+   ],
+   "host_start": {
+    "utc": "2026-10-01T23:59:48Z",
+    "loadavg": [
+     2.3447265625,
+     2.10498046875,
+     2.40771484375
+    ],
+    "MemAvailable_gb": 25.93,
+    "SwapFree_gb": 13.43,
+    "gpu": "1, 3213",
+    "top_procs": [
+     "2851411   7 43.5 4269376 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2851409   1 39.2 3041932 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2851828   6 37.5 22856 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m2_delta_recall.py arm --arm base --n 2000 --commit 885c29",
+     "1865822  15  3.7 339192 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     " 459179   7  2.1 157736 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "1526395   0  1.6 128408 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "rc": 0,
+   "finished": "2026-10-02T00:30:24Z",
+   "host_end": {
+    "utc": "2026-10-02T00:30:24Z",
+    "loadavg": [
+     8.67236328125,
+     8.4169921875,
+     7.5615234375
+    ],
+    "MemAvailable_gb": 28.17,
+    "SwapFree_gb": 10.36,
+    "gpu": "3, 3247",
+    "top_procs": [
+     "2851411   5 64.1 2602244 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2851409   1 56.6 1389492 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "1865822  10  3.6 104696 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     " 459179  14  2.1 121644 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "1526395   3  1.6 86796 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402   0  1.5 88980 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/m2/log_base_r2.txt",
+    "bytes": 389,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  },
+  "delta_r2": {
+   "started": "2026-10-02T00:30:24Z",
+   "commit": "885c29e7",
+   "cmd": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/vscode/work/venv_local/bin/python3",
+    "/workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+    "arm-child",
+    "--arm",
+    "delta",
+    "--src",
+    "/home/vscode/work/delta_ingest/m2/code_885c29e7/src",
+    "--n",
+    "2000",
+    "--tag",
+    "delta_r2",
+    "--rows-tag",
+    "delta",
+    "--deadline",
+    "2026-10-02T02:50:00Z"
+   ],
+   "host_start": {
+    "utc": "2026-10-02T00:30:24Z",
+    "loadavg": [
+     8.67236328125,
+     8.4169921875,
+     7.5615234375
+    ],
+    "MemAvailable_gb": 28.14,
+    "SwapFree_gb": 10.38,
+    "gpu": "2, 3247",
+    "top_procs": [
+     "2851411   5 64.1 2672800 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2851409   1 56.6 1459976 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2900519  12 30.0 22604 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m2_delta_recall.py arm --arm delta --n 2000 --commit 885c2",
+     "1865822   2  3.6 108628 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     " 459179   2  2.1 121648 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "1526395   0  1.6 91708 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "rc": 0,
+   "finished": "2026-10-02T01:04:54Z",
+   "host_end": {
+    "utc": "2026-10-02T01:04:54Z",
+    "loadavg": [
+     13.48291015625,
+     11.06884765625,
+     9.3662109375
+    ],
+    "MemAvailable_gb": 28.18,
+    "SwapFree_gb": 10.37,
+    "gpu": "1, 3334",
+    "top_procs": [
+     "2851411   7 66.6 2048688 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "2851409   2 59.1 1463836 /home/vscode/work/venv_local/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py chil",
+     "1865822  12  3.5 81912 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     " 459179   4  2.1 114468 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "1526395  13  1.6 97668 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402   6  1.5 91744 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "scan": {
+    "path": "/home/vscode/work/delta_ingest/m2/log_delta_r2.txt",
+    "bytes": 311,
+    "signature_counts": {
+     "Cannot allocate memory": 0,
+     "CrossEncoder unavailable": 0,
+     "Failed to load embedding model": 0,
+     "falling back to BM25F": 0,
+     "SPLADE encoder failed": 0,
+     "SEISMIC SPLADE leg failed": 0,
+     "delta buffer sparse encode failed": 0,
+     "Traceback": 0,
+     "delta layer off": 0,
+     "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+     "MemoryError": 0,
+     "WI-10": 0
+    }
+   }
+  }
+ },
+ "status": {
+  "probe": {
+   "stopped_at_deadline": false,
+   "new_rows": 50,
+   "wall_s": 254.8,
+   "finished": "2026-09-30T18:19:11Z",
+   "warnings_tail": [],
+   "warning_signatures": []
+  },
+  "base_r2": {
+   "stopped_at_deadline": false,
+   "new_rows": 648,
+   "wall_s": 1812.3,
+   "finished": "2026-10-02T00:30:10Z",
+   "warnings_tail": [],
+   "warning_signatures": []
+  },
+  "delta_r2": {
+   "stopped_at_deadline": false,
+   "new_rows": 560,
+   "wall_s": 2042.4,
+   "finished": "2026-10-02T01:04:37Z",
+   "warnings_tail": [],
+   "warning_signatures": []
+  }
+ },
+ "timings_valid": false,
+ "timings_note": "host shared with the in-place spike's B7 (cores 0-7, latency lock) and S0-2 (~19 GB), and the M3/M8 agents; every wall/latency field is not a deliverable",
+ "notes": [
+  "full N: rows 0-1351 from 2026-09-30, continued 2026-10-01 23:59Z-2026-10-02 01:05Z under a shared lock (resume flags 06289a0a); stitched across two sessions"
+ ],
+ "recorded_utc": "2026-10-02T01:44:14Z",
+ "record_commit": "aaabe1a7715fcecd68299ce9cd33c5fc2debea17"
+}

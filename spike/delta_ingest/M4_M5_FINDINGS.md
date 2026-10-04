@@ -160,3 +160,106 @@ involve n0 were unaffected by the flaw and agree with the re-run: OLS over
   the bar, so they ran instead. The sequential run can still be done with
   `inproc-drive --federations sequential --arms n0,n1,n4,n8 --tag fixprime`
   under the lock.
+
+## M4 compaction half, run 2026-10-01 (parallel federation)
+
+**Pre-run record (written 2026-10-01 ~04:12Z, after launch and during the
+discarded warm-up pass, before any measured query).**
+
+- Bar (frozen, `03_SPIKE_PLAN.md` M4 row 35 and the script header): compaction
+  returns to within 5% of the 1-generation arm, operationalised as PASS iff
+  `|p50(n8c)/p50(n1) - 1| <= 0.05`, parallel federation; n4c reported with the
+  same rule (not decisive).
+- Command (launched 2026-10-01 04:09:09Z, repo HEAD 105261c8, measured code
+  snapshot `git archive 105261c8 src` at
+  `/home/vscode/work/inplace_update/m4/code_105261c8`):
+  `inproc-drive --federations parallel --arms n1,n8,n4c,n8c --tag compaction_20261001
+  --retries 0 --out data/eval_results/delta_ingest_M4_compaction_20261001.json`,
+  defaults otherwise (1 warm-up + 2 measured passes, 120 topics, separate
+  priming retriever, seed 20260929), wrapped in `timeout` to 06:08Z. The child
+  takes `/tmp/sfu_latency_measure.lock` exclusively (it held it from 04:09Z).
+- Roots unchanged since 2026-09-29 (`root_n1`, `root_n8`, `root_n4c`,
+  `root_n8c`; `compact_n8.json` 8 gens into g0009, `compact_n4.json` 4 into
+  g0005).
+- Deviations, stated before measuring:
+  1. Interpreter is the local-disk venv mirror
+     `/home/vscode/work/venv_local/bin/python3` (same installed `seismic` .so,
+     md5 04ca2e42…, as `.venv`), and `SFU_SPLADE_MODEL_PATH` /
+     `SFU_CE_MODEL_PATH` point at the local mirrors under
+     `/home/vscode/work/models_local/` (same model files), to avoid the 9p
+     ENOMEM failure mode (O12). The 2026-09-29 primary run used `.venv` and the
+     repo model paths, so absolute p50s across the two runs are not directly
+     comparable; the bar compares arms within this one process.
+  2. Measured code is snapshot 105261c8 (includes the O19 BM25F lower-case fix
+     and the livedocs work), not ef48050d as in the growth run. Same reason:
+     cross-run absolute comparisons are indicative only.
+  3. Sequential federation not run (does not fit the time box).
+  Projected runtime ~1.5 h (2026-09-29 run with 4 arms + prime: 5,255 s),
+  i.e. finish ~05:40Z, inside the 06:10Z lock release; no trimming planned.
+
+### Result (measured 2026-10-01 04:09Z – 05:42Z)
+
+Results file `data/eval_results/delta_ingest_M4_compaction_20261001.json`
+(rows `/home/vscode/work/inplace_update/m4/inproc_compaction_20261001/parallel.json`),
+script `scripts/experiments/eval_delta_ingest_m4_read_amp.py` (`inproc` child at
+HEAD 105261c8; summary re-run with `inproc-summarize --tag compaction_20261001
+--commit 105261c8…` at e0f9eebf, because the driver's in-memory summarize hit the
+per-pass bug fixed in e0f9eebf; no statistic of the run depends on that fix).
+Health OK for all four arms + the priming retriever (SPLADE 43 terms,
+CrossEncoder, SentenceTransformer, ParallelSeismicBackend; n1/n4c/n8c 9 shards
+and 11 delta sections, n8 16 shards and 73), every measured call reached the
+SEISMIC traverse, 0 warnings during passes, no ENOMEM in the log, no retry.
+N = 240 calls per arm (120 topics × 2 measured passes).
+
+| arm | live gens | p50 ms | p95 ms | mean ms | per-pass p50 (2, 3) |
+|---|---|---|---|---|---|
+| n1 | 1 | 2491.5 | 3650.4 | 2483.5 | 2511.4 / 2440.8 |
+| n8 | 8 | 2614.7 | 3815.8 | 2631.9 | 2680.1 / 2599.6 |
+| n4c | 4 → 1 (g0005) | 2520.0 | 3598.0 | 2483.0 | 2536.5 / 2442.6 |
+| n8c | 8 → 1 (g0009) | 2525.1 | 3656.4 | 2487.6 | 2566.2 / 2483.3 |
+
+- **Compaction bar (`|p50(n8c)/p50(n1) - 1| <= 0.05`, parallel): PASS.**
+  Ratio **1.0135** (per pass 1.022 / 1.017). n4c (reported, same rule): 1.0114,
+  PASS.
+- Paired per-query differences (median over 240 (pass, topic) pairs, bootstrap
+  95% CI): n8c − n1 **−0.2 ms** (−14.7 to +12.1); n4c − n1 −3.3 ms (−15.6 to
+  +15.9); n8 − n1 +94.5 ms (+82.9 to +110.4); n8c − n8 **−93.1 ms** (−109.9 to
+  −80.4).
+- **What compaction buys back vs n8:** by the paired statistic essentially all
+  of the 7-extra-generation tax (93.1 of 94.5 ms, ~98%); by pooled p50 89.6 of
+  123.1 ms (~73%; the rest is p50 noise, the n8c − n1 CI straddles 0). After
+  compaction the delta layer costs the same as one generation: per-arm mean
+  delta-side serial work 14.7 ms (n8c) vs 15.1 (n1) vs 93.7 (n8); SEISMIC
+  traverse p50 170.5 / 173.0 / 225.2 ms; major faults per call 951 / 842 / 1653.
+  The biggest single n8 component is the per-generation delta mask work
+  (`delta_masks` mean 40.2 ms at n8 vs 0.3 at n1/n8c), then delta abstract-store
+  probes (37.9 vs 6.0 / 5.6) and delta BM25F sections (15.1 vs 8.7 / 8.5).
+- Growth statistics are NOT recomputed here (no n0/n4 arm; the summary's
+  `slope_primary_per_pass` entries are 2-point {1,8} slopes, 24.1 / 22.7 ms/gen,
+  and are not the pre-registered primary). They agree with the 2026-09-29 growth
+  run's n8 − n1 paired median (+106 ms, CI 94–116) within CIs.
+- Delta docs in fused top-10: 0.0 mean in every arm (corpus (b) is ~90%
+  datasets), so this run times the delta layer's cost, not its ranking effect.
+- Host: load1 1.6–4.5 at all 24 inline quiet checks, all quiet (max wait 1.1 s),
+  MemAvailable 29.0 → 28.3 GB, SwapFree 15.0 → 12.5 GB; the measuring process
+  held ~1.3 GB VmSwap from the warm-up pass on (WSL swap-out under a full page
+  cache; anon RSS ~1 GB), steady through both measured passes and identical for
+  all arms, which are interleaved per query. Pass walls 1792 / 1872 / 1847 s,
+  total 5551 s. The latency lock was held exclusively from 04:09Z to 05:42Z.
+
+**What it means for M4 and the follow-up.** M4's two halves now stand at:
+growth bar FAIL (27.7 ms/gen, 2026-09-29), compaction bar PASS (1.35% vs ≤ 5%,
+2026-10-01). Since `compact` returns the read path to the 1-generation cost,
+the per-generation tax is bounded by how many live generations are allowed to
+accumulate. The follow-up is a compaction-cadence rule: with ~15–28 ms per
+extra live generation (paired / pooled), a cap of K live generations bounds the
+added p50 to about (K − 1) × 28 ms over the one-generation state; e.g. K = 2
+holds it within one generation's tax, *est.* from these two runs, not measured
+as a cadence. The cadence rule and its bar must be pre-registered in
+`03_SPIKE_PLAN.md` before any run; this run measured only the end states (8 → 1
+and 4 → 1), not compaction's cost while serving (compact walls 126 s / 146 s
+offline, `compact_n8.json` / `compact_n4.json`, 2026-09-29) nor reload after a
+compaction publish.
+
+Still not measured: sequential federation (both halves), compaction under
+concurrent serving, a cadence policy.

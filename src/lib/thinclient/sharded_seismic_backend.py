@@ -292,6 +292,29 @@ def _load_manifest(manifest_path: str, load_mode: str = "stock") -> list[str]:
     return [s.strip() for s in manifest_path.split(",") if s.strip()]
 
 
+def _delta_group_positions(manifest_path: str, n_shards: int) -> list[int] | None:
+    """Lever L5 (`SFU_SEISMIC_DELTA_GROUP=1`): served positions of the delta
+    generation shards, i.e. the manifest `shards` records carrying a non-null
+    `delta_generation`. None (no grouping) when the gate is not literal `1`,
+    the manifest is not a JSON dict with `shards`, its record count differs
+    from `n_shards`, or no record is a delta shard."""
+    if os.environ.get("SFU_SEISMIC_DELTA_GROUP", "") != "1":
+        return None
+    p = Path(manifest_path)
+    if not p.exists() and not p.is_absolute():
+        p = _REPO_ROOT / manifest_path
+    try:
+        data = json.loads(p.read_text())
+    except (OSError, ValueError):
+        return None
+    recs = data.get("shards") if isinstance(data, dict) else None
+    if not isinstance(recs, list) or len(recs) != n_shards:
+        return None
+    pos = [i for i, r in enumerate(recs)
+           if isinstance(r, dict) and r.get("delta_generation") is not None]
+    return pos or None
+
+
 def _load_one_shard(seismic_module, p: str, load_mode: str):
     """Load one shard by `load_mode` (pure: takes the seismic module + the mode,
     no instance state). `mmap` requires a `.mmap/` dir (produced by
@@ -1225,9 +1248,34 @@ class ParallelSeismicBackend(_SeismicBackendBase):
         self._executor = cf.ThreadPoolExecutor(
             max_workers=max(1, len(self.shards)),
             thread_name_prefix="seismic-shard")
+        self._delta_group: list[int] | None = None
+
+    @classmethod
+    def from_manifest(cls, manifest_path: str, *, splade_model_path: str = "models/splade_onnx_fused",
+                      load_mode: str = "stock"):
+        """As the base `from_manifest`, plus the L5 delta-shard group read
+        from the same manifest (`_delta_group_positions`, gate read here once
+        per backend instance)."""
+        obj = super().from_manifest(manifest_path, splade_model_path=splade_model_path,
+                                    load_mode=load_mode)
+        obj._delta_group = _delta_group_positions(manifest_path, len(obj.shards))
+        return obj
 
     def _fan_out(self, _search_one) -> list:
-        return list(self._executor.map(_search_one, self.shards))
+        group = self._delta_group
+        if not group:
+            return list(self._executor.map(_search_one, self.shards))
+        shards = self.shards
+        gfut = self._executor.submit(lambda: [_search_one(shards[i]) for i in group])
+        in_group = set(group)
+        futs = [(i, self._executor.submit(_search_one, s))
+                for i, s in enumerate(shards) if i not in in_group]
+        out: list = [None] * len(shards)
+        for i, fut in futs:
+            out[i] = fut.result()
+        for i, res in zip(group, gfut.result()):
+            out[i] = res
+        return out
 
 
 class SequentialSeismicBackend(_SeismicBackendBase):

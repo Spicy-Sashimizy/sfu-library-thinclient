@@ -1,0 +1,82 @@
+{
+ "measurement": "O7 OpenAlexSnapshotAdapter peak RSS before -> after streaming (docs/delta_ingest/02_DESIGN.md \u00a73.1 O7)",
+ "bar": "none pre-registered; recorded. Laptop profile max_rss_gb 3.0 is the reference cap",
+ "date": "2026-10-01T04:16:00Z",
+ "git_head_at_run": "e59ad3554d8f0bee82df712d4ea8bdfb89520518",
+ "pre_fix_adapter": "105261c8:spike/delta_ingest/adapters.py",
+ "script": "scripts/experiments/eval_delta_ingest_o7_streaming.py",
+ "corpus_note": "REAL OpenAlex snapshot partition (item B download 2026-09-29); the subset is its first 60000 raw lines re-gzipped so the pre-fix arm stays under the 4.0 GB address-space cap of this dispatch",
+ "subset": {
+  "path": "/home/vscode/work/delta_ingest/O7/part_0001_first60000.gz",
+  "raw_lines": 60000,
+  "raw_bytes": 724960795,
+  "gz_bytes": 84118854
+ },
+ "full_partition": {
+  "path": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+  "raw_lines": 276848,
+  "raw_bytes": 3242179450,
+  "gz_bytes": 359271114
+ },
+ "min_year": 2010,
+ "method": "each arm a separate child process under prlimit --as; adapter iteration only (records counted and dropped); peak = VmHWM of the child; nice 19, taskset 12-15, OMP_NUM_THREADS=2",
+ "timings_valid": false,
+ "timings_note": "shared host with a concurrent exclusive latency run; wall times are not throughput numbers",
+ "runs": [
+  {
+   "corpus": "subset",
+   "arm": "old_spooled",
+   "part": "/home/vscode/work/delta_ingest/O7/part_0001_first60000.gz",
+   "records_in_slice": 41735,
+   "baseline_rss_gb": 0.014,
+   "peak_rss_gb": 1.527,
+   "wall_s": 8.4,
+   "first_record_s": 1.89,
+   "timings_valid": false
+  },
+  {
+   "corpus": "subset",
+   "arm": "new_spooled",
+   "part": "/home/vscode/work/delta_ingest/O7/part_0001_first60000.gz",
+   "records_in_slice": 41735,
+   "baseline_rss_gb": 0.014,
+   "peak_rss_gb": 0.024,
+   "wall_s": 9.34,
+   "first_record_s": 0.13,
+   "timings_valid": false
+  },
+  {
+   "corpus": "subset",
+   "arm": "new_local",
+   "part": "/home/vscode/work/delta_ingest/O7/part_0001_first60000.gz",
+   "records_in_slice": 41735,
+   "baseline_rss_gb": 0.014,
+   "peak_rss_gb": 0.024,
+   "wall_s": 8.74,
+   "first_record_s": 0.0,
+   "timings_valid": false
+  },
+  {
+   "corpus": "full",
+   "arm": "new_spooled",
+   "part": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+   "records_in_slice": 205358,
+   "baseline_rss_gb": 0.014,
+   "peak_rss_gb": 0.026,
+   "wall_s": 42.76,
+   "first_record_s": 0.63,
+   "timings_valid": false
+  },
+  {
+   "corpus": "full",
+   "arm": "new_local",
+   "part": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+   "records_in_slice": 205358,
+   "baseline_rss_gb": 0.014,
+   "peak_rss_gb": 0.025,
+   "wall_s": 41.86,
+   "first_record_s": 0.0,
+   "timings_valid": false
+  }
+ ]
+}

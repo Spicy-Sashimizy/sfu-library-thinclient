@@ -18,6 +18,16 @@ BM25F hits (`filter_hits`), and post-merge on SPLADE backends without the
 per-shard hook (`filter_ids`). `mask.deleted` then only lists ids with no base
 ordinal; roots published before item C (no `livedocs` key) are served from the
 JSON lists exactly as before.
+
+Fold-in (doc 10 §3 G4, 2026-10-01): a base shard s replaced by its fold s′
+through a composed manifest record carrying `fold_origin` ("fold:s:k") has
+that string as its origin in `shard_origins`. `mask.newest_by_leg.seismic`
+({id: "fold:s:k"}) names the SEISMIC leg's newest copy where it differs from
+`superseded` (which stays the sections / meta / abstract leg's newest
+generation): the per-shard SEISMIC filter keys on it first, so a folded doc is
+served from s′ only, while its delta-generation tantivy/meta/abstract copy and
+the livedocs bit that masks its base tantivy copy are unchanged. Without
+either key every filter is exactly as before.
 """
 from __future__ import annotations
 
@@ -34,6 +44,35 @@ logger = logging.getLogger("sfu_library_mcp")
 
 BUFFER_SECTION = "delta_buffer"
 BUFFER_ORIGIN = "buffer"
+
+REPO_DATA_DIR = Path(__file__).resolve().parents[3] / "data"
+READ_ONLY_DATA_DIRS = ("seismic_150m",)
+
+
+def resolve_delta_root(index_root, value: str | None = None, *, for_write: bool = False) -> Path:
+    """Resolve the delta root (O16). `value` = an explicit path (CLI
+    `--delta-root`), literal `1` (= `<index_root>/delta`), or empty/None, in
+    which case `SFU_DELTA_ROOT` is consulted with the same meaning, then
+    `<index_root>/delta`. Serving (`for_write=False`) only resolves. Writers
+    (`for_write=True`) are refused with ValueError when the root lies inside a
+    read-only data dir (`data/seismic_150m`), and when nothing explicit was
+    given (no value, env unset or `1`) and the implicit `<index_root>/delta`
+    lies under the repo's `data/` tree (9p here, not to be written casually)."""
+    v = value or os.environ.get("SFU_DELTA_ROOT", "")
+    implicit = v in ("", "1")
+    root = Path(index_root) / "delta" if implicit else Path(v)
+    if for_write:
+        r = root.resolve()
+        for name in READ_ONLY_DATA_DIRS:
+            ro = (REPO_DATA_DIR / name).resolve()
+            if r == ro or ro in r.parents:
+                raise ValueError(f"delta root {root} is inside read-only {ro}")
+        data = REPO_DATA_DIR.resolve()
+        if implicit and (r == data or data in r.parents):
+            raise ValueError(
+                f"implicit delta root {root} is under {data}; pass --delta-root or set "
+                "SFU_DELTA_ROOT to a local-disk path (e.g. /var/tmp/sfu_delta)")
+    return root
 
 
 class _ExactSparse:
@@ -64,6 +103,7 @@ class DeltaLayer:
         self.generations: list[dict] = []
         self.deleted: set[str] = set()
         self.superseded: dict[str, int] = {}
+        self.seismic_newest: dict[str, str] = {}
         self._shard_manifest: str | None = None
         self.livedocs = None
         self._ordinals = None
@@ -71,6 +111,7 @@ class DeltaLayer:
         self._meta: list[tuple[int, sqlite3.Connection, bool]] = []
         self._ledger: sqlite3.Connection | None = None
         self._buffer_sig: tuple[int, int] = (-1, -1)
+        self._buffer_gens: set[int] = set()
         self._ledger_stat: tuple | None = None
         self._buffer_rows: dict[str, dict] = {}
         self._buffer_sparse = _ExactSparse()
@@ -83,6 +124,7 @@ class DeltaLayer:
             mask = data.get("mask") or {}
             self.deleted = set(mask.get("deleted") or [])
             self.superseded = {k: int(v) for k, v in (mask.get("superseded") or {}).items()}
+            self.seismic_newest = dict((mask.get("newest_by_leg") or {}).get("seismic") or {})
             self._shard_manifest = data.get("shard_manifest")
             if data.get("livedocs"):
                 self._open_livedocs(data["livedocs"])
@@ -120,25 +162,28 @@ class DeltaLayer:
 
     def shard_origins(self, n_shards: int, manifest: str | None) -> list:
         """Origin per served shard position: `None` = base, `g` = delta
-        generation g. Only the composed manifest carries delta shards (base
-        records first, then one per generation); any other manifest is all base."""
+        generation g, `"fold:s:k"` = fold k of base shard s (G4). Only the
+        composed manifest carries delta shards (base records first, then one
+        per generation); any other manifest is all base."""
         mine = self.shard_manifest_path()
         if not mine or not manifest or Path(manifest).resolve() != Path(mine).resolve():
             return [None] * n_shards
         recs = json.loads(Path(mine).read_text()).get("shards") or []
         if len(recs) != n_shards:
             return [None] * n_shards
-        return [int(r["delta_generation"]) if r.get("delta_generation") is not None else None
-                for r in recs]
+        return [int(r["delta_generation"]) if r.get("delta_generation") is not None
+                else (str(r["fold_origin"]) if r.get("fold_origin") else None) for r in recs]
 
     def shard_result_filter(self, origins: list):
         """Return `f(per_shard) -> per_shard` for `_SeismicBackendBase`: on base
         shards drop results whose base ordinal is dead; on delta shards keep a
         doc only if that generation is its newest copy and it is not a
         bitset-deleted id; everywhere drop JSON `deleted` ids. Entries are SEISMIC `(query_id, score, doc_id)` triples;
-        order within a shard is preserved."""
+        order within a shard is preserved. Delta and fold positions resolve a
+        doc's newest SEISMIC origin as `seismic_newest`, else `superseded`."""
         deleted = self.deleted
         superseded = self.superseded
+        seismic_newest = self.seismic_newest
 
         def _filter(per_shard: list) -> list:
             out = []
@@ -153,16 +198,20 @@ class DeltaLayer:
                                 if not x and r[2] not in deleted])
                 else:
                     out.append([r for r, x in zip(res, dead) if r[2] not in deleted
-                                and not (x and r[2] not in superseded)
-                                and superseded.get(r[2], origin) == origin])
+                                and not (x and r[2] not in superseded and r[2] not in seismic_newest)
+                                and seismic_newest.get(r[2], superseded.get(r[2], origin)) == origin])
             return out
         return _filter
 
     def attach_seismic(self, backend, manifest: str | None) -> bool:
         """Install the per-shard filter on a federated SEISMIC backend when a
-        livedocs bitset is loaded. Returns whether it was installed; when not,
-        `filter_ids` applies the bitset post-merge instead."""
-        if self.livedocs is None or not hasattr(backend, "_shard_result_filter"):
+        livedocs bitset is loaded, or when a fold is served (G4). Returns
+        whether it was installed; when not, `filter_ids` applies the bitset
+        post-merge instead."""
+        if not hasattr(backend, "_shard_result_filter"):
+            return False
+        if self.livedocs is None and not (self.seismic_newest or any(
+                isinstance(o, str) for o in self.shard_origins(len(getattr(backend, "shards", ())), manifest))):
             return False
         backend._shard_result_filter = self.shard_result_filter(
             self.shard_origins(len(backend.shards), manifest))
@@ -174,7 +223,7 @@ class DeltaLayer:
         gate = os.environ.get("SFU_DELTA_ROOT", "")
         if not gate:
             return None
-        root = Path(index_root) / "delta" if gate == "1" else Path(gate)
+        root = resolve_delta_root(index_root, gate)
         if not root.is_dir():
             logger.warning("SFU_DELTA_ROOT=%s but %s is not a directory; delta layer off", gate, root)
             return None
@@ -184,18 +233,32 @@ class DeltaLayer:
         out: list[tuple[str, Path, object]] = []
         for g in self.generations:
             for name in g.get("sections") or []:
-                out.append((f"delta_g{int(g['gen']):04d}:{name}", Path(g["dir"]) / "sections" / name,
+                out.append((self.section_key(int(g["gen"]), name), Path(g["dir"]) / "sections" / name,
                             int(g["gen"])))
-        buf = self.root / "buffer" / BUFFER_SECTION
-        if (buf / "tantivy" / "meta.json").exists():
+        buf = self.buffer_section_dir()
+        if buf is not None:
             out.append((BUFFER_SECTION, buf, BUFFER_ORIGIN))
         return out
+
+    @staticmethod
+    def section_key(gen: int, name: str) -> str:
+        """Retriever key of generation `gen`'s section `name` (in `_sections`
+        and `_abstract_stores`)."""
+        return f"delta_g{int(gen):04d}:{name}"
+
+    def buffer_section_dir(self) -> Path | None:
+        """The buffer's section dir once its tantivy index exists (the ingest
+        process creates it on first ingest, possibly after this layer loaded)."""
+        buf = self.root / "buffer" / BUFFER_SECTION
+        return buf if (buf / "tantivy" / "meta.json").exists() else None
 
     def shard_manifest_path(self) -> str | None:
         return self._shard_manifest if self._shard_manifest and Path(self._shard_manifest).exists() else None
 
     def keep_hit(self, doc_id: str, origin) -> bool:
         if doc_id in self.deleted:
+            return False
+        if origin == BUFFER_ORIGIN and doc_id not in self._buffer_rows:
             return False
         newest = self.superseded.get(doc_id)
         if newest is None:
@@ -207,6 +270,8 @@ class DeltaLayer:
         return newest == origin
 
     def filter_hits(self, hits: list[tuple[str, float, object]]) -> list[tuple[str, float]]:
+        if any(h[2] == BUFFER_ORIGIN for h in hits):
+            self.refresh_buffer()
         if self.livedocs is not None:
             dead = self.base_dead([h[0] for h in hits])
             return [(d, s) for (d, s, o), x in zip(hits, dead)
@@ -248,27 +313,30 @@ class DeltaLayer:
                 logger.warning("delta ledger open failed: %s", exc)
                 return
         try:
+            gens = self._buffer_generations()
+            marks = ",".join("?" * len(gens))
             row = self._ledger.execute(
                 "SELECT COUNT(*), COALESCE(MAX(r.rowid),0) FROM records r JOIN docs d ON d.id=r.id "
-                "WHERE (r.generation=0 OR r.generation IN (SELECT gen FROM generations WHERE state='building')) "
-                "AND d.status='live'").fetchone()
+                f"WHERE r.generation IN ({marks}) AND d.status='live'", gens).fetchone()
         except sqlite3.Error as exc:
             logger.warning("delta buffer poll failed: %s", exc)
             return
         sig = (int(row[0]), int(row[1]))
-        if sig == self._buffer_sig:
+        if sig == self._buffer_sig and set(gens) >= self._buffer_gens:
+            self._buffer_gens = set(gens)
             self._ledger_stat = st
             return
         with self._lock:
-            if sig == self._buffer_sig:
+            if sig == self._buffer_sig and set(gens) >= self._buffer_gens:
+                self._buffer_gens = set(gens)
                 return
             q = ("SELECT r.rowid, r.record FROM records r JOIN docs d ON d.id=r.id "
-                 "WHERE (r.generation=0 OR r.generation IN (SELECT gen FROM generations WHERE state='building')) "
-                 "AND d.status='live' AND r.rowid>? ORDER BY r.rowid")
+                 f"WHERE r.generation IN ({marks}) AND d.status='live' AND r.rowid>? ORDER BY r.rowid")
             after = self._buffer_sig[1] if self._buffer_sig[0] >= 0 else -1
-            rows = self._ledger.execute(q, (after,)).fetchall()
-            if after < 0 or self._buffer_sig[0] + len(rows) != sig[0]:
-                rows = self._ledger.execute(q, (-1,)).fetchall()
+            rows = self._ledger.execute(q, (*gens, after)).fetchall()
+            if (after < 0 or self._buffer_sig[0] + len(rows) != sig[0]
+                    or not set(gens) >= self._buffer_gens):
+                rows = self._ledger.execute(q, (*gens, -1)).fetchall()
                 self._buffer_rows = {}
                 self._buffer_sparse = _ExactSparse()
             for _, rec in rows:
@@ -277,7 +345,44 @@ class DeltaLayer:
                 if d.get("sparse_field"):
                     self._buffer_sparse.add(d["id"], d["sparse_field"])
             self._buffer_sig = sig
+            self._buffer_gens = set(gens)
             self._ledger_stat = st
+
+    def _buffer_generations(self) -> list[int]:
+        """Ledger generations whose records form the buffer view: 0, plus
+        every `building` or published-but-not-loaded generation that holds
+        only docs this layer does not already serve from a loaded generation
+        (O2: a freeze publishes before `reload()` loads it). A generation is
+        buffer-derived when its `from_gens` (ledger `info`) are all 0 or
+        themselves buffer-derived and unloaded; when `info` no longer carries
+        `from_gens` (published rows), it counts as buffer-derived iff no loaded
+        generation has been compacted since load, since only a compaction can
+        move loaded docs into a newer generation."""
+        loaded = {int(g["gen"]) for g in self.generations}
+        rows = {int(g): (s, i) for g, s, i in
+                self._ledger.execute("SELECT gen, state, info FROM generations")}
+        loaded_compacted = any(rows.get(g, ("",))[0] == "compacted" for g in loaded)
+        memo: dict[int, bool] = {}
+
+        def derived(g: int, depth: int = 0) -> bool:
+            if g == 0:
+                return True
+            if g in loaded or g not in rows or depth > len(rows):
+                return False
+            if g in memo:
+                return memo[g]
+            try:
+                info = json.loads(rows[g][1] or "{}")
+            except ValueError:
+                info = {}
+            src = info.get("from_gens") if isinstance(info, dict) else None
+            ok = (all(derived(int(s), depth + 1) for s in src) if isinstance(src, list)
+                  else not loaded_compacted)
+            memo[g] = ok
+            return ok
+
+        return [0] + sorted(g for g, (state, _) in rows.items()
+                            if g not in loaded and state in ("building", "published") and derived(g))
 
     def buffer_size(self) -> int:
         self.refresh_buffer()
@@ -321,6 +426,35 @@ class DeltaLayer:
             if d is not None:
                 out[i] = (i, d.get("title") or "", d.get("doi") or "", d.get("year"),
                           d.get("type") or "", bool(d.get("is_oa")), "delta_buffer")
+        return out
+
+    def abstract_owner(self, ids: list[str]) -> dict[str, tuple[int, str]]:
+        """`{id: (generation, section)}` for the ids a loaded generation
+        serves: the newest generation whose `meta.sqlite` holds the id and that
+        `superseded` names as its newest copy (unsuperseded ids: the newest
+        generation holding them). Ids no generation holds are absent (base,
+        buffer or unknown). Lever L3 (`SFU_DELTA_ABS_ROUTE`)."""
+        out: dict[str, tuple[int, str]] = {}
+        if not ids:
+            return out
+        for gen, db, numeric in reversed(self._meta):
+            want = [i for i in ids if i not in out]
+            if not want:
+                break
+            enc: dict[int, str] = {}
+            other: list[str] = []
+            for s in want:
+                n = encode_meta_id(s) if numeric else None
+                (other.append(s) if n is None else enc.__setitem__(n, s))
+            for table, keys, back in (("docs", list(enc), enc), ("docs_other", other, None)):
+                for i in range(0, len(keys), 500):
+                    chunk = keys[i:i + 500]
+                    marks = ",".join("?" * len(chunk))
+                    for row in db.execute(
+                            f"SELECT id, section FROM {table} WHERE id IN ({marks})", chunk):
+                        did = back[row[0]] if back is not None else row[0]
+                        if self.superseded.get(did, gen) == gen:
+                            out[did] = (gen, row[1])
         return out
 
     def buffer_abstracts(self, ids: list[str]) -> dict[str, str]:

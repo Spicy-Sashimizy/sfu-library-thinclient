@@ -1,0 +1,349 @@
+{
+ "parse": {
+  "utc": "2026-10-01T15:42:58Z",
+  "mode": "parse",
+  "arms": {
+   "pre": "sanitise, case kept (pre-99e2b663)",
+   "post": "bm25f_query_text of the working tree (current)",
+   "lower_0930": "sanitise + str.lower() (99e2b663)"
+  },
+  "lower_0930_vs_pre": {
+   "topics_120": {
+    "n": 120,
+    "same": 119,
+    "diff": 1,
+    "pre_raises": 0,
+    "post_raises": 0,
+    "diff_reasons": {
+     "case_variant_repeat": 1
+    }
+   },
+   "titles_m3_350": {
+    "n": 350,
+    "same": 313,
+    "diff": 27,
+    "pre_raises": 8,
+    "post_raises": 2,
+    "diff_reasons": {
+     "case_variant_repeat": 23,
+     "upper_operator_word": 4
+    }
+   },
+   "titles_all": {
+    "n": 50000,
+    "same": 43558,
+    "diff": 4579,
+    "pre_raises": 1424,
+    "post_raises": 439,
+    "diff_reasons": {
+     "case_variant_repeat": 4005,
+     "upper_operator_word": 587
+    }
+   }
+  },
+  "topics_120": {
+   "n": 120,
+   "same": 119,
+   "diff": 1,
+   "pre_raises": 0,
+   "post_raises": 0,
+   "diff_reasons": {
+    "case_variant_repeat": 1
+   }
+  },
+  "titles_m3_350": {
+   "n": 350,
+   "same": 313,
+   "diff": 27,
+   "pre_raises": 10,
+   "post_raises": 0,
+   "diff_reasons": {
+    "case_variant_repeat": 23,
+    "upper_operator_word": 4
+   }
+  },
+  "titles_all": {
+   "n": 50000,
+   "same": 43604,
+   "diff": 4581,
+   "pre_raises": 1810,
+   "post_raises": 5,
+   "diff_reasons": {
+    "case_variant_repeat": 4005,
+    "upper_operator_word": 589
+   }
+  },
+  "diff_topics": [
+   {
+    "i": 66,
+    "q": "Canadian documentary film Indigenous representation National Film Board NFB",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   }
+  ],
+  "diff_titles_350": [
+   {
+    "i": 14,
+    "q": "Mental wellbeing among urban young adults in a developing country: A Latent Profile Analysis",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 19,
+    "q": "Damage Control Surgery for Thoracic Outlet Vascular Injuries: The New Resuscitative Median Sternotomy Plus Endovascular Aortic Balloon Occlusion of the Aorta Approach",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 23,
+    "q": "Der Begriff der digitalen Transformation: Ein transdisziplin\u00e4rer Literatur\u00fcberblick",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 34,
+    "q": "Future underground spatial utilization &amp;#8211; The role of geological criteria in the repurposing process of former coal mines",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 50,
+    "q": "The Reforms in Russia: Exhausting Running on the Spot",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 55,
+    "q": "THE PUBLIC DANGER OF QUALIFIED ELEMENTS OF CRIMES COMMITTED USING INFORMATION AND TELECOMMUNICATION NETWORKS",
+    "reasons": [
+     "upper_operator_word"
+    ]
+   },
+   {
+    "i": 78,
+    "q": "A German Piltdown? The Steinau skull discovery of 1911 and the omnipresence of fraud in early paleoanthropology",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 88,
+    "q": "The Study Investigates the Synergistic Effect of Pollution Reduction and Carbon Mitigation in Industrial Parks: A Case Study of Yunnan Province",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 97,
+    "q": "\u0406. KANT AND THE HUMANITIES",
+    "reasons": [
+     "upper_operator_word"
+    ]
+   },
+   {
+    "i": 101,
+    "q": "Production and health constraints to sustainable Nile tilapia production by small-holders, using net cages at the Tr\u00eas Marias reservoir, Brazil",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 103,
+    "q": "Visual resources, visual quality, landscape aesthetics. Evoluzioni di un concetto: 1979-1999-2005",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 107,
+    "q": "\u201cThe music of color\u201d in Ukrainian art of the 1960s",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 130,
+    "q": "The impact of social media use on the self-esteem levels of its users",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 133,
+    "q": "Neutral Evolution in Colorectal Cancer: How Can We Distinguish Functional from Non-functional Variation?",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 137,
+    "q": "Most Recent Data (2012). Statistics Canada. CANSIM: Information and Communications Technology - Business and Government Internet Use | Country: Canada | Table: Survey of digital technology and Internet use, business changes from using Information and Communication Technologies | Variable: Greater information sharing, Administrative and support, waste management and remediation services, Small size enterprises | Units: %, 2012. Data-Planet\u2122 Statistical Ready Reference by Conquest Systems, Inc. Dataset-ID: 075-001-125.",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 152,
+    "q": "T?rkiye'de m?ltecilerin hukuki durumlar? ve ?zmir'e ili?kin bir ara?t?rma",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 181,
+    "q": "The Influence of Media Dependency and Partisan Selectivity on Negative Affects, the Perception of Economic Changes, and the Evaluation of Government\u2019s Response to COVID-19",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 206,
+    "q": "The use of \u201cLevers of Control\u201d to control strategy and drive strategic change in corporatization",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 220,
+    "q": "Most Recent Data (2009). Food and Agriculture Organization of the United Nations. Food and Agriculture Organization Statistics: Food Security - Indicators from Household Surveys | Survey: Sudan (former) - 2009 | Breakdown: Presence children under 5: Household with no child | Gender: Female-headed household | Indicator: Fat consumption | Measure: Mean, 2009. Data-Planet\u2122 Statistical Ready Reference by Conquest Systems, Inc. Dataset-ID: 067-001-070.",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 235,
+    "q": "2.5 Walking the City: A Work Report from a One-Afternoon-Workshop in July in \u201cKreuzgassenviertel\u201d",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 250,
+    "q": "Mercy Meets Misery: The Presentation of Divine Mercy in the Macaronic Sermons of MS Bodley 649",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 266,
+    "q": "THE METAMORPHOSIS OF ECONOMIC SCIENCE AND PRACTICE OR, ON TO POLITICAL ECONOMY",
+    "reasons": [
+     "upper_operator_word"
+    ]
+   },
+   {
+    "i": 279,
+    "q": "Zoning for Obesity: Incorporating context-based strategies for improved health in municipal zoning codes",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 280,
+    "q": "THE LATTICE\u2013WAVE ATOMIC MODEL: TOWARD A RESONANCE-BASED FRAMEWORK FOR MASS AND NUCLEAR STRUCTURE",
+    "reasons": [
+     "upper_operator_word"
+    ]
+   },
+   {
+    "i": 291,
+    "q": "The future of neo-corporatist organization of interests: representation of social economy beyond the capital/labour division?",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 302,
+    "q": "The efficiency calculation and selection of the optimal energy carrier in the aspect of sustainable development",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   },
+   {
+    "i": 325,
+    "q": "Calidad de vida e inclusi\u00f3n social de las personas con trastorno del espectro autista. La utilidad del uso de herramientas digitales en la intervenci\u00f3n social",
+    "reasons": [
+     "case_variant_repeat"
+    ]
+   }
+  ],
+  "head": "ef206dde",
+  "script": "scripts/experiments/eval_delta_ingest_o19_case_parse.py",
+  "rows_file": "/home/vscode/work/delta_ingest/fix/o19_parse_rows.json"
+ },
+ "hits": {
+  "utc_end": "2026-10-02T01:41:22Z",
+  "mode": "hits",
+  "k": 50,
+  "seconds": 1348.6,
+  "sections": [
+   "cs_math__archive",
+   "cs_math__recent",
+   "med_bio__archive",
+   "med_bio__recent",
+   "other__archive",
+   "other__recent",
+   "phys_eng__archive",
+   "phys_eng__recent",
+   "social_sciences__archive",
+   "social_sciences__recent"
+  ],
+  "diff_topics": {
+   "n": 1,
+   "identical": 0,
+   "both_empty": 0,
+   "same_set": 0,
+   "top1_same": 1,
+   "mean_overlap10": 6.0,
+   "known_found_either": 0,
+   "known_rank_better_post": 0,
+   "known_rank_worse_post": 0,
+   "known_rank_equal": 0
+  },
+  "diff_titles": {
+   "n": 194,
+   "identical": 2,
+   "both_empty": 0,
+   "same_set": 3,
+   "top1_same": 189,
+   "mean_overlap10": 7.691,
+   "known_found_either": 194,
+   "known_rank_better_post": 5,
+   "known_rank_worse_post": 2,
+   "known_rank_equal": 187
+  },
+  "diff_titles_m3_350": {
+   "n": 27,
+   "identical": 0,
+   "both_empty": 0,
+   "same_set": 0,
+   "top1_same": 27,
+   "mean_overlap10": 7.148,
+   "known_found_either": 27,
+   "known_rank_better_post": 0,
+   "known_rank_worse_post": 0,
+   "known_rank_equal": 27
+  },
+  "control_same_parse": {
+   "n": 40,
+   "identical": 40,
+   "both_empty": 0,
+   "same_set": 40,
+   "top1_same": 40,
+   "mean_overlap10": 10.0,
+   "known_found_either": 19,
+   "known_rank_better_post": 0,
+   "known_rank_worse_post": 0,
+   "known_rank_equal": 19
+  },
+  "max_title_index": 2000,
+  "head": "aaabe1a7",
+  "rows_file": "/home/vscode/work/delta_ingest/fix/o19_hits_rows.json"
+ }
+}
