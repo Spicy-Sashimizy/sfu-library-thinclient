@@ -281,6 +281,8 @@ def main(argv=None):
     ap.add_argument("--shard", type=int, default=None, help="fold-build / publish-fold: base shard")
     ap.add_argument("--fold", type=int, default=None, help="publish-fold: fold number")
     ap.add_argument("--confirm", action="store_true", help="publish-fold: actually publish (operator step)")
+    ap.add_argument("--no-prefault", action="store_true",
+                    help="publish-fold: skip the page-cache prefault of the fold's served dir (doc 10 §4)")
     ap.add_argument("--fold-root", default=None, help="fold side root (default foldin.FOLD_ROOT_DEFAULT)")
     ap.add_argument("--fold-input", default=None, help="fold-build: f16 c1a dir of the shard as served")
     ap.add_argument("--token-map-dir", default=None,
@@ -354,7 +356,8 @@ def main(argv=None):
                 out = foldin.publish_fold(delta_root, ledger, base, args.shard, args.fold,
                                           confirm=args.confirm, cfg=cfg,
                                           base_shard_manifest=args.base_shard_manifest,
-                                          ordinal_dir=args.ordinal_dir)
+                                          ordinal_dir=args.ordinal_dir,
+                                          prefault=not args.no_prefault)
         else:
             out = {"ledger": ledger.stats(), "profile": profile.as_dict(), "delta_root": str(delta_root)}
             gj = delta_root / "generations.json"

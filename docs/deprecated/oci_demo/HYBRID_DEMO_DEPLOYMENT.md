@@ -4,12 +4,14 @@
 
 **Status:** CLOSED DEAD 2026-09-25
 
+> **2026-10-06:** the "cloud access ended / no tenancy" reasoning in the banner is outdated — the tenancy is on Pay As You Go and the public demo is back (`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md`). This doc stays closed on its own grounds: superseded by the OCI E5 plan, which is live again.
+
 > **STATUS 2026-09-25: CLOUD ACCESS ENDED**
 >
 > The operator no longer has access to any cloud instances. Every DigitalOcean
 > droplet is gone, and so is the OCI E5 62 GiB host that superseded this plan in
 > the banner below; neither will return. The demo broker
-> (`scripts/archive/demo_broker/`) is therefore **dormant** — the code is kept, but there
+> (`scripts/demo_broker/`) is therefore **dormant** — the code is kept, but there
 > is no instance for it to create, destroy, wake, or reap.
 >
 > Every pending item in this doc is **CLOSED-UNRUNNABLE**, not pending — there is
@@ -27,7 +29,7 @@
 > supersedes this doc for the **cloud / wake / cost layer** (OCI stops-and-starts
 > one persistent instance — compute billing pauses when stopped — instead of the
 > DO destroy-and-reseed dance here) and **reuses everything engine-independent
-> from this doc**: the broker (`scripts/archive/demo_broker/`), the token landing +
+> from this doc**: the broker (`scripts/demo_broker/`), the token landing +
 > waiting-room + idle-reaper + killswitch design, the abstract live-fetch
 > decision (§4 #2), and the int8 ONNX cross-encoder (§4 #4 / §6). Kept in place
 > (not moved) because that reused content is still current and referenced.
@@ -87,7 +89,7 @@ working set):**
 Keep the droplet **hot 09:00–17:00 on weekdays** (landing page fully loaded,
 instant queries — no 2–4 min wake) and **scale-to-zero after hours / weekends**
 (boot-on-request via the existing wake path). The broker owns this policy
-(`scripts/archive/demo_broker/`, §2A) via a `BUSINESS_HOURS` window + timezone; outside
+(`scripts/demo_broker/`, §2A) via a `BUSINESS_HOURS` window + timezone; outside
 the window it falls back to the on-demand wake + idle-reaper behaviour.
 
 **Cost model — 3 weeks, `g-16vcpu-64gb` @ ~$0.50/h *est.*:**
@@ -192,7 +194,7 @@ Small Python (FastAPI) service on the NAS, fronted by the **existing** cloudflar
    even if "active", as a budget backstop against a stuck reaper.
 7. **Architecture explainer** `GET /architecture` — public (no auth), no wake.
    Serves the interactive federated query trace visualization
-   (`scripts/archive/demo_broker/architecture_page.py`): 8-shard pipeline diagram, R1-accurate
+   (`scripts/demo_broker/architecture_page.py`): 8-shard pipeline diagram, R1-accurate
    RAM ladder, phone/thumb-drive deployment scenarios, References tab with links to
    repos and concept papers. Linked from the waiting room and the landing page footer.
    The page's "RUN QUERY →" button fires a real search (see item 7a) in parallel with
@@ -322,10 +324,10 @@ pre-measurement numbers `*est.*`.
   Script `scripts/experiments/export_ce_onnx_int8.py`, results
   `data/eval_results/ce_onnx_int8_bench_20260619_0302.json`. Quality (NDCG) parity
   still UNMEASURED (separate LLM-judge eval).
-- **Broker schedule decision core** (`scripts/archive/demo_broker/scheduler.py`): 13/13 unit
+- **Broker schedule decision core** (`scripts/demo_broker/scheduler.py`): 13/13 unit
   tests (hot-window keep-alive, prewarm boot, after-hours scale-to-zero, idle reaper,
   daily killswitch). Control-plane only; no live DO timing yet (dry-run).
-- **Multi-tenant broker (per-person, account-free)** (`scripts/archive/demo_broker/`,
+- **Multi-tenant broker (per-person, account-free)** (`scripts/demo_broker/`,
   added 2026-06-19): per-invitee unguessable-token links (`mint_invite.py`) →
   isolated sessions with their own `/mcp` bearer; **push notification to owner on
   session start + errors** (ntfy/Slack/Discord webhook); **durable usage+debug**

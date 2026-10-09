@@ -10,10 +10,13 @@ A generation directory is a self-contained mini index root:
         seismic/delta_g0007.mmap/                  c1a f16 mmap layout
         seismic/delta_g0007.dotvbyte.v2.mmap/      served forward format
 
-and the delta root publishes two atomic files the serving layer reads:
+and the delta root publishes the files the serving layer reads:
 
-    <delta_root>/generations.json   stamp, published generations, masks
-    <delta_root>/shard_manifest.json base shard records + one per generation
+    <delta_root>/generations.json   stamp, published generations, masks,
+                                    the path of the composed manifest (commit point)
+    <delta_root>/shard_manifests/shard_manifest-<stamp>.json
+                                    base shard records + one per generation (a new
+                                    file per publish, never rewritten)
 
 Nothing under a published gNNNN/ is ever modified; compaction builds a NEW
 generation from the ledger's stored records and retires the old ones.
@@ -248,12 +251,38 @@ def build_generation(delta_root: Path, gen: int, records: list[DocRecord],
 
 
 # ── publish ─────────────────────────────────────────────────────────────────
+MANIFEST_DIR = "shard_manifests"
+
+
+def _new_manifest_path(delta_root: Path, stamp: str) -> Path:
+    """A path no earlier publish used: `shard_manifests/shard_manifest-<stamp>[-n].json`.
+    The composed manifest is never rewritten in place, so the generations.json
+    a reader (or a restart after a kill) sees always names the manifest it was
+    published with (F5, doc 10 addendum 2026-10-08)."""
+    d = delta_root / MANIFEST_DIR
+    d.mkdir(exist_ok=True)
+    p = d / f"shard_manifest-{stamp}.json"
+    n = 1
+    while p.exists():
+        p = d / f"shard_manifest-{stamp}-{n}.json"
+        n += 1
+    return p
+
+
 def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
             base_shard_manifest: str | None = None, ordinal_dir: str | None = None) -> dict:
-    """Rewrite generations.json + shard_manifest.json from the ledger's
-    published generations. Both writes are atomic renames; a reader always
-    sees a complete pair (generations.json is written LAST and carries the
-    shard manifest path + stamp, so the reader keys everything off it).
+    """Rewrite generations.json from the ledger's published generations, with
+    the composed shard manifest written first to a NEW file
+    (`shard_manifests/shard_manifest-<stamp>.json`, never an existing path).
+    generations.json is written LAST by atomic rename and names that file, so
+    it is the single commit point: a reader, or a restart after a kill at any
+    instant, sees either the previous publish complete or this one complete.
+    (Before 2026-10-08 the manifest was rewritten in place at
+    `<delta_root>/shard_manifest.json` ahead of generations.json, so a kill
+    between the two renames paired the new manifest with the old masks;
+    found by review while writing the F5 checker, doc 10 addendum
+    2026-10-08. Roots published earlier still name that file until their
+    next publish, which does not touch it.)
 
     Item C (2026-09-29): when base ordinal arrays are available (`ordinal_dir`
     — the CLI's `--ordinal-dir`, threaded through `freeze_buffer`/`compact` —
@@ -267,7 +296,11 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
     the composed manifest of the newest published fold (if any) is the base;
     a base whose records carry `fold_origin` always gets a composed
     `shard_manifest.json`, even with no delta SEISMIC shard. With no
-    published fold both are exactly as before."""
+    published fold both are exactly as before.
+
+    Fold-in trigger (doc 10 §1, `trigger.py`): after generations.json, the
+    per-shard (a)/(d)/(c) record goes to `trigger.json` + `trigger_log.jsonl`
+    (report only; serving never reads it) and is returned under `trigger`."""
     gens = ledger.published_generations()
     entries = []
     delta_shards = []
@@ -285,16 +318,17 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
                                  "forward_format": gi["seismic"].get("format")})
     base_manifest = base.shard_manifest(base_shard_manifest or ledger.active_fold_manifest())
     base_records = BaseIndex.shard_records(base_manifest)
+    stamp = f"{gen_name(gens[-1]) if gens else 'g0000'}-{int(time.time())}"
     shard_manifest_path = None
     if delta_shards or any(r.get("fold_origin") for r in base_records):
         records = base_records + delta_shards
-        shard_manifest_path = delta_root / "shard_manifest.json"
+        shard_manifest_path = _new_manifest_path(delta_root, stamp)
         atomic_write_json(shard_manifest_path, {
             "plan": "delta layer: base shards + one shard per published delta generation",
             "base_shard_manifest": str(base_manifest) if base_manifest else None,
+            "stamp": stamp,
             "n_shards": len(records), "shards": records, "built_utc": time.strftime("%Y-%m-%d %H:%M"),
         })
-    stamp = f"{gen_name(gens[-1]) if gens else 'g0000'}-{int(time.time())}"
     mask = ledger.mask()
     livedocs_entry = None
     ordinal_dir = ordinal_dir or os.environ.get("SFU_THINCLIENT_ORDINALS")
@@ -315,6 +349,9 @@ def publish(delta_root: Path, ledger: IngestLedger, base: BaseIndex,
         "buffer": {"ledger": str(ledger.path), "tantivy_section": "delta_buffer"},
     }
     atomic_write_json(delta_root / "generations.json", data)
+    from .trigger import record as trigger_record
+    data["trigger"] = trigger_record(delta_root, ledger, base_records,
+                                     str(od) if ordinal_dir else None, stamp)
     return data
 
 

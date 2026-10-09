@@ -133,7 +133,10 @@ LIMIT = 10
 BOOT_N = 10_000
 BOOT_SEED = 0
 M_SET_RECORDED = {"QT": 0.9908, "QD": 0.985}
-F4_BARS = {"wall_s": 90 * 60, "peak_rss_gb": 10.0, "scratch_gb": 60.0, "output_ratio": 1.10}
+# peak_rss_gb is the FROZEN 2026-10-01 bar; peak_rss_gb_amended is the owner's amendment of 2026-10-05
+# (doc 10 addendum of that date, taken after folds 1-3 were measured), read on peak tree VmRSS + VmSwap.
+F4_BARS = {"wall_s": 90 * 60, "peak_rss_gb": 10.0, "peak_rss_gb_amended": 11.5, "scratch_gb": 60.0,
+           "output_ratio": 1.10}
 BLANK_ENV = ("SFU_SEISMIC_STAGE_DIR", "SFU_META_STAGE_DIR", "SFU_SEISMIC_SHARD_MANIFEST", "SFU_DELTA_ROOT",
              "SFU_THINCLIENT_ORDINALS", "SFU_SEARCH_SPECULATIVE_RERANK", "SFU_DELTA_ABS_ROUTE",
              "SFU_BM25F_PARSE_ONCE", "SFU_SEISMIC_DELTA_GROUP", "SFU_OA_BITMAP", "SFU_SEISMIC_SHARD_FAULT_BOUNDARY")
@@ -412,6 +415,7 @@ def cmd_build(a) -> int:
         rec["output_bar"] = {"error": repr(exc)}
     rec["bars"] = {"wall_le_90min": wall <= F4_BARS["wall_s"],
                    "peak_rss_incl_swap_le_10gb": box["sum"] <= F4_BARS["peak_rss_gb"],
+                   "peak_tree_rss_incl_swap_le_11p5gb_amended_20261005": box["sum"] <= F4_BARS["peak_rss_gb_amended"],
                    "scratch_le_60gb": box["scratch"] <= F4_BARS["scratch_gb"] * 1e9,
                    "output": rec["output_bar"].get("pass"),
                    "note": "read as F4 only on a quiet host (exclusive lock) and with the publish stage added"}
@@ -617,8 +621,17 @@ def cmd_measure(a) -> int:
             bad(f"F: position {shard} origin {oF[shard:shard + 1]} != {origin}")
         if [o for j, o in enumerate(oF) if j != shard] != [o for j, o in enumerate(oL) if j != shard]:
             bad("F and L differ at a position other than the folded shard")
-        if oL[shard:shard + 1] != [None]:
-            bad(f"L: position {shard} is not the base shard ({oL[shard:shard + 1]})")
+        # F6 (doc 10 addendum 2026-10-09): L may serve a previously PUBLISHED fold of s at position s
+        _db = sqlite3.connect(f"file:{Path(a.delta_root) / 'ledger.sqlite'}?mode=ro", uri=True)
+        try:
+            _pub = [f"fold:{shard}:{k}" for (k,) in _db.execute(
+                "SELECT fold FROM folds WHERE shard=? AND state='published' ORDER BY fold DESC LIMIT 1", (shard,))]
+        except sqlite3.OperationalError:
+            _pub = []
+        finally:
+            _db.close()
+        if oL[shard:shard + 1] not in ([None], _pub):
+            bad(f"L: position {shard} is neither the base shard nor the root's published fold ({oL[shard:shard + 1]})")
         if out["arms"]["F"].get("seismic_newest") != len(moved):
             bad(f"F: seismic_newest {out['arms']['F'].get('seismic_newest')} != moved {len(moved)}")
         if not out["arms"]["F"].get("shard_filter_attached"):

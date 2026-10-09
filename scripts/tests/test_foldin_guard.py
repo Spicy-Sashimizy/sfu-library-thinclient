@@ -188,8 +188,11 @@ def test_compose_manifest_repoints_one_record_and_never_overwrites(tree):
     assert got["shards"][1]["fold_of"]["mmap_dir"] == str(tree["outside"])
     assert tree["served_manifest"].read_bytes() == before_manifest
     assert _base_files(tree) == before
+    body = out.read_bytes()
+    assert compose_fold_manifest(tree["served_manifest"], 1, 1, mm, 12, out, cfg) == out
+    assert out.read_bytes() == body
     with pytest.raises(FoldGuardError, match="never overwritten"):
-        compose_fold_manifest(tree["served_manifest"], 1, 1, mm, 12, out, cfg)
+        compose_fold_manifest(tree["served_manifest"], 1, 1, mm, 13, out, cfg)
     with pytest.raises(FoldGuardError):
         compose_fold_manifest(tree["served_manifest"], 1, 1, mm, 12, tree["data"] / "m.json", cfg)
 
@@ -210,6 +213,16 @@ def test_baseline_detects_changed_new_and_missing(tree):
     f.unlink()
     with pytest.raises(BaselineChanged):
         baseline_check(snap, roots, retries=1, sleep_s=0.01)
+
+
+def test_baseline_survives_json_round_trip(tree):
+    roots = [tree["data"], tree["staged"]]
+    snap = json.loads(json.dumps(baseline_snapshot(roots)))
+    assert baseline_check(snap, roots, retries=0)["changed"] == []
+    f = tree["data"] / "seismic" / "plan01" / "shard0.mmap" / "forward_data.bin"
+    f.write_bytes(b"changed!!!!")
+    with pytest.raises(BaselineChanged):
+        baseline_check(snap, roots, retries=0)
 
 
 def _ready_fold(tree, ledger, shard, fold, ids):
@@ -319,3 +332,46 @@ def test_extend_token_map_keeps_ids():
     pinned = {"a": 0, "b": 1, "c": 2}
     out, extra = foldin.extend_token_map(pinned, ["b", "z", "y"])
     assert extra == ["y", "z"] and out == {"a": 0, "b": 1, "c": 2, "y": 3, "z": 4}
+
+
+def test_prefault_reads_every_file_once_and_writes_nothing(tmp_path):
+    d = tmp_path / "fold.dotvbyte.v2.mmap"
+    (d / "sub").mkdir(parents=True)
+    (d / "forward_data.bin").write_bytes(b"a" * 3000)
+    (d / "sub" / "posting_lists.bin").write_bytes(b"b" * 17)
+    (d / "empty.bin").write_bytes(b"")
+    (d / "link.bin").symlink_to(d / "forward_data.bin")
+    before = {p: (p.stat().st_size, p.stat().st_mtime_ns) for p in d.rglob("*") if p.is_file()}
+    out = foldin.prefault_dir(d, chunk=1024)
+    assert out["files"] == 3 and out["bytes"] == 3017 and out["dir"] == str(d)
+    assert {p: (p.stat().st_size, p.stat().st_mtime_ns) for p in d.rglob("*") if p.is_file()} == before
+
+
+def test_publish_fold_prefaults_the_fold_unless_told_not_to(tree):
+    cfg = tree["cfg"]
+    roots = [tree["data"], tree["staged"]]
+    outs = []
+    for k, pf in ((1, True), (2, False)):
+        delta = tree["tmp"] / "work" / f"delta{k}"
+        delta.mkdir()
+        idx = tree["tmp"] / f"index{k}"
+        idx.mkdir()
+        led = IngestLedger(delta / "ledger.sqlite")
+        ids = _ids_routed_to(1, 1)
+        led.stage([DocRecord(id=ids[0], title="x", sparse_field={"a": 1.0})], {})
+        led.db.execute("UPDATE docs SET generation=1")
+        led.db.commit()
+        base = BaseIndex(idx)
+        _ready_fold(tree, led, 1, k, ids)
+        foldin.mark_fold_ready(led, 1, k, {})
+        dry = foldin.publish_fold(delta, led, base, 1, k, confirm=False, cfg=cfg,
+                                  base_shard_manifest=str(tree["served_manifest"]), baseline_roots=roots,
+                                  prefault=pf)
+        assert "prefault" not in dry
+        outs.append(foldin.publish_fold(delta, led, base, 1, k, confirm=True, cfg=cfg,
+                                        base_shard_manifest=str(tree["served_manifest"]),
+                                        baseline_roots=roots, prefault=pf))
+        led.close()
+        base.close()
+    assert outs[0]["prefault"]["files"] == 1 and outs[0]["prefault"]["bytes"] == 1
+    assert outs[1]["prefault"] is None

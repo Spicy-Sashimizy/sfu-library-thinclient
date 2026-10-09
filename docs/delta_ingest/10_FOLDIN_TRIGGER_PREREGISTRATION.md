@@ -300,3 +300,438 @@ Read on the owner's level, **F2 = PASS on fold 1 and on fold 2** (Q-a, Q-b,
 Q-c, Q-d; Q-d still on a fixture without deletions), and the §8 kill
 condition "F2 fails Q-a or Q-b after one fold rebuild" is not met. F4's
 memory bar, F1, F3, F5, F6, F8 are unaffected by this addendum.
+
+## Addendum 2026-10-05 — owner amendment of the F4 memory bar (recorded AFTER the runs it affects)
+
+§6 F4 froze "peak RSS ≤ 10 GB" from M9's 8.2 GB, a number M9's own record
+says understated the working set (the build child was partly swapped; the
+original build peaked at 9.92 GB). Three builds of the shard-0 fold were
+measured (2026-10-03 and 2026-10-04, `spike/delta_ingest/FOLDIN_FINDINGS.md`):
+peak process-tree VmRSS + VmSwap 12.11 GiB (fold 1), 13.13 GiB (fold 2, dump
+change only), **11.37 GiB (fold 3, current code)**; every reading of fold 3
+is above 10 GB (largest process 11.24, anonymous-only 10.32).
+
+The owner decided on 2026-10-05, **with those numbers known**: **the F4
+memory bar is amended to peak RSS ≤ 11.5 GB, read on the process-tree VmRSS +
+VmSwap of the fold build as the recorder samples it** (GiB, the recorder's
+unit; this also answers which number "peak RSS" is). This loosens a frozen
+bar after measurement; it is recorded as an amendment, not a clarification,
+and the original bar's verdict stays on record (FAIL on all three builds).
+The value and its ground were proposed by the session's assistant and
+accepted by the owner ("amend the bar"): a shard-rebuild cost of this size
+is the normal cost of the delta + periodic-merge design
+(`12_NEXT_SESSION_2026-10-05.md` §5, online research 2026-10-05), and 11.5
+sits just above the one build of the current code.
+
+Unchanged: the §8 kill line (peak RSS > 12 GB per shard on `desktop_gpu`) and
+the profile abort (`max_rss_gb` 12.0); F4's wall, scratch and output bars;
+the publish stage and the duty-cycle estimate, which no build record
+includes yet.
+
+Read on the amended bar: fold 3 **PASS** (11.37 ≤ 11.5, margin 0.13 GiB);
+folds 1 and 2 FAIL (older code). The margin is thin: the peak is the
+dotvbyte converter's last 2 s sample and moved between builds (fold 2 and
+fold 3 both read 11.24 GiB for that process); a build that reads above 11.5
+fails F4 again, and one above 12 meets the kill line.
+(`data/eval_results/delta_ingest_foldin_20261004.json` key
+`F4_amended_bar_20261005`; the recorder writes both flags from now on.)
+
+## Addendum 2026-10-08 — implementation readings of §1 (a)/(c)/(d) and of F1 (recorded BEFORE the F1 run)
+
+The trigger bookkeeping is `spike/delta_ingest/trigger.py`, called by
+`generation.publish()` after `generations.json` is written; it writes
+`<delta_root>/trigger.json` (+ one line of `trigger_log.jsonl`) and only
+reports. These readings fix what the code counts; none changes a threshold or
+a bar.
+
+- **Base docs of s** = `n_docs` of position s in the base shard manifest that
+  `publish()` used (after a published fold, s′'s record).
+- **(a)** counts ledger rows with status `live`, `route_shard = s` and
+  `seismic_origin IS NULL`: a doc whose newest SEISMIC copy is already inside a
+  published fold of s does not weigh on the delta leg, so it is not counted
+  (otherwise (a) would fire again as soon as the 24 h hysteresis ends).
+- **(c)** = now − MIN(`last_seen`) over the same rows (`last_seen` = stage
+  time of the current copy, the `staged_at` of `foldin`).
+- **(d), no published fold of s** = distinct base ordinals set in the livedocs
+  bitset whose id routes to s. With no ordinal arrays (no bitset) the ledger
+  reading is used — tombstones with `in_base=1` plus live `in_base=1` docs,
+  routed — and the record says `d_source = "ledger"`.
+- **(d), after a published fold k of s** (snapshot T): only copies dead in s′
+  count — a live `in_base=1` doc with `last_seen > T` that was a fold member
+  or first seen after T, or a tombstone with `ts > T` whose id was a member or
+  had no `docs` row first seen at or before T. Residual edge, not handled: an
+  id tombstoned both before and after T with no `docs` row. F1's checkpoints
+  publish no fold, so this branch is covered by unit tests
+  (`scripts/tests/test_foldin_trigger.py`) and NOT by F1.
+- **(b)** is not implemented (needs F0); `SFU_DELTA_FOLDIN_TAX_MS` is ignored
+  and every record carries `tax_ms: null` and a `tax_hook` note.
+- **Dials:** env only (`SFU_DELTA_FOLDIN_FRAC`, `_DEAD_FRAC`, `_MAX_AGE` in
+  days); unset or empty = OFF; no profile default until F7.
+- **F1 "synthetic publish"** = a ledger mutation batch on a copy (upserts of
+  new ids, updates of base ids, deletions of base ids, deletions of live delta
+  ids) staged into the buffer, then `publish()` with the full local ordinal
+  arrays (`/var/tmp/sfu_delta_C_20260929/ords`) so a bitset is written; no
+  generation is frozen (buffer docs are live delta docs for (a)). The
+  brute-force recount is an independent path: (a)/(c) from every `docs` row
+  routed with `scripts/seismic_testbed/shard_spool.py` `shard_id` (not the
+  stored `route_shard`), (d) by decoding the published `.liv` (crc checked),
+  mapping set ordinals to W-ids through `wids.npy` and routing them the same
+  way; base docs from the manifest file read directly. "Identical" = equal
+  integer numerators, equal denominators, and equal `oldest_staged_at` floats
+  per shard; fractions follow. The copies hold the ledger and each
+  generation's `generation.json` only (what `publish()` reads); the originals
+  are never opened for writing. The `root_n8` copy gets `backfill-routes`
+  (the original has no route columns).
+
+## Addendum 2026-10-08 — the deletions fixture for Q-d (recorded BEFORE its fold is built)
+
+§5 (ii) names the Stage-0 encoded subsample as delta input; until now every
+fold ran on `fixture_n8` (0 tombstones, 0 superseded), so Q-d tested only
+double-serving. The Stage-0 format is usable (no deviation from §5 is
+needed): `/home/vscode/work/inplace_update/stage2/docs` holds the 32,155
+encoded upserts (SPLADE vectors in shard 0's token ids, encoder text and year
+per doc) and the 1,131,292 deleted shard-0 rows of 2026-06-17 .. 2026-09-15.
+
+**Fixture** `/home/vscode/work/delta_ingest/foldin/fixture_n8_del`, built by
+`scripts/experiments/delta_ingest_foldin_del_fixture.py` through the product
+ledger path (`IngestLedger.delete` / `stage`, `freeze_buffer`, `publish` with
+the base ordinal arrays `/var/tmp/sfu_delta_C_20260929/ords`, so the masks are
+the livedocs bitset), record `build_fixture.json` beside it:
+copy of `fixture_n8` (fold tables emptied) + **1,131,292 tombstones** (all
+routed to shard 0, all in base) + the 32,155 upserts as one new generation
+g0009, all routed to shard 0: **8,465 superseded base docs**, **20,112
+re-staged delta docs** (every corpus (b) doc routed to shard 0 is also a
+Stage-0 upsert — corpus (b) was cut from the same part files — so its g0001–
+g0008 copy is now a superseded delta copy) and 3,578 new docs. Livedocs
+popcount 1,139,757 (1,131,292 deleted + 8,465 superseded; 0 deletes without
+an ordinal). Live delta docs routed to shard 0: 32,155. Expected docs of s′ =
+18,799,322 − 1,131,292 − 8,465 + 32,155 = **17,691,720**. The upsert records
+carry the encoder text as `title` and the year only (as the in-place bench's
+A1 arm built them); both arms serve the same records, so F-vs-L parity is
+unaffected.
+
+**This is a NEW fold (different delta), not a rebuild of fold 1**: its fold
+root is `/home/vscode/work/delta_ingest/foldin_del` (fold 1 of that root). A
+Q-a or Q-b failure on it is a result of this fold. The §8 clause ("F2 fails
+Q-a or Q-b after one fold rebuild with a corrected harness") is applied to it
+as to any fold: a harness defect is fixed and re-run once, a model result is
+not; the kill is the owner's call and is not decided by the run.
+
+Bars, unchanged: Q-a Reading A (0.985 / 0.980), Q-b at the federated level
+against the same base-only reference overlap@10(R, A0) (0.9858 / 0.9870 −
+0.005; R and A0 do not depend on the delta), Q-c as frozen, **Q-d = 0 leaks
+over 460 queries** — now with real tombstones, base-superseded and
+delta-superseded copies. F4 on the amended bars (wall ≤ 90 min, tree peak ≤
+11.5 GB, scratch ≤ 60 GB, output ≤ 1.10 × (served dv-v2 + f16 twin) × docs
+of s′ ÷ 18,799,322; kill line 12 GB). Result keys `F4_build_fold_del`,
+`F2_fold_del` in `data/eval_results/delta_ingest_foldin_20261008.json`.
+
+## Addendum 2026-10-08 — F3/F8 implementation reading (recorded BEFORE either run)
+
+Harness `scripts/experiments/eval_delta_ingest_foldin_f3f8.py` (rows F3 and F8
+copied verbatim in its header); launcher
+`/home/vscode/work/delta_ingest/foldin/f3f8/run_f3f8.sh` (exclusive latency
+lock around setup → smoke → F8 → F3; it starts only after the deletions-fixture
+F2 of the addendum above has written its result). Results
+`data/eval_results/delta_ingest_foldin_f3f8_<YYYYMMDD>.json`, keys `setup`,
+`F8`, `F3`. No bar changes; these readings fix what the rows leave open.
+
+**Common.** Every root is a COPY under `…/foldin/f3f8/` (never `fixture_n8`,
+never a served root, never `data/`). All arms serve the base from the staged
+manifest `/home/vscode/work/inplace_update/m4/base_manifest.json` (local disk,
+as 09's n0 and roots), not the repo-data manifest `fixture_n8` was published
+over. Delta arms run the fallback stack's levers L3 + L4 + L5
+(`SFU_DELTA_ABS_ROUTE`, `SFU_BM25F_PARSE_ONCE`, `SFU_SEISMIC_DELTA_GROUP` = 1),
+layout `per_base_section`, parallel federation. `publish-fold` now prefaults
+the fold's served dir before the repoint (the operator prefault of §4; commit
+c5998e72); its seconds are recorded.
+
+**F3 arms.** The fold delta is the 160,347 corpus (b) docs of `fixture_n8`.
+- **n0**: gate off, staged base (09's n0).
+- **L** = base + fold delta + consolidated sections tier: 09's `root_n8c`
+  (the same 160,347 docs compacted into ONE generation that carries its
+  SEISMIC shard and its sections) + L3/L4/L5 — the `x8c` arm of 09 R1/R3.
+- **F** = s′ + consolidated sections tier: a copy of `fixture_n8` compacted
+  (`cli.py compact --gens 1..8 --no-seismic`) into ONE generation with no
+  SEISMIC shard, then `cli.py publish-fold --shard 0 --fold 1 --confirm`
+  (fold 1 = the fold that passed F2): s′ at position 0, staged base shards 1–7,
+  no delta SEISMIC shard, folded docs' SEISMIC origin `fold:0:1`.
+- Deviation, stated: only shard 0 is folded, so in F the delta docs routed to
+  shards 1–7 (≈ 140k of 160,347) have no SEISMIC copy anywhere. F is therefore
+  the latency of the post-fold steady state (no delta SEISMIC shard), not a
+  servable mixed state. F3 measures latency only; quality is F2's.
+- Recorded beside the bar: **n0x** (n0 + L4, the one lever that acts on the
+  base, 09's reference), Δ(F, n0x), Δ(L, F), Δ(L, n0).
+- Design and statistics = 09 §1/§1.1 through `eval_delta_ingest_m4f.py
+  inproc` (one process, one retriever per arm + a prime retriever, 1 warm-up +
+  2 measured passes over the 120 M4 topics, per-query shuffled arm order, quiet
+  gate, memory guard). p50 = pooled over both measured passes; Δ = median of
+  paired per-(pass, topic) differences, 95 % CI by topic-cluster bootstrap
+  (2,000 resamples, seed 20261001). Bar as frozen: p50(F) ≤ 1.05 × p50(n0) AND
+  CI upper bound of Δ(F, n0) ≤ +8.0 ms. Not read unless the run is COMPLETE
+  and healthy.
+
+**F8.** The F arm of F2 (s′ + the 8 delta generations) on a copy of
+`fixture_n8` republished over the staged base, fold 2 (also F2 PASS at the
+federated level, 2026-10-04) — fold 2 rather than fold 1 because the composed
+fold manifest is never overwritten and F3's root composes fold 1's. One
+process (M5 design), L3/L4/L5 on:
+- warm-up pass on the pre-fold state;
+- **rep 1** = the real operator step (`publish-fold`, prefault included), then
+  `reload()` timed, first query + 9 recovery queries;
+- warm-up + **warm pass on the post-fold state** — warm p50 = that pass (the
+  state the first query is served from);
+- **reps 2–5** = restore the pre-fold files (generations.json, the composed
+  manifest it names, any livedocs it names) → `reload()` → one query
+  (rollback, recorded) → prefault s′ → restore the post-fold files →
+  `reload()` timed → first query + 9 recovery. Each restore changes the stamp,
+  so the backend is dropped every time (asserted);
+- 2 controls (reload without a change), recorded.
+- First queries: topic (rep − 1) × 24 of the 120, as M5. Bars as frozen: max
+  `reload()` ≤ 15 s over the 5 reps; median first-query ms ≤ 2 × warm p50.
+  The same-topic paired ratio is recorded.
+
+## Addendum 2026-10-08 — F0 implementation readings (recorded BEFORE the g1M build and the F0 run)
+
+Harness `scripts/experiments/eval_delta_ingest_foldin_f0.py` (row F0 copied
+verbatim in its header; unit tests `scripts/tests/test_foldin_f0_builder.py`);
+launcher `/home/vscode/work/delta_ingest/foldin/f0/run_f0.sh`, which starts
+only after the F3/F8 launcher has written `…/foldin/f3f8/F3F8_DONE` (host order
+deletions → F3/F8 → F0 → F5) and always writes `…/foldin/f0/F0_DONE`. Result
+key `F0` in `data/eval_results/delta_ingest_foldin_f0_<YYYYMMDD>.json`. No bar
+changes; these readings fix what the row leaves open.
+
+**g1M corpus (1,000,000 base docs of shard 0, re-ingested as updates).**
+- **U** = every shard-0 base doc that the Stage-0 sample of the closed
+  in-place spike (10 % of the 2026-06-17 .. 2026-09-15 OpenAlex
+  `updated_date` part files, `/home/vscode/work/inplace_update/stage0/`) saw
+  updated and in slice (`partsout_f10/*.npz`: `rows ≥ 0` and `in_slice`;
+  517,185 expected). Text = that snapshot record (newest part wins) through
+  the product adapter `normalize_openalex_work`.
+- **F** = fill to exactly 1,000,000 with shard-0 base docs whose ordinal
+  section is `social_sciences__recent` and that its abstract sidecar holds,
+  minus U, in a seeded permutation (seed 20261008). Text = base meta row +
+  sidecar abstract via `seed.base_record`. Deviation, stated: base text is
+  local only for that one section (the other nine have no local sidecar), so
+  about half the corpus sits in one base section where real updates spread
+  over all ten. U keeps the real spread for the other half.
+- Vectors for U and F = the doc's stored f16 vector in twin 0 (the local copy,
+  `BaseVectorStore` exact-or-refuse); a refused doc is dropped and counted,
+  never re-encoded. No GPU. U's snapshot text is newer than the stored
+  vector's text; F0 measures latency, not quality.
+- All docs are routed to shard 0 (vectors exist locally only for twin 0), so
+  the livedocs bits of the superseded base copies concentrate in shard 0
+  (1,000,000 of 18,799,322 = 5.3 %) instead of spreading over 8 shards.
+
+**Root** `/home/vscode/work/delta_ingest/foldin/f0/root_g1M`: a NEW ledger,
+all 1,000,000 staged with `in_base=1`, frozen as ONE generation by the product
+`freeze_buffer` — layout `per_base_section`, **`seismic=True`** (the row says
+"with twin vectors", and without a delta SEISMIC copy the superseded docs
+would vanish from the SPLADE leg, a state no serving path produces before a
+fold). The consolidated tier of §4 drops that shard after a fold, so F0 reads
+an **upper bound** on the post-fold sections-tier tax; the delta SEISMIC
+shard's own share is recorded from the leg attribution
+(`seismic_delta_shard_sum`). Base manifest = M4's staged manifest
+(`/home/vscode/work/inplace_update/m4/base_manifest.json`, as `root_n1` and
+F3); base ordinals `/var/tmp/sfu_delta_C_20260929/ords`, so the superseded base
+copies are masked by the livedocs bitset (`root_n1` has no masks: its docs
+are new works). Profile `desktop_gpu` with `max_rss_gb` raised 12 → 40 for
+this fixture build only (it is not a fold and not an F4 record); build wall,
+tree peak and bytes are recorded under `build_g1M`.
+
+**Arms and statistics** (09 §1/§1.1 through `eval_delta_ingest_m4f.py
+inproc`: one process, a retriever per arm + a separate prime retriever, 1
+warm-up + 2 measured passes over the 120 M4 topics, per-query shuffled arm
+order, quiet gate, memory guard, parallel federation):
+- **n0x** = gate off + L4 (the stack's one base-acting lever; 09's reference);
+- **x1** = `m4/root_n1` (160,347 docs, 1 generation) + L3, L4, L5;
+- **xg1M** = `root_g1M` + L3, L4, L5.
+The bar quantity Δ(g1M) − Δ(n1) is read per (pass, topic) unit as
+t(xg1M) − t(x1), which equals Δ(g1M, n0x) − Δ(n1, n0x) unit by unit; median
+and 95 % topic-cluster bootstrap CI (2,000 resamples, seed 20261001). **PASS
+iff the run is COMPLETE and healthy AND the CI upper bound ≤ 8.0 ms**; else
+FAIL (sections tier flagged, §8), or NOT READ if incomplete. Recorded beside
+it: Δ(x1, n0x), Δ(xg1M, n0x), per-leg median differences, and the
+coefficient **c = median ÷ 0.839653** (ms per million delta docs added) for
+§1 (b)'s model T = a + b·G + c·D, with b from the 09 R1 F-SLOPE records.
+
+## Addendum 2026-10-08 — F5 implementation readings (recorded BEFORE any F5 trial)
+
+Harness `scripts/experiments/eval_delta_ingest_foldin_f5.py` (row F5 copied
+verbatim in its header); launcher `/home/vscode/work/delta_ingest/foldin/f5/run_f5.sh`.
+Results `data/eval_results/delta_ingest_foldin_f5_<YYYYMMDD>.json` key `F5`,
+per-trial rows in `…/foldin/f5/rows.json`. No bar changes; these readings fix
+what the row leaves open.
+
+**Code fixed BEFORE any trial, found by review while writing the checker**
+(commit 60ba0fc1, 7 tmp-tree tests in `scripts/tests/test_foldin_f5_crash.py`).
+F5 measures the code at the launcher's commit, which includes them:
+1. `generation.publish` rewrote `<delta_root>/shard_manifest.json` in place
+   BEFORE `generations.json`. A kill between the two renames paired the new
+   composed manifest with the old masks; on `fixture_n8` (all fold members are
+   new works, absent from `superseded`) every member would be served from both
+   s′ and its delta generation — a state neither pre- nor post-fold. The test's
+   negative control reproduces it (6/6 docs double-served). Now the manifest goes
+   to a NEW file per publish (`shard_manifests/shard_manifest-<stamp>.json`) and
+   `generations.json`, written last, names it: one commit point.
+2. `compose_fold_manifest` refused any existing output, so `publish-fold`
+   killed after composing but before its ledger commit could never be re-run.
+   An existing manifest with the same source and the same records is now reused;
+   any other is still refused.
+3. `build_fold` took the fold number from the ledger only, so a build killed
+   between `make_fold_dir` and its ledger row left a dir that blocked every
+   re-run ("fold numbers are never reused"). `next_fold` now also skips existing
+   `shard{s}/fold{k}` dirs.
+
+**Reduced fixture.** First 1,000,000 docs of twin 0 (the cmp-verified local
+copy), dumped in twin row order in the fold dump's format and built by the twin
+route with the twin's pinned token map (f16 c1a = the fold input, + dv-v2 =
+served); a 1-shard base manifest naming it. Fixture root = a copy of
+`fixture_n8`'s ledger (sqlite backup, fold tables emptied) + copies of
+g0001–g0008, published once over the reduced base: the pre-fold state. "The fold
+delta routed into it" = the 20,112 `fixture_n8` docs routed to shard 0 (all new
+works, so the fold drops no base row; docs of s′ = 1,020,112). Docs routed to
+shards 1–7 stay in the delta generations, served as before. Fold root
+`…/foldin/f5/foldroot`.
+
+**Kill.** SIGKILL to the whole process group of the `cli.py fold-build` /
+`publish-fold` child at once (the CLI, its dump workers and its Rust converter
+children): the closest model of a host crash or OOM kill available here (no
+cgroups). Kill times uniform on [0, W]: W = mean wall of two clean folds of the
+fixture (`calibrate`), seed 20261008; for publish, [0, W_p] with W_p = wall of
+one clean reference publish on a copy, seed 20261009. A trial whose child exits
+before its kill time is recorded `finished_before_kill` and replaced by the next
+draw (at most 25 per phase); replacements are listed in the result. "Restart" =
+a fresh `DeltaLayer` + SEISMIC backend over the root, with no repair step run.
+
+**(i) — exactly the pre-fold or the post-fold state.** All three must hold:
+(a) the served-state digest (composed-manifest records, generations, mask
+hashes, livedocs facts, base manifest; paths normalised to the root; stamp,
+publish time and manifest file name left out) equals the pre-fold digest taken
+from the root just before the trial, or the post-fold digest of the clean
+reference publish; (b) state inspection: every live delta doc routed to shard 0
+is kept at exactly one served position after the product per-shard filter
+(physical membership from the served shards' document mappings), at the
+expected origin (pre: its delta generation; post: `fold:0:k` for the fold's
+members, its generation otherwise); (c) 200 own-id lookups (sample seed
+20261008; the doc's own top-64 vector as the query through the product loader
+and filter, per-shard k = k′ = **1000**): no doc returned from two positions or
+from an unexpected origin, and the set of docs not returned equals the
+reference state's. k = 1000, not the E8 200: the smoke showed a quarter of the
+delta docs rank 384–778 on their own vector (inner product favours heavier docs
+on the same terms), so k = 200 would leave a quarter of the lookups unable to
+see a double. Base positions ≠ 0 are not searched (G2: an id routed to shard 0
+cannot be in them). A trial reading neither is recorded as the §8 kill
+criterion; it is never fixed and re-run silently.
+
+**(ii)** G3 baseline (`foldin.default_baseline_roots`) snapshot before the
+trial; unchanged after the kill AND after the re-run.
+
+**(iii) fold-build trials:** the re-run (a new fold number) completes (rc 0,
+state `built`) and its F arm (preview root) passes Q-a against L on QT + QD (220
+queries, the reduced fixture's federated SPLADE leg, E8 conventions). Bar =
+Reading A (owner, 2026-10-03), bar_set = min(0.99, m_set) − 0.005, with m_set =
+mean overlap@10 between the two clean calibration folds' F arms (§3 G1's
+build-vs-build rule applied to this fixture; item N's m_set belongs to the full
+shard). Reading B (0.99) is recorded beside it. If either clean fold itself
+fails that Q-a, (iii) is NOT READABLE on this fixture and the verdict says so;
+no bar changes. **publish trials:** the re-run of `publish-fold` completes, the
+served-state digest after it equals the clean post-fold digest, and the fold dir
+(size + mtime of every file) is unchanged. Q-a is inherited from F2 fold 1:
+the published output is fold 1 itself, unchanged bytes (Q-a PASS 2026-10-04,
+federated, Reading A).
+
+**Publish trials' roots.** A master copy of `fixture_n8` (ledger backup +
+g0001–g0008 copied once) under `…/foldin/f5/pub/master`; per trial the ledger is
+backed up again and the generation dirs symlinked to the master's copies. Each
+copy is published over M4's staged base manifest
+(`/home/vscode/work/inplace_update/m4/base_manifest.json`, the base F3/F8 uses,
+so the shared composed manifest `…/foldin/manifests/shard_manifest.fold_s0_k1.json`
+comes out identical and is reused). Fold 1 of shard 0 (`…/foldin/shard0/fold1`)
+is marked READY on the copy. If the shared manifest exists with different
+content, the harness pre-composes its own under `…/foldin/f5/pub/manifests/` and
+records that per trial.
+
+**Run.** The launcher waits for `…/foldin/f3f8/F3F8_DONE` AND
+`…/foldin/f0/F0_DONE`, then holds the latency lock SHARED for the whole run (an
+exclusive latency run excludes it). Threads 4, dump workers 2; wall *est.*
+~6.5 h. Smoke of 2026-10-08 (30,000-doc base, 10 queries per set, 3 + 2 trials,
+`…/foldin/f5_smoke/`): plumbing only, 5/5, not a result.
+
+## Addendum 2026-10-09 — F7 implementation reading (recorded BEFORE F7 is computed)
+
+F7 is a computation (no lock, no index). Script
+`scripts/experiments/eval_delta_ingest_foldin_f7.py`, result key `F7` in
+`data/eval_results/delta_ingest_foldin_f7_20261009.json`. No bar changes;
+these readings fix what the row leaves open.
+
+- **Fold wall per shard** = max measured F4 wall (fold 3, 1,431.2 s) + the
+  F8 `publish-fold` wall (15.1 s) = 24.1 min. Σ over 8 shards (serial;
+  concurrency does not change a sum) = 3.21 h. Same number for `server`
+  (no server measurement exists; *est.*, an upper bound for a faster host).
+  `laptop`: fold disabled for shards above *est.* ~6 M docs (§7), so F7 is
+  NOT APPLICABLE to this corpus's 18.8 M-doc shards on `laptop`.
+- **(a)-period** = days from a fresh fold until (a) fires, from §2's table,
+  **as coded** (the governing stream; the text filter is not built). The
+  text-filtered column is computed and recorded beside it, not used.
+- **Duty cycle** at (a) = 3.21 h ÷ (24 h × period).
+- **Tax model** T(D, G) = Δ(x1, n0x) + b × (G − 1) + c × (D − 0.160347),
+  with Δ(x1, n0x) = +6.60 ms and c = 21.354 ms per million delta docs from
+  the F0 run (same harness, same day), b = 1.308 ms/gen = `09` R1 F-SLOPE on
+  the fallback stack (`R1_per_base_section_repeat`). D is in millions and
+  counts **every live delta doc of every shard, including the docs held only
+  by the never-folding sections tier** (§4: tantivy/meta/abstract copies stay
+  in the delta after a fold). c carries the delta SEISMIC share too, which is
+  right at a fold moment (the delta SEISMIC shards are still live then).
+- **"That (a)'s fold moment"** = the FIRST fold moment after a full build
+  (the most favourable one): routing is uniform, so all 8 shards reach (a)
+  together and D = 8 × a × 18,799,322 / 10⁶. G = the adopted G_max =
+  `max_live_gens` of the profile (8 on every profile, `profiles.py`), the
+  worst served state L1 allows. Flag iff T > 8 ms × G_max = 64 ms. Recorded
+  beside it, no verdict: T at the k-th fold round (D grows by the same step
+  each round, because folded docs stay in the sections tier), T with c at its
+  CI bounds (12.62 / 27.63), and T at G_max 1 and 4.
+- **(d)** = the smallest §1 candidate ≥ the dead fraction reached when (a)
+  fires = 0.367 %/day as coded × period. **(c)** = 30 days unless the duty
+  cycle of (c)-driven folds (3.21 h per 30 days) > 25 %. **(b)** = 8 ms.
+- A FLAG means no default ships ON for that profile; the chosen values are
+  still recorded.
+
+## Addendum 2026-10-09 — F6 implementation reading (recorded BEFORE the F6 fixture and fold are built)
+
+- **Live state before the second fold** (`/home/vscode/work/delta_ingest/foldin_f6/fixture`):
+  a copy of `fixture_n8` republished over the staged base manifest
+  (`m4/base_manifest.json`, as F3/F8), fold 1 marked READY on its F2 evidence
+  (2026-10-03/04, federated Q-b) and published with `publish-fold` (its
+  composed manifest is the identical one F3 composed and is reused), THEN the
+  second delta batch applied through the product ledger path by
+  `scripts/experiments/delta_ingest_foldin_del_fixture.py --keep-folds` (the
+  fold tables are kept so publish serves s′ at position 0).
+- **Second batch — deviation from the row, stated now:** the row names
+  "corpus (b) half not used in fold 1, or Stage-0 Q2 synthetic". Fold 1
+  used ALL corpus (b) shard-0 docs, and no Q2 data exists locally, so the
+  batch is the Stage-0 Q1 subsample (the deletions fixture's batch):
+  1,131,292 tombstones, 32,155 upserts — which re-update all 20,112 fold-1
+  members (a fold origin superseded by a newer generation: a stricter case
+  than the row's), supersede 8,465 base docs and add 3,578 new docs.
+- **Fold 2 of s′** = `fold-build` with `--fold-input` = fold 1's own c1a
+  output `/home/vscode/work/delta_ingest/foldin/shard0/fold1/fold.mmap`,
+  token map pinned to the twin's (as every fold), fold root
+  `/home/vscode/work/delta_ingest/foldin_f6` (the ledger numbers it fold 4;
+  it is "fold 2 of s′"), through the F4 recorder (shared lock; its F4
+  numbers are recorded, not read against F4).
+- **Bars read:** F2 Q-a and Q-b exactly as the owner readings stand
+  (`--bar-reading A --q-b-level federated`), L = the fixture (s′ + delta +
+  masks), F = the preview of fold 4; Q-b's reference overlap@10(R, A0) is the
+  same drift-run reference as every F2. **F6 PASS = Q-a AND Q-b PASS.** Q-c
+  and Q-d are computed and recorded beside it, not part of F6's verdict.
+- **Recorded, no bar:** overlap@10(fold 2, A0) on base-only docs = per QT/QD
+  query, F's shard-own top-10 minus every id the fixture ledger knows (docs
+  + tombstones), against A0's ranked list (served shard 0, the drift run's
+  `q_served_dv.json`) minus the same ids, cut to the same length, mean per
+  set. The same number for the deletions fold's F arm (built from the twin;
+  the SAME doc set, 17,691,720 docs, since `fold_plan` drops every
+  ledger-known shard-0 id and re-adds every live shard-0 delta doc), and
+  overlap@10 between the two F arms' shard-own and federated lists (one fold
+  vs two folds of the same docs) — the direct compounding-drift reading.
+

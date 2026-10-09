@@ -1,0 +1,13 @@
+# One-shot serve-instance rebuild trigger (broker box). See rebuild_trigger.sh.
+# No NoNewPrivileges here: the rebuild restarts sfu-broker through sudo.
+[Unit]
+Description=SFU demo: rebuild the serve instance once the tenancy is pay-as-you-go
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/demo_broker
+ExecStart=/home/ubuntu/demo_broker/rebuild_trigger.sh
+TimeoutStartSec=30min

@@ -1,0 +1,204 @@
+{
+ "F7": {
+  "item": "doc 10 \u00a76 F7 trigger values per profile",
+  "date_utc": "2026-10-09T19:48:04Z",
+  "script": "scripts/experiments/eval_delta_ingest_foldin_f7.py",
+  "reading": "doc 10 addendum 2026-10-09 \u2014 F7 implementation reading",
+  "git_head": "1eb47eb9c7575d5efce1e1dd311b4c32d0f3c6b6",
+  "inputs": {
+   "fold_wall_s": 1431.2,
+   "fold_wall_sources": {
+    "F4_build_fold3": 1431.2,
+    "F4_build_fold_del": 1420.3
+   },
+   "publish_s": 15.11,
+   "dx1_ms": 6.6,
+   "c_ms_per_M": 21.354,
+   "c_ci": [
+    12.624,
+    27.63
+   ],
+   "b_ms_per_gen": 1.308,
+   "r1_key_present": true
+  },
+  "stream_as_coded": {
+   "sum_fold_wall_8_shards_h": 3.214,
+   "a_rows": [
+    {
+     "a": 0.02,
+     "period_days": 4.29,
+     "duty_cycle": 0.0312,
+     "D_first_fold_M": 3.008,
+     "dead_frac_at_fire": 0.0157
+    },
+    {
+     "a": 0.05,
+     "period_days": 10.72,
+     "duty_cycle": 0.0125,
+     "D_first_fold_M": 7.52,
+     "dead_frac_at_fire": 0.0393
+    },
+    {
+     "a": 0.1,
+     "period_days": 21.44,
+     "duty_cycle": 0.0062,
+     "D_first_fold_M": 15.039,
+     "dead_frac_at_fire": 0.0787
+    },
+    {
+     "a": 0.2,
+     "period_days": 42.88,
+     "duty_cycle": 0.0031,
+     "D_first_fold_M": 30.079,
+     "dead_frac_at_fire": 0.1574
+    }
+   ]
+  },
+  "stream_text_filtered": {
+   "sum_fold_wall_8_shards_h": 3.214,
+   "a_rows": [
+    {
+     "a": 0.02,
+     "period_days": 8.28,
+     "duty_cycle": 0.0162,
+     "D_first_fold_M": 3.008,
+     "dead_frac_at_fire": 0.0118
+    },
+    {
+     "a": 0.05,
+     "period_days": 20.71,
+     "duty_cycle": 0.0065,
+     "D_first_fold_M": 7.52,
+     "dead_frac_at_fire": 0.0294
+    },
+    {
+     "a": 0.1,
+     "period_days": 41.41,
+     "duty_cycle": 0.0032,
+     "D_first_fold_M": 15.039,
+     "dead_frac_at_fire": 0.0588
+    },
+    {
+     "a": 0.2,
+     "period_days": 82.83,
+     "duty_cycle": 0.0016,
+     "D_first_fold_M": 30.079,
+     "dead_frac_at_fire": 0.1176
+    }
+   ]
+  },
+  "profiles": {
+   "laptop": {
+    "verdict": "NOT APPLICABLE",
+    "why": "fold disabled for shards above *est.* ~6 M docs (doc 10 \u00a77)"
+   },
+   "desktop_gpu": {
+    "a": 0.02,
+    "a_period_days": 4.29,
+    "a_duty_cycle": 0.0312,
+    "d": 0.05,
+    "d_reached_at_a": 0.0157,
+    "c_days": 30,
+    "c_duty_cycle": 0.0045,
+    "b_ms": 8.0,
+    "D_at_first_fold_M": 3.008,
+    "G_max": 8,
+    "tax_ms_at_first_fold": 76.56,
+    "tax_limit_ms": 64.0,
+    "flag": true,
+    "recorded_no_verdict": {
+     "tax_at_fold_round_k": {
+      "1": 76.56,
+      "2": 140.8,
+      "4": 269.26
+     },
+     "tax_c_ci_low": 51.7,
+     "tax_c_ci_high": 94.44,
+     "tax_G_max_1_vs_limit_8": 67.41,
+     "tax_G_max_4_vs_limit_32": 71.33
+    },
+    "text_filtered_recorded": {
+     "a": 0.02,
+     "a_period_days": 8.28,
+     "a_duty_cycle": 0.0162,
+     "d": 0.05,
+     "d_reached_at_a": 0.0118,
+     "c_days": 30,
+     "c_duty_cycle": 0.0045,
+     "b_ms": 8.0,
+     "D_at_first_fold_M": 3.008,
+     "G_max": 8,
+     "tax_ms_at_first_fold": 76.56,
+     "tax_limit_ms": 64.0,
+     "flag": true,
+     "recorded_no_verdict": {
+      "tax_at_fold_round_k": {
+       "1": 76.56,
+       "2": 140.8,
+       "4": 269.26
+      },
+      "tax_c_ci_low": 51.7,
+      "tax_c_ci_high": 94.44,
+      "tax_G_max_1_vs_limit_8": 67.41,
+      "tax_G_max_4_vs_limit_32": 71.33
+     }
+    },
+    "verdict": "FLAGGED (no default ships ON)"
+   },
+   "server": {
+    "a": 0.02,
+    "a_period_days": 4.29,
+    "a_duty_cycle": 0.0312,
+    "d": 0.05,
+    "d_reached_at_a": 0.0157,
+    "c_days": 30,
+    "c_duty_cycle": 0.0045,
+    "b_ms": 8.0,
+    "D_at_first_fold_M": 3.008,
+    "G_max": 8,
+    "tax_ms_at_first_fold": 76.56,
+    "tax_limit_ms": 64.0,
+    "flag": true,
+    "recorded_no_verdict": {
+     "tax_at_fold_round_k": {
+      "1": 76.56,
+      "2": 140.8,
+      "4": 269.26
+     },
+     "tax_c_ci_low": 51.7,
+     "tax_c_ci_high": 94.44,
+     "tax_G_max_1_vs_limit_8": 67.41,
+     "tax_G_max_4_vs_limit_32": 71.33
+    },
+    "text_filtered_recorded": {
+     "a": 0.02,
+     "a_period_days": 8.28,
+     "a_duty_cycle": 0.0162,
+     "d": 0.05,
+     "d_reached_at_a": 0.0118,
+     "c_days": 30,
+     "c_duty_cycle": 0.0045,
+     "b_ms": 8.0,
+     "D_at_first_fold_M": 3.008,
+     "G_max": 8,
+     "tax_ms_at_first_fold": 76.56,
+     "tax_limit_ms": 64.0,
+     "flag": true,
+     "recorded_no_verdict": {
+      "tax_at_fold_round_k": {
+       "1": 76.56,
+       "2": 140.8,
+       "4": 269.26
+      },
+      "tax_c_ci_low": 51.7,
+      "tax_c_ci_high": 94.44,
+      "tax_G_max_1_vs_limit_8": 67.41,
+      "tax_G_max_4_vs_limit_32": 71.33
+     }
+    },
+    "verdict": "FLAGGED (no default ships ON)",
+    "note": "fold wall not measured on a server; desktop_gpu wall used (*est.*, upper bound)"
+   }
+  }
+ }
+}

@@ -1,6 +1,6 @@
 """Unit tests for the WI-3 memory dial (no kernel, no systemd needed).
 
-    .venv/bin/python3 -m pytest scripts/archive/demo_broker/test_dial.py
+    .venv/bin/python3 -m pytest scripts/demo_broker/test_dial.py
 
 CgroupBackend is exercised against a tmpdir of fake cgroup-v2 files (the
 designed test seam); SystemdBackend against a captured fake runner. The

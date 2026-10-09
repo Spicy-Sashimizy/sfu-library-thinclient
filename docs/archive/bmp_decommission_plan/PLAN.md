@@ -82,10 +82,10 @@ collection completed 2026-06-20.
 > **Note 2026-09-25: CLOUD ACCESS ENDED.** The DigitalOcean tech-demo deployment
 > this plan was sizing for never happened and now cannot: the operator has no
 > cloud instances, the OCI E5 host and every DO droplet are gone and will not
-> return, and the demo broker (`scripts/archive/demo_broker/`) is dormant. The BMP→Qdrant
+> return, and the demo broker (`scripts/demo_broker/`) is dormant. The BMP→Qdrant
 > validation work below is unaffected (it ran and is DONE); only the droplet
 > deployment it was gating is CLOSED-UNRUNNABLE. See
-> `docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` and `DO_SIZING.md` banners.
+> `docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` and `DO_SIZING.md` banners.
 
 The user wants to: (1) close the remaining open items, (2) run a **full validation
 suite** to decide whether BMP can be safely decommissioned **before** committing to

@@ -13,7 +13,7 @@ cloud calls it makes:
 
 `DEMO_CLOUD` defaults to **do**, so nothing changes for the existing DO deploy
 until it is flipped to `oci`. DO→OCI mapping table:
-`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §4.
+`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §4.
 
 Semantic difference worth remembering: on DO the compute id is *created* state
 (None when destroyed); on OCI the instance always exists and its OCID is static

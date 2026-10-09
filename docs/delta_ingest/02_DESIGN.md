@@ -20,7 +20,7 @@ facts it leans on are cited to their docs.
    L0  MUTABLE buffer    tantivy delta_buffer (delete+add+commit)  +  exact sparse (RAM) ◀── ledger records (gen 0)
         searchable now   ───────────── freeze (flush_docs / flush_bytes / cap) ─────────────▶
    L1  IMMUTABLE gens    gNNNN/{sections/<base>__<era>/tantivy+abstracts.sqlite, meta.sqlite, seismic/*.dotvbyte.v2.mmap}
-        + newest-wins    generations.json (stamp, masks) + shard_manifest.json (base 8 + one per gen)
+        + newest-wins    generations.json (stamp, masks, commit point) + shard_manifests/shard_manifest-<stamp>.json (base 8 + one per gen)
         masks            ───────────── compact (rebuild N gens → 1 from ledger records) ─────▶
    L2  IMMUTABLE base    the 2026-06-16 150M build: 10 tantivy sections, meta.sqlite, sidecars, 8 SEISMIC shards
                          (never touched; folded only by a full rebuild that REPLAYS the ledger)
@@ -91,9 +91,14 @@ cold-latency on 18.8M-doc shards, irrelevant at delta size). Each stage
 records success or why it was skipped; `mmap_dir` is the most advanced layout
 that exists, so a host without the Rust bins still publishes tantivy + meta
 (SPLADE leg then lacks those docs until the buffer freezes elsewhere).
-`publish` composes `shard_manifest.json` = base shard records (from the
+`publish` composes the shard manifest = base shard records (from the
 served manifest ladder or `--base-shard-manifest`) + one record per
 generation, `n_shards` = total (satisfies the loader's partial-corpus gate).
+Since 2026-10-08 it goes to a NEW file per publish
+(`shard_manifests/shard_manifest-<stamp>.json`, never an existing path) and
+`generations.json`, written last, names it — so `generations.json` is the
+single commit point (before, `shard_manifest.json` was rewritten in place
+first; doc 10 addendum 2026-10-08 "F5 implementation readings").
 
 ### 1.6 Newest-wins masks
 
@@ -380,9 +385,14 @@ CPU encoding. Every stage is resumable from the ledger.
    the fold returning to the n0 arm of M4 within 5%.
 9. **Crash safety:** ledger writes are transactions; generation dirs stage as
    `.building` and rename; `abort_generation` returns docs to the buffer;
-   `generations.json`/`shard_manifest.json` are atomic renames. Not covered:
-   a crash between `finish_generation` and `publish` leaves a published
-   generation without a manifest until the next `publish` (idempotent).
+   `generations.json` and the composed manifest are atomic renames, and
+   since 2026-10-08 the manifest is a new file per publish, so
+   `generations.json` is the one commit point (the earlier in-place rewrite
+   of `shard_manifest.json` ahead of it could pair a new manifest with old
+   masks after a kill — found by review before F5, doc 10 addendum
+   2026-10-08). Not covered: a crash between `finish_generation` and
+   `publish` leaves a published generation without a manifest until the
+   next `publish` (idempotent). Fold-in crash safety is doc 10 F5.
 
 ## 5. What "off the shelf" bought and what stayed bespoke
 

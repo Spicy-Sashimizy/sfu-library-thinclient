@@ -93,5 +93,5 @@ most of the ratio win on small records (ru −40% … zh −32% vs an English di
 
 - **2026-08-18 — DEFERRED.** Operator: the OpenAlex polite pool is enough for
   the demo's purposes. The live-fetch path stays the documented, accepted
-  behavior (`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §8 gotcha); this doc is the pickup point
+  behavior (`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §8 gotcha); this doc is the pickup point
   if latency/offline-robustness ever justify the ~2–4 h build + ~70 GB payload.

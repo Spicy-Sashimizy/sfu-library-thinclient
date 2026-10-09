@@ -1,7 +1,7 @@
 """End-to-end broker wiring test (dry-run, no DO spend) via FastAPI TestClient.
 
 Requires fastapi + httpx (present in the project venv):
-    .venv/bin/python3 -m pytest scripts/archive/demo_broker/test_app.py
+    .venv/bin/python3 -m pytest scripts/demo_broker/test_app.py
 Skips cleanly if fastapi/httpx are absent (e.g. system python).
 """
 from __future__ import annotations
@@ -21,10 +21,30 @@ class TestBrokerWiring(unittest.TestCase):
         os.environ["DEMO_STATE_PATH"] = os.path.join(tempfile.mkdtemp(), "state.db")
         os.environ["DEMO_LOG_PATH"] = os.path.join(tempfile.mkdtemp(), "b.jsonl")
         os.environ["DEMO_ADMIN_TOKEN"] = "adm"
+        os.environ["DEMO_MAX_RUNTIME_HOURS_PER_MONTH"] = "55"
         from fastapi.testclient import TestClient
         import app
         cls.app = app
         cls.c = TestClient(app.app)
+
+    def test_zz_budget_refuses_wake(self):
+        app, c = self.app, self.c
+        now = app._now()
+        tok = app.tenants.mint_invite("Budget Test")
+        app.store.mark_down(now)
+        app.store.set("runtime_month", now.date().isoformat()[:7])
+        app.store.set("runtime_month_seconds", 56 * 3600.0)
+        try:
+            r = c.get("/start", params={"t": tok})
+            self.assertEqual(r.status_code, 503)
+            self.assertEqual(app.store.snapshot(now).status.value, "down")
+            self.assertEqual(c.get("/health").json()["max_runtime_hours_per_month"], 55.0)
+        finally:
+            app.store.set("runtime_month_seconds", 0.0)
+        self.assertEqual(c.get("/start", params={"t": tok}).status_code, 200)
+        self.assertEqual(app.store.snapshot(now).status.value, "booting")
+        app.store.mark_down(now)
+        app.store.set("runtime_month_seconds", 0.0)
 
     def test_full_flow(self):
         app, c = self.app, self.c

@@ -1,0 +1,8718 @@
+{
+ "measurement": "doc 10 \u00a76 F3 + F8 (docs/delta_ingest/10_FOLDIN_TRIGGER_PREREGISTRATION.md)",
+ "harness": "scripts/experiments/eval_delta_ingest_foldin_f3f8.py",
+ "launcher": "/home/vscode/work/delta_ingest/foldin/f3f8/run_f3f8.sh",
+ "git_head_launch": "46b85c0cd386f4b9a869debfa41987e4c63294e8",
+ "date_utc": "2026-10-08",
+ "setup": {
+  "utc": "2026-10-08T01:56:09Z",
+  "git_head": "46b85c0cd386f4b9a869debfa41987e4c63294e8",
+  "git_dirty_spike_src": [],
+  "roots": {
+   "root_f3": {
+    "skipped": "marker exists",
+    "utc_start": "2026-10-08T01:51:58Z",
+    "copy": {
+     "src": "/home/vscode/work/delta_ingest/foldin/fixture_n8",
+     "dst": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+     "copy_s": 4.49
+    },
+    "compact": {
+     "argv": [
+      "compact",
+      "--delta-root",
+      "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+      "--gens",
+      "1,2,3,4,5,6,7,8",
+      "--no-seismic",
+      "--base-shard-manifest",
+      "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "--profile",
+      "desktop_gpu"
+     ],
+     "rc": 0,
+     "s": 88.96,
+     "out": {
+      "format": 1,
+      "stamp": "g0009-1791424411",
+      "published": 1791424411.3061793,
+      "generations": [
+       {
+        "gen": 9,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3/g0009",
+        "docs": 160347,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__archive",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "disabled",
+        "docs_with_vectors": 0
+       }
+      ],
+      "mask": {
+       "deleted": [],
+       "superseded": {}
+      },
+      "livedocs": null,
+      "shard_manifest": null,
+      "base_shard_manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "buffer": {
+       "ledger": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3/ledger.sqlite",
+       "tantivy_section": "delta_buffer"
+      },
+      "trigger": {
+       "format": 1,
+       "computed_at": 1791424411.3136435,
+       "stamp": "g0009-1791424411",
+       "thresholds": {
+        "frac": null,
+        "dead_frac": null,
+        "max_age_days": null
+       },
+       "enabled": false,
+       "hysteresis_s": 86400,
+       "tax_hook": "NOT IMPLEMENTED: (b) needs F0's size coefficient (doc 10 \u00a76 F0); SFU_DELTA_FOLDIN_TAX_MS is ignored",
+       "route_seed": "sfu-seismic-plan01",
+       "route_shards": 8,
+       "ordinal_dir": null,
+       "d_source": "ledger",
+       "shards": [
+        {
+         "shard": 0,
+         "base_docs": 18799322,
+         "live_routed": 20112,
+         "masked_routed": 0,
+         "frac": 0.0010698258160586854,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 1,
+         "base_docs": 18812242,
+         "live_routed": 20030,
+         "masked_routed": 0,
+         "frac": 0.0010647322100151592,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 2,
+         "base_docs": 18797227,
+         "live_routed": 20124,
+         "masked_routed": 0,
+         "frac": 0.001070583442972732,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 3,
+         "base_docs": 18801448,
+         "live_routed": 20047,
+         "masked_routed": 0,
+         "frac": 0.0010662476634778343,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 4,
+         "base_docs": 18807611,
+         "live_routed": 20109,
+         "masked_routed": 0,
+         "frac": 0.0010691948062941114,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 5,
+         "base_docs": 18801216,
+         "live_routed": 19840,
+         "masked_routed": 0,
+         "frac": 0.0010552508944102338,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 6,
+         "base_docs": 18796836,
+         "live_routed": 20246,
+         "masked_routed": 0,
+         "frac": 0.0010770961666101678,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 7,
+         "base_docs": 18797196,
+         "live_routed": 19839,
+         "masked_routed": 0,
+         "frac": 0.0010554233727200588,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706129032188544,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        }
+       ],
+       "fire": []
+      },
+      "compacted": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ],
+      "into": 9
+     },
+     "stderr_tail": "",
+     "enomem": false
+    },
+    "after_compact": {
+     "stamp": "g0009-1791424411",
+     "generations": [
+      [
+       9,
+       160347,
+       "disabled"
+      ]
+     ],
+     "shard_manifest": null,
+     "base_shard_manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+     "n_shards": 0,
+     "origins": [],
+     "position0_mmap_dir": null,
+     "newest_by_leg_seismic": 0
+    },
+    "ready": {
+     "fold": 1,
+     "state": "ready"
+    },
+    "manifest_preset": null,
+    "publish_fold": {
+     "argv": [
+      "publish-fold",
+      "--delta-root",
+      "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+      "--shard",
+      "0",
+      "--fold",
+      "1",
+      "--confirm",
+      "--base-shard-manifest",
+      "/home/vscode/work/inplace_update/m4/base_manifest.json"
+     ],
+     "rc": 0,
+     "s": 10.52,
+     "out": {
+      "shard": 0,
+      "fold": 1,
+      "origin": "fold:0:1",
+      "fold_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold1",
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold1/fold.dotvbyte.v2.mmap",
+      "composed_from": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "manifest": "/home/vscode/work/delta_ingest/foldin/manifests/shard_manifest.fold_s0_k1.json",
+      "members": 20112,
+      "prefault": {
+       "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold1/fold.dotvbyte.v2.mmap",
+       "files": 9,
+       "bytes": 5548187135,
+       "s": 5.348
+      },
+      "marked_seismic_origin": 20112,
+      "stamp": "g0009-1791424420",
+      "shard_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3/shard_manifests/shard_manifest-g0009-1791424420.json",
+      "baseline": {
+       "changed": [],
+       "new": [],
+       "missing": [],
+       "n_files_before": 817,
+       "n_files_after": 817,
+       "retries": 0
+      }
+     },
+     "stderr_tail": "",
+     "enomem": false
+    },
+    "after_publish_fold": {
+     "stamp": "g0009-1791424420",
+     "generations": [
+      [
+       9,
+       160347,
+       "disabled"
+      ]
+     ],
+     "shard_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3/shard_manifests/shard_manifest-g0009-1791424420.json",
+     "base_shard_manifest": "/home/vscode/work/delta_ingest/foldin/manifests/shard_manifest.fold_s0_k1.json",
+     "n_shards": 8,
+     "origins": [
+      "fold:0:1",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "position0_mmap_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold1/fold.dotvbyte.v2.mmap",
+     "newest_by_leg_seismic": 20112
+    },
+    "utc_end": "2026-10-08T01:53:42Z"
+   },
+   "root_f8": {
+    "skipped": "marker exists",
+    "utc_start": "2026-10-08T01:53:42Z",
+    "copy": {
+     "src": "/home/vscode/work/delta_ingest/foldin/fixture_n8",
+     "dst": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8",
+     "copy_s": 2.5
+    },
+    "publish": {
+     "argv": [
+      "publish",
+      "--delta-root",
+      "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8",
+      "--base-shard-manifest",
+      "/home/vscode/work/inplace_update/m4/base_manifest.json"
+     ],
+     "rc": 0,
+     "s": 0.77,
+     "out": {
+      "format": 1,
+      "stamp": "g0008-1791424425",
+      "published": 1791424425.7129767,
+      "generations": [
+       {
+        "gen": 1,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0001",
+        "docs": 20044,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__archive",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20044
+       },
+       {
+        "gen": 2,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0002",
+        "docs": 20044,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__archive",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20044
+       },
+       {
+        "gen": 3,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0003",
+        "docs": 20044,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20044
+       },
+       {
+        "gen": 4,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0004",
+        "docs": 20043,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20043
+       },
+       {
+        "gen": 5,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0005",
+        "docs": 20043,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20043
+       },
+       {
+        "gen": 6,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0006",
+        "docs": 20043,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20043
+       },
+       {
+        "gen": 7,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0007",
+        "docs": 20043,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__recent",
+         "social_sciences__archive",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20043
+       },
+       {
+        "gen": 8,
+        "dir": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/g0008",
+        "docs": 20043,
+        "sections": [
+         "cs_math__archive",
+         "cs_math__recent",
+         "med_bio__archive",
+         "med_bio__recent",
+         "other__archive",
+         "other__recent",
+         "phys_eng__archive",
+         "phys_eng__recent",
+         "social_sciences__recent"
+        ],
+        "seismic": "served",
+        "docs_with_vectors": 20043
+       }
+      ],
+      "mask": {
+       "deleted": [],
+       "superseded": {}
+      },
+      "livedocs": null,
+      "shard_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/shard_manifests/shard_manifest-g0008-1791424425.json",
+      "base_shard_manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "buffer": {
+       "ledger": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/ledger.sqlite",
+       "tantivy_section": "delta_buffer"
+      },
+      "trigger": {
+       "format": 1,
+       "computed_at": 1791424425.7201843,
+       "stamp": "g0008-1791424425",
+       "thresholds": {
+        "frac": null,
+        "dead_frac": null,
+        "max_age_days": null
+       },
+       "enabled": false,
+       "hysteresis_s": 86400,
+       "tax_hook": "NOT IMPLEMENTED: (b) needs F0's size coefficient (doc 10 \u00a76 F0); SFU_DELTA_FOLDIN_TAX_MS is ignored",
+       "route_seed": "sfu-seismic-plan01",
+       "route_shards": 8,
+       "ordinal_dir": null,
+       "d_source": "ledger",
+       "shards": [
+        {
+         "shard": 0,
+         "base_docs": 18799322,
+         "live_routed": 20112,
+         "masked_routed": 0,
+         "frac": 0.0010698258160586854,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 1,
+         "base_docs": 18812242,
+         "live_routed": 20030,
+         "masked_routed": 0,
+         "frac": 0.0010647322100151592,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 2,
+         "base_docs": 18797227,
+         "live_routed": 20124,
+         "masked_routed": 0,
+         "frac": 0.001070583442972732,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 3,
+         "base_docs": 18801448,
+         "live_routed": 20047,
+         "masked_routed": 0,
+         "frac": 0.0010662476634778343,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 4,
+         "base_docs": 18807611,
+         "live_routed": 20109,
+         "masked_routed": 0,
+         "frac": 0.0010691948062941114,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 5,
+         "base_docs": 18801216,
+         "live_routed": 19840,
+         "masked_routed": 0,
+         "frac": 0.0010552508944102338,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 6,
+         "base_docs": 18796836,
+         "live_routed": 20246,
+         "masked_routed": 0,
+         "frac": 0.0010770961666101678,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        },
+        {
+         "shard": 7,
+         "base_docs": 18797196,
+         "live_routed": 19839,
+         "masked_routed": 0,
+         "frac": 0.0010554233727200588,
+         "dead_frac": 0.0,
+         "oldest_staged_at": 1790672201.7652624,
+         "age_days": 8.706295774559733,
+         "tax_ms": null,
+         "last_fold": null,
+         "hysteresis_until": null,
+         "in_hysteresis": false,
+         "fires": []
+        }
+       ],
+       "fire": []
+      }
+     },
+     "stderr_tail": "",
+     "enomem": false
+    },
+    "after_publish": {
+     "stamp": "g0008-1791424425",
+     "generations": [
+      [
+       1,
+       20044,
+       "served"
+      ],
+      [
+       2,
+       20044,
+       "served"
+      ],
+      [
+       3,
+       20044,
+       "served"
+      ],
+      [
+       4,
+       20043,
+       "served"
+      ],
+      [
+       5,
+       20043,
+       "served"
+      ],
+      [
+       6,
+       20043,
+       "served"
+      ],
+      [
+       7,
+       20043,
+       "served"
+      ],
+      [
+       8,
+       20043,
+       "served"
+      ]
+     ],
+     "shard_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/shard_manifests/shard_manifest-g0008-1791424425.json",
+     "base_shard_manifest": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+     "n_shards": 16,
+     "origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "position0_mmap_dir": "/var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap",
+     "newest_by_leg_seismic": 0
+    },
+    "ready": {
+     "fold": 2,
+     "state": "ready"
+    },
+    "manifest_preset": null,
+    "utc_end": "2026-10-08T01:53:46Z"
+   }
+  },
+  "baseline_after_setup": {
+   "changed": [],
+   "new": [],
+   "missing": [],
+   "n_files_before": 817,
+   "n_files_after": 817,
+   "retries": 0
+  }
+ },
+ "baseline_end": {
+  "changed": [],
+  "new": [],
+  "missing": [],
+  "n_files_before": 817,
+  "n_files_after": 817,
+  "retries": 0
+ },
+ "F8": {
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0"
+  },
+  "root": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8",
+  "fold": 2,
+  "src": "/home/vscode/work/delta_ingest/foldin/f3f8/code_46b85c0cd386f4b9a869debfa41987e4c63294e8/src",
+  "wall_s": 1324.0,
+  "warm_p50_ms_post_fold": 2157.97,
+  "warm_p95_ms_post_fold": 3206.41,
+  "warmup_pass_p50_ms_pre_fold": 4086.23,
+  "warmup_pass_p50_ms_post_fold": 2521.79,
+  "reload_s": [
+   1.223,
+   0.559,
+   0.552,
+   0.582,
+   0.546
+  ],
+  "reload_s_max": 1.223,
+  "reload_s_median": 0.559,
+  "backend_reopen_s": [
+   3.311,
+   1.531,
+   1.352,
+   1.415,
+   1.431
+  ],
+  "reload_plus_reopen_s": [
+   4.534,
+   2.089,
+   1.904,
+   1.997,
+   1.977
+  ],
+  "backend_dropped_all": true,
+  "first_query_ms": [
+   22333.24,
+   5718.35,
+   4683.55,
+   3683.72,
+   3837.95
+  ],
+  "first_query_p50_ms": 4683.55,
+  "first_query_ratio_vs_warm_p50": 2.17,
+  "first_query_paired_ratio_vs_same_topic_warm": [
+   11.088,
+   1.448,
+   1.554,
+   1.888,
+   1.833
+  ],
+  "first_query_paired_ratio_median": 1.833,
+  "recovery_p50_ms_queries_2_to_10": 2401.52,
+  "majflt_first_query": [
+   1861,
+   15,
+   24,
+   11,
+   17
+  ],
+  "prefault": [
+   {
+    "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+    "files": 9,
+    "bytes": 5548187008,
+    "s": 9.811
+   },
+   {
+    "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+    "files": 9,
+    "bytes": 5548187008,
+    "s": 1.595
+   },
+   {
+    "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+    "files": 9,
+    "bytes": 5548187008,
+    "s": 0.45
+   },
+   {
+    "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+    "files": 9,
+    "bytes": 5548187008,
+    "s": 0.455
+   },
+   {
+    "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+    "files": 9,
+    "bytes": 5548187008,
+    "s": 0.463
+   }
+  ],
+  "publish_fold_cli_s": 15.11,
+  "rollback_reload_s": [
+   2.512,
+   0.614,
+   0.602,
+   0.607
+  ],
+  "rollback_first_query_ms": [
+   5289.42,
+   4393.21,
+   3876.17,
+   3466.33
+  ],
+  "controls_no_change": [
+   {
+    "reload_s": 0.602,
+    "backend_dropped": false,
+    "first_query_ms": 2768.6
+   },
+   {
+    "reload_s": 0.542,
+    "backend_dropped": false,
+    "first_query_ms": 2691.6
+   }
+  ],
+  "bars": {
+   "reload_le_15s": "PASS",
+   "first_query_p50_le_2x_warm_p50": "FAIL"
+  },
+  "verdict": "FAIL",
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.0
+  },
+  "host_start": {
+   "utc": "2026-10-08T01:58:59Z",
+   "loadavg": [
+    2.16552734375,
+    1.6708984375,
+    2.0009765625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 51.28,
+    "Cached": 46.94,
+    "SwapTotal": 16.0,
+    "SwapFree": 15.22
+   },
+   "gpu": {
+    "util_pct": 1,
+    "mem_used_mib": 2248
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-08T02:21:02Z",
+   "loadavg": [
+    2.38037109375,
+    2.13720703125,
+    2.193359375
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 49.6,
+    "Cached": 49.14,
+    "SwapTotal": 16.0,
+    "SwapFree": 14.91
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 2293
+   },
+   "busy_procs_gt20pct": []
+  },
+  "reps": [
+   {
+    "rep": 1,
+    "kind": "fold_publish_operator_step",
+    "publish_fold": {
+     "argv": [
+      "publish-fold",
+      "--delta-root",
+      "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8",
+      "--shard",
+      "0",
+      "--fold",
+      "2",
+      "--confirm",
+      "--base-shard-manifest",
+      "/home/vscode/work/inplace_update/m4/base_manifest.json"
+     ],
+     "rc": 0,
+     "s": 15.11,
+     "out": {
+      "shard": 0,
+      "fold": 2,
+      "origin": "fold:0:2",
+      "fold_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2",
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+      "composed_from": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+      "manifest": "/home/vscode/work/delta_ingest/foldin/manifests/shard_manifest.fold_s0_k2.json",
+      "members": 20112,
+      "prefault": {
+       "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+       "files": 9,
+       "bytes": 5548187008,
+       "s": 9.811
+      },
+      "marked_seismic_origin": 20112,
+      "stamp": "g0008-1791425301",
+      "shard_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f8/shard_manifests/shard_manifest-g0008-1791425301.json",
+      "baseline": {
+       "changed": [],
+       "new": [],
+       "missing": [],
+       "n_files_before": 817,
+       "n_files_after": 817,
+       "retries": 0
+      }
+     },
+     "stderr_tail": "",
+     "enomem": false
+    },
+    "prefault": {
+     "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+     "files": 9,
+     "bytes": 5548187008,
+     "s": 9.811
+    },
+    "stamp_before": "g0008-1791424425",
+    "stamp_after": "g0008-1791425301",
+    "reload_s": 1.223,
+    "backend_dropped": true,
+    "backend_reopen_s": 3.311,
+    "reload_plus_reopen_s": 4.534,
+    "majflt_reload": 7547,
+    "first_query": {
+     "topic": "type 2 diabetes prevention lifestyle intervention primary care Canada",
+     "ms": 22333.24,
+     "majflt": 1861,
+     "n": 50,
+     "warm_ms": 2014.14
+    },
+    "recovery": [
+     {
+      "topic": "hospital emergency department overcrowding wait times patient outcomes",
+      "ms": 4005.18,
+      "majflt": 1153,
+      "n": 50,
+      "warm_ms": 2043.46
+     },
+     {
+      "topic": "childhood vaccination coverage school immunization programs uptake",
+      "ms": 5195.55,
+      "majflt": 827,
+      "n": 50,
+      "warm_ms": 2505.67
+     },
+     {
+      "topic": "palliative care access rural communities end of life symptom management",
+      "ms": 4883.63,
+      "majflt": 895,
+      "n": 50,
+      "warm_ms": 3206.41
+     },
+     {
+      "topic": "wearable device physical activity monitoring chronic disease self management",
+      "ms": 4325.87,
+      "majflt": 1016,
+      "n": 50,
+      "warm_ms": 1866.84
+     },
+     {
+      "topic": "Indigenous data sovereignty OCAP principles research governance",
+      "ms": 4444.47,
+      "majflt": 733,
+      "n": 50,
+      "warm_ms": 2467.8
+     },
+     {
+      "topic": "urban Indigenous friendship centres community services identity",
+      "ms": 3372.86,
+      "majflt": 236,
+      "n": 50,
+      "warm_ms": 2612.26
+     },
+     {
+      "topic": "Indigenous food sovereignty traditional harvesting country foods nutrition",
+      "ms": 2717.06,
+      "majflt": 154,
+      "n": 50,
+      "warm_ms": 2087.1
+     },
+     {
+      "topic": "Metis identity scrip land dispossession prairie history",
+      "ms": 3696.8,
+      "majflt": 188,
+      "n": 50,
+      "warm_ms": 2857.56
+     },
+     {
+      "topic": "Quebec language policy Bill 101 French minority rights",
+      "ms": 2880.23,
+      "majflt": 132,
+      "n": 50,
+      "warm_ms": 2165.52
+     }
+    ]
+   },
+   {
+    "rep": 2,
+    "kind": "fold_republish_from_snapshot",
+    "rollback": {
+     "stamp_before": "g0008-1791425301",
+     "stamp_after": "g0008-1791424425",
+     "reload_s": 2.512,
+     "backend_dropped": true,
+     "backend_reopen_s": 2.436,
+     "reload_plus_reopen_s": 4.949,
+     "majflt_reload": 6,
+     "first_query": {
+      "topic": "news deserts local journalism decline community information",
+      "ms": 5289.42,
+      "majflt": 6,
+      "n": 50,
+      "warm_ms": 2524.09
+     },
+     "recovery": []
+    },
+    "prefault": {
+     "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+     "files": 9,
+     "bytes": 5548187008,
+     "s": 1.595
+    },
+    "stamp_before": "g0008-1791424425",
+    "stamp_after": "g0008-1791425301",
+    "reload_s": 0.559,
+    "backend_dropped": true,
+    "backend_reopen_s": 1.531,
+    "reload_plus_reopen_s": 2.089,
+    "majflt_reload": 542,
+    "first_query": {
+     "topic": "gait analysis prosthetic limb amputee walking energetics",
+     "ms": 5718.35,
+     "majflt": 15,
+     "n": 50,
+     "warm_ms": 3950.31
+    },
+    "recovery": [
+     {
+      "topic": "eelgrass seagrass habitat restoration coastal carbon sequestration",
+      "ms": 2866.15,
+      "majflt": 45,
+      "n": 50,
+      "warm_ms": 2644.55
+     },
+     {
+      "topic": "caribou herd decline habitat disturbance boreal recovery planning",
+      "ms": 2280.0,
+      "majflt": 70,
+      "n": 50,
+      "warm_ms": 2150.47
+     },
+     {
+      "topic": "mine tailings dam failure water quality remediation monitoring",
+      "ms": 3482.32,
+      "majflt": 93,
+      "n": 50,
+      "warm_ms": 3255.43
+     },
+     {
+      "topic": "marine protected area network design fisheries spillover effects",
+      "ms": 2401.52,
+      "majflt": 114,
+      "n": 50,
+      "warm_ms": 2299.68
+     },
+     {
+      "topic": "cryptocurrency market volatility bitcoin price contagion spillover",
+      "ms": 896.21,
+      "majflt": 12,
+      "n": 50,
+      "warm_ms": 856.6
+     },
+     {
+      "topic": "household debt mortgage stress test housing finance Canada",
+      "ms": 2740.29,
+      "majflt": 52,
+      "n": 50,
+      "warm_ms": 2602.18
+     },
+     {
+      "topic": "corporate bond liquidity credit spread market microstructure",
+      "ms": 2773.56,
+      "majflt": 27,
+      "n": 50,
+      "warm_ms": 2798.76
+     },
+     {
+      "topic": "electoral turnout youth voter mobilization campaign contact",
+      "ms": 2126.83,
+      "majflt": 13,
+      "n": 50,
+      "warm_ms": 2077.11
+     },
+     {
+      "topic": "federal provincial fiscal transfers equalization intergovernmental relations",
+      "ms": 2125.38,
+      "majflt": 101,
+      "n": 50,
+      "warm_ms": 2060.85
+     }
+    ]
+   },
+   {
+    "rep": 3,
+    "kind": "fold_republish_from_snapshot",
+    "rollback": {
+     "stamp_before": "g0008-1791425301",
+     "stamp_after": "g0008-1791424425",
+     "reload_s": 0.614,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.526,
+     "reload_plus_reopen_s": 2.14,
+     "majflt_reload": 25,
+     "first_query": {
+      "topic": "neighbourhood effects concentrated disadvantage child outcomes",
+      "ms": 4393.21,
+      "majflt": 25,
+      "n": 50,
+      "warm_ms": 2537.7
+     },
+     "recovery": []
+    },
+    "prefault": {
+     "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+     "files": 9,
+     "bytes": 5548187008,
+     "s": 0.45
+    },
+    "stamp_before": "g0008-1791424425",
+    "stamp_after": "g0008-1791425301",
+    "reload_s": 0.552,
+    "backend_dropped": true,
+    "backend_reopen_s": 1.352,
+    "reload_plus_reopen_s": 1.904,
+    "majflt_reload": 271,
+    "first_query": {
+     "topic": "early literacy phonics instruction reading intervention primary grades",
+     "ms": 4683.55,
+     "majflt": 24,
+     "n": 50,
+     "warm_ms": 3013.52
+    },
+    "recovery": [
+     {
+      "topic": "graduate student supervision mentorship doctoral completion attrition",
+      "ms": 2108.48,
+      "majflt": 9,
+      "n": 50,
+      "warm_ms": 2017.97
+     },
+     {
+      "topic": "sleep deprivation memory consolidation cognitive performance",
+      "ms": 2106.68,
+      "majflt": 28,
+      "n": 50,
+      "warm_ms": 2110.2
+     },
+     {
+      "topic": "loneliness social isolation mental health older adults intervention",
+      "ms": 2100.0,
+      "majflt": 15,
+      "n": 50,
+      "warm_ms": 2030.66
+     },
+     {
+      "topic": "implicit bias measurement predictive validity discrimination behaviour",
+      "ms": 535.78,
+      "majflt": 15,
+      "n": 50,
+      "warm_ms": 471.61
+     },
+     {
+      "topic": "transgender healthcare access gender affirming care barriers",
+      "ms": 1806.56,
+      "majflt": 47,
+      "n": 50,
+      "warm_ms": 1675.0
+     },
+     {
+      "topic": "unpaid care work gender division household labour time use",
+      "ms": 1943.3,
+      "majflt": 85,
+      "n": 50,
+      "warm_ms": 1844.77
+     },
+     {
+      "topic": "5G millimeter wave antenna array beamforming design",
+      "ms": 1767.35,
+      "majflt": 8,
+      "n": 50,
+      "warm_ms": 1780.09
+     },
+     {
+      "topic": "additive manufacturing metal 3D printing fatigue defects microstructure",
+      "ms": 2750.56,
+      "majflt": 10,
+      "n": 50,
+      "warm_ms": 2629.14
+     },
+     {
+      "topic": "autonomous vehicle sensor fusion lidar camera perception",
+      "ms": 2575.91,
+      "majflt": 30,
+      "n": 50,
+      "warm_ms": 2577.09
+     }
+    ]
+   },
+   {
+    "rep": 4,
+    "kind": "fold_republish_from_snapshot",
+    "rollback": {
+     "stamp_before": "g0008-1791425301",
+     "stamp_after": "g0008-1791424425",
+     "reload_s": 0.602,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.441,
+     "reload_plus_reopen_s": 2.044,
+     "majflt_reload": 19,
+     "first_query": {
+      "topic": "migration transnational families remittances belonging ethnography",
+      "ms": 3876.17,
+      "majflt": 19,
+      "n": 50,
+      "warm_ms": 2120.43
+     },
+     "recovery": []
+    },
+    "prefault": {
+     "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+     "files": 9,
+     "bytes": 5548187008,
+     "s": 0.455
+    },
+    "stamp_before": "g0008-1791424425",
+    "stamp_after": "g0008-1791425301",
+    "reload_s": 0.582,
+    "backend_dropped": true,
+    "backend_reopen_s": 1.415,
+    "reload_plus_reopen_s": 1.997,
+    "majflt_reload": 289,
+    "first_query": {
+     "topic": "workplace automation job displacement reskilling worker adjustment",
+     "ms": 3683.72,
+     "majflt": 11,
+     "n": 50,
+     "warm_ms": 1950.99
+    },
+    "recovery": [
+     {
+      "topic": "code switching bilingual speakers sociolinguistic variation",
+      "ms": 2237.25,
+      "majflt": 12,
+      "n": 50,
+      "warm_ms": 2075.1
+     },
+     {
+      "topic": "prosody intonation speech perception listener comprehension",
+      "ms": 2750.11,
+      "majflt": 12,
+      "n": 50,
+      "warm_ms": 2618.57
+     },
+     {
+      "topic": "modernist poetry fragmentation form early twentieth century",
+      "ms": 2561.73,
+      "majflt": 75,
+      "n": 50,
+      "warm_ms": 2201.33
+     },
+     {
+      "topic": "graphic novels comics studies narrative visual storytelling",
+      "ms": 2176.45,
+      "majflt": 18,
+      "n": 50,
+      "warm_ms": 2121.43
+     },
+     {
+      "topic": "film festival circuit curation programming world cinema",
+      "ms": 2446.18,
+      "majflt": 29,
+      "n": 50,
+      "warm_ms": 2229.51
+     },
+     {
+      "topic": "sound design film music affect audience emotional response",
+      "ms": 2538.04,
+      "majflt": 71,
+      "n": 50,
+      "warm_ms": 2427.79
+     },
+     {
+      "topic": "glacier retreat mass balance monitoring mountain water supply",
+      "ms": 970.12,
+      "majflt": 30,
+      "n": 50,
+      "warm_ms": 946.05
+     },
+     {
+      "topic": "coastal erosion sea level rise shoreline retreat adaptation",
+      "ms": 2825.01,
+      "majflt": 17,
+      "n": 50,
+      "warm_ms": 2858.2
+     },
+     {
+      "topic": "falls prevention older adults balance training home hazards",
+      "ms": 1953.97,
+      "majflt": 14,
+      "n": 50,
+      "warm_ms": 1989.37
+     }
+    ]
+   },
+   {
+    "rep": 5,
+    "kind": "fold_republish_from_snapshot",
+    "rollback": {
+     "stamp_before": "g0008-1791425301",
+     "stamp_after": "g0008-1791424425",
+     "reload_s": 0.607,
+     "backend_dropped": true,
+     "backend_reopen_s": 1.443,
+     "reload_plus_reopen_s": 2.05,
+     "majflt_reload": 17,
+     "first_query": {
+      "topic": "extreme value theory tail risk catastrophe insurance modelling",
+      "ms": 3466.33,
+      "majflt": 17,
+      "n": 50,
+      "warm_ms": 1625.7
+     },
+     "recovery": []
+    },
+    "prefault": {
+     "dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold2/fold.dotvbyte.v2.mmap",
+     "files": 9,
+     "bytes": 5548187008,
+     "s": 0.463
+    },
+    "stamp_before": "g0008-1791424425",
+    "stamp_after": "g0008-1791425301",
+    "reload_s": 0.546,
+    "backend_dropped": true,
+    "backend_reopen_s": 1.431,
+    "reload_plus_reopen_s": 1.977,
+    "majflt_reload": 372,
+    "first_query": {
+     "topic": "mRNA vaccine lipid nanoparticle delivery stability formulation",
+     "ms": 3837.95,
+     "majflt": 17,
+     "n": 50,
+     "warm_ms": 2093.42
+    },
+    "recovery": [
+     {
+      "topic": "jazz improvisation performance analysis interaction ensemble",
+      "ms": 1579.56,
+      "majflt": 66,
+      "n": 50,
+      "warm_ms": 1449.81
+     },
+     {
+      "topic": "music streaming royalties artist income platform economics",
+      "ms": 2050.97,
+      "majflt": 12,
+      "n": 50,
+      "warm_ms": 1924.84
+     },
+     {
+      "topic": "childcare policy universal early learning affordability workforce",
+      "ms": 2182.22,
+      "majflt": 13,
+      "n": 50,
+      "warm_ms": 2114.46
+     },
+     {
+      "topic": "public procurement innovation policy government purchasing outcomes",
+      "ms": 1930.61,
+      "majflt": 48,
+      "n": 50,
+      "warm_ms": 1705.43
+     },
+     {
+      "topic": "maternal mortality skilled birth attendance low resource settings",
+      "ms": 1987.23,
+      "majflt": 29,
+      "n": 50,
+      "warm_ms": 1898.63
+     },
+     {
+      "topic": "neglected tropical disease mass drug administration elimination",
+      "ms": 1927.69,
+      "majflt": 70,
+      "n": 50,
+      "warm_ms": 1600.98
+     },
+     {
+      "topic": "solar photovoltaic degradation module reliability field performance",
+      "ms": 3353.0,
+      "majflt": 37,
+      "n": 50,
+      "warm_ms": 3289.0
+     },
+     {
+      "topic": "district heating waste heat recovery thermal network efficiency",
+      "ms": 3186.5,
+      "majflt": 22,
+      "n": 50,
+      "warm_ms": 3180.41
+     },
+     {
+      "topic": "auditor independence non-audit services fee dependence quality",
+      "ms": 2121.69,
+      "majflt": 58,
+      "n": 50,
+      "warm_ms": 2158.71
+     }
+    ]
+   },
+   {
+    "rep": 6,
+    "kind": "control_no_change",
+    "reload_s": 0.602,
+    "backend_dropped": false,
+    "first_query": {
+     "topic": "urban Indigenous friendship centres community services identity",
+     "ms": 2768.6,
+     "majflt": 0,
+     "n": 50,
+     "warm_ms": 2612.26
+    }
+   },
+   {
+    "rep": 7,
+    "kind": "control_no_change",
+    "reload_s": 0.542,
+    "backend_dropped": false,
+    "first_query": {
+     "topic": "household debt mortgage stress test housing finance Canada",
+     "ms": 2691.6,
+     "majflt": 1,
+     "n": 50,
+     "warm_ms": 2602.18
+    }
+   }
+  ],
+  "raw_warm_pass_post_fold": [
+   [
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    2014.14
+   ],
+   [
+    "hospital emergency department overcrowding wait times patient outcomes",
+    2043.46
+   ],
+   [
+    "childhood vaccination coverage school immunization programs uptake",
+    2505.67
+   ],
+   [
+    "palliative care access rural communities end of life symptom management",
+    3206.41
+   ],
+   [
+    "wearable device physical activity monitoring chronic disease self management",
+    1866.84
+   ],
+   [
+    "Indigenous data sovereignty OCAP principles research governance",
+    2467.8
+   ],
+   [
+    "urban Indigenous friendship centres community services identity",
+    2612.26
+   ],
+   [
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    2087.1
+   ],
+   [
+    "Metis identity scrip land dispossession prairie history",
+    2857.56
+   ],
+   [
+    "Quebec language policy Bill 101 French minority rights",
+    2165.52
+   ],
+   [
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    3075.33
+   ],
+   [
+    "Canadian universal pharmacare drug coverage policy debate",
+    3233.52
+   ],
+   [
+    "interprovincial trade barriers Canadian economic union regulation",
+    2037.33
+   ],
+   [
+    "bail reform pretrial detention remand population Canada",
+    2000.46
+   ],
+   [
+    "intimate partner violence risk assessment protective orders",
+    2111.23
+   ],
+   [
+    "gang desistance youth intervention programs street involvement",
+    2043.51
+   ],
+   [
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    2282.73
+   ],
+   [
+    "haptic feedback tangible interface design user perception",
+    2963.38
+   ],
+   [
+    "data physicalization tangible data representation public engagement",
+    2979.18
+   ],
+   [
+    "serious games health behaviour change gamification design",
+    2131.06
+   ],
+   [
+    "wearable computing textile interfaces embodied interaction design",
+    2558.69
+   ],
+   [
+    "concussion return to play protocol youth sport recovery",
+    2986.5
+   ],
+   [
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    2084.08
+   ],
+   [
+    "thermoregulation heat strain occupational workers hydration",
+    2423.67
+   ],
+   [
+    "gait analysis prosthetic limb amputee walking energetics",
+    3950.31
+   ],
+   [
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    2644.55
+   ],
+   [
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    2150.47
+   ],
+   [
+    "mine tailings dam failure water quality remediation monitoring",
+    3255.43
+   ],
+   [
+    "marine protected area network design fisheries spillover effects",
+    2299.68
+   ],
+   [
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    856.6
+   ],
+   [
+    "household debt mortgage stress test housing finance Canada",
+    2602.18
+   ],
+   [
+    "corporate bond liquidity credit spread market microstructure",
+    2798.76
+   ],
+   [
+    "electoral turnout youth voter mobilization campaign contact",
+    2077.11
+   ],
+   [
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    2060.85
+   ],
+   [
+    "foreign election interference disinformation state actors democracy",
+    1943.24
+   ],
+   [
+    "podcast audiences intimacy parasocial relationship listeners",
+    1304.16
+   ],
+   [
+    "news deserts local journalism decline community information",
+    2524.09
+   ],
+   [
+    "influencer marketing disclosure sponsored content consumer trust",
+    611.25
+   ],
+   [
+    "minimum wage employment effects small business labour demand",
+    3009.06
+   ],
+   [
+    "immigration labour market wages native workers displacement",
+    880.29
+   ],
+   [
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    2501.52
+   ],
+   [
+    "Spanish influenza 1918 pandemic public health response cities",
+    2308.52
+   ],
+   [
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    2982.24
+   ],
+   [
+    "women's suffrage movement provincial franchise campaigns Canada",
+    2476.99
+   ],
+   [
+    "compiler optimization loop vectorization SIMD code generation",
+    849.98
+   ],
+   [
+    "approximate nearest neighbour search vector index billion scale",
+    2592.88
+   ],
+   [
+    "static analysis memory safety vulnerability detection C programs",
+    2162.73
+   ],
+   [
+    "teacher retention burnout attrition rural schools workforce",
+    2056.91
+   ],
+   [
+    "early literacy phonics instruction reading intervention primary grades",
+    3013.52
+   ],
+   [
+    "graduate student supervision mentorship doctoral completion attrition",
+    2017.97
+   ],
+   [
+    "sleep deprivation memory consolidation cognitive performance",
+    2110.2
+   ],
+   [
+    "loneliness social isolation mental health older adults intervention",
+    2030.66
+   ],
+   [
+    "implicit bias measurement predictive validity discrimination behaviour",
+    471.61
+   ],
+   [
+    "transgender healthcare access gender affirming care barriers",
+    1675.0
+   ],
+   [
+    "unpaid care work gender division household labour time use",
+    1844.77
+   ],
+   [
+    "5G millimeter wave antenna array beamforming design",
+    1780.09
+   ],
+   [
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    2629.14
+   ],
+   [
+    "autonomous vehicle sensor fusion lidar camera perception",
+    2577.09
+   ],
+   [
+    "soft robotics pneumatic actuator compliant gripper design",
+    1103.95
+   ],
+   [
+    "religious participation secularization generational change belonging",
+    2031.9
+   ],
+   [
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    2537.7
+   ],
+   [
+    "free will moral responsibility determinism compatibilism",
+    1126.24
+   ],
+   [
+    "philosophy of mind consciousness qualia explanatory gap",
+    2830.76
+   ],
+   [
+    "topological data analysis persistent homology point clouds",
+    1387.26
+   ],
+   [
+    "stochastic partial differential equations numerical approximation convergence",
+    2732.8
+   ],
+   [
+    "gravitational wave detection black hole merger interferometer",
+    1106.94
+   ],
+   [
+    "topological insulator edge states spin orbit coupling materials",
+    3750.16
+   ],
+   [
+    "lithium ion battery electrolyte degradation cathode interface",
+    3379.79
+   ],
+   [
+    "PFAS forever chemicals water treatment removal degradation",
+    1251.2
+   ],
+   [
+    "remote work hybrid arrangements productivity employee wellbeing",
+    2049.2
+   ],
+   [
+    "family business succession planning governance next generation",
+    2987.95
+   ],
+   [
+    "migrant agricultural workers temporary foreign worker program conditions",
+    784.0
+   ],
+   [
+    "workplace automation job displacement reskilling worker adjustment",
+    1950.99
+   ],
+   [
+    "code switching bilingual speakers sociolinguistic variation",
+    2075.1
+   ],
+   [
+    "prosody intonation speech perception listener comprehension",
+    2618.57
+   ],
+   [
+    "modernist poetry fragmentation form early twentieth century",
+    2201.33
+   ],
+   [
+    "graphic novels comics studies narrative visual storytelling",
+    2121.43
+   ],
+   [
+    "film festival circuit curation programming world cinema",
+    2229.51
+   ],
+   [
+    "sound design film music affect audience emotional response",
+    2427.79
+   ],
+   [
+    "glacier retreat mass balance monitoring mountain water supply",
+    946.05
+   ],
+   [
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    2858.2
+   ],
+   [
+    "falls prevention older adults balance training home hazards",
+    1989.37
+   ],
+   [
+    "social prescribing older adults community programs wellbeing",
+    1664.31
+   ],
+   [
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    2681.04
+   ],
+   [
+    "migration transnational families remittances belonging ethnography",
+    2120.43
+   ],
+   [
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    2255.16
+   ],
+   [
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    1827.85
+   ],
+   [
+    "refugee resettlement burden sharing international protection regime",
+    2545.18
+   ],
+   [
+    "economic sanctions effectiveness compliance target state behaviour",
+    2740.07
+   ],
+   [
+    "Cuban revolution health system export medical diplomacy",
+    2296.31
+   ],
+   [
+    "Andean agrarian reform peasant movements land tenure",
+    2922.96
+   ],
+   [
+    "informal settlements upgrading tenure security global south cities",
+    1833.22
+   ],
+   [
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    376.94
+   ],
+   [
+    "access to justice self represented litigants legal aid funding",
+    2430.39
+   ],
+   [
+    "environmental litigation climate lawsuits state liability courts",
+    2484.92
+   ],
+   [
+    "gut microbiome host immune interaction metabolite signalling",
+    2401.2
+   ],
+   [
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    2093.42
+   ],
+   [
+    "jazz improvisation performance analysis interaction ensemble",
+    1449.81
+   ],
+   [
+    "music streaming royalties artist income platform economics",
+    1924.84
+   ],
+   [
+    "childcare policy universal early learning affordability workforce",
+    2114.46
+   ],
+   [
+    "public procurement innovation policy government purchasing outcomes",
+    1705.43
+   ],
+   [
+    "maternal mortality skilled birth attendance low resource settings",
+    1898.63
+   ],
+   [
+    "neglected tropical disease mass drug administration elimination",
+    1600.98
+   ],
+   [
+    "solar photovoltaic degradation module reliability field performance",
+    3289.0
+   ],
+   [
+    "district heating waste heat recovery thermal network efficiency",
+    3180.41
+   ],
+   [
+    "auditor independence non-audit services fee dependence quality",
+    2158.71
+   ],
+   [
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    1871.62
+   ],
+   [
+    "causal inference propensity score matching observational studies",
+    2565.04
+   ],
+   [
+    "extreme value theory tail risk catastrophe insurance modelling",
+    1625.7
+   ],
+   [
+    "socially engaged art practice participation community collaboration",
+    2396.82
+   ],
+   [
+    "conservation of contemporary art materials degradation museum practice",
+    1091.44
+   ],
+   [
+    "dramaturgy new play development workshop process",
+    3185.38
+   ],
+   [
+    "puppetry object theatre performance materiality audience",
+    2576.18
+   ],
+   [
+    "audiobook market growth narration production publishing industry",
+    2728.12
+   ],
+   [
+    "peer review reform preprints open science scholarly communication",
+    2157.97
+   ],
+   [
+    "community land trust affordable housing stewardship models",
+    534.29
+   ],
+   [
+    "participatory budgeting civic engagement municipal decision making",
+    1771.72
+   ],
+   [
+    "psychological safety team performance speaking up organizations",
+    2065.95
+   ],
+   [
+    "corporate social responsibility greenwashing stakeholder perception",
+    1168.69
+   ],
+   [
+    "forensic entomology postmortem interval insect succession estimation",
+    2312.14
+   ]
+  ],
+  "rows_file": "/home/vscode/work/delta_ingest/foldin/f3f8/f8/rows.json",
+  "git_head": "46b85c0cd386f4b9a869debfa41987e4c63294e8"
+ },
+ "F3": {
+  "run": "F3",
+  "script": "scripts/experiments/eval_delta_ingest_m4f.py",
+  "preregistration": "docs/delta_ingest/09_M4_FOLLOWUP_PREREGISTRATION.md",
+  "rows_file": "/home/vscode/work/delta_ingest/foldin/f3f8/f3/rows.json",
+  "status": "COMPLETE",
+  "health": {
+   "ok": true,
+   "problems": [],
+   "arms": {
+    "n0": {
+     "spec": {
+      "name": "n0",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "n_seismic": 0,
+      "n_gens": 0,
+      "levers": [],
+      "fold_positions": []
+     },
+     "load_s": 0.68,
+     "backend_load_s": 1.16,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_shard_positions": [],
+     "fold_positions": [],
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "n0x": {
+     "spec": {
+      "name": "n0x",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "n_seismic": 0,
+      "n_gens": 0,
+      "levers": [
+       "L4"
+      ],
+      "fold_positions": []
+     },
+     "load_s": 0.35,
+     "backend_load_s": 1.31,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "gates": {
+      "L3": false,
+      "L4": true,
+      "L5": null
+     },
+     "delta_shard_positions": [],
+     "fold_positions": [],
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    },
+    "L": {
+     "spec": {
+      "name": "L",
+      "tag": "L",
+      "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+      "n_gen": 1,
+      "n_seismic": 1,
+      "n_gens": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ],
+      "fold_positions": []
+     },
+     "load_s": 0.44,
+     "backend_load_s": 1.36,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 9,
+     "sections": 21,
+     "abstract_stores": 11,
+     "origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      9
+     ],
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": [
+       8
+      ]
+     },
+     "delta_shard_positions": [
+      8
+     ],
+     "fold_positions": [],
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1790672554",
+     "delta_manifest": "/home/vscode/work/inplace_update/m4/root_n8c/shard_manifest.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "seismic_newest": 0,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 9,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "F": {
+     "spec": {
+      "name": "F",
+      "tag": "F",
+      "root": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+      "n_gen": 0,
+      "n_seismic": 0,
+      "n_gens": 1,
+      "levers": [
+       "L3",
+       "L4",
+       "L5"
+      ],
+      "fold_positions": [
+       0
+      ]
+     },
+     "load_s": 0.45,
+     "backend_load_s": 1.31,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 21,
+     "abstract_stores": 11,
+     "origins": [
+      "fold:0:1",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "gates": {
+      "L3": true,
+      "L4": true,
+      "L5": null
+     },
+     "delta_shard_positions": [],
+     "fold_positions": [
+      0
+     ],
+     "delta_generations": [
+      9
+     ],
+     "delta_stamp": "g0009-1791424420",
+     "delta_manifest": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3/shard_manifests/shard_manifest-g0009-1791424420.json",
+     "buffer_size": 0,
+     "delta_sections": 11,
+     "livedocs": false,
+     "deleted": 0,
+     "superseded": 0,
+     "seismic_newest": 20112,
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 10,
+      "buffer": 1,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 10
+     }
+    },
+    "_prime": {
+     "spec": {
+      "name": "_prime",
+      "tag": null,
+      "root": null,
+      "n_gen": 0,
+      "n_seismic": 0,
+      "n_gens": 0,
+      "levers": [],
+      "fold_positions": []
+     },
+     "load_s": 0.34,
+     "backend_load_s": 1.29,
+     "backend_class": "ParallelSeismicBackend",
+     "n_shards": 8,
+     "sections": 10,
+     "abstract_stores": 1,
+     "origins": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "gates": {
+      "L3": false,
+      "L4": false,
+      "L5": null
+     },
+     "delta_shard_positions": [],
+     "fold_positions": [],
+     "instrumented": {
+      "sections_base": 10,
+      "sections_delta": 0,
+      "buffer": 0,
+      "shards": 8,
+      "abstract_stores_base": 1,
+      "abstract_stores_delta": 0
+     }
+    }
+   },
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "mem_after_load": {
+    "tripped": null,
+    "min_mem_available_gb": 49.97,
+    "max_vmswap_growth_gb": 0.0,
+    "vmswap_start_gb": 0.0
+   },
+   "warnings_during_passes": [],
+   "n_warnings_during_passes": 0
+  },
+  "layout": "per_base_section",
+  "x_levers": [],
+  "seed": 20261001,
+  "src": "/home/vscode/work/delta_ingest/foldin/f3f8/code_46b85c0cd386f4b9a869debfa41987e4c63294e8/src",
+  "git_commit_measured_code": "46b85c0cd386f4b9a869debfa41987e4c63294e8",
+  "measured_passes": 2,
+  "pass_wall_s": [
+   1328.2,
+   1332.8,
+   1304.7
+  ],
+  "wall_s": 3991.5,
+  "host_start": {
+   "utc": "2026-10-08T02:21:13Z",
+   "loadavg": [
+    2.408203125,
+    2.1494140625,
+    2.1962890625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 51.49,
+    "Cached": 42.06,
+    "SwapTotal": 16.0,
+    "SwapFree": 14.91
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 1840
+   },
+   "busy_procs_gt20pct": []
+  },
+  "host_end": {
+   "utc": "2026-10-08T03:27:44Z",
+   "loadavg": [
+    3.458984375,
+    2.85498046875,
+    2.7978515625
+   ],
+   "mem_gb": {
+    "MemTotal": 54.92,
+    "MemAvailable": 49.1,
+    "Cached": 48.3,
+    "SwapTotal": 16.0,
+    "SwapFree": 14.83
+   },
+   "gpu": {
+    "util_pct": 0,
+    "mem_used_mib": 2356
+   },
+   "busy_procs_gt20pct": []
+  },
+  "quiet_gate": {
+   "quiet": true,
+   "waited_s": 1.1,
+   "samples": [
+    {
+     "utc": "2026-10-08T02:21:37Z",
+     "load1": 2.08740234375,
+     "busy_gt50pct": []
+    }
+   ]
+  },
+  "quiet_waits": [
+   {
+    "pass": 2,
+    "q": 0,
+    "utc": "2026-10-08T02:43:46Z",
+    "load1": 2.4072265625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 49.47,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 10,
+    "utc": "2026-10-08T02:45:53Z",
+    "load1": 1.51953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 49.26,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 20,
+    "utc": "2026-10-08T02:48:02Z",
+    "load1": 4.55859375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.38,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 30,
+    "utc": "2026-10-08T02:50:11Z",
+    "load1": 4.47607421875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.4,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 40,
+    "utc": "2026-10-08T02:51:53Z",
+    "load1": 2.52001953125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.31,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 50,
+    "utc": "2026-10-08T02:53:46Z",
+    "load1": 2.02392578125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.36,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 60,
+    "utc": "2026-10-08T02:55:18Z",
+    "load1": 3.2216796875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.3,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 70,
+    "utc": "2026-10-08T02:57:11Z",
+    "load1": 2.724609375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.18,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 80,
+    "utc": "2026-10-08T02:58:53Z",
+    "load1": 1.62451171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.18,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 90,
+    "utc": "2026-10-08T03:00:47Z",
+    "load1": 2.23828125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.16,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 100,
+    "utc": "2026-10-08T03:02:29Z",
+    "load1": 1.67041015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.06,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 2,
+    "q": 110,
+    "utc": "2026-10-08T03:04:19Z",
+    "load1": 2.2666015625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.12,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 0,
+    "utc": "2026-10-08T03:05:59Z",
+    "load1": 2.47216796875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.15,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 10,
+    "utc": "2026-10-08T03:07:57Z",
+    "load1": 2.72412109375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.08,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 20,
+    "utc": "2026-10-08T03:10:01Z",
+    "load1": 2.18701171875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.02,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 30,
+    "utc": "2026-10-08T03:12:03Z",
+    "load1": 1.8515625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.07,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 40,
+    "utc": "2026-10-08T03:13:40Z",
+    "load1": 3.1728515625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.04,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 50,
+    "utc": "2026-10-08T03:15:34Z",
+    "load1": 3.33984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.1,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 60,
+    "utc": "2026-10-08T03:17:05Z",
+    "load1": 4.0185546875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.1,
+    "mem_avail_gb": 49.0,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 70,
+    "utc": "2026-10-08T03:18:56Z",
+    "load1": 3.60693359375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.19,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 80,
+    "utc": "2026-10-08T03:20:38Z",
+    "load1": 4.2529296875,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 48.98,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 90,
+    "utc": "2026-10-08T03:22:31Z",
+    "load1": 2.24658203125,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.1,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 100,
+    "utc": "2026-10-08T03:24:12Z",
+    "load1": 1.78369140625,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.07,
+    "vmswap_gb": 0.0
+   },
+   {
+    "pass": 3,
+    "q": 110,
+    "utc": "2026-10-08T03:26:04Z",
+    "load1": 2.79833984375,
+    "busy": [],
+    "quiet": true,
+    "waited_s": 1.0,
+    "mem_avail_gb": 49.06,
+    "vmswap_gb": 0.0
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 48.96,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "maxrss_gb": 144.08,
+  "stop": null,
+  "arms": {
+   "n0": {
+    "spec": {
+     "name": "n0",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "n_seismic": 0,
+     "n_gens": 0,
+     "levers": [],
+     "fold_positions": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2122.1,
+    "p95_ms": 3152.67,
+    "mean_ms": 2156.21,
+    "per_pass_p50_ms": [
+     2121.46,
+     2132.59
+    ],
+    "legs_mean_ms": {
+     "total": 2156.211,
+     "bm25f_base_sections": 2013.119,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.293,
+     "seismic_traverse": 37.361,
+     "seismic_base_max_shard": 22.868,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.603,
+     "splade_other_delta_merge": 0.031,
+     "hydrate_abstracts_base": 31.176,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.628
+    },
+    "legs_median_ms": {
+     "total": 2127.345,
+     "bm25f_base_sections": 1987.975,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 2.31,
+     "seismic_traverse": 37.21,
+     "seismic_base_max_shard": 21.82,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.37,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 31.135,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.65
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "n0x": {
+    "spec": {
+     "name": "n0x",
+     "tag": null,
+     "root": null,
+     "n_gen": 0,
+     "n_seismic": 0,
+     "n_gens": 0,
+     "levers": [
+      "L4"
+     ],
+     "fold_positions": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2140.7,
+    "p95_ms": 3130.24,
+    "mean_ms": 2152.6,
+    "per_pass_p50_ms": [
+     2155.46,
+     2138.98
+    ],
+    "legs_mean_ms": {
+     "total": 2152.603,
+     "bm25f_base_sections": 2010.817,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.814,
+     "seismic_traverse": 36.755,
+     "seismic_base_max_shard": 23.165,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.485,
+     "splade_other_delta_merge": 0.032,
+     "hydrate_abstracts_base": 31.067,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.634
+    },
+    "legs_median_ms": {
+     "total": 2142.14,
+     "bm25f_base_sections": 1998.165,
+     "bm25f_delta_sections": 0.0,
+     "bm25f_other_parse_merge_masks": 1.82,
+     "seismic_traverse": 36.875,
+     "seismic_base_max_shard": 21.6,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.32,
+     "splade_other_delta_merge": 0.03,
+     "hydrate_abstracts_base": 31.035,
+     "hydrate_abstracts_delta": 0.0,
+     "hydrate_abs_owner_lookup": 0.0,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.0,
+     "hydrate_other_base_meta_fuse": 38.39
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "L": {
+    "spec": {
+     "name": "L",
+     "tag": "L",
+     "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+     "n_gen": 1,
+     "n_seismic": 1,
+     "n_gens": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ],
+     "fold_positions": []
+    },
+    "n_calls": 240,
+    "p50_ms": 2152.43,
+    "p95_ms": 3158.76,
+    "mean_ms": 2163.86,
+    "per_pass_p50_ms": [
+     2180.35,
+     2128.31
+    ],
+    "legs_mean_ms": {
+     "total": 2163.855,
+     "bm25f_base_sections": 2014.486,
+     "bm25f_delta_sections": 2.905,
+     "bm25f_other_parse_merge_masks": 2.845,
+     "seismic_traverse": 39.621,
+     "seismic_base_max_shard": 24.974,
+     "seismic_delta_shard_sum": 3.351,
+     "splade_encode": 34.214,
+     "splade_other_delta_merge": 0.105,
+     "hydrate_abstracts_base": 31.011,
+     "hydrate_abstracts_delta": 0.146,
+     "hydrate_abs_owner_lookup": 0.145,
+     "hydrate_delta_meta": 0.002,
+     "delta_masks": 0.328,
+     "hydrate_other_base_meta_fuse": 38.425
+    },
+    "legs_median_ms": {
+     "total": 2160.495,
+     "bm25f_base_sections": 2008.015,
+     "bm25f_delta_sections": 3.08,
+     "bm25f_other_parse_merge_masks": 2.825,
+     "seismic_traverse": 39.38,
+     "seismic_base_max_shard": 23.525,
+     "seismic_delta_shard_sum": 2.275,
+     "splade_encode": 33.745,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.98,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.15,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.32,
+     "hydrate_other_base_meta_fuse": 38.315
+    },
+    "majflt_mean": 0.0,
+    "delta_docs_in_top10_mean": 0.0
+   },
+   "F": {
+    "spec": {
+     "name": "F",
+     "tag": "F",
+     "root": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+     "n_gen": 0,
+     "n_seismic": 0,
+     "n_gens": 1,
+     "levers": [
+      "L3",
+      "L4",
+      "L5"
+     ],
+     "fold_positions": [
+      0
+     ]
+    },
+    "n_calls": 240,
+    "p50_ms": 2151.75,
+    "p95_ms": 3184.41,
+    "mean_ms": 2164.67,
+    "per_pass_p50_ms": [
+     2153.86,
+     2123.82
+    ],
+    "legs_mean_ms": {
+     "total": 2164.673,
+     "bm25f_base_sections": 2011.46,
+     "bm25f_delta_sections": 2.903,
+     "bm25f_other_parse_merge_masks": 2.838,
+     "seismic_traverse": 43.804,
+     "seismic_base_max_shard": 30.356,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.735,
+     "splade_other_delta_merge": 0.102,
+     "hydrate_abstracts_base": 30.97,
+     "hydrate_abstracts_delta": 0.148,
+     "hydrate_abs_owner_lookup": 0.144,
+     "hydrate_delta_meta": 0.001,
+     "delta_masks": 0.335,
+     "hydrate_other_base_meta_fuse": 38.617
+    },
+    "legs_median_ms": {
+     "total": 2152.295,
+     "bm25f_base_sections": 1995.985,
+     "bm25f_delta_sections": 3.07,
+     "bm25f_other_parse_merge_masks": 2.8,
+     "seismic_traverse": 41.355,
+     "seismic_base_max_shard": 27.41,
+     "seismic_delta_shard_sum": 0.0,
+     "splade_encode": 33.41,
+     "splade_other_delta_merge": 0.1,
+     "hydrate_abstracts_base": 30.79,
+     "hydrate_abstracts_delta": 0.15,
+     "hydrate_abs_owner_lookup": 0.14,
+     "hydrate_delta_meta": 0.0,
+     "delta_masks": 0.31,
+     "hydrate_other_base_meta_fuse": 38.385
+    },
+    "majflt_mean": 0.2,
+    "delta_docs_in_top10_mean": 0.0
+   }
+  },
+  "prime_p50_ms": 2258.74,
+  "p50_by_position": {
+   "0": 2132.57,
+   "1": 2122.1,
+   "2": 2143.58,
+   "3": 2152.84
+  },
+  "date_utc": "2026-10-08",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/foldin/f3f8/f3/child.log",
+   "bytes": 612,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "item": "doc 10 F3 latency returns to n0",
+  "harness": "scripts/experiments/eval_delta_ingest_foldin_f3f8.py",
+  "design": "09 \u00a71/\u00a71.1 via eval_delta_ingest_m4f.py inproc",
+  "arms_defined": {
+   "n0": {
+    "root": null,
+    "levers": [],
+    "n_seismic": 0,
+    "n_gens": 0,
+    "fold_positions": []
+   },
+   "n0x": {
+    "root": null,
+    "levers": [
+     "L4"
+    ],
+    "n_seismic": 0,
+    "n_gens": 0,
+    "fold_positions": []
+   },
+   "L": {
+    "root": "/home/vscode/work/inplace_update/m4/root_n8c",
+    "levers": [
+     "L3",
+     "L4",
+     "L5"
+    ],
+    "n_seismic": 1,
+    "n_gens": 1,
+    "fold_positions": []
+   },
+   "F": {
+    "root": "/home/vscode/work/delta_ingest/foldin/f3f8/root_f3",
+    "levers": [
+     "L3",
+     "L4",
+     "L5"
+    ],
+    "n_seismic": 0,
+    "n_gens": 1,
+    "fold_positions": [
+     0
+    ]
+   }
+  },
+  "paired_differences": {
+   "F_minus_n0": {
+    "n": 240,
+    "median": 5.76,
+    "ci95": [
+     0.365,
+     13.57
+    ]
+   },
+   "L_minus_F": {
+    "n": 240,
+    "median": -1.5,
+    "ci95": [
+     -8.76,
+     6.41
+    ]
+   },
+   "F_minus_n0x": {
+    "n": 240,
+    "median": 4.815,
+    "ci95": [
+     -2.55,
+     12.33
+    ]
+   },
+   "L_minus_n0": {
+    "n": 240,
+    "median": 6.645,
+    "ci95": [
+     -1.355,
+     14.67
+    ]
+   },
+   "n0x_minus_n0": {
+    "n": 240,
+    "median": -0.305,
+    "ci95": [
+     -9.43,
+     5.04
+    ]
+   }
+  },
+  "bars": {
+   "p50_F_over_p50_n0": 1.014,
+   "ratio_bar": 1.05,
+   "ratio_ok": true,
+   "ci_upper_F_minus_n0_ms": 13.57,
+   "ci_bar_ms": 8.0,
+   "ci_ok": false,
+   "verdict": "FAIL"
+  },
+  "raw_rows_pass_topic_arm_ms": [
+   [
+    2,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "n0",
+    1965.93
+   ],
+   [
+    2,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "L",
+    1963.4
+   ],
+   [
+    2,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "F",
+    2004.22
+   ],
+   [
+    2,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "n0x",
+    2044.47
+   ],
+   [
+    2,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "n0x",
+    2110.59
+   ],
+   [
+    2,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "L",
+    2004.28
+   ],
+   [
+    2,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "n0",
+    2045.38
+   ],
+   [
+    2,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "F",
+    2023.71
+   ],
+   [
+    2,
+    "childhood vaccination coverage school immunization programs uptake",
+    "F",
+    2556.97
+   ],
+   [
+    2,
+    "childhood vaccination coverage school immunization programs uptake",
+    "n0",
+    2493.51
+   ],
+   [
+    2,
+    "childhood vaccination coverage school immunization programs uptake",
+    "L",
+    2469.5
+   ],
+   [
+    2,
+    "childhood vaccination coverage school immunization programs uptake",
+    "n0x",
+    2457.67
+   ],
+   [
+    2,
+    "palliative care access rural communities end of life symptom management",
+    "F",
+    3165.15
+   ],
+   [
+    2,
+    "palliative care access rural communities end of life symptom management",
+    "L",
+    3082.45
+   ],
+   [
+    2,
+    "palliative care access rural communities end of life symptom management",
+    "n0",
+    3071.68
+   ],
+   [
+    2,
+    "palliative care access rural communities end of life symptom management",
+    "n0x",
+    3075.7
+   ],
+   [
+    2,
+    "wearable device physical activity monitoring chronic disease self management",
+    "L",
+    1932.13
+   ],
+   [
+    2,
+    "wearable device physical activity monitoring chronic disease self management",
+    "n0",
+    1874.79
+   ],
+   [
+    2,
+    "wearable device physical activity monitoring chronic disease self management",
+    "n0x",
+    1941.16
+   ],
+   [
+    2,
+    "wearable device physical activity monitoring chronic disease self management",
+    "F",
+    1976.98
+   ],
+   [
+    2,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "F",
+    2484.72
+   ],
+   [
+    2,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "n0x",
+    2512.65
+   ],
+   [
+    2,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "n0",
+    2478.7
+   ],
+   [
+    2,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "L",
+    2461.07
+   ],
+   [
+    2,
+    "urban Indigenous friendship centres community services identity",
+    "F",
+    2662.5
+   ],
+   [
+    2,
+    "urban Indigenous friendship centres community services identity",
+    "n0",
+    2596.59
+   ],
+   [
+    2,
+    "urban Indigenous friendship centres community services identity",
+    "n0x",
+    2666.64
+   ],
+   [
+    2,
+    "urban Indigenous friendship centres community services identity",
+    "L",
+    2666.15
+   ],
+   [
+    2,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "n0x",
+    2089.77
+   ],
+   [
+    2,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "F",
+    2033.18
+   ],
+   [
+    2,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "n0",
+    2030.18
+   ],
+   [
+    2,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "L",
+    2016.25
+   ],
+   [
+    2,
+    "Metis identity scrip land dispossession prairie history",
+    "n0",
+    2800.79
+   ],
+   [
+    2,
+    "Metis identity scrip land dispossession prairie history",
+    "F",
+    2800.95
+   ],
+   [
+    2,
+    "Metis identity scrip land dispossession prairie history",
+    "L",
+    2835.67
+   ],
+   [
+    2,
+    "Metis identity scrip land dispossession prairie history",
+    "n0x",
+    2873.42
+   ],
+   [
+    2,
+    "Quebec language policy Bill 101 French minority rights",
+    "L",
+    2202.03
+   ],
+   [
+    2,
+    "Quebec language policy Bill 101 French minority rights",
+    "n0",
+    2379.5
+   ],
+   [
+    2,
+    "Quebec language policy Bill 101 French minority rights",
+    "n0x",
+    2174.46
+   ],
+   [
+    2,
+    "Quebec language policy Bill 101 French minority rights",
+    "F",
+    2210.9
+   ],
+   [
+    2,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "F",
+    3093.89
+   ],
+   [
+    2,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "n0",
+    3077.58
+   ],
+   [
+    2,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "n0x",
+    3105.39
+   ],
+   [
+    2,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "L",
+    3067.64
+   ],
+   [
+    2,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "n0",
+    3164.48
+   ],
+   [
+    2,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "L",
+    3158.76
+   ],
+   [
+    2,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "n0x",
+    3121.69
+   ],
+   [
+    2,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "F",
+    3185.75
+   ],
+   [
+    2,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "L",
+    2002.15
+   ],
+   [
+    2,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "n0x",
+    2021.75
+   ],
+   [
+    2,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "F",
+    2031.14
+   ],
+   [
+    2,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "n0",
+    2065.33
+   ],
+   [
+    2,
+    "bail reform pretrial detention remand population Canada",
+    "L",
+    2091.73
+   ],
+   [
+    2,
+    "bail reform pretrial detention remand population Canada",
+    "n0x",
+    1970.92
+   ],
+   [
+    2,
+    "bail reform pretrial detention remand population Canada",
+    "n0",
+    1977.16
+   ],
+   [
+    2,
+    "bail reform pretrial detention remand population Canada",
+    "F",
+    2048.91
+   ],
+   [
+    2,
+    "intimate partner violence risk assessment protective orders",
+    "n0",
+    2112.17
+   ],
+   [
+    2,
+    "intimate partner violence risk assessment protective orders",
+    "F",
+    2108.35
+   ],
+   [
+    2,
+    "intimate partner violence risk assessment protective orders",
+    "L",
+    2131.4
+   ],
+   [
+    2,
+    "intimate partner violence risk assessment protective orders",
+    "n0x",
+    2111.75
+   ],
+   [
+    2,
+    "gang desistance youth intervention programs street involvement",
+    "F",
+    2029.83
+   ],
+   [
+    2,
+    "gang desistance youth intervention programs street involvement",
+    "L",
+    2241.32
+   ],
+   [
+    2,
+    "gang desistance youth intervention programs street involvement",
+    "n0x",
+    2155.46
+   ],
+   [
+    2,
+    "gang desistance youth intervention programs street involvement",
+    "n0",
+    1990.42
+   ],
+   [
+    2,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "n0x",
+    2216.01
+   ],
+   [
+    2,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "F",
+    2302.74
+   ],
+   [
+    2,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "L",
+    2243.62
+   ],
+   [
+    2,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "n0",
+    2236.71
+   ],
+   [
+    2,
+    "haptic feedback tangible interface design user perception",
+    "n0",
+    2951.83
+   ],
+   [
+    2,
+    "haptic feedback tangible interface design user perception",
+    "n0x",
+    2909.85
+   ],
+   [
+    2,
+    "haptic feedback tangible interface design user perception",
+    "L",
+    2907.94
+   ],
+   [
+    2,
+    "haptic feedback tangible interface design user perception",
+    "F",
+    2953.06
+   ],
+   [
+    2,
+    "data physicalization tangible data representation public engagement",
+    "n0",
+    2872.39
+   ],
+   [
+    2,
+    "data physicalization tangible data representation public engagement",
+    "L",
+    2851.47
+   ],
+   [
+    2,
+    "data physicalization tangible data representation public engagement",
+    "F",
+    3068.34
+   ],
+   [
+    2,
+    "data physicalization tangible data representation public engagement",
+    "n0x",
+    2864.06
+   ],
+   [
+    2,
+    "serious games health behaviour change gamification design",
+    "F",
+    2020.5
+   ],
+   [
+    2,
+    "serious games health behaviour change gamification design",
+    "L",
+    2079.54
+   ],
+   [
+    2,
+    "serious games health behaviour change gamification design",
+    "n0",
+    2029.53
+   ],
+   [
+    2,
+    "serious games health behaviour change gamification design",
+    "n0x",
+    2028.18
+   ],
+   [
+    2,
+    "wearable computing textile interfaces embodied interaction design",
+    "F",
+    2600.66
+   ],
+   [
+    2,
+    "wearable computing textile interfaces embodied interaction design",
+    "L",
+    2505.39
+   ],
+   [
+    2,
+    "wearable computing textile interfaces embodied interaction design",
+    "n0",
+    2482.39
+   ],
+   [
+    2,
+    "wearable computing textile interfaces embodied interaction design",
+    "n0x",
+    2485.98
+   ],
+   [
+    2,
+    "concussion return to play protocol youth sport recovery",
+    "F",
+    2925.13
+   ],
+   [
+    2,
+    "concussion return to play protocol youth sport recovery",
+    "n0x",
+    2867.14
+   ],
+   [
+    2,
+    "concussion return to play protocol youth sport recovery",
+    "L",
+    2947.45
+   ],
+   [
+    2,
+    "concussion return to play protocol youth sport recovery",
+    "n0",
+    2919.63
+   ],
+   [
+    2,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "L",
+    1827.99
+   ],
+   [
+    2,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "n0",
+    1835.6
+   ],
+   [
+    2,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "F",
+    1874.66
+   ],
+   [
+    2,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "n0x",
+    1823.85
+   ],
+   [
+    2,
+    "thermoregulation heat strain occupational workers hydration",
+    "F",
+    2164.97
+   ],
+   [
+    2,
+    "thermoregulation heat strain occupational workers hydration",
+    "n0",
+    2379.69
+   ],
+   [
+    2,
+    "thermoregulation heat strain occupational workers hydration",
+    "n0x",
+    2212.21
+   ],
+   [
+    2,
+    "thermoregulation heat strain occupational workers hydration",
+    "L",
+    2182.04
+   ],
+   [
+    2,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "n0",
+    4021.43
+   ],
+   [
+    2,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "L",
+    3815.6
+   ],
+   [
+    2,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "F",
+    3810.01
+   ],
+   [
+    2,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "n0x",
+    3709.63
+   ],
+   [
+    2,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "n0",
+    2636.67
+   ],
+   [
+    2,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "n0x",
+    2571.31
+   ],
+   [
+    2,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "L",
+    2591.28
+   ],
+   [
+    2,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "F",
+    2614.29
+   ],
+   [
+    2,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "L",
+    2139.5
+   ],
+   [
+    2,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "n0",
+    2075.43
+   ],
+   [
+    2,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "n0x",
+    2106.7
+   ],
+   [
+    2,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "F",
+    2135.89
+   ],
+   [
+    2,
+    "mine tailings dam failure water quality remediation monitoring",
+    "n0",
+    3109.59
+   ],
+   [
+    2,
+    "mine tailings dam failure water quality remediation monitoring",
+    "F",
+    3450.96
+   ],
+   [
+    2,
+    "mine tailings dam failure water quality remediation monitoring",
+    "L",
+    3202.76
+   ],
+   [
+    2,
+    "mine tailings dam failure water quality remediation monitoring",
+    "n0x",
+    3172.92
+   ],
+   [
+    2,
+    "marine protected area network design fisheries spillover effects",
+    "L",
+    2228.76
+   ],
+   [
+    2,
+    "marine protected area network design fisheries spillover effects",
+    "n0x",
+    2235.06
+   ],
+   [
+    2,
+    "marine protected area network design fisheries spillover effects",
+    "n0",
+    2241.34
+   ],
+   [
+    2,
+    "marine protected area network design fisheries spillover effects",
+    "F",
+    2312.15
+   ],
+   [
+    2,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "F",
+    855.5
+   ],
+   [
+    2,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "L",
+    870.12
+   ],
+   [
+    2,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "n0",
+    866.56
+   ],
+   [
+    2,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "n0x",
+    880.25
+   ],
+   [
+    2,
+    "household debt mortgage stress test housing finance Canada",
+    "L",
+    3029.93
+   ],
+   [
+    2,
+    "household debt mortgage stress test housing finance Canada",
+    "n0",
+    2673.84
+   ],
+   [
+    2,
+    "household debt mortgage stress test housing finance Canada",
+    "n0x",
+    2511.45
+   ],
+   [
+    2,
+    "household debt mortgage stress test housing finance Canada",
+    "F",
+    2567.13
+   ],
+   [
+    2,
+    "corporate bond liquidity credit spread market microstructure",
+    "n0x",
+    2716.05
+   ],
+   [
+    2,
+    "corporate bond liquidity credit spread market microstructure",
+    "L",
+    2684.7
+   ],
+   [
+    2,
+    "corporate bond liquidity credit spread market microstructure",
+    "F",
+    2751.46
+   ],
+   [
+    2,
+    "corporate bond liquidity credit spread market microstructure",
+    "n0",
+    2703.34
+   ],
+   [
+    2,
+    "electoral turnout youth voter mobilization campaign contact",
+    "n0",
+    2031.72
+   ],
+   [
+    2,
+    "electoral turnout youth voter mobilization campaign contact",
+    "n0x",
+    2139.66
+   ],
+   [
+    2,
+    "electoral turnout youth voter mobilization campaign contact",
+    "L",
+    2596.17
+   ],
+   [
+    2,
+    "electoral turnout youth voter mobilization campaign contact",
+    "F",
+    2340.87
+   ],
+   [
+    2,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "F",
+    2110.56
+   ],
+   [
+    2,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "L",
+    2082.81
+   ],
+   [
+    2,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "n0",
+    2019.48
+   ],
+   [
+    2,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "n0x",
+    2006.68
+   ],
+   [
+    2,
+    "foreign election interference disinformation state actors democracy",
+    "F",
+    2132.57
+   ],
+   [
+    2,
+    "foreign election interference disinformation state actors democracy",
+    "n0",
+    1972.07
+   ],
+   [
+    2,
+    "foreign election interference disinformation state actors democracy",
+    "n0x",
+    1923.98
+   ],
+   [
+    2,
+    "foreign election interference disinformation state actors democracy",
+    "L",
+    1929.04
+   ],
+   [
+    2,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "n0",
+    1248.84
+   ],
+   [
+    2,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "F",
+    1300.61
+   ],
+   [
+    2,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "L",
+    1300.58
+   ],
+   [
+    2,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "n0x",
+    1244.98
+   ],
+   [
+    2,
+    "news deserts local journalism decline community information",
+    "L",
+    2383.53
+   ],
+   [
+    2,
+    "news deserts local journalism decline community information",
+    "F",
+    2400.78
+   ],
+   [
+    2,
+    "news deserts local journalism decline community information",
+    "n0",
+    2424.63
+   ],
+   [
+    2,
+    "news deserts local journalism decline community information",
+    "n0x",
+    2395.89
+   ],
+   [
+    2,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "n0x",
+    541.76
+   ],
+   [
+    2,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "L",
+    526.32
+   ],
+   [
+    2,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "n0",
+    530.53
+   ],
+   [
+    2,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "F",
+    525.01
+   ],
+   [
+    2,
+    "minimum wage employment effects small business labour demand",
+    "F",
+    3031.69
+   ],
+   [
+    2,
+    "minimum wage employment effects small business labour demand",
+    "n0",
+    3007.7
+   ],
+   [
+    2,
+    "minimum wage employment effects small business labour demand",
+    "L",
+    3000.03
+   ],
+   [
+    2,
+    "minimum wage employment effects small business labour demand",
+    "n0x",
+    3092.82
+   ],
+   [
+    2,
+    "immigration labour market wages native workers displacement",
+    "n0",
+    854.39
+   ],
+   [
+    2,
+    "immigration labour market wages native workers displacement",
+    "F",
+    870.64
+   ],
+   [
+    2,
+    "immigration labour market wages native workers displacement",
+    "n0x",
+    871.4
+   ],
+   [
+    2,
+    "immigration labour market wages native workers displacement",
+    "L",
+    843.96
+   ],
+   [
+    2,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "n0x",
+    2580.35
+   ],
+   [
+    2,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "F",
+    2496.07
+   ],
+   [
+    2,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "L",
+    2549.05
+   ],
+   [
+    2,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "n0",
+    2477.0
+   ],
+   [
+    2,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "L",
+    2303.62
+   ],
+   [
+    2,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "F",
+    2294.1
+   ],
+   [
+    2,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "n0",
+    2253.95
+   ],
+   [
+    2,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "n0x",
+    2319.23
+   ],
+   [
+    2,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "n0x",
+    2987.07
+   ],
+   [
+    2,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "F",
+    3069.46
+   ],
+   [
+    2,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "L",
+    2950.51
+   ],
+   [
+    2,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "n0",
+    3016.16
+   ],
+   [
+    2,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "n0",
+    2470.93
+   ],
+   [
+    2,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "F",
+    2401.54
+   ],
+   [
+    2,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "L",
+    2447.83
+   ],
+   [
+    2,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "n0x",
+    2344.96
+   ],
+   [
+    2,
+    "compiler optimization loop vectorization SIMD code generation",
+    "n0",
+    712.0
+   ],
+   [
+    2,
+    "compiler optimization loop vectorization SIMD code generation",
+    "F",
+    760.3
+   ],
+   [
+    2,
+    "compiler optimization loop vectorization SIMD code generation",
+    "L",
+    771.92
+   ],
+   [
+    2,
+    "compiler optimization loop vectorization SIMD code generation",
+    "n0x",
+    714.83
+   ],
+   [
+    2,
+    "approximate nearest neighbour search vector index billion scale",
+    "F",
+    2475.65
+   ],
+   [
+    2,
+    "approximate nearest neighbour search vector index billion scale",
+    "n0x",
+    2426.07
+   ],
+   [
+    2,
+    "approximate nearest neighbour search vector index billion scale",
+    "L",
+    2563.32
+   ],
+   [
+    2,
+    "approximate nearest neighbour search vector index billion scale",
+    "n0",
+    2471.28
+   ],
+   [
+    2,
+    "static analysis memory safety vulnerability detection C programs",
+    "n0",
+    1910.75
+   ],
+   [
+    2,
+    "static analysis memory safety vulnerability detection C programs",
+    "F",
+    2000.57
+   ],
+   [
+    2,
+    "static analysis memory safety vulnerability detection C programs",
+    "n0x",
+    1910.65
+   ],
+   [
+    2,
+    "static analysis memory safety vulnerability detection C programs",
+    "L",
+    1907.96
+   ],
+   [
+    2,
+    "teacher retention burnout attrition rural schools workforce",
+    "n0",
+    2051.69
+   ],
+   [
+    2,
+    "teacher retention burnout attrition rural schools workforce",
+    "n0x",
+    2095.77
+   ],
+   [
+    2,
+    "teacher retention burnout attrition rural schools workforce",
+    "F",
+    2004.47
+   ],
+   [
+    2,
+    "teacher retention burnout attrition rural schools workforce",
+    "L",
+    1957.89
+   ],
+   [
+    2,
+    "early literacy phonics instruction reading intervention primary grades",
+    "L",
+    3052.3
+   ],
+   [
+    2,
+    "early literacy phonics instruction reading intervention primary grades",
+    "n0",
+    2989.24
+   ],
+   [
+    2,
+    "early literacy phonics instruction reading intervention primary grades",
+    "F",
+    3010.25
+   ],
+   [
+    2,
+    "early literacy phonics instruction reading intervention primary grades",
+    "n0x",
+    2947.53
+   ],
+   [
+    2,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "F",
+    1941.71
+   ],
+   [
+    2,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "n0x",
+    1942.84
+   ],
+   [
+    2,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "n0",
+    1935.28
+   ],
+   [
+    2,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "L",
+    1934.84
+   ],
+   [
+    2,
+    "sleep deprivation memory consolidation cognitive performance",
+    "L",
+    1949.97
+   ],
+   [
+    2,
+    "sleep deprivation memory consolidation cognitive performance",
+    "n0",
+    1998.08
+   ],
+   [
+    2,
+    "sleep deprivation memory consolidation cognitive performance",
+    "F",
+    1971.33
+   ],
+   [
+    2,
+    "sleep deprivation memory consolidation cognitive performance",
+    "n0x",
+    1984.39
+   ],
+   [
+    2,
+    "loneliness social isolation mental health older adults intervention",
+    "n0",
+    2053.34
+   ],
+   [
+    2,
+    "loneliness social isolation mental health older adults intervention",
+    "n0x",
+    2091.75
+   ],
+   [
+    2,
+    "loneliness social isolation mental health older adults intervention",
+    "L",
+    2106.9
+   ],
+   [
+    2,
+    "loneliness social isolation mental health older adults intervention",
+    "F",
+    2208.35
+   ],
+   [
+    2,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "n0",
+    467.65
+   ],
+   [
+    2,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "F",
+    478.29
+   ],
+   [
+    2,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "L",
+    476.19
+   ],
+   [
+    2,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "n0x",
+    466.22
+   ],
+   [
+    2,
+    "transgender healthcare access gender affirming care barriers",
+    "n0x",
+    1765.81
+   ],
+   [
+    2,
+    "transgender healthcare access gender affirming care barriers",
+    "n0",
+    1696.35
+   ],
+   [
+    2,
+    "transgender healthcare access gender affirming care barriers",
+    "F",
+    1737.14
+   ],
+   [
+    2,
+    "transgender healthcare access gender affirming care barriers",
+    "L",
+    1703.16
+   ],
+   [
+    2,
+    "unpaid care work gender division household labour time use",
+    "n0",
+    1701.14
+   ],
+   [
+    2,
+    "unpaid care work gender division household labour time use",
+    "L",
+    1730.15
+   ],
+   [
+    2,
+    "unpaid care work gender division household labour time use",
+    "F",
+    1722.02
+   ],
+   [
+    2,
+    "unpaid care work gender division household labour time use",
+    "n0x",
+    1729.74
+   ],
+   [
+    2,
+    "5G millimeter wave antenna array beamforming design",
+    "L",
+    1731.9
+   ],
+   [
+    2,
+    "5G millimeter wave antenna array beamforming design",
+    "F",
+    1763.99
+   ],
+   [
+    2,
+    "5G millimeter wave antenna array beamforming design",
+    "n0",
+    1753.11
+   ],
+   [
+    2,
+    "5G millimeter wave antenna array beamforming design",
+    "n0x",
+    1697.84
+   ],
+   [
+    2,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "F",
+    2591.81
+   ],
+   [
+    2,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "L",
+    2581.92
+   ],
+   [
+    2,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "n0",
+    2552.72
+   ],
+   [
+    2,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "n0x",
+    2700.5
+   ],
+   [
+    2,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "n0",
+    2536.18
+   ],
+   [
+    2,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "F",
+    2579.36
+   ],
+   [
+    2,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "n0x",
+    2600.71
+   ],
+   [
+    2,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "L",
+    2588.74
+   ],
+   [
+    2,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "F",
+    1089.78
+   ],
+   [
+    2,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "L",
+    1096.19
+   ],
+   [
+    2,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "n0",
+    1211.35
+   ],
+   [
+    2,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "n0x",
+    1103.18
+   ],
+   [
+    2,
+    "religious participation secularization generational change belonging",
+    "n0x",
+    2028.17
+   ],
+   [
+    2,
+    "religious participation secularization generational change belonging",
+    "n0",
+    2109.97
+   ],
+   [
+    2,
+    "religious participation secularization generational change belonging",
+    "L",
+    2104.37
+   ],
+   [
+    2,
+    "religious participation secularization generational change belonging",
+    "F",
+    2178.26
+   ],
+   [
+    2,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "L",
+    2531.53
+   ],
+   [
+    2,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "F",
+    2670.81
+   ],
+   [
+    2,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "n0",
+    2555.91
+   ],
+   [
+    2,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "n0x",
+    2557.69
+   ],
+   [
+    2,
+    "free will moral responsibility determinism compatibilism",
+    "F",
+    1124.62
+   ],
+   [
+    2,
+    "free will moral responsibility determinism compatibilism",
+    "n0",
+    1183.43
+   ],
+   [
+    2,
+    "free will moral responsibility determinism compatibilism",
+    "n0x",
+    1154.58
+   ],
+   [
+    2,
+    "free will moral responsibility determinism compatibilism",
+    "L",
+    1104.48
+   ],
+   [
+    2,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "F",
+    2796.14
+   ],
+   [
+    2,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "n0x",
+    2784.28
+   ],
+   [
+    2,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "n0",
+    2891.96
+   ],
+   [
+    2,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "L",
+    2812.24
+   ],
+   [
+    2,
+    "topological data analysis persistent homology point clouds",
+    "n0x",
+    1385.65
+   ],
+   [
+    2,
+    "topological data analysis persistent homology point clouds",
+    "n0",
+    1396.89
+   ],
+   [
+    2,
+    "topological data analysis persistent homology point clouds",
+    "L",
+    1446.3
+   ],
+   [
+    2,
+    "topological data analysis persistent homology point clouds",
+    "F",
+    1465.23
+   ],
+   [
+    2,
+    "stochastic partial differential equations numerical approximation convergence",
+    "F",
+    2729.83
+   ],
+   [
+    2,
+    "stochastic partial differential equations numerical approximation convergence",
+    "L",
+    2827.22
+   ],
+   [
+    2,
+    "stochastic partial differential equations numerical approximation convergence",
+    "n0",
+    2787.99
+   ],
+   [
+    2,
+    "stochastic partial differential equations numerical approximation convergence",
+    "n0x",
+    2706.36
+   ],
+   [
+    2,
+    "gravitational wave detection black hole merger interferometer",
+    "n0",
+    1055.83
+   ],
+   [
+    2,
+    "gravitational wave detection black hole merger interferometer",
+    "F",
+    1102.84
+   ],
+   [
+    2,
+    "gravitational wave detection black hole merger interferometer",
+    "n0x",
+    1112.01
+   ],
+   [
+    2,
+    "gravitational wave detection black hole merger interferometer",
+    "L",
+    1097.37
+   ],
+   [
+    2,
+    "topological insulator edge states spin orbit coupling materials",
+    "L",
+    3706.17
+   ],
+   [
+    2,
+    "topological insulator edge states spin orbit coupling materials",
+    "F",
+    3740.08
+   ],
+   [
+    2,
+    "topological insulator edge states spin orbit coupling materials",
+    "n0",
+    3634.01
+   ],
+   [
+    2,
+    "topological insulator edge states spin orbit coupling materials",
+    "n0x",
+    3720.09
+   ],
+   [
+    2,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "F",
+    3329.31
+   ],
+   [
+    2,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "L",
+    3380.68
+   ],
+   [
+    2,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "n0",
+    3478.52
+   ],
+   [
+    2,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "n0x",
+    3353.59
+   ],
+   [
+    2,
+    "PFAS forever chemicals water treatment removal degradation",
+    "n0x",
+    1283.01
+   ],
+   [
+    2,
+    "PFAS forever chemicals water treatment removal degradation",
+    "F",
+    1211.07
+   ],
+   [
+    2,
+    "PFAS forever chemicals water treatment removal degradation",
+    "L",
+    1284.62
+   ],
+   [
+    2,
+    "PFAS forever chemicals water treatment removal degradation",
+    "n0",
+    1261.4
+   ],
+   [
+    2,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "L",
+    2021.85
+   ],
+   [
+    2,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "F",
+    2050.95
+   ],
+   [
+    2,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "n0",
+    2040.62
+   ],
+   [
+    2,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "n0x",
+    2093.39
+   ],
+   [
+    2,
+    "family business succession planning governance next generation",
+    "n0x",
+    2875.77
+   ],
+   [
+    2,
+    "family business succession planning governance next generation",
+    "n0",
+    2921.32
+   ],
+   [
+    2,
+    "family business succession planning governance next generation",
+    "L",
+    2835.97
+   ],
+   [
+    2,
+    "family business succession planning governance next generation",
+    "F",
+    3032.78
+   ],
+   [
+    2,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "n0x",
+    728.01
+   ],
+   [
+    2,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "n0",
+    721.6
+   ],
+   [
+    2,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "F",
+    820.62
+   ],
+   [
+    2,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "L",
+    759.97
+   ],
+   [
+    2,
+    "workplace automation job displacement reskilling worker adjustment",
+    "L",
+    1988.08
+   ],
+   [
+    2,
+    "workplace automation job displacement reskilling worker adjustment",
+    "F",
+    1983.27
+   ],
+   [
+    2,
+    "workplace automation job displacement reskilling worker adjustment",
+    "n0",
+    1981.38
+   ],
+   [
+    2,
+    "workplace automation job displacement reskilling worker adjustment",
+    "n0x",
+    2013.35
+   ],
+   [
+    2,
+    "code switching bilingual speakers sociolinguistic variation",
+    "L",
+    2070.01
+   ],
+   [
+    2,
+    "code switching bilingual speakers sociolinguistic variation",
+    "F",
+    2095.68
+   ],
+   [
+    2,
+    "code switching bilingual speakers sociolinguistic variation",
+    "n0x",
+    2203.46
+   ],
+   [
+    2,
+    "code switching bilingual speakers sociolinguistic variation",
+    "n0",
+    2118.43
+   ],
+   [
+    2,
+    "prosody intonation speech perception listener comprehension",
+    "F",
+    2590.21
+   ],
+   [
+    2,
+    "prosody intonation speech perception listener comprehension",
+    "n0",
+    2584.73
+   ],
+   [
+    2,
+    "prosody intonation speech perception listener comprehension",
+    "L",
+    2636.89
+   ],
+   [
+    2,
+    "prosody intonation speech perception listener comprehension",
+    "n0x",
+    2564.3
+   ],
+   [
+    2,
+    "modernist poetry fragmentation form early twentieth century",
+    "F",
+    2192.59
+   ],
+   [
+    2,
+    "modernist poetry fragmentation form early twentieth century",
+    "n0x",
+    2172.54
+   ],
+   [
+    2,
+    "modernist poetry fragmentation form early twentieth century",
+    "n0",
+    2204.54
+   ],
+   [
+    2,
+    "modernist poetry fragmentation form early twentieth century",
+    "L",
+    2180.35
+   ],
+   [
+    2,
+    "graphic novels comics studies narrative visual storytelling",
+    "L",
+    2067.23
+   ],
+   [
+    2,
+    "graphic novels comics studies narrative visual storytelling",
+    "n0",
+    2122.1
+   ],
+   [
+    2,
+    "graphic novels comics studies narrative visual storytelling",
+    "n0x",
+    2029.26
+   ],
+   [
+    2,
+    "graphic novels comics studies narrative visual storytelling",
+    "F",
+    2072.81
+   ],
+   [
+    2,
+    "film festival circuit curation programming world cinema",
+    "n0",
+    2164.45
+   ],
+   [
+    2,
+    "film festival circuit curation programming world cinema",
+    "F",
+    2212.02
+   ],
+   [
+    2,
+    "film festival circuit curation programming world cinema",
+    "n0x",
+    2216.6
+   ],
+   [
+    2,
+    "film festival circuit curation programming world cinema",
+    "L",
+    2327.46
+   ],
+   [
+    2,
+    "sound design film music affect audience emotional response",
+    "L",
+    2480.69
+   ],
+   [
+    2,
+    "sound design film music affect audience emotional response",
+    "n0",
+    2296.75
+   ],
+   [
+    2,
+    "sound design film music affect audience emotional response",
+    "n0x",
+    2286.4
+   ],
+   [
+    2,
+    "sound design film music affect audience emotional response",
+    "F",
+    2465.3
+   ],
+   [
+    2,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "F",
+    862.02
+   ],
+   [
+    2,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "n0x",
+    836.31
+   ],
+   [
+    2,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "L",
+    855.29
+   ],
+   [
+    2,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "n0",
+    822.37
+   ],
+   [
+    2,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "L",
+    2716.68
+   ],
+   [
+    2,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "n0x",
+    2664.64
+   ],
+   [
+    2,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "n0",
+    2641.09
+   ],
+   [
+    2,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "F",
+    2764.98
+   ],
+   [
+    2,
+    "falls prevention older adults balance training home hazards",
+    "n0x",
+    1905.78
+   ],
+   [
+    2,
+    "falls prevention older adults balance training home hazards",
+    "n0",
+    1861.69
+   ],
+   [
+    2,
+    "falls prevention older adults balance training home hazards",
+    "L",
+    1889.3
+   ],
+   [
+    2,
+    "falls prevention older adults balance training home hazards",
+    "F",
+    2018.81
+   ],
+   [
+    2,
+    "social prescribing older adults community programs wellbeing",
+    "F",
+    1664.3
+   ],
+   [
+    2,
+    "social prescribing older adults community programs wellbeing",
+    "L",
+    1640.79
+   ],
+   [
+    2,
+    "social prescribing older adults community programs wellbeing",
+    "n0x",
+    1643.65
+   ],
+   [
+    2,
+    "social prescribing older adults community programs wellbeing",
+    "n0",
+    1702.3
+   ],
+   [
+    2,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "L",
+    2676.15
+   ],
+   [
+    2,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "F",
+    2609.22
+   ],
+   [
+    2,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "n0x",
+    2548.84
+   ],
+   [
+    2,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "n0",
+    2576.96
+   ],
+   [
+    2,
+    "migration transnational families remittances belonging ethnography",
+    "n0x",
+    2033.19
+   ],
+   [
+    2,
+    "migration transnational families remittances belonging ethnography",
+    "F",
+    2006.46
+   ],
+   [
+    2,
+    "migration transnational families remittances belonging ethnography",
+    "L",
+    2022.52
+   ],
+   [
+    2,
+    "migration transnational families remittances belonging ethnography",
+    "n0",
+    2121.46
+   ],
+   [
+    2,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "n0",
+    2177.25
+   ],
+   [
+    2,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "n0x",
+    2155.55
+   ],
+   [
+    2,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "L",
+    2233.82
+   ],
+   [
+    2,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "F",
+    2153.86
+   ],
+   [
+    2,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "F",
+    1846.82
+   ],
+   [
+    2,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "n0",
+    1852.07
+   ],
+   [
+    2,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "L",
+    1930.49
+   ],
+   [
+    2,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "n0x",
+    1933.29
+   ],
+   [
+    2,
+    "refugee resettlement burden sharing international protection regime",
+    "F",
+    2587.09
+   ],
+   [
+    2,
+    "refugee resettlement burden sharing international protection regime",
+    "n0",
+    2761.52
+   ],
+   [
+    2,
+    "refugee resettlement burden sharing international protection regime",
+    "n0x",
+    2571.19
+   ],
+   [
+    2,
+    "refugee resettlement burden sharing international protection regime",
+    "L",
+    2543.44
+   ],
+   [
+    2,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "n0x",
+    2704.43
+   ],
+   [
+    2,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "L",
+    2684.71
+   ],
+   [
+    2,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "n0",
+    2715.84
+   ],
+   [
+    2,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "F",
+    2666.44
+   ],
+   [
+    2,
+    "Cuban revolution health system export medical diplomacy",
+    "n0x",
+    2277.35
+   ],
+   [
+    2,
+    "Cuban revolution health system export medical diplomacy",
+    "n0",
+    2341.02
+   ],
+   [
+    2,
+    "Cuban revolution health system export medical diplomacy",
+    "F",
+    2325.89
+   ],
+   [
+    2,
+    "Cuban revolution health system export medical diplomacy",
+    "L",
+    2395.97
+   ],
+   [
+    2,
+    "Andean agrarian reform peasant movements land tenure",
+    "n0x",
+    2978.45
+   ],
+   [
+    2,
+    "Andean agrarian reform peasant movements land tenure",
+    "n0",
+    2991.49
+   ],
+   [
+    2,
+    "Andean agrarian reform peasant movements land tenure",
+    "F",
+    3047.43
+   ],
+   [
+    2,
+    "Andean agrarian reform peasant movements land tenure",
+    "L",
+    3077.19
+   ],
+   [
+    2,
+    "informal settlements upgrading tenure security global south cities",
+    "F",
+    1900.07
+   ],
+   [
+    2,
+    "informal settlements upgrading tenure security global south cities",
+    "L",
+    1868.72
+   ],
+   [
+    2,
+    "informal settlements upgrading tenure security global south cities",
+    "n0x",
+    1787.33
+   ],
+   [
+    2,
+    "informal settlements upgrading tenure security global south cities",
+    "n0",
+    1834.42
+   ],
+   [
+    2,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "F",
+    394.49
+   ],
+   [
+    2,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "L",
+    365.78
+   ],
+   [
+    2,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "n0x",
+    340.95
+   ],
+   [
+    2,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "n0",
+    356.6
+   ],
+   [
+    2,
+    "access to justice self represented litigants legal aid funding",
+    "n0x",
+    2413.83
+   ],
+   [
+    2,
+    "access to justice self represented litigants legal aid funding",
+    "n0",
+    2429.85
+   ],
+   [
+    2,
+    "access to justice self represented litigants legal aid funding",
+    "L",
+    2406.82
+   ],
+   [
+    2,
+    "access to justice self represented litigants legal aid funding",
+    "F",
+    2458.59
+   ],
+   [
+    2,
+    "environmental litigation climate lawsuits state liability courts",
+    "n0x",
+    2519.5
+   ],
+   [
+    2,
+    "environmental litigation climate lawsuits state liability courts",
+    "F",
+    2486.49
+   ],
+   [
+    2,
+    "environmental litigation climate lawsuits state liability courts",
+    "n0",
+    2547.22
+   ],
+   [
+    2,
+    "environmental litigation climate lawsuits state liability courts",
+    "L",
+    2510.24
+   ],
+   [
+    2,
+    "gut microbiome host immune interaction metabolite signalling",
+    "L",
+    2425.66
+   ],
+   [
+    2,
+    "gut microbiome host immune interaction metabolite signalling",
+    "n0",
+    2500.66
+   ],
+   [
+    2,
+    "gut microbiome host immune interaction metabolite signalling",
+    "n0x",
+    2537.44
+   ],
+   [
+    2,
+    "gut microbiome host immune interaction metabolite signalling",
+    "F",
+    2431.83
+   ],
+   [
+    2,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "n0x",
+    2072.56
+   ],
+   [
+    2,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "L",
+    2111.93
+   ],
+   [
+    2,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "n0",
+    2114.55
+   ],
+   [
+    2,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "F",
+    2103.66
+   ],
+   [
+    2,
+    "jazz improvisation performance analysis interaction ensemble",
+    "L",
+    1465.76
+   ],
+   [
+    2,
+    "jazz improvisation performance analysis interaction ensemble",
+    "F",
+    1447.53
+   ],
+   [
+    2,
+    "jazz improvisation performance analysis interaction ensemble",
+    "n0x",
+    1471.06
+   ],
+   [
+    2,
+    "jazz improvisation performance analysis interaction ensemble",
+    "n0",
+    1463.94
+   ],
+   [
+    2,
+    "music streaming royalties artist income platform economics",
+    "n0",
+    1848.35
+   ],
+   [
+    2,
+    "music streaming royalties artist income platform economics",
+    "n0x",
+    1845.4
+   ],
+   [
+    2,
+    "music streaming royalties artist income platform economics",
+    "F",
+    1900.8
+   ],
+   [
+    2,
+    "music streaming royalties artist income platform economics",
+    "L",
+    1890.33
+   ],
+   [
+    2,
+    "childcare policy universal early learning affordability workforce",
+    "F",
+    2025.39
+   ],
+   [
+    2,
+    "childcare policy universal early learning affordability workforce",
+    "n0x",
+    2011.57
+   ],
+   [
+    2,
+    "childcare policy universal early learning affordability workforce",
+    "n0",
+    2066.5
+   ],
+   [
+    2,
+    "childcare policy universal early learning affordability workforce",
+    "L",
+    2024.49
+   ],
+   [
+    2,
+    "public procurement innovation policy government purchasing outcomes",
+    "F",
+    1622.48
+   ],
+   [
+    2,
+    "public procurement innovation policy government purchasing outcomes",
+    "n0x",
+    1668.4
+   ],
+   [
+    2,
+    "public procurement innovation policy government purchasing outcomes",
+    "L",
+    1701.33
+   ],
+   [
+    2,
+    "public procurement innovation policy government purchasing outcomes",
+    "n0",
+    1634.25
+   ],
+   [
+    2,
+    "maternal mortality skilled birth attendance low resource settings",
+    "n0",
+    1862.04
+   ],
+   [
+    2,
+    "maternal mortality skilled birth attendance low resource settings",
+    "F",
+    1840.58
+   ],
+   [
+    2,
+    "maternal mortality skilled birth attendance low resource settings",
+    "n0x",
+    1849.26
+   ],
+   [
+    2,
+    "maternal mortality skilled birth attendance low resource settings",
+    "L",
+    1911.49
+   ],
+   [
+    2,
+    "neglected tropical disease mass drug administration elimination",
+    "n0",
+    1559.65
+   ],
+   [
+    2,
+    "neglected tropical disease mass drug administration elimination",
+    "F",
+    1538.43
+   ],
+   [
+    2,
+    "neglected tropical disease mass drug administration elimination",
+    "n0x",
+    1518.33
+   ],
+   [
+    2,
+    "neglected tropical disease mass drug administration elimination",
+    "L",
+    1557.96
+   ],
+   [
+    2,
+    "solar photovoltaic degradation module reliability field performance",
+    "L",
+    3193.05
+   ],
+   [
+    2,
+    "solar photovoltaic degradation module reliability field performance",
+    "n0x",
+    3139.93
+   ],
+   [
+    2,
+    "solar photovoltaic degradation module reliability field performance",
+    "F",
+    3184.41
+   ],
+   [
+    2,
+    "solar photovoltaic degradation module reliability field performance",
+    "n0",
+    3181.89
+   ],
+   [
+    2,
+    "district heating waste heat recovery thermal network efficiency",
+    "F",
+    3223.55
+   ],
+   [
+    2,
+    "district heating waste heat recovery thermal network efficiency",
+    "n0",
+    3152.67
+   ],
+   [
+    2,
+    "district heating waste heat recovery thermal network efficiency",
+    "n0x",
+    3062.52
+   ],
+   [
+    2,
+    "district heating waste heat recovery thermal network efficiency",
+    "L",
+    3129.9
+   ],
+   [
+    2,
+    "auditor independence non-audit services fee dependence quality",
+    "F",
+    2036.19
+   ],
+   [
+    2,
+    "auditor independence non-audit services fee dependence quality",
+    "n0x",
+    2031.2
+   ],
+   [
+    2,
+    "auditor independence non-audit services fee dependence quality",
+    "L",
+    2050.56
+   ],
+   [
+    2,
+    "auditor independence non-audit services fee dependence quality",
+    "n0",
+    2092.95
+   ],
+   [
+    2,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "L",
+    1851.03
+   ],
+   [
+    2,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "n0",
+    1812.87
+   ],
+   [
+    2,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "F",
+    1796.25
+   ],
+   [
+    2,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "n0x",
+    1819.84
+   ],
+   [
+    2,
+    "causal inference propensity score matching observational studies",
+    "F",
+    2544.78
+   ],
+   [
+    2,
+    "causal inference propensity score matching observational studies",
+    "n0x",
+    2517.89
+   ],
+   [
+    2,
+    "causal inference propensity score matching observational studies",
+    "n0",
+    2628.71
+   ],
+   [
+    2,
+    "causal inference propensity score matching observational studies",
+    "L",
+    2534.6
+   ],
+   [
+    2,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "F",
+    1608.62
+   ],
+   [
+    2,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "n0x",
+    1587.74
+   ],
+   [
+    2,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "n0",
+    1597.97
+   ],
+   [
+    2,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "L",
+    1664.51
+   ],
+   [
+    2,
+    "socially engaged art practice participation community collaboration",
+    "F",
+    2425.27
+   ],
+   [
+    2,
+    "socially engaged art practice participation community collaboration",
+    "L",
+    2402.34
+   ],
+   [
+    2,
+    "socially engaged art practice participation community collaboration",
+    "n0x",
+    2434.08
+   ],
+   [
+    2,
+    "socially engaged art practice participation community collaboration",
+    "n0",
+    2357.39
+   ],
+   [
+    2,
+    "conservation of contemporary art materials degradation museum practice",
+    "F",
+    1079.09
+   ],
+   [
+    2,
+    "conservation of contemporary art materials degradation museum practice",
+    "L",
+    1047.28
+   ],
+   [
+    2,
+    "conservation of contemporary art materials degradation museum practice",
+    "n0",
+    1041.15
+   ],
+   [
+    2,
+    "conservation of contemporary art materials degradation museum practice",
+    "n0x",
+    1121.96
+   ],
+   [
+    2,
+    "dramaturgy new play development workshop process",
+    "n0x",
+    3212.17
+   ],
+   [
+    2,
+    "dramaturgy new play development workshop process",
+    "n0",
+    3281.42
+   ],
+   [
+    2,
+    "dramaturgy new play development workshop process",
+    "L",
+    3386.47
+   ],
+   [
+    2,
+    "dramaturgy new play development workshop process",
+    "F",
+    3294.81
+   ],
+   [
+    2,
+    "puppetry object theatre performance materiality audience",
+    "L",
+    2672.49
+   ],
+   [
+    2,
+    "puppetry object theatre performance materiality audience",
+    "n0",
+    2588.97
+   ],
+   [
+    2,
+    "puppetry object theatre performance materiality audience",
+    "F",
+    2520.65
+   ],
+   [
+    2,
+    "puppetry object theatre performance materiality audience",
+    "n0x",
+    2470.38
+   ],
+   [
+    2,
+    "audiobook market growth narration production publishing industry",
+    "n0x",
+    2685.15
+   ],
+   [
+    2,
+    "audiobook market growth narration production publishing industry",
+    "L",
+    2706.69
+   ],
+   [
+    2,
+    "audiobook market growth narration production publishing industry",
+    "F",
+    2687.79
+   ],
+   [
+    2,
+    "audiobook market growth narration production publishing industry",
+    "n0",
+    2726.61
+   ],
+   [
+    2,
+    "peer review reform preprints open science scholarly communication",
+    "L",
+    2238.02
+   ],
+   [
+    2,
+    "peer review reform preprints open science scholarly communication",
+    "n0x",
+    2271.05
+   ],
+   [
+    2,
+    "peer review reform preprints open science scholarly communication",
+    "n0",
+    2303.64
+   ],
+   [
+    2,
+    "peer review reform preprints open science scholarly communication",
+    "F",
+    2151.75
+   ],
+   [
+    2,
+    "community land trust affordable housing stewardship models",
+    "n0x",
+    519.94
+   ],
+   [
+    2,
+    "community land trust affordable housing stewardship models",
+    "n0",
+    516.61
+   ],
+   [
+    2,
+    "community land trust affordable housing stewardship models",
+    "F",
+    528.34
+   ],
+   [
+    2,
+    "community land trust affordable housing stewardship models",
+    "L",
+    536.02
+   ],
+   [
+    2,
+    "participatory budgeting civic engagement municipal decision making",
+    "L",
+    1756.88
+   ],
+   [
+    2,
+    "participatory budgeting civic engagement municipal decision making",
+    "F",
+    1816.68
+   ],
+   [
+    2,
+    "participatory budgeting civic engagement municipal decision making",
+    "n0",
+    1763.27
+   ],
+   [
+    2,
+    "participatory budgeting civic engagement municipal decision making",
+    "n0x",
+    1775.78
+   ],
+   [
+    2,
+    "psychological safety team performance speaking up organizations",
+    "L",
+    1985.4
+   ],
+   [
+    2,
+    "psychological safety team performance speaking up organizations",
+    "F",
+    2084.58
+   ],
+   [
+    2,
+    "psychological safety team performance speaking up organizations",
+    "n0",
+    2028.31
+   ],
+   [
+    2,
+    "psychological safety team performance speaking up organizations",
+    "n0x",
+    2006.41
+   ],
+   [
+    2,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "n0",
+    1113.9
+   ],
+   [
+    2,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "F",
+    1136.53
+   ],
+   [
+    2,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "n0x",
+    1124.2
+   ],
+   [
+    2,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "L",
+    1189.89
+   ],
+   [
+    2,
+    "forensic entomology postmortem interval insect succession estimation",
+    "n0x",
+    2332.01
+   ],
+   [
+    2,
+    "forensic entomology postmortem interval insect succession estimation",
+    "n0",
+    2290.12
+   ],
+   [
+    2,
+    "forensic entomology postmortem interval insect succession estimation",
+    "F",
+    2334.47
+   ],
+   [
+    2,
+    "forensic entomology postmortem interval insect succession estimation",
+    "L",
+    2361.87
+   ],
+   [
+    3,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "n0x",
+    2006.08
+   ],
+   [
+    3,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "n0",
+    2000.41
+   ],
+   [
+    3,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "F",
+    2116.77
+   ],
+   [
+    3,
+    "type 2 diabetes prevention lifestyle intervention primary care Canada",
+    "L",
+    2017.73
+   ],
+   [
+    3,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "n0",
+    2065.0
+   ],
+   [
+    3,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "n0x",
+    2017.32
+   ],
+   [
+    3,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "L",
+    2102.29
+   ],
+   [
+    3,
+    "hospital emergency department overcrowding wait times patient outcomes",
+    "F",
+    1976.87
+   ],
+   [
+    3,
+    "childhood vaccination coverage school immunization programs uptake",
+    "F",
+    2472.8
+   ],
+   [
+    3,
+    "childhood vaccination coverage school immunization programs uptake",
+    "n0",
+    2581.65
+   ],
+   [
+    3,
+    "childhood vaccination coverage school immunization programs uptake",
+    "n0x",
+    2573.99
+   ],
+   [
+    3,
+    "childhood vaccination coverage school immunization programs uptake",
+    "L",
+    2435.4
+   ],
+   [
+    3,
+    "palliative care access rural communities end of life symptom management",
+    "F",
+    3084.24
+   ],
+   [
+    3,
+    "palliative care access rural communities end of life symptom management",
+    "L",
+    3094.58
+   ],
+   [
+    3,
+    "palliative care access rural communities end of life symptom management",
+    "n0",
+    3016.39
+   ],
+   [
+    3,
+    "palliative care access rural communities end of life symptom management",
+    "n0x",
+    3130.24
+   ],
+   [
+    3,
+    "wearable device physical activity monitoring chronic disease self management",
+    "n0x",
+    1769.93
+   ],
+   [
+    3,
+    "wearable device physical activity monitoring chronic disease self management",
+    "n0",
+    1827.87
+   ],
+   [
+    3,
+    "wearable device physical activity monitoring chronic disease self management",
+    "F",
+    1790.2
+   ],
+   [
+    3,
+    "wearable device physical activity monitoring chronic disease self management",
+    "L",
+    1839.59
+   ],
+   [
+    3,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "n0x",
+    2367.79
+   ],
+   [
+    3,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "n0",
+    2400.36
+   ],
+   [
+    3,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "F",
+    2421.08
+   ],
+   [
+    3,
+    "Indigenous data sovereignty OCAP principles research governance",
+    "L",
+    2416.85
+   ],
+   [
+    3,
+    "urban Indigenous friendship centres community services identity",
+    "n0",
+    2568.24
+   ],
+   [
+    3,
+    "urban Indigenous friendship centres community services identity",
+    "F",
+    2577.14
+   ],
+   [
+    3,
+    "urban Indigenous friendship centres community services identity",
+    "L",
+    2588.1
+   ],
+   [
+    3,
+    "urban Indigenous friendship centres community services identity",
+    "n0x",
+    2540.72
+   ],
+   [
+    3,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "F",
+    1994.19
+   ],
+   [
+    3,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "n0x",
+    2015.28
+   ],
+   [
+    3,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "L",
+    2037.0
+   ],
+   [
+    3,
+    "Indigenous food sovereignty traditional harvesting country foods nutrition",
+    "n0",
+    2004.59
+   ],
+   [
+    3,
+    "Metis identity scrip land dispossession prairie history",
+    "L",
+    2826.99
+   ],
+   [
+    3,
+    "Metis identity scrip land dispossession prairie history",
+    "n0x",
+    2797.52
+   ],
+   [
+    3,
+    "Metis identity scrip land dispossession prairie history",
+    "n0",
+    2817.49
+   ],
+   [
+    3,
+    "Metis identity scrip land dispossession prairie history",
+    "F",
+    2780.63
+   ],
+   [
+    3,
+    "Quebec language policy Bill 101 French minority rights",
+    "L",
+    2152.43
+   ],
+   [
+    3,
+    "Quebec language policy Bill 101 French minority rights",
+    "n0",
+    2118.99
+   ],
+   [
+    3,
+    "Quebec language policy Bill 101 French minority rights",
+    "F",
+    2123.82
+   ],
+   [
+    3,
+    "Quebec language policy Bill 101 French minority rights",
+    "n0x",
+    2143.88
+   ],
+   [
+    3,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "n0x",
+    3037.55
+   ],
+   [
+    3,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "L",
+    3043.56
+   ],
+   [
+    3,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "F",
+    3069.56
+   ],
+   [
+    3,
+    "Canadian Arctic sovereignty Northwest Passage shipping governance",
+    "n0",
+    3043.27
+   ],
+   [
+    3,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "F",
+    3204.42
+   ],
+   [
+    3,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "n0",
+    3077.91
+   ],
+   [
+    3,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "n0x",
+    3126.38
+   ],
+   [
+    3,
+    "Canadian universal pharmacare drug coverage policy debate",
+    "L",
+    3157.08
+   ],
+   [
+    3,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "n0",
+    2093.13
+   ],
+   [
+    3,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "F",
+    2009.8
+   ],
+   [
+    3,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "n0x",
+    2028.19
+   ],
+   [
+    3,
+    "interprovincial trade barriers Canadian economic union regulation",
+    "L",
+    2065.23
+   ],
+   [
+    3,
+    "bail reform pretrial detention remand population Canada",
+    "L",
+    1987.37
+   ],
+   [
+    3,
+    "bail reform pretrial detention remand population Canada",
+    "n0x",
+    2063.76
+   ],
+   [
+    3,
+    "bail reform pretrial detention remand population Canada",
+    "n0",
+    1971.14
+   ],
+   [
+    3,
+    "bail reform pretrial detention remand population Canada",
+    "F",
+    2072.05
+   ],
+   [
+    3,
+    "intimate partner violence risk assessment protective orders",
+    "L",
+    2067.34
+   ],
+   [
+    3,
+    "intimate partner violence risk assessment protective orders",
+    "n0",
+    2093.48
+   ],
+   [
+    3,
+    "intimate partner violence risk assessment protective orders",
+    "n0x",
+    2114.99
+   ],
+   [
+    3,
+    "intimate partner violence risk assessment protective orders",
+    "F",
+    2117.28
+   ],
+   [
+    3,
+    "gang desistance youth intervention programs street involvement",
+    "L",
+    1985.69
+   ],
+   [
+    3,
+    "gang desistance youth intervention programs street involvement",
+    "n0",
+    1967.77
+   ],
+   [
+    3,
+    "gang desistance youth intervention programs street involvement",
+    "n0x",
+    2011.97
+   ],
+   [
+    3,
+    "gang desistance youth intervention programs street involvement",
+    "F",
+    2011.34
+   ],
+   [
+    3,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "L",
+    2243.85
+   ],
+   [
+    3,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "n0x",
+    2270.28
+   ],
+   [
+    3,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "F",
+    2260.47
+   ],
+   [
+    3,
+    "wildlife crime illegal trafficking enforcement conservation criminology",
+    "n0",
+    2225.6
+   ],
+   [
+    3,
+    "haptic feedback tangible interface design user perception",
+    "n0x",
+    2931.9
+   ],
+   [
+    3,
+    "haptic feedback tangible interface design user perception",
+    "n0",
+    2897.72
+   ],
+   [
+    3,
+    "haptic feedback tangible interface design user perception",
+    "L",
+    2903.7
+   ],
+   [
+    3,
+    "haptic feedback tangible interface design user perception",
+    "F",
+    2892.6
+   ],
+   [
+    3,
+    "data physicalization tangible data representation public engagement",
+    "L",
+    2905.48
+   ],
+   [
+    3,
+    "data physicalization tangible data representation public engagement",
+    "F",
+    2855.32
+   ],
+   [
+    3,
+    "data physicalization tangible data representation public engagement",
+    "n0",
+    3012.19
+   ],
+   [
+    3,
+    "data physicalization tangible data representation public engagement",
+    "n0x",
+    3116.26
+   ],
+   [
+    3,
+    "serious games health behaviour change gamification design",
+    "F",
+    2106.63
+   ],
+   [
+    3,
+    "serious games health behaviour change gamification design",
+    "n0x",
+    2120.03
+   ],
+   [
+    3,
+    "serious games health behaviour change gamification design",
+    "n0",
+    2136.28
+   ],
+   [
+    3,
+    "serious games health behaviour change gamification design",
+    "L",
+    2126.39
+   ],
+   [
+    3,
+    "wearable computing textile interfaces embodied interaction design",
+    "n0",
+    2516.8
+   ],
+   [
+    3,
+    "wearable computing textile interfaces embodied interaction design",
+    "n0x",
+    2471.31
+   ],
+   [
+    3,
+    "wearable computing textile interfaces embodied interaction design",
+    "L",
+    2549.0
+   ],
+   [
+    3,
+    "wearable computing textile interfaces embodied interaction design",
+    "F",
+    2548.83
+   ],
+   [
+    3,
+    "concussion return to play protocol youth sport recovery",
+    "L",
+    3058.46
+   ],
+   [
+    3,
+    "concussion return to play protocol youth sport recovery",
+    "F",
+    2948.03
+   ],
+   [
+    3,
+    "concussion return to play protocol youth sport recovery",
+    "n0x",
+    2951.32
+   ],
+   [
+    3,
+    "concussion return to play protocol youth sport recovery",
+    "n0",
+    2940.57
+   ],
+   [
+    3,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "n0x",
+    1810.2
+   ],
+   [
+    3,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "n0",
+    1819.63
+   ],
+   [
+    3,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "F",
+    1809.79
+   ],
+   [
+    3,
+    "high altitude hypoxia ventilatory acclimatization physiology",
+    "L",
+    1833.45
+   ],
+   [
+    3,
+    "thermoregulation heat strain occupational workers hydration",
+    "n0x",
+    2140.7
+   ],
+   [
+    3,
+    "thermoregulation heat strain occupational workers hydration",
+    "n0",
+    2056.92
+   ],
+   [
+    3,
+    "thermoregulation heat strain occupational workers hydration",
+    "F",
+    2169.58
+   ],
+   [
+    3,
+    "thermoregulation heat strain occupational workers hydration",
+    "L",
+    2184.23
+   ],
+   [
+    3,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "n0x",
+    3724.57
+   ],
+   [
+    3,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "L",
+    3785.73
+   ],
+   [
+    3,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "F",
+    3708.12
+   ],
+   [
+    3,
+    "gait analysis prosthetic limb amputee walking energetics",
+    "n0",
+    3788.89
+   ],
+   [
+    3,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "F",
+    2609.57
+   ],
+   [
+    3,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "n0",
+    2609.07
+   ],
+   [
+    3,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "L",
+    2623.76
+   ],
+   [
+    3,
+    "eelgrass seagrass habitat restoration coastal carbon sequestration",
+    "n0x",
+    2610.22
+   ],
+   [
+    3,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "F",
+    2143.12
+   ],
+   [
+    3,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "n0",
+    2197.76
+   ],
+   [
+    3,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "n0x",
+    2127.77
+   ],
+   [
+    3,
+    "caribou herd decline habitat disturbance boreal recovery planning",
+    "L",
+    2187.72
+   ],
+   [
+    3,
+    "mine tailings dam failure water quality remediation monitoring",
+    "n0x",
+    3203.23
+   ],
+   [
+    3,
+    "mine tailings dam failure water quality remediation monitoring",
+    "n0",
+    3114.87
+   ],
+   [
+    3,
+    "mine tailings dam failure water quality remediation monitoring",
+    "F",
+    3098.17
+   ],
+   [
+    3,
+    "mine tailings dam failure water quality remediation monitoring",
+    "L",
+    3125.5
+   ],
+   [
+    3,
+    "marine protected area network design fisheries spillover effects",
+    "n0x",
+    2216.32
+   ],
+   [
+    3,
+    "marine protected area network design fisheries spillover effects",
+    "L",
+    2188.85
+   ],
+   [
+    3,
+    "marine protected area network design fisheries spillover effects",
+    "n0",
+    2225.69
+   ],
+   [
+    3,
+    "marine protected area network design fisheries spillover effects",
+    "F",
+    2251.56
+   ],
+   [
+    3,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "F",
+    805.68
+   ],
+   [
+    3,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "n0x",
+    823.21
+   ],
+   [
+    3,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "L",
+    806.26
+   ],
+   [
+    3,
+    "cryptocurrency market volatility bitcoin price contagion spillover",
+    "n0",
+    804.67
+   ],
+   [
+    3,
+    "household debt mortgage stress test housing finance Canada",
+    "F",
+    2583.03
+   ],
+   [
+    3,
+    "household debt mortgage stress test housing finance Canada",
+    "n0",
+    2543.25
+   ],
+   [
+    3,
+    "household debt mortgage stress test housing finance Canada",
+    "n0x",
+    2543.06
+   ],
+   [
+    3,
+    "household debt mortgage stress test housing finance Canada",
+    "L",
+    2526.48
+   ],
+   [
+    3,
+    "corporate bond liquidity credit spread market microstructure",
+    "n0x",
+    2681.84
+   ],
+   [
+    3,
+    "corporate bond liquidity credit spread market microstructure",
+    "F",
+    2669.57
+   ],
+   [
+    3,
+    "corporate bond liquidity credit spread market microstructure",
+    "L",
+    2765.67
+   ],
+   [
+    3,
+    "corporate bond liquidity credit spread market microstructure",
+    "n0",
+    2637.68
+   ],
+   [
+    3,
+    "electoral turnout youth voter mobilization campaign contact",
+    "L",
+    2061.58
+   ],
+   [
+    3,
+    "electoral turnout youth voter mobilization campaign contact",
+    "F",
+    2052.29
+   ],
+   [
+    3,
+    "electoral turnout youth voter mobilization campaign contact",
+    "n0x",
+    2077.86
+   ],
+   [
+    3,
+    "electoral turnout youth voter mobilization campaign contact",
+    "n0",
+    2037.58
+   ],
+   [
+    3,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "n0",
+    2000.93
+   ],
+   [
+    3,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "L",
+    2003.19
+   ],
+   [
+    3,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "n0x",
+    2138.98
+   ],
+   [
+    3,
+    "federal provincial fiscal transfers equalization intergovernmental relations",
+    "F",
+    2000.67
+   ],
+   [
+    3,
+    "foreign election interference disinformation state actors democracy",
+    "F",
+    1925.1
+   ],
+   [
+    3,
+    "foreign election interference disinformation state actors democracy",
+    "n0x",
+    1923.39
+   ],
+   [
+    3,
+    "foreign election interference disinformation state actors democracy",
+    "L",
+    1958.13
+   ],
+   [
+    3,
+    "foreign election interference disinformation state actors democracy",
+    "n0",
+    1933.11
+   ],
+   [
+    3,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "L",
+    1263.12
+   ],
+   [
+    3,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "F",
+    1276.29
+   ],
+   [
+    3,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "n0",
+    1278.5
+   ],
+   [
+    3,
+    "podcast audiences intimacy parasocial relationship listeners",
+    "n0x",
+    1267.5
+   ],
+   [
+    3,
+    "news deserts local journalism decline community information",
+    "F",
+    2362.63
+   ],
+   [
+    3,
+    "news deserts local journalism decline community information",
+    "n0",
+    2377.51
+   ],
+   [
+    3,
+    "news deserts local journalism decline community information",
+    "L",
+    2353.58
+   ],
+   [
+    3,
+    "news deserts local journalism decline community information",
+    "n0x",
+    2406.76
+   ],
+   [
+    3,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "F",
+    522.63
+   ],
+   [
+    3,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "n0x",
+    505.97
+   ],
+   [
+    3,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "n0",
+    519.8
+   ],
+   [
+    3,
+    "influencer marketing disclosure sponsored content consumer trust",
+    "L",
+    520.48
+   ],
+   [
+    3,
+    "minimum wage employment effects small business labour demand",
+    "n0",
+    2962.82
+   ],
+   [
+    3,
+    "minimum wage employment effects small business labour demand",
+    "n0x",
+    2975.94
+   ],
+   [
+    3,
+    "minimum wage employment effects small business labour demand",
+    "F",
+    2948.15
+   ],
+   [
+    3,
+    "minimum wage employment effects small business labour demand",
+    "L",
+    2934.68
+   ],
+   [
+    3,
+    "immigration labour market wages native workers displacement",
+    "n0",
+    875.67
+   ],
+   [
+    3,
+    "immigration labour market wages native workers displacement",
+    "F",
+    863.02
+   ],
+   [
+    3,
+    "immigration labour market wages native workers displacement",
+    "n0x",
+    868.93
+   ],
+   [
+    3,
+    "immigration labour market wages native workers displacement",
+    "L",
+    851.3
+   ],
+   [
+    3,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "L",
+    2451.12
+   ],
+   [
+    3,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "n0x",
+    2596.88
+   ],
+   [
+    3,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "n0",
+    2498.57
+   ],
+   [
+    3,
+    "carbon border adjustment mechanism trade competitiveness leakage",
+    "F",
+    2504.62
+   ],
+   [
+    3,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "n0x",
+    2296.44
+   ],
+   [
+    3,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "L",
+    2247.13
+   ],
+   [
+    3,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "n0",
+    2257.59
+   ],
+   [
+    3,
+    "Spanish influenza 1918 pandemic public health response cities",
+    "F",
+    2251.63
+   ],
+   [
+    3,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "n0x",
+    2941.07
+   ],
+   [
+    3,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "n0",
+    2994.22
+   ],
+   [
+    3,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "F",
+    3047.11
+   ],
+   [
+    3,
+    "fur trade Hudson's Bay Company Indigenous labour exchange networks",
+    "L",
+    3014.88
+   ],
+   [
+    3,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "n0",
+    2376.71
+   ],
+   [
+    3,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "F",
+    2437.95
+   ],
+   [
+    3,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "L",
+    2406.27
+   ],
+   [
+    3,
+    "women's suffrage movement provincial franchise campaigns Canada",
+    "n0x",
+    2423.47
+   ],
+   [
+    3,
+    "compiler optimization loop vectorization SIMD code generation",
+    "n0",
+    687.16
+   ],
+   [
+    3,
+    "compiler optimization loop vectorization SIMD code generation",
+    "n0x",
+    722.79
+   ],
+   [
+    3,
+    "compiler optimization loop vectorization SIMD code generation",
+    "F",
+    689.43
+   ],
+   [
+    3,
+    "compiler optimization loop vectorization SIMD code generation",
+    "L",
+    683.82
+   ],
+   [
+    3,
+    "approximate nearest neighbour search vector index billion scale",
+    "n0x",
+    2493.72
+   ],
+   [
+    3,
+    "approximate nearest neighbour search vector index billion scale",
+    "L",
+    2461.46
+   ],
+   [
+    3,
+    "approximate nearest neighbour search vector index billion scale",
+    "F",
+    2448.95
+   ],
+   [
+    3,
+    "approximate nearest neighbour search vector index billion scale",
+    "n0",
+    2552.92
+   ],
+   [
+    3,
+    "static analysis memory safety vulnerability detection C programs",
+    "n0x",
+    1886.92
+   ],
+   [
+    3,
+    "static analysis memory safety vulnerability detection C programs",
+    "F",
+    1915.45
+   ],
+   [
+    3,
+    "static analysis memory safety vulnerability detection C programs",
+    "L",
+    1926.81
+   ],
+   [
+    3,
+    "static analysis memory safety vulnerability detection C programs",
+    "n0",
+    1993.92
+   ],
+   [
+    3,
+    "teacher retention burnout attrition rural schools workforce",
+    "L",
+    2019.12
+   ],
+   [
+    3,
+    "teacher retention burnout attrition rural schools workforce",
+    "n0x",
+    2104.23
+   ],
+   [
+    3,
+    "teacher retention burnout attrition rural schools workforce",
+    "F",
+    2107.56
+   ],
+   [
+    3,
+    "teacher retention burnout attrition rural schools workforce",
+    "n0",
+    2178.59
+   ],
+   [
+    3,
+    "early literacy phonics instruction reading intervention primary grades",
+    "F",
+    3256.07
+   ],
+   [
+    3,
+    "early literacy phonics instruction reading intervention primary grades",
+    "L",
+    3175.23
+   ],
+   [
+    3,
+    "early literacy phonics instruction reading intervention primary grades",
+    "n0x",
+    3005.59
+   ],
+   [
+    3,
+    "early literacy phonics instruction reading intervention primary grades",
+    "n0",
+    2995.02
+   ],
+   [
+    3,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "F",
+    2009.42
+   ],
+   [
+    3,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "L",
+    1989.73
+   ],
+   [
+    3,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "n0x",
+    2004.35
+   ],
+   [
+    3,
+    "graduate student supervision mentorship doctoral completion attrition",
+    "n0",
+    2015.05
+   ],
+   [
+    3,
+    "sleep deprivation memory consolidation cognitive performance",
+    "n0x",
+    1995.91
+   ],
+   [
+    3,
+    "sleep deprivation memory consolidation cognitive performance",
+    "F",
+    2006.04
+   ],
+   [
+    3,
+    "sleep deprivation memory consolidation cognitive performance",
+    "n0",
+    1977.37
+   ],
+   [
+    3,
+    "sleep deprivation memory consolidation cognitive performance",
+    "L",
+    1953.98
+   ],
+   [
+    3,
+    "loneliness social isolation mental health older adults intervention",
+    "n0",
+    2067.85
+   ],
+   [
+    3,
+    "loneliness social isolation mental health older adults intervention",
+    "L",
+    2031.4
+   ],
+   [
+    3,
+    "loneliness social isolation mental health older adults intervention",
+    "n0x",
+    1975.94
+   ],
+   [
+    3,
+    "loneliness social isolation mental health older adults intervention",
+    "F",
+    1964.36
+   ],
+   [
+    3,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "L",
+    417.84
+   ],
+   [
+    3,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "F",
+    440.2
+   ],
+   [
+    3,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "n0x",
+    445.57
+   ],
+   [
+    3,
+    "implicit bias measurement predictive validity discrimination behaviour",
+    "n0",
+    476.54
+   ],
+   [
+    3,
+    "transgender healthcare access gender affirming care barriers",
+    "L",
+    1647.19
+   ],
+   [
+    3,
+    "transgender healthcare access gender affirming care barriers",
+    "F",
+    1621.4
+   ],
+   [
+    3,
+    "transgender healthcare access gender affirming care barriers",
+    "n0",
+    1629.42
+   ],
+   [
+    3,
+    "transgender healthcare access gender affirming care barriers",
+    "n0x",
+    1646.42
+   ],
+   [
+    3,
+    "unpaid care work gender division household labour time use",
+    "n0x",
+    1713.8
+   ],
+   [
+    3,
+    "unpaid care work gender division household labour time use",
+    "n0",
+    1712.4
+   ],
+   [
+    3,
+    "unpaid care work gender division household labour time use",
+    "F",
+    1719.34
+   ],
+   [
+    3,
+    "unpaid care work gender division household labour time use",
+    "L",
+    1729.34
+   ],
+   [
+    3,
+    "5G millimeter wave antenna array beamforming design",
+    "F",
+    1848.87
+   ],
+   [
+    3,
+    "5G millimeter wave antenna array beamforming design",
+    "n0x",
+    1831.99
+   ],
+   [
+    3,
+    "5G millimeter wave antenna array beamforming design",
+    "L",
+    1738.72
+   ],
+   [
+    3,
+    "5G millimeter wave antenna array beamforming design",
+    "n0",
+    1704.43
+   ],
+   [
+    3,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "F",
+    2593.61
+   ],
+   [
+    3,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "n0x",
+    2571.87
+   ],
+   [
+    3,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "L",
+    2584.99
+   ],
+   [
+    3,
+    "additive manufacturing metal 3D printing fatigue defects microstructure",
+    "n0",
+    2568.27
+   ],
+   [
+    3,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "n0",
+    2605.4
+   ],
+   [
+    3,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "F",
+    2617.01
+   ],
+   [
+    3,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "L",
+    2582.57
+   ],
+   [
+    3,
+    "autonomous vehicle sensor fusion lidar camera perception",
+    "n0x",
+    2710.82
+   ],
+   [
+    3,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "L",
+    1134.83
+   ],
+   [
+    3,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "n0",
+    1114.97
+   ],
+   [
+    3,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "n0x",
+    1127.97
+   ],
+   [
+    3,
+    "soft robotics pneumatic actuator compliant gripper design",
+    "F",
+    1121.86
+   ],
+   [
+    3,
+    "religious participation secularization generational change belonging",
+    "n0x",
+    2099.23
+   ],
+   [
+    3,
+    "religious participation secularization generational change belonging",
+    "n0",
+    2020.9
+   ],
+   [
+    3,
+    "religious participation secularization generational change belonging",
+    "F",
+    2058.2
+   ],
+   [
+    3,
+    "religious participation secularization generational change belonging",
+    "L",
+    2062.59
+   ],
+   [
+    3,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "n0",
+    2509.27
+   ],
+   [
+    3,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "L",
+    2528.7
+   ],
+   [
+    3,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "F",
+    2458.33
+   ],
+   [
+    3,
+    "neighbourhood effects concentrated disadvantage child outcomes",
+    "n0x",
+    2513.47
+   ],
+   [
+    3,
+    "free will moral responsibility determinism compatibilism",
+    "L",
+    1100.62
+   ],
+   [
+    3,
+    "free will moral responsibility determinism compatibilism",
+    "n0x",
+    1088.2
+   ],
+   [
+    3,
+    "free will moral responsibility determinism compatibilism",
+    "F",
+    1086.6
+   ],
+   [
+    3,
+    "free will moral responsibility determinism compatibilism",
+    "n0",
+    1082.03
+   ],
+   [
+    3,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "L",
+    2793.23
+   ],
+   [
+    3,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "F",
+    2813.97
+   ],
+   [
+    3,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "n0x",
+    2765.56
+   ],
+   [
+    3,
+    "philosophy of mind consciousness qualia explanatory gap",
+    "n0",
+    2792.68
+   ],
+   [
+    3,
+    "topological data analysis persistent homology point clouds",
+    "n0",
+    1386.06
+   ],
+   [
+    3,
+    "topological data analysis persistent homology point clouds",
+    "n0x",
+    1405.05
+   ],
+   [
+    3,
+    "topological data analysis persistent homology point clouds",
+    "F",
+    1390.37
+   ],
+   [
+    3,
+    "topological data analysis persistent homology point clouds",
+    "L",
+    1380.2
+   ],
+   [
+    3,
+    "stochastic partial differential equations numerical approximation convergence",
+    "F",
+    2817.39
+   ],
+   [
+    3,
+    "stochastic partial differential equations numerical approximation convergence",
+    "L",
+    2723.35
+   ],
+   [
+    3,
+    "stochastic partial differential equations numerical approximation convergence",
+    "n0x",
+    2696.43
+   ],
+   [
+    3,
+    "stochastic partial differential equations numerical approximation convergence",
+    "n0",
+    2850.51
+   ],
+   [
+    3,
+    "gravitational wave detection black hole merger interferometer",
+    "L",
+    1116.09
+   ],
+   [
+    3,
+    "gravitational wave detection black hole merger interferometer",
+    "F",
+    1108.24
+   ],
+   [
+    3,
+    "gravitational wave detection black hole merger interferometer",
+    "n0",
+    1088.28
+   ],
+   [
+    3,
+    "gravitational wave detection black hole merger interferometer",
+    "n0x",
+    1114.97
+   ],
+   [
+    3,
+    "topological insulator edge states spin orbit coupling materials",
+    "n0x",
+    3635.99
+   ],
+   [
+    3,
+    "topological insulator edge states spin orbit coupling materials",
+    "L",
+    3641.99
+   ],
+   [
+    3,
+    "topological insulator edge states spin orbit coupling materials",
+    "n0",
+    3631.01
+   ],
+   [
+    3,
+    "topological insulator edge states spin orbit coupling materials",
+    "F",
+    3735.32
+   ],
+   [
+    3,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "F",
+    3395.69
+   ],
+   [
+    3,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "n0x",
+    3328.67
+   ],
+   [
+    3,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "L",
+    3363.55
+   ],
+   [
+    3,
+    "lithium ion battery electrolyte degradation cathode interface",
+    "n0",
+    3440.22
+   ],
+   [
+    3,
+    "PFAS forever chemicals water treatment removal degradation",
+    "n0",
+    1228.91
+   ],
+   [
+    3,
+    "PFAS forever chemicals water treatment removal degradation",
+    "F",
+    1242.31
+   ],
+   [
+    3,
+    "PFAS forever chemicals water treatment removal degradation",
+    "n0x",
+    1233.77
+   ],
+   [
+    3,
+    "PFAS forever chemicals water treatment removal degradation",
+    "L",
+    1229.8
+   ],
+   [
+    3,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "n0x",
+    2122.83
+   ],
+   [
+    3,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "F",
+    2033.02
+   ],
+   [
+    3,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "L",
+    2057.04
+   ],
+   [
+    3,
+    "remote work hybrid arrangements productivity employee wellbeing",
+    "n0",
+    2016.97
+   ],
+   [
+    3,
+    "family business succession planning governance next generation",
+    "n0",
+    2904.72
+   ],
+   [
+    3,
+    "family business succession planning governance next generation",
+    "F",
+    2900.75
+   ],
+   [
+    3,
+    "family business succession planning governance next generation",
+    "L",
+    2971.64
+   ],
+   [
+    3,
+    "family business succession planning governance next generation",
+    "n0x",
+    2869.79
+   ],
+   [
+    3,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "n0",
+    733.9
+   ],
+   [
+    3,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "n0x",
+    776.59
+   ],
+   [
+    3,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "L",
+    750.95
+   ],
+   [
+    3,
+    "migrant agricultural workers temporary foreign worker program conditions",
+    "F",
+    747.47
+   ],
+   [
+    3,
+    "workplace automation job displacement reskilling worker adjustment",
+    "F",
+    1999.24
+   ],
+   [
+    3,
+    "workplace automation job displacement reskilling worker adjustment",
+    "L",
+    2042.28
+   ],
+   [
+    3,
+    "workplace automation job displacement reskilling worker adjustment",
+    "n0x",
+    1974.23
+   ],
+   [
+    3,
+    "workplace automation job displacement reskilling worker adjustment",
+    "n0",
+    1942.4
+   ],
+   [
+    3,
+    "code switching bilingual speakers sociolinguistic variation",
+    "n0",
+    2112.46
+   ],
+   [
+    3,
+    "code switching bilingual speakers sociolinguistic variation",
+    "n0x",
+    2052.56
+   ],
+   [
+    3,
+    "code switching bilingual speakers sociolinguistic variation",
+    "F",
+    2108.55
+   ],
+   [
+    3,
+    "code switching bilingual speakers sociolinguistic variation",
+    "L",
+    2079.23
+   ],
+   [
+    3,
+    "prosody intonation speech perception listener comprehension",
+    "n0",
+    2585.08
+   ],
+   [
+    3,
+    "prosody intonation speech perception listener comprehension",
+    "L",
+    2585.4
+   ],
+   [
+    3,
+    "prosody intonation speech perception listener comprehension",
+    "n0x",
+    2548.93
+   ],
+   [
+    3,
+    "prosody intonation speech perception listener comprehension",
+    "F",
+    2678.99
+   ],
+   [
+    3,
+    "modernist poetry fragmentation form early twentieth century",
+    "L",
+    2128.31
+   ],
+   [
+    3,
+    "modernist poetry fragmentation form early twentieth century",
+    "n0x",
+    2152.88
+   ],
+   [
+    3,
+    "modernist poetry fragmentation form early twentieth century",
+    "F",
+    2183.97
+   ],
+   [
+    3,
+    "modernist poetry fragmentation form early twentieth century",
+    "n0",
+    2162.6
+   ],
+   [
+    3,
+    "graphic novels comics studies narrative visual storytelling",
+    "L",
+    2046.64
+   ],
+   [
+    3,
+    "graphic novels comics studies narrative visual storytelling",
+    "n0x",
+    2061.89
+   ],
+   [
+    3,
+    "graphic novels comics studies narrative visual storytelling",
+    "F",
+    2121.13
+   ],
+   [
+    3,
+    "graphic novels comics studies narrative visual storytelling",
+    "n0",
+    2132.59
+   ],
+   [
+    3,
+    "film festival circuit curation programming world cinema",
+    "F",
+    2349.45
+   ],
+   [
+    3,
+    "film festival circuit curation programming world cinema",
+    "L",
+    2355.86
+   ],
+   [
+    3,
+    "film festival circuit curation programming world cinema",
+    "n0x",
+    2327.83
+   ],
+   [
+    3,
+    "film festival circuit curation programming world cinema",
+    "n0",
+    2268.85
+   ],
+   [
+    3,
+    "sound design film music affect audience emotional response",
+    "L",
+    2413.38
+   ],
+   [
+    3,
+    "sound design film music affect audience emotional response",
+    "n0x",
+    2424.85
+   ],
+   [
+    3,
+    "sound design film music affect audience emotional response",
+    "F",
+    2431.68
+   ],
+   [
+    3,
+    "sound design film music affect audience emotional response",
+    "n0",
+    2352.64
+   ],
+   [
+    3,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "L",
+    838.57
+   ],
+   [
+    3,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "F",
+    863.26
+   ],
+   [
+    3,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "n0",
+    863.03
+   ],
+   [
+    3,
+    "glacier retreat mass balance monitoring mountain water supply",
+    "n0x",
+    881.34
+   ],
+   [
+    3,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "n0x",
+    2672.7
+   ],
+   [
+    3,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "F",
+    2677.14
+   ],
+   [
+    3,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "L",
+    2777.48
+   ],
+   [
+    3,
+    "coastal erosion sea level rise shoreline retreat adaptation",
+    "n0",
+    2653.73
+   ],
+   [
+    3,
+    "falls prevention older adults balance training home hazards",
+    "n0",
+    1872.5
+   ],
+   [
+    3,
+    "falls prevention older adults balance training home hazards",
+    "n0x",
+    1924.03
+   ],
+   [
+    3,
+    "falls prevention older adults balance training home hazards",
+    "L",
+    1889.05
+   ],
+   [
+    3,
+    "falls prevention older adults balance training home hazards",
+    "F",
+    1858.89
+   ],
+   [
+    3,
+    "social prescribing older adults community programs wellbeing",
+    "L",
+    1570.53
+   ],
+   [
+    3,
+    "social prescribing older adults community programs wellbeing",
+    "n0x",
+    1552.93
+   ],
+   [
+    3,
+    "social prescribing older adults community programs wellbeing",
+    "n0",
+    1614.33
+   ],
+   [
+    3,
+    "social prescribing older adults community programs wellbeing",
+    "F",
+    1642.47
+   ],
+   [
+    3,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "n0",
+    2554.52
+   ],
+   [
+    3,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "n0x",
+    2558.9
+   ],
+   [
+    3,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "F",
+    2549.13
+   ],
+   [
+    3,
+    "ritual kinship exchange gift economies ethnography Melanesia",
+    "L",
+    2598.66
+   ],
+   [
+    3,
+    "migration transnational families remittances belonging ethnography",
+    "F",
+    2008.53
+   ],
+   [
+    3,
+    "migration transnational families remittances belonging ethnography",
+    "L",
+    2046.31
+   ],
+   [
+    3,
+    "migration transnational families remittances belonging ethnography",
+    "n0x",
+    2067.77
+   ],
+   [
+    3,
+    "migration transnational families remittances belonging ethnography",
+    "n0",
+    2030.62
+   ],
+   [
+    3,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "n0x",
+    2185.74
+   ],
+   [
+    3,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "n0",
+    2181.86
+   ],
+   [
+    3,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "L",
+    2180.49
+   ],
+   [
+    3,
+    "radiocarbon dating chronology Bayesian modelling stratigraphy",
+    "F",
+    2152.84
+   ],
+   [
+    3,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "L",
+    1842.61
+   ],
+   [
+    3,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "n0",
+    1904.2
+   ],
+   [
+    3,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "n0x",
+    1827.46
+   ],
+   [
+    3,
+    "ancient DNA population migration archaeogenetics prehistoric Europe",
+    "F",
+    1809.69
+   ],
+   [
+    3,
+    "refugee resettlement burden sharing international protection regime",
+    "F",
+    2568.77
+   ],
+   [
+    3,
+    "refugee resettlement burden sharing international protection regime",
+    "L",
+    2614.78
+   ],
+   [
+    3,
+    "refugee resettlement burden sharing international protection regime",
+    "n0x",
+    2610.84
+   ],
+   [
+    3,
+    "refugee resettlement burden sharing international protection regime",
+    "n0",
+    2626.83
+   ],
+   [
+    3,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "L",
+    2791.79
+   ],
+   [
+    3,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "n0x",
+    2697.65
+   ],
+   [
+    3,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "n0",
+    2730.9
+   ],
+   [
+    3,
+    "economic sanctions effectiveness compliance target state behaviour",
+    "F",
+    2733.57
+   ],
+   [
+    3,
+    "Cuban revolution health system export medical diplomacy",
+    "F",
+    2310.2
+   ],
+   [
+    3,
+    "Cuban revolution health system export medical diplomacy",
+    "n0x",
+    2327.24
+   ],
+   [
+    3,
+    "Cuban revolution health system export medical diplomacy",
+    "L",
+    2303.78
+   ],
+   [
+    3,
+    "Cuban revolution health system export medical diplomacy",
+    "n0",
+    2332.81
+   ],
+   [
+    3,
+    "Andean agrarian reform peasant movements land tenure",
+    "L",
+    2968.06
+   ],
+   [
+    3,
+    "Andean agrarian reform peasant movements land tenure",
+    "n0x",
+    2923.42
+   ],
+   [
+    3,
+    "Andean agrarian reform peasant movements land tenure",
+    "n0",
+    2908.12
+   ],
+   [
+    3,
+    "Andean agrarian reform peasant movements land tenure",
+    "F",
+    2928.16
+   ],
+   [
+    3,
+    "informal settlements upgrading tenure security global south cities",
+    "L",
+    1811.6
+   ],
+   [
+    3,
+    "informal settlements upgrading tenure security global south cities",
+    "n0x",
+    1821.72
+   ],
+   [
+    3,
+    "informal settlements upgrading tenure security global south cities",
+    "F",
+    1822.77
+   ],
+   [
+    3,
+    "informal settlements upgrading tenure security global south cities",
+    "n0",
+    1872.24
+   ],
+   [
+    3,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "n0",
+    365.89
+   ],
+   [
+    3,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "F",
+    407.39
+   ],
+   [
+    3,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "L",
+    355.7
+   ],
+   [
+    3,
+    "cycling infrastructure bike lanes mode shift urban mobility",
+    "n0x",
+    353.05
+   ],
+   [
+    3,
+    "access to justice self represented litigants legal aid funding",
+    "n0x",
+    2392.19
+   ],
+   [
+    3,
+    "access to justice self represented litigants legal aid funding",
+    "L",
+    2380.88
+   ],
+   [
+    3,
+    "access to justice self represented litigants legal aid funding",
+    "F",
+    2389.64
+   ],
+   [
+    3,
+    "access to justice self represented litigants legal aid funding",
+    "n0",
+    2347.95
+   ],
+   [
+    3,
+    "environmental litigation climate lawsuits state liability courts",
+    "F",
+    2460.88
+   ],
+   [
+    3,
+    "environmental litigation climate lawsuits state liability courts",
+    "L",
+    2506.78
+   ],
+   [
+    3,
+    "environmental litigation climate lawsuits state liability courts",
+    "n0x",
+    2484.56
+   ],
+   [
+    3,
+    "environmental litigation climate lawsuits state liability courts",
+    "n0",
+    2486.45
+   ],
+   [
+    3,
+    "gut microbiome host immune interaction metabolite signalling",
+    "n0",
+    2489.77
+   ],
+   [
+    3,
+    "gut microbiome host immune interaction metabolite signalling",
+    "L",
+    2414.81
+   ],
+   [
+    3,
+    "gut microbiome host immune interaction metabolite signalling",
+    "n0x",
+    2436.85
+   ],
+   [
+    3,
+    "gut microbiome host immune interaction metabolite signalling",
+    "F",
+    2381.57
+   ],
+   [
+    3,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "n0",
+    2121.12
+   ],
+   [
+    3,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "F",
+    2115.03
+   ],
+   [
+    3,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "n0x",
+    2143.58
+   ],
+   [
+    3,
+    "mRNA vaccine lipid nanoparticle delivery stability formulation",
+    "L",
+    2073.14
+   ],
+   [
+    3,
+    "jazz improvisation performance analysis interaction ensemble",
+    "n0",
+    1459.01
+   ],
+   [
+    3,
+    "jazz improvisation performance analysis interaction ensemble",
+    "n0x",
+    1505.35
+   ],
+   [
+    3,
+    "jazz improvisation performance analysis interaction ensemble",
+    "F",
+    1432.36
+   ],
+   [
+    3,
+    "jazz improvisation performance analysis interaction ensemble",
+    "L",
+    1470.45
+   ],
+   [
+    3,
+    "music streaming royalties artist income platform economics",
+    "F",
+    1844.06
+   ],
+   [
+    3,
+    "music streaming royalties artist income platform economics",
+    "n0",
+    1887.9
+   ],
+   [
+    3,
+    "music streaming royalties artist income platform economics",
+    "L",
+    1878.72
+   ],
+   [
+    3,
+    "music streaming royalties artist income platform economics",
+    "n0x",
+    1864.34
+   ],
+   [
+    3,
+    "childcare policy universal early learning affordability workforce",
+    "F",
+    1994.36
+   ],
+   [
+    3,
+    "childcare policy universal early learning affordability workforce",
+    "L",
+    2108.74
+   ],
+   [
+    3,
+    "childcare policy universal early learning affordability workforce",
+    "n0",
+    2080.85
+   ],
+   [
+    3,
+    "childcare policy universal early learning affordability workforce",
+    "n0x",
+    2051.94
+   ],
+   [
+    3,
+    "public procurement innovation policy government purchasing outcomes",
+    "n0x",
+    1625.58
+   ],
+   [
+    3,
+    "public procurement innovation policy government purchasing outcomes",
+    "n0",
+    1684.93
+   ],
+   [
+    3,
+    "public procurement innovation policy government purchasing outcomes",
+    "F",
+    1640.48
+   ],
+   [
+    3,
+    "public procurement innovation policy government purchasing outcomes",
+    "L",
+    1641.27
+   ],
+   [
+    3,
+    "maternal mortality skilled birth attendance low resource settings",
+    "L",
+    1852.56
+   ],
+   [
+    3,
+    "maternal mortality skilled birth attendance low resource settings",
+    "F",
+    1857.95
+   ],
+   [
+    3,
+    "maternal mortality skilled birth attendance low resource settings",
+    "n0x",
+    1884.94
+   ],
+   [
+    3,
+    "maternal mortality skilled birth attendance low resource settings",
+    "n0",
+    1888.26
+   ],
+   [
+    3,
+    "neglected tropical disease mass drug administration elimination",
+    "L",
+    1564.6
+   ],
+   [
+    3,
+    "neglected tropical disease mass drug administration elimination",
+    "n0",
+    1549.95
+   ],
+   [
+    3,
+    "neglected tropical disease mass drug administration elimination",
+    "n0x",
+    1576.62
+   ],
+   [
+    3,
+    "neglected tropical disease mass drug administration elimination",
+    "F",
+    1586.51
+   ],
+   [
+    3,
+    "solar photovoltaic degradation module reliability field performance",
+    "L",
+    3187.49
+   ],
+   [
+    3,
+    "solar photovoltaic degradation module reliability field performance",
+    "n0x",
+    3338.61
+   ],
+   [
+    3,
+    "solar photovoltaic degradation module reliability field performance",
+    "F",
+    3162.44
+   ],
+   [
+    3,
+    "solar photovoltaic degradation module reliability field performance",
+    "n0",
+    3521.65
+   ],
+   [
+    3,
+    "district heating waste heat recovery thermal network efficiency",
+    "L",
+    3102.95
+   ],
+   [
+    3,
+    "district heating waste heat recovery thermal network efficiency",
+    "n0",
+    3156.55
+   ],
+   [
+    3,
+    "district heating waste heat recovery thermal network efficiency",
+    "F",
+    3171.49
+   ],
+   [
+    3,
+    "district heating waste heat recovery thermal network efficiency",
+    "n0x",
+    3099.33
+   ],
+   [
+    3,
+    "auditor independence non-audit services fee dependence quality",
+    "L",
+    2194.1
+   ],
+   [
+    3,
+    "auditor independence non-audit services fee dependence quality",
+    "F",
+    2203.75
+   ],
+   [
+    3,
+    "auditor independence non-audit services fee dependence quality",
+    "n0x",
+    2087.58
+   ],
+   [
+    3,
+    "auditor independence non-audit services fee dependence quality",
+    "n0",
+    2032.42
+   ],
+   [
+    3,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "n0",
+    1799.2
+   ],
+   [
+    3,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "L",
+    1861.54
+   ],
+   [
+    3,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "n0x",
+    1929.68
+   ],
+   [
+    3,
+    "revenue recognition standard IFRS 15 adoption financial reporting",
+    "F",
+    1874.75
+   ],
+   [
+    3,
+    "causal inference propensity score matching observational studies",
+    "F",
+    2595.38
+   ],
+   [
+    3,
+    "causal inference propensity score matching observational studies",
+    "L",
+    2732.94
+   ],
+   [
+    3,
+    "causal inference propensity score matching observational studies",
+    "n0x",
+    2621.95
+   ],
+   [
+    3,
+    "causal inference propensity score matching observational studies",
+    "n0",
+    2663.65
+   ],
+   [
+    3,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "F",
+    1747.25
+   ],
+   [
+    3,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "L",
+    1760.54
+   ],
+   [
+    3,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "n0",
+    1662.67
+   ],
+   [
+    3,
+    "extreme value theory tail risk catastrophe insurance modelling",
+    "n0x",
+    1614.38
+   ],
+   [
+    3,
+    "socially engaged art practice participation community collaboration",
+    "n0",
+    2425.03
+   ],
+   [
+    3,
+    "socially engaged art practice participation community collaboration",
+    "n0x",
+    2450.75
+   ],
+   [
+    3,
+    "socially engaged art practice participation community collaboration",
+    "F",
+    2396.7
+   ],
+   [
+    3,
+    "socially engaged art practice participation community collaboration",
+    "L",
+    2422.48
+   ],
+   [
+    3,
+    "conservation of contemporary art materials degradation museum practice",
+    "n0x",
+    1144.74
+   ],
+   [
+    3,
+    "conservation of contemporary art materials degradation museum practice",
+    "F",
+    1103.17
+   ],
+   [
+    3,
+    "conservation of contemporary art materials degradation museum practice",
+    "L",
+    1086.5
+   ],
+   [
+    3,
+    "conservation of contemporary art materials degradation museum practice",
+    "n0",
+    1081.06
+   ],
+   [
+    3,
+    "dramaturgy new play development workshop process",
+    "F",
+    3175.45
+   ],
+   [
+    3,
+    "dramaturgy new play development workshop process",
+    "n0x",
+    3183.86
+   ],
+   [
+    3,
+    "dramaturgy new play development workshop process",
+    "L",
+    3165.54
+   ],
+   [
+    3,
+    "dramaturgy new play development workshop process",
+    "n0",
+    3204.18
+   ],
+   [
+    3,
+    "puppetry object theatre performance materiality audience",
+    "L",
+    2547.89
+   ],
+   [
+    3,
+    "puppetry object theatre performance materiality audience",
+    "n0",
+    2536.26
+   ],
+   [
+    3,
+    "puppetry object theatre performance materiality audience",
+    "n0x",
+    2596.62
+   ],
+   [
+    3,
+    "puppetry object theatre performance materiality audience",
+    "F",
+    2536.35
+   ],
+   [
+    3,
+    "audiobook market growth narration production publishing industry",
+    "n0x",
+    2714.71
+   ],
+   [
+    3,
+    "audiobook market growth narration production publishing industry",
+    "F",
+    2794.85
+   ],
+   [
+    3,
+    "audiobook market growth narration production publishing industry",
+    "n0",
+    2801.86
+   ],
+   [
+    3,
+    "audiobook market growth narration production publishing industry",
+    "L",
+    2724.48
+   ],
+   [
+    3,
+    "peer review reform preprints open science scholarly communication",
+    "n0x",
+    2190.28
+   ],
+   [
+    3,
+    "peer review reform preprints open science scholarly communication",
+    "n0",
+    2170.83
+   ],
+   [
+    3,
+    "peer review reform preprints open science scholarly communication",
+    "F",
+    2174.59
+   ],
+   [
+    3,
+    "peer review reform preprints open science scholarly communication",
+    "L",
+    2168.56
+   ],
+   [
+    3,
+    "community land trust affordable housing stewardship models",
+    "n0",
+    516.07
+   ],
+   [
+    3,
+    "community land trust affordable housing stewardship models",
+    "L",
+    508.1
+   ],
+   [
+    3,
+    "community land trust affordable housing stewardship models",
+    "n0x",
+    513.5
+   ],
+   [
+    3,
+    "community land trust affordable housing stewardship models",
+    "F",
+    549.69
+   ],
+   [
+    3,
+    "participatory budgeting civic engagement municipal decision making",
+    "F",
+    1793.64
+   ],
+   [
+    3,
+    "participatory budgeting civic engagement municipal decision making",
+    "L",
+    1798.91
+   ],
+   [
+    3,
+    "participatory budgeting civic engagement municipal decision making",
+    "n0x",
+    1780.37
+   ],
+   [
+    3,
+    "participatory budgeting civic engagement municipal decision making",
+    "n0",
+    1739.6
+   ],
+   [
+    3,
+    "psychological safety team performance speaking up organizations",
+    "L",
+    2092.88
+   ],
+   [
+    3,
+    "psychological safety team performance speaking up organizations",
+    "n0x",
+    2064.68
+   ],
+   [
+    3,
+    "psychological safety team performance speaking up organizations",
+    "n0",
+    2059.58
+   ],
+   [
+    3,
+    "psychological safety team performance speaking up organizations",
+    "F",
+    2070.96
+   ],
+   [
+    3,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "n0x",
+    1197.57
+   ],
+   [
+    3,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "L",
+    1233.57
+   ],
+   [
+    3,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "n0",
+    1195.82
+   ],
+   [
+    3,
+    "corporate social responsibility greenwashing stakeholder perception",
+    "F",
+    1186.12
+   ],
+   [
+    3,
+    "forensic entomology postmortem interval insect succession estimation",
+    "n0",
+    2325.61
+   ],
+   [
+    3,
+    "forensic entomology postmortem interval insect succession estimation",
+    "n0x",
+    2343.0
+   ],
+   [
+    3,
+    "forensic entomology postmortem interval insect succession estimation",
+    "L",
+    2332.2
+   ],
+   [
+    3,
+    "forensic entomology postmortem interval insect succession estimation",
+    "F",
+    2299.24
+   ]
+  ],
+  "git_head": "46b85c0cd386f4b9a869debfa41987e4c63294e8"
+ }
+}

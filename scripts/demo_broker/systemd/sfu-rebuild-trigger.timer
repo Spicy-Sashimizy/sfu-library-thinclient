@@ -1,0 +1,11 @@
+[Unit]
+Description=Check every 5 minutes whether the serve instance can be rebuilt
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=sfu-rebuild-trigger.service
+
+[Install]
+WantedBy=timers.target

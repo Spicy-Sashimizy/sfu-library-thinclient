@@ -1,14 +1,36 @@
 # Demo post-trial plan — keep the invite links usable on PAYG after 2026-09-03
 
-> **CLOSED DEAD 2026-09-25** — cloud access ended: there is no tenancy left to move to PAYG; the whole §6 open-items ledger is unrunnable. Serving is local-WSL2-only — see `docs/THIN_CLIENT_SWAP.md` §"What runs here now". Kept as a deployment record; not current.
+**Status:** ACTIVE (reopened 2026-10-06; closed 2026-09-25 → 2026-10-06)
 
-**Status:** CLOSED DEAD 2026-09-25
+> **REOPENED 2026-10-06** (was CLOSED DEAD 2026-09-25): the owner upgraded the tenancy to Pay As You Go on
+> 2026-10-06; the serve instance was rebuilt from its preserved disks, click-wake and the one-hour stop are
+> measured (`scripts/demo_broker/README.md` §"2026-10-06 revival"), and this doc is live again. The
+> 2026-09-25 closure text that follows is kept as the record of that closure.
+>
+> **CLOSED DEAD 2026-09-25 (record)** — cloud access ended: there is no tenancy left to move to PAYG; the whole §6 open-items ledger is unrunnable. Serving is local-WSL2-only — see `docs/THIN_CLIENT_SWAP.md` §"What runs here now". Kept as a deployment record; not current.
+
+> **UPDATE 2026-10-06 (written before the upgrade landed; see the REOPENED banner above).** The owner is upgrading the OCI
+> tenancy to Pay As You Go. Verified over the API on 2026-10-06: the tenancy still exists (still
+> `FREE_TRIAL`, E5 core limit 0 at the time of writing); the Always-Free broker box is RUNNING and
+> serving `/health`; Oracle TERMINATED the E5 serve instance on 2026-10-03 (end of the grace period)
+> but kept its 100 GB boot volume, the 200 GB `sfu-demo-idxvol`, the VCN/subnet, the `sfu-serve-locked`
+> NSG and the reserved public IP. So the "gone for good / no tenancy left" statements below were wrong
+> about the tenancy, the broker box and the disks. The live broker was switched the same day to
+> click-only wake (`DEMO_BUSINESS_DAYS=` empty), 60 min idle stop, unpinned, 10 h/day and **55 h/month**
+> runtime caps (the owner's CAD 40/month ceiling), and a self-disabling timer on the broker box
+> (`rebuild_trigger.sh`) rebuilds the serve instance from the preserved disks as soon as the upgrade
+> lands. **It landed and the trigger fired 2026-10-06 19:45 UTC: the tenancy is Pay As You Go, the E5
+> serve instance is rebuilt from the preserved disks, serving, and under the broker's reaper and caps**
+> (measured numbers in the README named below). The first invite-click wake and the first real idle
+> stop are not measured yet — this track stays CLOSED in the index until the commit that records
+> them, which also moves these docs and `scripts/demo_broker/` out of the closed trees. Details:
+> `scripts/demo_broker/README.md` §"2026-10-06 revival".
 
 > **STATUS 2026-09-25: CLOUD ACCESS ENDED**
 >
 > The operator no longer has access to any cloud instances. The OCI E5 62 GiB
 > demo host is gone and any DigitalOcean droplets are gone; neither will return.
-> The demo broker (`scripts/archive/demo_broker/`) is therefore **dormant** — the code is
+> The demo broker (`scripts/demo_broker/`) is therefore **dormant** — the code is
 > kept, but there is no instance for it to start, stop, pin, or reap.
 >
 > Every open item in this doc is **CLOSED-UNRUNNABLE**, not pending — there is no
@@ -44,7 +66,7 @@ decision must land before 2026-09-03 (trial expiry).** Costs below marked
 Upgrade the tenancy to pay-as-you-go (console, card on file; upgrading
 itself costs nothing and removes the expiry). Then run the demo in the
 scale-to-zero mode the broker was designed for
-(`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §3–4, live-validated
+(`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §3–4, live-validated
 2026-08-20): box **stopped by default** (a stopped OCI VM bills storage
 only — measured CAD 0.359/day), broker `instance action START` on invite
 click, killswitch stops it after idle.
@@ -116,7 +138,7 @@ a Cloudflare tunnel (pattern already proven for ntfy). Cost ≈ 0.
 This resurrects the shelved `OCI_FREE_TIER_RESIDENT_DEMO.md` design
 (operator-shelved 2026-08-18 in favor of the x86 plan) with two things
 that have changed since: the levers spike may shrink the serving
-footprint into 24 GB, and its WI-3 memory dial (`scripts/archive/demo_broker/dial.py`)
+footprint into 24 GB, and its WI-3 memory dial (`scripts/demo_broker/dial.py`)
 was already built. Free forever, survives on a free account. 24 GB < 29.1 GB footprint but
 > the 14.8 GB hot-set floor, so it is viable **only** with the L1/warmup
 levers (in measurement now) **and** an aarch64 rebuild of the seismic
@@ -135,6 +157,8 @@ experiment; do not block the 09-03 decision on it.
    the E5 box to burst-only and cut the recurring cost toward zero.
 
 ## 6. Open items ledger
+
+> Reconciled 2026-10-06: the ledger below is the 2026-09-01 record. Option A was executed on 2026-10-06 (tenancy upgrade, scale-to-zero live, killswitch/caps proven: one-hour stop and the monthly cap are measured/tested — see `scripts/demo_broker/README.md` §"2026-10-06 revival"). Options B–D remain unexecuted and are not pending.
 
 | Item | Owner | Deadline |
 |---|---|---|

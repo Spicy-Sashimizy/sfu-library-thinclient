@@ -4,14 +4,16 @@
 
 **Status:** CLOSED DEAD 2026-09-25
 
+> **2026-10-06:** the "cloud access ended / no tenancy" reasoning in the banner is outdated — the tenancy is on Pay As You Go and the public demo is back (`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md`). This doc stays closed on its own grounds: shelved by the operator 2026-08-18; the E5 demo is live again.
+
 > **STATUS 2026-09-25: CLOUD ACCESS ENDED**
 >
 > The operator no longer has access to any cloud instances. Beyond the
 > 2026-08-18 shelving noted below, the Always-Free A1 allotment, the E5 x86 box
 > of the canonical plan, and every DigitalOcean droplet are **gone and will not
 > return**, so nothing in this doc can be built or measured. The demo broker
-> (`scripts/archive/demo_broker/`) is **dormant**; its cgroup `MemoryHigh` dial
-> (`scripts/archive/demo_broker/dial.py`) survives as local code only — the 2026-08-20
+> (`scripts/demo_broker/`) is **dormant**; its cgroup `MemoryHigh` dial
+> (`scripts/demo_broker/dial.py`) survives as local code only — the 2026-08-20
 > live verification on the E5 box cannot be repeated. Every item here (the
 > WI-1/WI-2 aarch64 ports, the scale-to-free resize loop, the RAM-boost button)
 > is **CLOSED-UNRUNNABLE**, not pending.
@@ -23,7 +25,7 @@
 **Date:** 2026-08-17 · **Status:** **SHELVED by operator decision 2026-08-18**
 (the canonical x86 plan in `OCI_DEMO_DEPLOYMENT.md` was adopted; the WI-1/WI-2
 aarch64 ports are NOT pursued). One component WAS built and adopted
-independently: the §3 cgroup `MemoryHigh` dial (`scripts/archive/demo_broker/dial.py`
+independently: the §3 cgroup `MemoryHigh` dial (`scripts/demo_broker/dial.py`
 + `sfu-serve.service`), live-verified on the deployed E5 box 2026-08-20.
 Original status: DESIGN / RESEARCHED 2026-08-17, nothing built on OCI.
 
@@ -597,8 +599,8 @@ current venv is x86_64-only. Upstream aarch64 availability, checked on PyPI
 | `pyseismic-lsr` | x86_64 only, **not in any requirements file** | ❌ WI-1 |
 
 > **WI-3 STATUS 2026-08-18: BUILT (code + 18 unit tests, no kernel touched) —
-> `scripts/archive/demo_broker/dial.py` (systemd + raw-cgroup backends, bounds,
-> `MemoryMax = rung + guard`), `scripts/archive/demo_broker/systemd/sfu-serve.service`
+> `scripts/demo_broker/dial.py` (systemd + raw-cgroup backends, bounds,
+> `MemoryMax = rung + guard`), `scripts/demo_broker/systemd/sfu-serve.service`
 > (`MemorySwapMax=0` pinned), broker `GET/POST /admin/dial` (admin-gated,
 > `DEMO_DIAL_*` config). The in-container ladder re-run this item also asked
 > for is IMPOSSIBLE in this dev container — probed 2026-08-18: PID 1 is not
@@ -757,7 +759,7 @@ itself is SHELVED per the 2026-08-18 operator decision in §9).
 does not (CPU `onnxruntime` does).
 
 **In-repo (the measured evidence this design cites):**
-- `docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` — the canonical plan this amends
+- `docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` — the canonical plan this amends
 - `docs/THIN_CLIENT_SWAP.md` — recommended serving config, RAM sizing, F4/F6 levers, anon floor
 - `docs/seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md` §R1/§R2/§R3, §F3–F6
 - `docs/session_2026-07-14_f6_corrections_r1_ladder/` (03 measurement tables, 04 convergence artifact, 06 kernel page-reclaim internals)

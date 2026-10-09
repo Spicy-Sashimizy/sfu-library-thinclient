@@ -366,12 +366,15 @@ class IngestLedger:
                               "ORDER BY published DESC LIMIT 1").fetchone()
         return row[0] if row else None
 
-    def routed_live_counts(self) -> dict[int, int]:
-        """Live delta docs per routed base shard (doc 10 §1 (a) numerator)."""
+    def routed_live_counts(self, exclude_folded: bool = False) -> dict[int, int]:
+        """Live delta docs per routed base shard (doc 10 §1 (a) numerator).
+        `exclude_folded` leaves out docs whose newest SEISMIC copy is inside
+        a published fold (`seismic_origin` set) — the trigger's reading."""
         if not self.has_routes:
             return {}
+        extra = " AND seismic_origin IS NULL" if exclude_folded else ""
         return {int(s): int(n) for s, n in self.db.execute(
-            "SELECT route_shard, COUNT(*) FROM docs WHERE status='live' GROUP BY route_shard")}
+            "SELECT route_shard, COUNT(*) FROM docs WHERE status='live'" + extra + " GROUP BY route_shard")}
 
     def stats(self) -> dict:
         q = lambda s, *a: self.db.execute(s, a).fetchone()[0]  # noqa: E731

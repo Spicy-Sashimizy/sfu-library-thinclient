@@ -896,5 +896,27 @@
    "B": "PASS"
   },
   "verdict": "PASS (Q-a reading A)"
+ },
+ "F4_amended_bar_20261005": {
+  "item": "doc 10 F4 memory bar as amended by the owner on 2026-10-05 (addendum of that date; taken AFTER these builds were measured)",
+  "bar_gib": 11.5,
+  "read_on": "peak_tree_rss_plus_swap_gb",
+  "kill_line_gb_unchanged": 12.0,
+  "fold1_20261003": {
+   "value": 12.114,
+   "pass": false,
+   "code": "before the 2026-10-04 memory changes"
+  },
+  "fold2": {
+   "value": 13.132,
+   "pass": false,
+   "code": "dump change only"
+  },
+  "fold3": {
+   "value": 11.371,
+   "pass": true,
+   "code": "dump change + heap release (current code)"
+  },
+  "note": "no new measurement; recomputed from the stored records. Margin on fold 3: 0.13 GiB."
  }
 }

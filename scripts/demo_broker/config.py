@@ -109,7 +109,10 @@ class Config:
     prewarm_minutes: int = field(default_factory=lambda: _i("DEMO_PREWARM_MINUTES", 5))
 
     idle_minutes: int = field(default_factory=lambda: _i("DEMO_IDLE_MINUTES", 20))
+    max_session_minutes: int = field(default_factory=lambda: _i("DEMO_MAX_SESSION_MINUTES", 0))
     max_runtime_hours_per_day: float = field(default_factory=lambda: _f("DEMO_MAX_RUNTIME_HOURS_PER_DAY", 10.0))
+    max_runtime_hours_per_month: float = field(
+        default_factory=lambda: _f("DEMO_MAX_RUNTIME_HOURS_PER_MONTH", 0.0))
     poll_seconds: int = field(default_factory=lambda: _i("DEMO_POLL_SECONDS", 60))
 
     dial_backend: str = field(default_factory=lambda: os.environ.get("DEMO_DIAL_BACKEND", "off"))

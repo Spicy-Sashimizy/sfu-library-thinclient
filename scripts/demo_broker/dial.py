@@ -21,9 +21,9 @@ self-tests against a real kernel: the R1/R2-ladder-under-MemoryHigh
 verification is deferred to the OCI Phase-5 dry run.
 
 CLI (reads the same DEMO_DIAL_* env as the broker):
-    .venv/bin/python3 scripts/archive/demo_broker/dial.py status
-    .venv/bin/python3 scripts/archive/demo_broker/dial.py set 12
-    .venv/bin/python3 scripts/archive/demo_broker/dial.py off
+    .venv/bin/python3 scripts/demo_broker/dial.py status
+    .venv/bin/python3 scripts/demo_broker/dial.py set 12
+    .venv/bin/python3 scripts/demo_broker/dial.py off
 """
 from __future__ import annotations
 

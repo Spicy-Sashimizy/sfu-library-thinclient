@@ -1,7 +1,7 @@
 """Oracle Cloud Infrastructure control wrapper — START/STOP ONE persistent instance.
 
 The OCI port of `do_client.py` (mapping table:
-`docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §4). It is deliberately *simpler* than the DO client
+`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §4). It is deliberately *simpler* than the DO client
 because OCI pauses OCPU+RAM billing on a stopped instance (§0), so:
 
   * wake  = `POST /20160918/instances/<ocid>?action=START`   (no create, no seed)

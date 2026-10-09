@@ -6,14 +6,14 @@
 #
 # The dial: systemctl set-property --runtime sfu-serve.service \
 #              MemoryHigh=12G MemoryMax=13610612736
-# or through the broker: POST /admin/dial?gb=12  (scripts/archive/demo_broker/dial.py).
+# or through the broker: POST /admin/dial?gb=12  (scripts/demo_broker/dial.py).
 #
 # MemoryHigh (reclaim, never OOM) is the rung; MemoryMax is only a backstop
 # ~1.5 GB above it. MemorySwapMax=0 is NOT optional: every R1/R2 ladder cell
 # was measured swap-forbidden — a swap-enabled dial measures something else.
 #
 # Install (on the serve box):
-#   sudo cp scripts/archive/demo_broker/systemd/sfu-serve.service /etc/systemd/system/
+#   sudo cp scripts/demo_broker/systemd/sfu-serve.service /etc/systemd/system/
 #   edit WorkingDirectory/ExecStart paths below, then:
 #   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-serve
 

@@ -1,0 +1,500 @@
+{
+ "F4_build_fold_del": {
+  "item": "doc 10 F4 raw numbers of one fold build (publish stage not included)",
+  "date_utc": "2026-10-08T01:20:57Z",
+  "script": "scripts/experiments/eval_delta_ingest_foldin.py",
+  "git_head": "312b42b7d85e094aa1c9d4b7010d15ba962afae7",
+  "argv": [
+   "/home/vscode/work/venv_local/bin/python3",
+   "-m",
+   "spike.delta_ingest.cli",
+   "fold-build",
+   "--delta-root",
+   "/home/vscode/work/delta_ingest/foldin/fixture_n8_del",
+   "--shard",
+   "0",
+   "--fold-input",
+   "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+   "--token-map-dir",
+   "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+   "--fold-root",
+   "/home/vscode/work/delta_ingest/foldin_del",
+   "--fold-workers",
+   "8",
+   "--profile",
+   "desktop_gpu",
+   "--seismic-threads",
+   "8"
+  ],
+  "rc": 0,
+  "lock": {
+   "mode": "exclusive",
+   "acquired_utc": "2026-10-08T00:57:17Z",
+   "waited_s": 0
+  },
+  "quiet_host": true,
+  "wall_s": 1420.3,
+  "peak_tree_vmrss_gb": 10.858,
+  "peak_tree_vmswap_gb": 0.0,
+  "peak_tree_rss_plus_swap_gb": 10.858,
+  "peak_single_process_rss_plus_swap_gb": 10.585,
+  "peak_tree_anon_plus_swap_gb": 9.604,
+  "peak_tree_rssfile_gb": 5.92,
+  "peak_tree_pss_plus_swap_gb": 10.842,
+  "peak_by_comm_gb": {
+   "python3": {
+    "rss_plus_swap": 9.386,
+    "anon_plus_swap": 9.367
+   },
+   "c1a_mmap_index": {
+    "rss_plus_swap": 9.353,
+    "anon_plus_swap": 9.35
+   },
+   "convert_f16_to_": {
+    "rss_plus_swap": 10.585,
+    "anon_plus_swap": 4.685
+   }
+  },
+  "mem_timeline": "/home/vscode/work/delta_ingest/foldin_del/fold_build_s0_del.log.mem.jsonl",
+  "min_host_memavail_gb": 40.21,
+  "peak_fold_dir_bytes": 55987327026,
+  "final_fold_dir_bytes": 13078991950,
+  "fold_dir": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1",
+  "fold_json": {
+   "state": "built",
+   "jsonl": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1/fold.jsonl",
+   "stock": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1/fold.index.seismic",
+   "mmap_dir": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1/fold.dotvbyte.v2.mmap",
+   "format": "dotvbyte_fixedu8_v2",
+   "stages": {
+    "build": {
+     "seconds": 1123.48,
+     "docs": 17691720,
+     "dim": 28702,
+     "nnz": 1547982197
+    },
+    "mmap": {
+     "seconds": 39.01
+    },
+    "dotvbyte": {
+     "seconds": 101.06
+    }
+   },
+   "dump": {
+    "input_rows": 18799322,
+    "kept_base_rows": 17659565,
+    "dropped_base_rows": 1139757,
+    "added_delta_rows": 32155,
+    "docs": 17691720,
+    "bytes": 36573505742,
+    "seconds": 145.2
+   },
+   "token_map_dir": "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+   "token_map_size": 28702,
+   "token_map_appended": 0,
+   "input_mmap_dir": "/home/vscode/work/inplace_update/twin_local/global_shard0of8.mmap",
+   "origin": "fold:0:1",
+   "members": 32155,
+   "drop_ids": 1163447,
+   "baseline": {
+    "changed": [],
+    "new": [],
+    "missing": [],
+    "n_files_before": 817,
+    "n_files_after": 817,
+    "retries": 0
+   }
+  },
+  "output_bar": {
+   "served_dv_plus_f16_bytes": 13827776607,
+   "docs_s": 18799322,
+   "docs_s_prime": 17691720,
+   "allowed_bytes": 14314392143,
+   "pass": true
+  },
+  "bars": {
+   "wall_le_90min": true,
+   "peak_rss_incl_swap_le_10gb": false,
+   "peak_tree_rss_incl_swap_le_11p5gb_amended_20261005": true,
+   "scratch_le_60gb": true,
+   "output": true,
+   "note": "read as F4 only on a quiet host (exclusive lock) and with the publish stage added"
+  }
+ },
+ "F2_fold_del": {
+  "item": "doc 10 F2 quality parity of the fold",
+  "date_utc": "2026-10-08T01:45:50Z",
+  "script": "scripts/experiments/eval_delta_ingest_foldin.py",
+  "preregistration": "docs/delta_ingest/10_FOLDIN_TRIGGER_PREREGISTRATION.md \u00a76",
+  "rows_file": "/home/vscode/work/delta_ingest/foldin_del/f2/rows.json",
+  "git_head_measured": "312b42b7d85e094aa1c9d4b7010d15ba962afae7",
+  "bar_reading": "A",
+  "log_scan": {
+   "path": "/home/vscode/work/delta_ingest/foldin_del/f2/measure.log",
+   "bytes": 2774,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "delta buffer sparse encode failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "m_set_source": "q_build2_stock.json vs q_build1_stock.json (recomputed)",
+  "start_utc": "2026-10-08T01:23:48Z",
+  "end_utc": "2026-10-08T01:45:39Z",
+  "wall_s": 1319.0,
+  "lock": {
+   "mode": "shared",
+   "acquired_utc": "2026-10-08T01:23:40Z",
+   "waited_s": 0
+  },
+  "preview": {
+   "created_utc": "2026-10-08T01:20:58Z",
+   "delta_root": "/home/vscode/work/delta_ingest/foldin/fixture_n8_del",
+   "preview_root": "/home/vscode/work/delta_ingest/foldin_del/f2/preview_root",
+   "shard": 0,
+   "fold": 1,
+   "origin": "fold:0:1",
+   "fold_state": "built",
+   "fold_dir": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1",
+   "fold_mmap_dir": "/home/vscode/work/delta_ingest/foldin_del/shard0/fold1/fold.dotvbyte.v2.mmap",
+   "manifest": "/home/vscode/work/delta_ingest/foldin_del/manifests/f2_preview.fold_s0_k1.json",
+   "composed_from": "/home/vscode/work/delta_ingest/foldin/fixture_n8_del/shard_manifest.json",
+   "members": 32155,
+   "moved": 32155,
+   "token_map_appended": 0,
+   "fold_docs": 17691720
+  },
+  "queries_sha256": "66917a4de6e2122e850eaabf936c4fc6e8ba256c63851ebbbf68fa79b4301fae",
+  "search": {
+   "k": 200,
+   "k_prime": 200,
+   "heap_factor": 0.8,
+   "query_cut": "len(terms)",
+   "prefloor": "2"
+  },
+  "ledger": {
+   "live": 172390,
+   "tombstones": 1131292,
+   "superseded": 28577,
+   "routed_to_shard": 32155,
+   "moved": 32155
+  },
+  "arms": {
+   "L": {
+    "root": "/home/vscode/work/delta_ingest/foldin/fixture_n8_del",
+    "backend": "ParallelSeismicBackend",
+    "n_shards": 17,
+    "origins": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ],
+    "manifest": "/home/vscode/work/delta_ingest/foldin/fixture_n8_del/shard_manifest.json",
+    "stamp": "g0009-1791420943",
+    "generations": 9,
+    "buffer_size": 0,
+    "deleted": 0,
+    "superseded": 28577,
+    "seismic_newest": 0,
+    "livedocs": true,
+    "shard_filter_attached": true
+   },
+   "F": {
+    "root": "/home/vscode/work/delta_ingest/foldin_del/f2/preview_root",
+    "backend": "ParallelSeismicBackend",
+    "n_shards": 17,
+    "origins": [
+     "fold:0:1",
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ],
+    "manifest": "/home/vscode/work/delta_ingest/foldin_del/manifests/f2_preview.fold_s0_k1.json",
+    "stamp": "g0009-1791420943+f2preview-fold:0:1",
+    "generations": 9,
+    "buffer_size": 0,
+    "deleted": 0,
+    "superseded": 28577,
+    "seismic_newest": 32155,
+    "livedocs": true,
+    "shard_filter_attached": true
+   }
+  },
+  "health": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer"
+  },
+  "selfcheck": [
+   {
+    "arm": "L",
+    "i": 0,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "F",
+    "i": 0,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "L",
+    "i": 1,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "F",
+    "i": 1,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "L",
+    "i": 2,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "F",
+    "i": 2,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "L",
+    "i": 3,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "F",
+    "i": 3,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "L",
+    "i": 4,
+    "equal_to_search_encoded": true
+   },
+   {
+    "arm": "F",
+    "i": 4,
+    "equal_to_search_encoded": true
+   }
+  ],
+  "mem": {
+   "tripped": null,
+   "min_mem_available_gb": 48.87,
+   "max_vmswap_growth_gb": 0.0,
+   "vmswap_start_gb": 0.0
+  },
+  "stop": null,
+  "limit": 0,
+  "Q_a": {
+   "QT": {
+    "n": 120,
+    "federated_overlap10_mean": 0.9983333333333333,
+    "shard_own_overlap10_mean": 0.9708333333333333,
+    "federated_min": 0.9,
+    "shard_own_min": 0.7,
+    "identical_top10_federated": 118,
+    "identical_top10_shard_own": 90,
+    "m_set": 0.9908,
+    "A": 0.985,
+    "B": 0.99,
+    "pass_A": true,
+    "shard_own_clears_A": false,
+    "pass_B": true,
+    "shard_own_clears_B": false
+   },
+   "QD": {
+    "n": 100,
+    "federated_overlap10_mean": 1.0,
+    "shard_own_overlap10_mean": 0.9580000000000001,
+    "federated_min": 1.0,
+    "shard_own_min": 0.7,
+    "identical_top10_federated": 100,
+    "identical_top10_shard_own": 66,
+    "m_set": 0.985,
+    "A": 0.98,
+    "B": 0.99,
+    "pass_A": true,
+    "shard_own_clears_A": false,
+    "pass_B": true,
+    "shard_own_clears_B": false
+   }
+  },
+  "Q_b": {
+   "QT": {
+    "reference_R_vs_A0": {
+     "overlap10_mean": 0.9858333333333335,
+     "n": 120,
+     "source": "q_build1_dv.json vs q_served_dv.json (recomputed)"
+    },
+    "threshold": 0.9808333333333334,
+    "shard_own_overlap10_mean": 0.9708333333333333,
+    "federated_overlap10_mean": 0.9983333333333333,
+    "level": "federated",
+    "pass_shard_own": false,
+    "pass_federated": true,
+    "pass": true
+   },
+   "QD": {
+    "reference_R_vs_A0": {
+     "overlap10_mean": 0.987,
+     "n": 100,
+     "source": "q_build1_dv.json vs q_served_dv.json (recomputed)"
+    },
+    "threshold": 0.982,
+    "shard_own_overlap10_mean": 0.9580000000000001,
+    "federated_overlap10_mean": 1.0,
+    "level": "federated",
+    "pass_shard_own": false,
+    "pass_federated": true,
+    "pass": true
+   }
+  },
+  "Q_c": {
+   "final": {
+    "topics": 120,
+    "queries": 240,
+    "ndcg10_F": 0.7222533595368581,
+    "ndcg10_L": 0.7226517244994743,
+    "delta_F_minus_L": {
+     "n": 120,
+     "mean": -0.0003983649626161767,
+     "ci95": [
+      -0.0011643731906214002,
+      6.92381291683993e-05
+     ],
+     "resamples": 10000,
+     "seed": 0
+    }
+   },
+   "fused": {
+    "topics": 120,
+    "queries": 240,
+    "ndcg10_F": 0.6637979181966592,
+    "ndcg10_L": 0.6638323655064019,
+    "delta_F_minus_L": {
+     "n": 120,
+     "mean": -3.444730974260605e-05,
+     "ci95": [
+      -0.00010334192922781816,
+      0.0
+     ],
+     "resamples": 10000,
+     "seed": 0
+    }
+   },
+   "pass": true,
+   "identical_final_top10": 235
+  },
+  "Q_d": {
+   "federated_leg_queries": 460,
+   "leaks_F": 0,
+   "leak_examples_F": [],
+   "leaks_L_control": 0,
+   "tombstoned_in_F_fused_or_final": 0,
+   "pass": true,
+   "coverage_note": "fixture has 1131292 tombstones and 28577 superseded docs; with 0 of both, Q-d exercises only the double-serving of folded docs"
+  },
+  "done": {
+   "QT": 120,
+   "QD": 100,
+   "QA": 240,
+   "QA_pipeline": 240
+  },
+  "planned": {
+   "QT": 120,
+   "QD": 100,
+   "QA": 240,
+   "QA_pipeline": 240
+  },
+  "complete": true,
+  "healthy": true,
+  "verdict_by_reading": {
+   "A": "PASS",
+   "B": "PASS"
+  },
+  "verdict": "PASS (Q-a reading A)"
+ },
+ "fold_del_derived_20261008": {
+  "item": "derived by the session from the raw outputs of F4_build_fold_del and F2_fold_del (no new measurement)",
+  "fixture": "/home/vscode/work/delta_ingest/foldin/fixture_n8_del (build_fixture.json beside it; scripts/experiments/delta_ingest_foldin_del_fixture.py)",
+  "fixture_counts": {
+   "tombstones": 1131292,
+   "superseded_base": 8465,
+   "superseded_delta": 20112,
+   "new_to_ledger": 3578,
+   "live_delta_routed_shard0": 32155,
+   "livedocs_popcount": 1139757,
+   "docs_s_prime": 17691720,
+   "dump_kept_base_rows": 17659565,
+   "dump_dropped_base_rows": 1139757
+  },
+  "f4_stage_peaks_tree_rss_plus_swap_gib": {
+   "dump": 6.13,
+   "build": 9.39,
+   "c1a": 9.62,
+   "dotvbyte": 10.86,
+   "fold3_same_stages_for_comparison": {
+    "dump": 4.68,
+    "build": 9.65,
+    "c1a": 10.34,
+    "dotvbyte": 11.37
+   },
+   "source": "fold_build_s0_del.log.mem.jsonl (stage = which tool is in the process tree)"
+  },
+  "q_d_mask_exercise": {
+   "leg_queries": 460,
+   "raw_candidates_per_arm": 1564000,
+   "filtered_by_masks_L": 96283,
+   "filtered_by_masks_F": 184251,
+   "leaks_F": 0,
+   "leaks_L": 0,
+   "source": "rows.json leg[*].{L,F}.raw_candidates - survivors"
+  },
+  "shard_own_F_only_docs": {
+   "total": 148,
+   "fold_members": 0,
+   "base_docs": 148
+  },
+  "logs": "/home/vscode/work/delta_ingest/foldin_del/ (CHAIN_STATUS, fold_build_s0_del.log(.mem.jsonl), f2/measure.log, f2/rows.json, f2/smoke.json)"
+ }
+}

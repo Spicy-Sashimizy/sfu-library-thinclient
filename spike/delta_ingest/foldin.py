@@ -260,7 +260,8 @@ def baseline_snapshot(roots: list[Path]) -> dict:
 
 def baseline_diff(before: dict, after: dict) -> dict:
     b, a = before["files"], after["files"]
-    changed = sorted(p for p in a if p in b and a[p] != b[p])
+    # tuple() both sides: a snapshot read back from JSON holds lists, never == a fresh tuple
+    changed = sorted(p for p in a if p in b and tuple(a[p]) != tuple(b[p]))
     new = sorted(p for p in a if p not in b and p not in before["missing"])
     missing = sorted(p for p in b if p not in a)
     return {"changed": changed, "new": new, "missing": missing,
@@ -291,10 +292,21 @@ def ensure_fold_schema(ledger: IngestLedger) -> None:
     ledger.db.executescript(FOLD_SCHEMA)
 
 
-def next_fold(ledger: IngestLedger, shard: int) -> int:
+def next_fold(ledger: IngestLedger, shard: int, fold_root: Path | None = None) -> int:
+    """1 + the highest fold number of `shard` in the ledger and, with
+    `fold_root`, among the existing `shard{s}/fold{k}` dirs (a build killed
+    between `make_fold_dir` and its ledger row leaves a dir the ledger does
+    not know; fold numbers are never reused, F5)."""
     ensure_fold_schema(ledger)
     row = ledger.db.execute("SELECT MAX(fold) FROM folds WHERE shard=?", (shard,)).fetchone()
-    return (row[0] or 0) + 1
+    k = row[0] or 0
+    if fold_root is not None:
+        sd = Path(fold_root) / f"shard{int(shard)}"
+        if sd.is_dir():
+            for p in sd.iterdir():
+                if p.name.startswith("fold") and p.name[4:].isdigit():
+                    k = max(k, int(p.name[4:]))
+    return k + 1
 
 
 def fold_plan(ledger: IngestLedger, shard: int) -> dict:
@@ -463,7 +475,7 @@ def build_fold(delta_root: Path, ledger: IngestLedger, shard: int, input_mmap_di
     roots = baseline_roots if baseline_roots is not None else default_baseline_roots()
     before = baseline_snapshot(roots)
     ensure_fold_schema(ledger)
-    k = fold or next_fold(ledger, shard)
+    k = fold or next_fold(ledger, shard, cfg.fold_root)
     d = make_fold_dir(cfg, shard, k)
     plan = fold_plan(ledger, shard)
     snap = time.time()
@@ -513,10 +525,10 @@ def compose_fold_manifest(base_manifest: Path | None, shard: int, fold: int, fol
                           forward_format: str = "dotvbyte_fixedu8_v2") -> Path:
     """Write a NEW manifest naming fold k of `shard` at its side path in the
     shard's position; every other record is copied verbatim. Never overwrites
-    a file, never touches `base_manifest`."""
+    a file, never touches `base_manifest`. If `out` already exists with the
+    same source and the same shard records (a publish killed after composing
+    and re-run, F5), it is reused as is; any other existing `out` is refused."""
     check_target(out, cfg)
-    if out.exists():
-        raise FoldGuardError(f"refusing {out}: composed manifests are never overwritten")
     if base_manifest is None or not Path(base_manifest).exists():
         raise ValueError(f"base shard manifest {base_manifest} not found")
     data = json.loads(Path(base_manifest).read_text())
@@ -530,6 +542,15 @@ def compose_fold_manifest(base_manifest: Path | None, shard: int, fold: int, fol
                "forward_format": forward_format, "fold_origin": fold_origin(shard, fold),
                "fold_of": {"mmap_dir": old.get("mmap_dir"), "n_docs": old.get("n_docs"),
                            "fold_origin": old.get("fold_origin")}}
+    if out.exists():
+        try:
+            prev = json.loads(out.read_text())
+        except (OSError, ValueError):
+            prev = None
+        if (isinstance(prev, dict) and prev.get("composed_from") == str(base_manifest)
+                and prev.get("shards") == recs):
+            return out
+        raise FoldGuardError(f"refusing {out}: composed manifests are never overwritten")
     out.parent.mkdir(parents=True, exist_ok=True)
     body = {k: v for k, v in data.items() if k != "shards"}
     body.update(plan=f"fold-in repoint: shard {shard} -> fold {fold} (doc 10 G3)",
@@ -541,11 +562,41 @@ def compose_fold_manifest(base_manifest: Path | None, shard: int, fold: int, fol
     return out
 
 
+def prefault_dir(d: Path, chunk: int = 8 << 20) -> dict:
+    """Operator prefault of a fold's served dir before the manifest repoint
+    (doc 10 §4, `reload()` row): read every regular file once, sequentially,
+    so s' is in the page cache when serving first touches it. Read-only."""
+    t0 = time.perf_counter()
+    n = files = 0
+    buf = memoryview(bytearray(chunk))
+    for dp, dns, fns in os.walk(d):
+        dns.sort()
+        for name in sorted(fns):
+            p = Path(dp) / name
+            if p.is_symlink() or not p.is_file():
+                continue
+            with open(p, "rb", buffering=0) as fh:
+                try:
+                    os.posix_fadvise(fh.fileno(), 0, 0, os.POSIX_FADV_SEQUENTIAL)
+                except (AttributeError, OSError):
+                    pass
+                while True:
+                    k = fh.readinto(buf)
+                    if not k:
+                        break
+                    n += k
+            files += 1
+    return {"dir": str(d), "files": files, "bytes": n, "s": round(time.perf_counter() - t0, 3)}
+
+
 def publish_fold(delta_root: Path, ledger: IngestLedger, base: BaseIndex, shard: int, fold: int, *,
                  confirm: bool, cfg: GuardConfig, base_shard_manifest: str | None = None,
-                 ordinal_dir: str | None = None, baseline_roots: list[Path] | None = None) -> dict:
+                 ordinal_dir: str | None = None, baseline_roots: list[Path] | None = None,
+                 prefault: bool = True) -> dict:
     """Operator step: repoint serving at fold k of `shard`. Without `confirm`
-    it only reports what it would do."""
+    it only reports what it would do. With `prefault` (default) the fold's
+    served dir is read into the page cache before the repoint (doc 10 §4);
+    the read is recorded under `prefault`."""
     from .generation import publish
     ensure_fold_schema(ledger)
     row = ledger.db.execute("SELECT state, dir, info, manifest FROM folds WHERE shard=? AND fold=?",
@@ -569,6 +620,7 @@ def publish_fold(delta_root: Path, ledger: IngestLedger, base: BaseIndex, shard:
     mmap = Path(info.get("mmap_dir") or "")
     if not mmap.is_dir() or not _inside(_canon(mmap), _canon(d)):
         raise FoldGuardError(f"fold {shard}/{fold}: served dir {mmap} missing or outside {d}")
+    plan["prefault"] = prefault_dir(mmap) if prefault else None
     if prev_manifest and Path(prev_manifest).exists():
         out = Path(prev_manifest)
     else:

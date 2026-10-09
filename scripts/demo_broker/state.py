@@ -130,6 +130,11 @@ class StateStore:
             self.set("runtime_seconds", 0.0)
         elapsed = max(0.0, time.time() - booted_at)
         self.set("runtime_seconds", (self.get("runtime_seconds") or 0.0) + elapsed)
+        month = day[:7]
+        if self.get("runtime_month") != month:
+            self.set("runtime_month", month)
+            self.set("runtime_month_seconds", 0.0)
+        self.set("runtime_month_seconds", (self.get("runtime_month_seconds") or 0.0) + elapsed)
         self.set("booted_at", time.time())
 
     def runtime_hours_today(self, now: datetime) -> float:
@@ -143,15 +148,31 @@ class StateStore:
             live = 0.0
         return (accrued + live) / 3600.0
 
+    def runtime_hours_month(self, now: datetime) -> float:
+        """Hours the compute has run this calendar month (accrued + the live stretch)."""
+        month = now.date().isoformat()[:7]
+        accrued = (self.get("runtime_month_seconds") or 0.0) if self.get("runtime_month") == month else 0.0
+        booted_at = self.get("booted_at") or 0
+        if booted_at:
+            month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).timestamp()
+            live = max(0.0, time.time() - max(booted_at, month_start))
+        else:
+            live = 0.0
+        return (accrued + live) / 3600.0
+
     def snapshot(self, now: datetime) -> BrokerState:
         status = DropletStatus(self.get("status", DropletStatus.DOWN.value))
         last = self.get("last_activity")
         idle = (time.time() - last) / 60.0 if (last and status == DropletStatus.UP) else None
+        booted_at = self.get("booted_at") or 0
+        session = (time.time() - booted_at) / 60.0 if (booted_at and status != DropletStatus.DOWN) else None
         return BrokerState(
             status=status,
             idle_minutes=idle,
             runtime_hours_today=self.runtime_hours_today(now),
             on_demand_session=bool(self.get("on_demand_session", False)),
+            runtime_hours_month=self.runtime_hours_month(now),
+            session_minutes=session,
         )
 
     def droplet_id(self) -> str | None:

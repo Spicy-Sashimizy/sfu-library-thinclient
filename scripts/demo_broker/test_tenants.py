@@ -1,6 +1,6 @@
 """Tests for per-person tenancy, rate caps, events, and notify payloads.
 
-    python3 scripts/archive/demo_broker/test_tenants.py
+    python3 scripts/demo_broker/test_tenants.py
 """
 from __future__ import annotations
 

@@ -45,6 +45,8 @@ class BrokerState:
     idle_minutes: float | None = None
     runtime_hours_today: float = 0.0
     on_demand_session: bool = False
+    runtime_hours_month: float = 0.0
+    session_minutes: float | None = None
 
 
 def in_business_window(now: datetime, *, start_hour: int, end_hour: int,
@@ -62,6 +64,23 @@ def in_business_window(now: datetime, *, start_hour: int, end_hour: int,
     return open_at <= minute_of_day < close_at
 
 
+def month_cap_reached(state: BrokerState, cfg) -> bool:
+    """True once this calendar month's runtime hits the monthly cap (0 = no cap)."""
+    cap = getattr(cfg, "max_runtime_hours_per_month", 0) or 0
+    return cap > 0 and state.runtime_hours_month >= cap
+
+
+def budget_exhausted(state: BrokerState, cfg) -> str:
+    """Reason a wake must be refused (daily or monthly cap spent), else ''."""
+    if month_cap_reached(state, cfg):
+        return (f"monthly cap: {state.runtime_hours_month:.2f}h >= "
+                f"{cfg.max_runtime_hours_per_month:.2f}h this month")
+    if state.runtime_hours_today >= cfg.max_runtime_hours_per_day:
+        return (f"daily cap: {state.runtime_hours_today:.2f}h >= "
+                f"{cfg.max_runtime_hours_per_day:.2f}h today")
+    return ""
+
+
 def decide(now: datetime, state: BrokerState, cfg) -> Decision:
     """Return the action the scheduler tick should take. Pure function of inputs."""
     if state.status in (DropletStatus.UP, DropletStatus.BOOTING):
@@ -69,6 +88,10 @@ def decide(now: datetime, state: BrokerState, cfg) -> Decision:
             return Decision(Action.DESTROY,
                             f"killswitch: {state.runtime_hours_today:.2f}h >= "
                             f"{cfg.max_runtime_hours_per_day:.2f}h daily cap")
+        if month_cap_reached(state, cfg):
+            return Decision(Action.DESTROY,
+                            f"killswitch: {state.runtime_hours_month:.2f}h >= "
+                            f"{cfg.max_runtime_hours_per_month:.2f}h monthly cap")
 
     hot = in_business_window(
         now,
@@ -80,12 +103,19 @@ def decide(now: datetime, state: BrokerState, cfg) -> Decision:
 
     if hot:
         if state.status == DropletStatus.DOWN:
+            spent = budget_exhausted(state, cfg)
+            if spent:
+                return Decision(Action.NONE, f"business hours: staying down ({spent})")
             return Decision(Action.BOOT, "schedule: business-hours prewarm/keep-hot")
         return Decision(Action.NONE, "business hours: hot, idle reaper suppressed")
 
     if state.status in (DropletStatus.UP, DropletStatus.BOOTING):
         if not state.on_demand_session:
             return Decision(Action.DESTROY, "after-hours: no active on-demand session")
+        limit = getattr(cfg, "max_session_minutes", 0) or 0
+        if limit > 0 and state.session_minutes is not None and state.session_minutes >= limit:
+            return Decision(Action.DESTROY,
+                            f"session limit: {state.session_minutes:.1f}m since wake >= {limit}m")
         if state.idle_minutes is not None and state.idle_minutes >= cfg.idle_minutes:
             return Decision(Action.DESTROY,
                             f"after-hours idle reaper: idle {state.idle_minutes:.1f}m "

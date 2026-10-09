@@ -8,7 +8,7 @@
 > deprecation below, there is now **no cloud target at all**: the operator has no
 > access to any cloud instances, the OCI E5 62 GiB demo host and every
 > DigitalOcean droplet are gone and will not return, and the demo broker
-> (`scripts/archive/demo_broker/`) is **dormant**. No droplet will be rented, so the SKU
+> (`scripts/demo_broker/`) is **dormant**. No droplet will be rented, so the SKU
 > table, the monthly prices and the "recommended demo droplet" row are
 > **CLOSED-UNRUNNABLE**, not pending decisions. The measured RAM→latency *sizing
 > model* stays valid and is now applied to the **local WSL2 host only** (31 GB
@@ -16,7 +16,7 @@
 
 > **⚠ DEPRECATED for the cloud target 2026-08-06 — the demo moved to Oracle
 > Cloud (OCI).** The **RAM→latency sizing MODEL** in this doc is still valid and
-> is cited by `docs/deprecated/oci_demo/OCI_DEMO_DEPLOYMENT.md` §2, but the
+> is cited by `docs/infrastructure/OCI_DEMO_DEPLOYMENT.md` §2, but the
 > **DigitalOcean droplet SKUs, prices, and the Qdrant engine** here are
 > superseded: the SPLADE leg is SEISMIC (see the 2026-07-17 POINTER below), and
 > the deployment target is OCI (E4.Flex x86 / A1.Flex ARM), not DO. Use the OCI

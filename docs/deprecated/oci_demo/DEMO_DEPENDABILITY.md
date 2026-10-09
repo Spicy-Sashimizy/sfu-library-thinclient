@@ -4,10 +4,12 @@
 
 **Status:** CLOSED DEAD 2026-09-25
 
+> **2026-10-06:** the "cloud access ended / no tenancy" reasoning in the banner is outdated — the tenancy is on Pay As You Go and the public demo is back (`docs/infrastructure/OCI_DEMO_DEPLOYMENT.md`). This doc stays closed on its own grounds: the cloud deployment it gated is live again since 2026-10-06, but this harness has not been re-run against it.
+
 > **STATUS 2026-09-25: CLOUD ACCESS ENDED** — the operator no longer has access
 > to any cloud instances; the OCI E5 62 GiB demo host and every DigitalOcean
 > droplet are gone and will not return, and the demo broker
-> (`scripts/archive/demo_broker/`) is **dormant**. The in-container harness and every
+> (`scripts/demo_broker/`) is **dormant**. The in-container harness and every
 > measured number below remain valid and still run locally, but the cloud-tier
 > half is not runnable: the cross-reference to `OCI_DEMO_DEPLOYMENT.md` for
 > "cloud-tier dependability" now points at a dead deployment, and the WI-12

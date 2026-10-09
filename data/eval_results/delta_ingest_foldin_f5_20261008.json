@@ -1,0 +1,6358 @@
+{
+ "F5_interrupted_20261008": {
+  "item": "doc 10 \u00a76 F5 crash safety",
+  "date_utc": "2026-10-09T04:59:46Z",
+  "git_head": "2f5185d30771107d8b2b5cf97d4dee17c6925a09",
+  "script": "scripts/experiments/eval_delta_ingest_foldin_f5.py",
+  "work": "/home/vscode/work/delta_ingest/foldin/f5",
+  "rows_file": "/home/vscode/work/delta_ingest/foldin/f5/rows.json",
+  "seed": 20261008,
+  "calibration": {
+   "W_s": 199.77,
+   "m_set": {
+    "QT": 1.0,
+    "QD": 1.0
+   },
+   "clean_q_a": [
+    {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    }
+   ],
+   "iii_readable": true,
+   "folds": [
+    {
+     "fold": 1,
+     "wall_s": 196.72,
+     "stages": {
+      "build": {
+       "seconds": 158.17,
+       "docs": 1020112,
+       "dim": 28702,
+       "nnz": 88518745
+      },
+      "mmap": {
+       "seconds": 7.51
+      },
+      "dotvbyte": {
+       "seconds": 8.54
+      }
+     },
+     "dump": {
+      "input_rows": 1000000,
+      "kept_base_rows": 1000000,
+      "dropped_base_rows": 0,
+      "added_delta_rows": 20112,
+      "docs": 1020112,
+      "bytes": 2101419043,
+      "seconds": 15.7
+     },
+     "token_map_appended": 0
+    },
+    {
+     "fold": 2,
+     "wall_s": 202.82,
+     "stages": {
+      "build": {
+       "seconds": 152.96,
+       "docs": 1020112,
+       "dim": 28702,
+       "nnz": 88518745
+      },
+      "mmap": {
+       "seconds": 9.17
+      },
+      "dotvbyte": {
+       "seconds": 12.85
+      }
+     },
+     "dump": {
+      "input_rows": 1000000,
+      "kept_base_rows": 1000000,
+      "dropped_base_rows": 0,
+      "added_delta_rows": 20112,
+      "docs": 1020112,
+      "bytes": 2101419043,
+      "seconds": 17.7
+     },
+     "token_map_appended": 0
+    }
+   ],
+   "threads": 4
+  },
+  "publish_reference": null,
+  "n_fold_trials": 30,
+  "n_publish_trials": 0,
+  "redrawn_finished_before_kill": [
+   "fold-02",
+   "fold-20"
+  ],
+  "passed": 30,
+  "of": 30,
+  "complete": false,
+  "i_fail": [],
+  "ii_fail": [],
+  "iii_fail": [],
+  "neither_pre_nor_post": [],
+  "stages_hit": [
+   [
+    "fold_build_kill",
+    "build"
+   ],
+   [
+    "fold_build_kill",
+    "dotvbyte"
+   ],
+   [
+    "fold_build_kill",
+    "dump"
+   ]
+  ],
+  "stopped": "deadline",
+  "verdict": "NOT COMPLETE",
+  "rows": [
+   {
+    "trial": "fold-00",
+    "kind": "fold_build_kill",
+    "kill_at_s": 58.37,
+    "start_utc": "2026-10-08T05:15:33Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 58.4
+    },
+    "killed_fold": 3,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.82,
+     "fold": 4,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold3",
+      2101419171
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold4",
+      2204655888
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:19:54Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-01",
+    "kind": "fold_build_kill",
+    "kill_at_s": 87.616,
+    "start_utc": "2026-10-08T05:19:54Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 87.78
+    },
+    "killed_fold": 5,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.43,
+     "fold": 6,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold5",
+      2101419170
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold6",
+      2204656764
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:24:44Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-02",
+    "kind": "fold_build_kill",
+    "kill_at_s": 193.806,
+    "start_utc": "2026-10-08T05:24:44Z",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.32
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "fold-02",
+    "kind": "fold_build_kill",
+    "kill_at_s": 55.897,
+    "start_utc": "2026-10-08T05:27:53Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 55.94
+    },
+    "killed_fold": 8,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.48,
+     "fold": 9,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold8",
+      2101419171
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold9",
+      2204659465
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:32:07Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-03",
+    "kind": "fold_build_kill",
+    "kill_at_s": 17.325,
+    "start_utc": "2026-10-08T05:32:07Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 17.43
+    },
+    "killed_fold": 10,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 186.01,
+     "fold": 11,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold10",
+      1575086179
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold11",
+      2204658539
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:35:44Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-04",
+    "kind": "fold_build_kill",
+    "kill_at_s": 142.827,
+    "start_utc": "2026-10-08T05:35:44Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 142.98
+    },
+    "killed_fold": 12,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 183.75,
+     "fold": 13,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold12",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold13",
+      2204659047
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:41:24Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-05",
+    "kind": "fold_build_kill",
+    "kill_at_s": 61.999,
+    "start_utc": "2026-10-08T05:41:24Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 62.04
+    },
+    "killed_fold": 14,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 176.79,
+     "fold": 15,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold14",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold15",
+      2204656099
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:45:35Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-06",
+    "kind": "fold_build_kill",
+    "kill_at_s": 134.828,
+    "start_utc": "2026-10-08T05:45:35Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 134.96
+    },
+    "killed_fold": 16,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.82,
+     "fold": 17,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold16",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold17",
+      2204661427
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:51:09Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-07",
+    "kind": "fold_build_kill",
+    "kill_at_s": 43.667,
+    "start_utc": "2026-10-08T05:51:09Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 43.68
+    },
+    "killed_fold": 18,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 183.47,
+     "fold": 19,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold18",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold19",
+      2204656021
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:55:09Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-08",
+    "kind": "fold_build_kill",
+    "kill_at_s": 24.327,
+    "start_utc": "2026-10-08T05:55:09Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 24.34
+    },
+    "killed_fold": 20,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 205.26,
+     "fold": 21,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold20",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold21",
+      2204658645
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:59:15Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-09",
+    "kind": "fold_build_kill",
+    "kill_at_s": 149.257,
+    "start_utc": "2026-10-08T05:59:15Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 149.41
+    },
+    "killed_fold": 22,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 206.91,
+     "fold": 23,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold22",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold23",
+      2204658363
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:05:28Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-10",
+    "kind": "fold_build_kill",
+    "kill_at_s": 5.551,
+    "start_utc": "2026-10-08T06:05:28Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 5.66
+    },
+    "killed_fold": 24,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 210.03,
+     "fold": 25,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold24",
+      82870102
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold25",
+      2204655765
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:09:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-11",
+    "kind": "fold_build_kill",
+    "kill_at_s": 72.835,
+    "start_utc": "2026-10-08T06:09:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 72.88
+    },
+    "killed_fold": 26,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 211.4,
+     "fold": 27,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold26",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold27",
+      2204657963
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:14:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-12",
+    "kind": "fold_build_kill",
+    "kill_at_s": 47.404,
+    "start_utc": "2026-10-08T06:14:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 47.43
+    },
+    "killed_fold": 28,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 206.62,
+     "fold": 29,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold28",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold29",
+      2204660513
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:18:47Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-13",
+    "kind": "fold_build_kill",
+    "kill_at_s": 199.393,
+    "start_utc": "2026-10-08T06:18:47Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 199.5
+    },
+    "killed_fold": 30,
+    "stage_hit": "dotvbyte",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.41,
+     "fold": 31,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold30",
+      4440548663
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold31",
+      2204660736
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:25:50Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-14",
+    "kind": "fold_build_kill",
+    "kill_at_s": 11.966,
+    "start_utc": "2026-10-08T06:25:50Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 12.07
+    },
+    "killed_fold": 32,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.93,
+     "fold": 33,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold32",
+      1034038306
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold33",
+      2204656400
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:29:47Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-15",
+    "kind": "fold_build_kill",
+    "kill_at_s": 18.706,
+    "start_utc": "2026-10-08T06:29:47Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 18.72
+    },
+    "killed_fold": 34,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 212.33,
+     "fold": 35,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold34",
+      2174339086
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold35",
+      2204661032
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:33:53Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-16",
+    "kind": "fold_build_kill",
+    "kill_at_s": 163.991,
+    "start_utc": "2026-10-08T06:33:53Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 164.15
+    },
+    "killed_fold": 36,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 211.41,
+     "fold": 37,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold36",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold37",
+      2204658427
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:40:24Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-17",
+    "kind": "fold_build_kill",
+    "kill_at_s": 57.97,
+    "start_utc": "2026-10-08T06:40:24Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 58.01
+    },
+    "killed_fold": 38,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.2,
+     "fold": 39,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold38",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold39",
+      2204660855
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:44:40Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-18",
+    "kind": "fold_build_kill",
+    "kill_at_s": 131.445,
+    "start_utc": "2026-10-08T06:44:40Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 131.58
+    },
+    "killed_fold": 40,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 195.24,
+     "fold": 41,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold40",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold41",
+      2204658252
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:50:21Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-19",
+    "kind": "fold_build_kill",
+    "kill_at_s": 98.659,
+    "start_utc": "2026-10-08T06:50:21Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 98.82
+    },
+    "killed_fold": 42,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 188.46,
+     "fold": 43,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold42",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold43",
+      2204658281
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:55:23Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-20",
+    "kind": "fold_build_kill",
+    "kill_at_s": 197.372,
+    "start_utc": "2026-10-08T06:55:23Z",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.0
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "fold-20",
+    "kind": "fold_build_kill",
+    "kill_at_s": 11.619,
+    "start_utc": "2026-10-08T06:58:34Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 11.72
+    },
+    "killed_fold": 45,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 193.96,
+     "fold": 46,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold45",
+      1075657608
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold46",
+      2204658935
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:02:14Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-21",
+    "kind": "fold_build_kill",
+    "kill_at_s": 159.59,
+    "start_utc": "2026-10-08T07:02:14Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 159.75
+    },
+    "killed_fold": 47,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 190.61,
+     "fold": 48,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold47",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold48",
+      2204658702
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:08:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-22",
+    "kind": "fold_build_kill",
+    "kill_at_s": 15.575,
+    "start_utc": "2026-10-08T07:08:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 15.68
+    },
+    "killed_fold": 49,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 192.77,
+     "fold": 50,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold49",
+      1824481206
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold50",
+      2204661723
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:12:03Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-23",
+    "kind": "fold_build_kill",
+    "kill_at_s": 97.958,
+    "start_utc": "2026-10-08T07:12:03Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 98.11
+    },
+    "killed_fold": 51,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.98,
+     "fold": 52,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold51",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold52",
+      2204656078
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:17:05Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-24",
+    "kind": "fold_build_kill",
+    "kill_at_s": 65.738,
+    "start_utc": "2026-10-08T07:17:05Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 65.78
+    },
+    "killed_fold": 53,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.4,
+     "fold": 54,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold53",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold54",
+      2204656669
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:21:34Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-25",
+    "kind": "fold_build_kill",
+    "kill_at_s": 115.562,
+    "start_utc": "2026-10-08T07:21:34Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 115.68
+    },
+    "killed_fold": 55,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.81,
+     "fold": 56,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold55",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold56",
+      2204658731
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:26:54Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-26",
+    "kind": "fold_build_kill",
+    "kill_at_s": 121.521,
+    "start_utc": "2026-10-08T07:26:54Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 121.65
+    },
+    "killed_fold": 57,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.81,
+     "fold": 58,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold57",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold58",
+      2204658625
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:32:20Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-27",
+    "kind": "fold_build_kill",
+    "kill_at_s": 63.426,
+    "start_utc": "2026-10-08T07:32:20Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 63.46
+    },
+    "killed_fold": 59,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 188.37,
+     "fold": 60,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold59",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold60",
+      2204660784
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:36:46Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-28",
+    "kind": "fold_build_kill",
+    "kill_at_s": 69.889,
+    "start_utc": "2026-10-08T07:36:46Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 69.94
+    },
+    "killed_fold": 61,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 197.09,
+     "fold": 62,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold61",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold62",
+      2204659100
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:41:27Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-29",
+    "kind": "fold_build_kill",
+    "kill_at_s": 10.435,
+    "start_utc": "2026-10-08T07:41:27Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 10.54
+    },
+    "killed_fold": 63,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 76673.42,
+     "fold": 64,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold63",
+      911344715
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold64",
+      2204658788
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T04:59:46Z",
+    "state": "PRE"
+   }
+  ],
+  "note": "interrupted run: wall clock jumped 2026-10-08 07:41Z -> 2026-10-09 04:59Z during trial fold-29 while the tools' own stage timers advanced ~4 min (host/WSL VM paused, inferred, not verified); harness stopped on its wall-clock deadline; 30/30 fold trials passed, 0 publish trials; resumed 2026-10-09 from rows.json into key F5"
+ },
+ "F5": {
+  "item": "doc 10 \u00a76 F5 crash safety",
+  "date_utc": "2026-10-09T19:44:15Z",
+  "git_head": "2fd0db84625e52e84f4e53883640acbd3028bd06",
+  "script": "scripts/experiments/eval_delta_ingest_foldin_f5.py",
+  "work": "/home/vscode/work/delta_ingest/foldin/f5",
+  "rows_file": "/home/vscode/work/delta_ingest/foldin/f5/rows.json",
+  "seed": 20261008,
+  "calibration": {
+   "W_s": 199.77,
+   "m_set": {
+    "QT": 1.0,
+    "QD": 1.0
+   },
+   "clean_q_a": [
+    {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    }
+   ],
+   "iii_readable": true,
+   "folds": [
+    {
+     "fold": 1,
+     "wall_s": 196.72,
+     "stages": {
+      "build": {
+       "seconds": 158.17,
+       "docs": 1020112,
+       "dim": 28702,
+       "nnz": 88518745
+      },
+      "mmap": {
+       "seconds": 7.51
+      },
+      "dotvbyte": {
+       "seconds": 8.54
+      }
+     },
+     "dump": {
+      "input_rows": 1000000,
+      "kept_base_rows": 1000000,
+      "dropped_base_rows": 0,
+      "added_delta_rows": 20112,
+      "docs": 1020112,
+      "bytes": 2101419043,
+      "seconds": 15.7
+     },
+     "token_map_appended": 0
+    },
+    {
+     "fold": 2,
+     "wall_s": 202.82,
+     "stages": {
+      "build": {
+       "seconds": 152.96,
+       "docs": 1020112,
+       "dim": 28702,
+       "nnz": 88518745
+      },
+      "mmap": {
+       "seconds": 9.17
+      },
+      "dotvbyte": {
+       "seconds": 12.85
+      }
+     },
+     "dump": {
+      "input_rows": 1000000,
+      "kept_base_rows": 1000000,
+      "dropped_base_rows": 0,
+      "added_delta_rows": 20112,
+      "docs": 1020112,
+      "bytes": 2101419043,
+      "seconds": 17.7
+     },
+     "token_map_appended": 0
+    }
+   ],
+   "threads": 4
+  },
+  "publish_reference": {
+   "post_digest": "85924a5741c14ccb8814d95574447eaf772f78d38048e5cfc528f25295d1c240",
+   "wall_s": 12.07,
+   "missed": {
+    "pre": [
+     "W7212675453",
+     "W7212687914"
+    ],
+    "post": [
+     "W7212799956",
+     "W7212468778",
+     "W7212988588",
+     "W7212727916",
+     "W7212612112",
+     "W7212523133",
+     "W7212694364",
+     "W7212823318",
+     "W7212699028",
+     "W7212950293",
+     "W7212570066",
+     "W7213159503",
+     "W7213025964",
+     "W7212706491",
+     "W7213003441",
+     "W7212487248",
+     "W7213141518",
+     "W7212945303",
+     "W7213062703",
+     "W7213021055",
+     "W4397470291",
+     "W7212878524",
+     "W7212511510",
+     "W7213057963",
+     "W7212491814",
+     "W7212848105",
+     "W7213174375",
+     "W7213108977",
+     "W7212496583",
+     "W7212874695",
+     "W7212516473",
+     "W7212567157",
+     "W7212675453",
+     "W7212743897",
+     "W7212635128",
+     "W7212519989",
+     "W7212772470",
+     "W4397134940",
+     "W7160270798",
+     "W7213110187",
+     "W7212517620",
+     "W7212980573",
+     "W7212596554",
+     "W7212651673",
+     "W7212986770",
+     "W7212505108",
+     "W7212798027",
+     "W7212885642",
+     "W7212561977",
+     "W7213168795",
+     "W7212427909",
+     "W7212728854",
+     "W7212661325",
+     "W7213023249",
+     "W7212806824",
+     "W7212766310",
+     "W7212735661",
+     "W7212764367",
+     "W7212759552",
+     "W7213088099",
+     "W7213201694",
+     "W7212793010",
+     "W7212431938",
+     "W7212786056",
+     "W7213092977",
+     "W7212362403",
+     "W7212876843",
+     "W7212997257",
+     "W7212492548",
+     "W7212961023",
+     "W7213042268",
+     "W7212899490",
+     "W7212601939",
+     "W7212688141",
+     "W7212604019",
+     "W7212956465",
+     "W7212952047",
+     "W7212616224",
+     "W7212686855",
+     "W7213082491",
+     "W7212671032",
+     "W7213015085",
+     "W7212728925",
+     "W7212814274",
+     "W7212470029",
+     "W7212774961",
+     "W7212481221",
+     "W7212497062",
+     "W7213122241",
+     "W7212722913",
+     "W7212652073",
+     "W7212766225",
+     "W7213023888",
+     "W7212496082",
+     "W7212661775",
+     "W7212630021",
+     "W7212732275",
+     "W7213019602",
+     "W7212846191",
+     "W7212767200",
+     "W7213021805",
+     "W7213195802",
+     "W7213186018",
+     "W7212662569",
+     "W7212687914",
+     "W7212599068",
+     "W7212729722",
+     "W7212621414",
+     "W7212858068",
+     "W7212589233",
+     "W7212787886",
+     "W7213013815",
+     "W7212523427",
+     "W7212698401",
+     "W7212762840",
+     "W7212660456",
+     "W7213140228",
+     "W7212555314",
+     "W7213179507",
+     "W7212640688",
+     "W7212990613",
+     "W7212994718",
+     "W7212694500"
+    ]
+   },
+   "post_parts": {
+    "manifest_present": true,
+    "manifest_named_exists": true,
+    "shards": [
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/shard0/fold1/fold.dotvbyte.v2.mmap",
+      "n_docs": 18819434,
+      "delta_generation": null,
+      "fold_origin": "fold:0:1"
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard1of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18812242,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard2of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18797227,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard3of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18801448,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard4of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18807611,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard5of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18801216,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard6of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18796836,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/var/tmp/seismic_stage/global_shard7of8.dotvbyte.e5.v2.mmap",
+      "n_docs": 18797196,
+      "delta_generation": null,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0001/seismic/delta_g0001.dotvbyte.v2.mmap",
+      "n_docs": 20044,
+      "delta_generation": 1,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0002/seismic/delta_g0002.dotvbyte.v2.mmap",
+      "n_docs": 20044,
+      "delta_generation": 2,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0003/seismic/delta_g0003.dotvbyte.v2.mmap",
+      "n_docs": 20044,
+      "delta_generation": 3,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0004/seismic/delta_g0004.dotvbyte.v2.mmap",
+      "n_docs": 20043,
+      "delta_generation": 4,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0005/seismic/delta_g0005.dotvbyte.v2.mmap",
+      "n_docs": 20043,
+      "delta_generation": 5,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0006/seismic/delta_g0006.dotvbyte.v2.mmap",
+      "n_docs": 20043,
+      "delta_generation": 6,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0007/seismic/delta_g0007.dotvbyte.v2.mmap",
+      "n_docs": 20043,
+      "delta_generation": 7,
+      "fold_origin": null
+     },
+     {
+      "mmap_dir": "/home/vscode/work/delta_ingest/foldin/f5/pub/master/g0008/seismic/delta_g0008.dotvbyte.v2.mmap",
+      "n_docs": 20043,
+      "delta_generation": 8,
+      "fold_origin": null
+     }
+    ],
+    "generations": [
+     {
+      "gen": 1,
+      "dir": "<root>/g0001",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__archive",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 2,
+      "dir": "<root>/g0002",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__archive",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 3,
+      "dir": "<root>/g0003",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 4,
+      "dir": "<root>/g0004",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 5,
+      "dir": "<root>/g0005",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 6,
+      "dir": "<root>/g0006",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 7,
+      "dir": "<root>/g0007",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__recent",
+       "social_sciences__archive",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     },
+     {
+      "gen": 8,
+      "dir": "<root>/g0008",
+      "sections": [
+       "cs_math__archive",
+       "cs_math__recent",
+       "med_bio__archive",
+       "med_bio__recent",
+       "other__archive",
+       "other__recent",
+       "phys_eng__archive",
+       "phys_eng__recent",
+       "social_sciences__recent"
+      ],
+      "seismic": "served"
+     }
+    ],
+    "deleted": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "superseded": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "newest_seismic": "95a6962d8e6d9a1b23dd53f018db754284710f588b85549d11a7427e639d90f8",
+    "n_newest_seismic": 20112,
+    "livedocs": null,
+    "base_shard_manifest": "/home/vscode/work/delta_ingest/foldin/manifests/shard_manifest.fold_s0_k1.json"
+   },
+   "pre_digest_ref_copy": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d"
+  },
+  "n_fold_trials": 50,
+  "n_publish_trials": 10,
+  "redrawn_finished_before_kill": [
+   "fold-02",
+   "fold-20",
+   "pub-00",
+   "pub-00",
+   "pub-00",
+   "pub-02",
+   "pub-03",
+   "pub-06",
+   "pub-06",
+   "pub-08"
+  ],
+  "passed": 60,
+  "of": 60,
+  "complete": true,
+  "i_fail": [],
+  "ii_fail": [],
+  "iii_fail": [],
+  "neither_pre_nor_post": [],
+  "stages_hit": [
+   [
+    "fold_build_kill",
+    "before_mkdir"
+   ],
+   [
+    "fold_build_kill",
+    "build"
+   ],
+   [
+    "fold_build_kill",
+    "dotvbyte"
+   ],
+   [
+    "fold_build_kill",
+    "dump"
+   ],
+   [
+    "fold_build_kill",
+    "plan_or_token_map"
+   ],
+   [
+    "publish_fold_kill",
+    "after_generations_json+trigger"
+   ],
+   [
+    "publish_fold_kill",
+    "after_ledger_commit+new_manifest"
+   ],
+   [
+    "publish_fold_kill",
+    "before_ledger_commit (prefault / compose / baseline)"
+   ]
+  ],
+  "stopped": null,
+  "verdict": "PASS",
+  "rows": [
+   {
+    "trial": "fold-00",
+    "kind": "fold_build_kill",
+    "kill_at_s": 58.37,
+    "start_utc": "2026-10-08T05:15:33Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 58.4
+    },
+    "killed_fold": 3,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.82,
+     "fold": 4,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold3",
+      2101419171
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold4",
+      2204655888
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:19:54Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-01",
+    "kind": "fold_build_kill",
+    "kill_at_s": 87.616,
+    "start_utc": "2026-10-08T05:19:54Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 87.78
+    },
+    "killed_fold": 5,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.43,
+     "fold": 6,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold5",
+      2101419170
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold6",
+      2204656764
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:24:44Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-02",
+    "kind": "fold_build_kill",
+    "kill_at_s": 193.806,
+    "start_utc": "2026-10-08T05:24:44Z",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 187.32
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "fold-02",
+    "kind": "fold_build_kill",
+    "kill_at_s": 55.897,
+    "start_utc": "2026-10-08T05:27:53Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 55.94
+    },
+    "killed_fold": 8,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.48,
+     "fold": 9,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold8",
+      2101419171
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold9",
+      2204659465
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:32:07Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-03",
+    "kind": "fold_build_kill",
+    "kill_at_s": 17.325,
+    "start_utc": "2026-10-08T05:32:07Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 17.43
+    },
+    "killed_fold": 10,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 186.01,
+     "fold": 11,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold10",
+      1575086179
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold11",
+      2204658539
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:35:44Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-04",
+    "kind": "fold_build_kill",
+    "kill_at_s": 142.827,
+    "start_utc": "2026-10-08T05:35:44Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 142.98
+    },
+    "killed_fold": 12,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 183.75,
+     "fold": 13,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold12",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold13",
+      2204659047
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:41:24Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-05",
+    "kind": "fold_build_kill",
+    "kill_at_s": 61.999,
+    "start_utc": "2026-10-08T05:41:24Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 62.04
+    },
+    "killed_fold": 14,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 176.79,
+     "fold": 15,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold14",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold15",
+      2204656099
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:45:35Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-06",
+    "kind": "fold_build_kill",
+    "kill_at_s": 134.828,
+    "start_utc": "2026-10-08T05:45:35Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 134.96
+    },
+    "killed_fold": 16,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.82,
+     "fold": 17,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold16",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold17",
+      2204661427
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:51:09Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-07",
+    "kind": "fold_build_kill",
+    "kill_at_s": 43.667,
+    "start_utc": "2026-10-08T05:51:09Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 43.68
+    },
+    "killed_fold": 18,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 183.47,
+     "fold": 19,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold18",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold19",
+      2204656021
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:55:09Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-08",
+    "kind": "fold_build_kill",
+    "kill_at_s": 24.327,
+    "start_utc": "2026-10-08T05:55:09Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 24.34
+    },
+    "killed_fold": 20,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 205.26,
+     "fold": 21,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold20",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold21",
+      2204658645
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T05:59:15Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-09",
+    "kind": "fold_build_kill",
+    "kill_at_s": 149.257,
+    "start_utc": "2026-10-08T05:59:15Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 149.41
+    },
+    "killed_fold": 22,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 206.91,
+     "fold": 23,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold22",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold23",
+      2204658363
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:05:28Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-10",
+    "kind": "fold_build_kill",
+    "kill_at_s": 5.551,
+    "start_utc": "2026-10-08T06:05:28Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 5.66
+    },
+    "killed_fold": 24,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 210.03,
+     "fold": 25,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold24",
+      82870102
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold25",
+      2204655765
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:09:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-11",
+    "kind": "fold_build_kill",
+    "kill_at_s": 72.835,
+    "start_utc": "2026-10-08T06:09:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 72.88
+    },
+    "killed_fold": 26,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 211.4,
+     "fold": 27,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold26",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold27",
+      2204657963
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:14:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-12",
+    "kind": "fold_build_kill",
+    "kill_at_s": 47.404,
+    "start_utc": "2026-10-08T06:14:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 47.43
+    },
+    "killed_fold": 28,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 206.62,
+     "fold": 29,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold28",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold29",
+      2204660513
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:18:47Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-13",
+    "kind": "fold_build_kill",
+    "kill_at_s": 199.393,
+    "start_utc": "2026-10-08T06:18:47Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 199.5
+    },
+    "killed_fold": 30,
+    "stage_hit": "dotvbyte",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.41,
+     "fold": 31,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold30",
+      4440548663
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold31",
+      2204660736
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:25:50Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-14",
+    "kind": "fold_build_kill",
+    "kill_at_s": 11.966,
+    "start_utc": "2026-10-08T06:25:50Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 12.07
+    },
+    "killed_fold": 32,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.93,
+     "fold": 33,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold32",
+      1034038306
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold33",
+      2204656400
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:29:47Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-15",
+    "kind": "fold_build_kill",
+    "kill_at_s": 18.706,
+    "start_utc": "2026-10-08T06:29:47Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 18.72
+    },
+    "killed_fold": 34,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 212.33,
+     "fold": 35,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold34",
+      2174339086
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold35",
+      2204661032
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:33:53Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-16",
+    "kind": "fold_build_kill",
+    "kill_at_s": 163.991,
+    "start_utc": "2026-10-08T06:33:53Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 164.15
+    },
+    "killed_fold": 36,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 211.41,
+     "fold": 37,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold36",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold37",
+      2204658427
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:40:24Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-17",
+    "kind": "fold_build_kill",
+    "kill_at_s": 57.97,
+    "start_utc": "2026-10-08T06:40:24Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 58.01
+    },
+    "killed_fold": 38,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 184.2,
+     "fold": 39,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold38",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold39",
+      2204660855
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:44:40Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-18",
+    "kind": "fold_build_kill",
+    "kill_at_s": 131.445,
+    "start_utc": "2026-10-08T06:44:40Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 131.58
+    },
+    "killed_fold": 40,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 195.24,
+     "fold": 41,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold40",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold41",
+      2204658252
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:50:21Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-19",
+    "kind": "fold_build_kill",
+    "kill_at_s": 98.659,
+    "start_utc": "2026-10-08T06:50:21Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 98.82
+    },
+    "killed_fold": 42,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 188.46,
+     "fold": 43,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold42",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold43",
+      2204658281
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T06:55:23Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-20",
+    "kind": "fold_build_kill",
+    "kill_at_s": 197.372,
+    "start_utc": "2026-10-08T06:55:23Z",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.0
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "fold-20",
+    "kind": "fold_build_kill",
+    "kill_at_s": 11.619,
+    "start_utc": "2026-10-08T06:58:34Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 11.72
+    },
+    "killed_fold": 45,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 193.96,
+     "fold": 46,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold45",
+      1075657608
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold46",
+      2204658935
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:02:14Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-21",
+    "kind": "fold_build_kill",
+    "kill_at_s": 159.59,
+    "start_utc": "2026-10-08T07:02:14Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 159.75
+    },
+    "killed_fold": 47,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 190.61,
+     "fold": 48,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold47",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold48",
+      2204658702
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:08:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-22",
+    "kind": "fold_build_kill",
+    "kill_at_s": 15.575,
+    "start_utc": "2026-10-08T07:08:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 15.68
+    },
+    "killed_fold": 49,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 192.77,
+     "fold": 50,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold49",
+      1824481206
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold50",
+      2204661723
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:12:03Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-23",
+    "kind": "fold_build_kill",
+    "kill_at_s": 97.958,
+    "start_utc": "2026-10-08T07:12:03Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 98.11
+    },
+    "killed_fold": 51,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.98,
+     "fold": 52,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold51",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold52",
+      2204656078
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:17:05Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-24",
+    "kind": "fold_build_kill",
+    "kill_at_s": 65.738,
+    "start_utc": "2026-10-08T07:17:05Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 65.78
+    },
+    "killed_fold": 53,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.4,
+     "fold": 54,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold53",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold54",
+      2204656669
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:21:34Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-25",
+    "kind": "fold_build_kill",
+    "kill_at_s": 115.562,
+    "start_utc": "2026-10-08T07:21:34Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 115.68
+    },
+    "killed_fold": 55,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.81,
+     "fold": 56,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold55",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold56",
+      2204658731
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:26:54Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-26",
+    "kind": "fold_build_kill",
+    "kill_at_s": 121.521,
+    "start_utc": "2026-10-08T07:26:54Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 121.65
+    },
+    "killed_fold": 57,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 189.81,
+     "fold": 58,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold57",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold58",
+      2204658625
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:32:20Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-27",
+    "kind": "fold_build_kill",
+    "kill_at_s": 63.426,
+    "start_utc": "2026-10-08T07:32:20Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 63.46
+    },
+    "killed_fold": 59,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 188.37,
+     "fold": 60,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold59",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold60",
+      2204660784
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:36:46Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-28",
+    "kind": "fold_build_kill",
+    "kill_at_s": 69.889,
+    "start_utc": "2026-10-08T07:36:46Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 69.94
+    },
+    "killed_fold": 61,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 197.09,
+     "fold": 62,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold61",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold62",
+      2204659100
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-08T07:41:27Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-29",
+    "kind": "fold_build_kill",
+    "kill_at_s": 10.435,
+    "start_utc": "2026-10-08T07:41:27Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 10.54
+    },
+    "killed_fold": 63,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 76673.42,
+     "fold": 64,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold63",
+      911344715
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold64",
+      2204658788
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T04:59:46Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-30",
+    "kind": "fold_build_kill",
+    "kill_at_s": 147.052,
+    "start_utc": "2026-10-09T05:03:05Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 147.19
+    },
+    "killed_fold": 65,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 219.43,
+     "fold": 66,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold65",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold66",
+      2204658194
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:09:27Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-31",
+    "kind": "fold_build_kill",
+    "kill_at_s": 132.86,
+    "start_utc": "2026-10-09T05:09:27Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 132.98
+    },
+    "killed_fold": 67,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 207.17,
+     "fold": 68,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold67",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold68",
+      2204658983
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:15:22Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-32",
+    "kind": "fold_build_kill",
+    "kill_at_s": 58.669,
+    "start_utc": "2026-10-09T05:15:22Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 58.7
+    },
+    "killed_fold": 69,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 204.89,
+     "fold": 70,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold69",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold70",
+      2204661191
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:20:01Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-33",
+    "kind": "fold_build_kill",
+    "kill_at_s": 180.076,
+    "start_utc": "2026-10-09T05:20:01Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 180.26
+    },
+    "killed_fold": 71,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.92,
+     "fold": 72,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold71",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold72",
+      2204658935
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:26:44Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-34",
+    "kind": "fold_build_kill",
+    "kill_at_s": 158.089,
+    "start_utc": "2026-10-09T05:26:44Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 158.26
+    },
+    "killed_fold": 73,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 206.83,
+     "fold": 74,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold73",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold74",
+      2204661539
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:33:05Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-35",
+    "kind": "fold_build_kill",
+    "kill_at_s": 33.973,
+    "start_utc": "2026-10-09T05:33:05Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 33.98
+    },
+    "killed_fold": 75,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 208.79,
+     "fold": 76,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold75",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold76",
+      2204661812
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:37:23Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-36",
+    "kind": "fold_build_kill",
+    "kill_at_s": 54.454,
+    "start_utc": "2026-10-09T05:37:23Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 54.48
+    },
+    "killed_fold": 77,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 210.88,
+     "fold": 78,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold77",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold78",
+      2204661675
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:42:03Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-37",
+    "kind": "fold_build_kill",
+    "kill_at_s": 1.085,
+    "start_utc": "2026-10-09T05:42:03Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 1.09
+    },
+    "killed_fold": null,
+    "stage_hit": "before_mkdir",
+    "killed_row_state": null,
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 202.81,
+     "fold": 79,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold79",
+      2204655953
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:45:43Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-38",
+    "kind": "fold_build_kill",
+    "kill_at_s": 155.466,
+    "start_utc": "2026-10-09T05:45:43Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 155.64
+    },
+    "killed_fold": 80,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 212.63,
+     "fold": 81,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold80",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold81",
+      2204657994
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:52:06Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-39",
+    "kind": "fold_build_kill",
+    "kill_at_s": 3.48,
+    "start_utc": "2026-10-09T05:52:06Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 3.49
+    },
+    "killed_fold": 82,
+    "stage_hit": "plan_or_token_map",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 209.12,
+     "fold": 83,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold82",
+      130
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold83",
+      2204657985
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T05:55:54Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-40",
+    "kind": "fold_build_kill",
+    "kill_at_s": 85.536,
+    "start_utc": "2026-10-09T05:55:54Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 85.73
+    },
+    "killed_fold": 84,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 209.54,
+     "fold": 85,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold84",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold85",
+      2204657996
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:01:06Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-41",
+    "kind": "fold_build_kill",
+    "kill_at_s": 5.442,
+    "start_utc": "2026-10-09T06:01:06Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 5.55
+    },
+    "killed_fold": 86,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 210.42,
+     "fold": 87,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold86",
+      130
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold87",
+      2204658330
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:04:57Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-42",
+    "kind": "fold_build_kill",
+    "kill_at_s": 104.087,
+    "start_utc": "2026-10-09T06:04:57Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 104.25
+    },
+    "killed_fold": 88,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 212.02,
+     "fold": 89,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold88",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold89",
+      2204659345
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:10:28Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-43",
+    "kind": "fold_build_kill",
+    "kill_at_s": 153.07,
+    "start_utc": "2026-10-09T06:10:28Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 153.21
+    },
+    "killed_fold": 90,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 207.21,
+     "fold": 91,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold90",
+      2101419173
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold91",
+      2204656638
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:16:43Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-44",
+    "kind": "fold_build_kill",
+    "kill_at_s": 16.583,
+    "start_utc": "2026-10-09T06:16:43Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 16.69
+    },
+    "killed_fold": 92,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 221.8,
+     "fold": 93,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold92",
+      1742262922
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold93",
+      2204655988
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:20:57Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-45",
+    "kind": "fold_build_kill",
+    "kill_at_s": 161.627,
+    "start_utc": "2026-10-09T06:20:57Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 161.78
+    },
+    "killed_fold": 94,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 224.34,
+     "fold": 95,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold94",
+      2101419171
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold95",
+      2204661559
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:27:38Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-46",
+    "kind": "fold_build_kill",
+    "kill_at_s": 8.478,
+    "start_utc": "2026-10-09T06:27:38Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 8.58
+    },
+    "killed_fold": 96,
+    "stage_hit": "dump",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 211.72,
+     "fold": 97,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold96",
+      497966462
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold97",
+      2204658413
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:31:34Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-47",
+    "kind": "fold_build_kill",
+    "kill_at_s": 86.284,
+    "start_utc": "2026-10-09T06:31:34Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 86.46
+    },
+    "killed_fold": 98,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 217.95,
+     "fold": 99,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold98",
+      2101419172
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold99",
+      2204657938
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:36:53Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-48",
+    "kind": "fold_build_kill",
+    "kill_at_s": 149.661,
+    "start_utc": "2026-10-09T06:36:53Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 149.82
+    },
+    "killed_fold": 100,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 219.8,
+     "fold": 101,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold100",
+      2101419175
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold101",
+      2204661217
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:43:18Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "fold-49",
+    "kind": "fold_build_kill",
+    "kill_at_s": 138.984,
+    "start_utc": "2026-10-09T06:43:18Z",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 139.12
+    },
+    "killed_fold": 102,
+    "stage_hit": "build",
+    "killed_row_state": "building",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 218.72,
+     "fold": 103,
+     "state": "built"
+    },
+    "rerun_completes": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "q_a": {
+     "overlap10_F_vs_L": {
+      "QT": 1.0,
+      "QD": 1.0
+     },
+     "bar_A": {
+      "QT": 0.985,
+      "QD": 0.985
+     },
+     "pass_A": true,
+     "pass_B_0p99": true
+    },
+    "overlap10_vs_clean_fold": {
+     "QT": 1.0,
+     "QD": 1.0
+    },
+    "after_rerun_state": true,
+    "removed_dirs": [
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold102",
+      2101419175
+     ],
+     [
+      "/home/vscode/work/delta_ingest/foldin/f5/foldroot/shard0/fold103",
+      2204659703
+     ]
+    ],
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "end_utc": "2026-10-09T06:49:31Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-00",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 8.052,
+    "start_utc": "2026-10-09T06:50:08Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791528609",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.23
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-00",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 9.435,
+    "start_utc": "2026-10-09T06:50:19Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791528620",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.98
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-00",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 10.11,
+    "start_utc": "2026-10-09T06:50:29Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791528630",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.83
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-00",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 1.679,
+    "start_utc": "2026-10-09T06:50:40Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574668",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 1.69
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.54
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:38:19Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-01",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 1.013,
+    "start_utc": "2026-10-09T19:39:25Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574766",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 1.02
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.71
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:39:46Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-02",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 8.024,
+    "start_utc": "2026-10-09T19:39:46Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574787",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.93
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-02",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 6.469,
+    "start_utc": "2026-10-09T19:39:56Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574798",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 6.48
+    },
+    "stage_hit": "after_generations_json+trigger",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.57
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:40:28Z",
+    "state": "POST"
+   },
+   {
+    "trial": "pub-03",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 9.948,
+    "start_utc": "2026-10-09T19:40:28Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574830",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 8.69
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-03",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 9.555,
+    "start_utc": "2026-10-09T19:40:41Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574842",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 9.56
+    },
+    "stage_hit": "after_ledger_commit+new_manifest",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.43
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:41:13Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-04",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 2.788,
+    "start_utc": "2026-10-09T19:41:13Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574875",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 2.79
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.12
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:41:37Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-05",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 5.573,
+    "start_utc": "2026-10-09T19:41:37Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574898",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 5.58
+    },
+    "stage_hit": "after_generations_json+trigger",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.48
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:42:01Z",
+    "state": "POST"
+   },
+   {
+    "trial": "pub-06",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 8.188,
+    "start_utc": "2026-10-09T19:42:01Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574925",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.23
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-06",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 9.539,
+    "start_utc": "2026-10-09T19:42:14Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574936",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.23
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-06",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 3.113,
+    "start_utc": "2026-10-09T19:42:26Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574947",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 3.12
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.01
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:42:48Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-07",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 4.125,
+    "start_utc": "2026-10-09T19:42:48Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574970",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 4.13
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.08
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:43:12Z",
+    "state": "PRE"
+   },
+   {
+    "trial": "pub-08",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 11.151,
+    "start_utc": "2026-10-09T19:43:12Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791574993",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.98
+    },
+    "finished_before_kill": true,
+    "state": null
+   },
+   {
+    "trial": "pub-08",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 6.488,
+    "start_utc": "2026-10-09T19:43:23Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791575004",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 6.49
+    },
+    "stage_hit": "after_generations_json+trigger",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 7.76
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:43:51Z",
+    "state": "POST"
+   },
+   {
+    "trial": "pub-09",
+    "kind": "publish_fold_kill",
+    "kill_at_s": 4.712,
+    "start_utc": "2026-10-09T19:43:51Z",
+    "compose": "shared path",
+    "pre_stamp": "g0008-1791575032",
+    "pre_digest": "3901d0951ea9c29888117d8c699dac11aed63259f789dac98b140bceb8c47b7d",
+    "run": {
+     "rc": -9,
+     "killed": true,
+     "wall_s": 4.72
+    },
+    "stage_hit": "before_ledger_commit (prefault / compose / baseline)",
+    "g3_after_kill": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "rerun": {
+     "rc": 0,
+     "killed": false,
+     "wall_s": 6.96
+    },
+    "rerun_completes": true,
+    "after_rerun_is_post": true,
+    "fold_dir_unchanged": true,
+    "g3_after_rerun": {
+     "unchanged": true,
+     "n_files": 817,
+     "retries": 0
+    },
+    "i_pass": true,
+    "ii_pass": true,
+    "iii_pass": true,
+    "iii_q_a": "inherited: the published output is fold 1 itself (bytes unchanged), F2 Q-a PASS 2026-10-04",
+    "end_utc": "2026-10-09T19:44:15Z",
+    "state": "PRE"
+   }
+  ]
+ }
+}

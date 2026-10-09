@@ -36,7 +36,7 @@ from cloud import make_cloud_client
 from config import CONFIG
 from dial import DialError, make_dial
 from notify import notify
-from scheduler import Action, DropletStatus, decide
+from scheduler import Action, DropletStatus, budget_exhausted, decide
 from state import StateStore
 from tenants import TenantStore
 
@@ -133,6 +133,8 @@ def _scheduler_loop() -> None:
                 _boot(d.reason, on_demand=False)
             elif d.action == Action.DESTROY:
                 _destroy(d.reason)
+                if d.reason.startswith("killswitch") and not CONFIG.pin_running:
+                    notify(CONFIG, "Duck Library demo killswitch", f"compute stopped: {d.reason}")
         except Exception:
             log.exception("scheduler tick failed")
         _stop.wait(CONFIG.poll_seconds)
@@ -167,7 +169,10 @@ def health(request: Request):
     st = store.snapshot(_now())
     return {"status": "ok", "mode": "live" if CONFIG.live else "dry-run",
             "droplet": st.status.value, "runtime_hours_today": round(st.runtime_hours_today, 3),
-            "idle_minutes": st.idle_minutes}
+            "runtime_hours_month": round(st.runtime_hours_month, 3),
+            "max_runtime_hours_per_month": CONFIG.max_runtime_hours_per_month,
+            "idle_minutes": st.idle_minutes, "session_minutes": st.session_minutes,
+            "max_session_minutes": CONFIG.max_session_minutes}
 
 
 @app.get("/status")
@@ -190,6 +195,15 @@ def start(request: Request, t: str = ""):
 
     st = store.snapshot(_now())
     if st.status == DropletStatus.DOWN:
+        spent = budget_exhausted(st, CONFIG)
+        if spent:
+            tenants.record(sess.session_id, "start", "budget_refused", status=503, detail=spent)
+            jlog(event="start_refused_budget", session=sess.session_id, reason=spent)
+            notify(CONFIG, "Duck Library demo wake refused",
+                   f"{sess.name} clicked an invite link but the runtime budget is spent ({spent})")
+            raise HTTPException(status_code=503, detail=(
+                "The demo has used up its runtime budget for this period and is paused. "
+                "Please try again later."))
         _boot(f"on-demand /start ({sess.name})", on_demand=True)
 
     ip = _client_ip(request)
@@ -509,6 +523,7 @@ def admin_report(request: Request, since_hours: float = 24.0):
     st = store.snapshot(_now())
     rep = tenants.report(since_s=since_hours * 3600)
     rep["droplet"] = {"status": st.status.value, "runtime_hours_today": round(st.runtime_hours_today, 3),
+                      "runtime_hours_month": round(st.runtime_hours_month, 3),
                       "est_cost_today_usd": round(st.runtime_hours_today * 0.50, 2)}
     return rep
 
@@ -609,7 +624,7 @@ wakes on demand — this usually takes about 90&nbsp;seconds.</p>
 <div class=card>
 <div class=stat><span class=spin id=sp></span><span id=msg>Requesting compute&hellip;</span></div>
 <div class=prog><div id=pb></div></div>
-<div class=stat style=font-size:.85rem><span id=eta>Estimated: under 2 minutes</span></div>
+<div class=stat style=font-size:.85rem><span id=eta>Estimated: about 5 minutes</span></div>
 </div>
 <p class=hint>Keep this tab open — your access details appear here the moment the
 server is warm.</p>
