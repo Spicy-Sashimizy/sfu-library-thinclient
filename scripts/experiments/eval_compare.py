@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Phase M.4: Compare two evaluation runs with paired bootstrap 95% CI.
 
-Reads from results/sfu_eval_history.jsonl (one JSON object per line, appended
+Reads from data/eval_results/archive/training_era_results/sfu_eval_history.jsonl (one JSON object per line, appended
 by evaluate_sfu_queries.py) and pretty-prints a side-by-side comparison of any
 two runs, including NDCG@10, MRR@10, Recall@10, and a paired bootstrap
 confidence interval on the NDCG delta.
@@ -17,7 +17,7 @@ Usage:
     python -m scripts.eval_compare --index 0 2
 
     # Use a different history file:
-    python -m scripts.eval_compare A B --history results/my_history.jsonl
+    python -m scripts.eval_compare A B --history data/eval_results/archive/training_era_results/my_history.jsonl
 """
 import argparse
 import json
@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-DEFAULT_HISTORY = REPO_ROOT / "results/sfu_eval_history.jsonl"
+DEFAULT_HISTORY = REPO_ROOT / "data/eval_results/archive/training_era_results/sfu_eval_history.jsonl"
 
 
 def load_history(path: Path) -> list[dict]:

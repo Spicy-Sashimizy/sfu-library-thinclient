@@ -178,7 +178,6 @@ def counters() -> dict:
     """Snapshot for ``/health``: hit/miss/store/bypass + resident size + the
     env gate state (so an operator can confirm ``SFU_RESULT_CACHE=0`` took)."""
     size = _cache.size if _cache is not None else 0
-    total = sum(_counters.values())
     hits, misses = _counters["hit"], _counters["miss"]
     return {
         "enabled": is_enabled(),

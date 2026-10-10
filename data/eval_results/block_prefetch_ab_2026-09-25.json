@@ -1,0 +1,739 @@
+{
+ "what": "lever #4 term-prefix block prefetch — cold/warm A/B",
+ "date": "2026-09-26",
+ "script": "scripts/experiments/eval_block_prefetch.py",
+ "pre_registration": "docs/SPECULATIVE_RETRIEVAL_UPGRADES.md §4 row 4",
+ "manifest": "/workspaces/sfu-library-thinclient/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+ "stage_dir": "/var/tmp/seismic_stage",
+ "shards": "0",
+ "federation": "sequential",
+ "shard_dirs": [
+  "/var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap"
+ ],
+ "layouts_loaded": 1,
+ "n_queries": 40,
+ "top_k": 50,
+ "prefix_frac": 0.6,
+ "lead_ms": 300.0,
+ "max_bytes": 33554432,
+ "env": {
+  "SFU_FEATURE_RERANK_ENABLED": "true",
+  "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+  "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+  "SFU_SEARCH_BACKEND": "thinclient",
+  "SFU_SEISMIC_STAGE_DIR": "/var/tmp/seismic_stage",
+  "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+  "SFU_FEATURE_RRF_ENABLED": "true",
+  "SFU_BLOCK_PREFETCH": "1"
+ },
+ "eviction": "release_pages() then per-file posix_fadvise DONTNEED, mincore-verified (eval_ordinals_cliff ladder); never drop_caches",
+ "waste_definition": "advised bytes outside the final query's uncapped posting-list plan",
+ "host": {
+  "mem_total_bytes": 33651965952,
+  "mem_available_at_start": 30989512704,
+  "kernel": "6.18.33.2-microsoft-standard-WSL2+"
+ },
+ "rungs": [
+  {
+   "cap_gib": null,
+   "mem_available": 30989512704,
+   "quiet_gate": [
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.41,
+      "load5": 1.04,
+      "load15": 1.52,
+      "running": "1/1383",
+      "t": "2026-09-26T00:01:18"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.54,
+      "load5": 1.47,
+      "load15": 1.63,
+      "running": "2/1450",
+      "t": "2026-09-26T00:02:45"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.7,
+      "load5": 1.54,
+      "load15": 1.65,
+      "running": "1/1444",
+      "t": "2026-09-26T00:02:51"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.64,
+      "load5": 1.55,
+      "load15": 1.65,
+      "running": "2/1445",
+      "t": "2026-09-26T00:02:56"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.51,
+      "load5": 1.54,
+      "load15": 1.65,
+      "running": "1/1434",
+      "t": "2026-09-26T00:03:04"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.36,
+      "load5": 1.54,
+      "load15": 1.65,
+      "running": "2/1449",
+      "t": "2026-09-26T00:03:11"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.33,
+      "load5": 1.55,
+      "load15": 1.65,
+      "running": "1/1447",
+      "t": "2026-09-26T00:03:17"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.22,
+      "load5": 1.54,
+      "load15": 1.64,
+      "running": "1/1440",
+      "t": "2026-09-26T00:03:23"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.12,
+      "load5": 1.53,
+      "load15": 1.64,
+      "running": "2/1446",
+      "t": "2026-09-26T00:03:28"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.11,
+      "load5": 1.54,
+      "load15": 1.64,
+      "running": "3/1433",
+      "t": "2026-09-26T00:03:33"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 2.02,
+      "load5": 1.53,
+      "load15": 1.64,
+      "running": "1/1432",
+      "t": "2026-09-26T00:03:39"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.94,
+      "load5": 1.52,
+      "load15": 1.64,
+      "running": "1/1446",
+      "t": "2026-09-26T00:03:44"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.95,
+      "load5": 1.53,
+      "load15": 1.64,
+      "running": "1/1440",
+      "t": "2026-09-26T00:03:48"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.87,
+      "load5": 1.52,
+      "load15": 1.63,
+      "running": "2/1434",
+      "t": "2026-09-26T00:03:54"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.8,
+      "load5": 1.51,
+      "load15": 1.63,
+      "running": "1/1427",
+      "t": "2026-09-26T00:03:59"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.74,
+      "load5": 1.5,
+      "load15": 1.63,
+      "running": "2/1427",
+      "t": "2026-09-26T00:04:03"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.68,
+      "load5": 1.49,
+      "load15": 1.62,
+      "running": "1/1434",
+      "t": "2026-09-26T00:04:08"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.62,
+      "load5": 1.48,
+      "load15": 1.62,
+      "running": "3/1443",
+      "t": "2026-09-26T00:04:13"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.65,
+      "load5": 1.49,
+      "load15": 1.62,
+      "running": "1/1435",
+      "t": "2026-09-26T00:04:18"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.6,
+      "load5": 1.48,
+      "load15": 1.62,
+      "running": "2/1423",
+      "t": "2026-09-26T00:04:23"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.71,
+      "load5": 1.51,
+      "load15": 1.63,
+      "running": "1/1428",
+      "t": "2026-09-26T00:04:29"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.66,
+      "load5": 1.5,
+      "load15": 1.62,
+      "running": "1/1422",
+      "t": "2026-09-26T00:04:34"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.6,
+      "load5": 1.49,
+      "load15": 1.62,
+      "running": "1/1428",
+      "t": "2026-09-26T00:04:38"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.47,
+      "load5": 1.47,
+      "load15": 1.61,
+      "running": "1/1441",
+      "t": "2026-09-26T00:04:43"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.44,
+      "load5": 1.46,
+      "load15": 1.61,
+      "running": "1/1434",
+      "t": "2026-09-26T00:04:49"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.4,
+      "load5": 1.45,
+      "load15": 1.6,
+      "running": "2/1427",
+      "t": "2026-09-26T00:04:54"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.37,
+      "load5": 1.44,
+      "load15": 1.6,
+      "running": "1/1419",
+      "t": "2026-09-26T00:05:00"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.34,
+      "load5": 1.44,
+      "load15": 1.6,
+      "running": "1/1421",
+      "t": "2026-09-26T00:05:05"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.31,
+      "load5": 1.43,
+      "load15": 1.59,
+      "running": "1/1435",
+      "t": "2026-09-26T00:05:10"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.29,
+      "load5": 1.42,
+      "load15": 1.59,
+      "running": "1/1444",
+      "t": "2026-09-26T00:05:15"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.47,
+      "load5": 1.46,
+      "load15": 1.6,
+      "running": "1/1438",
+      "t": "2026-09-26T00:05:21"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.51,
+      "load5": 1.47,
+      "load15": 1.6,
+      "running": "2/1431",
+      "t": "2026-09-26T00:05:26"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.47,
+      "load5": 1.46,
+      "load15": 1.6,
+      "running": "2/1431",
+      "t": "2026-09-26T00:05:32"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.43,
+      "load5": 1.45,
+      "load15": 1.6,
+      "running": "6/1430",
+      "t": "2026-09-26T00:05:37"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.4,
+      "load5": 1.44,
+      "load15": 1.59,
+      "running": "1/1438",
+      "t": "2026-09-26T00:05:42"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.37,
+      "load5": 1.43,
+      "load15": 1.59,
+      "running": "1/1438",
+      "t": "2026-09-26T00:05:46"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.26,
+      "load5": 1.41,
+      "load15": 1.58,
+      "running": "1/1437",
+      "t": "2026-09-26T00:05:51"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.24,
+      "load5": 1.4,
+      "load15": 1.58,
+      "running": "1/1429",
+      "t": "2026-09-26T00:05:56"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.14,
+      "load5": 1.38,
+      "load15": 1.57,
+      "running": "1/1422",
+      "t": "2026-09-26T00:06:01"
+     },
+     "other_python": []
+    },
+    {
+     "quiet": true,
+     "waited_s": 0.0,
+     "loadavg": {
+      "load1": 1.14,
+      "load5": 1.38,
+      "load15": 1.57,
+      "running": "1/1415",
+      "t": "2026-09-26T00:06:06"
+     },
+     "other_python": []
+    }
+   ],
+   "parity": {
+    "queries": 40,
+    "mismatches": 0,
+    "pass": true
+   },
+   "arms": {
+    "cold_none": {
+     "n": 40,
+     "traverse_p50_ms": 1658.94,
+     "traverse_p95_ms": 2460.34,
+     "majflt_p50": 465.5,
+     "advised_bytes_mean": 0,
+     "wasted_bytes_mean": 0,
+     "plan_ms_p50": 0.0,
+     "per_query_ms": [
+      2460.34,
+      2021.53,
+      1490.49,
+      4071.55,
+      3199.2,
+      1798.69,
+      1980.45,
+      1630.87,
+      1771.9,
+      1943.38,
+      1280.22,
+      1594.83,
+      1757.41,
+      1491.08,
+      1336.48,
+      1476.22,
+      1652.02,
+      1849.06,
+      1461.12,
+      1784.26,
+      1468.06,
+      1462.95,
+      1453.68,
+      1949.18,
+      1864.77,
+      1611.31,
+      1562.21,
+      2123.86,
+      1463.01,
+      1758.98,
+      1790.44,
+      1665.85,
+      1702.18,
+      1765.13,
+      1120.52,
+      1491.37,
+      1756.84,
+      1451.24,
+      1389.34,
+      1570.22
+     ]
+    },
+    "cold_prefetch": {
+     "n": 40,
+     "traverse_p50_ms": 1590.3,
+     "traverse_p95_ms": 1911.08,
+     "majflt_p50": 447.5,
+     "advised_bytes_mean": 5871923,
+     "wasted_bytes_mean": 1590170,
+     "plan_ms_p50": 22.22,
+     "per_query_ms": [
+      1808.93,
+      1982.21,
+      1410.33,
+      1999.47,
+      1827.13,
+      1674.98,
+      1822.84,
+      1499.99,
+      1568.13,
+      1911.08,
+      1310.61,
+      1502.94,
+      1721.01,
+      1409.23,
+      1223.5,
+      1432.05,
+      1533.97,
+      1793.85,
+      1408.77,
+      1621.55,
+      1402.91,
+      1372.69,
+      1437.48,
+      1889.41,
+      1799.96,
+      1579.97,
+      1600.2,
+      1857.75,
+      1545.21,
+      1695.04,
+      1699.59,
+      1601.94,
+      1651.02,
+      1762.96,
+      1071.51,
+      1394.93,
+      1580.4,
+      1360.76,
+      1339.16,
+      1750.63
+     ]
+    },
+    "warm_none": {
+     "n": 40,
+     "traverse_p50_ms": 27.92,
+     "traverse_p95_ms": 45.55,
+     "majflt_p50": 0.0,
+     "advised_bytes_mean": 0,
+     "wasted_bytes_mean": 0,
+     "plan_ms_p50": 0.0,
+     "per_query_ms": [
+      49.44,
+      33.83,
+      25.92,
+      37.07,
+      32.2,
+      25.5,
+      32.62,
+      24.08,
+      24.99,
+      32.66,
+      19.57,
+      18.46,
+      42.27,
+      29.2,
+      30.57,
+      20.97,
+      28.45,
+      44.19,
+      20.73,
+      42.84,
+      29.6,
+      26.44,
+      17.55,
+      45.55,
+      29.92,
+      32.38,
+      16.96,
+      26.57,
+      11.9,
+      32.71,
+      27.39,
+      31.09,
+      21.32,
+      33.39,
+      11.5,
+      23.23,
+      19.85,
+      24.27,
+      14.58,
+      48.74
+     ]
+    },
+    "warm_prefetch": {
+     "n": 40,
+     "traverse_p50_ms": 35.64,
+     "traverse_p95_ms": 54.8,
+     "majflt_p50": 0.0,
+     "advised_bytes_mean": 5871923,
+     "wasted_bytes_mean": 1590170,
+     "plan_ms_p50": 22.22,
+     "per_query_ms": [
+      40.85,
+      37.37,
+      35.44,
+      46.54,
+      41.88,
+      32.0,
+      34.7,
+      29.19,
+      38.36,
+      35.84,
+      26.68,
+      19.79,
+      48.03,
+      37.88,
+      42.64,
+      33.28,
+      41.95,
+      50.01,
+      22.22,
+      58.55,
+      38.45,
+      41.9,
+      21.74,
+      58.94,
+      35.28,
+      32.23,
+      25.49,
+      36.92,
+      17.21,
+      39.27,
+      32.86,
+      35.18,
+      28.6,
+      51.4,
+      17.9,
+      37.06,
+      24.32,
+      28.63,
+      20.48,
+      54.8
+     ]
+    }
+   },
+   "eviction_summary": {
+    "n": 80,
+    "posting_lists_resident_after_max": 0
+   }
+  }
+ ]
+}

@@ -1,0 +1,641 @@
+{
+ "measurement": "M6 ingest throughput per profile (docs/delta_ingest/03_SPIKE_PLAN.md)",
+ "bar": "recorded, no bar",
+ "date": "2026-09-29",
+ "git_commit_measured_at": "aa5f8dd4cd058d88d582bad79812b26241f2211f",
+ "script": "scripts/experiments/eval_delta_ingest_m6_throughput.py",
+ "corpus": {
+  "source": "OpenAlex works snapshot partition updated_date=2026-09-15 part_0001 (downloaded by item B on 2026-09-29; read-only here)",
+  "path": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+  "bytes_gz": 359271114,
+  "slice_filter": "OpenAlexSnapshotAdapter: publication_year >= 2015 (or null) + normalize_openalex_work (abstract >= 50 chars, not xpac, valid W-id)",
+  "records_in_slice": 194931,
+  "note": "the partition yields 194,931 in-slice records, fewer than the 200k target; all of them were used"
+ },
+ "hardware": {
+  "cpu": "AMD Ryzen 7 5700X3D, 8 cores / 16 threads (torch used 8 threads)",
+  "ram_gb": 31,
+  "gpu": "NVIDIA RTX 4070 Ti SUPER 16 GB (about 1.9-2.5 GB in use by other processes before the runs)",
+  "os": "Linux 6.18 WSL2, overlay fs on local disk (/var/tmp)"
+ },
+ "method_notes": [
+  "Every stage ran as its own process with the profile's os.nice applied (laptop nice 10, desktop_gpu nice 5); laptop stages ran with CUDA_VISIBLE_DEVICES=\"\".",
+  "The host was shared with items A, C, D and B/M7 running concurrently (load average about 4-6 on 16 cores; D's full SEISMIC shard build held /tmp/sfu_seismic_build.lock). All throughput numbers are measured under that background load, not on an idle host.",
+  "adapter_to_buffer: unthrottled (profile rate_docs_per_s disabled) and without the buffer-cap mid-ingest freeze, so it is the pipeline ceiling; the laptop profile's policy throttle is 20 docs/s by definition.",
+  "Base membership used an empty base root: the served data/thinclient_index/meta.sqlite was not opened (access to it was not permitted in this session), so every record classified as new and BaseIndex.contains cost ~0.",
+  "The OpenAlexSnapshotAdapter gzip.decompress()es the whole partition into memory before yielding the first record: peak RSS 6.74 GB in adapter_to_buffer for BOTH profiles, above the laptop profile's max_rss_gb 3.0 (that guard is only checked in generation builds).",
+  "desktop_gpu encode: the TensorRT EP failed to load (onnxruntime 1.26: TensorRT libraries not found) and ORT fell back to CUDAExecutionProvider; the encoder still labels itself onnxruntime_trt_iob_fp16. The desktop_gpu docs/s is therefore ORT-CUDA fp16, not TRT. encoder_init_s includes the ORT session build.",
+  "desktop_gpu encode run starting ~2026-09-29T06:01Z (stages.encode_desktop_gpu_contended) was measured UNDER GPU CONTENTION: item A's M1 parity child (pid 2249701) was a GPU compute process for the whole run (coordinator saw 8.2 GB used, 79% util at 06:03Z). It is NOT the clean desktop_gpu figure. Its vectors were written back to the ledger (untimed) and feed the desktop_gpu generation build.",
+  "laptop encode: SpladeDocEncoder on CPU runs fp32 (model.half() only on cuda) although the class label reads pytorch_fp16. Sample = first 5,000 records of the partition in file order; their mean encoder text is 956 chars vs 529.7 for the whole 194,931 corpus, so the sample is length-biased toward slower docs and the laptop docs/s likely understates the corpus-wide rate (unquantified).",
+  "laptop generation build uses 20,000 records (the laptop flush_docs) whose SPLADE vectors came from the desktop_gpu encode (seed stage), because CPU-encoding 20k docs did not fit the time box; build cost does not depend on which device encoded the vectors.",
+  "Generation build peak RSS: peak_rss_gb_python_process (VmHWM) is the figure to use; peak_rss_gb_largest_child equals it because RUSAGE_CHILDREN counts the forked-but-not-yet-exec'd copy of the python process, so the c1a/dotvbyte child peaks are NOT separately measured.",
+  "Generation build wall_s (freeze_buffer end to end) = ledger open_generation + reading the buffered records (with vectors) back from the ledger + build_generation (generation.json seconds: meta.sqlite + tantivy sections + abstract sidecar + SEISMIC jsonl write + SEISMIC build + c1a + dotvbyte) + publish. For desktop_gpu 194,931 docs: 446.9 s wall, of which build_generation 353.3 s and SEISMIC stages 41.9 + 1.6 + 4.2 s; the remaining ~305 s of build_generation is meta/tantivy/sidecar/jsonl (not split further).",
+  "Load average during the stages ranged 4.6-10.6 (see stages.*.host.loadavg).",
+  "Generation builds ran under flock /tmp/sfu_seismic_build.lock, after item D's build released it."
+ ],
+ "summary": {
+  "adapter_to_buffer_docs_per_s": {
+   "laptop": {
+    "docs_per_s": 402.9,
+    "docs": 194931,
+    "wall_s": 483.81,
+    "status": "measured"
+   },
+   "desktop_gpu": {
+    "docs_per_s": 2560.9,
+    "docs": 194931,
+    "wall_s": 76.12,
+    "status": "measured"
+   },
+   "note": "laptop is dominated by 975 tantivy commits at ingest_batch=200 (295.4 s) and nice 10 under host load; desktop_gpu commits 98 times (15.5 s)"
+  },
+  "encode_docs_per_s": {
+   "laptop_cpu_fp32": {
+    "docs_per_s": 12.2,
+    "sample_docs": 5000,
+    "seconds": 408.57,
+    "status": "measured (length-biased sample, see method_notes)"
+   },
+   "desktop_gpu_contended": {
+    "docs_per_s": 629.7,
+    "docs": 194931,
+    "seconds": 309.55,
+    "backend": "ORT CUDAExecutionProvider fp16 (TRT EP failed to load)",
+    "status": "measured UNDER GPU CONTENTION with item A's M1 run; not the clean figure"
+   },
+   "desktop_gpu_clean": {
+    "status": "UNMEASURED: the GPU was never free of other compute processes (item A pid 2249701 until ~06:12Z, then item C eval_delta_ingest_livedocs_bitset.py pid 2294871 from ~06:18Z) before the 2026-09-29T06:48Z start cutoff"
+   }
+  },
+  "generation_build": {
+   "desktop_gpu": {
+    "docs": 194931,
+    "wall_s": 446.92,
+    "build_generation_s": 353.26,
+    "peak_rss_gb": 2.997,
+    "seismic_build_s": 41.89,
+    "c1a_s": 1.64,
+    "dotvbyte_s": 4.23,
+    "generation_dir_bytes": 1089905666,
+    "status": "measured"
+   },
+   "laptop": {
+    "docs": 20000,
+    "wall_s": 18.62,
+    "build_generation_s": 16.88,
+    "peak_rss_gb": 0.531,
+    "seismic_build_s": 2.94,
+    "c1a_s": 0.54,
+    "dotvbyte_s": 0.92,
+    "generation_dir_bytes": 170391324,
+    "status": "measured (20k = laptop flush_docs; vectors from the GPU encode)"
+   }
+  },
+  "gpu_memory_peak_desktop_gpu": {
+   "whole_gpu_peak_mib": 8328,
+   "baseline_mib": 2522,
+   "peak_minus_baseline_mib": 5806,
+   "torch_cuda_max_memory_allocated_mib": 2862.2,
+   "status": "measured under contention: the whole-GPU delta includes item A's concurrent process, so the encoder's own peak is only bounded above by 5806 MiB; clean figure UNMEASURED"
+  },
+  "peak_rss_adapter_to_buffer_gb": {
+   "laptop": 6.74,
+   "desktop_gpu": 6.737,
+   "cause": "whole-partition gzip.decompress in OpenAlexSnapshotAdapter"
+  },
+  "ratios_desktop_gpu_over_laptop": {
+   "adapter_to_buffer": 6.4,
+   "encode": "51.6 (contended GPU vs biased CPU sample; indicative only)"
+  }
+ },
+ "unmeasured": [
+  "desktop_gpu clean (uncontended) encode docs/s and GPU memory peak: GPU never cleared before the cutoff",
+  "laptop CPU encode on the full corpus (only a 5,000-doc sample; no extrapolation made)",
+  "laptop generation build at 194,931 docs (built at its 20k flush size only)",
+  "TensorRT-EP encode throughput (TRT libraries not loadable by onnxruntime 1.26 in this venv)",
+  "per-child peak RSS of c1a_mmap_index / convert_f16_to_dotvbyte"
+ ],
+ "est_extrapolations": {},
+ "stages": {
+  "build_desktop_gpu": {
+   "stage": "generation_build",
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "buffer_docs": 194931,
+   "wall_s": 446.92,
+   "error": null,
+   "peak_rss_gb_python_process": 2.997,
+   "peak_rss_gb_largest_child": 2.997,
+   "rss_note": "python process VmHWM covers meta+tantivy+in-process SEISMIC build; largest child = c1a_mmap_index / convert_f16_to_dotvbyte",
+   "generation": 1,
+   "generation_json": {
+    "seconds": 353.26,
+    "docs": 194931,
+    "docs_with_vectors": 194931,
+    "sections": {
+     "cs_math__archive": {
+      "docs": 17,
+      "bmp_shards": 0,
+      "abstracts_stored": 17,
+      "live_bytes": 52768,
+      "hot": true
+     },
+     "cs_math__recent": {
+      "docs": 15848,
+      "bmp_shards": 0,
+      "abstracts_stored": 15848,
+      "live_bytes": 6861565,
+      "hot": true
+     },
+     "med_bio__archive": {
+      "docs": 12,
+      "bmp_shards": 0,
+      "abstracts_stored": 12,
+      "live_bytes": 48268,
+      "hot": true
+     },
+     "med_bio__recent": {
+      "docs": 14788,
+      "bmp_shards": 0,
+      "abstracts_stored": 14788,
+      "live_bytes": 10906370,
+      "hot": true
+     },
+     "other__archive": {
+      "docs": 1504,
+      "bmp_shards": 0,
+      "abstracts_stored": 1504,
+      "live_bytes": 284543,
+      "hot": true
+     },
+     "other__recent": {
+      "docs": 98225,
+      "bmp_shards": 0,
+      "abstracts_stored": 98225,
+      "live_bytes": 20497924,
+      "hot": true
+     },
+     "phys_eng__archive": {
+      "docs": 5,
+      "bmp_shards": 0,
+      "abstracts_stored": 5,
+      "live_bytes": 44198,
+      "hot": true
+     },
+     "phys_eng__recent": {
+      "docs": 49833,
+      "bmp_shards": 0,
+      "abstracts_stored": 49833,
+      "live_bytes": 10858479,
+      "hot": true
+     },
+     "social_sciences__archive": {
+      "docs": 30,
+      "bmp_shards": 0,
+      "abstracts_stored": 30,
+      "live_bytes": 63747,
+      "hot": true
+     },
+     "social_sciences__recent": {
+      "docs": 14669,
+      "bmp_shards": 0,
+      "abstracts_stored": 14669,
+      "live_bytes": 14254640,
+      "hot": true
+     }
+    },
+    "seismic": {
+     "jsonl": "/var/tmp/sfu_delta_F_20260929/root/desktop_gpu/g0001.building/seismic/delta_g0001.jsonl",
+     "stock": "/var/tmp/sfu_delta_F_20260929/root/desktop_gpu/g0001.building/seismic/delta_g0001.index.seismic",
+     "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 41.89,
+       "docs": 194931,
+       "dim": 25095,
+       "nnz": 16311058
+      },
+      "mmap": {
+       "seconds": 1.64
+      },
+      "dotvbyte": {
+       "seconds": 4.23
+      }
+     },
+     "status": "served"
+    }
+   },
+   "generation_dir_bytes": 1089905666,
+   "seismic_dir_bytes": {
+    "delta_g0001.dotvbyte.v2.mmap": 228542947,
+    "delta_g0001.index.seismic": 242825210,
+    "delta_g0001.mmap": 256504902,
+    "delta_g0001.jsonl": 270513796
+   },
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     8.16943359375,
+     7.46484375,
+     7.45556640625
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T06:36:08Z",
+    "CUDA_VISIBLE_DEVICES": null,
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "build_laptop": {
+   "stage": "generation_build",
+   "profile": {
+    "name": "laptop",
+    "encode_backend": "pytorch",
+    "encode_device": "cpu",
+    "encode_batch": 8,
+    "ingest_batch": 200,
+    "rate_docs_per_s": 20.0,
+    "flush_docs": 20000,
+    "flush_bytes": 268435456,
+    "buffer_max_docs": 20000,
+    "max_rss_gb": 3.0,
+    "seismic_threads": 2,
+    "parts_per_run": 1,
+    "nice": 10
+   },
+   "buffer_docs": 20000,
+   "wall_s": 18.62,
+   "error": null,
+   "peak_rss_gb_python_process": 0.531,
+   "peak_rss_gb_largest_child": 0.531,
+   "rss_note": "python process VmHWM covers meta+tantivy+in-process SEISMIC build; largest child = c1a_mmap_index / convert_f16_to_dotvbyte",
+   "generation": 1,
+   "generation_json": {
+    "seconds": 16.88,
+    "docs": 20000,
+    "docs_with_vectors": 20000,
+    "sections": {
+     "cs_math__archive": {
+      "docs": 1,
+      "bmp_shards": 0,
+      "abstracts_stored": 1,
+      "live_bytes": 31666,
+      "hot": true
+     },
+     "cs_math__recent": {
+      "docs": 1601,
+      "bmp_shards": 0,
+      "abstracts_stored": 1601,
+      "live_bytes": 908450,
+      "hot": true
+     },
+     "med_bio__recent": {
+      "docs": 1308,
+      "bmp_shards": 0,
+      "abstracts_stored": 1308,
+      "live_bytes": 1240213,
+      "hot": true
+     },
+     "other__archive": {
+      "docs": 149,
+      "bmp_shards": 0,
+      "abstracts_stored": 149,
+      "live_bytes": 47417,
+      "hot": true
+     },
+     "other__recent": {
+      "docs": 10352,
+      "bmp_shards": 0,
+      "abstracts_stored": 10352,
+      "live_bytes": 2320642,
+      "hot": true
+     },
+     "phys_eng__archive": {
+      "docs": 1,
+      "bmp_shards": 0,
+      "abstracts_stored": 1,
+      "live_bytes": 29096,
+      "hot": true
+     },
+     "phys_eng__recent": {
+      "docs": 5313,
+      "bmp_shards": 0,
+      "abstracts_stored": 5313,
+      "live_bytes": 1342526,
+      "hot": true
+     },
+     "social_sciences__archive": {
+      "docs": 5,
+      "bmp_shards": 0,
+      "abstracts_stored": 5,
+      "live_bytes": 41173,
+      "hot": true
+     },
+     "social_sciences__recent": {
+      "docs": 1270,
+      "bmp_shards": 0,
+      "abstracts_stored": 1270,
+      "live_bytes": 1594598,
+      "hot": true
+     }
+    },
+    "seismic": {
+     "jsonl": "/var/tmp/sfu_delta_F_20260929/root/laptop_build/g0001.building/seismic/delta_g0001.jsonl",
+     "stock": "/var/tmp/sfu_delta_F_20260929/root/laptop_build/g0001.building/seismic/delta_g0001.index.seismic",
+     "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+     "format": "dotvbyte_fixedu8_v2",
+     "stages": {
+      "build": {
+       "seconds": 2.94,
+       "docs": 20000,
+       "dim": 17871,
+       "nnz": 1670237
+      },
+      "mmap": {
+       "seconds": 0.54
+      },
+      "dotvbyte": {
+       "seconds": 0.92
+      }
+     },
+     "status": "served"
+    }
+   },
+   "generation_dir_bytes": 170391324,
+   "seismic_dir_bytes": {
+    "delta_g0001.dotvbyte.v2.mmap": 45480399,
+    "delta_g0001.index.seismic": 38543449,
+    "delta_g0001.mmap": 48287278,
+    "delta_g0001.jsonl": 27679549
+   },
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     8.00341796875,
+     7.494140625,
+     7.46630859375
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T06:36:28Z",
+    "CUDA_VISIBLE_DEVICES": "",
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "encode_desktop_gpu_contended": {
+   "stage": "encode",
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "sample_docs": 194931,
+   "torch_threads": 8,
+   "cuda_available": true,
+   "mean_encoder_text_chars": 529.7,
+   "encoder_init_s": 72.47,
+   "encoder_class": "SpladeDocEncoderTRT",
+   "encoder_backend": "onnxruntime_trt_iob_fp16",
+   "encoder_device": "cuda",
+   "warmup_first_batch_s": 0.52,
+   "encoded_docs": 194931,
+   "encode_seconds": 309.55,
+   "docs_per_s": 629.7,
+   "mean_nnz": 83.7,
+   "stopped_by_max_seconds": false,
+   "torch_cuda_max_memory_allocated_mib": 2862.2,
+   "gpu_memory": {
+    "baseline_mib": [
+     2522
+    ],
+    "peak_mib": [
+     8328
+    ],
+    "peak_minus_baseline_mib": [
+     5806
+    ],
+    "method": "nvidia-smi memory.used polled every 0.25 s (whole GPU; other processes included)"
+   },
+   "peak_rss_gb": 1.999,
+   "write_back": {
+    "rows": 194931,
+    "seconds_untimed_in_docs_per_s": 117.98
+   },
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     4.78857421875,
+     6.0537109375,
+     5.76953125
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T06:09:33Z",
+    "CUDA_VISIBLE_DEVICES": null,
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "encode_laptop": {
+   "stage": "encode",
+   "profile": {
+    "name": "laptop",
+    "encode_backend": "pytorch",
+    "encode_device": "cpu",
+    "encode_batch": 8,
+    "ingest_batch": 200,
+    "rate_docs_per_s": 20.0,
+    "flush_docs": 20000,
+    "flush_bytes": 268435456,
+    "buffer_max_docs": 20000,
+    "max_rss_gb": 3.0,
+    "seismic_threads": 2,
+    "parts_per_run": 1,
+    "nice": 10
+   },
+   "sample_docs": 5000,
+   "torch_threads": 8,
+   "cuda_available": false,
+   "mean_encoder_text_chars": 956.1,
+   "encoder_init_s": 90.84,
+   "encoder_class": "SpladeDocEncoder",
+   "encoder_backend": "pytorch_fp16",
+   "encoder_device": "cpu",
+   "ort_providers_in_use": null,
+   "gpu_compute_apps_at_start": null,
+   "warmup_first_batch_s": 0.8,
+   "encoded_docs": 5000,
+   "encode_seconds": 408.57,
+   "docs_per_s": 12.2,
+   "mean_nnz": 121.1,
+   "stopped_by_max_seconds": false,
+   "peak_rss_gb": 1.806,
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     10.62060546875,
+     9.97802734375,
+     7.78125
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T06:20:42Z",
+    "CUDA_VISIBLE_DEVICES": "",
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "ingest_desktop_gpu": {
+   "stage": "adapter_to_buffer",
+   "profile": {
+    "name": "desktop_gpu",
+    "encode_backend": "auto",
+    "encode_device": "auto",
+    "encode_batch": 64,
+    "ingest_batch": 2000,
+    "rate_docs_per_s": 0.0,
+    "flush_docs": 500000,
+    "flush_bytes": 2147483648,
+    "buffer_max_docs": 100000,
+    "max_rss_gb": 12.0,
+    "seismic_threads": 8,
+    "parts_per_run": 4,
+    "nice": 5
+   },
+   "corpus": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+   "corpus_bytes": 359271114,
+   "limit": 200000,
+   "min_year": 2015,
+   "counts": {
+    "seen": 194931,
+    "new": 194931,
+    "updated": 0,
+    "unchanged": 0,
+    "batches": 98
+   },
+   "wall_s": 76.12,
+   "docs_per_s": 2560.9,
+   "time_to_first_record_s": 8.37,
+   "stage_seconds": {
+    "adapter": 40.61,
+    "classify_hash": 2.2,
+    "ledger_stage": 16.35,
+    "tantivy_upsert": 1.04,
+    "tantivy_commit": 15.52,
+    "save_state": 0.05
+   },
+   "adapter_docs_per_s": 4800.6,
+   "buffer_side_docs_per_s": 5489.0,
+   "peak_rss_gb": 6.737,
+   "throttle": "rate_docs_per_s disabled for the measurement (profile value 0.0)",
+   "buffer_cap_freeze": "disabled (profile buffer_max_docs 100000); generation build measured separately",
+   "base_membership": "empty base root (served meta.sqlite not opened): every record classifies new",
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     4.79052734375,
+     7.162109375,
+     5.6708984375
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T06:00:50Z",
+    "CUDA_VISIBLE_DEVICES": null,
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "ingest_laptop": {
+   "stage": "adapter_to_buffer",
+   "profile": {
+    "name": "laptop",
+    "encode_backend": "pytorch",
+    "encode_device": "cpu",
+    "encode_batch": 8,
+    "ingest_batch": 200,
+    "rate_docs_per_s": 20.0,
+    "flush_docs": 20000,
+    "flush_bytes": 268435456,
+    "buffer_max_docs": 20000,
+    "max_rss_gb": 3.0,
+    "seismic_threads": 2,
+    "parts_per_run": 1,
+    "nice": 10
+   },
+   "corpus": "/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz",
+   "corpus_bytes": 359271114,
+   "limit": 200000,
+   "min_year": 2015,
+   "counts": {
+    "seen": 194931,
+    "new": 194931,
+    "updated": 0,
+    "unchanged": 0,
+    "batches": 975
+   },
+   "wall_s": 483.81,
+   "docs_per_s": 402.9,
+   "time_to_first_record_s": 9.96,
+   "stage_seconds": {
+    "adapter": 130.12,
+    "classify_hash": 2.83,
+    "ledger_stage": 41.44,
+    "tantivy_upsert": 1.15,
+    "tantivy_commit": 295.4,
+    "save_state": 12.25
+   },
+   "adapter_docs_per_s": 1498.0,
+   "buffer_side_docs_per_s": 551.1,
+   "peak_rss_gb": 6.74,
+   "throttle": "rate_docs_per_s disabled for the measurement (profile value 20.0)",
+   "buffer_cap_freeze": "disabled (profile buffer_max_docs 20000); generation build measured separately",
+   "base_membership": "empty base root (served meta.sqlite not opened): every record classifies new",
+   "host": {
+    "hostname": "<host>",
+    "cpu_count": 16,
+    "loadavg": [
+     4.60693359375,
+     7.89794921875,
+     5.74072265625
+    ],
+    "python": "3.11.2",
+    "utc": "2026-09-29T05:59:26Z",
+    "CUDA_VISIBLE_DEVICES": "",
+    "cpu_model": "AMD Ryzen 7 5700X3D 8-Core Processor",
+    "mem_total_gb": 31.3
+   }
+  },
+  "seed_laptop_build": {
+   "stage": "seed",
+   "src_root": "/var/tmp/sfu_delta_F_20260929/root/desktop_gpu",
+   "root": "/var/tmp/sfu_delta_F_20260929/root/laptop_build",
+   "records_with_vectors": 20000
+  }
+ }
+}

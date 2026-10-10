@@ -43,7 +43,6 @@ SOFT_LIVE_SUBJECTS = {
     "Anthropology",
 }
 
-# pragmatic heuristic, NOT a classifier: it will miss paraphrases and only covers
 _SUBJECT_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("Theatre", ("theatre", "theater", "playwright", "stagecraft", "dramaturgy", "scenography")),
     ("Music", ("music", "musical", "composer", "symphony", "orchestra", "string quartet", "opera", "ethnomusicology")),
@@ -180,7 +179,7 @@ class FederatedSearchRouter:
             filters: OpenAlex-style filter dict (e.g. from_publication_date, type)
             subject_hint: detected SFU subject area for the query (e.g. "Theatre").
                 Empty string means no subject was detected and subject-aware rules
-                are skipped. NOTE: no caller currently passes this — see module note.
+                are skipped. tools.py passes ``detect_subject(query)`` here.
             prefer_local: when True, overrides the SOFT_LIVE_SUBJECTS preference and
                 keeps soft-live subjects on the local route. Has no effect on the
                 hard ALWAYS_LIVE_SUBJECTS list (those have no usable local data).

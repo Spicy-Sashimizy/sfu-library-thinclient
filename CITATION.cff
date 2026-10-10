@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software or its measurements, please cite it as below."
+title: "sfu-library-thinclient (Duck Library): local-first hybrid academic search over 150M documents"
+type: software
+authors:
+  - family-names: Chan
+    given-names: Gordon
+repository-code: "https://github.com/Spicy-Sashimizy/sfu-library-thinclient"
+date-released: "2026-10-10"
+version: "2026-10-10"
+abstract: >-
+  Research testbed for a no-cluster academic search stack: tantivy BM25F,
+  SPLADE served by SEISMIC from immutable mmap shards, optional dense leg,
+  RRF fusion and cross-encoder rerank over a 150-million-document OpenAlex
+  corpus, exposed as MCP tools and a web GUI, with every design decision and
+  measurement recorded in the repository's docs tree.
+keywords:
+  - information retrieval
+  - learned sparse retrieval
+  - SPLADE
+  - SEISMIC
+  - BM25F
+  - hybrid search
+  - Model Context Protocol

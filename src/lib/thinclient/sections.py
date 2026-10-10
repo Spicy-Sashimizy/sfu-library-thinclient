@@ -46,11 +46,6 @@ def subsection_name(base: str, year: int | None) -> str:
     return f"{base}__{era_of(year)}"
 
 
-def base_section(name: str) -> str:
-    """'social_sciences__recent' -> 'social_sciences' (era-less names pass through)."""
-    return name.split("__", 1)[0]
-
-
 SUBSECTION_NAMES: list[str] = [f"{b}__{e}" for b in SECTION_NAMES for e in ERAS]
 
 PERSONAS: dict[str, list[str]] = {

@@ -1,6 +1,6 @@
 # sfu-library-portable — project instructions
 
-**What this project is:** the portable/handout client for the SFU Library
+**What this project is:** the portable/handout client for the Duck Library
 thin-client search stack — Rust orchestration (RRF + leg dispatch +
 hydration) over the same immutable artifacts the research container serves,
 packaged behind a Tauri shell into per-OS installers. Targets:

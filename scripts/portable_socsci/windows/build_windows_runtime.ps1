@@ -94,4 +94,4 @@ if ($LASTEXITCODE -ne 0) { throw "import verification failed" }
 
 Write-Host ""
 Write-Host "[build] DONE. The drive is now self-contained." -ForegroundColor Green
-Write-Host "[build] Double-click START.bat to launch the SFU Library." -ForegroundColor Green
+Write-Host "[build] Double-click START.bat to launch the Duck Library." -ForegroundColor Green

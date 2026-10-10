@@ -631,7 +631,6 @@ class _SeismicBackendBase:
         self._shard_mmap_dirs = []
         self._shard_faults: list[_ShardFaultTracker] = []
         self._shard_names: list[str] = []
-        self._shard_paths = list(index_paths)
         self._fault_boundary = _shard_fault_boundary_on()
         for i, p in enumerate(index_paths):
             if self._fault_boundary:
@@ -1122,7 +1121,6 @@ class _SeismicBackendBase:
         timeout = _shard_search_timeout_s()
 
         def _guarded(idx):
-            pos = id(idx)
             tr = None
             for i, s in enumerate(self.shards):
                 if i < len(self._shard_faults) and s is idx:

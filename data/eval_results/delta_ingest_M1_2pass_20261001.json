@@ -1,0 +1,951 @@
+{
+ "what": "Delta-ingest M1 rerun: gate-off parity, 2 passes per arm, on current code",
+ "bar_preregistered": "03_SPIKE_PLAN.md M1 (frozen 2026-09-29): fused + final top-10, 120 topics, SFU_DELTA_ROOT unset vs set with an EMPTY delta root -> byte-identical 120/120; fixed inputs: 2 passes",
+ "verdict": "PASS (120 topics x 2 passes, byte-identical)",
+ "verdict_basis": "identity of full fused list (50) and final top-10 per topic (json.dumps sort_keys, every field incl. scores) per pass; fused top-10 also reported. Health of every process asserted before measuring; rows with a failure-signature warning flagged.",
+ "date": "2026-10-01",
+ "git_commit_measured": "d985b70d9b6307333d4e6eb9a611cfa812ce9dd2",
+ "script": "scripts/experiments/eval_delta_ingest_m1_2pass.py",
+ "topics_file": "data/eval_results/dense_ablation_qrels_20260817.json",
+ "query_field": "natural",
+ "n_topics": 120,
+ "timings_valid": false,
+ "timings_note": "INVALID: arms ran concurrently (cores 0-3 / 4-7) under a SHARED latency lock while Agent B built SEISMIC shards on cores 8-15; latency fields are not measurements",
+ "reference_arm": "gate_off (SFU_DELTA_ROOT absent) at the same commit and same snapshot as empty_root",
+ "pairs_gate_off_vs_empty_root": {
+  "pass1": {
+   "n": 120,
+   "n_a": 120,
+   "n_b": 120,
+   "fused_identical": 120,
+   "fused_top10_identical": 120,
+   "final_identical": 120,
+   "fused_ids_identical": 120,
+   "final_ids_identical": 120,
+   "differing_topics": [],
+   "first_differing": null
+  },
+  "pass2": {
+   "n": 120,
+   "n_a": 120,
+   "n_b": 120,
+   "fused_identical": 120,
+   "fused_top10_identical": 120,
+   "final_identical": 120,
+   "fused_ids_identical": 120,
+   "final_ids_identical": 120,
+   "differing_topics": [],
+   "first_differing": null
+  }
+ },
+ "pass_to_pass_self_identity": {
+  "gate_off": {
+   "n": 120,
+   "n_a": 120,
+   "n_b": 120,
+   "fused_identical": 120,
+   "fused_top10_identical": 120,
+   "final_identical": 120,
+   "fused_ids_identical": 120,
+   "final_ids_identical": 120,
+   "differing_topics": [],
+   "first_differing": null
+  },
+  "empty_root": {
+   "n": 120,
+   "n_a": 120,
+   "n_b": 120,
+   "fused_identical": 120,
+   "fused_top10_identical": 120,
+   "final_identical": 120,
+   "fused_ids_identical": 120,
+   "final_ids_identical": 120,
+   "differing_topics": [],
+   "first_differing": null
+  }
+ },
+ "full_fused_list_and_final_identical_per_pass": {
+  "pass1": true,
+  "pass2": true
+ },
+ "fused_top10_and_final_identical_per_pass": {
+  "pass1": true,
+  "pass2": true
+ },
+ "health": {
+  "gate_off": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "SequentialSeismicBackend",
+   "n_shards": 8,
+   "seismic_manifest": "/home/vscode/work/delta_ingest/m1/code_d985b70d/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+   "warnings_at_load": []
+  },
+  "empty_root": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "SequentialSeismicBackend",
+   "n_shards": 8,
+   "seismic_manifest": "/home/vscode/work/delta_ingest/m1/code_d985b70d/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+   "delta_layer": {
+    "root": "/home/vscode/work/delta_ingest/m1/empty_root_dir",
+    "stamp": null,
+    "generations": 0,
+    "deleted": 0,
+    "superseded": 0,
+    "shard_manifest": null,
+    "buffer_size": 0,
+    "section_dirs": [],
+    "livedocs": false
+   },
+   "warnings_at_load": []
+  }
+ },
+ "degraded_rows": {
+  "gate_off": 0,
+  "empty_root": 0
+ },
+ "log_scan": {
+  "gate_off": {
+   "Cannot allocate memory": 0,
+   "Errno 12": 0,
+   "CrossEncoder unavailable": 0,
+   "Failed to load embedding model": 0,
+   "Reranker failed": 0,
+   "Traceback": 0,
+   "falling back to BM25F": 0,
+   "SPLADE leg failed": 0,
+   "SPLADE encoder failed": 0,
+   "delta layer off": 0,
+   "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+   "buffer skipped": 0,
+   "thinclient index unavailable": 0
+  },
+  "empty_root": {
+   "Cannot allocate memory": 0,
+   "Errno 12": 0,
+   "CrossEncoder unavailable": 0,
+   "Failed to load embedding model": 0,
+   "Reranker failed": 0,
+   "Traceback": 0,
+   "falling back to BM25F": 0,
+   "SPLADE leg failed": 0,
+   "SPLADE encoder failed": 0,
+   "delta layer off": 0,
+   "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+   "buffer skipped": 0,
+   "thinclient index unavailable": 0
+  }
+ },
+ "cross_commit_informational_vs_aa0fc405_gate_off_pass1": {
+  "n": 120,
+  "n_a": 120,
+  "n_b": 120,
+  "fused_identical": 119,
+  "fused_top10_identical": 119,
+  "final_identical": 119,
+  "fused_ids_identical": 119,
+  "final_ids_identical": 119,
+  "differing_topics": [
+   "psychological safety team performance speaking up organizations"
+  ],
+  "first_differing": {
+   "topic": "psychological safety team performance speaking up organizations",
+   "query": "How does psychological safety affect whether people speak up and how teams perform?",
+   "fused_identical": false,
+   "final_identical": false,
+   "fused_ids_identical": false,
+   "final_ids_identical": false,
+   "a": {
+    "fused_ids": [
+     "W3134775844",
+     "W6967294949",
+     "W4401820014",
+     "W6930141930",
+     "W2965019228",
+     "W7037969218",
+     "W3134573035",
+     "W4292677557",
+     "W7131352662",
+     "W2606127012",
+     "W6907736719",
+     "W6906241991",
+     "W4406790912",
+     "W6962634174",
+     "W3208499817",
+     "W4401529470",
+     "W4413834851",
+     "W3081811730",
+     "W6967958032",
+     "W6926444472",
+     "W6968368754",
+     "W4288080625",
+     "W7083693540",
+     "W6907795383",
+     "W4410097127",
+     "W4417399863",
+     "W3011447305",
+     "W4404903678",
+     "W4229062852",
+     "W6930356483",
+     "W4411592397",
+     "W4410119250",
+     "W6996086551",
+     "W2003538811",
+     "W4414556885",
+     "W3184669168",
+     "W4410240488",
+     "W6886002593",
+     "W7078548158",
+     "W4378575711",
+     "W7117088743",
+     "W2807336453",
+     "W2927328992",
+     "W3013005930",
+     "W7029022356",
+     "W4404294511",
+     "W2767824565",
+     "W4366084727",
+     "W6982271741",
+     "W7024061872"
+    ],
+    "final_ids": [
+     "W4410097127",
+     "W4413834851",
+     "W4366084727",
+     "W4410119250",
+     "W4417399863",
+     "W4410240488",
+     "W3134573035",
+     "W4401820014",
+     "W4292677557",
+     "W7083693540"
+    ],
+    "fused_sha256": "369a4da8941a3f78c9df88de4711efa05c42fc6dfd415940713a9377b58c89a4",
+    "final": [
+     {
+      "abstract": "Background: The key to success is to banish fear and create a thriving environment that allows people to speak their minds without any fear, an environment that allows people to be vulnerable. This environment, known as psychological safety, when present at the workplace, makes people feel comfortable with them, ask bold questions, share concerns, and ask for help, resulting in high team performance and lower team conflicts. A lack of psychological safety at work impacts the team’s performance and the organization’s bottom line. Aims: This research shows the effect of psychological safety on team learning and team efficacy. The study is done on regular employees and finds the relation of aforementioned. Psychological safety, too, is critical for a team's success, which is the backbone of today's businesses. To improve workplace psychological safety, leaders must first go within to comprehend and incorporate their feelings and concerns and then look outside to help others. Since the research only focuses on team learning and team efficacy, it can further be researched on Team Leadership, Mentoring/coaching. Objectives: The objective of the study was to investigate whether there is a correlation between learning behaviours, Team Efficacy, and Team Productivity. And also, to study the relationship between these variables and psychological safety. Team psychological safety refers to the shared belief among team members that they can take interpersonal risks without fear of negative consequences. This study also examined the impact of team psychological safety on team efficacy. Methods: The study was conducted with a sample size of 101 respondents. Snowball and convenience sampling were found appropriate for this study as the study focused on team efficacy and learning behavior. Regression analysis was used to study the impact of Team psychological safety on learning behavior and team efficacy and test the hypothesis. Results: The result of this study was that team dynamics are significantly impacted by psychological safety, team learning, and team efficacy in teams and, thereby productivity. It was also found that the Team's psychological safety is favourably correlated with organizational work teams. The Team's effectiveness is positively impacted by team psychological safety. Conclusion: This study contributes significantly to the literature on the concept of psychological safety. Adding significant value to Leading management thinkers, consultants, and psychologists. The research concludes that team dynamics are significantly impacted by psychological safety, team learning, team efficacy, and productivity in teams. Moreover, this study aimed to promote psychological safety, which is also essential for team success and is the foundation of today's enterprises.",
+      "date": "2023",
+      "doi": "https://doi.org/10.2174/18743501-v16-230727-2023-36",
+      "is_oa": false,
+      "openalex_id": "W4410097127",
+      "publication_year": 2023,
+      "score": 0.014084507042253521,
+      "source": "thinclient_rrf",
+      "title": "The Power of Psychological Safety: Investigating its Impact on Team Learning, Team Efficacy, and Team Productivity",
+      "type": "article",
+      "year": 2023
+     },
+     {
+      "abstract": "Introduction: Team psychological safety is a shared belief by team members that it is acceptable to explore possibilities, express ideas and concerns openly, speak up with questions, and share mistakes, without fear of negative consequences. Psychological safety fosters work environments that enhance team performance, innovation, creativity, resilience, and learning. From 2020 to 2022, we observed hospital-wide decreases in safety culture engagement and event reporting. We aimed to enhance staff competency in using error prevention tools through targeted education at onboarding for employees and leaders, emphasizing foundational psychological safety principles. Methods: In early 2023, our patient safety leadership team integrated the 4 stages of psychological safety—inclusion, learner, contributor, and challenger safety1—into staff and physician safety training and new employee orientation. This training encompasses a structured definition of each stage of psychological safety, the provision of illustrative examples, the incorporation of reflective questions, and the facilitation of robust and vulnerable discussions regarding participants’ experiences with the presence or absence of psychological safety in their work environments. We taught caregivers to achieve challenger safety, recognizing that this takes time and leader support to navigate through the stages. Training included teaching leaders about their responsibility to model and to teach key behaviors to promote a psychologically safe culture. One year after initiation of the revised comprehensive training program, we sought insight into the outcomes of training, specifically the integration of psychological safety behaviors by caregivers. We selected 1 medical nursing unit as a pilot unit for data collection and developed a qualitative once-a-quarter survey to assess team perceptions and levels of psychological safety. Participants were presented with 2 open-ended prompts as part of the survey: (1) “How do you personally define psychological safety?” (refer to Table 1), and (2) “Please describe a recent safety-related event or experience that involved psychological safety” (refer to Table 2). Table 1. - Personal Definition of Psychological Safety Role How Do You Personally Define Psychological Safety? Nurse Creating a safe environment where staff feel comfortable to ask a question and speak up Patient care technician Feeling comfortable and safe and unjudged by actions Nurse Workplace safety for all staff, not just nursing. Giving all who work at PCH to feel safe, appreciated, and valued Patient care technician Feeling safe to speak up, feeling included, knowing you can learn on the job/from mistakes Nurse Being confident in speaking up about concerns or questions I have without fear of being looked down upon Patient care technician Can get help from others without judgement. Feel supported by those around me Nurse Psychological Safety is being in a safe place to speak your mind/bring up questions that you have without fear of persecution. Being comfortable questioning anyone, no matter their role Patient care technician It means feeling safe speaking up about patient-safety and my own safety and needs and knowing I will be taken seriously and receive appropriate responses Patient care technician My mental health is not put in danger PCH, Primary Children's Hospital. Table 2. - Safety Event or Experience Involving Psychological Safety Theme Please Describe a Recent Safety-related Event or Experience that Involved Psychological Safety Reporting safety concerns “When I was on a 1:1, the grandma was verbally assaulting staff. The RN, didn’t hesitate to get the teams and security involved.”“Physician having pushback with calling BERT. I continued to say how important it was before it escalated more- patient escalated during BERT” Comfort in speaking up “I spoke up for my patient with a chest tube that I was concerned about, the team responded and reacted appropriately which allowed me to feel comfortable raising other concerns or questions.”“I was feeling very stressed when I admitted a patient from the PICU that was very complex and needed all of my time/attention, when I finally spoke up and asked for help, I was able to feel more comfortable in the tasks that I needed to get done. I want to be a safe person for others to turn to when they need help.”“ I feel like this last year I was able to feel more confident speaking up and advocating for my patients.” Team support and collaboration “I was working with a new tech. I became frustrated with them. So, I purposely showed them how to chart I/O’s. In the end, it was a positive experience.”“One moment I had in the last few months was asking a provider about a patient who was experiencing delirium. I asked further questions because it was the most severe form of delirium I had seen. The Provider took time to sit with me and talk about it and explained that since the patient had lost their vision, that escalated their delirium. This impacted me and helped me learn. I can ask providers about diagnoses more often which helps everyone learning. Mental health and well-being “I’ve been having problems with my mental health lately and my managers, colleagues, and HR have been working with me very well to help me navigate this new obstacle.”“I feel as though this last year has been hard on my mental health while being here. I try to be as transparent in the moment as possible.” Advocacy for patients “One of my patients was getting the wrong feeds, I felt comfortable enough to bring up to the nurse and get it fixed.”“I had a seizure patient that didn’t have a rescue med ordered. When questioning the resident, I was told it was not necessary because ‘they’ve never needed one’. Fortunately, I pushed harder and talked with the senior who agreed it was absolutely needed for patient safety.” Results: Since starting the revised safety training in November 2023, more than 90% of new staff (n = 2000) have been trained in person. Additionally, the revised safety program has been included in the ongoing training of all department leaders. Within the pilot unit, nursing staff and patient care technicians (n = 102) reported an increased awareness of both the presence and absence of psychological safety across multidisciplinary teams. We identified significant self-reported improvements in 4 domains. These included (1) reduced anxiety and fear of failure; (2) overall job satisfaction and better relationships with colleagues; (3) enhanced innovation and collaboration among team members; and (4) improved staff retention. Conclusions: Findings suggest that the integration of psychological safety principles into new hire safety training has positively influenced workplace culture, fostering a more engaged, innovative, and resilient workforce. This initiative is still in its early phases, with limitations in available quantitative data. Further research is necessary to assess long-term effects of foundational psychological safety training on patient safety outcomes.",
+      "date": "2025",
+      "doi": "https://doi.org/10.1097/pq9.0000000000000834",
+      "is_oa": false,
+      "openalex_id": "W4413834851",
+      "publication_year": 2025,
+      "score": 0.014925373134328358,
+      "source": "thinclient_rrf",
+      "title": "“Just” Speaking Up Requires Increasing Psychological Safety",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2023",
+      "doi": "https://doi.org/10.3389/fpsyg.2023.1129359",
+      "is_oa": false,
+      "openalex_id": "W4366084727",
+      "publication_year": 2023,
+      "score": 0.011904761904761904,
+      "source": "thinclient_rrf",
+      "title": "I like what you are saying, but only if i feel safe: Psychological safety moderates the relationship between voice and perceived contribution to healthcare team effectiveness",
+      "type": "article",
+      "year": 2023
+     },
+     {
+      "abstract": "This article examines how leaders can foster psychological safety—defined as \"a shared belief that the team is safe for interpersonal risk taking\"—to encourage authentic employee communication. It explores barriers to psychological safety including unclear expectations, competitive environments, leadership trust issues, and problematic group dynamics, while offering evidence-based strategies for improvement. These strategies include leaders modeling vulnerability, establishing clear communication norms, implementing inclusive decision-making practices, providing consistent support, and conducting regular retrospectives. The article presents real-world examples from companies like Intuit, Pixar, BuzzFeed, Citi, and Google to demonstrate how these approaches can be effectively implemented, ultimately arguing that psychological safety is fundamental to organizational learning, innovation, and competitive advantage in today's complex business environment.",
+      "date": "2025",
+      "doi": "https://doi.org/10.70175/hclreview.2020.20.4.4",
+      "is_oa": false,
+      "openalex_id": "W4410119250",
+      "publication_year": 2025,
+      "score": 0.013157894736842105,
+      "source": "thinclient_rrf",
+      "title": "Getting Teams to Actually Speak Up: Creating a Culture of Psychological Safety",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2025",
+      "doi": "https://doi.org/10.2308/ajpt-2024-148",
+      "is_oa": false,
+      "openalex_id": "W4417399863",
+      "publication_year": 2025,
+      "score": 0.013888888888888888,
+      "source": "thinclient_rrf",
+      "title": "Psychological Safety, AI-Enabled Anonymous Communication, and Speaking Up in Audit Teams",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "<ns3:p>Many companies and organizations promote the idea of creating a work environment that fosters openness and readiness to discuss difficult issues and provide feedback—both reinforcing and corrective (often referred to as a “culture of speaking up” or “feedback culture”). In this context, building a climate of psychological safety at both the team and organizational levels appears to be crucial. Research on psychological safety1 and employee silence2 clearly highlights the benefits of the former (such as increased effectiveness) and the negative consequences of the latter. The aim of this research is to examine the relationship between feedback from coworkers and effectiveness in team roles, considering psychological safety as a mediator. A total of 378 individuals participated in the study, all working in the higher education sector (both public and private institutions across Poland). The Positive Workplace Behaviors Questionnaire3 was used to measure team roles performance. In terms of feedback from coworkers – the Work Design Questionnaire4 was utelised, while psychological safety was assessed using Edmondson’s questionnaire adapted by Retowski et al.5 Mediation analysis was conducted using Model 4 in the PROCESS macro6.The results indicate significant indirect effects in the relationship between feedback and effectiveness in the following team roles: proficiency (β = 0.1210, 95% CI = [0.0696, 0.1786]), adaptability (β = 0.1339, 95% CI = [0.0670, 0.2095]), and proactivity (β = 0.0903, 95% CI = [0.0120; 0.1747]). Psychological safety serves as a significant mediator, through which feedback from colleagues enhances effectiveness in team roles.These findings emphasize the importance of designing and adapting the work environment not only to increase the frequency and amount of feedback from work mates but, most importantly, to establish a foundation of psychological safety. When this foundation is in place, employees are more likely to provide feedback (especially corrective one), which can positively impact their effectiveness in team roles.</ns3:p>",
+      "date": "2025",
+      "doi": "https://doi.org/10.5604/01.3001.0055.1169",
+      "is_oa": false,
+      "openalex_id": "W4410240488",
+      "publication_year": 2025,
+      "score": 0.01282051282051282,
+      "source": "thinclient_rrf",
+      "title": "FEEDBACK FROM COWORKERS AND EFFECTIVENESS IN TEAM ROLES – THE MEDIATING ROLE OF PSYCHOLOGICAL SAFETY",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2021",
+      "doi": "https://doi.org/10.1080/08956308.2021.1863111",
+      "is_oa": false,
+      "openalex_id": "W3134573035",
+      "publication_year": 2021,
+      "score": 0.016129032258064516,
+      "source": "thinclient_rrf",
+      "title": "How Psychological Safety Impacts R&amp;D Project Teams’ Performance",
+      "type": "article",
+      "year": 2021
+     },
+     {
+      "abstract": "",
+      "date": "2024",
+      "doi": "https://doi.org/10.21474/ijar01/19218",
+      "is_oa": false,
+      "openalex_id": "W4401820014",
+      "publication_year": 2024,
+      "score": 0.023769338959212377,
+      "source": "thinclient_rrf",
+      "title": "PSYCHOLOGICAL SAFETY IN HIGH-PERFORMANCE TEAMS",
+      "type": "article",
+      "year": 2024
+     },
+     {
+      "abstract": "",
+      "date": "2022",
+      "doi": "https://doi.org/10.1097/pts.0000000000001048",
+      "is_oa": false,
+      "openalex_id": "W4292677557",
+      "publication_year": 2022,
+      "score": 0.016129032258064516,
+      "source": "thinclient_rrf",
+      "title": "The Psychological Safety Scale of the Safety, Communication, Operational, Reliability, and Engagement (SCORE) Survey: A Brief, Diagnostic, and Actionable Metric for the Ability to Speak Up in Healthcare Settings",
+      "type": "article",
+      "year": 2022
+     },
+     {
+      "abstract": "",
+      "date": "2024",
+      "doi": "https://doi.org/10.61978/psychosocia.v2i3.804",
+      "is_oa": false,
+      "openalex_id": "W7083693540",
+      "publication_year": 2024,
+      "score": 0.014285714285714285,
+      "source": "thinclient_rrf",
+      "title": "Psychological Safety as a Catalyst for Healthcare Team Performance: Mediating Roles of Communication and Mental Health in Crisis Contexts",
+      "type": "article",
+      "year": 2024
+     }
+    ]
+   },
+   "b": {
+    "fused_ids": [
+     "W3134775844",
+     "W4406790912",
+     "W4401820014",
+     "W6967294949",
+     "W2965019228",
+     "W7037969218",
+     "W4417399863",
+     "W4292677557",
+     "W6926444472",
+     "W2606127012",
+     "W4288080625",
+     "W6907795383",
+     "W7131352662",
+     "W3208499817",
+     "W3134573035",
+     "W4413834851",
+     "W4410119250",
+     "W6967958032",
+     "W4404903678",
+     "W6968368754",
+     "W7078548158",
+     "W7083693540",
+     "W4410097127",
+     "W4401286502",
+     "W3011447305",
+     "W4247605919",
+     "W6930141930",
+     "W6925254958",
+     "W4411592397",
+     "W3045568018",
+     "W6996086551",
+     "W6907736719",
+     "W4414556885",
+     "W4402576402",
+     "W4410240488",
+     "W2786857556",
+     "W6886002593",
+     "W4401529470",
+     "W4378575711",
+     "W3044230327",
+     "W2807336453",
+     "W4385222060",
+     "W3013005930",
+     "W2766896223",
+     "W4404294511",
+     "W4366084727",
+     "W7133325785",
+     "W7024061872",
+     "W7001412891",
+     "W4417228294"
+    ],
+    "final_ids": [
+     "W4410097127",
+     "W4413834851",
+     "W4366084727",
+     "W4410119250",
+     "W4417399863",
+     "W4406790912",
+     "W4410240488",
+     "W3134573035",
+     "W4401820014",
+     "W4292677557"
+    ],
+    "fused_sha256": "5d8329b348ced7673fbc9f92b382c90955d54b8283144b92ceffe59b051e6046",
+    "final": [
+     {
+      "abstract": "Background: The key to success is to banish fear and create a thriving environment that allows people to speak their minds without any fear, an environment that allows people to be vulnerable. This environment, known as psychological safety, when present at the workplace, makes people feel comfortable with them, ask bold questions, share concerns, and ask for help, resulting in high team performance and lower team conflicts. A lack of psychological safety at work impacts the team’s performance and the organization’s bottom line. Aims: This research shows the effect of psychological safety on team learning and team efficacy. The study is done on regular employees and finds the relation of aforementioned. Psychological safety, too, is critical for a team's success, which is the backbone of today's businesses. To improve workplace psychological safety, leaders must first go within to comprehend and incorporate their feelings and concerns and then look outside to help others. Since the research only focuses on team learning and team efficacy, it can further be researched on Team Leadership, Mentoring/coaching. Objectives: The objective of the study was to investigate whether there is a correlation between learning behaviours, Team Efficacy, and Team Productivity. And also, to study the relationship between these variables and psychological safety. Team psychological safety refers to the shared belief among team members that they can take interpersonal risks without fear of negative consequences. This study also examined the impact of team psychological safety on team efficacy. Methods: The study was conducted with a sample size of 101 respondents. Snowball and convenience sampling were found appropriate for this study as the study focused on team efficacy and learning behavior. Regression analysis was used to study the impact of Team psychological safety on learning behavior and team efficacy and test the hypothesis. Results: The result of this study was that team dynamics are significantly impacted by psychological safety, team learning, and team efficacy in teams and, thereby productivity. It was also found that the Team's psychological safety is favourably correlated with organizational work teams. The Team's effectiveness is positively impacted by team psychological safety. Conclusion: This study contributes significantly to the literature on the concept of psychological safety. Adding significant value to Leading management thinkers, consultants, and psychologists. The research concludes that team dynamics are significantly impacted by psychological safety, team learning, team efficacy, and productivity in teams. Moreover, this study aimed to promote psychological safety, which is also essential for team success and is the foundation of today's enterprises.",
+      "date": "2023",
+      "doi": "https://doi.org/10.2174/18743501-v16-230727-2023-36",
+      "is_oa": false,
+      "openalex_id": "W4410097127",
+      "publication_year": 2023,
+      "score": 0.014084507042253521,
+      "source": "thinclient_rrf",
+      "title": "The Power of Psychological Safety: Investigating its Impact on Team Learning, Team Efficacy, and Team Productivity",
+      "type": "article",
+      "year": 2023
+     },
+     {
+      "abstract": "Introduction: Team psychological safety is a shared belief by team members that it is acceptable to explore possibilities, express ideas and concerns openly, speak up with questions, and share mistakes, without fear of negative consequences. Psychological safety fosters work environments that enhance team performance, innovation, creativity, resilience, and learning. From 2020 to 2022, we observed hospital-wide decreases in safety culture engagement and event reporting. We aimed to enhance staff competency in using error prevention tools through targeted education at onboarding for employees and leaders, emphasizing foundational psychological safety principles. Methods: In early 2023, our patient safety leadership team integrated the 4 stages of psychological safety—inclusion, learner, contributor, and challenger safety1—into staff and physician safety training and new employee orientation. This training encompasses a structured definition of each stage of psychological safety, the provision of illustrative examples, the incorporation of reflective questions, and the facilitation of robust and vulnerable discussions regarding participants’ experiences with the presence or absence of psychological safety in their work environments. We taught caregivers to achieve challenger safety, recognizing that this takes time and leader support to navigate through the stages. Training included teaching leaders about their responsibility to model and to teach key behaviors to promote a psychologically safe culture. One year after initiation of the revised comprehensive training program, we sought insight into the outcomes of training, specifically the integration of psychological safety behaviors by caregivers. We selected 1 medical nursing unit as a pilot unit for data collection and developed a qualitative once-a-quarter survey to assess team perceptions and levels of psychological safety. Participants were presented with 2 open-ended prompts as part of the survey: (1) “How do you personally define psychological safety?” (refer to Table 1), and (2) “Please describe a recent safety-related event or experience that involved psychological safety” (refer to Table 2). Table 1. - Personal Definition of Psychological Safety Role How Do You Personally Define Psychological Safety? Nurse Creating a safe environment where staff feel comfortable to ask a question and speak up Patient care technician Feeling comfortable and safe and unjudged by actions Nurse Workplace safety for all staff, not just nursing. Giving all who work at PCH to feel safe, appreciated, and valued Patient care technician Feeling safe to speak up, feeling included, knowing you can learn on the job/from mistakes Nurse Being confident in speaking up about concerns or questions I have without fear of being looked down upon Patient care technician Can get help from others without judgement. Feel supported by those around me Nurse Psychological Safety is being in a safe place to speak your mind/bring up questions that you have without fear of persecution. Being comfortable questioning anyone, no matter their role Patient care technician It means feeling safe speaking up about patient-safety and my own safety and needs and knowing I will be taken seriously and receive appropriate responses Patient care technician My mental health is not put in danger PCH, Primary Children's Hospital. Table 2. - Safety Event or Experience Involving Psychological Safety Theme Please Describe a Recent Safety-related Event or Experience that Involved Psychological Safety Reporting safety concerns “When I was on a 1:1, the grandma was verbally assaulting staff. The RN, didn’t hesitate to get the teams and security involved.”“Physician having pushback with calling BERT. I continued to say how important it was before it escalated more- patient escalated during BERT” Comfort in speaking up “I spoke up for my patient with a chest tube that I was concerned about, the team responded and reacted appropriately which allowed me to feel comfortable raising other concerns or questions.”“I was feeling very stressed when I admitted a patient from the PICU that was very complex and needed all of my time/attention, when I finally spoke up and asked for help, I was able to feel more comfortable in the tasks that I needed to get done. I want to be a safe person for others to turn to when they need help.”“ I feel like this last year I was able to feel more confident speaking up and advocating for my patients.” Team support and collaboration “I was working with a new tech. I became frustrated with them. So, I purposely showed them how to chart I/O’s. In the end, it was a positive experience.”“One moment I had in the last few months was asking a provider about a patient who was experiencing delirium. I asked further questions because it was the most severe form of delirium I had seen. The Provider took time to sit with me and talk about it and explained that since the patient had lost their vision, that escalated their delirium. This impacted me and helped me learn. I can ask providers about diagnoses more often which helps everyone learning. Mental health and well-being “I’ve been having problems with my mental health lately and my managers, colleagues, and HR have been working with me very well to help me navigate this new obstacle.”“I feel as though this last year has been hard on my mental health while being here. I try to be as transparent in the moment as possible.” Advocacy for patients “One of my patients was getting the wrong feeds, I felt comfortable enough to bring up to the nurse and get it fixed.”“I had a seizure patient that didn’t have a rescue med ordered. When questioning the resident, I was told it was not necessary because ‘they’ve never needed one’. Fortunately, I pushed harder and talked with the senior who agreed it was absolutely needed for patient safety.” Results: Since starting the revised safety training in November 2023, more than 90% of new staff (n = 2000) have been trained in person. Additionally, the revised safety program has been included in the ongoing training of all department leaders. Within the pilot unit, nursing staff and patient care technicians (n = 102) reported an increased awareness of both the presence and absence of psychological safety across multidisciplinary teams. We identified significant self-reported improvements in 4 domains. These included (1) reduced anxiety and fear of failure; (2) overall job satisfaction and better relationships with colleagues; (3) enhanced innovation and collaboration among team members; and (4) improved staff retention. Conclusions: Findings suggest that the integration of psychological safety principles into new hire safety training has positively influenced workplace culture, fostering a more engaged, innovative, and resilient workforce. This initiative is still in its early phases, with limitations in available quantitative data. Further research is necessary to assess long-term effects of foundational psychological safety training on patient safety outcomes.",
+      "date": "2025",
+      "doi": "https://doi.org/10.1097/pq9.0000000000000834",
+      "is_oa": false,
+      "openalex_id": "W4413834851",
+      "publication_year": 2025,
+      "score": 0.014925373134328358,
+      "source": "thinclient_rrf",
+      "title": "“Just” Speaking Up Requires Increasing Psychological Safety",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2023",
+      "doi": "https://doi.org/10.3389/fpsyg.2023.1129359",
+      "is_oa": false,
+      "openalex_id": "W4366084727",
+      "publication_year": 2023,
+      "score": 0.011904761904761904,
+      "source": "thinclient_rrf",
+      "title": "I like what you are saying, but only if i feel safe: Psychological safety moderates the relationship between voice and perceived contribution to healthcare team effectiveness",
+      "type": "article",
+      "year": 2023
+     },
+     {
+      "abstract": "This article examines how leaders can foster psychological safety—defined as \"a shared belief that the team is safe for interpersonal risk taking\"—to encourage authentic employee communication. It explores barriers to psychological safety including unclear expectations, competitive environments, leadership trust issues, and problematic group dynamics, while offering evidence-based strategies for improvement. These strategies include leaders modeling vulnerability, establishing clear communication norms, implementing inclusive decision-making practices, providing consistent support, and conducting regular retrospectives. The article presents real-world examples from companies like Intuit, Pixar, BuzzFeed, Citi, and Google to demonstrate how these approaches can be effectively implemented, ultimately arguing that psychological safety is fundamental to organizational learning, innovation, and competitive advantage in today's complex business environment.",
+      "date": "2025",
+      "doi": "https://doi.org/10.70175/hclreview.2020.20.4.4",
+      "is_oa": false,
+      "openalex_id": "W4410119250",
+      "publication_year": 2025,
+      "score": 0.014705882352941176,
+      "source": "thinclient_rrf",
+      "title": "Getting Teams to Actually Speak Up: Creating a Culture of Psychological Safety",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2025",
+      "doi": "https://doi.org/10.2308/ajpt-2024-148",
+      "is_oa": false,
+      "openalex_id": "W4417399863",
+      "publication_year": 2025,
+      "score": 0.016129032258064516,
+      "source": "thinclient_rrf",
+      "title": "Psychological Safety, AI-Enabled Anonymous Communication, and Speaking Up in Audit Teams",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2025",
+      "doi": "https://doi.org/10.1002/9781394217113.ch16",
+      "is_oa": false,
+      "openalex_id": "W4406790912",
+      "publication_year": 2025,
+      "score": 0.02728937728937729,
+      "source": "thinclient_rrf",
+      "title": "Psychological Safety",
+      "type": "other",
+      "year": 2025
+     },
+     {
+      "abstract": "<ns3:p>Many companies and organizations promote the idea of creating a work environment that fosters openness and readiness to discuss difficult issues and provide feedback—both reinforcing and corrective (often referred to as a “culture of speaking up” or “feedback culture”). In this context, building a climate of psychological safety at both the team and organizational levels appears to be crucial. Research on psychological safety1 and employee silence2 clearly highlights the benefits of the former (such as increased effectiveness) and the negative consequences of the latter. The aim of this research is to examine the relationship between feedback from coworkers and effectiveness in team roles, considering psychological safety as a mediator. A total of 378 individuals participated in the study, all working in the higher education sector (both public and private institutions across Poland). The Positive Workplace Behaviors Questionnaire3 was used to measure team roles performance. In terms of feedback from coworkers – the Work Design Questionnaire4 was utelised, while psychological safety was assessed using Edmondson’s questionnaire adapted by Retowski et al.5 Mediation analysis was conducted using Model 4 in the PROCESS macro6.The results indicate significant indirect effects in the relationship between feedback and effectiveness in the following team roles: proficiency (β = 0.1210, 95% CI = [0.0696, 0.1786]), adaptability (β = 0.1339, 95% CI = [0.0670, 0.2095]), and proactivity (β = 0.0903, 95% CI = [0.0120; 0.1747]). Psychological safety serves as a significant mediator, through which feedback from colleagues enhances effectiveness in team roles.These findings emphasize the importance of designing and adapting the work environment not only to increase the frequency and amount of feedback from work mates but, most importantly, to establish a foundation of psychological safety. When this foundation is in place, employees are more likely to provide feedback (especially corrective one), which can positively impact their effectiveness in team roles.</ns3:p>",
+      "date": "2025",
+      "doi": "https://doi.org/10.5604/01.3001.0055.1169",
+      "is_oa": false,
+      "openalex_id": "W4410240488",
+      "publication_year": 2025,
+      "score": 0.01282051282051282,
+      "source": "thinclient_rrf",
+      "title": "FEEDBACK FROM COWORKERS AND EFFECTIVENESS IN TEAM ROLES – THE MEDIATING ROLE OF PSYCHOLOGICAL SAFETY",
+      "type": "article",
+      "year": 2025
+     },
+     {
+      "abstract": "",
+      "date": "2021",
+      "doi": "https://doi.org/10.1080/08956308.2021.1863111",
+      "is_oa": false,
+      "openalex_id": "W3134573035",
+      "publication_year": 2021,
+      "score": 0.014925373134328358,
+      "source": "thinclient_rrf",
+      "title": "How Psychological Safety Impacts R&amp;D Project Teams’ Performance",
+      "type": "article",
+      "year": 2021
+     },
+     {
+      "abstract": "",
+      "date": "2024",
+      "doi": "https://doi.org/10.21474/ijar01/19218",
+      "is_oa": false,
+      "openalex_id": "W4401820014",
+      "publication_year": 2024,
+      "score": 0.025195618153364633,
+      "source": "thinclient_rrf",
+      "title": "PSYCHOLOGICAL SAFETY IN HIGH-PERFORMANCE TEAMS",
+      "type": "article",
+      "year": 2024
+     },
+     {
+      "abstract": "",
+      "date": "2022",
+      "doi": "https://doi.org/10.1097/pts.0000000000001048",
+      "is_oa": false,
+      "openalex_id": "W4292677557",
+      "publication_year": 2022,
+      "score": 0.016129032258064516,
+      "source": "thinclient_rrf",
+      "title": "The Psychological Safety Scale of the Safety, Communication, Operational, Reliability, and Engagement (SCORE) Survey: A Brief, Diagnostic, and Actionable Metric for the Ability to Speak Up in Healthcare Settings",
+      "type": "article",
+      "year": 2022
+     }
+    ]
+   },
+   "first_differing_fused_field": {
+    "rank": 1,
+    "fields": {
+     "score": [
+      0.025240384615384616,
+      0.0293236301369863
+     ]
+    }
+   }
+  }
+ },
+ "cross_commit_note": "NOT part of the bar: stored gate_off rows from 2026-09-29 (code aa0fc405, shards served from the /var/tmp/seismic_stage copy) vs today's gate_off pass 1 (code d985b70d, shards served from data/seismic_150m with the stage dir empty)",
+ "drive": {
+  "commit": "d985b70d9b6307333d4e6eb9a611cfa812ce9dd2",
+  "snapshot": "/home/vscode/work/delta_ingest/m1/code_d985b70d",
+  "start_utc": "2026-10-01T05:42:19Z",
+  "python": "/home/vscode/work/venv_local/bin/python3",
+  "parallel": true,
+  "lock": "flock -s /tmp/sfu_latency_measure.lock",
+  "model_files": {
+   "SFU_SPLADE_MODEL_PATH": {
+    "dir": "/home/vscode/work/models_local/splade_onnx_fused",
+    "from_env": true,
+    "sha256": {
+     "model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "tokenizer.json": "851ca67100d372ca3ae031a6abd168f53489eebfd7d89523f35c5c9b4d372c3c"
+    }
+   },
+   "SFU_CE_MODEL_PATH": {
+    "dir": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+    "from_env": true,
+    "sha256": {
+     "model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e",
+     "tokenizer.json": "851ca67100d372ca3ae031a6abd168f53489eebfd7d89523f35c5c9b4d372c3c"
+    }
+   },
+   "SFU_EMBEDDING_MODEL_PATH": {
+    "dir": "/home/vscode/work/delta_ingest/m1/models/sfu-academic-embed-v5",
+    "from_env": true,
+    "sha256": {
+     "model.safetensors": "1e975de65ccdeaabf4dc571ead137cdbc3c96943082b0df5068dd1db37ab9c65",
+     "tokenizer.json": "3fc3f18ce1603449ed5c2e95d62dc54ce8652af6b6b61e27ff410bff02fbfd5e"
+    }
+   }
+  },
+  "dirty_src_at_launch_not_measured": [],
+  "empty_root": {
+   "path": "/home/vscode/work/delta_ingest/m1/empty_root_dir",
+   "listing_before": [],
+   "listing_after": []
+  },
+  "arms": {
+   "gate_off": {
+    "cmd": [
+     "flock",
+     "-s",
+     "/tmp/sfu_latency_measure.lock",
+     "nice",
+     "-n",
+     "10",
+     "taskset",
+     "-c",
+     "0-3",
+     "/home/vscode/work/venv_local/bin/python3",
+     "/home/vscode/work/delta_ingest/m1/code_d985b70d/scripts/experiments/eval_delta_ingest_m1_2pass.py",
+     "child",
+     "--arm",
+     "gate_off",
+     "--passes",
+     "2",
+     "--scratch",
+     "/home/vscode/work/delta_ingest/m1",
+     "--limit-topics",
+     "0",
+     "--src",
+     "/home/vscode/work/delta_ingest/m1/code_d985b70d/src",
+     "--deadline",
+     "2026-10-01T06:40:00Z"
+    ],
+    "cpus": "0-3",
+    "rc": 0,
+    "attempts": [
+     {
+      "launched_utc": "2026-10-01T05:42:21Z",
+      "ended_utc": "2026-10-01T06:03:59Z",
+      "rc": 0,
+      "o12_early_enomem": false
+     }
+    ],
+    "log": "/home/vscode/work/delta_ingest/m1/gate_off.log"
+   },
+   "empty_root": {
+    "cmd": [
+     "flock",
+     "-s",
+     "/tmp/sfu_latency_measure.lock",
+     "nice",
+     "-n",
+     "10",
+     "taskset",
+     "-c",
+     "4-7",
+     "/home/vscode/work/venv_local/bin/python3",
+     "/home/vscode/work/delta_ingest/m1/code_d985b70d/scripts/experiments/eval_delta_ingest_m1_2pass.py",
+     "child",
+     "--arm",
+     "empty_root",
+     "--passes",
+     "2",
+     "--scratch",
+     "/home/vscode/work/delta_ingest/m1",
+     "--limit-topics",
+     "0",
+     "--src",
+     "/home/vscode/work/delta_ingest/m1/code_d985b70d/src",
+     "--deadline",
+     "2026-10-01T06:40:00Z"
+    ],
+    "cpus": "4-7",
+    "rc": 0,
+    "attempts": [
+     {
+      "launched_utc": "2026-10-01T05:42:21Z",
+      "ended_utc": "2026-10-01T06:04:02Z",
+      "rc": 0,
+      "o12_early_enomem": false
+     }
+    ],
+    "log": "/home/vscode/work/delta_ingest/m1/empty_root.log"
+   }
+  },
+  "end_utc": "2026-10-01T06:04:02Z"
+ },
+ "arms": {
+  "gate_off": {
+   "arm": "gate_off",
+   "pid": 1717520,
+   "start_utc": "2026-10-01T05:42:21Z",
+   "python": "/home/vscode/work/venv_local/bin/python3",
+   "src": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src",
+   "health": {
+    "ok": true,
+    "problems": [],
+    "onnxruntime": "1.26.0",
+    "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+    "splade_terms": 43,
+    "cross_encoder": "CrossEncoder",
+    "embedding_model": "SentenceTransformer",
+    "backend_class": "SequentialSeismicBackend",
+    "n_shards": 8,
+    "seismic_manifest": "/home/vscode/work/delta_ingest/m1/code_d985b70d/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+    "warnings_at_load": []
+   },
+   "timings_valid": false,
+   "env": {
+    "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+    "SFU_EMBEDDING_MODEL_PATH": "/home/vscode/work/delta_ingest/m1/models/sfu-academic-embed-v5",
+    "SFU_FEATURE_RERANK_ENABLED": "true",
+    "SFU_FEATURE_RRF_ENABLED": "true",
+    "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+    "SFU_SEARCH_BACKEND": "thinclient",
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused"
+   },
+   "sfu_delta_root_set": false,
+   "host_start": {
+    "MemFree_gb": 13.8,
+    "MemAvailable_gb": 29.39,
+    "Cached_gb": 15.65,
+    "SwapTotal_gb": 16.0,
+    "SwapFree_gb": 14.57
+   },
+   "code_under_test": {
+    "lib.tools": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/tools.py",
+     "sha256": "4b48cb9364a3101615f12e0d38f009b51458788ca745bdd28e372280b031efc0"
+    },
+    "lib.thinclient.retriever": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/thinclient/retriever.py",
+     "sha256": "e449a0c025ed36e58ede74f61a92b185882debbd6819d8799172e654a9494316"
+    },
+    "lib.thinclient.delta_layer": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/thinclient/delta_layer.py",
+     "sha256": "918231dbf79effa406a83b5a46a797d46126ac7a9a5b91e55bc30d4daab8cedc"
+    }
+   },
+   "features": {
+    "cache_enabled": true,
+    "retry_enabled": true,
+    "circuit_breaker_enabled": true,
+    "metrics_enabled": true,
+    "rerank_enabled": true,
+    "zotero_enabled": true,
+    "semantic_scholar_enabled": true,
+    "europe_pmc_enabled": false,
+    "local_embedding_enabled": true,
+    "rrf_enabled": true,
+    "crossencoder_enabled": true,
+    "query_log_enabled": false,
+    "lambdamart_enabled": false,
+    "engagement_log_enabled": false,
+    "local_opensearch_enabled": true,
+    "splade_enabled": false,
+    "federated_search_enabled": true,
+    "local_rrf_enabled": true
+   },
+   "load_s": 2.39,
+   "torch_device": "cuda",
+   "torch_threads": 4,
+   "health_ok_utc": "2026-10-01T05:42:36Z",
+   "state": "complete",
+   "wall_s": 1286.8,
+   "proc_mem": {
+    "VmHWM_gb": 8.22,
+    "VmRSS_gb": 6.64,
+    "VmSwap_gb": 0.93
+   },
+   "passes": [
+    {
+     "pass": 1,
+     "start_utc": "2026-10-01T05:42:36Z",
+     "n_rows": 120,
+     "wall_s": 748.4,
+     "end_utc": "2026-10-01T05:55:05Z"
+    },
+    {
+     "pass": 2,
+     "start_utc": "2026-10-01T05:55:05Z",
+     "n_rows": 120,
+     "wall_s": 522.8,
+     "end_utc": "2026-10-01T06:03:48Z"
+    }
+   ],
+   "stopped": null,
+   "host_end": {
+    "MemFree_gb": 0.26,
+    "MemAvailable_gb": 26.73,
+    "Cached_gb": 26.63,
+    "SwapTotal_gb": 16.0,
+    "SwapFree_gb": 12.02
+   },
+   "rows_per_pass": {
+    "1": 120,
+    "2": 120
+   },
+   "pass1_rrf_ms_p50_INVALID": 4851.9,
+   "pass2_rrf_ms_p50_INVALID": 3767.5
+  },
+  "empty_root": {
+   "arm": "empty_root",
+   "pid": 1717521,
+   "start_utc": "2026-10-01T05:42:21Z",
+   "python": "/home/vscode/work/venv_local/bin/python3",
+   "src": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src",
+   "health": {
+    "ok": true,
+    "problems": [],
+    "onnxruntime": "1.26.0",
+    "splade_model_path": "/home/vscode/work/models_local/splade_onnx_fused",
+    "splade_terms": 43,
+    "cross_encoder": "CrossEncoder",
+    "embedding_model": "SentenceTransformer",
+    "backend_class": "SequentialSeismicBackend",
+    "n_shards": 8,
+    "seismic_manifest": "/home/vscode/work/delta_ingest/m1/code_d985b70d/data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+    "delta_layer": {
+     "root": "/home/vscode/work/delta_ingest/m1/empty_root_dir",
+     "stamp": null,
+     "generations": 0,
+     "deleted": 0,
+     "superseded": 0,
+     "shard_manifest": null,
+     "buffer_size": 0,
+     "section_dirs": [],
+     "livedocs": false
+    },
+    "warnings_at_load": []
+   },
+   "timings_valid": false,
+   "env": {
+    "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+    "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/m1/empty_root_dir",
+    "SFU_EMBEDDING_MODEL_PATH": "/home/vscode/work/delta_ingest/m1/models/sfu-academic-embed-v5",
+    "SFU_FEATURE_RERANK_ENABLED": "true",
+    "SFU_FEATURE_RRF_ENABLED": "true",
+    "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+    "SFU_META_STAGE_DIR": "",
+    "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+    "SFU_SEARCH_BACKEND": "thinclient",
+    "SFU_SEISMIC_STAGE_DIR": "",
+    "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused"
+   },
+   "sfu_delta_root_set": true,
+   "host_start": {
+    "MemFree_gb": 13.8,
+    "MemAvailable_gb": 29.39,
+    "Cached_gb": 15.65,
+    "SwapTotal_gb": 16.0,
+    "SwapFree_gb": 14.57
+   },
+   "code_under_test": {
+    "lib.tools": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/tools.py",
+     "sha256": "4b48cb9364a3101615f12e0d38f009b51458788ca745bdd28e372280b031efc0"
+    },
+    "lib.thinclient.retriever": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/thinclient/retriever.py",
+     "sha256": "e449a0c025ed36e58ede74f61a92b185882debbd6819d8799172e654a9494316"
+    },
+    "lib.thinclient.delta_layer": {
+     "file": "/home/vscode/work/delta_ingest/m1/code_d985b70d/src/lib/thinclient/delta_layer.py",
+     "sha256": "918231dbf79effa406a83b5a46a797d46126ac7a9a5b91e55bc30d4daab8cedc"
+    }
+   },
+   "features": {
+    "cache_enabled": true,
+    "retry_enabled": true,
+    "circuit_breaker_enabled": true,
+    "metrics_enabled": true,
+    "rerank_enabled": true,
+    "zotero_enabled": true,
+    "semantic_scholar_enabled": true,
+    "europe_pmc_enabled": false,
+    "local_embedding_enabled": true,
+    "rrf_enabled": true,
+    "crossencoder_enabled": true,
+    "query_log_enabled": false,
+    "lambdamart_enabled": false,
+    "engagement_log_enabled": false,
+    "local_opensearch_enabled": true,
+    "splade_enabled": false,
+    "federated_search_enabled": true,
+    "local_rrf_enabled": true
+   },
+   "load_s": 2.39,
+   "torch_device": "cuda",
+   "torch_threads": 4,
+   "health_ok_utc": "2026-10-01T05:42:36Z",
+   "state": "complete",
+   "wall_s": 1286.8,
+   "proc_mem": {
+    "VmHWM_gb": 8.2,
+    "VmRSS_gb": 6.64,
+    "VmSwap_gb": 0.91
+   },
+   "passes": [
+    {
+     "pass": 1,
+     "start_utc": "2026-10-01T05:42:36Z",
+     "n_rows": 120,
+     "wall_s": 748.4,
+     "end_utc": "2026-10-01T05:55:05Z"
+    },
+    {
+     "pass": 2,
+     "start_utc": "2026-10-01T05:55:05Z",
+     "n_rows": 120,
+     "wall_s": 522.8,
+     "end_utc": "2026-10-01T06:03:48Z"
+    }
+   ],
+   "stopped": null,
+   "host_end": {
+    "MemFree_gb": 0.25,
+    "MemAvailable_gb": 26.73,
+    "Cached_gb": 26.63,
+    "SwapTotal_gb": 16.0,
+    "SwapFree_gb": 12.03
+   },
+   "rows_per_pass": {
+    "1": 120,
+    "2": 120
+   },
+   "pass1_rrf_ms_p50_INVALID": 4859.4,
+   "pass2_rrf_ms_p50_INVALID": 3778.8
+  }
+ },
+ "scratch": "/home/vscode/work/delta_ingest/m1",
+ "notes": [
+  "Run 2026-10-01 05:42:19Z-06:04:02Z, both arms concurrent (gate_off cores 0-3, empty_root cores 4-7) under flock -s, launched after Agent A's M4 process exited and the lock was free; Agent B's SEISMIC build ran on cores 8-15. Timings INVALID.",
+  "Serving config consequence of SFU_SEISMIC_STAGE_DIR='': the FS-aware federation default picked SequentialSeismicBackend (shards on 9p); the 2026-09-29 run served the staged copy with ParallelSeismicBackend. Both of today's arms are equal; the cross-commit view (informational) compares across this difference."
+ ]
+}

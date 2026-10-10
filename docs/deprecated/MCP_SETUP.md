@@ -1,5 +1,7 @@
 # SFU Library MCP Server - Desktop Setup Guide
 
+> **2026-10-10:** the launcher files and `claude_desktop_config.json` named below were moved from the repository root to `launchers/` (see `launchers/README.md`).
+
 ## Problem Fixed
 
 The original error was caused by:

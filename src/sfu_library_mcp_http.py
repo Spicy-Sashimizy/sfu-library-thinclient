@@ -1,5 +1,5 @@
 """
-SFU Library MCP Server — Streamable HTTP Transport.
+Duck Library MCP Server — Streamable HTTP Transport.
 
 Production entry point serving the same MCP server over HTTP
 instead of stdio. Used for remote access from Claude Desktop via mcp-remote.
@@ -95,7 +95,6 @@ _WARMUP_STATE = {"state": "disabled"}
 
 import contextvars as _contextvars
 _CACHE_HIT_VAR: _contextvars.ContextVar = _contextvars.ContextVar("sfu_cache_hit", default=None)
-_CACHE_HIT_TOKEN: _contextvars.ContextVar = _contextvars.ContextVar("sfu_cache_hit_token", default=None)
 
 
 def _set_thread_cache_hit(value: bool | None):
@@ -167,7 +166,6 @@ def _collect_preseed_queries() -> list[str]:
     Replicates scripts/prime_result_cache.py's collection so the on-start and
     offline primers plant identical keys."""
     import re as _re
-    from pathlib import Path as _Path
     seen, out = set(), []
     repo = Path(__file__).resolve().parents[1]
     jsx = repo / "web" / "src" / "search.jsx"
@@ -655,7 +653,7 @@ async def app(scope, receive, send):
 def main():
     host = os.environ.get("MCP_HTTP_HOST", "0.0.0.0")
     port = int(os.environ.get("MCP_HTTP_PORT", "8080"))
-    logger.info("Starting SFU Library MCP HTTP server on %s:%d", host, port)
+    logger.info("Starting Duck Library MCP HTTP server on %s:%d", host, port)
     logger.info("Tools available: %d", len(TOOL_DEFINITIONS))
     uvicorn.run(app, host=host, port=port, log_level="info")
 

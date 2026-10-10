@@ -24,8 +24,8 @@ LLM-judge cache is reused (no re-judging cost). Numbers are tagged
 metrics with no training equivalent are tagged `new`.
 
 Usage:
-  scripts/build_presentation_metrics.py            # render from existing catalog
-  scripts/build_presentation_metrics.py --rebuild  # re-parse all source files
+  scripts/experiments/build_presentation_metrics.py            # render from existing catalog
+  scripts/experiments/build_presentation_metrics.py --rebuild  # re-parse all source files
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ import re
 import subprocess
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 EVAL = REPO_ROOT / "data" / "eval_results"
 CATALOG_JSON = EVAL / "METRICS_CATALOG.json"
 PRESENTATION_JSON_TMPL = "presentation_metrics_{date}.json"

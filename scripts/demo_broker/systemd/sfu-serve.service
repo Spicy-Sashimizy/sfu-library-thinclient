@@ -18,7 +18,7 @@
 #   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-serve
 
 [Unit]
-Description=SFU library thin-client MCP serve (dialable memory cgroup)
+Description=Duck Library thin-client MCP serve (dialable memory cgroup)
 After=network-online.target
 Wants=network-online.target
 

@@ -275,15 +275,6 @@ class IngestLedger:
             "AND d.status='live' AND r.rowid>? ORDER BY r.rowid", (after_rowid,)).fetchall()
         return [(rid, DocRecord.from_json(rec)) for rid, rec in rows]
 
-    def buffer_signature(self) -> tuple[int, int]:
-        """(count, max rowid) of the mutable tier — a reader polls this to know
-        whether to append new rows or rebuild (rows left the buffer)."""
-        row = self.db.execute(
-            "SELECT COUNT(*), COALESCE(MAX(r.rowid),0) FROM records r JOIN docs d ON d.id=r.id "
-            "WHERE (r.generation=0 OR r.generation IN (SELECT gen FROM generations WHERE state='building')) "
-            "AND d.status='live'").fetchone()
-        return int(row[0]), int(row[1])
-
     def records_for(self, gens: Iterable[int]) -> list[DocRecord]:
         gens = list(gens)
         marks = ",".join("?" * len(gens))

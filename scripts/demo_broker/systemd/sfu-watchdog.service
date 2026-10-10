@@ -7,7 +7,7 @@
 #   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-watchdog.timer
 
 [Unit]
-Description=SFU demo watchdog (read-only liveness probe -> ntfy)
+Description=Duck Library demo watchdog (read-only liveness probe -> ntfy)
 After=network-online.target
 Wants=network-online.target
 

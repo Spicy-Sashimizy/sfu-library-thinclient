@@ -251,7 +251,7 @@ tc-vs-OS overlap@50 for both backends), ops (Qdrant latency p50/p95 at 150M
 RAM-bound + 30M fitting-tier, resident RAM, on-disk size, ingest throughput).
 Canonical ledger: `data/eval_results/METRICS_CATALOG.json`.
 
-**Script:** `scripts/build_presentation_metrics.py --rebuild`.
+**Script:** `scripts/experiments/build_presentation_metrics.py --rebuild`.
 **Result files:** `data/eval_results/METRICS_CATALOG.json`,
 `presentation_metrics_<date>.json`. **Rendered:** `docs/archive/bmp_decommission_plan/
 {PRESENTATION_METRICS.md, METRICS_CATALOG.md}`. **Date:** 2026-06-24.

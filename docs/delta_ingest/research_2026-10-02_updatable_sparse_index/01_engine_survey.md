@@ -1,5 +1,7 @@
 # Updatable, disk-resident learned-sparse / impact indexes: engine survey (as of 2026-10-02)
 
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+
 Context: 150M SPLADE docs, ~85 nnz/doc, 8 mmap SEISMIC shards, one host with 32–48 GB RAM. Scope clarification from the owner (received mid-task): the idea being checked is to take **only the updater** (insert/update/delete/merge machinery) from an existing product and attach it to our system, with SEISMIC shards and tantivy still serving, possibly through a translation layer. The whole engine is not being adopted. Each engine section below has an "Updater separability" block. Whole-engine RAM/latency facts are kept as secondary context.
 
 Tags: [read] = I opened the page or source and read it; [snippet] = search-result snippet only; [inferred] = my inference or background knowledge, not verified this session. Rough arithmetic for our corpus: 150M × 85 ≈ 12.75B postings.

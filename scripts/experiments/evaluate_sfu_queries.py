@@ -765,7 +765,7 @@ def main():
     parser.add_argument("--output", type=str, default=None,
                         help="Save full results to JSON file")
     parser.add_argument("--history", type=str,
-                        default=str(Path(__file__).parent.parent / "results/sfu_eval_history.jsonl"),
+                        default=str(Path(__file__).parent.parent.parent / "data/eval_results/archive/training_era_results/sfu_eval_history.jsonl"),
                         help="Append-only history JSONL (M.4); one line per run")
     parser.add_argument("--delay", type=float, default=1.2,
                         help="Delay between OpenAlex API requests (seconds)")

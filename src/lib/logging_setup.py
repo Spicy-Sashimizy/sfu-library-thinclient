@@ -1,4 +1,4 @@
-"""Structured logging setup for SFU Library MCP server.
+"""Structured logging setup for the Duck Library MCP server.
 
 All logging goes to stderr to avoid polluting MCP stdio JSON-RPC on stdout.
 Optionally also logs to a persistent file via RotatingFileHandler.

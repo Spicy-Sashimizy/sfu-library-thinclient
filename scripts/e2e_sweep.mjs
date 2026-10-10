@@ -350,7 +350,7 @@ await browser.close();
 try {
   const fs = await import('node:fs');
   fs.writeFileSync(new URL('./sweep_interaction_log.txt', import.meta.url),
-    `SFU Library Suite — Playwright interaction log (${actions.length} actions)\n` +
+    `Duck Library Suite — Playwright interaction log (${actions.length} actions)\n` +
     '='.repeat(64) + '\n' + actions.join('\n') + '\n');
 } catch {}
 

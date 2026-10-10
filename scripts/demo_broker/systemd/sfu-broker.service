@@ -12,7 +12,7 @@
 #   sudo systemctl daemon-reload && sudo systemctl enable --now sfu-broker
 
 [Unit]
-Description=SFU library demo broker (landing page + wake/sleep control plane)
+Description=Duck Library demo broker (landing page + wake/sleep control plane)
 After=network-online.target
 Wants=network-online.target
 

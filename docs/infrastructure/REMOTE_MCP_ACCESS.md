@@ -1,4 +1,4 @@
-# Connecting Claude to the SFU Library MCP server
+# Connecting Claude to the Duck Library MCP server
 
 **Status:** ACTIVE
 

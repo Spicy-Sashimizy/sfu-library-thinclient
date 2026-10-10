@@ -1,5 +1,7 @@
 # LSM / segment-based update machinery, per-segment query overhead, and a mutable exact delta tier
 
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+
 Compiled 2026-10-02. Context: 150M-doc hybrid system (SPLADE via 8 immutable mmap SEISMIC shards + tantivy BM25F + RRF + CE rerank; 16 cores, 32-48 GB RAM, 1x16 GB GPU). Measured: each live delta generation adds ~20-28 ms p50 (target +8 ms/gen). The cost splits into ~11 ms/gen sparse fan-out, ~5 ms/gen lexical per-section parse/merge, and ~5 ms/gen abstract-store probes.
 
 Markers: **[read]** means the source was opened and read (the full page or the extracted PDF text). **[snippet]** means a search-result snippet only. **[inferred]** means my own derivation, with the arithmetic shown. **[local-bench]** means a synthetic micro-benchmark run on this host on 2026-10-02. The script is `/tmp/claude-1000/-workspaces-sfu-library-thinclient/4e24eda4-ae7d-47ca-b274-66a1a52510d4/scratchpad/exact_taat_bench.py`, which is outside the repo and not reproducible from git. The host is an AMD Ryzen 7 5700X3D (8C/16T), and the benchmark ran single-threaded with scipy 1.17.1 and numpy 2.4.3.

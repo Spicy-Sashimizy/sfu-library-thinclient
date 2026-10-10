@@ -1,0 +1,1484 @@
+{
+ "item": "M3 BM25F score drift (T1)",
+ "date": "2026-09-30",
+ "plan_row": {
+  "metric": "for corpus (a): rank of each updated doc for its title-as-query with the update served from a delta section vs from the base; and the number of NON-updated base docs displaced out of the fused top-10 across the 120 topics",
+  "bar": "median rank change 0; displaced base docs <= 5% of top-10 slots"
+ },
+ "harness": "scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py",
+ "code_commit": "e0e3a8f4ca83740d735300e6a7c1d22c98a5fcdc",
+ "code_snapshot": "/home/vscode/work/delta_ingest/m3/code_e0e3a8f4",
+ "fixture": {
+  "ready_json": "/home/vscode/work/delta_ingest/corpus_a/READY.json",
+  "commit": "885c29e741c834ca53c98143b132056836b9820b",
+  "root": "/home/vscode/work/delta_ingest/corpus_a/root",
+  "n_updated_ids": 50000,
+  "sample_size": 50000,
+  "ready_keys": [
+   "appended_sentence",
+   "base_copies_path",
+   "base_manifest",
+   "code_snapshot",
+   "delta_records_path",
+   "doc_ids_path",
+   "doc_ids_sha256",
+   "env_gate_off",
+   "env_gate_on",
+   "env_note",
+   "fixture_commit",
+   "fixture_dir",
+   "harness",
+   "ordinals",
+   "population",
+   "published_utc",
+   "root",
+   "rule",
+   "sampling_rule",
+   "sidecar_text_source",
+   "smoke",
+   "title_sample_path",
+   "title_sample_rule",
+   "verify"
+  ]
+ },
+ "arms_env": {
+  "base:B": {
+   "SFU_DELTA_ROOT": "",
+   "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+   "SFU_FEATURE_RERANK_ENABLED": "true",
+   "SFU_FEATURE_RRF_ENABLED": "true",
+   "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+   "SFU_META_STAGE_DIR": "",
+   "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+   "SFU_SEARCH_BACKEND": "thinclient",
+   "SFU_SEARCH_SPECULATIVE_RERANK": "",
+   "SFU_SEISMIC_FEDERATION": "parallel",
+   "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+   "SFU_SEISMIC_STAGE_DIR": "",
+   "SFU_SPLADE_BACKEND": "seismic",
+   "SFU_THINCLIENT_ORDINALS": ""
+  },
+  "delta:B": {
+   "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+   "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+   "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+   "SFU_FEATURE_RERANK_ENABLED": "true",
+   "SFU_FEATURE_RRF_ENABLED": "true",
+   "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+   "SFU_META_STAGE_DIR": "",
+   "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+   "SFU_SEARCH_BACKEND": "thinclient",
+   "SFU_SEARCH_SPECULATIVE_RERANK": "",
+   "SFU_SEISMIC_FEDERATION": "parallel",
+   "SFU_SEISMIC_SHARD_MANIFEST": "",
+   "SFU_SEISMIC_STAGE_DIR": "",
+   "SFU_SPLADE_BACKEND": "seismic",
+   "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+   "SFU_THINCLIENT_ORDINALS": ""
+  },
+  "base:A": {
+   "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+   "SFU_DELTA_ROOT": "",
+   "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+   "SFU_FEATURE_RERANK_ENABLED": "true",
+   "SFU_FEATURE_RRF_ENABLED": "true",
+   "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+   "SFU_META_STAGE_DIR": "",
+   "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+   "SFU_SEARCH_BACKEND": "thinclient",
+   "SFU_SEARCH_SPECULATIVE_RERANK": "",
+   "SFU_SEISMIC_FEDERATION": "parallel",
+   "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+   "SFU_SEISMIC_STAGE_DIR": "",
+   "SFU_SPLADE_BACKEND": "seismic",
+   "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+   "SFU_THINCLIENT_ORDINALS": ""
+  },
+  "delta:A": {
+   "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+   "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+   "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+   "SFU_FEATURE_RERANK_ENABLED": "true",
+   "SFU_FEATURE_RRF_ENABLED": "true",
+   "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+   "SFU_META_STAGE_DIR": "",
+   "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+   "SFU_SEARCH_BACKEND": "thinclient",
+   "SFU_SEARCH_SPECULATIVE_RERANK": "",
+   "SFU_SEISMIC_FEDERATION": "parallel",
+   "SFU_SEISMIC_SHARD_MANIFEST": "",
+   "SFU_SEISMIC_STAGE_DIR": "",
+   "SFU_SPLADE_BACKEND": "seismic",
+   "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+   "SFU_THINCLIENT_ORDINALS": ""
+  }
+ },
+ "health": {
+  "base_B": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 8,
+   "sections": [
+    "cs_math__archive",
+    "cs_math__recent",
+    "med_bio__archive",
+    "med_bio__recent",
+    "other__archive",
+    "other__recent",
+    "phys_eng__archive",
+    "phys_eng__recent",
+    "social_sciences__archive",
+    "social_sciences__recent"
+   ],
+   "warnings_at_load": [],
+   "n_warnings_during_run": 0,
+   "warnings_during_run": []
+  },
+  "delta_B": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 9,
+   "delta_generations": [
+    1
+   ],
+   "delta_stamp": "g0001-1790791831",
+   "delta_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+   "delta_superseded": 50000,
+   "delta_deleted": 0,
+   "delta_buffer_size": 0,
+   "delta_sections_loaded": [
+    "delta_buffer",
+    "delta_g0001:social_sciences__recent"
+   ],
+   "livedocs": true,
+   "shard_filter_attached": true,
+   "sections": [
+    "cs_math__archive",
+    "cs_math__recent",
+    "delta_buffer",
+    "delta_g0001:social_sciences__recent",
+    "med_bio__archive",
+    "med_bio__recent",
+    "other__archive",
+    "other__recent",
+    "phys_eng__archive",
+    "phys_eng__recent",
+    "social_sciences__archive",
+    "social_sciences__recent"
+   ],
+   "warnings_at_load": [],
+   "n_warnings_during_run": 0,
+   "warnings_during_run": []
+  },
+  "base_A": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 8,
+   "sections": [
+    "cs_math__archive",
+    "cs_math__recent",
+    "med_bio__archive",
+    "med_bio__recent",
+    "other__archive",
+    "other__recent",
+    "phys_eng__archive",
+    "phys_eng__recent",
+    "social_sciences__archive",
+    "social_sciences__recent"
+   ],
+   "warnings_at_load": []
+  },
+  "delta_A": {
+   "ok": true,
+   "problems": [],
+   "onnxruntime": "1.26.0",
+   "splade_terms": 43,
+   "cross_encoder": "CrossEncoder",
+   "embedding_model": "SentenceTransformer",
+   "backend_class": "ParallelSeismicBackend",
+   "n_shards": 9,
+   "delta_generations": [
+    1
+   ],
+   "delta_stamp": "g0001-1790791831",
+   "delta_manifest": "/home/vscode/work/delta_ingest/corpus_a/root/shard_manifest.json",
+   "delta_superseded": 50000,
+   "delta_deleted": 0,
+   "delta_buffer_size": 0,
+   "delta_sections_loaded": [
+    "delta_buffer",
+    "delta_g0001:social_sciences__recent"
+   ],
+   "livedocs": true,
+   "shard_filter_attached": true,
+   "sections": [
+    "cs_math__archive",
+    "cs_math__recent",
+    "delta_buffer",
+    "delta_g0001:social_sciences__recent",
+    "med_bio__archive",
+    "med_bio__recent",
+    "other__archive",
+    "other__recent",
+    "phys_eng__archive",
+    "phys_eng__recent",
+    "social_sciences__archive",
+    "social_sciences__recent"
+   ],
+   "warnings_at_load": []
+  }
+ },
+ "degraded": {
+  "base_B": false,
+  "delta_B": false,
+  "base_A": false,
+  "delta_A": false
+ },
+ "log_scan": {
+  "base_B": {
+   "path": "/home/vscode/work/delta_ingest/m3/runs/base_B.log",
+   "bytes": 3352,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "Reranker failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "delta_B": {
+   "path": "/home/vscode/work/delta_ingest/m3/runs/delta_B.log",
+   "bytes": 3418,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "Reranker failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "base_A": {
+   "path": "/home/vscode/work/delta_ingest/m3/runs/base_A.log",
+   "bytes": 10883,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "Reranker failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  },
+  "delta_A": {
+   "path": "/home/vscode/work/delta_ingest/m3/runs/delta_A.log",
+   "bytes": 11213,
+   "signature_counts": {
+    "Cannot allocate memory": 0,
+    "CrossEncoder unavailable": 0,
+    "Failed to load embedding model": 0,
+    "falling back to BM25F": 0,
+    "SPLADE encoder failed": 0,
+    "SEISMIC SPLADE leg failed": 0,
+    "Reranker failed": 0,
+    "Traceback": 0,
+    "delta layer off": 0,
+    "SFU_SEISMIC_SHARD_MANIFEST is set": 0,
+    "MemoryError": 0,
+    "WI-10": 0
+   }
+  }
+ },
+ "host": {
+  "base_B": {
+   "start": {
+    "utc": "2026-09-30T20:50:13Z",
+    "loadavg": [
+     12.55810546875,
+     11.3642578125,
+     10.9228515625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 25.07,
+     "Cached": 24.92,
+     "SwapTotal": 16.0,
+     "SwapFree": 0.0
+    },
+    "top_procs": [
+     " 786276  724 3195744 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater search --dir /home/vscode/work/inplace_update/stage2/work_a2 --queri",
+     " 540493  106 4038164 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 788750 72.5 53024 /workspaces/sfu-library-thinclient/.venv/bin/python3 /home/vscode/work/delta_ingest/m3/code_dfc06e6e/scripts/experiments/eval_delta_ingest_m3",
+     " 512691 34.9 4763008 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 788744 16.9 52768 .venv/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus auto --min-mem-gb 10",
+     " 779778 11.2  5852 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 779780  5.9 72992 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 459179  5.6 336168 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "end": {
+    "utc": "2026-09-30T21:19:06Z",
+    "loadavg": [
+     11.77197265625,
+     11.7548828125,
+     11.8056640625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 23.63,
+     "Cached": 23.51,
+     "SwapTotal": 16.0,
+     "SwapFree": 0.0
+    },
+    "top_procs": [
+     " 788862 96.2 4008564 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 788750 63.1 3885508 /workspaces/sfu-library-thinclient/.venv/bin/python3 /home/vscode/work/delta_ingest/m3/code_dfc06e6e/scripts/experiments/eval_delta_ingest_",
+     " 835730 50.0 47268 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater restore --dir /home/vscode/work/inplace_update/stage2/work_a2 --pristi",
+     " 512691 35.3 3860020 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 826872 12.1  5136 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     " 459179  5.3 274912 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     " 826874  4.0 101952 rsync -a --partial --inplace /workspaces/sfu-library-thinclient/.venv/ /home/vscode/work/venv_local_tmp/",
+     "  95402  2.6 201660 claude --dangerously-skip-permissions --model claude-fable-5-1"
+    ]
+   },
+   "maxrss_gb": 5.75,
+   "partial": false,
+   "wall_s": 1733.8
+  },
+  "delta_B": {
+   "start": {
+    "utc": "2026-09-30T21:26:08Z",
+    "loadavg": [
+     5.810546875,
+     7.82421875,
+     9.9892578125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 25.56,
+     "Cached": 25.44,
+     "SwapTotal": 16.0,
+     "SwapFree": 0.0
+    },
+    "top_procs": [
+     " 788862  100 6072480 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 846086 87.5 52904 /home/vscode/work/venv_local/bin/python3 /home/vscode/work/delta_ingest/m3/code_611ee06b/scripts/experiments/eval_delta_ingest_m3_bm25f_drift",
+     " 846078 64.4 53112 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+     " 512691 35.2 4650680 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 459179  5.5 328356 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402  2.6 183252 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108  0.5  2576 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     " 838688  0.2  3624 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di"
+    ]
+   },
+   "end": {
+    "utc": "2026-09-30T21:46:54Z",
+    "loadavg": [
+     7.6982421875,
+     6.603515625,
+     7.13525390625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 23.75,
+     "Cached": 23.7,
+     "SwapTotal": 16.0,
+     "SwapFree": 0.0
+    },
+    "top_procs": [
+     " 788862  104 6951528 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 846086 71.1 5761452 /home/vscode/work/venv_local/bin/python3 /home/vscode/work/delta_ingest/m3/code_611ee06b/scripts/experiments/eval_delta_ingest_m3_bm25f_dri",
+     " 512691 35.1 4050644 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 459179  5.3 291812 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402  2.5 200916 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108  0.5  2632 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     " 846234  0.2  3064 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+     " 846078  0.1 43216 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus"
+    ]
+   },
+   "maxrss_gb": 6.88,
+   "partial": false,
+   "wall_s": 1246.4
+  },
+  "base_A": {
+   "start": {
+    "utc": "2026-09-30T21:54:47Z",
+    "loadavg": [
+     8.32373046875,
+     7.2607421875,
+     7.0947265625
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 25.56,
+     "Cached": 25.41,
+     "SwapTotal": 16.0,
+     "SwapFree": 0.0
+    },
+    "top_procs": [
+     " 788862  104 5026740 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 893466 85.7 53360 /home/vscode/work/venv_local/bin/python3 /home/vscode/work/delta_ingest/m3/code_e0e3a8f4/scripts/experiments/eval_delta_ingest_m3_bm25f_drift",
+     " 893445 67.9 53152 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+     " 512691 35.0 4194252 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+     " 459179  5.4 326884 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402  2.5 181684 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108  0.5  2540 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     " 846234  0.2  1940 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di"
+    ]
+   },
+   "end": null,
+   "maxrss_gb": null,
+   "partial": true,
+   "wall_s": 2070.0
+  },
+  "delta_A": {
+   "start": {
+    "utc": "2026-09-30T22:29:21Z",
+    "loadavg": [
+     8.173828125,
+     6.33203125,
+     6.03125
+    ],
+    "mem_gb": {
+     "MemTotal": 31.34,
+     "MemAvailable": 29.03,
+     "Cached": 28.85,
+     "SwapTotal": 16.0,
+     "SwapFree": 14.19
+    },
+    "top_procs": [
+     " 788862  105 7553196 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+     " 960277 70.8 53332 /home/vscode/work/venv_local/bin/python3 /home/vscode/work/delta_ingest/m3/code_e0e3a8f4/scripts/experiments/eval_delta_ingest_m3_bm25f_drift",
+     " 459179  5.2 203804 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "  95402  2.5 254520 claude --dangerously-skip-permissions --model claude-fable-5-1",
+     "    108  0.5  1544 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+     " 956097  0.2  3316 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+     " 960140  0.0  3664 /usr/bin/zsh -c source /home/vscode/.claude-official/shell-snapshots/snapshot-zsh-1790738551546-du7bl6.sh 2>/dev/null || true && setopt NO_EX",
+     " 893445  0.0  8124 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus"
+    ]
+   },
+   "end": null,
+   "maxrss_gb": null,
+   "partial": true,
+   "wall_s": 1733.3
+  }
+ },
+ "o12_events_outside_measured_processes": [
+  {
+   "utc": "2026-09-30T19:20Z",
+   "what": "a short python3 start-up (inspection one-liner run by this agent, cwd /workspaces, no index loaded) failed with OSError [Errno 12] Cannot allocate memory: '/workspaces/sfu-library-thinclient' in init_fs_encoding while S0-2 held ~21 GB and MemAvailable was ~9 GB; re-run from cwd /tmp it succeeded. Not a measured process."
+  },
+  {
+   "utc": "2026-09-30T20:16:57Z..20:20:31Z",
+   "what": "M3 launches 1 and 2: every child (base:B x7, delta:B, base:A) died before any query -- ENOMEM on .venv imports, or health FAIL (encode_splade OSError 12, cross-encoder and embedding model not loaded). Logs under /home/vscode/work/delta_ingest/m3/failed_launch_2016Z/ and runs/*.attemptN.log. Bare import probe from /tmp: 2/10 at 20:21Z, 1/5 at 20:22Z (MemFree 897 MB) and 20:27Z (MemFree 2316 MB)."
+  },
+  {
+   "utc": "2026-09-30T20:58Z",
+   "what": "coordinator's root cause (verified by strace of a failing import): `read(3, ..., 48565) = -1 ENOMEM` and `getdents64(3, ..., 32768) = -1 ENOMEM` on the /workspaces 9p mount; the kernel 9p client request buffers need order-3/4 contiguous pages and /proc/buddyinfo showed 1 free order-4 block and none above in zone Normal (MemFree 160-900 MB, 25 GB page cache); forced compaction did not fix it (probe 8/8 failed); /proc/sys read-only so vm.min_free_kbytes cannot be raised."
+  },
+  {
+   "utc": "2026-09-30",
+   "what": "WORKAROUND used by the measured run: interpreter = local venv mirror /home/vscode/work/venv_local (retrying rsync of the .venv, same site-packages, pyvenv home /usr/bin); code = git-archive snapshot + a copy of this harness on local disk; model files, the topics file and .env pre-read into the page cache with a retrying cat (m3/prewarm.sh) before launch. Index files (tantivy sections, meta.sqlite, abstracts) are still read from 9p."
+  },
+  {
+   "utc": "2026-09-30T20:50Z..21:26Z",
+   "what": "INTERPRETER / MODEL COPY PER PROCESS: base:B (20:50-21:19Z, healthy, 120/120) ran on the repo /workspaces/.../.venv with repo models (launch 3, drive.json). delta:B then failed health 7 times on the repo .venv (launch 3) and 3 times on the repo .venv with local model copies (launch 4, drive2.log, 21:22-21:25Z): `Error importing huggingface_hub.hf_api: [Errno 12] ... site-packages/huggingface_hub/utils` -> encode_splade OSError 12, CE and embedding model not loaded. From launch 5 (drive3.log, 21:26Z) delta:B, base:A and delta:A run on the local venv mirror /home/vscode/work/venv_local (rsync of the same .venv, identical package versions; only onnx/backend/test/data, torch/testing/_internal and sympy/*/tests excluded), PYTHONPATH blank, with SFU_SPLADE_MODEL_PATH / SFU_CE_MODEL_PATH on byte-identical local copies (sha256 in model_files). The CE ONNX int8 dir and the embedding model stay on 9p (hardcoded paths)."
+  },
+  {
+   "utc": "2026-09-30T22:25Z",
+   "what": "HOST CONDITION: another session ran swapoff/swapon to pull its ~15 GB swapped S0-2 process back into RAM (swap 16 GB, 15 GB used at 22:20Z); base:A was running at the time (its file reads re-fault; timings invalid anyway). Per that session, the 19:20Z ENOMEM coincided with a full 16 GB swap partition."
+  }
+ ],
+ "splade_tokenizer_resolution": {
+  "per_process": {
+   "base_B": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v1 (repo models/splade_onnx_fused has no tokenizer files; 9p)",
+   "delta_B": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v1 (started 21:26Z, before the local model dir got tokenizer files at 21:51:15Z; 9p)",
+   "base_A": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v1 (healthy attempt started 21:47:34Z, before 21:51:15Z; 9p)",
+   "delta_A": "/home/vscode/work/models_local/splade_onnx_fused (started after 21:51:15Z; local copy)"
+  },
+  "basis": "inferred from the resolution order and file mtimes; the log line is not captured",
+  "sha256": {
+   "tokenizer.json": {
+    "repo_fallback": "851ca67100d372ca3ae031a6abd168f53489eebfd7d89523f35c5c9b4d372c3c",
+    "local_model_dir": "851ca67100d372ca3ae031a6abd168f53489eebfd7d89523f35c5c9b4d372c3c",
+    "identical": true
+   },
+   "tokenizer_config.json": {
+    "repo_fallback": "24704d136ee624ddb2a21a991c0d251422d5488762a16dfe287f133f39095fdd",
+    "local_model_dir": "24704d136ee624ddb2a21a991c0d251422d5488762a16dfe287f133f39095fdd",
+    "identical": true
+   }
+  }
+ },
+ "timings_valid": false,
+ "timings_note": "host shared with the in-place B7 run (latency lock, cores 0-7) and S0-2 (~19 GB, cores 8-15); nice 10, taskset 8-15, no lock. Every ms/wall field is NOT a deliverable.",
+ "part_a": {
+  "definition": "BM25F leg only (_bm25f_leg(title, 100, None)); sample = first 600 of READY.json title sample in its order; rank 1-based in top-100, >100 absent; statistic median of (rank_delta - rank_base) over docs present in both arms",
+  "n_planned": 600,
+  "n_common_prefix": 350,
+  "n_compared": 340,
+  "n_query_errors": 10,
+  "query_errors": [
+   {
+    "i": 56,
+    "id": "W7105742074",
+    "base": "ValueError: Syntax Error: INNOVATION IN THE EV INDUSTRY  CASE STUDY OF TESLA 2019   2025",
+    "delta": "ValueError: Syntax Error: INNOVATION IN THE EV INDUSTRY  CASE STUDY OF TESLA 2019   2025"
+   },
+   {
+    "i": 120,
+    "id": "W4362464437",
+    "base": "ValueError: Syntax Error: WHEN WOMEN UNITED  ANTI  ARRACK CAMPAIGN IN NELLORE DISTRICT",
+    "delta": "ValueError: Syntax Error: WHEN WOMEN UNITED  ANTI  ARRACK CAMPAIGN IN NELLORE DISTRICT"
+   },
+   {
+    "i": 197,
+    "id": "W6911476447",
+    "base": "ValueError: Syntax Error: DEVELOPMENT OF TRANSPORT COMPANIES IN THE CONDITIONS OF DIGITAL TRANSFORMATION ON THE EXAMPLE OF EUROPEAN COUNTRIES",
+    "delta": "ValueError: Syntax Error: DEVELOPMENT OF TRANSPORT COMPANIES IN THE CONDITIONS OF DIGITAL TRANSFORMATION ON THE EXAMPLE OF EUROPEAN COUNTRIES"
+   },
+   {
+    "i": 205,
+    "id": "W7063019200",
+    "base": "ValueError: Syntax Error: Ð Ð Ð ÑÐ Ð Ð¾ÑÐºÐ  ÑÑÑÑÐºÑÑÑÑ ÑÐ ÑÐ Ð²Ð ÐµÐ½Ð Ñ Ð Ð Ð Ð½ÐµÑ â Ð ÑÐ¾ÑÐµÑÑÐ Ð¼Ð  Ð¾ÑÐ³Ð  Ð½Ð Ð Ð ÑÐ Ð ",
+    "delta": "ValueError: Syntax Error: Ð Ð Ð ÑÐ Ð Ð¾ÑÐºÐ  ÑÑÑÑÐºÑÑÑÑ ÑÐ ÑÐ Ð²Ð ÐµÐ½Ð Ñ Ð Ð Ð Ð½ÐµÑ â Ð ÑÐ¾ÑÐµÑÑÐ Ð¼Ð  Ð¾ÑÐ³Ð  Ð½Ð Ð Ð ÑÐ Ð "
+   },
+   {
+    "i": 253,
+    "id": "W7124170489",
+    "base": "ValueError: Syntax Error: KAMP ARKADAŞLARI ADLI ESERDEKİ KÜLTÜREL ÖGELERİN ÇEVİRİSİNİN PETER NEWMARK IN ÇEVİRİ STRATEJİLERİ IŞIĞINDA İNCELENMESİ",
+    "delta": "ValueError: Syntax Error: KAMP ARKADAŞLARI ADLI ESERDEKİ KÜLTÜREL ÖGELERİN ÇEVİRİSİNİN PETER NEWMARK IN ÇEVİRİ STRATEJİLERİ IŞIĞINDA İNCELENMESİ"
+   },
+   {
+    "i": 300,
+    "id": "W6962948529",
+    "base": "ValueError: Syntax Error: ARTIFICIAL INTELLIGENCE S EFFECT ON NETWORKING TECHNOLOGY IN THE FUTURE",
+    "delta": "ValueError: Syntax Error: ARTIFICIAL INTELLIGENCE S EFFECT ON NETWORKING TECHNOLOGY IN THE FUTURE"
+   },
+   {
+    "i": 316,
+    "id": "W4321187295",
+    "base": "ValueError: Syntax Error: NEW TRENDS IN PHILOLOGY  INTERNET LINGUISTICS",
+    "delta": "ValueError: Syntax Error: NEW TRENDS IN PHILOLOGY  INTERNET LINGUISTICS"
+   },
+   {
+    "i": 327,
+    "id": "W2278828524",
+    "base": "ValueError: Syntax Error: RECOMMENDED CHANGES IN STUDENTS  INDUSTRIAL WORK EXPERIENCE SCHEME  SIWES  GEARED TOWARDS DECREASE IN UNEMPLOYMENT RATE OF BUSINESS EDUCATION GRADUATES IN NIGERIA",
+    "delta": "ValueError: Syntax Error: RECOMMENDED CHANGES IN STUDENTS  INDUSTRIAL WORK EXPERIENCE SCHEME  SIWES  GEARED TOWARDS DECREASE IN UNEMPLOYMENT RATE OF BUSINESS EDUCATION GRADUATES IN NIGERIA"
+   },
+   {
+    "i": 335,
+    "id": "W4410742547",
+    "base": "ValueError: Syntax Error: IMPLEMENTATION OF BLUE OCEAN STRATEGY IN WINNING BUSINESS COMPETITION  CASE STUDY AT PT  TELKOM INDONESIA Tbk  WITEL SUKABUMI ",
+    "delta": "ValueError: Syntax Error: IMPLEMENTATION OF BLUE OCEAN STRATEGY IN WINNING BUSINESS COMPETITION  CASE STUDY AT PT  TELKOM INDONESIA Tbk  WITEL SUKABUMI "
+   },
+   {
+    "i": 345,
+    "id": "W7123782610",
+    "base": "ValueError: Syntax Error: INTELLECTUAL PROPERTY AS AN AXIS OF TECHNOLOGICAL SOVEREIGNTY IN THE RARE EARTHS VALUE CHAIN  EVIDENCE FROM MINAS GERAIS",
+    "delta": "ValueError: Syntax Error: INTELLECTUAL PROPERTY AS AN AXIS OF TECHNOLOGICAL SOVEREIGNTY IN THE RARE EARTHS VALUE CHAIN  EVIDENCE FROM MINAS GERAIS"
+   }
+  ],
+  "partial": true,
+  "n_present_both": 331,
+  "n_absent_base_only": 2,
+  "n_absent_delta_only": 0,
+  "n_absent_both": 7,
+  "base_own_recall_at100": 0.9735,
+  "delta_own_recall_at100": 0.9794,
+  "base_rank1_share": 0.8471,
+  "delta_rank1_share": 0.7824,
+  "rank_change_quantiles": {
+   "n": 331,
+   "min": -8,
+   "p5": 0,
+   "p25": 0,
+   "p50": 0,
+   "p75": 0,
+   "p95": 1,
+   "max": 15,
+   "mean": 0.2085
+  },
+  "median_rank_change": 0,
+  "share_improved": 0.003,
+  "share_same": 0.8973,
+  "share_worse": 0.0997,
+  "rank_base_quantiles": {
+   "n": 331,
+   "min": 1,
+   "p5": 1,
+   "p25": 1,
+   "p50": 1,
+   "p75": 1,
+   "p95": 2,
+   "max": 72,
+   "mean": 1.7221
+  },
+  "rank_delta_quantiles": {
+   "n": 331,
+   "min": 1,
+   "p5": 1,
+   "p25": 1,
+   "p50": 1,
+   "p75": 1,
+   "p95": 3,
+   "max": 79,
+   "mean": 1.9305
+  },
+  "score_ratio_delta_over_base_copy": {
+   "n": 336,
+   "min": 0.6920378201041956,
+   "p5": 0.8464476530929353,
+   "p25": 0.9394647917485639,
+   "p50": 0.9820679278304021,
+   "p75": 0.9958545911373284,
+   "p95": 1.0049558316219551,
+   "max": 1.028765913045595,
+   "mean": 0.9611
+  },
+  "share_ratio_gt1": 0.1131,
+  "n_delta_copy_scored": 340,
+  "n_base_copy_scored_premask": 336,
+  "base_score_crossprocess_absdiff_max": 0.0,
+  "mask_leak_own_doc_base_copy_postmask": 0,
+  "mask_leak_any_updated_base_copy_postmask": 0,
+  "both_copies_same_list": 0,
+  "filter_alignment_failures": 0,
+  "own_doc_served_origin_counts": {
+   "1": 340
+  },
+  "mean_updated_ids_in_list": {
+   "base": 1.024,
+   "delta": 1.076
+  },
+  "ms_p50": {
+   "base": {
+    "n": 340,
+    "min": 535.0,
+    "p5": 1022.6,
+    "p25": 3820.0,
+    "p50": 5926.299999999999,
+    "p75": 8087.8,
+    "p95": 10836.1,
+    "max": 19118.6,
+    "mean": 6044.4141
+   },
+   "delta": {
+    "n": 340,
+    "min": 188.6,
+    "p5": 721.5,
+    "p25": 3070.6,
+    "p50": 4789.55,
+    "p75": 6858.3,
+    "p95": 10220.0,
+    "max": 13574.2,
+    "mean": 5041.0206
+   },
+   "timings_valid": false
+  },
+  "verdict": "PASS (PARTIAL)",
+  "worst_20": [
+   {
+    "id": "W7104273973",
+    "rank_base": 8,
+    "rank_delta": 23,
+    "score_base": 226.0033721923828,
+    "score_delta": 224.64181518554688,
+    "pre_base_score": 226.0033721923828
+   },
+   {
+    "id": "W6930325734",
+    "rank_base": 3,
+    "rank_delta": 12,
+    "score_base": 146.855712890625,
+    "score_delta": 139.7173614501953,
+    "pre_base_score": 146.855712890625
+   },
+   {
+    "id": "W4233326592",
+    "rank_base": 72,
+    "rank_delta": 79,
+    "score_base": 56.84829330444336,
+    "score_delta": 56.29621887207031,
+    "pre_base_score": 56.84829330444336
+   },
+   {
+    "id": "W6892861871",
+    "rank_base": 2,
+    "rank_delta": 6,
+    "score_base": 322.592041015625,
+    "score_delta": 296.4854736328125,
+    "pre_base_score": 322.592041015625
+   },
+   {
+    "id": "W6948692522",
+    "rank_base": 17,
+    "rank_delta": 20,
+    "score_base": 123.41535949707031,
+    "score_delta": 122.81448364257812,
+    "pre_base_score": 123.41535949707031
+   },
+   {
+    "id": "W6940272771",
+    "rank_base": 1,
+    "rank_delta": 4,
+    "score_base": 253.07896423339844,
+    "score_delta": 240.4981231689453,
+    "pre_base_score": 253.07896423339844
+   },
+   {
+    "id": "W6885975997",
+    "rank_base": 20,
+    "rank_delta": 23,
+    "score_base": 58.29644775390625,
+    "score_delta": 57.92125701904297,
+    "pre_base_score": 58.29644775390625
+   },
+   {
+    "id": "W6921021904",
+    "rank_base": 1,
+    "rank_delta": 3,
+    "score_base": 303.5018310546875,
+    "score_delta": 284.86712646484375,
+    "pre_base_score": 303.5018310546875
+   },
+   {
+    "id": "W4220855535",
+    "rank_base": 1,
+    "rank_delta": 3,
+    "score_base": 246.24966430664062,
+    "score_delta": 231.24317932128906,
+    "pre_base_score": 246.24966430664062
+   },
+   {
+    "id": "W6927520920",
+    "rank_base": 1,
+    "rank_delta": 3,
+    "score_base": 195.3349151611328,
+    "score_delta": 184.49269104003906,
+    "pre_base_score": 195.3349151611328
+   },
+   {
+    "id": "W6930232433",
+    "rank_base": 10,
+    "rank_delta": 12,
+    "score_base": 458.09747314453125,
+    "score_delta": 437.27142333984375,
+    "pre_base_score": 458.09747314453125
+   },
+   {
+    "id": "W6958092373",
+    "rank_base": 1,
+    "rank_delta": 3,
+    "score_base": 282.750732421875,
+    "score_delta": 276.1459045410156,
+    "pre_base_score": 282.750732421875
+   },
+   {
+    "id": "W7092369361",
+    "rank_base": 5,
+    "rank_delta": 7,
+    "score_base": 115.04463195800781,
+    "score_delta": 111.14602661132812,
+    "pre_base_score": 115.04463195800781
+   },
+   {
+    "id": "W3216003378",
+    "rank_base": 2,
+    "rank_delta": 4,
+    "score_base": 178.2646026611328,
+    "score_delta": 175.2349395751953,
+    "pre_base_score": 178.2646026611328
+   },
+   {
+    "id": "W6938910036",
+    "rank_base": 2,
+    "rank_delta": 3,
+    "score_base": 187.40798950195312,
+    "score_delta": 183.47906494140625,
+    "pre_base_score": 187.40798950195312
+   },
+   {
+    "id": "W6926891237",
+    "rank_base": 1,
+    "rank_delta": 2,
+    "score_base": 191.9668731689453,
+    "score_delta": 186.40769958496094,
+    "pre_base_score": 191.9668731689453
+   },
+   {
+    "id": "W7137650323",
+    "rank_base": 1,
+    "rank_delta": 2,
+    "score_base": 177.5391082763672,
+    "score_delta": 128.13961791992188,
+    "pre_base_score": 177.5391082763672
+   },
+   {
+    "id": "W6930471701",
+    "rank_base": 1,
+    "rank_delta": 2,
+    "score_base": 187.36497497558594,
+    "score_delta": 183.31832885742188,
+    "pre_base_score": 187.36497497558594
+   },
+   {
+    "id": "W6964094691",
+    "rank_base": 1,
+    "rank_delta": 2,
+    "score_base": 445.978271484375,
+    "score_delta": 411.29547119140625,
+    "pre_base_score": 445.978271484375
+   },
+   {
+    "id": "W7029366110",
+    "rank_base": 1,
+    "rank_delta": 2,
+    "score_base": 316.87725830078125,
+    "score_delta": 304.0326843261719,
+    "pre_base_score": 316.87725830078125
+   }
+  ]
+ },
+ "part_b": {
+  "definition": "search_rrf_detailed(q, top_k=50) == search_rrf fused list; 120 topics of data/sfu_eval_queries.json 'query'; displaced = BASE fused top-10 doc not in the 50,000 updated ids and absent from DELTA fused top-10; bar <= 60 of 1,200 slots",
+  "n_topics": 120,
+  "slots": 1200,
+  "partial": false,
+  "displaced_fused_top10": 1,
+  "displaced_share": 0.0008,
+  "topics_with_displacement": 1,
+  "displaced_per_topic_max": 1,
+  "updated_entered_fused_top10": 1,
+  "updated_in_fused_top10": {
+   "base": 2,
+   "delta": 3
+  },
+  "fused_top10_idlist_identical": 118,
+  "fused_top50_idlist_identical": 113,
+  "displaced_bm25f_leg_top10": 0,
+  "displaced_splade_leg_top10": 1,
+  "bm25f_leg_top10_identical": 119,
+  "splade_leg_top10_identical": 117,
+  "updated_in_bm25f_leg_top10": {
+   "base": 2,
+   "delta": 2
+  },
+  "updated_in_splade_leg_top10": {
+   "base": 3,
+   "delta": 4
+  },
+  "final_top10_changed_topics": 2,
+  "displaced_final_top10": 0,
+  "rrf_ms_p50": {
+   "base": {
+    "n": 120,
+    "min": 8016.8,
+    "p5": 9460.3,
+    "p25": 10731.8,
+    "p50": 12498.55,
+    "p75": 13847.4,
+    "p95": 18786.6,
+    "max": 25223.5,
+    "mean": 12741.0725
+   },
+   "delta": {
+    "n": 120,
+    "min": 4873.5,
+    "p5": 8209.4,
+    "p25": 9313.0,
+    "p50": 9802.0,
+    "p75": 10335.4,
+    "p95": 11303.3,
+    "max": 17104.6,
+    "mean": 9819.5683
+   },
+   "timings_valid": false
+  },
+  "displaced_examples": [
+   {
+    "query": "virtual reality augmented reality immersive learning environments",
+    "displaced": [
+     "W4400951113"
+    ]
+   }
+  ],
+  "verdict": "PASS"
+ },
+ "verdict": {
+  "median_rank_change_0": "PASS (PARTIAL)",
+  "displaced_le_5pct": "PASS",
+  "M3": "PASS (PARTIAL) / PASS"
+ },
+ "drive": {
+  "commit": "e0e3a8f4ca83740d735300e6a7c1d22c98a5fcdc",
+  "snapshot": "/home/vscode/work/delta_ingest/m3/code_e0e3a8f4",
+  "arms": {
+   "base:B": {
+    "rc": 0,
+    "cpus": "8-15",
+    "o12_failed_start_attempts": [],
+    "host_after": {
+     "utc": "2026-09-30T21:19:12Z",
+     "loadavg": [
+      11.6298828125,
+      11.7255859375,
+      11.7958984375
+     ],
+     "mem_gb": {
+      "MemTotal": 31.34,
+      "MemAvailable": 24.99,
+      "Cached": 24.18,
+      "SwapTotal": 16.0,
+      "SwapFree": 0.04
+     },
+     "top_procs": [
+      " 788862 96.1 4278960 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+      " 835747 79.0 532612 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater crash --dir /home/vscode/work/inplace_update/stage2/work_a2 --log /ho",
+      " 512691 35.3 4175600 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+      " 459179  5.3 263572 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "  95402  2.6 191260 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "    108  0.5  2484 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+      " 788765  0.2  2528 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+      " 397385  0.1 28948 .venv/bin/python3 scripts/experiments/eval_inplace_bench.py b7 --trials 100 --arms A2"
+     ]
+    },
+    "wall_s": 1739.7,
+    "log": "/home/vscode/work/delta_ingest/m3/runs/base_B.log",
+    "env": {
+     "SFU_DELTA_ROOT": "",
+     "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+     "SFU_FEATURE_RERANK_ENABLED": "true",
+     "SFU_FEATURE_RRF_ENABLED": "true",
+     "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+     "SFU_META_STAGE_DIR": "",
+     "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+     "SFU_SEARCH_BACKEND": "thinclient",
+     "SFU_SEARCH_SPECULATIVE_RERANK": "",
+     "SFU_SEISMIC_FEDERATION": "parallel",
+     "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+     "SFU_SEISMIC_STAGE_DIR": "",
+     "SFU_SPLADE_BACKEND": "seismic",
+     "SFU_THINCLIENT_ORDINALS": ""
+    },
+    "launch_start": "2026-09-30T20:50:12Z",
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "model_files": null
+   },
+   "delta:B": {
+    "rc": 0,
+    "cpus": "0-7",
+    "o12_failed_start_attempts": [],
+    "host_after": {
+     "utc": "2026-09-30T21:46:59Z",
+     "loadavg": [
+      7.48193359375,
+      6.57666015625,
+      7.12353515625
+     ],
+     "mem_gb": {
+      "MemTotal": 31.34,
+      "MemAvailable": 25.41,
+      "Cached": 24.38,
+      "SwapTotal": 16.0,
+      "SwapFree": 0.07
+     },
+     "top_procs": [
+      " 788862  104 6711092 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+      " 512691 35.1 4019476 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+      " 459179  5.3 283556 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "  95402  2.5 200420 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "    108  0.5  2632 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+      " 846234  0.2  3420 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+      " 846078  0.0 45172 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+      "     99  0.0  3384 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+     ]
+    },
+    "wall_s": 1251.0,
+    "log": "/home/vscode/work/delta_ingest/m3/runs/delta_B.log",
+    "env": {
+     "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+     "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+     "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+     "SFU_FEATURE_RERANK_ENABLED": "true",
+     "SFU_FEATURE_RRF_ENABLED": "true",
+     "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+     "SFU_META_STAGE_DIR": "",
+     "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+     "SFU_SEARCH_BACKEND": "thinclient",
+     "SFU_SEARCH_SPECULATIVE_RERANK": "",
+     "SFU_SEISMIC_FEDERATION": "parallel",
+     "SFU_SEISMIC_SHARD_MANIFEST": "",
+     "SFU_SEISMIC_STAGE_DIR": "",
+     "SFU_SPLADE_BACKEND": "seismic",
+     "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+     "SFU_THINCLIENT_ORDINALS": ""
+    },
+    "launch_start": "2026-09-30T21:26:07Z",
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "model_files": {
+     "/home/vscode/work/models_local/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "/home/vscode/work/models_local/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e"
+    }
+   },
+   "base:A": {
+    "rc": -15,
+    "cpus": "0-7",
+    "o12_failed_start_attempts": [],
+    "host_after": {
+     "utc": "2026-09-30T22:29:20Z",
+     "loadavg": [
+      8.173828125,
+      6.33203125,
+      6.03125
+     ],
+     "mem_gb": {
+      "MemTotal": 31.34,
+      "MemAvailable": 29.09,
+      "Cached": 28.98,
+      "SwapTotal": 16.0,
+      "SwapFree": 14.18
+     },
+     "top_procs": [
+      " 788862  105 7480576 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+      " 459179  5.2 202424 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "  95402  2.5 254280 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "    108  0.5  1544 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+      " 956097  0.1  2648 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+      " 960140  0.0  3664 /usr/bin/zsh -c source /home/vscode/.claude-official/shell-snapshots/snapshot-zsh-1790738551546-du7bl6.sh 2>/dev/null || true && setopt NO_EX",
+      " 893445  0.0  6600 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+      "     99  0.0  2868 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+     ]
+    },
+    "wall_s": 2073.4,
+    "log": "/home/vscode/work/delta_ingest/m3/runs/base_A.log",
+    "env": {
+     "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+     "SFU_DELTA_ROOT": "",
+     "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+     "SFU_FEATURE_RERANK_ENABLED": "true",
+     "SFU_FEATURE_RRF_ENABLED": "true",
+     "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+     "SFU_META_STAGE_DIR": "",
+     "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+     "SFU_SEARCH_BACKEND": "thinclient",
+     "SFU_SEARCH_SPECULATIVE_RERANK": "",
+     "SFU_SEISMIC_FEDERATION": "parallel",
+     "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+     "SFU_SEISMIC_STAGE_DIR": "",
+     "SFU_SPLADE_BACKEND": "seismic",
+     "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+     "SFU_THINCLIENT_ORDINALS": ""
+    },
+    "launch_start": "2026-09-30T21:54:46Z",
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "model_files": {
+     "/home/vscode/work/models_local/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "/home/vscode/work/models_local/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e"
+    }
+   },
+   "delta:A": {
+    "rc": -15,
+    "cpus": "0-7",
+    "o12_failed_start_attempts": [],
+    "host_after": {
+     "utc": "2026-09-30T22:58:21Z",
+     "loadavg": [
+      2.5478515625,
+      3.9189453125,
+      5.0498046875
+     ],
+     "mem_gb": {
+      "MemTotal": 31.34,
+      "MemAvailable": 17.2,
+      "Cached": 8.89,
+      "SwapTotal": 16.0,
+      "SwapFree": 14.81
+     },
+     "top_procs": [
+      " 999834 99.4 14301708 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+      " 459179  5.2 341012 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "  95402  2.6 271724 claude --dangerously-skip-permissions --model claude-fable-5-1",
+      "    108  0.5  2568 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+      " 956097  0.2  2360 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+      " 893445  0.0  6120 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+      "     99  0.0  3208 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf",
+      " 956096  0.0  1792 tail -n0 -F drive4.log runs/delta_A.log stop_at_flush.log"
+     ]
+    },
+    "wall_s": 1740.3,
+    "log": "/home/vscode/work/delta_ingest/m3/runs/delta_A.log",
+    "env": {
+     "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+     "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+     "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+     "SFU_FEATURE_RERANK_ENABLED": "true",
+     "SFU_FEATURE_RRF_ENABLED": "true",
+     "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+     "SFU_META_STAGE_DIR": "",
+     "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+     "SFU_SEARCH_BACKEND": "thinclient",
+     "SFU_SEARCH_SPECULATIVE_RERANK": "",
+     "SFU_SEISMIC_FEDERATION": "parallel",
+     "SFU_SEISMIC_SHARD_MANIFEST": "",
+     "SFU_SEISMIC_STAGE_DIR": "",
+     "SFU_SPLADE_BACKEND": "seismic",
+     "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+     "SFU_THINCLIENT_ORDINALS": ""
+    },
+    "launch_start": "2026-09-30T21:54:46Z",
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "model_files": {
+     "/home/vscode/work/models_local/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "/home/vscode/work/models_local/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e"
+    }
+   }
+  },
+  "launches": [
+   {
+    "commit": "dfc06e6e283ed27f011266a230bb7f4327f6a7d4",
+    "snapshot": "/home/vscode/work/delta_ingest/m3/code_dfc06e6e",
+    "start": "2026-09-30T20:50:12Z",
+    "arms": {
+     "base:B": {
+      "rc": 0,
+      "cpus": "8-15",
+      "o12_failed_start_attempts": [],
+      "host_after": {
+       "utc": "2026-09-30T21:19:12Z",
+       "loadavg": [
+        11.6298828125,
+        11.7255859375,
+        11.7958984375
+       ],
+       "mem_gb": {
+        "MemTotal": 31.34,
+        "MemAvailable": 24.99,
+        "Cached": 24.18,
+        "SwapTotal": 16.0,
+        "SwapFree": 0.04
+       },
+       "top_procs": [
+        " 788862 96.1 4278960 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+        " 835747 79.0 532612 /home/vscode/work/inplace_update/stage2/target/release/inplace-updater crash --dir /home/vscode/work/inplace_update/stage2/work_a2 --log /ho",
+        " 512691 35.3 4175600 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+        " 459179  5.3 263572 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "  95402  2.6 191260 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "    108  0.5  2484 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+        " 788765  0.2  2528 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+        " 397385  0.1 28948 .venv/bin/python3 scripts/experiments/eval_inplace_bench.py b7 --trials 100 --arms A2"
+       ]
+      },
+      "wall_s": 1739.7,
+      "log": "/home/vscode/work/delta_ingest/m3/runs/base_B.log",
+      "env": {
+       "SFU_DELTA_ROOT": "",
+       "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+       "SFU_FEATURE_RERANK_ENABLED": "true",
+       "SFU_FEATURE_RRF_ENABLED": "true",
+       "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+       "SFU_META_STAGE_DIR": "",
+       "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+       "SFU_SEARCH_BACKEND": "thinclient",
+       "SFU_SEARCH_SPECULATIVE_RERANK": "",
+       "SFU_SEISMIC_FEDERATION": "parallel",
+       "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+       "SFU_SEISMIC_STAGE_DIR": "",
+       "SFU_SPLADE_BACKEND": "seismic",
+       "SFU_THINCLIENT_ORDINALS": ""
+      }
+     }
+    },
+    "python": "/workspaces/sfu-library-thinclient/.venv/bin/python3",
+    "sys_prefix": "/workspaces/sfu-library-thinclient/.venv",
+    "cpus": "auto"
+   },
+   {
+    "commit": "611ee06ba5a71c5aca7177f0ca3620e4bee19a42",
+    "snapshot": "/home/vscode/work/delta_ingest/m3/code_611ee06b",
+    "start": "2026-09-30T21:26:07Z",
+    "arms": {
+     "delta:B": {
+      "rc": 0,
+      "cpus": "0-7",
+      "o12_failed_start_attempts": [],
+      "host_after": {
+       "utc": "2026-09-30T21:46:59Z",
+       "loadavg": [
+        7.48193359375,
+        6.57666015625,
+        7.12353515625
+       ],
+       "mem_gb": {
+        "MemTotal": 31.34,
+        "MemAvailable": 25.41,
+        "Cached": 24.38,
+        "SwapTotal": 16.0,
+        "SwapFree": 0.07
+       },
+       "top_procs": [
+        " 788862  104 6711092 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+        " 512691 35.1 4019476 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+        " 459179  5.3 283556 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "  95402  2.5 200420 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "    108  0.5  2632 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+        " 846234  0.2  3420 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+        " 846078  0.0 45172 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+        "     99  0.0  3384 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+       ]
+      },
+      "wall_s": 1251.0,
+      "log": "/home/vscode/work/delta_ingest/m3/runs/delta_B.log",
+      "env": {
+       "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+       "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+       "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+       "SFU_FEATURE_RERANK_ENABLED": "true",
+       "SFU_FEATURE_RRF_ENABLED": "true",
+       "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+       "SFU_META_STAGE_DIR": "",
+       "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+       "SFU_SEARCH_BACKEND": "thinclient",
+       "SFU_SEARCH_SPECULATIVE_RERANK": "",
+       "SFU_SEISMIC_FEDERATION": "parallel",
+       "SFU_SEISMIC_SHARD_MANIFEST": "",
+       "SFU_SEISMIC_STAGE_DIR": "",
+       "SFU_SPLADE_BACKEND": "seismic",
+       "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+       "SFU_THINCLIENT_ORDINALS": ""
+      }
+     },
+     "base:A": {
+      "rc": 1,
+      "cpus": "0-7",
+      "o12_failed_start_attempts": [
+       {
+        "utc": "2026-09-30T21:47:14Z",
+        "rc": 3,
+        "log": "/home/vscode/work/delta_ingest/m3/runs/base_A.attempt1.log",
+        "enomem_line": [
+         "HEALTH FAIL [\"encode_splade raised Exception('Cannot allocate memory (os error 12)')\"]"
+        ]
+       }
+      ],
+      "host_after": {
+       "utc": "2026-09-30T21:53:53Z",
+       "loadavg": [
+        9.400390625,
+        7.2314453125,
+        7.0771484375
+       ],
+       "mem_gb": {
+        "MemTotal": 31.34,
+        "MemAvailable": 25.51,
+        "Cached": 24.8,
+        "SwapTotal": 16.0,
+        "SwapFree": 0.02
+       },
+       "top_procs": [
+        " 788862  104 5570788 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+        " 512691 35.1 4383636 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+        " 459179  5.4 360340 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "  95402  2.5 181920 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "    108  0.5  2548 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+        " 846234  0.2  2228 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+        " 846078  0.0 41964 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+        "     99  0.0  3252 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+       ]
+      },
+      "wall_s": 414.7,
+      "log": "/home/vscode/work/delta_ingest/m3/runs/base_A.log",
+      "env": {
+       "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+       "SFU_DELTA_ROOT": "",
+       "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+       "SFU_FEATURE_RERANK_ENABLED": "true",
+       "SFU_FEATURE_RRF_ENABLED": "true",
+       "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+       "SFU_META_STAGE_DIR": "",
+       "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+       "SFU_SEARCH_BACKEND": "thinclient",
+       "SFU_SEARCH_SPECULATIVE_RERANK": "",
+       "SFU_SEISMIC_FEDERATION": "parallel",
+       "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+       "SFU_SEISMIC_STAGE_DIR": "",
+       "SFU_SPLADE_BACKEND": "seismic",
+       "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+       "SFU_THINCLIENT_ORDINALS": ""
+      }
+     }
+    },
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "sys_prefix": "/home/vscode/work/venv_local",
+    "model_files": {
+     "/home/vscode/work/models_local/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "/home/vscode/work/models_local/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e"
+    },
+    "cpus": "auto"
+   },
+   {
+    "commit": "e0e3a8f4ca83740d735300e6a7c1d22c98a5fcdc",
+    "snapshot": "/home/vscode/work/delta_ingest/m3/code_e0e3a8f4",
+    "start": "2026-09-30T21:54:46Z",
+    "arms": {
+     "base:A": {
+      "rc": -15,
+      "cpus": "0-7",
+      "o12_failed_start_attempts": [],
+      "host_after": {
+       "utc": "2026-09-30T22:29:20Z",
+       "loadavg": [
+        8.173828125,
+        6.33203125,
+        6.03125
+       ],
+       "mem_gb": {
+        "MemTotal": 31.34,
+        "MemAvailable": 29.09,
+        "Cached": 28.98,
+        "SwapTotal": 16.0,
+        "SwapFree": 14.18
+       },
+       "top_procs": [
+        " 788862  105 7480576 /workspaces/sfu-library-thinclient/.venv/bin/python3 /workspaces/sfu-library-thinclient/scripts/experiments/eval_delta_ingest_m2_delta_reca",
+        " 459179  5.2 202424 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "  95402  2.5 254280 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "    108  0.5  1544 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+        " 956097  0.1  2648 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+        " 960140  0.0  3664 /usr/bin/zsh -c source /home/vscode/.claude-official/shell-snapshots/snapshot-zsh-1790738551546-du7bl6.sh 2>/dev/null || true && setopt NO_EX",
+        " 893445  0.0  6600 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+        "     99  0.0  2868 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+       ]
+      },
+      "wall_s": 2073.4,
+      "log": "/home/vscode/work/delta_ingest/m3/runs/base_A.log",
+      "env": {
+       "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+       "SFU_DELTA_ROOT": "",
+       "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+       "SFU_FEATURE_RERANK_ENABLED": "true",
+       "SFU_FEATURE_RRF_ENABLED": "true",
+       "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+       "SFU_META_STAGE_DIR": "",
+       "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+       "SFU_SEARCH_BACKEND": "thinclient",
+       "SFU_SEARCH_SPECULATIVE_RERANK": "",
+       "SFU_SEISMIC_FEDERATION": "parallel",
+       "SFU_SEISMIC_SHARD_MANIFEST": "/home/vscode/work/inplace_update/m4/base_manifest.json",
+       "SFU_SEISMIC_STAGE_DIR": "",
+       "SFU_SPLADE_BACKEND": "seismic",
+       "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+       "SFU_THINCLIENT_ORDINALS": ""
+      }
+     },
+     "delta:A": {
+      "rc": -15,
+      "cpus": "0-7",
+      "o12_failed_start_attempts": [],
+      "host_after": {
+       "utc": "2026-09-30T22:58:21Z",
+       "loadavg": [
+        2.5478515625,
+        3.9189453125,
+        5.0498046875
+       ],
+       "mem_gb": {
+        "MemTotal": 31.34,
+        "MemAvailable": 17.2,
+        "Cached": 8.89,
+        "SwapTotal": 16.0,
+        "SwapFree": 14.81
+       },
+       "top_procs": [
+        " 999834 99.4 14301708 .venv/bin/python3 scripts/experiments/eval_inplace_s0_2.py run --floor-frac 0.14 --out data/eval_results/inplace_s0_20260930.json",
+        " 459179  5.2 341012 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "  95402  2.6 271724 claude --dangerously-skip-permissions --model claude-fable-5-1",
+        "    108  0.5  2568 /bin/bash /usr/local/bin/lsp-symbol-bridge.sh",
+        " 956097  0.2  2360 ugrep -G --ignore-files --hidden -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.jj --exclude-di",
+        " 893445  0.0  6120 /home/vscode/work/venv_local/bin/python3 scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py drive --deadline 2026-09-30T23:25:00Z --cpus",
+        "     99  0.0  3208 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf",
+        " 956096  0.0  1792 tail -n0 -F drive4.log runs/delta_A.log stop_at_flush.log"
+       ]
+      },
+      "wall_s": 1740.3,
+      "log": "/home/vscode/work/delta_ingest/m3/runs/delta_A.log",
+      "env": {
+       "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
+       "SFU_DELTA_ROOT": "/home/vscode/work/delta_ingest/corpus_a/root",
+       "SFU_EMBEDDING_MODEL_PATH": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+       "SFU_FEATURE_RERANK_ENABLED": "true",
+       "SFU_FEATURE_RRF_ENABLED": "true",
+       "SFU_LIBRARY_MCP_DEPLOY_DIR": "/mnt/MAIN/sfu-library-mcp",
+       "SFU_META_STAGE_DIR": "",
+       "SFU_OPENSEARCH_URL": "http://host.docker.internal:9200",
+       "SFU_SEARCH_BACKEND": "thinclient",
+       "SFU_SEARCH_SPECULATIVE_RERANK": "",
+       "SFU_SEISMIC_FEDERATION": "parallel",
+       "SFU_SEISMIC_SHARD_MANIFEST": "",
+       "SFU_SEISMIC_STAGE_DIR": "",
+       "SFU_SPLADE_BACKEND": "seismic",
+       "SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
+       "SFU_THINCLIENT_ORDINALS": ""
+      }
+     }
+    },
+    "python": "/home/vscode/work/venv_local/bin/python3",
+    "sys_prefix": "/home/vscode/work/venv_local",
+    "model_files": {
+     "/home/vscode/work/models_local/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+     "/home/vscode/work/models_local/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e"
+    },
+    "cpus": "auto",
+    "end": "2026-09-30T22:58:21Z"
+   }
+  ]
+ },
+ "model_identity_check": {
+  "utc": "2026-09-30T23:47Z",
+  "repo_models/splade_onnx_fused/model.onnx": "1b018e1a636a8e3d841084773a77d8244eae95a3714357084c0dfaf72b49a381",
+  "repo_models/sfu-cross-encoder-v1/model.safetensors": "69367ede1983644f3d769c9901dbd94c25ed405933514b728405ec58c8d6885e",
+  "identical_to_local_copies": true
+ },
+ "notes": [
+  "Part A is PARTIAL: common prefix 350 of the pre-registered 600 (base:A stopped at row 350 after the coordinator's GO; delta:A stopped at row 350 = base rows, 22:58Z, to free memory before S0-2 restarted). 10 of 350 titles raise tantivy 'Syntax Error' in _bm25f_leg in BOTH arms (upper-case titles with IN/AND/OR survive the leg's sanitiser as parser operators) and are excluded; 340 compared, 331 present in both top-100s.",
+  "Part B ran base:B on the repo .venv + repo models (20:50-21:19Z, cores 8-15, latency lock then held by B7) and delta:B on the local venv mirror + local byte-identical model copies (21:26-21:47Z, cores 0-7, lock free, not held). Same src (git diff dfc06e6e 611ee06b -- src empty). Tokenizer: both resolved models/sfu-academic-embed-v1 (9p).",
+  "M2's process ran concurrently with every M3 process (coordinator option b). The other track's S0-2 (~21 GB, later swapped ~15 GB) and B7 ran during Part B; a swapoff/swapon ran during base:A (~22:25Z).",
+  "Noise baseline for Part B: not measured in this run (1 pass per arm); M1 (2026-09-29) found gate-off vs empty-root fused/final top-10 120/120 identical on 1 pass. The two final-top-10 changes with an identical fused top-10 (topics 65, 105) come from the reranker input (fused top-50 differs in 7 topics) or rerank float noise across interpreters; not separated.",
+  "Timings are NOT deliverables (timings_valid false everywhere)."
+ ]
+}

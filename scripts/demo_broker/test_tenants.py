@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import os
 import tempfile
-import time
 import unittest
 
 from notify import build_payload
@@ -97,9 +96,9 @@ class TestRateAndEvents(unittest.TestCase):
 
 class TestNotifyPayload(unittest.TestCase):
     def test_ntfy(self):
-        body, headers = build_payload("ntfy", "SFU demo started", "Prof X @ 14:32")
+        body, headers = build_payload("ntfy", "Duck Library demo started", "Prof X @ 14:32")
         self.assertEqual(body, b"Prof X @ 14:32")
-        self.assertEqual(headers["Title"], "SFU demo started")
+        self.assertEqual(headers["Title"], "Duck Library demo started")
 
     def test_slack(self):
         body, headers = build_payload("slack", "t", "m")

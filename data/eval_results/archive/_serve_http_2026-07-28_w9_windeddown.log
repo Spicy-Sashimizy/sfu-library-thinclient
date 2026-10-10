@@ -1,0 +1,191 @@
+2026-07-28 05:34:17 [WARNING] sfu_library_mcp: Config: OPENALEX_TRACKER_PATH is in /tmp — the daily call counter will reset on container restart. Set OPENALEX_TRACKER_PATH to a persistent volume path to preserve budget across restarts.
+2026-07-28 05:34:17 [INFO] sfu_library_mcp: Serving web GUI from /workspaces/sfu-library-thinclient/web at /app
+2026-07-28 05:34:17 [INFO] sfu_library_mcp: Starting SFU Library MCP HTTP server on 0.0.0.0:8080
+2026-07-28 05:34:17 [INFO] sfu_library_mcp: Tools available: 27
+INFO:     Started server process [277849]
+INFO:     Waiting for application startup.
+2026-07-28 05:34:18 [INFO] sfu_library_mcp: Startup warmup: loading retrieval stack + faulting hot set (6 queries) ...
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2026-07-28 05:34:21 [INFO] sfu_library_mcp: dense warm cache: restored 20077 docs from delta.sqlite
+2026-07-28 05:34:21 [INFO] sfu_library_mcp: thinclient: loaded 10 live sections ['cs_math__archive', 'cs_math__recent', 'med_bio__archive', 'med_bio__recent', 'other__archive', 'other__recent', 'phys_eng__archive', 'phys_eng__recent', 'social_sciences__archive', 'social_sciences__recent'], dense=True
+INFO:     127.0.0.1:44112 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:34:25 [WARNING] sfu_library_mcp: remote abstract fetch failed (19 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4394838747%7CW6930560868%7CW6930516330%7CW7108079186%7CW7108071788%7CW7096902244%7CW6968514514%7CW6949564118%7CW7030226715%7CW4412378271%7CW7096103599%7CW7127913161%7CW7127958895%7CW4256583922%7CW7106851392%7CW7106846516%7CW2624972569%7CW6968307845%7CW2536723159&per-page=19&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard0of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard1of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard2of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard3of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard4of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard5of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard6of8.dotvbyte.e5.v2.mmap already staged (5.5 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC stage: global_shard7of8.dotvbyte.e5.v2.mmap already staged (5.6 GB), skipping
+2026-07-28 05:34:25 [INFO] sfu_library_mcp: SEISMIC federation auto-selected 'parallel' (overlay on /var/tmp/seismic_stage/global_shard0of8.dotvbyte.e5.v2.mmap)
+INFO:     127.0.0.1:49604 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49612 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56648 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56662 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55536 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55550 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43006 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43008 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52492 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52506 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47434 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47436 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56346 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56356 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54726 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:35:42 [INFO] sfu_library_mcp: Loading SPLADE ONNX model from /workspaces/sfu-library-thinclient/models/splade_onnx_fused/model.onnx (tokenizer sfu-academic-embed-v1)
+2026-07-28 05:35:46 [INFO] sfu_library_mcp: SPLADE ONNX model loaded (CPU)
+INFO:     127.0.0.1:54734 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:35:46 [WARNING] sfu_library_mcp: remote abstract fetch failed (18 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW7042748635%7CW2058992613%7CW6930516330%7CW6930560868%7CW6912909891%7CW3209141220%7CW4402807759%7CW2607154818%7CW2987104083%7CW3208358587%7CW6910522595%7CW3197274231%7CW6912840473%7CW2965011405%7CW7036999802%7CW2624972569%7CW3157252687%7CW2418603565&per-page=18&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:35:46 [INFO] sfu_library_mcp: Loading embedding model: /workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5
+INFO:     127.0.0.1:48958 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60664 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:00 [INFO] sfu_library_mcp: Embedding model loaded (/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5)
+INFO:     127.0.0.1:60672 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:01 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:02 [INFO] sfu_library_mcp: CrossEncoder loaded: /workspaces/sfu-library-thinclient/models/sfu-cross-encoder-v1
+2026-07-28 05:36:02 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 05:36:03 [WARNING] sfu_library_mcp: remote abstract fetch failed (9 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW7018258429%7CW2765194618%7CW7094372453%7CW3028364192%7CW6885531451%7CW4405787020%7CW3094260366%7CW2518955564%7CW6885988992&per-page=9&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:03 [WARNING] sfu_library_mcp: remote abstract fetch failed (19 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4391878842%7CW4411731327%7CW4416402165%7CW4405765352%7CW4409372275%7CW4411039752%7CW4403337511%7CW6993079272%7CW2767458690%7CW7107953563%7CW7107966258%7CW2611826627%7CW4396723482%7CW6889233319%7CW3175376146%7CW3131078401%7CW2950081799%7CW6891838889%7CW2954826798&per-page=19&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:03 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:03 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 05:36:04 [WARNING] sfu_library_mcp: remote abstract fetch failed (18 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4281653924%7CW2905467621%7CW4230269563%7CW6968761638%7CW6931654653%7CW3186525776%7CW3096021168%7CW1949118065%7CW7064713493%7CW6943554876%7CW2552402601%7CW4313118606%7CW6925335698%7CW4391789641%7CW6963534189%7CW7066487993%7CW4200357099%7CW4389725901&per-page=18&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:04 [WARNING] sfu_library_mcp: remote abstract fetch failed (6 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW6920946432%7CW6958798864%7CW7132466299%7CW2512765318%7CW7007588526%7CW4404389054&per-page=6&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:04 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:04 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 05:36:06 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:06 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+INFO:     127.0.0.1:56186 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:06 [WARNING] sfu_library_mcp: remote abstract fetch failed (7 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW3198799154%7CW7112961728%7CW4390821342%7CW6948073084%7CW4402562336%7CW7133304144%7CW6931813919&per-page=7&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:06 [WARNING] sfu_library_mcp: remote abstract fetch failed (15 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4416941050%7CW7128074748%7CW7128096512%7CW4404317654%7CW7105687504%7CW7105643441%7CW4384571950%7CW2256936395%7CW4300667117%7CW4407928228%7CW4386605606%7CW4386709843%7CW4391582464%7CW6948148624%7CW4409589310&per-page=15&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:06 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:07 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 05:36:08 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=20 -> 20
+2026-07-28 05:36:08 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 5 results
+2026-07-28 05:36:08 [INFO] sfu_library_mcp: Startup warmup complete in 109.9s
+2026-07-28 05:36:08 [INFO] sfu_library_mcp: cache pre-seed: planting 6 demo seed queries (sequential, post-warmup) ...
+INFO:     127.0.0.1:56202 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:11 [WARNING] sfu_library_mcp: remote abstract fetch failed (36 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW3200046933%7CW2769688952%7CW3200781813%7CW2336110468%7CW3097880516%7CW4311171295%7CW7128703766%7CW4409986271%7CW2909555249%7CW2796592028%7CW4226168184%7CW3119933776%7CW4256399402%7CW6936466721%7CW2888130325%7CW3180662871%7CW3092881186%7CW2766197357%7CW2960175759%7CW4402095981%7CW3177176800%7CW4416339953%7CW3119830046%7CW2526186968%7CW4411099105%7CW4396885645%7CW2902318536%7CW3167850970%7CW4414967621%7CW3013142534%7CW7042621986%7CW2899957650%7CW4411316148%7CW1934158825%7CW3168254500%7CW2892225880&per-page=36&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:11 [WARNING] sfu_library_mcp: remote abstract fetch failed (10 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW2766197357%7CW4283369446%7CW6949437305%7CW6930872241%7CW6893604819%7CW6949762515%7CW6976845084%7CW7061510227%7CW2601258215%7CW4398132889&per-page=10&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:12 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:12 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-28 05:36:13 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:13 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-28 05:36:16 [WARNING] sfu_library_mcp: remote abstract fetch failed (40 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4386910281%7CW2397613839%7CW7024856894%7CW3127661864%7CW2999134649%7CW4239808709%7CW3036606887%7CW4210762719%7CW2564750536%7CW4312210632%7CW6976742248%7CW6939884418%7CW7062406380%7CW4318477514%7CW4405630820%7CW4213075155%7CW6912150918%7CW6893264102%7CW3104723253%7CW4405876865%7CW4413327930%7CW4403467602%7CW6977340145%7CW6921408736%7CW6921411891%7CW6977591113%7CW6920887678%7CW6901999476%7CW2566727698%7CW2969747859%7CW7037370996%7CW2811029880%7CW6920651849%7CW4394477313%7CW7042777373%7CW4415912069%7CW6973837960%7CW4386914983%7CW4210907370%7CW7038374628&per-page=40&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:16 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:16 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:44674 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:18 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:18 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-28 05:36:20 [WARNING] sfu_library_mcp: remote abstract fetch failed (45 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW7017652726%7CW4410541764%7CW7048660758%7CW6910635755%7CW6979288780%7CW7134901477%7CW4404701039%7CW4312625760%7CW4399837292%7CW4385211593%7CW4396725574%7CW7125597338%7CW6962664354%7CW7055286164%7CW4364382868%7CW3137741072%7CW4388852108%7CW4390221451%7CW4385659735%7CW4389395703%7CW6979777533%7CW7135197544%7CW4292399434%7CW3130274530%7CW6910804014%7CW3094060150%7CW4404826425%7CW4387475574%7CW4297975906%7CW4416259539%7CW7140656488%7CW4312138485%7CW4417521042%7CW4403322902%7CW4224786608%7CW4416875150%7CW4206689765%7CW4221163428%7CW4400010928%7CW4406626919%7CW4406534352%7CW4312142088%7CW7118037617%7CW4387687199%7CW7112414924&per-page=45&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:21 [WARNING] sfu_library_mcp: remote abstract fetch failed (50 ids): 429 Client Error: Too Many Requests for url: https://api.openalex.org/works?filter=openalex_id%3AW4411958050%7CW4387882024%7CW4287125495%7CW6921720114%7CW4400999790%7CW7128696544%7CW4221152661%7CW2952480183%7CW4310413874%7CW4296205287%7CW2899400350%7CW4294349577%7CW4389935611%7CW4406259880%7CW4384455743%7CW4297949515%7CW3101697762%7CW4221151574%7CW3036877262%7CW3094060150%7CW3167942196%7CW4312625760%7CW4387694017%7CW2972345006%7CW4391462756%7CW6891789911%7CW4293566852%7CW4319049576%7CW4387127183%7CW6929574097%7CW7048660758%7CW7126227460%7CW4404232819%7CW4394285496%7CW6920670083%7CW7077465561%7CW4384931247%7CW7127172669%7CW7127203198%7CW7111130524%7CW7048709044%7CW6966833821%7CW6959588165%7CW6940258653%7CW6959143694%7CW7124455086%7CW4296975737%7CW4298089296%7CW7124557925%7CW2795523124&per-page=50&select=id%2Cabstract_inverted_index&mailto=<contact>
+2026-07-28 05:36:21 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:21 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+INFO:     127.0.0.1:44680 - "GET /health HTTP/1.1" 200 OK
+2026-07-28 05:36:22 [INFO] sfu_library_mcp: rerank: rrf=True embed=True docs=50 -> 50
+2026-07-28 05:36:22 [INFO] sfu_library_mcp: crossencoder: scored 20 candidates -> 20 results
+2026-07-28 05:36:22 [INFO] sfu_library_mcp: cache pre-seed: complete in 14.3s (6/6 planted; cache resident=6, miss=6, store=6, hit=0)
+INFO:     127.0.0.1:43100 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43108 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45262 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45268 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50342 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50352 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34086 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34100 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34114 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34120 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34130 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49982 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49988 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37924 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37934 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33604 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33614 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42732 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42744 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58592 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58596 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49098 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49114 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34230 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34246 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57066 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57072 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57146 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57158 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37276 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37292 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33264 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33274 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52232 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52246 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44256 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44270 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49422 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49432 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41442 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60374 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60378 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48576 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48586 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42402 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42404 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42416 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48852 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48862 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41722 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41726 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44562 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44574 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39778 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39788 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53316 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53324 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57958 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57962 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42798 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42804 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33602 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33606 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42696 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42710 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47656 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47672 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48812 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48814 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48628 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48638 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46322 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46332 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59500 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59516 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52078 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52092 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52102 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41812 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41828 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45106 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45112 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48700 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48702 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44082 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44094 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44098 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40574 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40578 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52930 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52936 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34260 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34262 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38420 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38424 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38816 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38828 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40440 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56612 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56622 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47032 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47034 - "GET /health HTTP/1.1" 200 OK

@@ -27,7 +27,7 @@
 >   queries; f32 0.6039 = quant 0.6039 over 14 judged-coverage queries). Result:
 >   `data/eval_results/quant_fidelity_live_150m_20260624_2345.json`. Catalog +
 >   VALIDATION_REPORT + BENCHMARK_METHODOLOGY updated with the live numbers.
-> - **C1 DONE 2026-06-24** — `scripts/build_presentation_metrics.py` aggregator
+> - **C1 DONE 2026-06-24** — `scripts/experiments/build_presentation_metrics.py` aggregator
 >   created: parses every relevant `data/eval_results/` file (+ Qdrant latency
 >   logs) into the canonical ledger `data/eval_results/METRICS_CATALOG.json`
 >   (idempotent upsert by key), renders `presentation_metrics_<date>.json` +
@@ -193,7 +193,7 @@ artifact-deletion safety check (Workstream D dry-run).
 
 Produce one consolidated, presentation-ready artifact comparable to training.
 
-1. **New aggregator** `scripts/build_presentation_metrics.py`: reads every relevant
+1. **New aggregator** `scripts/experiments/build_presentation_metrics.py`: reads every relevant
    file under `data/eval_results/` (LLM-judge, parity, quant-fidelity, dense POC,
    storage levers, latency logs) and emits:
    - `data/eval_results/presentation_metrics_<date>.json` (machine-readable), and
@@ -252,7 +252,7 @@ not a nicety.
    `data/eval_results/METRICS_CATALOG.json` — one row per metric run with:
    `metric, k, scale, backend, value, baseline_value, delta, eval_script,
    result_file, date, git_commit, status` where `status ∈ {measured, est, unmeasured}`.
-   `scripts/build_presentation_metrics.py` both **appends to** and **renders from**
+   `scripts/experiments/build_presentation_metrics.py` both **appends to** and **renders from**
    this catalog, so the JSON is the canonical ledger and the markdown is generated.
 4. **Human-readable catalog** `docs/archive/bmp_decommission_plan/METRICS_CATALOG.md`: a table
    generated from the JSON above, grouped by section (Quality / Parity / Ops), each
@@ -289,7 +289,7 @@ Only after the go/no-go report passes:
 (retry/backoff), `scripts/experiments/eval_quant_fidelity.py` (read live Qdrant collection),
 `docs/THIN_CLIENT_SWAP.md`, `docs/README.md`, `docs/STORAGE_BUDGET_150M.md`.
 
-**Create:** `scripts/build_presentation_metrics.py`;
+**Create:** `scripts/experiments/build_presentation_metrics.py`;
 `docs/archive/bmp_decommission_plan/` containing `PLAN.md` (this plan, per the user's request),
 `VALIDATION_REPORT.md` (go/no-go gate table), `PRESENTATION_METRICS.md`,
 `METRICS_CATALOG.md`, `DO_SIZING.md`;

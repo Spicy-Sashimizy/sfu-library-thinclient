@@ -130,7 +130,6 @@ class QueryLogger:
         self._session = os.environ.get("SFU_SERVE_QUERY_LOG_SESSION") or _rand_id()
         self._dropped = 0
         self._q: "queue.Queue[dict | None]" = queue.Queue(maxsize=max(1, buffer))
-        self._stop = threading.Event()
         self._thread = threading.Thread(target=self._run, name="serve-query-log",
                                         daemon=True)
         self._fh = None
@@ -277,12 +276,6 @@ class QueryLogger:
             pass
         if self._thread.is_alive() and self._thread is not threading.current_thread():
             self._thread.join(timeout=5.0)
-
-
-    def stats(self) -> dict:
-        return {"enabled": self.enabled, "path": str(self.path),
-                "max_bytes": self.max_bytes, "dropped": self._dropped,
-                "session": self._session, "store_raw": self.store_raw}
 
 
 def _normalize_query(q: str) -> str:

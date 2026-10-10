@@ -93,10 +93,6 @@ def script_bucket(text: str) -> str:
     return name if n > len(head) * 0.15 else "latin"
 
 
-def _is_cyrillic(text: str) -> bool:
-    return script_bucket(text) == "cyrillic"
-
-
 class AbstractStoreWriter:
     """Build-time writer (v3). Buffers per script bucket, trains each bucket's
     dict at TRAIN_TARGET_DOCS (or finish), then packs ~32 KB blocks."""

@@ -1,4 +1,4 @@
-# SFU Library Suite — web GUI
+# Duck Library Suite — web GUI
 
 The web GUI for the thin-client stack. Implementation of the `claude.ai/design`
 handoff bundle. Served as **static files at `/app`** by the HTTP entry point —

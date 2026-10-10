@@ -28,7 +28,6 @@ shards) — since 2026-07-06 that federated path is the DEFAULT SPLADE leg
 """
 import logging
 import os
-from pathlib import Path
 
 import numpy as np
 

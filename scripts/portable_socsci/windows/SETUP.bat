@@ -1,6 +1,6 @@
 @echo off
 REM ===================================================================
-REM  SFU Library (portable social-sciences edition) - SETUP
+REM  Duck Library (portable social-sciences edition) - SETUP
 REM
 REM  Double-click this to run the install wizard. It lets you:
 REM    * Install to this PC (fastest), OR

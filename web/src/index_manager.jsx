@@ -85,7 +85,7 @@ const ResultCacheCard = () => {
   return (
     <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-light)", borderRadius: 8, padding: "12px 14px", gridColumn: "span 2" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <span style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label} <Badge tone={tone}>{!live ? "demo" : (enabled ? "on" : "SFU_RESULT_CACHE=0")}</Badge></span>
+        <span style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label} <Badge tone={tone}>{!live ? "demo" : (enabled ? "on" : "off (env gate)")}</Badge></span>
         <Icon name="zap" size={14} style={{ color: "var(--c-amber)" }} />
       </div>
       <div style={{ display: "flex", gap: 18, alignItems: "baseline" }}>
@@ -383,7 +383,7 @@ const WarmCacheScreen = () => {
           Query-driven dense delta over the static seed — every hydrated local result is enqueued fire-and-forget, CPU-encoded in the background, and becomes retrievable for <em>future</em> queries. The cache converges to the user's active domain.
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <Toggle on={enabled} setOn={setEnabled} label="SFU_DENSE_WARMCACHE" />
+          <Toggle on={enabled} setOn={setEnabled} label="Dense warm cache" />
           {enabled ? <Badge tone="ok">on · default</Badge> : <Badge tone="muted">disabled</Badge>}
         </div>
       </div>

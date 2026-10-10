@@ -75,7 +75,6 @@ import asyncio
 import logging
 import os
 import threading
-from typing import Any
 
 from lib import result_cache
 
@@ -153,7 +152,6 @@ def _historical_queries(limit: int = 200) -> list[str]:
     empty. The privacy boundary in serve_query_log NEVER stores the true raw
     query (only normalized+truncated), and we re-normalize here regardless, so
     this stays PII-free."""
-    from pathlib import Path as _Path
     out: list[str] = []
     out.extend(_serve_log_queries(limit=limit))
     out.extend(_bench_pool_queries())

@@ -1623,7 +1623,7 @@ const ResultCacheCard = () => {
     }
   }, label, " ", /*#__PURE__*/React.createElement(Badge, {
     tone: tone
-  }, !live ? "demo" : enabled ? "on" : "SFU_RESULT_CACHE=0")), /*#__PURE__*/React.createElement(Icon, {
+  }, !live ? "demo" : enabled ? "on" : "off (env gate)")), /*#__PURE__*/React.createElement(Icon, {
     name: "zap",
     size: 14,
     style: {
@@ -2470,7 +2470,7 @@ const WarmCacheScreen = () => {
   }, /*#__PURE__*/React.createElement(Toggle, {
     on: enabled,
     setOn: setEnabled,
-    label: "SFU_DENSE_WARMCACHE"
+    label: "Dense warm cache"
   }), enabled ? /*#__PURE__*/React.createElement(Badge, {
     tone: "ok"
   }, "on \xB7 default") : /*#__PURE__*/React.createElement(Badge, {

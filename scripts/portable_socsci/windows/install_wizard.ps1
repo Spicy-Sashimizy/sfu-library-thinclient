@@ -1,5 +1,5 @@
 # ============================================================================
-#  install_wizard.ps1 - SFU Library (portable social-sciences) setup wizard
+#  install_wizard.ps1 - Duck Library (portable social-sciences) setup wizard
 #
 #  Self-contained WPF wizard. Ships at the bundle root on the USB; launched by
 #  SETUP.bat (double-click). Steps:
@@ -173,7 +173,7 @@ $script:MoveWork = {
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SFU Library - Setup" Height="640" Width="860"
+        Title="Duck Library - Setup" Height="640" Width="860"
         WindowStartupLocation="CenterScreen" FontFamily="Segoe UI" Background="#F5F5F7">
   <DockPanel>
     <Border DockPanel.Dock="Top" Background="#B3261E" Padding="24,18">
@@ -197,7 +197,7 @@ $script:MoveWork = {
       <!-- Step 0: Welcome -->
       <StackPanel x:Name="Step0">
         <TextBlock FontSize="15" TextWrapping="Wrap" Foreground="#222">
-          This sets up the offline SFU Library (social-sciences edition) on this computer.
+          This sets up the offline Duck Library (social-sciences edition) on this computer.
         </TextBlock>
         <Border Background="#FFF6E5" BorderBrush="#E9C46A" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,18">
           <StackPanel>
@@ -288,7 +288,7 @@ $script:MoveWork = {
       <StackPanel x:Name="Step5" Visibility="Collapsed">
         <TextBlock FontSize="18" FontWeight="SemiBold" Text="All set." Foreground="#1B7F3B"/>
         <TextBlock x:Name="FinishMsg" FontSize="13" Foreground="#333" TextWrapping="Wrap" Margin="0,12,0,0"/>
-        <CheckBox x:Name="ChkLaunch" Content="Launch SFU Library now" IsChecked="True" Margin="0,18,0,0"/>
+        <CheckBox x:Name="ChkLaunch" Content="Launch Duck Library now" IsChecked="True" Margin="0,18,0,0"/>
         <CheckBox x:Name="ChkShortcut" Content="Create a Desktop shortcut" IsChecked="True" Margin="0,8,0,0"/>
       </StackPanel>
     </Grid>
@@ -317,7 +317,7 @@ $script:sizeSeismic = $null
 $script:sizeHot     = $null
 $script:freedBytes  = [int64]0
 $script:copyStarted = $false
-$script:TargetPath.Text = Join-Path $env:LOCALAPPDATA 'SFU-Library'
+$script:TargetPath.Text = Join-Path $env:LOCALAPPDATA 'Duck-Library'
 
 function Get-Mode {
     if ($RbPc.IsChecked)     { return 'pc' }
@@ -392,7 +392,7 @@ function Enter-Step {
                 'hybrid' { 'Fast parts are on this PC; the seismic index streams from the USB (keep it plugged in).' }
                 default  { 'Running from the USB. Searches run one at a time (search queue is ON). Keep the USB plugged in.' }
             }
-            $FinishMsg.Text = "SFU Library is ready at:`n$where`n`n$note"
+            $FinishMsg.Text = "Duck Library is ready at:`n$where`n`n$note"
         }
     }
 }
@@ -444,7 +444,7 @@ $script:timer.Add_Tick({
     if ($script:sync.done) {
         $script:timer.Stop()
         if (-not $script:sync.ok) {
-            [System.Windows.MessageBox]::Show("Operation failed:`n$($script:sync.error)", 'SFU Library Setup',
+            [System.Windows.MessageBox]::Show("Operation failed:`n$($script:sync.error)", 'Duck Library Setup',
                 'OK', 'Error') | Out-Null
             $BtnNext.IsEnabled = $true; $BtnBack.IsEnabled = $true
         } else {
@@ -485,7 +485,7 @@ function Start-MovePhase {
     }
     if ($sel.Count -eq 0) {
         [System.Windows.MessageBox]::Show('No files selected. Tick files to move, or go Back and choose Hybrid / Run-from-USB.',
-            'SFU Library Setup', 'OK', 'Information') | Out-Null
+            'Duck Library Setup', 'OK', 'Information') | Out-Null
         return $false
     }
     Reset-Sync
@@ -510,7 +510,7 @@ function Start-MovePhase {
                     $FreedInfo.Text = "Freed enough. Click Next to install."
                 }
             } else {
-                [System.Windows.MessageBox]::Show("Move failed:`n$($script:sync.error)",'SFU Library Setup','OK','Error') | Out-Null
+                [System.Windows.MessageBox]::Show("Move failed:`n$($script:sync.error)",'Duck Library Setup','OK','Error') | Out-Null
                 $BtnBack.IsEnabled = $true; $BtnNext.IsEnabled = $true
             }
         }
@@ -544,13 +544,13 @@ function New-DesktopShortcut {
     param([string]$StartBat)
     try {
         $desktop = [Environment]::GetFolderPath('Desktop')
-        $lnk = Join-Path $desktop 'SFU Library.lnk'
+        $lnk = Join-Path $desktop 'Duck Library.lnk'
         $sh = New-Object -ComObject WScript.Shell
         $s = $sh.CreateShortcut($lnk)
         $s.TargetPath = $StartBat
         $s.WorkingDirectory = Split-Path -Parent $StartBat
         $s.IconLocation = "$env:SystemRoot\System32\imageres.dll,3"
-        $s.Description = 'SFU Library (offline social-sciences edition)'
+        $s.Description = 'Duck Library (offline social-sciences edition)'
         $s.Save()
     } catch {}
 }
@@ -585,7 +585,7 @@ function Go-Step {
         $script:StepPanels[$k].Visibility = if ($k -eq $i) { 'Visible' } else { 'Collapsed' }
     }
     $titles = @(
-        @('Welcome',                 'Offline SFU Library - social-sciences edition'),
+        @('Welcome',                 'Offline Duck Library - social-sciences edition'),
         @('Step 1 of 4 - Processor', 'Confirming this computer can run the engine'),
         @('Step 2 of 4 - Choose mode','Install to PC, Hybrid, or run from USB'),
         @('Free up space',           'Move files to the USB to make room'),
@@ -603,9 +603,9 @@ function Go-Step {
 
 $BtnBrowse.Add_Click({
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
-    $dlg.Description = 'Choose where to install SFU Library'
+    $dlg.Description = 'Choose where to install Duck Library'
     if ($dlg.ShowDialog() -eq 'OK') {
-        $script:TargetPath.Text = Join-Path $dlg.SelectedPath 'SFU-Library'
+        $script:TargetPath.Text = Join-Path $dlg.SelectedPath 'Duck-Library'
         Update-SpaceInfo
     }
 })

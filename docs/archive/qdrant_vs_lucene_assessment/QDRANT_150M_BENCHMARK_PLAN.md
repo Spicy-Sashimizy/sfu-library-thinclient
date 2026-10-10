@@ -110,7 +110,7 @@ SFU_SPLADE_BACKEND=qdrant .venv/bin/python3 scripts/eval_thinclient_parity.py \
 - **Resilience measured:** retry-heal rate under seeded red; OOM ceiling under
   concurrency per host size.
 - All results land in `data/eval_results/` with absolute dates and feed
-  `scripts/build_presentation_metrics.py --rebuild` (so `METRICS_CATALOG.json`
+  `scripts/experiments/build_presentation_metrics.py --rebuild` (so `METRICS_CATALOG.json`
   carries the correctly-sized-host numbers, not just the RAM-bound ones).
 
 ## Reuse — scripts that already exist
@@ -119,5 +119,5 @@ SFU_SPLADE_BACKEND=qdrant .venv/bin/python3 scripts/eval_thinclient_parity.py \
   + per-leg overlap + latency.
 - `scripts/experiments/eval_quant_fidelity.py --live-qdrant` — parity re-check post-restore.
 - `scripts/archive/qdrant-serve.supervisor.conf` — serve-only auto-restart on the target.
-- `scripts/build_presentation_metrics.py --rebuild` — fold results into the catalog.
+- `scripts/experiments/build_presentation_metrics.py --rebuild` — fold results into the catalog.
 </content>

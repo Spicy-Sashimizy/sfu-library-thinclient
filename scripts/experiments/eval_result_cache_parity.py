@@ -35,7 +35,7 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 SEED_FILE = REPO / "data" / "eval_results" / "demo_seed_queries.txt"
 AB_JSON = REPO / "data" / "eval_results" / "result_cache_ab_2026-07-18.json"
 DEFAULT_LIMIT = 50

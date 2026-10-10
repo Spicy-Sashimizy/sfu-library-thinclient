@@ -1,4 +1,4 @@
-# SFU Library demo broker (NAS-side, always-on)
+# Duck Library demo broker (NAS-side, always-on)
 
 > **CLOSED DEAD 2026-09-25** — cloud access ended: the OCI E5 host and every
 > DigitalOcean droplet are gone for good, so there is no instance for this

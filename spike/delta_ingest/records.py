@@ -35,7 +35,6 @@ DELTA_SECTION = "delta"
 # and other OpenAlex churn are deliberately NOT here — see 01_RESEARCH.md §1
 # (~15% of records are touched per month, mostly citation bumps).
 CONTENT_FIELDS = ("title", "abstract", "year", "type", "is_oa", "doi")
-ENCODE_FIELDS = ("title", "abstract")
 
 
 @dataclass
@@ -101,11 +100,6 @@ class DocRecord:
             return None
         return json.dumps({"id": self.id, "vector": self.sparse_field},
                           separators=(",", ":"))
-
-    def meta_row(self) -> tuple:
-        """(id, title, doi, year, type, is_oa, section) — meta.sqlite shape."""
-        return (self.id, self.title or "", self.doi or "", self.year,
-                self.type or "", bool(self.is_oa), self.section())
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), ensure_ascii=False, separators=(",", ":"))

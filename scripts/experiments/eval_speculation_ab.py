@@ -79,7 +79,7 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 OUT = REPO / "data" / "eval_results" / "speculation_ab_2026-07-28.json"
 SEED_FILE = REPO / "data" / "eval_results" / "demo_seed_queries.txt"
 BENCH_FILE = REPO / "data" / "eval_results" / "speculation_bench_queries.txt"

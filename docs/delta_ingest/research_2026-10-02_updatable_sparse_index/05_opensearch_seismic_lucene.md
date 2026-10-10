@@ -1,5 +1,7 @@
 # OpenSearch neural sparse ANN (SEISMIC inside Lucene segments): update/merge design and reusability for standalone Rust SEISMIC
 
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+
 Researched 2026-10-02. Tags: [read] = I opened and read the source (for code: shallow clone of the repo's default branch on 2026-10-02); [snippet] = search-result snippet or tool summary only; [inferred] = my reasoning from read material.
 
 Code snapshots read:

@@ -1,6 +1,6 @@
 @echo off
 REM ===================================================================
-REM  SFU Library - restore files that SETUP moved to this USB.
+REM  Duck Library - restore files that SETUP moved to this USB.
 REM
 REM  When you used "Free up space" during setup, your files were copied
 REM  here (verified), then deleted from the PC, and logged in

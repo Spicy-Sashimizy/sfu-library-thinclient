@@ -1,5 +1,7 @@
 # Dynamic / updatable indexes for learned sparse retrieval (LSR): 2024–2026 literature and code survey
 
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+
 Compiled 2026-10-02. Evidence tags: **[read]** = I opened the full paper PDF, source code or page and read the passage; **[snippet]** = search-result snippet or abstract only; **[inferred]** = my own derivation from cited facts (not a claim made by any source). PDFs were fetched from arXiv or author pages and text-extracted locally; GitHub facts come from `gh api` and shallow clones on 2026-10-02.
 
 Context used for the inferences: 150M SPLADE vectors served from immutable SEISMIC shards (per-term statically pruned posting lists, clustered into blocks with summary vectors, plus a forward index). Per quarter, about 27% of a shard's docs are updated, 15% are new and 6% are deleted. An in-place posting-slot updater failed because list growth outran the slots that deletions freed.

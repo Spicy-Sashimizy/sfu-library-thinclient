@@ -1,4 +1,4 @@
-# web/ — SFU Library Suite GUI
+# web/ — Duck Library Suite GUI
 
 Vendored React 18 + in-browser Babel (`vendor/`) — NO CDN, NO npm build
 step, strict CSP-friendly. Apps are single-file JSX ported from design

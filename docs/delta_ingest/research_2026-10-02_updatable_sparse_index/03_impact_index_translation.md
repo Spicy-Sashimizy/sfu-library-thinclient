@@ -1,5 +1,7 @@
 # Impact-quantized inverted index as a SPLADE "translation layer" (tantivy / Lucene / PISA)
 
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+
 Research notes compiled 2026-10-02. Markers: **[read]** = I opened and read the source (paper PDF text, source file, doc page); **[snippet]** = search-result snippet only; **[inferred]** = my derivation from cited facts, not stated by any source.
 Code read at: tantivy `master` commit `1f9e49da` (2026-09-30, Cargo version `0.27.0`, unreleased); tantivy crate tarball `0.26.2` from crates.io (published 2026-09-08); tantivy-py `master` commit `46b25280` (2026-10-01, package version `0.26.2`, depends on `tantivy = "0.26.2"`, pyo3 0.29). This repo pins `tantivy>=0.26.0` (`requirements.txt:25`) and the venv has tantivy-py `0.26.0` installed.
 

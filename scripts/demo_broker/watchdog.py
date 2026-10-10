@@ -17,7 +17,6 @@ import json
 import logging
 import os
 import sys
-import time
 import urllib.request
 from datetime import datetime
 from zoneinfo import ZoneInfo

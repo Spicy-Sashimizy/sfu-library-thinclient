@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadPlaywright, openApp, mockApi } from './gui_testbed/lib.mjs';
+import { loadPlaywright, openApp, mockApi } from '../gui_testbed/lib.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 const results = [];
 function record(ctx, ok, detail) { results.push({ ctx, ok, detail }); }

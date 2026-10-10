@@ -154,9 +154,6 @@ class SemanticScholarClient:
         data = self._get(f"/paper/{paper_id}", {"fields": fields})
         return _normalize_paper(data) if data and data.get("paperId") else None
 
-    def get_paper_by_doi(self, doi: str, fields: str = _PAPER_FIELDS) -> dict | None:
-        return self.get_paper(f"DOI:{doi}", fields)
-
     def get_citations(
         self,
         paper_id: str,

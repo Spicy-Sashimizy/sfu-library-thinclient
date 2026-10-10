@@ -56,7 +56,7 @@ lines are deletions — the "any datapoint" path), `OpenAlexSnapshotAdapter`
 (partition-date watermark + `deleted_ids.csv.gz`, network injected),
 `OpenAlexApiAdapter` (cursor paging, key mandatory, `meta.cost_usd` summed).
 arXiv/Zotero/S2 adapters are ~30 lines each over their existing clients
-(`scripts/arxiv_fetcher.py`, `src/lib/zotero.py`, `src/lib/semantic_scholar.py`
+(`scripts/experiments/arxiv_fetcher.py`, `src/lib/zotero.py`, `src/lib/semantic_scholar.py`
 already produce the fields) — not written yet.
 
 ### 1.3 Ledger (`ledger.py`) — the only continuously written store

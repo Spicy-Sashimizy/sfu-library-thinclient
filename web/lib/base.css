@@ -1,4 +1,4 @@
-/* SFU Library Suite — shared UX / accessibility baseline.
+/* Duck Library Suite — shared UX / accessibility baseline.
  * Linked by every app AFTER its own <style>, so these layer on top.
  * Implements widely-recommended best practices: respect reduced-motion,
  * visible keyboard focus, text-zoom safety, long-text wrapping, fluid media,

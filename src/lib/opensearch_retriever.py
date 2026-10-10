@@ -3,7 +3,7 @@
 Two search modes, selected by the `splade_enabled` config flag:
   - BM25F (default, no GPU required): multi_match across title^3 / abstract / concepts^2.
   - SPLADE (splade_enabled=True): encode query → sparse term weights → rank_features query.
-    Requires transformers + torch; loaded lazily so BM25F deployments don't need them.
+    SPLADE query encoding runs on ONNX Runtime (no torch); loaded lazily so BM25F deployments don't need them.
 
 Index schema is defined in docker/opensearch/index_template.json.
 """

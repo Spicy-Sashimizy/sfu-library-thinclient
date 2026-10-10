@@ -69,6 +69,6 @@ if __name__ == "__main__":
     if not CONFIG.notify_webhook:
         print("set DEMO_NOTIFY_WEBHOOK (+DEMO_NOTIFY_TOKEN for auth-locked ntfy)")
         raise SystemExit(2)
-    b, h = build_payload(CONFIG.notify_kind, "SFU demo broker — test", msg, CONFIG.notify_token)
+    b, h = build_payload(CONFIG.notify_kind, "Duck Library demo broker — test", msg, CONFIG.notify_token)
     _post(CONFIG.notify_webhook, b, h)
     print(f"posted to {CONFIG.notify_webhook} (kind={CONFIG.notify_kind}, auth={'yes' if CONFIG.notify_token else 'no'})")

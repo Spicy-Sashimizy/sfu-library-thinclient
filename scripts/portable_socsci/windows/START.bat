@@ -1,6 +1,6 @@
 @echo off
 REM ===================================================================
-REM  SFU Library (portable social-sciences edition) - launcher
+REM  Duck Library (portable social-sciences edition) - launcher
 REM
 REM  Double-clicked directly on the USB  -> portable mode (everything on
 REM  the drive; sequential search queue ON). Or written + launched by the
@@ -73,9 +73,9 @@ if "%MCP_HTTP_PORT%"=="" set "MCP_HTTP_PORT=8080"
 echo [START] mode=%MODE%  sequential=%SEQUENTIAL%
 
 REM --- 3. Launch the server (from src\, like serve_http.sh does).
-echo [START] launching SFU Library on http://127.0.0.1:%MCP_HTTP_PORT%/app ...
+echo [START] launching Duck Library on http://127.0.0.1:%MCP_HTTP_PORT%/app ...
 pushd "%ROOT%\src"
-start "SFU Library (server)" /min "%PY%" sfu_library_mcp_http.py
+start "Duck Library (server)" /min "%PY%" sfu_library_mcp_http.py
 popd
 
 REM --- 4. Wait for /health to report warm (WI-6: "up" != "warm"), then open UI.
@@ -93,6 +93,6 @@ if errorlevel 1 (
 
 start "" "http://127.0.0.1:%MCP_HTTP_PORT%/app"
 echo [START] UI opened. Close this window to stop the server.
-echo         (the server runs in the minimized "SFU Library (server)" window)
+echo         (the server runs in the minimized "Duck Library (server)" window)
 pause
 endlocal

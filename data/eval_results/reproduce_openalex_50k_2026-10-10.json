@@ -1,0 +1,983 @@
+{
+ "date": "2026-10-10",
+ "doc": "docs/REPRODUCIBILITY.md",
+ "scripts": [
+  "scripts/reproduce/rebuild_from_openalex.py",
+  "scripts/reproduce/verify_rebuild.py"
+ ],
+ "input_part": "s3://openalex/data/jsonl/works/updated_date=2026-09-17/part_0005.gz (57,643 works, 91,823,543 B); first 50,000 lines",
+ "runs": {
+  "manual_uncontended": {
+   "how": "the two CLI commands by hand (ingest --limit 50000, flush --force), no other load on the host",
+   "ingest_seconds": 149,
+   "flush_seconds": 32,
+   "total_seconds": 181,
+   "docs": 21122,
+   "sections": {
+    "cs_math__archive": 430,
+    "cs_math__recent": 1899,
+    "med_bio__archive": 1540,
+    "med_bio__recent": 2838,
+    "other__archive": 2865,
+    "other__recent": 4425,
+    "phys_eng__archive": 440,
+    "phys_eng__recent": 1565,
+    "social_sciences__archive": 1082,
+    "social_sciences__recent": 4038
+   },
+   "seismic": {
+    "jsonl": "seismic/delta_g0001.jsonl",
+    "stock": "seismic/delta_g0001.index.seismic",
+    "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+    "format": "dotvbyte_fixedu8_v2",
+    "stages": {
+     "build": {
+      "seconds": 4.99,
+      "docs": 21122,
+      "dim": 23266,
+      "nnz": 1959660
+     },
+     "mmap": {
+      "seconds": 0.79
+     },
+     "dotvbyte": {
+      "seconds": 1.13
+     }
+    },
+    "status": "served"
+   },
+   "verify": {
+    "mode_B_generation_dir_as_root": {
+     "mode": "B",
+     "index_root": "/var/tmp/duck_repro/delta/g0001",
+     "construct_ms": 9.1,
+     "queries": [
+      {
+       "q": "social capital and civic participation",
+       "n_hits": 10,
+       "wall_ms": 80278.2,
+       "legs_hit_counts": {
+        "bm25f": 7,
+        "splade": 7
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "Role of Cultural Capital and Social Relationship in Shaping Cultural Consumption",
+         2026
+        ],
+        [
+         null,
+         "Generating social capital at the workplace: a South African case of inside-out s",
+         2001
+        ],
+        [
+         null,
+         "Do lifestyle, health and social participation mediate educational inequalities i",
+         2014
+        ]
+       ]
+      },
+      {
+       "q": "CRISPR gene editing off-target effects",
+       "n_hits": 10,
+       "wall_ms": 49.1,
+       "legs_hit_counts": {
+        "bm25f": 7,
+        "splade": 7
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "Killing two birds with one stone: A breakthrough in transgene-free gene editing ",
+         2024
+        ],
+        [
+         null,
+         "Recent Progress and Future Prospective in HBV Cure by CRISPR/Cas",
+         2021
+        ],
+        [
+         null,
+         "A CRISPR Way to Move Things Around",
+         2014
+        ]
+       ]
+      },
+      {
+       "q": "graph neural networks for molecule property prediction",
+       "n_hits": 10,
+       "wall_ms": 31.2,
+       "legs_hit_counts": {
+        "bm25f": 6,
+        "splade": 5
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "Technology convergence prediction based on temporal heterogeneous graph neural n",
+         2024
+        ],
+        [
+         null,
+         "Team structure optimization and talent flow prediction based on graph neural net",
+         2026
+        ],
+        [
+         null,
+         "Machine-Learning X-Ray Absorption Spectra to Quantitative Accuracy",
+         2020
+        ]
+       ]
+      }
+     ],
+     "seismic_backend_loaded": true,
+     "n_sections_loaded": 10,
+     "warnings": []
+    },
+    "mode_A_empty_base_plus_SFU_DELTA_ROOT": {
+     "mode": "A",
+     "index_root": "/var/tmp/duck_repro/base",
+     "construct_ms": 11.1,
+     "queries": [
+      {
+       "q": "social capital and civic participation",
+       "n_hits": 10,
+       "wall_ms": 86467.7,
+       "legs_hit_counts": {
+        "bm25f": 7,
+        "splade": 7
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ]
+       ]
+      },
+      {
+       "q": "CRISPR gene editing off-target effects",
+       "n_hits": 10,
+       "wall_ms": 68.8,
+       "legs_hit_counts": {
+        "bm25f": 7,
+        "splade": 7
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ]
+       ]
+      },
+      {
+       "q": "graph neural networks for molecule property prediction",
+       "n_hits": 10,
+       "wall_ms": 80.0,
+       "legs_hit_counts": {
+        "bm25f": 6,
+        "splade": 5
+       },
+       "n_with_abstract": 10,
+       "sections": [
+        ""
+       ],
+       "top3": [
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ],
+        [
+         null,
+         "",
+         null
+        ]
+       ]
+      }
+     ],
+     "seismic_backend_loaded": true,
+     "n_sections_loaded": 11,
+     "warnings": []
+    }
+   }
+  },
+  "driver_contended": {
+   "report": {
+    "started_utc": "2026-10-10T21:45:03Z",
+    "work": "/var/tmp/duck_rebuild_a",
+    "args": {
+     "work": "/var/tmp/duck_rebuild_a",
+     "part": [
+      "/tmp/claude-1000/-workspaces-sfu-library-thinclient/88db917c-3801-47cf-9c2f-b0b6473914a8/scratchpad/openalex_parts/part.jsonl.gz"
+     ],
+     "download": null,
+     "min_records": 40000,
+     "max_records": 120000,
+     "limit": 50000,
+     "profile": "desktop_gpu",
+     "encode_device": null,
+     "no_verify": false,
+     "queries": null
+    },
+    "host": {
+     "python": "3.11.2",
+     "platform": "Linux-6.18.40.1-microsoft-standard-WSL2+-x86_64-with-glibc2.36",
+     "cpu_count": 16,
+     "mem_total_gb": 54.9,
+     "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB",
+     "git_commit": "96fa441d"
+    },
+    "steps": [
+     {
+      "step": "ingest",
+      "part": "part.jsonl.gz",
+      "rc": 0,
+      "seconds": 332.3,
+      "totals": {
+       "seen": 21122,
+       "new": 21122,
+       "updated": 0,
+       "unchanged": 0,
+       "deleted": 0,
+       "encoded": 21122,
+       "reused": 0,
+       "reused_base": 0,
+       "base_refusals": {},
+       "batches": 11,
+       "started": 1791668981.872832,
+       "seconds": 52.4
+      }
+     },
+     {
+      "step": "flush",
+      "rc": 0,
+      "seconds": 31.1,
+      "frozen_generation": 1,
+      "frozen_docs": 21122
+     },
+     {
+      "step": "verify",
+      "seconds": 87.3,
+      "status": "PASS"
+     }
+    ],
+    "result": {
+     "index_root": "/var/tmp/duck_rebuild_a/delta/g0001",
+     "shard_manifest": "/var/tmp/duck_rebuild_a/delta/shard_manifests/shard_manifest-g0001-1791669065.json",
+     "serve_env": "/var/tmp/duck_rebuild_a/serve.env",
+     "input_works_seen": 21122,
+     "docs_indexed": 21122,
+     "sections": {
+      "cs_math__archive": 430,
+      "cs_math__recent": 1899,
+      "med_bio__archive": 1540,
+      "med_bio__recent": 2838,
+      "other__archive": 2865,
+      "other__recent": 4425,
+      "phys_eng__archive": 440,
+      "phys_eng__recent": 1565,
+      "social_sciences__archive": 1082,
+      "social_sciences__recent": 4038
+     },
+     "seismic": {
+      "jsonl": "seismic/delta_g0001.jsonl",
+      "stock": "seismic/delta_g0001.index.seismic",
+      "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+      "format": "dotvbyte_fixedu8_v2",
+      "stages": {
+       "build": {
+        "seconds": 4.89,
+        "docs": 21122,
+        "dim": 23266,
+        "nnz": 1959660
+       },
+       "mmap": {
+        "seconds": 0.78
+       },
+       "dotvbyte": {
+        "seconds": 1.28
+       }
+      },
+      "status": "served"
+     },
+     "bytes": {
+      "generation_total": 363931051,
+      "seismic_mmap": 104678813,
+      "meta_sqlite": 3633152,
+      "sections": 20125497
+     }
+    },
+    "verify": {
+     "status": "PASS",
+     "queries": [
+      [
+       "social capital and civic participation",
+       10,
+       {
+        "bm25f": 7,
+        "splade": 7
+       }
+      ],
+      [
+       "CRISPR gene editing off-target effects",
+       10,
+       {
+        "bm25f": 7,
+        "splade": 7
+       }
+      ],
+      [
+       "graph neural networks for molecule property prediction",
+       10,
+       {
+        "bm25f": 6,
+        "splade": 5
+       }
+      ]
+     ]
+    },
+    "total_seconds": 450.7
+   },
+   "verify": {
+    "index_root": "/var/tmp/duck_rebuild_a/delta/g0001",
+    "shard_manifest": "/var/tmp/duck_rebuild_a/delta/shard_manifests/shard_manifest-g0001-1791669065.json",
+    "construct_ms": 7.6,
+    "queries": [
+     {
+      "q": "social capital and civic participation",
+      "n_hits": 10,
+      "wall_ms": 87098.9,
+      "legs_hit_counts": {
+       "bm25f": 7,
+       "splade": 7
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W7204689375",
+        "Role of Cultural Capital and Social Relationship in Shaping Cultural Consumption Diversity",
+        2026
+       ],
+       [
+        "W4248021495",
+        "Generating social capital at the workplace: a South African case of inside-out social rene",
+        2001
+       ],
+       [
+        "W2132707868",
+        "Do lifestyle, health and social participation mediate educational inequalities in frailty ",
+        2014
+       ]
+      ]
+     },
+     {
+      "q": "CRISPR gene editing off-target effects",
+      "n_hits": 10,
+      "wall_ms": 65.3,
+      "legs_hit_counts": {
+       "bm25f": 7,
+       "splade": 7
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W4403113928",
+        "Killing two birds with one stone: A breakthrough in transgene-free gene editing in soybean",
+        2024
+       ],
+       [
+        "W4200015648",
+        "Recent Progress and Future Prospective in HBV Cure by CRISPR/Cas",
+        2021
+       ],
+       [
+        "W2015921444",
+        "A CRISPR Way to Move Things Around",
+        2014
+       ]
+      ]
+     },
+     {
+      "q": "graph neural networks for molecule property prediction",
+      "n_hits": 10,
+      "wall_ms": 39.6,
+      "legs_hit_counts": {
+       "bm25f": 6,
+       "splade": 5
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W4405657688",
+        "Technology convergence prediction based on temporal heterogeneous graph neural networks",
+        2024
+       ],
+       [
+        "W7160083747",
+        "Team structure optimization and talent flow prediction based on graph neural network",
+        2026
+       ],
+       [
+        "W2997960618",
+        "Machine-Learning X-Ray Absorption Spectra to Quantitative Accuracy",
+        2020
+       ]
+      ]
+     }
+    ],
+    "error": null,
+    "n_sections_loaded": 10,
+    "seismic_backend_loaded": true,
+    "leg_fallback_warnings": [],
+    "warnings": [],
+    "status": "PASS"
+   },
+   "note": "an 85 GB gitleaks --no-git scan of the working tree ran concurrently; wall times inflated"
+  },
+  "driver_clean": {
+   "report": {
+    "started_utc": "2026-10-10T22:02:09Z",
+    "work": "/var/tmp/duck_rebuild_b",
+    "args": {
+     "work": "/var/tmp/duck_rebuild_b",
+     "part": [
+      "/tmp/claude-1000/-workspaces-sfu-library-thinclient/88db917c-3801-47cf-9c2f-b0b6473914a8/scratchpad/openalex_parts/part.jsonl.gz"
+     ],
+     "download": null,
+     "min_records": 40000,
+     "max_records": 120000,
+     "limit": 50000,
+     "profile": "desktop_gpu",
+     "encode_device": null,
+     "no_verify": false,
+     "queries": null
+    },
+    "host": {
+     "python": "3.11.2",
+     "platform": "Linux-6.18.40.1-microsoft-standard-WSL2+-x86_64-with-glibc2.36",
+     "cpu_count": 16,
+     "mem_total_gb": 54.9,
+     "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB",
+     "git_commit": "7fb1287d"
+    },
+    "steps": [
+     {
+      "step": "ingest",
+      "part": "part.jsonl.gz",
+      "rc": 0,
+      "seconds": 130.3,
+      "totals": {
+       "seen": 21122,
+       "new": 21122,
+       "updated": 0,
+       "unchanged": 0,
+       "deleted": 0,
+       "encoded": 21122,
+       "reused": 0,
+       "reused_base": 0,
+       "base_refusals": {},
+       "batches": 11,
+       "started": 1791669807.577795,
+       "seconds": 51.3
+      }
+     },
+     {
+      "step": "flush",
+      "rc": 0,
+      "seconds": 31.2,
+      "frozen_generation": 1,
+      "frozen_docs": 21122
+     },
+     {
+      "step": "verify",
+      "seconds": 82.8,
+      "status": "PASS"
+     }
+    ],
+    "result": {
+     "index_root": "/var/tmp/duck_rebuild_b/delta/g0001",
+     "shard_manifest": "/var/tmp/duck_rebuild_b/delta/shard_manifests/shard_manifest-g0001-1791669890.json",
+     "serve_env": "/var/tmp/duck_rebuild_b/serve.env",
+     "records_after_abstract_filter": 21122,
+     "docs_indexed": 21122,
+     "note": "input lines read per part = --limit (or the whole part); works without a usable abstract (< 50 chars, or paratext) are dropped by normalize_openalex_work before counting",
+     "sections": {
+      "cs_math__archive": 430,
+      "cs_math__recent": 1899,
+      "med_bio__archive": 1540,
+      "med_bio__recent": 2838,
+      "other__archive": 2865,
+      "other__recent": 4425,
+      "phys_eng__archive": 440,
+      "phys_eng__recent": 1565,
+      "social_sciences__archive": 1082,
+      "social_sciences__recent": 4038
+     },
+     "seismic": {
+      "jsonl": "seismic/delta_g0001.jsonl",
+      "stock": "seismic/delta_g0001.index.seismic",
+      "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+      "format": "dotvbyte_fixedu8_v2",
+      "stages": {
+       "build": {
+        "seconds": 5.71,
+        "docs": 21122,
+        "dim": 23266,
+        "nnz": 1959660
+       },
+       "mmap": {
+        "seconds": 0.83
+       },
+       "dotvbyte": {
+        "seconds": 1.11
+       }
+      },
+      "status": "served"
+     },
+     "bytes": {
+      "generation_total": 363911444,
+      "seismic_mmap": 104673134,
+      "meta_sqlite": 3633152,
+      "sections": 20124684
+     }
+    },
+    "verify": {
+     "status": "PASS",
+     "queries": [
+      [
+       "social capital and civic participation",
+       10,
+       {
+        "bm25f": 7,
+        "splade": 7
+       }
+      ],
+      [
+       "CRISPR gene editing off-target effects",
+       10,
+       {
+        "bm25f": 7,
+        "splade": 7
+       }
+      ],
+      [
+       "graph neural networks for molecule property prediction",
+       10,
+       {
+        "bm25f": 6,
+        "splade": 5
+       }
+      ]
+     ]
+    },
+    "total_seconds": 244.4
+   },
+   "verify": {
+    "index_root": "/var/tmp/duck_rebuild_b/delta/g0001",
+    "shard_manifest": "/var/tmp/duck_rebuild_b/delta/shard_manifests/shard_manifest-g0001-1791669890.json",
+    "construct_ms": 7.3,
+    "queries": [
+     {
+      "q": "social capital and civic participation",
+      "n_hits": 10,
+      "wall_ms": 82656.5,
+      "legs_hit_counts": {
+       "bm25f": 7,
+       "splade": 7
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W7204689375",
+        "Role of Cultural Capital and Social Relationship in Shaping Cultural Consumption Diversity",
+        2026
+       ],
+       [
+        "W4248021495",
+        "Generating social capital at the workplace: a South African case of inside-out social rene",
+        2001
+       ],
+       [
+        "W2132707868",
+        "Do lifestyle, health and social participation mediate educational inequalities in frailty ",
+        2014
+       ]
+      ]
+     },
+     {
+      "q": "CRISPR gene editing off-target effects",
+      "n_hits": 10,
+      "wall_ms": 62.2,
+      "legs_hit_counts": {
+       "bm25f": 7,
+       "splade": 7
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W4403113928",
+        "Killing two birds with one stone: A breakthrough in transgene-free gene editing in soybean",
+        2024
+       ],
+       [
+        "W4200015648",
+        "Recent Progress and Future Prospective in HBV Cure by CRISPR/Cas",
+        2021
+       ],
+       [
+        "W2015921444",
+        "A CRISPR Way to Move Things Around",
+        2014
+       ]
+      ]
+     },
+     {
+      "q": "graph neural networks for molecule property prediction",
+      "n_hits": 10,
+      "wall_ms": 25.4,
+      "legs_hit_counts": {
+       "bm25f": 6,
+       "splade": 5
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W4405657688",
+        "Technology convergence prediction based on temporal heterogeneous graph neural networks",
+        2024
+       ],
+       [
+        "W7160083747",
+        "Team structure optimization and talent flow prediction based on graph neural network",
+        2026
+       ],
+       [
+        "W2997960618",
+        "Machine-Learning X-Ray Absorption Spectra to Quantitative Accuracy",
+        2020
+       ]
+      ]
+     }
+    ],
+    "error": null,
+    "n_sections_loaded": 10,
+    "seismic_backend_loaded": true,
+    "leg_fallback_warnings": [],
+    "warnings": [],
+    "status": "PASS"
+   },
+   "note": "same inputs as driver_contended, quiet host"
+  },
+  "download_run": {
+   "report": {
+    "started_utc": "2026-10-10T21:56:38Z",
+    "work": "/var/tmp/duck_rebuild_dl",
+    "args": {
+     "work": "/var/tmp/duck_rebuild_dl",
+     "part": null,
+     "download": 1,
+     "min_records": 1500,
+     "max_records": 6000,
+     "limit": null,
+     "profile": "desktop_gpu",
+     "encode_device": null,
+     "no_verify": false,
+     "queries": null
+    },
+    "host": {
+     "python": "3.11.2",
+     "platform": "Linux-6.18.40.1-microsoft-standard-WSL2+-x86_64-with-glibc2.36",
+     "cpu_count": 16,
+     "mem_total_gb": 54.9,
+     "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB",
+     "git_commit": "7fb1287d"
+    },
+    "steps": [
+     {
+      "step": "download",
+      "seconds": 1.3,
+      "bytes": 2933718
+     },
+     {
+      "step": "ingest",
+      "part": "updated_date=2026-08-26__part_0099.gz",
+      "rc": 0,
+      "seconds": 86.4,
+      "totals": {
+       "seen": 247,
+       "new": 247,
+       "updated": 0,
+       "unchanged": 0,
+       "deleted": 0,
+       "encoded": 247,
+       "reused": 0,
+       "reused_base": 0,
+       "base_refusals": {},
+       "batches": 1,
+       "started": 1791669484.2960224,
+       "seconds": 1.1
+      }
+     },
+     {
+      "step": "flush",
+      "rc": 0,
+      "seconds": 2.9,
+      "frozen_generation": 1,
+      "frozen_docs": 247
+     },
+     {
+      "step": "verify",
+      "seconds": 78.8,
+      "status": "PASS"
+     }
+    ],
+    "snapshot": {
+     "manifest_date": "2026-09-23",
+     "total_records": 476196327,
+     "parts": [
+      {
+       "url": "s3://openalex/data/jsonl/works/updated_date=2026-08-26/part_0099.gz",
+       "content_length": 2933718,
+       "record_count": 2624
+      }
+     ]
+    },
+    "result": {
+     "index_root": "/var/tmp/duck_rebuild_dl/delta/g0001",
+     "shard_manifest": "/var/tmp/duck_rebuild_dl/delta/shard_manifests/shard_manifest-g0001-1791669489.json",
+     "serve_env": "/var/tmp/duck_rebuild_dl/serve.env",
+     "input_works_seen": 247,
+     "docs_indexed": 247,
+     "sections": {
+      "cs_math__recent": 6,
+      "med_bio__archive": 13,
+      "med_bio__recent": 6,
+      "other__archive": 111,
+      "other__recent": 65,
+      "phys_eng__archive": 4,
+      "phys_eng__recent": 5,
+      "social_sciences__archive": 17,
+      "social_sciences__recent": 20
+     },
+     "seismic": {
+      "jsonl": "seismic/delta_g0001.jsonl",
+      "stock": "seismic/delta_g0001.index.seismic",
+      "mmap_dir": "seismic/delta_g0001.dotvbyte.v2.mmap",
+      "format": "dotvbyte_fixedu8_v2",
+      "stages": {
+       "build": {
+        "seconds": 0.07,
+        "docs": 247,
+        "dim": 5857,
+        "nnz": 25786
+       },
+       "mmap": {
+        "seconds": 0.26
+       },
+       "dotvbyte": {
+        "seconds": 0.11
+       }
+      },
+      "status": "served"
+     },
+     "bytes": {
+      "generation_total": 16612652,
+      "seismic_mmap": 6232157,
+      "meta_sqlite": 57344,
+      "sections": 573215
+     }
+    },
+    "verify": {
+     "status": "PASS",
+     "queries": [
+      [
+       "social capital and civic participation",
+       10,
+       {
+        "bm25f": 6,
+        "splade": 5
+       }
+      ],
+      [
+       "CRISPR gene editing off-target effects",
+       10,
+       {
+        "bm25f": 8,
+        "splade": 8
+       }
+      ],
+      [
+       "graph neural networks for molecule property prediction",
+       10,
+       {
+        "bm25f": 6,
+        "splade": 5
+       }
+      ]
+     ]
+    },
+    "total_seconds": 169.4
+   },
+   "verify": {
+    "index_root": "/var/tmp/duck_rebuild_dl/delta/g0001",
+    "shard_manifest": "/var/tmp/duck_rebuild_dl/delta/shard_manifests/shard_manifest-g0001-1791669489.json",
+    "construct_ms": 7.3,
+    "queries": [
+     {
+      "q": "social capital and civic participation",
+      "n_hits": 10,
+      "wall_ms": 78640.4,
+      "legs_hit_counts": {
+       "bm25f": 6,
+       "splade": 5
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W7112917083",
+        "The role of social reinforcement in depression: A longitudinal analysis",
+        1988
+       ],
+       [
+        "W7113260269",
+        "The Effect of Facial Expressions and Music on Felt and Perceived Emotions",
+        2009
+       ],
+       [
+        "W7112571940",
+        "El modelo de participaci\u00f3n p\u00fablica en el sistema urban\u00edstico espa\u00f1ol. Entre la formalidad ",
+        2025
+       ]
+      ]
+     },
+     {
+      "q": "CRISPR gene editing off-target effects",
+      "n_hits": 10,
+      "wall_ms": 40.2,
+      "legs_hit_counts": {
+       "bm25f": 8,
+       "splade": 8
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W7113731996",
+        "Identification par criblage CRISPR de nouveaux facteurs de r\u00e9gulation de l\u2019expression des ",
+        2025
+       ],
+       [
+        "W7112807754",
+        "Effects of medical payment from National Health Insurance on the improvement of metabolic ",
+        2008
+       ],
+       [
+        "W7113717222",
+        "Comparison with urinary cotinine levels and respiratory health effects between light and h",
+        2005
+       ]
+      ]
+     },
+     {
+      "q": "graph neural networks for molecule property prediction",
+      "n_hits": 10,
+      "wall_ms": 36.3,
+      "legs_hit_counts": {
+       "bm25f": 6,
+       "splade": 5
+      },
+      "n_with_title": 10,
+      "n_with_year": 10,
+      "n_with_abstract": 10,
+      "top3": [
+       [
+        "W7112515724",
+        "Prospective semiconducting compounds and nanostructures for optoelectronics, photovoltaics",
+        2016
+       ],
+       [
+        "W7112575673",
+        "THE BARYTON DIVERTIMENTI OF HAYDN: A SELECTED ADAPTATION FOR BRASS TRIO",
+        1968
+       ],
+       [
+        "W7113088259",
+        "Gode muligheder for h\u00f8j velf\u00e6rd hos mink:DJF Nyheder",
+        2010
+       ]
+      ]
+     }
+    ],
+    "error": null,
+    "n_sections_loaded": 9,
+    "seismic_backend_loaded": true,
+    "leg_fallback_warnings": [],
+    "warnings": [],
+    "status": "PASS"
+   }
+  }
+ }
+}
