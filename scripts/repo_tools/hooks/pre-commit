@@ -1,0 +1,28 @@
+#!/bin/sh
+# Tracked copy of the pre-commit hook. Install: scripts/repo_tools/install_git_hooks.sh
+# 1) large-file guard (keeps multi-GB runtime state out of .git); override once: ALLOW_BIG=1
+max=104857600
+if [ -z "$ALLOW_BIG" ]; then
+  for f in $(git diff --cached --name-only --diff-filter=AM); do
+    [ -f "$f" ] || continue
+    sz=$(wc -c < "$f")
+    if [ "$sz" -gt "$max" ]; then echo "pre-commit: $f is $sz bytes (> 100 MB). ALLOW_BIG=1 to override." >&2; exit 1; fi
+  done
+fi
+# 2) gitleaks on the staged diff (default rules + .gitleaks.toml); override once: SKIP_GITLEAKS=1
+if [ -z "$SKIP_GITLEAKS" ] && command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --no-banner --redact || { echo "pre-commit: gitleaks found a secret in the staged diff (SKIP_GITLEAKS=1 to override)" >&2; exit 1; }
+fi
+# 3) placement + lifecycle policy on ADDED files (docs/infrastructure/SCRIPT_HYGIENE_POLICY.md); override once: SKIP_PLACEMENT=1
+if [ -z "$SKIP_PLACEMENT" ]; then
+  top=$(git rev-parse --show-toplevel)
+  py="$top/.venv/bin/python3"; [ -x "$py" ] || py=python3
+  "$py" -I "$top/scripts/repo_tools/check_script_placement.py" --staged || { echo "pre-commit: placement/lifecycle policy failed (SKIP_PLACEMENT=1 to override once)" >&2; exit 1; }
+fi
+# 4) substantial-change gate: >=10 files, >=500 lines, or any delete/rename of code needs a fresh restore tag + a passing preflight run over the staged tree; override once: SKIP_PREFLIGHT=1
+if [ -z "$SKIP_PREFLIGHT" ]; then
+  top=$(git rev-parse --show-toplevel)
+  py="$top/.venv/bin/python3"; [ -x "$py" ] || py=python3
+  "$py" -I "$top/scripts/repo_tools/preflight.py" check || { echo "pre-commit: substantial change without a valid preflight (SKIP_PREFLIGHT=1 to override once)" >&2; exit 1; }
+fi
+exit 0

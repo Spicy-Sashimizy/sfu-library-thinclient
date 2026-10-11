@@ -199,8 +199,6 @@ class DraftHandle:
 class _RecordCtx:
     """Context active inside a draft job: computes and publishes each call."""
 
-    mode = "record"
-
     def __init__(self, handle: DraftHandle, early_ce: threading.Event | None = None,
                  is_early: bool = False) -> None:
         self.handle = handle
@@ -260,8 +258,6 @@ class _RecordCtx:
 
 class _ConsumeCtx:
     """Context active inside the real ``_maybe_rerank``: per-candidate reuse."""
-
-    mode = "consume"
 
     def __init__(self, handle: DraftHandle | None) -> None:
         self.handle = handle

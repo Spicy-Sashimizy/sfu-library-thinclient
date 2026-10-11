@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED DEAD 2026-09-25 — demo-dependability WI harness for the OCI deployment that was gone on 2026-09-25 (docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md); evidence kept, bars live in source at pinned commits
 """WI-3 (deployprep 2026-07-16) — staging serve watchdog. STAGING ONLY.
 
 A process supervisor for the staging serve wrapper (`staging_serve.py`). It

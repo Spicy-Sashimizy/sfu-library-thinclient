@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED MEASURED 2026-09-30 — in-place bit-update spike harness (docs/archive/inplace_update/); evidence kept, pre-registered bars live in source
 """In-place bit updater, Stage 1 benchmark harness: bars B2-B7, arms A0/A1/A2/A2b/A3
 (+ supplementary A2-2p, A2b-2p). Written 2026-09-29 BEFORE any measured run.
 

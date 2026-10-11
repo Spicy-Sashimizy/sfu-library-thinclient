@@ -105,7 +105,7 @@ refused by default for the same reason.
 
 ### Section-shard-wave eval — gets 150M numbers on the 24 GB host (added 2026-06-17)
 
-`scripts/eval_parity_section_waves.py run` produces a record-tc-schema file
+`scripts/archive/bmp_era/eval_parity_section_waves.py run` produces a record-tc-schema file
 without ever holding the SPLADE set in one process. It exploits the fact that the
 legs **already merge across sections/shards by plain score-concatenation**:
 
@@ -125,7 +125,7 @@ cache, no engine live). Time-, not RAM-, bound: it reads the 68.6 GB BMP set onc
 
 ```bash
 # thin-client record on a small host (≈43 min at 150M, 27 waves, 8 GB budget):
-scripts/eval_parity_section_waves.py run --index-root data/thinclient_index \
+scripts/archive/bmp_era/eval_parity_section_waves.py run --index-root data/thinclient_index \
     --queries 40 --resident-budget-gb 8 --output <tc_record.json>
 # OpenSearch baseline (separate process):
 scripts/eval_thinclient_parity.py record-os --baseline-url <url> --queries 40 --output <os_record.json>

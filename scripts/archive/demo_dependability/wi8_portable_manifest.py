@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED DEAD 2026-09-25 — demo-dependability WI harness for the OCI deployment that was gone on 2026-09-25 (docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md); evidence kept, bars live in source at pinned commits
 """WI-8 (deployprep wave 2, 2026-07-17) — portable-stack dependency MANIFEST.
 
 STAGING / authoring only (no deploy, no spend). Produces the authoritative

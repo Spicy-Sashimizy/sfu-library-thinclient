@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED MEASURED 2026-09-30 — in-place bit-update spike harness (docs/archive/inplace_update/); evidence kept, pre-registered bars live in source
 """In-place v3 decoder: A2b heap-unit read path + reader registration test.
 
 Task (coordinator, 2026-09-29, after B1; plan 06 "Addendum 2026-09-29

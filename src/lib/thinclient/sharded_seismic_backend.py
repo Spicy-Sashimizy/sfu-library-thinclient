@@ -652,12 +652,10 @@ class _SeismicBackendBase:
                 self.shards.append(idx)
                 self._shard_mmap_dirs.append(_resolve_mmap_dir(p, self.load_mode))
 
-        self._floor_prefaulted = False
         if load_mode == "mmap" and os.environ.get("SFU_SEISMIC_PREFLOOR_AT_LOAD", "0") == "1":
             self.prefault_floor(include_forward_offsets=True)
 
         self._floor_mlocked = False
-        self._floor_mlocked_bytes = 0
         self._hotset_pinned_gb = 0.0
         _floor_mode = _mlock_floor_mode()
         _pin_on = (load_mode == "mmap" and (
@@ -705,7 +703,6 @@ class _SeismicBackendBase:
                 log.debug("prefault_floor: shard lacks the hook (older .so?) — skipped")
                 continue
             total += int(fn(include_forward_offsets))
-        self._floor_prefaulted = True
         log.info("prefault_floor: touched %.2f GB across %d shards in %.1fs "
                  "(include_forward_offsets=%s)",
                  total / 1e9, len(self.shards),
@@ -832,7 +829,6 @@ class _SeismicBackendBase:
                      Path(shard_dir).name, locked / 1e6, len(merged),
                      sum(ln for _, ln in runs) / 1e6, per_shard_budget / 1e6)
         self._floor_mlocked = total > 0
-        self._floor_mlocked_bytes = total
         log.info("mlock_structural_floor: locked %.1f MB across %d shards in %.1fs "
                  "(RESCOPED navigation floor — NOT the 13.4 GB whole-slab pin)",
                  total / 1e6, len(self.shards), time.perf_counter() - t0)
@@ -861,7 +857,6 @@ class _SeismicBackendBase:
                 continue
             total += int(fn(include_forward_offsets))
         self._floor_mlocked = True
-        self._floor_mlocked_bytes = total
         log.info("mlock_floor: locked %.2f GB across %d shards in %.1fs "
                  "(include_forward_offsets=%s)",
                  total / 1e9, len(self.shards),
@@ -1158,21 +1153,6 @@ class _SeismicBackendBase:
             if tr.is_failed():
                 out.append(name)
         return sorted(out)
-
-    def fault_status(self) -> list[dict]:
-        """Per-shard fault state (for /health + the proof harness). Empty list
-        when the boundary is OFF."""
-        if not self._fault_boundary:
-            return []
-        out = []
-        for i, (name, tr) in enumerate(zip(self._shard_names, self._shard_faults)):
-            with tr._lock:
-                out.append({"shard": name, "position": i,
-                            "loaded": self.shards[i] is not None,
-                            "failed": tr.opened_at is not None,
-                            "fails": tr.fails,
-                            "last_reason": tr.last_reason})
-        return out
 
     @property
     def _probe_executor(self):

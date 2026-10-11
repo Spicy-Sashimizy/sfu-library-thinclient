@@ -352,5 +352,5 @@ pre-measurement numbers `*est.*`.
   2026-08-19, Qdrant/DO era): interrupt→resume→checksum-verify
   validated; dry-run enumerated the real 41 GB / 30M Qdrant storage (2,509 files).
   Its successor for the OCI plan is
-  `scripts/archive/demo_dependability/seed_oci_volume.sh` (manifest-driven, thin-client
+  `scripts/demo_broker/seed_oci_volume.sh` (manifest-driven, thin-client
   payload) — see `OCI_DEMO_DEPLOYMENT.md` §8/§9.

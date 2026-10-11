@@ -74,7 +74,7 @@ shards resident at once → **~211 GB**. Every other leg is mmap/paged and serve
 > 2026-06-18); (2) **hot/cold residency** (built, `packer.py`) — but at 3.07×
 > one hot `__recent` section is still ~25–40 GB resident (64–128 GB server,
 > not a 24 GB laptop); (3) for benchmarking, the **section-shard-wave eval**
-> (`scripts/eval_parity_section_waves.py`) needs only ~8 GB resident per wave —
+> (`scripts/archive/bmp_era/eval_parity_section_waves.py`) needs only ~8 GB resident per wave —
 > how the 150M parity numbers were produced on the 24 GB host (eval tool, not a
 > serving path). The single-process `record-tc`/`run_parity_safe.sh` path would
 > need ~232 GB (211 + headroom) — that figure only explains why the wave eval

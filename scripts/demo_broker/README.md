@@ -129,6 +129,7 @@ python3 scripts/demo_broker/test_scheduler.py   # 13 tests, no deps
 | `app.py` | FastAPI: `/start` (invite+access info), `/status`, `/mcp` (per-session proxy), `/admin/report`, `/admin/dial`, `/health`, scheduler thread |
 | `dial.py` | **WI-3 memory dial** (`docs/deprecated/oci_demo/OCI_FREE_TIER_RESIDENT_DEMO.md` §3): live `MemoryHigh` rungs on the serve cgroup — systemd (`set-property --runtime`) or raw cgroup-v2 backend + CLI |
 | `watchdog.py` + `systemd/sfu-watchdog.{service,timer}` | read-only liveness watchdog → ntfy (see Watchdog section) |
+| `ntfy/` | compose + runbook for the NAS `sfu-ntfy` notification relay that `notify.py` / `watchdog.py` post to (`DEMO_NOTIFY_WEBHOOK`); moved 2026-10-11 from `deploy/ntfy/` |
 | `systemd/sfu-serve.service` | serve unit the dial targets: `MemorySwapMax=0` pinned (the ladder was measured swap-forbidden), rungs applied at runtime |
 | `test_scheduler.py` / `test_tenants.py` / `test_app.py` / `test_dial.py` / `test_oci_client.py` | decision core / tenancy / end-to-end wiring / dial backends + endpoint / OCI signing + START-STOP + factory (all HTTP mocked) |
 

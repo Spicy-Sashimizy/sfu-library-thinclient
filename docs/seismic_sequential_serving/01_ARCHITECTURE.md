@@ -105,7 +105,7 @@ shards down (missing/truncated/unreadable file, search exception, hang/timeout)
   search (`SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S`, default 30) → `[]` for that shard
   + recorded fault; the reprobe cooldown (`SFU_SEISMIC_SHARD_REPROBE_S`, default
   10) re-admits on a successful probe. The federation merges surviving shards'
-  results with `degraded_shards:[…]`; `fault_status()` surfaces it to `/health`.
+  results with `degraded_shards:[…]`; `fault_status()` was removed 2026-10-11 (codebase triage): nothing ever surfaced it to `/health`.
 - Hash sharding ⇒ a lost shard costs a BOUNDED ~1/8 of recall with no score-
   comparability issue (each shard is a disjoint doc-id hash partition, scored in
   one shared SPLADE vocab space — doc 09: calibration unnecessary by

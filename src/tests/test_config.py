@@ -52,26 +52,26 @@ class TestServerConfig:
         config = load_config()
         assert config.zotero_api_key == ""
         assert config.zotero_user_id == ""
-        assert config.search_timeout == 30
 
     def test_env_var_overrides(self, monkeypatch):
-        monkeypatch.setenv("SFU_SEARCH_TIMEOUT", "60")
         monkeypatch.setenv("SFU_LOG_LEVEL", "DEBUG")
         config = load_config()
-        assert config.search_timeout == 60
         assert config.log_level == "DEBUG"
 
     def test_feature_flag_env_override(self, monkeypatch):
-        monkeypatch.setenv("SFU_FEATURE_CACHE_ENABLED", "false")
-        monkeypatch.setenv("SFU_FEATURE_RETRY_ENABLED", "0")
+        monkeypatch.setenv("SFU_FEATURE_RERANK_ENABLED", "false")
+        monkeypatch.setenv("SFU_FEATURE_CROSSENCODER_ENABLED", "0")
         config = load_config()
-        assert config.features["cache_enabled"] is False
-        assert config.features["retry_enabled"] is False
+        assert config.features["rerank_enabled"] is False
+        assert config.features["crossencoder_enabled"] is False
 
-    def test_feature_flag_defaults(self):
+    def test_feature_flag_defaults(self, monkeypatch):
+        for var in ["SFU_FEATURE_RERANK_ENABLED", "SFU_FEATURE_CROSSENCODER_ENABLED"]:
+            monkeypatch.delenv(var, raising=False)
+        monkeypatch.setattr("lib.config._load_dotenv", lambda: None)
         config = load_config()
-        assert config.features["cache_enabled"] is True
-        assert config.features["retry_enabled"] is True
+        assert config.features["rerank_enabled"] is True
+        assert config.features["crossencoder_enabled"] is True
 
 
 class TestValidateConfig:
@@ -87,25 +87,10 @@ class TestValidateConfig:
         warnings = validate_config(config)
         assert len(warnings) == 0
 
-    def test_low_timeout_warning(self):
-        config = ServerConfig(search_timeout=0)
-        warnings = validate_config(config)
-        assert any("search_timeout" in w for w in warnings)
-
-    def test_negative_retries_warning(self):
-        config = ServerConfig(max_retries=-1)
-        warnings = validate_config(config)
-        assert any("max_retries" in w for w in warnings)
-
     def test_invalid_log_level_warning(self):
         config = ServerConfig(log_level="INVALID")
         warnings = validate_config(config)
         assert any("log_level" in w for w in warnings)
-
-    def test_negative_cache_ttl_warning(self):
-        config = ServerConfig(cache_ttl=-1)
-        warnings = validate_config(config)
-        assert any("cache_ttl" in w for w in warnings)
 
     def test_empty_zotero_key_warning(self):
         config = ServerConfig(zotero_api_key="", zotero_user_id="123")

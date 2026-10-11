@@ -16,7 +16,6 @@ comments (policy exemption).
 | `ebpf_pagecache/` | cache_ext eBPF eviction-policy spike (compiles; cannot load here) | its `README.md` |
 | `bm25_seismic/` | BM25 served through SEISMIC spike | `docs/seismic_150m_testbed/17_BM25_THROUGH_SEISMIC_SPIKE.md` |
 | `meta_consolidation/` | ordinal-addressing / metadata consolidation benches | `docs/seismic_150m_testbed/18_ORDINAL_ADDRESSING_DESIGN.md` |
-| `n2_mphf/` | MPHF viability for ordinal addressing | its `README.md` |
-| `archive/` | closed spikes kept as evidence: `mmap_bmp/`, `smallmachine_levers/`, `block_prefetch/`, `inplace_update/` | `docs/README.md` §Closed tracks |
+| `archive/` | closed spikes kept as evidence: `mmap_bmp/`, `smallmachine_levers/`, `block_prefetch/`, `inplace_update/`, `n2_mphf/` (MPHF viability for ordinal addressing, CLOSED MEASURED 2026-09-27, moved 2026-10-11; its `README.md`) | `docs/README.md` §Closed tracks |
 
 Work directories (`work*/`, `.venv-lance/`) are gitignored build outputs.

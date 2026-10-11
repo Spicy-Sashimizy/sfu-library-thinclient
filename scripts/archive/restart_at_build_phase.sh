@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# CLOSED SUPERSEDED 2026-09-25 — 150M OpenSearch→thin-client migration helper; the source index is gone since 2026-09 (scripts/README.md)
 # Restart the running 150M migration at the export->build boundary so the
 # BUILD phase runs builder code committed AFTER the migration launched
 # (meta v2 numeric schema, Cyrillic abstract dict). Export output is

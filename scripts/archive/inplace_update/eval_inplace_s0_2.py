@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED MEASURED 2026-09-30 — in-place bit-update spike harness (docs/archive/inplace_update/); evidence kept, pre-registered bars live in source
 """In-place bit updater, Stage 0 bar S0-2: quality under synthetic churn.
 Also runs the S0-3 bookkeeping (see eval_inplace_s0_3.py) in the same pass.
 

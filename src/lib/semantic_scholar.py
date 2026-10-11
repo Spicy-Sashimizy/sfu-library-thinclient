@@ -149,11 +149,6 @@ class SemanticScholarClient:
             return []
         return [_normalize_paper(p) for p in data.get("data", [])]
 
-    def get_paper(self, paper_id: str, fields: str = _PAPER_FIELDS) -> dict | None:
-        """Get a paper by S2 ID, DOI, or arXiv ID."""
-        data = self._get(f"/paper/{paper_id}", {"fields": fields})
-        return _normalize_paper(data) if data and data.get("paperId") else None
-
     def get_citations(
         self,
         paper_id: str,

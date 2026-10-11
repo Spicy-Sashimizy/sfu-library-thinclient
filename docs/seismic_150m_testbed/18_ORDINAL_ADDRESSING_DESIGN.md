@@ -170,6 +170,8 @@ already declares `year` as `fast=True`, so reading a u64 fast field for a batch
 of `DocAddress`es could be measured on the **real** index without a rebuild —
 the same mechanism an `ordinal` fast field would use.
 
+Code: `spike/meta_consolidation/07_tantivy_fastfield_gap.py`.
+
 Real index (23,398,073 docs), real eval queries, **arms interleaved within each
 repetition and their order randomised per rep** (§11's addendum ran all of one
 arm then the other, which let the second reuse the first's page faults and made
@@ -296,7 +298,7 @@ benchmarked over the real 150,413,098 W-ids (byte copy of
 `spike/meta_consolidation/work_ordinals_full/wids.npy`, sha256-verified, staged
 to local overlay disk). Library: **PtrHash** (`ptr_hash` crate 2.1.1, MIT,
 Groot Koerkamp SEA 2025), `PtrHashParams::default()`, `Xxh3Int` hasher, stored
-and file-backed-mmap'd via `epserde` 0.13.1. Code `spike/n2_mphf/` (harness
+and file-backed-mmap'd via `epserde` 0.13.1. Code `spike/archive/n2_mphf/` (archived 2026-10-11) (harness
 `src/main.rs`, orchestrator `run_n2.py`); results
 `data/eval_results/n2_mphf_viability_2026-09-27.json`. Host: Ryzen 7 5700X3D
 (96 MB L3), 31 GB, 1M member + 1M non-member ids per pass, cold = page cache
@@ -683,6 +685,7 @@ unlike the latency extrapolations that were wrong by up to 96×.
 §11's "not settled #1", the number that decides whether any of this ships.
 
 - Code: `spike/meta_consolidation/11_n6_whole_query_latency.py`
+- Launcher: `spike/meta_consolidation/run_n6.sh` (output `data/eval_results/n6_smoke.json`, `archive/_n6_run.log`)
 - Results: `data/eval_results/n6_whole_query_20260802_2104.json`
 - Real `ThinClientRetriever.search()` against the real index, arms switched by
   the **real serving gate** (`_ordinals`, what `SFU_THINCLIENT_ORDINALS` sets)

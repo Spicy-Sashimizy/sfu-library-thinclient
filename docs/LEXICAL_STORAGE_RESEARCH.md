@@ -242,6 +242,18 @@ Per the UTF-8 encoding ([Wikipedia/UTF-8](https://en.wikipedia.org/wiki/UTF-8)):
 - Measured adjacent evidence (M): a mismatched/heterogeneous dictionary can make ratios *worse than no dictionary* ([zstd issue #1703](https://github.com/facebook/zstd/issues/1703)); vendor guidance is explicitly "one dictionary per type of content," small homogeneous samples ([zstd homepage](http://facebook.github.io/zstd/), [training-set sizing #3769](https://github.com/facebook/zstd/issues/3769)).
 - **Feasibility here:** every language ≥0.5% share has ≥750K abstracts (≫ the 10–100 MB training-set guidance) — training ~10–15 per-language (or per language×domain) dictionaries is trivial. The §3.1 design already reserves a 1-byte dict-ID per doc; language routing reuses it unchanged.
 
+**MEASURED here, 2026-06-11 (recorded in the doc 2026-10-11 by the script triage):**
+`scripts/experiments/eval_per_language_dicts.py`, results
+`data/eval_results/per_language_dicts_20260611.json`. Held-out protocol on the
+20k-abstract sample (112 KB dicts, zstd −19, fixed-seed 80/20 split per language,
+≥ 300 docs): an own-language dictionary beats the shared all-language dictionary on
+every non-English stratum, bytes/doc own vs shared — ru 328 vs 450, fa 497 vs 626,
+ko 468 vs 616, zh 286 vs 420, pt 480 vs 599, id 502 vs 598, es 415 vs 482 (held-out
+n = 68…400); for English the shared dict costs +4.8 % (370 → 388 B/doc); the
+machine-code control shows own-vs-shared 530 vs 612, i.e. part of the gain is
+sample-specific vocabulary, not language. This is the "first datapoint" the
+paragraph above asks for; dilution is real at this dictionary size.
+
 ### 7.4 Brotli's built-in dictionary and non-English text
 
 - The RFC 7932 static dictionary is **13,504 words of English, Spanish, Chinese, Hindi, Russian and Arabic** plus HTML/JS phrases, distilled from a 40-language corpus — i.e., less purely English-biased than folklore says, but Latin/web-weighted ([brotli author on HN, 2021](https://news.ycombinator.com/item?id=27163981)) (C, primary author).

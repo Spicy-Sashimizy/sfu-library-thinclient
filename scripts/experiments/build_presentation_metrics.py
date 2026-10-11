@@ -152,7 +152,7 @@ def rows_parity_waves(path: Path) -> list[dict]:
     if tc is not None:
         rows.append(_row(metric="NDCG@10", k=10, scale="150M (40q judged-subset)",
                         backend="thinclient RRF", value=round(tc, 4),
-                        eval_script="scripts/eval_parity_section_waves.py + eval_thinclient_parity.py compare",
+                        eval_script="scripts/archive/bmp_era/eval_parity_section_waves.py + eval_thinclient_parity.py compare",
                         result_file=str(path.relative_to(REPO_ROOT)),
                         date=date, baseline_ref="OpenSearch 150M RRF (same run)",
                         delta=round(tc - oss, 4) if oss is not None else None,
@@ -172,7 +172,7 @@ def rows_parity_waves(path: Path) -> list[dict]:
         if v is not None:
             rows.append(_row(metric="overlap@50", k=50, scale="150M (40q)",
                             backend=f"thinclient {leg}", value=round(v, 3),
-                            eval_script="scripts/eval_parity_section_waves.py + compare",
+                            eval_script="scripts/archive/bmp_era/eval_parity_section_waves.py + compare",
                             result_file=str(path.relative_to(REPO_ROOT)),
                             date=date, baseline_ref="OpenSearch 150M",
                             delta=None, status="measured", comparable=False,

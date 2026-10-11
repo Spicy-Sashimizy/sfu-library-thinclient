@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED DEAD 2026-09-25 — demo-dependability WI harness for the OCI deployment that was gone on 2026-09-25 (docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md); evidence kept, bars live in source at pinned commits
 """Score-direction audit of the served cross-encoder (2026-08-19).
 
 Why: synthetic probes showed models/sfu-cross-encoder-v1 (and its int8 ONNX

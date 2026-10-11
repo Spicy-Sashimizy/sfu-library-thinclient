@@ -20,10 +20,9 @@ MCP_HTTP_PORT=8080 ../.venv/bin/python3 -m uvicorn sfu_library_mcp_http:app --ho
 |---|---|
 | `suite.html` | shell; keeps one iframe per app **alive** and toggles them (no reload/flash on switch); shows a loader until an app mounts; **refuses to mount iframes for apps toggled off** in Settings → Interface (shows a notice instead) and tears them down when toggled off mid-session |
 | `search.html` / `analytics.html` / `index_manager.html` | thin HTML shells that load the **precompiled** `*.js` |
-| `src/*.jsx` | **editable source** for each app (search.jsx bundles tweaks-panel + `_sidebar.jsx` is prepended into every app by the build) |
+| `src/*.jsx` | **editable source** for each app (`_sidebar.jsx` is prepended into every app by the build) |
 | `search.js` / `analytics.js` / `index_manager.js` | **auto-generated** by the build — do not edit |
-| `tweaks-panel.jsx` | design-time tweak panel (bundled into `src/search.jsx`) |
-| `lib/api.js` | `window.SFUApi` — live backend calls with mock fallback; surfaces HTTP 429 as `{source:"retry", retryAfter}` and passes through `degraded`/`degraded_shards` |
+| `lib/api.js` | `window.SFUApi` — live backend calls (`health`, `search`, `searchStream`, `speculate`, `analytics`, `unpack`) with mock fallback; surfaces HTTP 429 as `{source:"retry", retryAfter}` and passes through `degraded`/`degraded_shards` |
 | `lib/mock.js` | `window.SFUMock` — sample/fallback data |
 | `lib/ui.js` | `window.SFUUI` — the demo-data corner pill |
 | `lib/interface_prefs.js` | `window.SFUUI` bare-bones Interface prefs (§2): localStorage-persisted toggles for which nav items/apps are shown; broadcasts `suiteInterfacePrefs` so the shell unmounts toggled-off apps |
@@ -67,9 +66,14 @@ reload); the browser-level sweep is `scripts/e2e_sweep.mjs` PASS 6.
 
 ## Backend endpoints used
 
-`POST /api/search`, `GET /api/index_status`, `GET /api/personas`,
-`POST /api/unpack`, `GET /analytics`, `POST /engagement`, `GET /health`.
-See `docs/THIN_CLIENT_SWAP.md` → "Web GUI" for details.
+`GET /health`, `POST /api/search`, `POST /api/search_stream` (only when the
+server advertises the draft stream, gate `SFU_SEARCH_DRAFT_STREAM`),
+`POST /api/speculate` (gate `SFU_SEARCH_SPECULATE`), `GET /analytics`,
+`POST /api/unpack`. As of 2026-10-11 the GUI calls nothing else: the
+`SFUApi.indexStatus`/`personas`/`engagement` clients were removed (no caller;
+the Index Manager renders static constants and no GUI action posts engagement
+events), though the server still serves `/api/index_status`, `/api/personas`
+and `/engagement`. See `docs/THIN_CLIENT_SWAP.md` → "Web GUI" for details.
 
 ## Editing & build
 

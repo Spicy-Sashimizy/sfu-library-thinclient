@@ -2,9 +2,11 @@
 
 **Status:** ACTIVE
 
-Only `model_registry.json` (the versions table behind the Admin "Model
-Versions" view, maintained by hand + `src/lib/model_registry.py`) and
-`.gitkeep` are in git; the model directories are local, large, and
+Only `model_registry.json` (the versions table served as the
+`model_versions` panel of `GET /analytics` via `src/lib/model_registry.py`,
+maintained by hand; the GUI Admin "Model Versions" screen renders its own
+hard-coded rows as of 2026-10-11) and this README are in git (`.gitkeep`
+deleted 2026-10-11); the model directories are local, large, and
 regenerable or downloadable.
 
 | Directory (local) | Role |

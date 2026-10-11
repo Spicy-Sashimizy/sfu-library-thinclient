@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED SUPERSEDED 2026-07-06 — Qdrant on_disk sparse spike; SEISMIC promoted 2026-07-06 (docs/SEISMIC_ARCHIVE_SPLIT.md)
 """SPIKE: does Qdrant serve a SPLADE sparse index from disk (on_disk=true) at low
 resident RAM and acceptable latency? Decides whether Qdrant replaces the BMP
 sparse leg (which is load-into-RAM only — ~211 GB resident at 150M; see

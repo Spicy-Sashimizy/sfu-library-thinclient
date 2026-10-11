@@ -26,7 +26,7 @@ sequenced by scripts/run_parity_safe.sh. NOTE: at 150M even one engine exceeds t
 24 GB host — record-tc OOMs in _load() (now a clean RuntimeError, gate
 SFU_LOAD_MEM_FLOOR_GB). Holding one whole engine in a process needs ~232 GB (an
 artifact of BMP being load-into-memory only, NOT a serving target). For 150M
-numbers on a small host use scripts/eval_parity_section_waves.py instead; the real
+numbers on a small host use scripts/archive/bmp_era/eval_parity_section_waves.py instead; the real
 serving fix is mmap-backed SPLADE or hot/cold residency (see THIN_CLIENT_SWAP.md):
 
     # phase A — thin-client only (no OpenSearch in this process)
@@ -278,7 +278,7 @@ def cmd_combined(args) -> None:
             "REFUSED: combined mode loads BOTH 150M engines in one process and "
             "OOM-crashes the Docker/WSL2 VM (tc SPLADE leg alone ~211 GB "
             "resident on a 24 GB host).\n"
-            "  → 150M numbers on a small host:  scripts/eval_parity_section_waves.py run\n"
+            "  → 150M numbers on a small host:  scripts/archive/bmp_era/eval_parity_section_waves.py run\n"
             "  → OOM-safe split (needs a ~232 GB host to hold one engine): scripts/run_parity_safe.sh\n"
             "  → Or thin-client only:     ... combined --no-baseline\n"
             "  → To force anyway (NOT recommended): add --force-oom-risk")

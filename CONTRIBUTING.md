@@ -25,6 +25,11 @@ fail without them; the suite baseline is recorded in
 
 ## Rules for a change
 
+First thing after cloning: `scripts/repo_tools/install_git_hooks.sh` installs the
+tracked pre-commit hook (big-file guard, gitleaks, script placement policy,
+substantial-change gate). Policy and the exact rules:
+`docs/infrastructure/SCRIPT_HYGIENE_POLICY.md`.
+
 1. **Code wins over docs.** If a doc contradicts the code, fix the doc in the
    same commit you noticed it.
 2. **Same-commit doc rule.** A commit that changes architecture, defaults,

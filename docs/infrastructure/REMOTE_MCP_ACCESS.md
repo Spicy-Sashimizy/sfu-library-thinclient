@@ -2,6 +2,15 @@
 
 **Status:** ACTIVE
 
+> **Note 2026-10-11 (codebase triage):** Path A's supervisor config moved to
+> `scripts/archive/deploy_opensearch_era/mcp_http.supervisor.conf` (archived
+> with the rest of the legacy `deploy/` tooling). Its
+> `/workspaces/sfu-library-mcp-training/` paths never existed in this container,
+> and `claude_desktop_config.training.json` is not present either; the
+> long-lived local server here is `scripts/serve_http.sh`. Path B's NAS
+> `sfu-library-mcp` container state is unverified as of 2026-10-11 (its compose
+> recipe is archived at `scripts/archive/deploy_opensearch_era/docker-compose.prod.yml`).
+
 Two access paths, both pointing at the **same MCP toolset** (`sfu-library`,
 Streamable HTTP transport, `/mcp` endpoint):
 
@@ -21,7 +30,7 @@ HTTPS. The NAS already hosts the server, a `cloudflared` tunnel, and NPM.
 Merge `claude_desktop_config.training.json` into
 `%APPDATA%\Claude\claude_desktop_config.json`. It runs an in-container
 `mcp-remote` bridge over `docker exec` to the persistent HTTP server
-(`deploy/mcp_http.supervisor.conf`), so the heavy models stay warm
+(`scripts/archive/deploy_opensearch_era/mcp_http.supervisor.conf`, archived 2026-10-11), so the heavy models stay warm
 (cold first query ~134s → warm ~5s).
 
 ---

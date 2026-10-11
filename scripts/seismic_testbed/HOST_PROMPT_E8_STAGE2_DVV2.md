@@ -2,7 +2,7 @@
 
 Paste everything below the `---` into a Claude Code instance running **directly
 on the host** (NOT inside the 32 GB dev container). Plan:
-`.claude/plans/e8-stage2-host-dvv2-serve.md`. Doc 12 §3 Q1 is the source of
+`.claude/plans/done/e8-stage2-host-dvv2-serve.md`. Doc 12 §3 Q1 is the source of
 truth — if this file and doc 12 disagree, doc 12 wins; fix the stale one in the
 same commit you notice it.
 
@@ -17,7 +17,7 @@ serve flip.** This is the only queued lever that RAISES quality (corpus parity
 
 ---
 
-You are executing E8 Stage 2 per `.claude/plans/e8-stage2-host-dvv2-serve.md`.
+You are executing E8 Stage 2 per `.claude/plans/done/e8-stage2-host-dvv2-serve.md`.
 Work shard-by-shard; the loop is resumable; record every gate before moving on.
 
 ## ⚠️ RULE ZERO — THE SHARDS ARE IRREPLACEABLE-EXPENSIVE. READ-ONLY.

@@ -10,8 +10,8 @@
 > here now"); Qdrant on_disk survives only as an env-gated rollback, so the
 > question this folder asks is moot. Not current; do not resume.
 > Code committed 2026-09-25 before the folder was closed and left in place,
-> inert: `scripts/experiments/eval_qdrant_uint8_sparse_small.py`,
-> `scripts/tests/test_qdrant_uint8_sparse.py` (17 passing), and a
+> inert: `scripts/archive/qdrant_uint8_sparse/eval_qdrant_uint8_sparse_small.py`,
+> `scripts/archive/qdrant_uint8_sparse/test_qdrant_uint8_sparse.py` (17 passing when it lived in `scripts/tests/`; out of the suite since 2026-10-11), and a
 > `--sparse-datatype` flag on `scripts/archive/spike_qdrant_sparse.py`.
 > Environment fact recorded for whoever reopens it: no Qdrant engine exists on
 > this host, and `qdrant_client` local mode ignores sparse `datatype` (stores

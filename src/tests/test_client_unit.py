@@ -1,8 +1,5 @@
 """Unit tests for the new API client modules (OpenAlex, SFU databases, access resolver)."""
 
-import pytest
-
-from lib.config import ServerConfig
 from lib.openalex import normalize_doi, reconstruct_abstract, normalize_work
 from lib.sfu_databases import extract_domain, normalize_provider
 from lib.access_resolver import _is_proxy

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# ── SUPERSEDED 2026-08-19 by scripts/archive/demo_dependability/seed_oci_volume.sh ────
+# ── SUPERSEDED 2026-08-19 by scripts/demo_broker/seed_oci_volume.sh ────
 # Qdrant/DO era. This script rsyncs `data/qdrant_spike/storage` (~205 GB est.)
 # to a DigitalOcean droplet and can trigger a Qdrant collection snapshot first.
 # The stack no longer serves Qdrant (SEISMIC + tantivy BM25F thin client — see
 # docs/THIN_CLIENT_SWAP.md), and the demo target moved DO → OCI, so BOTH the
 # source payload and the destination are wrong.
 #
-# Replacement: `scripts/archive/demo_dependability/seed_oci_volume.sh`, driven by
-# `scripts/archive/demo_dependability/build_demo_payload_manifest.py` (the curated
+# Replacement: `scripts/demo_broker/seed_oci_volume.sh`, driven by
+# `scripts/demo_broker/build_demo_payload_manifest.py` (the curated
 # served set — measured 126.33 GB / 872 files on 2026-08-19). The rsync
 # resumability shape below (--partial --append-verify --inplace + an outer
 # retry loop + a checksum verify pass) was carried over verbatim; that part

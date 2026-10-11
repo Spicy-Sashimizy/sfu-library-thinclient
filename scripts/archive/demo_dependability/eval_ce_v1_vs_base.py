@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED DEAD 2026-09-25 — demo-dependability WI harness for the OCI deployment that was gone on 2026-09-25 (docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md); evidence kept, bars live in source at pinned commits
 """Judged eval: sfu-cross-encoder-v1 vs base ms-marco CE on the SERVE path (2026-08-19).
 
 Decides the open operator question from data/eval_results/

@@ -125,7 +125,7 @@ docs/CLOUD_OFFLOAD_AND_MONITOR_PLAN.md   # this file (authoritative plan/tracker
    anomalies so usage stays minimal). REQUIRED before the monitor can run.
 2. **Notification channel = SELF-HOSTED ntfy via Cloudflare → NPM** (chosen).
    Topic `<ntfy-topic>` on `https://ntfy.<your-domain>` (own domain,
-   off-network, private). Deployed by `deploy/ntfy/` (capped 256M, auth
+   off-network, private). Deployed by `scripts/demo_broker/ntfy/` (capped 256M, auth
    deny-all + token). No cloudflared tunnel exists on the NAS (verified), so it
    reuses the existing Cloudflare-DNS → NPM chain (add a CF subdomain record +
    an NPM proxy host with Websockets). monitor sends `Authorization: Bearer`

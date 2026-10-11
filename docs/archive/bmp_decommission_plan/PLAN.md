@@ -117,7 +117,7 @@ matters for droplet cost.
 | Need | Existing asset |
 |---|---|
 | BMP↔Qdrant toggle | `SFU_SPLADE_BACKEND` in `src/lib/thinclient/retriever.py` (`_splade_leg_qdrant` vs `_splade_leg`) |
-| OOM-safe 150M parity on small RAM | `scripts/eval_parity_section_waves.py`, `scripts/run_parity_safe.sh`, `scripts/eval_thinclient_parity.py` (`compare` mode) |
+| OOM-safe 150M parity on small RAM | `scripts/archive/bmp_era/eval_parity_section_waves.py`, `scripts/run_parity_safe.sh`, `scripts/eval_thinclient_parity.py` (`compare` mode) |
 | BMP-vs-Qdrant fidelity | `scripts/experiments/eval_quant_fidelity.py` (overlap@10/@50, Kendall-τ, NDCG delta) |
 | Quality metrics (training-comparable) | `scripts/experiments/benchmark_llm_judge.py` + `data/eval_results/llm_judge_cache.json` + `data/eval_results/diverse_queries.json` (Claude Haiku judge, NDCG@10/MRR@10/P@10) |
 | Qdrant latency/RAM | `scripts/archive/spike_qdrant_sparse.py` (`measure` subcommand) |

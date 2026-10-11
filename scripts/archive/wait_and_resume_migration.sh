@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# CLOSED SUPERSEDED 2026-09-25 — 150M OpenSearch→thin-client migration helper; the source OpenSearch index is gone since 2026-09 (scripts/README.md)
 # Polls the source OpenSearch cluster and launches the 150M thin-client
 # migration as soon as openalex_works is fully back (count stable >= 150M
 # on two consecutive checks, so we don't export from a still-recovering index).

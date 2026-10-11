@@ -15,8 +15,8 @@
 - `archive/smallmachine_levers/` — CLOSED DEAD 2026-09-25 (cloud access
   ended; the OCI E5 box its bars were judged on is gone). Evidence only;
   never pending.
-- `archive/block_prefetch/` — lever #4 term-prefix WILLNEED prefetch module +
-  unit tests, CLOSED MEASURED 2026-09-25 (cold −4.4% vs ≥ 20% bar;
+- `archive/block_prefetch/` — lever #4 term-prefix WILLNEED prefetch module
+  (unit tests deleted 2026-10-11, recoverable from 4e66eb6d), CLOSED MEASURED 2026-09-25 (cold −4.4% vs ≥ 20% bar;
   `docs/SPECULATIVE_RETRIEVAL_UPGRADES.md` §4 row 4). Evidence only; never pending.
 - `archive/inplace_update/` — in-place bit-update spike (format-v3 encoder/decoder
   patches under `patches/`, Rust updater crate, Stage-0 harness modules, spec +

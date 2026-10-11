@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# CLOSED MEASURED 2026-09-30 — in-place bit-update spike harness (docs/archive/inplace_update/); evidence kept, pre-registered bars live in source
 """In-place bit updater, Stage 0 bar S0-3: block visits vs bound inflation.
 
 BAR (verbatim from docs/delta_ingest/06_INPLACE_SPIKE_PLAN.md, commit 8c239e99):
