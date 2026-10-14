@@ -96,7 +96,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("eval_pipeline")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 DEFAULT_JUDGE_CACHE = REPO_ROOT / "data/eval_results/llm_judge_cache.json"
 DEFAULT_DIVERSE = REPO_ROOT / "data/eval_results/diverse_queries.json"
@@ -472,7 +472,13 @@ def report_thinclient(out: dict) -> None:
 # ── engine: opensearch (pre-2026-08 behavior; DEPRECATED) ───────────────────
 
 def run_opensearch(args) -> None:
-    from lib.opensearch_retriever import OpenSearchRetriever
+    import importlib.util as _ilu
+    # class archived 2026-10-11 to scripts/archive/opensearch_era; load it by path
+    _osp = __import__('pathlib').Path(__file__).resolve().parents[1] / 'archive' / 'opensearch_era' / 'opensearch_retriever.py'
+    _osspec = _ilu.spec_from_file_location('opensearch_retriever_archived', _osp)
+    _osmod = _ilu.module_from_spec(_osspec)
+    _osspec.loader.exec_module(_osmod)
+    OpenSearchRetriever = _osmod.OpenSearchRetriever
 
     logger.warning("engine=opensearch is the DEPRECATED pre-2026-08 path "
                    "(the OpenSearch cluster is not part of the thin-client "

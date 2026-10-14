@@ -39,7 +39,7 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 MANIFEST = REPO / "data" / "eval_results" / "seismic_c25_shards_150m_mmap_e5.json"
 QUERIES = REPO / "data" / "eval_results" / "diverse_queries.json"

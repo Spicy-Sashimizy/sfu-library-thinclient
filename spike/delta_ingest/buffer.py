@@ -1,12 +1,13 @@
 """L0 warm buffer — the only MUTABLE tier (Lucene/Vespa "memory index" role).
 
-Two halves, both fed from the ledger's generation-0 records:
+Fed from the ledger's generation-0 records:
   - a small tantivy index (`<delta_root>/buffer/tantivy`) that the ingest
     process writes with delete-by-term + add + commit. tantivy is mutable
     off-the-shelf; the serving process reopens it on commit (meta.json watch).
-  - an exact sparse scorer (`ExactSparseBuffer`) rebuilt in RAM from the same
-    records — brute-force dot product over an inverted dict. Exact, so no
-    SEISMIC build params matter at this size; cost is linear in postings hit.
+  - the exact sparse half is scored serving-side: `lib/thinclient/
+    delta_layer._ExactSparse` rebuilds it in RAM from the same records
+    (brute-force dot product over an inverted dict). The ingest-side twin
+    `ExactSparseBuffer` had no caller and was removed 2026-10-11.
 
 Freezing (generation build) moves records to gen N, after which the buffer
 copies are deleted here. Buffer size is bounded by `flush_docs` in the CLI.
@@ -93,47 +94,3 @@ class BufferWriter:
             self.writer.wait_merging_threads()
         except Exception:  # noqa: BLE001
             pass
-
-
-class ExactSparseBuffer:
-    """Brute-force sparse scorer over the buffer's SPLADE vectors.
-    `search(qvec, k)` returns [(id, dot)] in the same score space as SEISMIC's
-    f16 scores (exact vs SEISMIC's block-approximate), so the retriever can
-    merge them by score before RRF."""
-
-    def __init__(self):
-        self.ids: list[str] = []
-        self.postings: dict[str, list[tuple[int, float]]] = {}
-        self._pos: dict[str, int] = {}
-        self.deleted: set[int] = set()
-
-    def __len__(self) -> int:
-        return len(self.ids) - len(self.deleted)
-
-    def add(self, doc_id: str, vec: dict[str, float]) -> None:
-        if doc_id in self._pos:
-            self.remove(doc_id)
-        i = len(self.ids)
-        self.ids.append(doc_id)
-        self._pos[doc_id] = i
-        for t, w in vec.items():
-            if w > 0:
-                self.postings.setdefault(t, []).append((i, float(w)))
-
-    def remove(self, doc_id: str) -> None:
-        i = self._pos.pop(doc_id, None)
-        if i is not None:
-            self.deleted.add(i)
-
-    def search(self, qvec: dict[str, float], k: int) -> list[tuple[str, float]]:
-        if not self.ids:
-            return []
-        acc: dict[int, float] = {}
-        for t, qw in qvec.items():
-            plist = self.postings.get(t)
-            if not plist:
-                continue
-            for i, w in plist:
-                acc[i] = acc.get(i, 0.0) + qw * w
-        best = sorted(((s, i) for i, s in acc.items() if i not in self.deleted), reverse=True)[:k]
-        return [(self.ids[i], s) for s, i in best]

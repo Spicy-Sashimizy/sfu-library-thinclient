@@ -18,7 +18,7 @@
 > **frozen at 0.479** across BOTH pruning-lever axes — the per-list-cap axis
 > (`max_fraction`/`doc_cut`/`summary_energy`) **and** the global-budget axis
 > (`n_postings`, swept to the selection-saturated ceiling where every posting is
-> selected). Per-query top-10 **bit-identical** across all configs → the 0.479 gap
+> selected). Per-query top-10 **bit-identical** across all configurations → the 0.479 gap
 > is the query-time approximation floor (summary-skip + in-block coordinate
 > traversal), **not** posting retention; **no index-time knob reclaims it.** The
 > G2 *quality* risk is now the live open problem (separate from the cured G3
@@ -140,7 +140,7 @@ substrate table — `redb` is the fallback if hand-rolled offsets get painful.
   clustered blocks + truncated postings + forward vectors), so more structures must
   be got right. **Note:** the shipped DotVByte forward format decodes-in-registers via
   SIMD — evaluate whether its compressed bytes can be mmap'd-and-SIMD-decoded (cache
-  resident) vs. whether zero-decode `bytemuck` POD is the safer forward layout. This
+  resident) versus whether zero-decode `bytemuck` POD is the safer forward layout. This
   is a measured sub-decision inside Step C, not an assumption.
 - **R-OWN.** A SEISMIC storage fork = the mmap layout + per-arch wheels + tracking
   upstream forever (G9 build-vs-buy). This is the real cost; weigh against Step D.
@@ -210,7 +210,7 @@ FORMAT-WALL gap = **1.30×** (cold zero-decode beats cold materialize).
 RAM after: RssAnon **0.037 GB**, RssFile **0.174 GB** (slab carried by
 reclaimable file cache, anon ≈ 0 in kind — the cure shape holds).
 
-**VERDICT: `C0 PATH_C_FEASIBLE`** — zero-decode holds the ~20% latency budget vs
+**VERDICT: `C0 PATH_C_FEASIBLE`** — zero-decode holds the ~20% latency budget versus
 warm materialize AND beats cold materialize by 1.30×. The make-or-break hazard
 of §3 (a 731 MB summary slab decoded per query) does **not** rebuild the wall
 when the layout is flat POD read zero-decode. **Proceed to C1**: build the mmap
@@ -274,8 +274,8 @@ the upstream compressed format preserved; the mmap layer is a *page-source swap*
 
 **Why C0 (Python, cold page-fault axis) and C0.5 (Rust, decode-cost axis) are
 complementary, not redundant:** C0 proved the page-fault/zero-decode-on-mmap axis
-holds (cold 20.87 ms, gap 1.30× vs materialize); C0.5 proves the compressed-
-*decode* axis holds (warm 4.82 ms, 1.07× vs flat). Together they cover both
+holds (cold 20.87 ms, gap 1.30× versus materialize); C0.5 proves the compressed-
+*decode* axis holds (warm 4.82 ms, 1.07× versus flat). Together they cover both
 hazards §3 names: "mmap'd ≠ fast" (C0, page faults) and "encoded bytes that
 decode per query" (C0.5, compressed format). Both pass → C1 is de-risked on
 format. **Neither is a G2/recall bench** (that's §5) and Neither is a real-index
@@ -296,7 +296,7 @@ Ran: `spike/seismic_upstream/src/bin/c1a_mmap_index.rs` — the C0.5-deferred
 *integration* axis: build the real mmap writer/reader for all four SEISMIC
 components, run it over the REAL 2M persona index (`med_bio_2m.index.seismic`,
 the same one `seismic_ram_floor_persona_2m.json` measured at 912 B/doc anon),
-parity-assert vs the owned Path-A index, and measure the §6 floor (RssAnon≈0,
+parity-assert versus the owned Path-A index, and measure the §6 floor (RssAnon≈0,
 RssFile=index) + latency end-to-end.
 → `data/eval_results/seismic_c1a_mmap_persona.json`
 
@@ -331,7 +331,7 @@ in the four components, measure; (4) parity + latency + verdict.
 | **latency** mmap warm p50 / p95 | **0.097 ms** / 0.205 ms | ≤ 1.2× path_a | ✅ |
 | latency path_a warm p50 / p95 | 0.096 ms / 0.212 ms | (anchor) | — |
 | `mmap_vs_path_a_lat_x` | **1.013×** | ≤ 1.2 | ✅ |
-| **floor anon** (post-fault-in) | 0.193 GB = **+0.186 GB vs baseline** | ≈0 (≤ 0.085 GB) | ❌ |
+| **floor anon** (post-fault-in) | 0.193 GB = **+0.186 GB versus baseline** | ≈0 (≤ 0.085 GB) | ❌ |
 | **floor file** (post-fault-in) | 0.741 GB = **43% of 1.71 GB index** | >50% of index | ❌ |
 
 **VERDICT: `C1a FAILS_GATE — failing axis: FLOOR/ANON`** (and FLOOR/FILE).
@@ -341,7 +341,7 @@ The mmap borrow path **works and is arithmetic-correct** (parity ✓ — the cop
 verbatim `distances`/`search` bodies produce bit-identical results; latency 1.01× —
 the FORMAT-WALL C0/C0.5 de-risked did NOT re-emerge in integration). It cures
 **~80% of the Path-A floor** (912 B/doc → ~93 B/doc anon, and 0.74 GB of the slab
-moved into reclaimable file cache — vs 2.4 MB resident before the `touch_slab`
+moved into reclaimable file cache — versus 2.4 MB resident before the `touch_slab`
 fault-in fix, which is what the first (wrong) C1a run measured). C1a's two
 remaining gaps, both C2-scoped and neither a format/algorithm failure:
 
@@ -354,7 +354,7 @@ remaining gaps, both C2-scoped and neither a format/algorithm failure:
    `n_docs+1` byte offsets (no per-doc `String` allocation), keep the vocab-level
    `token_to_id_map` owned (<1 MB), and leave the `Box<[MmapPostingList]>` array
    owned (O(vocab), ~3 MB).
-2. **43% slab fault-in (file-resident 0.741 GB vs 1.71 GB index).** The `touch_slab`
+2. **43% slab fault-in (file-resident 0.741 GB versus 1.71 GB index).** The `touch_slab`
    4 KB-stride scan faulted only ~44% of pages; the kernel evicts hot pages under
    the scan. This is a **fault-in-strategy artifact**, not a structural floor
    problem — a denser sequential read or a `madvise(SEQUENTIAL/WILLNEED)` would
@@ -388,7 +388,7 @@ Ran: `spike/seismic_upstream/src/bin/c2_mmap_metadata_close.rs` — close the tw
 C1a gaps over the same real 2M persona index.
 → `data/eval_results/seismic_c2_mmap_metadata_close.json`
 
-**WHAT changed vs C1a:**
+**WHAT changed versus C1a:**
 - `document_mapping` is no longer decoded into `Box<[String]>` (2M individual
   heap allocations, ~120 MB anon). It is now written as a flat UTF-8 bytes file
   (`document_mapping_strings.bin`) plus an offsets file
@@ -408,14 +408,14 @@ C1a gaps over the same real 2M persona index.
 | **latency** mmap warm p50 / p95 | **0.041 ms** / 0.100 ms | ≤ 1.2× path_a | ✅ |
 | latency path_a warm p50 / p95 | 0.043 ms / 0.081 ms | (anchor) | — |
 | `mmap_vs_path_a_lat_x` | **0.971×** | ≤ 1.2 | ✅ |
-| **floor anon** (post-fault-in) | 0.049 GB = **+0.041 GB vs baseline** | ≈0 (≤ 0.085 GB) | ✅ |
+| **floor anon** (post-fault-in) | 0.049 GB = **+0.041 GB versus baseline** | ≈0 (≤ 0.085 GB) | ✅ |
 | **floor file** (post-fault-in) | 1.647 GB = **96% of 1.71 GB index** | >50% of index | ✅ |
 
 **VERDICT: `C2 KEEPS_GATE — parity OK; floor cured`.**
 
 **What the PASS actually says:** the no-JVM Path C is structurally viable. The
 whole 1.71 GB persona index lives in reclaimable file cache (RssFile), while the
-non-reclaimable anon floor is +0.041 GB — a **43× reduction** vs the original
+non-reclaimable anon floor is +0.041 GB — a **43× reduction** versus the original
 Path-A 1.782 GB floor. The remaining anon is the small owned tail (token map +
 `Box<[MmapPostingList]>` array), not O(n_docs). Per-doc anon at 2M is now
 ~21 B/doc; even if it scaled linearly with vocab/corpus bookkeeping it would
@@ -425,7 +425,7 @@ remain ≪ the 31.6 GB host budget at 150M.
 1. **G2 quality sweep — DONE 2026-06-27** (see `06_FINDINGS.md` §"G2 param-sweep" + §"G2 n_postings sweep"):
    overlap@10 is **invariant at 0.479** across BOTH axes. Sweep #1 (`max_fraction`):
    1.5→5.0→10.0, `doc_cut` 15→1, `summary_energy` 0.4→0.9 (index 1.69→5.28 GB; per-query
-   overlap bit-identical across configs). Sweep #2 (`n_postings`): 3500→7000→14000 to the
+   overlap bit-identical across configurations). Sweep #2 (`n_postings`): 3500→7000→14000 to the
    **selection-saturated ceiling** (N3 budget 390.5M > 153M total postings `idx.nnz` → every
    posting selected; only the per-list cap still binds the hottest lists, and sweep #1 proved
    that cap irrelevant to top-10). Per-query overlap **bit-identical** to P0 (programmatic:
@@ -438,7 +438,7 @@ remain ≪ the 31.6 GB host budget at 150M.
    `MmapSeismicIndex::from_mmap` is now exposed through pyo3 as
    `seismic.MmapSeismicIndex` (new pyclass `spike/seismic_upstream/src/pylib/mmap_index.rs`,
    registered in `lib.rs` `#[pymodule]`). Validated at the **Python serve boundary**
-   (not just the Rust bin): parity bit-identical (30 real SPLADE queries vs owned
+   (not just the Rust bin): parity bit-identical (30 real SPLADE queries versus owned
    reference), floor anon Δ **0.000 GB**, RssFile 96% of on-disk after `touch_slab`
    fault-in, mmap p50 0.441 ms — `data/eval_results/seismic_c25_mmap_serve_validate.json`
    (`06_FINDINGS.md` 2026-06-28 C2.5 row). Federation re-gated under `--load-mode mmap`:
@@ -447,7 +447,7 @@ remain ≪ the 31.6 GB host budget at 150M.
    **The 150M serve still needs the 8 stock shards converted to the flat mmap layout**
    (turnkey driver `scripts/seismic_testbed/convert_shard_to_mmap.py`, serial, ~9.9 GB
    peak/shard — fits 32 GB one at a time; run not started — gated on a box with the
-   budget). Load-bearing caveat: converted dirs MUST use the C2 flat doc-mapping layout
+   budget). Load-bearing caveat: converted directories MUST use the C2 flat doc-mapping layout
    (`document_mapping_strings.bin` + `document_mapping_offsets.bin`), not the stale C1a
    writer — else the reader loads `doc_mapping=None` and search falls back to numeric ids.
 3. **Cold-axis validation** — re-run with `posix_fadvise(DONTNEED)` on the mmap
@@ -492,7 +492,7 @@ the mmap move is the G3 lever; **they are different fixes and you need both.**
 | Per-doc anon floor | ≤ Qdrant-class O(10s) B/doc, not O(100s) | same |
 | 150M projection | servable on the 31.6 GB host (anon ≪ RAM) | projection in the probe |
 | Latency not regressed by the format | within ~20% of in-RAM Path A | FORMAT-WALL bench / G5 |
-| G2 not sacrificed to get there | overlap@10 unchanged vs the chosen build config — **CONFIRMED unchanged at 0.479 across the param sweep (2026-06-27)**, i.e. the storage move traded nothing for the floor, but 0.479 itself remains below the 0.95 B1 bar (a separate, open quality problem, not a G3 exit criterion) | `eval_seismic_parity.py` + `g2_param_sweep.py` |
+| G2 not sacrificed to get there | overlap@10 unchanged versus the chosen build configuration — **CONFIRMED unchanged at 0.479 across the parameter sweep (2026-06-27)**, that is, the storage move traded nothing for the floor, but 0.479 itself remains below the 0.95 B1 bar (a separate, open quality problem, not a G3 exit criterion) | `eval_seismic_parity.py` + `g2_param_sweep.py` |
 
 G3 is fixed only when **anon ≈ 0 AND latency held AND G2 not traded away** — all
 three, measured, same config.

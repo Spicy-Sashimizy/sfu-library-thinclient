@@ -39,7 +39,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 EXTENT = 2 * 1024 * 1024   # 2 MiB fixed extent (documented above)
 NR_CACHESTAT = 451        # x86_64 syscall number

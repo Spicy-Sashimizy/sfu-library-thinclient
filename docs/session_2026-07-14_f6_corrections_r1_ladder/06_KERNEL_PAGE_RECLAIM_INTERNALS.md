@@ -74,7 +74,7 @@ https://www.kernel.org/doc/Documentation/mm/multigen_lru.rst ): N generations
 instead of two lists; **tiers by access count** (`order_base_2(N)` refs); and
 — the kernel documentation's own words — "a feedback loop modeled after the
 **PID controller**" that monitors per-tier *refaults* and chooses which tiers
-to evict vs protect. The mainline literally adopted control-theory
+to evict versus protect. The mainline literally adopted control-theory
 terminology for what §1.3 does crudely. Not active on this box (§0), but it
 validates reading the classic machinery as a proto-controller.
 

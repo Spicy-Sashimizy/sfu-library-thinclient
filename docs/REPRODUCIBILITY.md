@@ -17,7 +17,7 @@ re-scored against frozen judgments without re-judging.
 
 | In git | Not in git (local artifacts) |
 |---|---|
-| all serving and build code (`src/`, `spike/delta_ingest/`), the GUI, the MCP server | the served 150M index (`data/thinclient_index/`, `data/seismic_150m/`, ~180 GB) |
+| all serving and build code (`source/`, `spike/delta_ingest/`), the GUI, the MCP server | the served 150M index (`data/thinclient_index/`, `data/seismic_150m/`, ~180 GB) |
 | every measurement file under `data/eval_results/` (1,500+; index: `data/eval_results/INDEX.md`) | encoder and reranker weights under `models/` (SPLADE ONNX export, in-house cross-encoder and embed fine-tunes) |
 | the eval queries, relevance judgments and both LLM-judge caches (`dense_ablation_topics_20260817.json`, `dense_ablation_qrels_20260817.json`, `dense_ablation_judge_cache_20260817.json`, `seismic_kimi_judge_cache.json`) | the built Rust tools (`spike/seismic_upstream/target/release/`) — the fork itself is tracked as a patch, §3 |
 | the SEISMIC fork as `spike/seismic_upstream_fork.patch` against upstream `v0.4.0` | the OpenAlex snapshot parts |
@@ -40,9 +40,9 @@ serves that generation directory directly as the index root:
 | Step | Code reused | Output |
 |---|---|---|
 | read + normalise each work, rebuild the abstract from `abstract_inverted_index` | `spike/delta_ingest/adapters.py` `JsonlAdapter(openalex_shape=True)`, `records.py` `normalize_openalex_work` / `reconstruct_abstract` | `DocRecord` stream (works without a usable abstract, under 50 chars or paratext, are dropped here) |
-| subject × era section | `src/lib/thinclient/sections.py` `classify_doc` | `<base>__<recent|archive>` |
-| SPLADE document encode (GPU if present, CPU otherwise) | `src/lib/thinclient/doc_encoder.py` (pulls `prithivida/Splade_PP_en_v1` from the Hugging Face hub on first use) | top-256 sparse vectors |
-| tantivy BM25F per section + `meta.sqlite` v2 + abstract sidecars | `src/lib/thinclient/builder.py` `SectionBuilder` | `g0001/sections/*/tantivy`, `g0001/meta.sqlite`, `abstracts.sqlite` |
+| subject × era section | `source/lib/thinclient/sections.py` `classify_doc` | `<base>__<recent|archive>` |
+| SPLADE document encode (GPU if present, CPU otherwise) | `source/lib/thinclient/doc_encoder.py` (pulls `prithivida/Splade_PP_en_v1` from the Hugging Face hub on first use) | top-256 sparse vectors |
+| tantivy BM25F per section + `meta.sqlite` v2 + abstract sidecars | `source/lib/thinclient/builder.py` `SectionBuilder` | `g0001/sections/*/tantivy`, `g0001/meta.sqlite`, `abstracts.sqlite` |
 | SEISMIC stock build → f16 mmap → dotvbyte v2 (the served format) | `spike/delta_ingest/generation.py` `build_seismic_shard` → `c1a_mmap_index`, `convert_f16_to_dotvbyte` (Rust) | `g0001/seismic/*.dotvbyte.v2.mmap` |
 | shard manifest + `serve.env` | `generation.py` `publish`; the driver | `delta/shard_manifests/*.json`, `<work>/serve.env` |
 | serve check | `scripts/reproduce/verify_rebuild.py` → `ThinClientRetriever.search_rrf(with_provenance=True)` | `<work>/verify.json` |
@@ -91,7 +91,7 @@ one 18.8 M-doc SEISMIC shard builds in ~17 min at ~10 GB peak
 raises the flush thresholds so a run lands in ONE generation; the
 generation builder holds its records in memory, so keep a single run under
 roughly a million works on a 32 GB host (*est.*) and use several work
-dirs, or several generations behind `SFU_DELTA_ROOT`, beyond that (§2.3).
+directories, or several generations behind `SFU_DELTA_ROOT`, beyond that (§2.3).
 
 ### 2.2 Second run — the download path
 
@@ -131,6 +131,23 @@ same chain; results file key `download_run`.
    serving is measured byte-identical to GPU
    (`infrastructure/PORTABLE_STACK_MANIFEST.md` §(d) row 6). The build step
    is GPU-practical only above a few hundred thousand works.
+   `requirements.txt` was regenerated 2026-10-12 from the third-party imports
+   of `source/` and the non-evidence `scripts/` directories; floors are the installed
+   major.minor of the venv, and `scripts/tests/test_requirements_cover_imports.py`
+   pins it (every `source/` import has a line, every line has a live import). It
+   is the development superset; the pinned serving sets are host-generated and not
+   regenerable here: `scripts/portable_linux/serving_requirements_linux.lock.txt`
+   (last commit 2026-09-27 04:21 UTC) and
+   `scripts/portable_socsci/windows/serving_requirements_win.txt` (last commit
+   2026-08-04 20:55 UTC). It deliberately has NO `pyseismic-lsr` line (only a
+   comment block): the venv's `seismic` is the local patched fork wheel built
+   from `spike/seismic_upstream` + `spike/seismic_upstream_fork.patch` (item 2
+   below), a PyPI pin would silently install unpatched upstream and drop the
+   fork patch, and the test fails if a `pyseismic*` line is added. brotli and
+   py3langid are kept under an "Evals (optional)" section (eval-only,
+   `scripts/experiments`); the other evidence-harness packages (`scripts/archive`,
+   `experiments`, `seismic_testbed`) are omitted: scipy, faiss, qdrant_client,
+   onnx, aiohttp, bmp.
 2. **The SEISMIC fork and the two Rust tools.** The fork is upstream
    `TusKANNy/seismic` tag **`v0.4.0`** (commit `aa5f81a8`) plus ONE tracked
    patch, `spike/seismic_upstream_fork.patch` (6,489 lines; verified
@@ -155,18 +172,18 @@ same chain; results file key `download_run`.
    from the Hugging Face hub on first use (network once). Query encoding at
    serve time needs the fused ONNX export at `models/splade_onnx_fused/`
    (`SFU_SPLADE_MODEL_PATH`) **with a bert-base-uncased tokenizer in the
-   same dir**; the export is `lib.thinclient.doc_encoder._ensure_onnx_export`
+   same directory**; the export is `lib.thinclient.doc_encoder._ensure_onnx_export`
    (FP16 ONNX via `optimum`) followed by
    `scripts/seismic_testbed/d2_ort_fusion_matrix.py` `build_fused`. This
-   repo's copy predates the session and the recipe is UNMEASURED here; a
-   handout should ship the fused dir plus tokenizer
+   repository's copy predates the session and the recipe is UNMEASURED here; a
+   handout should ship the fused directory plus tokenizer
    (`infrastructure/PORTABLE_LINUX_BUNDLE.md` §1 smoke attempt 1 is what
    happens when the tokenizer is missing: silent BM25F-only fallback).
 4. **Rerank models cannot be rebuilt.** `models/sfu-cross-encoder-v1` and
    `models/sfu-academic-embed-v5` are in-house fine-tunes whose trainers
    and training data are gone (`infrastructure/PORTABLE_LICENSING_INVENTORY.md`).
    `search_rrf` (what the rebuild verifies) does not rerank; the MCP/HTTP
-   tools do, and without those dirs fall back to the base checkpoints
+   tools do, and without those directories fall back to the base checkpoints
    (`cross-encoder/ms-marco-MiniLM-L-6-v2`; `lib/embedding.py` default).
    Rankings after rerank then differ from the measured ones. UNMEASURED.
 
@@ -186,7 +203,7 @@ regime, not a replication.
 | parity numbers (byte-identical top-10 across CPU/GPU, speculative rerank, delta gate) | the 120 `natural` topics | `scripts/experiments/eval_cpu_only_serve_path.py`, `scripts/run_parity_safe.sh` | 150M index | the cited `data/eval_results/*.json` |
 | storage levers 300.9 → 188.8 GB | measured sizes recorded per lever | `docs/STORAGE_BUDGET_150M.md`, `docs/LEXICAL_STORAGE_RESEARCH.md` | the full-corpus artifacts | the tables in those docs |
 
-Honest statement for a paper: a reader with this repo can (a) audit every
+Honest statement for a paper: a reader with this repository can (a) audit every
 number against its evidence file and the frozen judgments, (b) rebuild and
 serve a corpus of their chosen size from public data with one command,
 measured here at 182 s for 21 k works, and (c) reproduce the 150M numbers

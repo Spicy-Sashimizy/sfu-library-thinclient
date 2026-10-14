@@ -52,13 +52,13 @@ Why it fails **as a replacement** here — it breaks all four base constraints:
   of the cheap CPU posting-list scan this stack optimized.
 
 Where it *could* live (steelman, not a recommendation): a **bounded generative
-leg** over a small hot subset (e.g. the warm-cache cap, not the 150M), fused via
+leg** over a small hot subset (for example, the warm-cache cap, not the 150M), fused via
 the existing RRF k=60; or **generative rerank** of a small candidate set (but a
 cross-encoder reranker already exists).
 
 ## 2. MoE with a specified set of active params — already realised structurally
 
-MoE = large total params, a router activates only top-k experts per token → big
+MoE = large total parameters, a router activates only top-k experts per token → big
 capacity at fixed *active* FLOPs.
 
 Key observation: **this system already implements a hand-routed MoE at the index
@@ -69,7 +69,7 @@ is conditional activation (only the relevant partition is paged in).
 So MoE applicability splits:
 
 - **As a model:** the only place it fits is a **per-domain MoE reranker/encoder
-  routed by the existing section classifier** (med vs CS vs social-science
+  routed by the existing section classifier** (med versus CS versus social-science
   experts). Strongest concrete fit, but small payoff.
 - **Constraint mismatch:** MoE reduces *compute/FLOPs*; this stack is bound by
   *RAM/storage*. The full expert set still has to be resident or paged. MoE

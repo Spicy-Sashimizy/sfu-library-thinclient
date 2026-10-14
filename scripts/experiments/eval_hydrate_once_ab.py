@@ -57,7 +57,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 TOPICS = REPO / "data/eval_results/dense_ablation_qrels_20260817.json"
 DATE = "2026-09-27"

@@ -59,7 +59,7 @@ p50 2159 ms < parallel 2687 ms (VmRSS 1.34 vs 25.2 GB); warm inverts
 (parallel 80–101 ms ≪ sequential 367 ms).
 
 - Implement `--federation hybrid` in the sharded backend
-  (`src/lib/thinclient/sharded_seismic_backend.py`) + plumb through
+  (`source/lib/thinclient/sharded_seismic_backend.py`) + plumb through
   `scripts/seismic_testbed/serve_footprint_bench.py`. Start sequential;
   flip to parallel on a **state signal** (pre-register it before measuring:
   e.g. per-query traverse ms dropping below a threshold for 2 consecutive

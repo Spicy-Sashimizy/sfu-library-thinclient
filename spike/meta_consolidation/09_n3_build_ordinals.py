@@ -42,7 +42,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "source"))
 from lib.thinclient.ordinals import write_stamp  # noqa: E402
 
 META = ROOT / "data" / "thinclient_index" / "meta.sqlite"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — P3b: pruning + parallel-search reality (ledger rows 5 & 6).
 
 The FORMAT-WALL win (25.63 ms warm p50, 4-shard med_bio) exists because

@@ -38,22 +38,22 @@ seismic testbed) replaying a realistic ingest stream, at two cut depths.
 
 | Metric | Why | Compare against |
 |---|---|---|
-| **Resident set (RSS) vs. segment count** | the core mmap tension | the current full-rebuild single-segment-per-section baseline |
-| **Query fan-out** (segments touched/query) | does prefix-locality bound it? | depth-2 vs deeper cut |
+| **Resident set (RSS) versus segment count** | the core mmap tension | the current full-rebuild single-segment-per-section baseline |
+| **Query fan-out** (segments touched/query) | does prefix-locality bound it? | depth-2 versus deeper cut |
 | **p50/p95 query latency** under N segments | tail latency is where LSM hurts | baseline immutable build |
 | **Flush latency** (ingest→searchable-in-immutable-leg) | the honest NRT cost | n/a (new capability) |
 | **Compaction cost** (localised rebuild wall-time + write-amp) | SEISMIC has no byte-merge | n/a |
 | **Cross-host ID reproducibility** | the any-hardware guarantee | same doc on 2 different CPUs → identical ID |
 
 Reuse the existing Kimi-judge NDCG harness **only** as a *non-regression guard*
-(quality must not drop vs. the single-segment baseline) — Stage 1 is **not**
+(quality must not drop versus the single-segment baseline) — Stage 1 is **not**
 chasing a recall win.
 
 ## Go / No-Go gates for the spike itself
 
 - **PASS** if, at the big-host cut depth, RSS stays within ~1.2× of the
   single-segment baseline *and* p95 latency within ~1.5×, with bounded fan-out —
-  i.e. TieredMergePolicy + prefix-locality keep the small-segment cost in check.
+  that is, TieredMergePolicy + prefix-locality keep the small-segment cost in check.
 - **KILL** if RSS or p95 blows past those with no policy setting recovering it →
   LSM-on-mmap is incompatible with the page-cache thesis; stop, document, do not
   proceed to Stage 2.

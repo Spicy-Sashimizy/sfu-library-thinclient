@@ -115,7 +115,7 @@ was first written and bear on it two ways:
    behind it (the convergence trajectories AND the pin null-protection).
 
 2. **Fault COUNTS are a state metric, not a cost metric.** At 6 GB, pin-ON
-   raised majflt only +7% (550k→587k) but latency +35% (4.9→6.6 s) — i.e.
+   raised majflt only +7% (550k→587k) but latency +35% (4.9→6.6 s) — that is,
    per-fault service cost rose **0.358 → 0.452 ms (+26%)**. Interpretation:
    ~1.6 GB of mlocked extents interleaved through the forward slab fragment
    the fault runs — the kernel's readahead can no longer coalesce
@@ -177,7 +177,7 @@ was first written and bear on it two ways:
    >
    > **ADDENDUM 2026-09-29 — MEASURED on the real stack (uncapped mechanism
    > check, served binary NOT swapped):** the fork `2c4d863` `.so` was rebuilt
-   > portable (x86-64-v3) and run against the 8 served shards vs the served
+   > portable (x86-64-v3) and run against the 8 served shards versus the served
    > pre-fix `.so`. After one query pass the fixed hook takes all three
    > structural slabs (1.36 GB) to Rss 0 and drops RssFile 8.24 of 8.52 GB
    > residue (0.968); the served hook drops 7.07 GB (0.789) and leaves the
@@ -191,7 +191,7 @@ was first written and bear on it two ways:
    > `data/eval_results/wslrh_f5_gap1_verify_2026-09-29.json`.
 4. On the operator question "can we trigger the forced reclaim manually to
    get the benefit without scaling the host": yes — that is F5 (map-guided,
-   this repo), or map-blind equivalents documented in production elsewhere
+   this repository), or map-blind equivalents documented in production elsewhere
    (cgroup `memory.reclaim` / Meta TMO-senpai / DAMON_RECLAIM — see
    `05_EXTERNAL_PRECEDENTS.md`). Where it helps: the marginal band only
    (cap ≈ WS). Above: unnecessary. Below the repeat set: nothing but pinning
@@ -265,9 +265,9 @@ convergence-terminated (min 3 / max 12 passes), per-pass cgroup-v2
    ≤ 10 GB plateaus in sustained thrash. The §2.1 repeat-set estimate
    (~10–11 GB) is now an empirical boundary.
 2. **The §1 inversion replicates — but the §2 mechanism needs one
-   refinement.** At a fixed pass-3 window, 12 GB reads p50 21 ms vs 16 GB's
-   124 ms (R1: 22 vs 135) — yet 12 GB carried MORE residual faults at that
-   snapshot (26k vs 15k). The inversion is therefore carried by *where* the
+   refinement.** At a fixed pass-3 window, 12 GB reads p50 21 ms versus 16 GB's
+   124 ms (R1: 22 versus 135) — yet 12 GB carried MORE residual faults at that
+   snapshot (26k versus 15k). The inversion is therefore carried by *where* the
    residual faults land across queries (12 GB's residue misses the median
    query; 16 GB's is spread, lifting p50), not by the smaller cap having
    finished the whole sort. Meanwhile passes-to-full-convergence is flat
@@ -362,8 +362,8 @@ What the ledger adds to §2/§4/§7:
    the symmetric pass-3 transient. The lesson reaffirmed: the overhead must be
    compared at each cell's *most-converged* pass (the steady-state regime it
    actually reached), NOT a fixed pass-index — the two cells converge in
-   different pass counts (12g took 5 vs ctrl's 4, tracing-pressure-delayed), so
-   a fixed index is apples-to-oranges (12g pass-3 = mid-sort 824 ms vs ctrl
+   different pass counts (12g took 5 versus ctrl's 4, tracing-pressure-delayed), so
+   a fixed index is apples-to-oranges (12g pass-3 = mid-sort 824 ms versus ctrl
    near-converged 20 ms ⇒ a bogus 40× ratio). And the refault-ratio verifier
    heuristic, written pre-sampling, compared the 1/512-sampled probe against
    `majflt` (~7× too few) — flagging a designed property as a defect; corrected
@@ -422,13 +422,13 @@ boundary / thrash / deep), so the convergence transient the artifact needs
 the frozen 6.25g marginal cap produced it on the first try.
 
 **The inversion still did not appear.** At the pass-3 window boundary p95 =
-0.157 ms vs marginal p95 = 0.006 ms, an inversion ratio of **0.04x** against a
+0.157 ms versus marginal p95 = 0.006 ms, an inversion ratio of **0.04x** against a
 predicted 2–20x: the *smaller*-deficit rung converges faster, not slower.
 Marginal and boundary majflt trajectories are self-similar, scaled by their
-initial deficits (ratio 1.92 / 1.86 / 2.04 / 1.92 over passes 1–4, vs a load
+initial deficits (ratio 1.92 / 1.86 / 2.04 / 1.92 over passes 1–4, versus a load
 deficit ratio of 1.98). Pressure-scaled aging is real but second-order:
-boundary's per-pass geometric decay is 0.582 vs marginal's 0.646 (~10% faster,
-enough to reach zero faults at pass 8 vs pass 10 with twice the deficit — not
+boundary's per-pass geometric decay is 0.582 versus marginal's 0.646 (~10% faster,
+enough to reach zero faults at pass 8 versus pass 10 with twice the deficit — not
 enough to invert a 2x head start inside three passes). **Verdict: on this WSL2
 classic-LRU host, with a naive two-population interleaved load and
 uniform-random repeat, the fixed-window convergence outcome is
@@ -439,7 +439,7 @@ The conclusion is **robust to the metric** (on `clat` mean, pass-3 boundary is
 still 1.98x slower than marginal), but two of the three failing bars are not
 about the hypothesis at all — Tier-1b's bars moved p50 -> p95 to see faults,
 and p95 turns out to be a *threshold detector*: a percentile p_X reads fault
-latency only while the fault fraction exceeds (100-X)%, so at 1,310,720 ops per
+latency only while the fault fraction exceeds (100-X)%, so at 1,310,720 operations per
 pass p95 flips hard at 65,536 faults. Bars 2b and ES-3 then fail on ~100 ns
 differences inside a +/-16% cache-hit noise floor. Recorded in
 `spike/convergence_repro/RESULTS.md` sections 11 and 15 as bar-design findings;
@@ -499,7 +499,7 @@ prefault protocol matched to R1/R2):
   inversion are PRESENT.** Transient band 26–28 GB (repeat set ≈27.5 GB on
   the deployed dotvbyte index): both rungs converge to the same ~19–20 ms
   steady state through multi-pass sorts, and at the fixed pass-2 window
-  the smaller cap wins — 26 GB p50 64.3 ms vs 28 GB 262.8 ms (4.1×) —
+  the smaller cap wins — 26 GB p50 64.3 ms versus 28 GB 262.8 ms (4.1×) —
   pressure-dominated convergence with pass-1 pgscan monotone in pressure
   (0 → 1.0M → 5.2M). The dynamic the Tier-1b synthetic could not produce
   reproduces on the real stack outside WSL2.
@@ -525,7 +525,7 @@ bars frozen at `1a87aac3`:
   `31,642→5,072→0` and `31,523→5,100→0` majflt/pass). B3 PASS — the
   fixed-window inversion, the artifact this whole line of work is about,
   replicates on the real stack: at the pass-2 window the 26 GB cap is
-  5.8×/5.6× faster than the 28 GB cap (p50 63.9/62.4 ms vs 372.6/352.3
+  5.8×/5.6× faster than the 28 GB cap (p50 63.9/62.4 ms versus 372.6/352.3
   ms) with fewer faults, both converging to the same ~19.5 ms steady
   state. Phase-B trajectories reproduce phase A's single cells to ~1%.
 - **Item 3 (MGLRU A/B): still open, one cell short.** The deadline cut
@@ -609,7 +609,7 @@ to the arm asymmetry) needs ingredients beyond the current driver
 pre-registration; S-realprofile stays severed behind §6 gap 3; the
 MGLRU-FG RFC test (`PREREGISTRATION_T1D_FG.md`) and the access-histogram
 probe (`PREREGISTRATION_T1D_PROBE.md`) are drafted, not run. The spin-off
-decision (standalone public repo on item-1 PASS, recorded 2026-08-31) is
+decision (standalone public repository on item-1 PASS, recorded 2026-08-31) is
 now unblocked and awaits the owner.
 
 > **CORRECTION 2026-09-25 — two clauses of the paragraph above were already
@@ -651,13 +651,13 @@ now unblocked and awaits the owner.
 https://claude.ai/code/artifact/1b60d178-4b25-440c-b1c9-9a12bdfdc898 — seven
 figures, each mark a field of a recorded result file (no re-measurement):
 (1) R1 ladder per-pass p50 + majflt by cap, the observation; (2) R2 fine
-ladder, pass-3 p50 vs converged p50 by cap (non-monotone vs monotone);
-(3) R3 between-pass cachestat residency + active_file, 12 vs 16 GB;
-(4) Tier-2/3 real stack, per-pass p50 and converged state by cap, classic vs
+ladder, pass-3 p50 versus converged p50 by cap (non-monotone versus monotone);
+(3) R3 between-pass cachestat residency + active_file, 12 versus 16 GB;
+(4) Tier-2/3 real stack, per-pass p50 and converged state by cap, classic versus
 MGLRU (the cliff displacement); (5) Tier-2/3 reclaim anatomy at 28 GB,
-workingset activate vs refault; (6) Tier-1d hot-set residency + majflt per
+workingset activate versus refault; (6) Tier-1d hot-set residency + majflt per
 pass, both arms, both seeds, plus the 8 GiB control; (7) Tier-1d
-characterization, floor ratio vs h and vs cap. Companion: the 2026-09-12
+characterization, floor ratio versus h and versus cap. Companion: the 2026-09-12
 access-histogram probe chart (§ above). Source and data:
 `spike/convergence_repro/figures/` (`extract.py` → `figures_data.json`,
 `figures_template.html` + `build.py`); rebuild after any cited cell changes.
@@ -744,7 +744,7 @@ the regime-map constants pinned in the section above:
    without the upper boundary the band has no top.
 2. **A 28 GB cap is not meaningfully reachable on a 31 GB host.** The missing
    boundary cells sit at cap 28 GB. 31 − 28 = **3 GB** left for the WSL2
-   kernel, init, the dev container, the orchestrator and every page the cap
+   kernel, init, the development container, the orchestrator and every page the cap
    does not own; measured idle usage before any cell is **~5 GB**, so
    31 − 5 = **26 GB < 28 GB** — the cap is looser than the RAM actually
    available to fill it. A cgroup limit that the host cannot make bind does
@@ -760,7 +760,7 @@ the regime-map constants pinned in the section above:
    which the OCI cells' question can be posed at all**, regardless of how
    much RAM the machine had. (The hot sets themselves differ 13.76 / 10.1 =
    **1.36×** on the same 150M manifest; the record does not establish whether
-   that is host, codec or serving config, which is a second independent
+   that is host, codec or serving configuration, which is a second independent
    reason a same-numbered cap here would not be a replication.)
 
 **Consequence, stated once:** every OCI-derived cell is **CLOSED-UNRUNNABLE**
@@ -800,7 +800,7 @@ evidence citations there stand unchanged.
 | 1 — index-independent synthetic repro | **PASSED** (arm asymmetry, steady-floor ratio 1.443 in both seeds, bar ≥1.30). The *inversion* form remains real-stack-only. | **Yes** — synthetic, fully re-runnable on this host; Tier-1e is drafted for the inversion form | RESULTS.md §23–25, §30 |
 | 2 — native Linux, real stack | **CONFIRMED** (B2/B3 PASS, 5.8×/5.6× at 26-vs-28 GB) | **No new OCI cell is possible.** The verdict stands as a closed, judged record; a reader cannot re-run it | addendum 2026-09-01 (c)/(d) |
 | 3 — MGLRU arm | **MEASURED and now FINAL AS RECORDED**: cliff displaced ≥ ~4 GB upward, transient replaced by sustained thrash (~220× at 28 GB); **B1/B5 not-passed on uncomputable-as-frozen components, B4 FAIL on bar arithmetic — permanently, because AMEND1 is CLOSED-UNRUNNABLE** | **No** | addendum 2026-09-01 (d), RESULTS.md §21–22; AMEND1 retired |
-| spin-off decision (standalone public repo on item-1 PASS, recorded 2026-08-31) | **Still unblocked; still awaits the owner** — but its honest shape changed on 2026-09-25 | — | this addendum |
+| spin-off decision (standalone public repository on item-1 PASS, recorded 2026-08-31) | **Still unblocked; still awaits the owner** — but its honest shape changed on 2026-09-25 | — | this addendum |
 
 **What the host loss does to the spin-off.** The synthetic tier (item 1) is
 the part a reader can reproduce: `t1d_cell.py`, frozen bars, fresh seeds,

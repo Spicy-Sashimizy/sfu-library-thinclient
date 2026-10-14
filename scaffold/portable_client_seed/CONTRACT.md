@@ -16,10 +16,10 @@
 2. **Golden fixtures** — per (shard, query) expected top-10 `(id, score)`
    pairs, produced by the served Python+native path. Bit-exact contract.
 3. **Artifacts** — shards, models, `.so` build recipes. Never committed to
-   either repo; fetched to gitignored paths.
-4. **Specs** — GUI bare-bones/progress spec, reliability layer map,
+   either repository; fetched to gitignored paths.
+4. **Specifications** — GUI bare-bones/progress specification, reliability layer map,
    shipping decision doc (copied into `upstream_specs/` at import time,
-   with their dates, so this repo builds against a frozen snapshot).
+   with their dates, so this repository builds against a frozen snapshot).
 
 ## What the client owes back
 

@@ -62,16 +62,16 @@ in use.
 The production SPLADE path **already does u8×u8 integer scoring** — this is
 the precedent for doing the same in SEISMIC:
 
-- Doc values quantized at build: `src/lib/thinclient/builder.py:213`
+- Doc values quantized at build: `source/lib/thinclient/builder.py:213`
   `vec = {t: min(BMP_IMPACT_MAX, max(1, int(round(w * QUANT_SCALE))))}`
   with `QUANT_SCALE = 70`, `BMP_IMPACT_MAX = 255` (`builder.py:34-35`).
-- Query weights quantized at search: `src/lib/thinclient/retriever.py:669`
+- Query weights quantized at search: `source/lib/thinclient/retriever.py:669`
   `qvec = {t: max(1, int(round(w * QUANT_SCALE))) for t, w in top_terms.items()}`
   with `QUANT_SCALE = 70` (`retriever.py:100` — "saturation-free" comment,
   must match builder).
 - `SPLADE_QUERY_TERMS = 64` (`retriever.py:101`) — the query cap.
 
-**Quant fidelity (BMP ×70 vs Qdrant f32):** `data/eval_results/quant_fidelity_30mscan.json`
+**Quant fidelity (BMP ×70 versus Qdrant f32):** `data/eval_results/quant_fidelity_30mscan.json`
 (n=1,000,000 docs, 40 queries, 30M-scan harvest): `mean_overlap@10 = 0.9875`,
 `mean_ndcg@10_f32 = 0.8681`, `mean_ndcg@10_quant = 0.8681`,
 **`ndcg_delta = 0.0`** (bit-identical judged quality). Live 150M re-measurement

@@ -60,7 +60,7 @@ from pathlib import Path
 import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("uint8_sparse")
@@ -106,7 +106,7 @@ def choose_scale(values: np.ndarray, mode: str = "per_vector_max",
         THIS vector lands exactly on code 255 -- no clipping ever, error is
         purely rounding. Costs 4 bytes/doc to store the scale.
     mode="global": a fixed corpus-wide scale, quantizing to round(v/scale) and
-        CLIPPING at 255 (this is what src/lib/thinclient/builder.py does for the
+        CLIPPING at 255 (this is what source/lib/thinclient/builder.py does for the
         retired BMP leg with QUANT_SCALE=70, i.e. scale = 1/70). Costs nothing
         per doc but clips any weight above 255*scale.
 

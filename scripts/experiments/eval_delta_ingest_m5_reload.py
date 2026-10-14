@@ -266,7 +266,7 @@ def drive(args) -> int:
         env["SFU_DELTA_ROOT"] = str(root)
         for attempt in range(1, args.retries + 2):
             cmd = ["flock", m4.LOCK, sys.executable, str(Path(__file__).resolve()), "child", "--root", str(root),
-                   "--n", str(n), "--rows-out", str(rows_out), "--src", str(snap / "src"),
+                   "--n", str(n), "--rows-out", str(rows_out), "--src", str(snap / "source"),
                    "--quiet-wait", str(args.quiet_wait)]
             with open(logp, "a") as fh:
                 fh.write(f"=== attempt {attempt} {m4.utc()} ===\n")

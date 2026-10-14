@@ -1,0 +1,39 @@
+# Dev container config
+# > **CLOSED SUPERSEDED 2026-10-11** — OpenSearch-era droplet+TrueNAS deploy tooling; current deployment is scripts/demo_broker/ (OCI demo) and scripts/serve_http.sh locally
+.devcontainer/
+.claude/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Virtual environment
+.venv/
+
+# Tests
+src/tests/
+
+# Dev files
+.pommel/
+.pommelignore
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Language files (dev only)
+languages/
+
+# Dev docs
+deploy/truenas_setup.md
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+*.md
+!deploy/*.md
+LICENSE

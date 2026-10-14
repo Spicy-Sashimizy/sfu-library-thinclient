@@ -3,7 +3,7 @@
 - Family map and what each family is: `README.md` here. Keep it in sync with
   any move, in the same commit.
 - The root holds operator entry points only (listed in `README.md`). New
-  scripts go IN a family dir, never at the root.
+  scripts go IN a family directory, never at the root.
 - `experiments/` and `archive/` are evidence: superseded-but-cited. Never
   delete or "clean up" anything a doc or results file points at — pre-registered
   bars live in source at pinned commits (comment-policy exempt). A file that

@@ -1,7 +1,7 @@
 """Build the base-side `is_oa` bitmap (issue O17 option (a)) from any source of
 `(doc_id, is_oa)` pairs, in one streaming, resumable pass.
 
-Read side + artifact format: `src/lib/thinclient/oa_overlay.py` (gate
+Read side + artifact format: `source/lib/thinclient/oa_overlay.py` (gate
 `SFU_OA_BITMAP`). Findings: `spike/delta_ingest/OA_BITMAP_FINDINGS.md`.
 
 Pipeline
@@ -50,8 +50,8 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
-if str(REPO / "src") not in sys.path:
-    sys.path.insert(0, str(REPO / "src"))
+if str(REPO / "source") not in sys.path:
+    sys.path.insert(0, str(REPO / "source"))
 
 from lib.thinclient.oa_overlay import (  # noqa: E402
     FORMAT, KNOWN_FILE, OA_FILE, ORDINAL_STAMP, STAMP_FILE, meta_fingerprint)

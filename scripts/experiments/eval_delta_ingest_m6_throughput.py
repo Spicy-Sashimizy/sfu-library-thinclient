@@ -43,7 +43,7 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 sys.path.insert(0, str(REPO_ROOT))
 
 from spike.delta_ingest.profiles import PROFILES, apply_nice  # noqa: E402

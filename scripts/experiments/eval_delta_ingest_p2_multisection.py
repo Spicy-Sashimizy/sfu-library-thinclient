@@ -240,7 +240,7 @@ def wrong_origin(hits: list, gen: dict) -> int:
 
 def cmd_measure(a) -> int:
     t_start = time.time()
-    sys.path.insert(0, a.src or str(REPO / "src"))
+    sys.path.insert(0, a.src or str(REPO / "source"))
     sys.path.insert(0, str(REPO))
     os.chdir(REPO)
     import logging
@@ -517,9 +517,9 @@ def cmd_run(a) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     head = git_head()
     snap = WORK / f"code_{head}"
-    if not (snap / "src").is_dir():
+    if not (snap / "source").is_dir():
         snap.mkdir(parents=True, exist_ok=True)
-        tar = subprocess.run(["git", "-C", str(REPO), "archive", head, "src"], capture_output=True, check=True).stdout
+        tar = subprocess.run(["git", "-C", str(REPO), "archive", head, "source"], capture_output=True, check=True).stdout
         subprocess.run(["tar", "-x", "-C", str(snap)], input=tar, check=True)
         for n in ("models", "data", ".env"):
             if not (snap / n).exists():
@@ -534,7 +534,7 @@ def cmd_run(a) -> int:
                 log(f"contrast {c} already complete, skipped")
                 continue
         argv = [sys.executable, __file__, "measure", "--contrast", c, "--rows-out", str(out_dir / f"rows_c{c}.json"),
-                "--lock", a.lock, "--limit", str(a.limit), "--src", str(snap / "src")]
+                "--lock", a.lock, "--limit", str(a.limit), "--src", str(snap / "source")]
         if a.deadline:
             argv += ["--deadline", a.deadline]
         if a.resume:

@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WEB = path.join(ROOT, 'web');
-const SRC = path.join(WEB, 'src');
+const SRC = path.join(WEB, 'source');
 globalThis.window = globalThis.window || {};
 const Babel = (await import(path.join(WEB, 'vendor', 'babel.min.js'))).default || globalThis.Babel;
 
@@ -50,7 +50,7 @@ for (const app of APPS) {
   const shared = existsSync(sharedPath) ? readFileSync(sharedPath, 'utf8') + '\n\n' : '';
   const jsx = shared + readFileSync(srcPath, 'utf8');
   const out = Babel.transform(jsx, { presets: ['react'], compact: false }).code;
-  writeFileSync(path.join(WEB, app.js), '/* AUTO-GENERATED from src/' + app.src + ' by scripts/build_web.mjs — do not edit. */\n' + out);
+  writeFileSync(path.join(WEB, app.js), '/* AUTO-GENERATED from source/' + app.src + ' by scripts/build_web.mjs — do not edit. */\n' + out);
   console.log(`  built web/${app.js} (${(out.length/1024).toFixed(0)} KB)`);
   built++;
 }

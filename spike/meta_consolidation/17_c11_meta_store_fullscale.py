@@ -43,7 +43,7 @@ import numpy as np
 import zstandard
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "source"))
 
 DICT_SIZE = 112 * 1024
 COMPRESSION_LEVEL = 19

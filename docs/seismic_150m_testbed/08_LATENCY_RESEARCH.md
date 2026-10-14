@@ -17,7 +17,7 @@ implementing.
 > p50 **18.1 s**); raising the cap to **56 GB** to cache the working set dropped
 > warm p50 to **0.55 s — a 33× collapse with no other change**, proving the 15–18 s
 > was RAM starvation, *not* the engine. **SEISMIC at 150 M is ~0.5 s warm when
-> provisioned to cache the working set (~40 GB here); RAM floor stays 1.13 GB vs
+> provisioned to cache the working set (~40 GB here); RAM floor stays 1.13 GB versus
 > Qdrant ~17 GB.** Details in **§A1 measured** (#1 and #2).
 
 The G8 latency bench (2026-06-29/30) is **swap-contaminated and not a verdict**:
@@ -28,7 +28,7 @@ The G8 latency bench (2026-06-29/30) is **swap-contaminated and not a verdict**:
   `splade_150m` is `status=grey`, not optimized); inferred SEISMIC ~80 s/query is
   **almost entirely swap page-fault time, not engine traversal**.
 - The RAM half is already clean and decisive `[OURS]`: anon floor **0.142 GB**
-  (SEISMIC mmap) vs **6.71 GB** (Qdrant). The *latency* half is the open question.
+  (SEISMIC mmap) versus **6.71 GB** (Qdrant). The *latency* half is the open question.
 
 So this doc splits into two jobs: **(A) make the measurement clean** (you cannot
 research latency on a thrashing host), and **(B/C/D) the techniques that lower
@@ -80,7 +80,7 @@ OOM, which thrashes everything. Two complementary controls:
 > say definitively whether the run was clean (≈0 swap → verdict) or still
 > swap-confounded (>0 swap → record, do not conclude — same status as the
 > 2026-06-29 run). The bench now honors `SFU_SEISMIC_QUERY_CUT`/`HEAP_FACTOR`/
-> `K_PRIME` (matching the served retriever's env) and accepts plain-list
+> `K_PRIME` (matching the served retriever's environment) and accepts plain-list
 > manifests via `_load_manifest`. **Env-gated reality on this container
 > (measured 2026-06-30):** `/sys/fs/cgroup` is mounted **read-only** and
 > `swapoff` reports "Not superuser" even under sudo → the cgroup/swapoff paths
@@ -88,7 +88,7 @@ OOM, which thrashes everything. Two complementary controls:
 > writable cgroup v2, or the operator setting `memory.swap.max=0` on this
 > container's slice. Run:
 > ```bash
-> sudo env "PATH=$PATH" scripts/seismic_testbed/run_g8_latency_noswap.sh \
+> sudo environment "PATH=$PATH" scripts/seismic_testbed/run_g8_latency_noswap.sh \
 >     --shard-manifest data/eval_results/seismic_c25_shards_150m_mmap.json \
 >     --queries 40 --passes 2
 > # disable C1 to measure the all-terms baseline: SFU_SEISMIC_QUERY_CUT= ./...
@@ -112,7 +112,7 @@ passes.
 | Metric `[OURS]` | Value | Note |
 |---|---|---|
 | mmap load (8 shards) | **0.41 s** | lazy mmap; post-load RssAnon 0.14 GB |
-| RssAnon floor | **1.12 GB** | the decisive RAM win (vs Qdrant ~17 GB) |
+| RssAnon floor | **1.12 GB** | the decisive RAM win (versus Qdrant ~17 GB) |
 | **VmRSS peak** | **7.71 GB** | ← the §A1 "~7.5 GB projection" **CONFIRMED measured** |
 | VmSwap | 0.69 GB | minor anon; the 17 GB swap thrash is **gone** |
 | encode p50 (SPLADE) | cold 65 / warm 74 ms | trivial — **not** the bottleneck |
@@ -205,13 +205,13 @@ the cause beyond doubt: prior 15–18 s = page-cache miss, not traversal cost.
 > cold → CLEAN. This p50 IS a verdict."* warm p50 **668 ms** (traverse 625 +
 > encode 39), p95 2.18 s, min **126 ms**, VmRSS peak 41.2 GB, RssAnon 1.09 GB.
 > Result `data/eval_results/seismic_g8_150m_serve_noswap_58gb_20260630_093602.json`.
-> The 549↔668 ms warm-p50 wobble vs #2 is run-to-run noise (different cache start
+> The 549↔668 ms warm-p50 wobble versus #2 is run-to-run noise (different cache start
 > state); the decisive result is **zero swap → SEISMIC 150 M warm ≈ 0.5–0.7 s is a
 > definitive clean verdict, not swap/cache-confounded.** 58 GB sufficed to zero-out
 > swap for this ~41 GB working set; a working set touching the whole 62 GB index
 > would still want ≥72 GB or `vmtouch` pre-fault (§A2).
 
-**Net:** RAM axis decisive (1.13 GB vs Qdrant ~17 GB) **and** latency now
+**Net:** RAM axis decisive (1.13 GB versus Qdrant ~17 GB) **and** latency now
 answered directionally — **~0.5 s warm at 150 M when provisioned to cache the
 working set.** Deployment implication: provision serving RAM ≥ touched working
 set (here ~40 GB), or shrink the index (§B) to make a smaller box sufficient.
@@ -317,7 +317,7 @@ affect a running process.** Without this split, no latency number is actionable.
 > component, ahead of encode (~20 ms) and far ahead of the dot kernel
 > (~3 ms). Cold pass (as-found cache, not drop_caches): p50 5.3 s /
 > p95 23.1 s, encode share 0.7% — cold remains a fault problem, not an
-> encode problem. Next split (unmeasured): per-shard traverse walls vs
+> encode problem. Next split (unmeasured): per-shard traverse walls versus
 > merge inside the 43.7 ms.
 
 > **G8f attribution (2026-07-08, same day):** instrumented replica of
@@ -370,7 +370,7 @@ affect a running process.** Without this split, no latency number is actionable.
 >   largest single addressable component of the served warm path.
 > - **New served warm headline (k'-flip + persistent executor stacked):**
 >   `search_with_timing` end-to-end **warm p50 53.8 ms = encode 19.5 ms
->   (36%) + traverse 33.7 ms** (p95 79.3 ms), vs G8e's 64.2 ms measured at
+>   (36%) + traverse 33.7 ms** (p95 79.3 ms), versus G8e's 64.2 ms measured at
 >   the pre-flip k'=200 default.
 
 ---
@@ -404,7 +404,7 @@ cost and 99.8% of safe retrieval quality**. These are the summary/skip structure
 
 ### B3. Lightweight flat inverted index `[literature]`
 Same paper: a flat inverted index (no per-vector Rust `Vec` 24-byte overhead)
-gives **6.2× memory reduction vs BMP-Inv (3.6 GB vs 19 GB)** for the inverted
+gives **6.2× memory reduction versus BMP-Inv (3.6 GB versus 19 GB)** for the inverted
 side, optimal for blocks ≥96 docs. Relevant because our C2 mmap layout is already
 a flat-file design — this validates the direction and gives a target.
 
@@ -420,7 +420,7 @@ Our backend currently uses **all 64 query terms** (`query_cut=len(tokens)`) and
 `heap_factor=0.8` (`seismic_backend.py:72-89`) — deliberately recall-first while
 G2 was open. SEISMIC's own MS MARCO best-configs use a **small `query_cut`** and
 lower `heap_factor` for big latency wins at modest recall cost. Sweep
-`query_cut ∈ {10,15,20}` × `heap_factor ∈ {0.6,0.7,0.8}` and plot latency vs
+`query_cut ∈ {10,15,20}` × `heap_factor ∈ {0.6,0.7,0.8}` and plot latency versus
 overlap@10 — pure query-time knobs, zero rebuild, zero extra RAM.
 ([Seismic SIGIR'24 / scalability ECIR'25, arXiv 2501.11628](https://arxiv.org/pdf/2501.11628))
 
@@ -431,7 +431,7 @@ overlap@10 — pure query-time knobs, zero rebuild, zero extra RAM.
 > len=100000, dim=26603, nnz=11.8M), `models/splade_onnx_fp16` query encoder,
 > n=60 queries from `data/eval_results/diverse_queries.json`. **overlap@10 is
 > self-relative** — agreement with the recall-max baseline (all-terms, hf=0.8),
-> NOT vs a live Qdrant (not running on this box, not needed for the lever
+> NOT versus a live Qdrant (not running on this box, not needed for the lever
 > study). Per-cell traverse is the p50 of 5 warm repeats; warm-encode is timed
 > separately (the §A4/§D split). Absolute latency is swap-confounded off a
 > clean host — the relative recall + the encode/traverse split are the clean
@@ -440,7 +440,7 @@ overlap@10 — pure query-time knobs, zero rebuild, zero extra RAM.
 > **Baseline (all-64-terms, hf=0.8):** traverse p50 **9.98 ms**, warm-encode
 > **~38.6 ms**.
 >
-> | query_cut | heap_factor | overlap@10 (vs base) | traverse p50 (ms) | speedup |
+> | query_cut | heap_factor | overlap@10 (versus base) | traverse p50 (ms) | speedup |
 > |-----------|------------|----------------------|-------------------|---------|
 > | 10 | 0.8 | 0.9950 | 2.482 | **4.02×** |
 > | 10 | 0.7 | 0.9950 | 3.149 | 3.17× |
@@ -460,12 +460,12 @@ overlap@10 — pure query-time knobs, zero rebuild, zero extra RAM.
 > 0.8 = the recall-safe end). The served path currently pays **4× the
 > traversal it needs** at the all-terms default. **Caveat (scoped):** measured
 > on the 100K testbed index, not 150M; the 0.995 floor is *self-relative*
-> recall vs the un-pruned run (a recall-vs-baseline proxy, not a NDCG-vs-Qdrant
+> recall versus the un-pruned run (a recall-vs-baseline proxy, not a NDCG-vs-Qdrant
 > verdict). Re-verify overlap@10 ≥0.99 holds at 150M before flipping the served
 > default — but no rebuild is needed to do so (pure query-time knob).
 >
 > **Encode dominates warm wall (reinforces §D):** warm-encode is **~26–35 ms**
-> vs traverse **1.7–6.7 ms** — the SPLADE ONNX fp16 encoder is the post-cache
+> versus traverse **1.7–6.7 ms** — the SPLADE ONNX fp16 encoder is the post-cache
 > latency mass, not the SEISMIC fan-out. The cold model load (~78 s on this
 > box) is amortized by a one-query warmup. So §D (int8 SPLADE encoder) is the
 > next latency lever *after* C1 lands; C1 is the no-build change to ship first.
@@ -481,13 +481,13 @@ only adopt if B2's 4-bit quant offsets it, else it erodes the RAM win.
 The 2026 superblock paper's headline: guarantee visiting the top-γ superblocks +
 µ-prune the rest. Reports **1.8–17× faster than SP, 1.8–12× faster than BMP, 2×
 faster than SeismicWave**, *and* a smaller index (fewer safeness guards), with
-robust fixed params (γ=250–1000, β=0.33) — no per-dataset grid search. Most
+robust fixed parameters (γ=250–1000, β=0.33) — no per-dataset grid search. Most
 attractive of the algorithmic options because it claims latency↑ *with* RAM↓, but
-it's a different index structure (build-side work, not a config flip).
+it's a different index structure (build-side work, not a configuration flip).
 ([arXiv 2602.02883](https://arxiv.org/html/2602.02883v1))
 
 ### C4. κ-NN graph augmentation `[literature]`
-Adding a κ-NN (κ=10–20) graph over doc vectors keeps SEISMIC Pareto-efficient vs
+Adding a κ-NN (κ=10–20) graph over doc vectors keeps SEISMIC Pareto-efficient versus
 HNSW at higher accuracy. Adds graph RAM — characterize before considering; lower
 priority than B/C1 for our RAM-constrained case. ([arXiv 2501.11628](https://arxiv.org/pdf/2501.11628))
 
@@ -506,7 +506,7 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 - **Caveat:** the doc vectors were built from the **fp16** encoder; re-quantizing
   the *query* encoder to int8 risks an encoder-asymmetry quality hit. Validate
   overlap@10 parity before/after — the symmetry guarantee in `seismic_backend.py`
-  (raw-float query vs raw-float doc) is load-bearing for G2 attribution.
+  (raw-float query versus raw-float doc) is load-bearing for G2 attribution.
 
 > **D1 MEASURED — dynamic int8 KILLED (2026-07-09, container).** The
 > asymmetry caveat above was decisive.
@@ -517,10 +517,10 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 > `2c54704e…`) — the "_fp16" name is a misnomer; serving encode is fp32
 > everywhere today. Two arms, dynamic int8 per-channel
 > (`AutoQuantizationConfig.avx2`, host has no VNNI), gated on the SERVED
-> federated merged top-k vs fp32 qvecs, n=100, dv shards, served defaults:
+> federated merged top-k versus fp32 qvecs, n=100, dv shards, served defaults:
 > - **`int8_all`** (every MatMul): encode p50 1.45–1.59× faster, but
 >   **merged overlap@10 0.791** (min 0.30), top-64 qvec Jaccard 0.69 —
->   catastrophic vs the ≥0.99 bar.
+>   catastrophic versus the ≥0.99 bar.
 > - **`int8_nohead`** (MLM vocab-projection head `/cls/predictions/*`
 >   kept fp32): **overlap@10 0.798** — no rescue; the damage is in the
 >   quantized transformer body, not the head.
@@ -528,7 +528,7 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 >   (mechanisms A+B, real `release_pages`) returned merged top-50
 >   **bit-identical to parallel on 100/100 queries** for BOTH fp32 and
 >   int8 qvecs — the gate verdict transfers to both serving classes.
-> - **Verdict: KEEP_FP32**; the quantized model dirs were deleted (the
+> - **Verdict: KEEP_FP32**; the quantized model directories were deleted (the
 >   script regenerates them). Encoder-side revival levers, all
 >   unmeasured / design only: **static (calibrated) int8** on real query
 >   activations; **ORT graph-optimization fusion** (lossless, no
@@ -537,7 +537,7 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 >   *(Fusion measured same day — D2 below: PROMOTED.)*
 
 > **D2 — ORT graph-fusion + session-option matrix; exact-GELU fusion
-> PROMOTED (2026-07-09, container).** Full runtime-option matrix vs the
+> PROMOTED (2026-07-09, container).** Full runtime-option matrix versus the
 > production baseline (ORT_ENABLE_ALL, default threads, spinning on), one
 > arm session co-resident at a time, interleaved per query, n=100
 > (`scripts/seismic_testbed/d2_ort_fusion_matrix.py` + `d2b_fused_exact_gate.py`;
@@ -549,15 +549,15 @@ If A4 shows the SPLADE encoder is a big slice of per-query wall:
 >   parallel bit-identical 100/100. Paired served e2e (same-process A/B,
 >   encode + traverse): **total −5.6 ms p50** (encode leg −3.6 ms is the
 >   defensible part; the traverse share of the delta may include
->   fixed-order warm bias). Regenerate the dir with the D2 script;
+>   fixed-order warm bias). Regenerate the directory with the D2 script;
 >   `SFU_SPLADE_MODEL_PATH` overrides (`models/splade_onnx` = unfused
 >   fallback).
-> - **`fused_gelu` (FastGelu approx): passed the bar with ZERO margin —
+> - **`fused_gelu` (FastGelu approximation): passed the bar with ZERO margin —
 >   NOT promoted.** 1.14× but overlap@10 mean exactly 0.990 (min 0.90),
 >   0/100 qvecs exact; ~0.5 ms extra win doesn't justify grazing the
->   quality floor. Dir deleted.
+>   quality floor. Directory deleted.
 > - **Thread pinning REFUTED:** intra_op 8/4/2/1 → 0.86×/0.80×/0.64×/0.40×
->   (the default 16-core config wins at batch-1); **spinning-off REFUTED:**
+>   (the default 16-core configuration wins at batch-1); **spinning-off REFUTED:**
 >   0.65× single-stream. All qvec-exact 100/100 (thread count doesn't
 >   change numerics here) but strictly slower.
 > - Not tested, by design: graph_opt_level < ALL (baseline already ALL),
@@ -703,7 +703,7 @@ SFU_SEISMIC_LOAD_MODE=stock SFU_MEMCOMPRESSION_REGIME=windows_compression \
 ### Decision rule
 - **stock+compression cell** → warm p50 in a usable band AND `VmSwap>0` flagged
   **compressed-in-RAM verdict** ⇒ G8-latency clears **without a bigger box**;
-  G9 weighs Path-C build cost vs this (cheaper) Path-A-with-compression win.
+  G9 weighs Path-C build cost versus this (cheaper) Path-A-with-compression win.
 - stock cell still re-faults (warm≈cold) AND `VmSwap` reads as disk (regime
   not compressed) ⇒ memory compression isn't enough; Tier 2 #5 (no-swap host /
   pre-fault+mlock) or a bigger box remains the only resolution.
@@ -711,6 +711,6 @@ SFU_SEISMIC_LOAD_MODE=stock SFU_MEMCOMPRESSION_REGIME=windows_compression \
 ### Bigger-lift note (→ G9 / Path C, not this spike)
 A succinct / Elias-Fano compressed index format (§B1 DotVByte / §B2 4-bit
 summary quant) genuinely shrinks the resident set and is queryable-while-
-compressed, but needs a SEISMIC build+traversal fork — not a config knob.
+compressed, but needs a SEISMIC build+traversal fork — not a configuration knob.
 Design-only; not in our Rust reader.
 

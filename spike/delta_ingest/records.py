@@ -62,9 +62,6 @@ class DocRecord:
         not title/abstract must NOT re-encode (GPU is the expensive step)."""
         return hashlib.sha1(self.encoder_text().encode("utf-8")).hexdigest()
 
-    def is_openalex(self) -> bool:
-        return bool(W_ID_RE.match(self.id))
-
     # ── what the artifacts consume ───────────────────────────────────────
     def encoder_text(self) -> str:
         # Byte-identical to the retired splade_indexer (f"{title} {abstract}".strip())
@@ -88,9 +85,9 @@ class DocRecord:
         raise ValueError(f"unknown layout {layout!r}; expected one of {LAYOUTS}")
 
     def builder_doc(self) -> dict:
-        """The dict `SectionBuilder.add` expects. `sparse_field` is deliberately
-        omitted: the delta SPLADE leg is SEISMIC, and a present sparse_field
-        would make the builder emit BMP shards nobody serves."""
+        """The dict `SectionBuilder.add` expects. No `sparse_field`: the delta
+        SPLADE leg is SEISMIC, and the builder has ignored sparse weights since
+        its BMP shard emission was removed 2026-10-11."""
         return {"id": self.id, "title": self.title or "", "abstract": self.abstract or "",
                 "publication_year": self.year, "type": self.type or "",
                 "is_oa": bool(self.is_oa), "doi": self.doi or ""}

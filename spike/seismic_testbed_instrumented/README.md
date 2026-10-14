@@ -65,7 +65,7 @@ and use theirs. This fork is the *measurement* tool for G4, never a serving
 dependency — it ships behind the gate, not into the product.
 
 The cloned upstream is a git submodule-free checkout at
-`spike/seismic_upstream/`; not committed to this repo (kept out via
+`spike/seismic_upstream/`; not committed to this repository (kept out via
 `.gitignore`) — redoable from this README + the patch is small enough to
 re-apply. Pinned at upstream commit `7782a13` (v0.4.0-tagged line).
 

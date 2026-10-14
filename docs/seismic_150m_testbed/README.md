@@ -39,7 +39,7 @@ or buy a bigger box."
 
 > SEISMIC's pruning is **validated at 138M** (ECIR 2025) — the thing BMP's WAND
 > pruning was **not** (it scored ~95% of blocks, linear in corpus). But the FOSS
-> reference impl is **RAM-resident, no mmap** (repo README, 2026-06-26). **Can
+> reference implementation is **RAM-resident, no mmap** (repository README, 2026-06-26). **Can
 > SEISMIC's validated-at-scale pruning be served at 150M with the RAM floor cured,
 > without a JVM** — and is that worth owning over just running OpenSearch+SEISMIC?
 
@@ -49,7 +49,7 @@ or buy a bigger box."
 |---|---|---|
 | Algorithm validated at scale | ✅ **YES — 138M MS MARCO v2** (≈ our 150M target). SEISMIC *prunes* (geometric blocks + summary vectors) — the exact gap that killed BMP (row-6 linear pruning). | ECIR 2025, [arXiv:2501.11628](https://arxiv.org/abs/2501.11628) |
 | No-JVM / embeddable | ✅ **YES** — pure Rust, MIT, `cargo add seismic` + `pyseismic-lsr` Python bindings. Clears the two gates OpenSearch+SEISMIC fails. | [github.com/TusKANNy/seismic](https://github.com/TusKANNy/seismic) |
-| RAM cure out-of-the-box | ❌ **NO — RAM-resident, no mmap/on-disk/out-of-core mode** in the public repo as of 2026-06-26. Inherits BMP's row-4 disease: ~8 GB/9M docs → **~133 GB @150M resident** (est., to be measured). | repo README + `archive/qdrant_vs_lucene_assessment/STACK_COST_MATRIX.md` ("Seismic standalone … RAM-resident … not viable @150M") |
+| RAM cure out-of-the-box | ❌ **NO — RAM-resident, no mmap/on-disk/out-of-core mode** in the public repository as of 2026-06-26. Inherits BMP's row-4 disease: ~8 GB/9M docs → **~133 GB @150M resident** (est., to be measured). | repository README + `archive/qdrant_vs_lucene_assessment/STACK_COST_MATRIX.md` ("Seismic standalone … RAM-resident … not viable @150M") |
 
 **Plain reading:** SEISMIC fixes BMP's *fatal* axis (pruning) and keeps no-JVM —
 but ships with BMP's *other* axis (RAM-resident) unfixed. So this is **not** a "wire
@@ -65,7 +65,7 @@ maintenance trap. That is what the gates below decide.
 | `01_ARCHITECTURE.md` | The three candidate paths (A standalone / B OpenSearch+SEISMIC / C mmap-substrate) + the **two co-resident mmap engines** design (tantivy lexical + SEISMIC sparse, fused at RRF — *not* SEISMIC-into-tantivy-postings, and why) |
 | `02_GO_NO_GO_GATES.md` | The HARD/SIGNAL gates with thresholds; gate-zero filled in |
 | `03_BENCHMARK_METHODOLOGY.md` | **Full benchmarking documentation** — corpus, queries, metrics, harness, parity bars, reproduction steps |
-| `04_BUILD_AND_GATHER.md` | Assets in-container vs what to create per phase |
+| `04_BUILD_AND_GATHER.md` | Assets in-container versus what to create per phase |
 | `05_RISK_REGISTER.md` | Risks + cheapest retiring experiment per risk |
 | `06_FINDINGS.md` | Running results ledger — gate-zero ✓; P1/P2 G1✅ G4✅ G3❌(cured on Path C) G2❌; **G2 sweeps #1+#2+#3 (2026-06-27): ALL THREE lever axes measured — `max_fraction`+`n_postings` inert (bit-identical 0.479), `centroid_fraction` (#3) the only non-inert axis but TUNABLE-NOT-REACHED (+0.003→0.4824, 97% below 0.95) → no index knob clears G2; 0.479 is the query-time approximation floor. G6 (2026-06-27) → INCONCLUSIVE: persona-scale ±0.005 is unmeasurable (any 2M slice holds ≤4% of judged docs; matched-baseline degenerate; n=11, SEM 0.0058 > bar); **G6 re-scoped → PASS 2026-06-30** (matched n=120 SPLADE-leg Δ=+0.0197, CI clears zero — see `02_GO_NO_GO_GATES.md` + `06_FINDINGS.md` 2026-06-30 row). **G5 persona latency → SIGNAL-PASS 2026-07-01** (leg p50 58.20 ms ≤ 66 ms Qdrant ref, n=34, swap-tainted — the real signal is SEISMIC's anon floor surviving the swap storm that wrecked Qdrant's 66→13,930 ms; tail exceeds 66 ms; not "sub-ms" — that was the bare mmap-traversal micro-bench, see `02_GO_NO_GO_GATES.md` G5 row). Persona-unmeasurable note preserved (any 2M slice holds ≤4% of judged docs; matched-baseline degenerate; n=11, SEM 0.0058 > bar). G7 build-RAM CONFIRMED: 150M build needs **25-60 GB band** (NOT 160 GB — the 2-pt linear 128GB claim refuted by the 4-pt curve; sub-linear rss/doc 2.06→0.48 MB/M) → the eventual full-corpus run (G7/G8) is build-feasible on a ~75 GB host; SEISMIC→retriever wiring + indexes built for it.** |
 | `07_G3_RAM_FIX_PLAN.md` | **Worklist to cure G3 (RAM-resident)** — byte-split analysis, cheapest→hardest fix menu, Path C scope, cross-referenced upstream/2026 sources. **Step A + C0 + C0.5 + C1a + C2 DONE** — floor CURED on Path C (C2 KEEPS_GATE §4.4: anon +0.041 GB, file-resident 96%, parity✓, latency 0.97×). **G2 quality is now the live open risk** (07 §5 update): neither `max_fraction`/α/`doc_cut` nor `n_postings` recovers 0.479 (both sweep axes inert). |
@@ -73,9 +73,9 @@ maintenance trap. That is what the gates below decide.
 | `09_CROSS_SHARD_MMAP_AUDIT.md` | (2026-07-02) Cross-shard signal inventory + mmap page economics (forward index = 85% of bytes, ~2 random pages/candidate; MATH-vs-LAYOUT lever table) — the parent of the E6/E7 compression track |
 | `10_FORWARD_COMPRESSION_DESIGN.md` | **The dv (dotvbyte) compressed-forward track** — E6 codec design → E6b reuse decision → E7 shipped converter/reader + gates → §7.5 E7b/G8b promotion (−40% RSS, latency-neutral, fits where f16 thrashes) → §7.6 G8d full-corpus parity (corpus 0.9906, shards 1–2 = 0.985 marginal, **accepted 2026-07-05**) + the E8 quality-recovery pre-registration |
 | `11_EXPERIMENT_BACKLOG.md` | Pre-registered hypothesis registry (Tier 1/2 host cells — G8c executed 2026-07-04; Tier 3 container queue: E5, E8, M2b, M6, M7, M8) — rows stay until measured |
-| `15_R3_KERNEL_LEDGER_SPIKE.md` | **R3 spike — MEASURED 2026-07-16** — per-page eviction/refault attribution of the R2 convergence inversion (bpftrace filemap ledger + `workingset_refault` probe + between-pass `cachestat()` maps × per-query extent maps). Verdicts (§7): attribution REFUTED (repeat-set extents are shared — 19.6% touched by all 40 queries — so residual faults spread ~uniformly; the inversion is trajectory position, not per-query placement); decision-site UNCLEAR (distance not BTF-extractable; probe validated ±2% vs cgroup counter); the-sort-pictured CONFIRMED (12g evicts 3.17 GB by pass 0 vs 16g 0.0; drains to the 10.1 GB repeat set); observer-effect bars met on the final probes. GLM-drive-session-executed (§6); artifact §8 has the write-up |
+| `15_R3_KERNEL_LEDGER_SPIKE.md` | **R3 spike — MEASURED 2026-07-16** — per-page eviction/refault attribution of the R2 convergence inversion (bpftrace filemap ledger + `workingset_refault` probe + between-pass `cachestat()` maps × per-query extent maps). Verdicts (§7): attribution REFUTED (repeat-set extents are shared — 19.6% touched by all 40 queries — so residual faults spread ~uniformly; the inversion is trajectory position, not per-query placement); decision-site UNCLEAR (distance not BTF-extractable; probe validated ±2% versus cgroup counter); the-sort-pictured CONFIRMED (12g evicts 3.17 GB by pass 0 versus 16g 0.0; drains to the 10.1 GB repeat set); observer-effect bars met on the final probes. GLM-drive-session-executed (§6); artifact §8 has the write-up |
 | `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` | **CLOSED SUPERSEDED 2026-09-25 — archived, historical** (was "START HERE TO EXECUTE", 2026-07-05) — state snapshot, binding gate rules (worst-case-shard, n≥100, quality-free-first), the ordered queue with recipes + pre-registered bars (Q1 E8 dv-v2 → Q2 M7 sim → Q3 M8 instrument → Q4 M2b → Q5 M6 → Q6 E5), host-tier batch list, decision ledger, asset map |
-| `build_plans/` | **RAM-escape build plans (2026-06-28)** — how to build+serve a 150M SEISMIC leg on the 32 GB WSL2 box, no JVM, so G6 can be measured: **01** sharded build + federated query (OpenSearch segment-model ported to pure Rust; lossless, fits 32 GB), **02** build-once on a ≥56 GB host + serve mmap, **03** compression/nnz-reduction (adjunct), **04** cross-engine metadata dedup. Index + per-plan dirs in `build_plans/README.md`. Note: this session's forward-floor analysis refines the G7 build-RAM estimate to **~55–63 GB** (the 25 GB lower end of the old 25–60 band is not credible — it ignored the linear 4.10 bytes/nnz forward floor). |
+| `build_plans/` | **RAM-escape build plans (2026-06-28)** — how to build+serve a 150M SEISMIC leg on the 32 GB WSL2 box, no JVM, so G6 can be measured: **01** sharded build + federated query (OpenSearch segment-model ported to pure Rust; lossless, fits 32 GB), **02** build-once on a ≥56 GB host + serve mmap, **03** compression/nnz-reduction (adjunct), **04** cross-engine metadata dedup. Index + per-plan directories in `build_plans/README.md`. Note: this session's forward-floor analysis refines the G7 build-RAM estimate to **~55–63 GB** (the 25 GB lower end of the old 25–60 band is not credible — it ignored the linear 4.10 bytes/nnz forward floor). |
 | `REBUILD_TO_PERSISTENT_PATH.md` | **Shard-rematerialization runbook (2026-06-30)** — after the `/tmp` wipe (host reboot) lost all 8 served mmap shards + G7 sources + section spool. The upstream 150M corpus survives at `data/thinclient_index/spool_backup` (123 GB) → rebuild feasible. Final mmap shards land persistent at `data/seismic_150m/index/plan01/` (NOT `/tmp`); G7 sources + scratch stay on `/tmp`. Chain smoke-verified end-to-end before the full run. Unblocks `SequentialSeismicBackend` efficacy measurement (Tier 1 #3). |
 
 ## Standing constraint (do not re-litigate)
@@ -88,8 +88,8 @@ the bespoke-engine question for the laptop tier.
 ## 17 — BM25-through-SEISMIC spike (MEASURED & NOT ADOPTED, 2026-08-01)
 
 `17_BM25_THROUGH_SEISMIC_SPIKE.md`. Can SEISMIC also serve the BM25 lexical leg,
-retiring tantivy? Quality says yes (overlap@10 0.9992 vs exact BM25F; LLM-judged
-−0.66% NDCG@10 vs tantivy), cost says no (22.4× tantivy on disk, and exact only
+retiring tantivy? Quality says yes (overlap@10 0.9992 versus exact BM25F; LLM-judged
+−0.66% NDCG@10 versus tantivy), cost says no (22.4× tantivy on disk, and exact only
 because the pruning budget is 95× oversized on BM25's 710k-term vocabulary —
 force pruning to bind and overlap falls to 0.3942 at still 7.1× the size). The
 mirror question is a harder no: tantivy cannot serve SPLADE (overlap@10 0.485).
@@ -112,7 +112,7 @@ Code `spike/bm25_seismic/`, results `data/eval_results/bm25_seismic_spike_*`.
 >   `_hydrate` still needs `meta.sqlite`), not a latency or space lever.
 > - **§15 (C7):** with the goal changed from latency to **consolidation**,
 >   §13's rejected title/DOI store was reopened and measured: a per-record zstd
->   store replaces `meta.sqlite` for **14.69 GB vs 24.91 GB (−10.22 GB)** while
+>   store replaces `meta.sqlite` for **14.69 GB versus 24.91 GB (−10.22 GB)** while
 >   `_hydrate` gets *faster* (0.70× mainline). Latency is a 1M-doc
 >   extrapolation; size is trustworthy. **Unbuilt.**
 > - **§16 (C8):** `abstracts.sqlite` is deletable — **13.47 → 11.57 GB
@@ -132,7 +132,7 @@ problem. A W-id (OpenAlex Work ID) is a *sparse* key — 150M docs over a 7.14e9
 range — so resolving one is inherently a search; doing it ~1000×/query is the
 ~400 ms post-filter mask. C1/C3/C5 all swapped the *searcher* (tantivy fst,
 Lance BTREE) while keeping the *address*, and all lost. Assigning dense build-time
-**ordinals** makes the mask an array index (0.16–1.0 ms vs 38–400 ms at 150M) and
+**ordinals** makes the mask an array index (0.16–1.0 ms versus 38–400 ms at 150M) and
 lets ~1.95 GB stay resident where 24.9 GB cannot. Closes 17 §13's load-bearing
 gap: tantivy fast-field reads are 2.1–11× cheaper than the stored-id read
 production already pays. Cross-referenced to Lucene's docid↔UID split (mainstream
@@ -157,7 +157,7 @@ negative control (it never post-filters) bounds noise at ~9%, so the k=10 row's
 measurement** — `hydrate_meta` is 17.5 ms / 4.1%, not worth a 150.4M-doc blob
 (the MPHF ~2% / C3-locator 1.3% trap again). **Residency is a precondition:**
 run from a 9p mount the ordinal arm measured 8× *slower* than SQLite. §12 built
-the full 150M space (98,867 docs/s, 1.96 GB vs meta.sqlite's 24.91 GB), the
+the full 150M space (98,867 docs/s, 1.96 GB versus meta.sqlite's 24.91 GB), the
 stale-ordinal guard, and the retriever gate `SFU_THINCLIENT_ORDINALS`
 (default off; nothing is enabled). **§14–§16 (2026-08-03) re-attribute every
 multiple in this paragraph and pivot the work to consolidation — see the banner

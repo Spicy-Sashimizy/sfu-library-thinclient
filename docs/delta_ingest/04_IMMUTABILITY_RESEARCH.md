@@ -65,13 +65,13 @@ that date and supersedes a mark above wherever the two differ.
    host load (original build 1,134 s + 16 s save), c1a 365 s + dotvbyte
    195 s, peak RSS 8.2 GB resident (swapped; original 9.92 GB) — the 17–19
    min estimate did not hold on a loaded host. Forward index round-trips
-   exactly (5,000/5,000 rows), but parity vs the served shard **FAILED** the
+   exactly (5,000/5,000 rows), but parity versus the served shard **FAILED** the
    pre-registered 0.99 bar: overlap@10 0.9858 (120 topics) / 0.9870 (100
    diverse). Build-vs-build drift of two stock builds of the same input is
    UNMEASURED, so the route is neither refuted nor verified.
 
 5. **In-place editing verdicts** — inferred, from the slack-structure and
-   version-map sources below plus this repo's E5 record.
+   version-map sources below plus this repository's E5 record.
    (a) Forward-record append-and-repoint (SPFresh-style version map
    [snippet]): DESIGN ONLY, worth building only if M4 shows double copies
    cost latency. (b) Slack-space format change (PMA / Büttcher–Clarke gaps
@@ -80,7 +80,7 @@ that date and supersedes a mark above wherever the two differ.
    still need a side buffer. (c) Patching NEW docs into packed lists is
    impossible without (b).
 
-6. **Shard count** — inferred from this repo's G8g measurements (12.9 vs
+6. **Shard count** — inferred from this repository's G8g measurements (12.9 versus
    6.4 ms max-shard time at 8 concurrent shards) and the `blake2b % 16`
    refinement property. 16 shards is the defensible ceiling, UNMEASURED;
    sequential Σ *est.* ~420 ms at 16, ~720 ms at 32. A 9-shard pilot (M10)
@@ -94,7 +94,7 @@ builds SEISMIC per Lucene segment and rebuilds on merge [snippet].
 ## Sources (grouped as in the handoff)
 
 **Inverted-index maintenance**
-- Lester, Zobel, Williams 2004 — in-place vs re-merge vs rebuild [snippet]
+- Lester, Zobel, Williams 2004 — in-place versus re-merge versus rebuild [snippet]
 - Lester, Moffat, Zobel 2005/2008 — geometric partitioning [snippet]
 - Büttcher, Clarke 2006/2008 — hybrid maintenance, over-allocation [snippet]
 - Moffat, Mackenzie 2023 — immediate-access dynamic indexing [snippet]
@@ -114,7 +114,7 @@ builds SEISMIC per Lucene segment and rebuilds on merge [snippet].
 - tantivy `.del` files [snippet]
 - Vespa memory index + fusion [snippet]
 - Milvus L0 / sealed segments [snippet]
-- Qdrant appendable vs immutable segments [snippet]
+- Qdrant appendable versus immutable segments [snippet]
 - Pinecone slabs [snippet]
 - turbopuffer WAL [snippet]
 - Iceberg / Delta Lake deletion vectors [snippet]
@@ -186,15 +186,15 @@ transfer to 150M documents without measurement.
 | 1 | Lester, Zobel, Williams 2004 (researchgate 221574123) | ACSC 2004, pp. 15–22; PDF people.eng.unimelb.edu.au/jzobel/fulltext/acsc04.pdf | [read] | in-place wins only at LOW update rate | Abstract: "re-merge is for large numbers of updates the fastest approach, but in-place update is suitable when the rate of update is low or buffer size is limited." | Supported. |
 | 2 | people.eng.unimelb.edu.au/jzobel/fulltext/ipm06.pdf | Lester, Zobel, Williams, IPM 42(4):916–933 (2006), doi 10.1016/j.ipm.2005.09.005 | [read] | same | Same verdict; plus "with careful design of … free-space management, in-place update can be improved by around an order of magnitude over a naïve implementation"; gain "almost entirely due to" keeping short lists in the vocabulary; over-allocation gave little. Hardware: Pentium IV 2.8 GHz, 2 GB RAM; WT10g (1.7M docs) and GOV2 (25M docs, 426 GB). | Supported, but disk-seek era; the *hybrid* in this paper is short-lists-in-vocabulary, not "in-place long / merge short". |
 | 3 | Büttcher & Clarke (Springer 10.1007/s10791-007-9042-8) | Büttcher, Clarke, "Hybrid index maintenance for contiguous inverted lists", Information Retrieval 11(3):175–207, 2008 | [read: abstract] (Crossref metadata); body via Büttcher PhD thesis 2007 ch. 6 [read] (uwaterloo DSpace PDF); SIGIR 2006 (with Lushman) and ECIR 2006 papers [snippet] | hybrid (in-place long lists, merge short) beats both | Thesis §6.4.6: hybrid "is not always clear" to be better for non-contiguous lists; HIMC "should always be preferred over Immediate Merge" (same query speed, better update speed); HLMNC up to 9% faster updates than Logarithmic Merge with query time within 3%. Thesis §2.5: in 2007 "nobody has actually been able to come up with an implementation of in-place update that performs better than merge update"; relative performance "entirely depends on the operating characteristics of the hard drive(s)". | **Overstated.** Hybrid dominates Immediate Merge; against Logarithmic Merge it is a trade-off, not a win on both axes. All HDD-era. |
-| 4 | ScienceDirect S030643791400180X (MFIS 2014) | Jung, Roh, Shin, Park, "Inverted index maintenance strategy for flashSSDs: Revitalization of in-place index update strategy", Information Systems 49:25–39 (2015), doi 10.1016/j.is.2014.11.004 | [read: abstract] (Crossref metadata; PII matches); body [snippet] (ScienceDirect 403) | in-place revived on SSDs; non-contiguous lists, flash parallelism | Snippet: MFIS "stores the posting list of each term non-contiguously and exploits the internal parallelism of flashSSDs"; up to 14.93× vs Immediate Merge, 2.33× vs SSD-aware Hybrid. | Identifier correct (print year 2015). Claim plausible, body unread. |
+| 4 | ScienceDirect S030643791400180X (MFIS 2014) | Jung, Roh, Shin, Park, "Inverted index maintenance strategy for flashSSDs: Revitalization of in-place index update strategy", Information Systems 49:25–39 (2015), doi 10.1016/j.is.2014.11.004 | [read: abstract] (Crossref metadata; PII matches); body [snippet] (ScienceDirect 403) | in-place revived on SSDs; non-contiguous lists, flash parallelism | Snippet: MFIS "stores the posting list of each term non-contiguously and exploits the internal parallelism of flashSSDs"; up to 14.93× versus Immediate Merge, 2.33× versus SSD-aware Hybrid. | Identifier correct (print year 2015). Claim plausible, body unread. |
 | 5 | arXiv 2211.06030 (Moffat & Mackenzie IPM 2023) | Moffat, Mackenzie, "Efficient immediate-access dynamic indexing", IPM 60(3):103248 (2023), doi 10.1016/j.ipm.2022.103248 | [read] | extensible arrays, ~2 B/posting; growable format | "incremental document-level indexing using as little as two bytes per posting"; measured on WSJ and Wikipedia with ⟨d, f_t,d⟩ postings (BM25-era, not learned impacts). Structure is linked fixed-size blocks ("extensible lists"), not extensible arrays; the extensible-array variant is a separate paper (ADCS 2022, doi 10.1145/3572960.3572984). §6.1: "We have not considered document deletions nor updates". Dynamic pruning "would require allocation of an additional 4-byte field" per head block. | **Partly wrong:** ~2 B/posting holds for document-level frequency postings only; the structure is append-only with no deletes. |
-| 6 | Springer 10.1007/978-3-032-21324-2_1 (Rule & Mackenzie ECIR 2026) | Rule, Mackenzie, "Fast, Compact, Immediate-Access Indexing for Learned Sparse Retrieval Systems", ECIR 2026, LNCS pp. 3–16 | [read] (author PDF jmmackenzie.io/pdf/rm26-ecir.pdf; Crossref metadata; Springer page itself bot-blocked) | closest work; growable format | Clean-room linked-block index for LSR; impacts as 1 uncompressed byte, VByte doc ids; **per-list upper bound (1 byte) "checked and updated as new postings are inserted"**; MaxScore only, BMW left to future work; linked-block "supports rapid insertion, but no deletion". MS MARCO v1 8.8M, single core; SPLADEv3 full collection: 3,441 MiB at B=64 for 1.48B postings (≈2.4 B/posting, computed here), MaxScore 83.3 ms vs PISA 35.9 ms. Repo github.com/JMMackenzie/lslb. | Exists, correctly cited. Append-only, no deletes; partially anticipates Mechanism C at list granularity (see §B.2). |
+| 6 | Springer 10.1007/978-3-032-21324-2_1 (Rule & Mackenzie ECIR 2026) | Rule, Mackenzie, "Fast, Compact, Immediate-Access Indexing for Learned Sparse Retrieval Systems", ECIR 2026, LNCS pp. 3–16 | [read] (author PDF jmmackenzie.io/pdf/rm26-ecir.pdf; Crossref metadata; Springer page itself bot-blocked) | closest work; growable format | Clean-room linked-block index for LSR; impacts as 1 uncompressed byte, VByte doc ids; **per-list upper bound (1 byte) "checked and updated as new postings are inserted"**; MaxScore only, BMW left to future work; linked-block "supports rapid insertion, but no deletion". MS MARCO v1 8.8M, single core; SPLADEv3 full collection: 3,441 MiB at B=64 for 1.48B postings (≈2.4 B/posting, computed here), MaxScore 83.3 ms versus PISA 35.9 ms. Repository github.com/JMMackenzie/lslb. | Exists, correctly cited. Append-only, no deletes; partially anticipates Mechanism C at list granularity (see §B.2). |
 | 7 | arXiv 2605.01260 (Write-Read Decoupling survey) | Liang, Yang, Qiu, Mao, Ma, Zhu, Wang, submitted 2026-05-02 | [read] | Uber Sia, Alibaba Havenask route scalar fields to O(1) in-place | §4.1: Sia — "Stateless Searcher nodes pull pre-built segments. Zero live indexing occurs on serving nodes." §4.4: Havenask — full / incremental (30–60 min) / real-time build modes; no in-place attribute path described. §4.5 "In-Place Partial Updates" attributes O(1) in-place attribute updates to **Vespa's Proton** ("updated in-place in O(1) time … immediate query visibility", durability via a Transaction Log Service) and to the authors' in-house **ScaleSearch**. | **Wrong attribution.** Replace Sia/Havenask with Vespa Proton attributes (+ ScaleSearch). Scalar-field only; no posting-list in-place. |
 | 8 | github.com/alibaba/havenask wiki | — | [read] (wiki index only; Chinese "实时功能使用文档" page not opened) | as #7 | Wiki advertises second-level updates; no in-place claim seen. | Not evidence for the brief's claim. |
-| 9 | US 10474650 | US 10,474,650 B1, Google LLC, "In-place updates for inverted indices" (Sivathanu, Goyal, Mathews); priority 2013-05-24, granted 2019-11-12 | [read] (Google Patents) | provisioning empty posting positions = the CLOSED slack track | Abstract: "provision empty positions in posting lists to enable in-place updating"; count per list "based on the rate of updates for a particular term" (e.g. every 5th vs every 100th position); "Removing a document from the posting list may generate a new open position"; skip table updated when moved ids cross its boundaries. No block maxima / score bounds; no eviction. | Supported; also prior art for **dead-slot reuse** (brief §2.3 step 1). |
+| 9 | US 10474650 | US 10,474,650 B1, Google LLC, "In-place updates for inverted indices" (Sivathanu, Goyal, Mathews); priority 2013-05-24, granted 2019-11-12 | [read] (Google Patents) | provisioning empty posting positions = the CLOSED slack track | Abstract: "provision empty positions in posting lists to enable in-place updating"; count per list "based on the rate of updates for a particular term" (for example, every 5th versus every 100th position); "Removing a document from the posting list may generate a new open position"; skip table updated when moved ids cross its boundaries. No block maxima / score bounds; no eviction. | Supported; also prior art for **dead-slot reuse** (brief §2.3 step 1). |
 | 10 | arXiv 2607.29173 (MERIT) | Wu, Jin, Cheng, Ni, Li, Chen, Yao, Song, Shen, "MERIT: Efficient In-Place Deletion for Dynamic Graph-Based Approximate Nearest Neighbor Indexes", submitted 2026-07-31, rev. 2026-08-19 | [read: abstract] | versioned-edge invalidation; 3–19× faster deletes, recall stable; cited for "epoch tags, atomic publish by one write" | Abstract: "versioned-edge invalidation that immediately filters all stale incoming edges"; "up to 3.02×–18.87× faster deletion than SOTA". | Exists; numbers match. **Does not support atomic publish / crash safety** — it is in-memory graph deletion. Relevant only as "version tags filter stale references". |
 | 11 | alphaxiv 2502.13826 (IP-DiskANN) | arXiv 2502.13826, Xu, Manohar, Bernstein, Chandramouli, Wen, Simhadri, "In-Place Updates of a Graph Index for Streaming Approximate Nearest Neighbor Search", 2025-02-19 | [read: abstract] | in-place vector-index updates | Processes inserts and deletes directly "without accumulating updates in batches"; "stable recall over various lengthy update patterns". | Supported (alphaxiv is a mirror; use the arXiv id). |
-| 12 | arXiv 2105.09613 (FreshDiskANN) | Singh, Subramanya, Krishnaswamy, Simhadri, 2021-05-20 | [read: abstract] | in-place vector updates | "Thousands of concurrent real-time inserts, deletes and searches per second", >95% recall@5, 5–10× lower freshness cost. Design is RW/RO temp indexes + StreamingMerge (see `01_RESEARCH.md` §2), i.e. a delta layer, not in-place. | Exists; it is prior art for the **delta** arm, not for in-place. |
+| 12 | arXiv 2105.09613 (FreshDiskANN) | Singh, Subramanya, Krishnaswamy, Simhadri, 2021-05-20 | [read: abstract] | in-place vector updates | "Thousands of concurrent real-time inserts, deletes and searches per second", >95% recall@5, 5–10× lower freshness cost. Design is RW/RO temp indexes + StreamingMerge (see `01_RESEARCH.md` §2), that is, a delta layer, not in-place. | Exists; it is prior art for the **delta** arm, not for in-place. |
 | 13 | dl.acm.org/doi/10.1145/3600006.3613166 (SPFresh) | Xu et al., SOSP 2023, pp. 545–561; arXiv 2410.14452 | [read] (arXiv full text; Crossref metadata) | "SPFresh is the clustered-index analogue of Mechanism B" | LIRE appends a new vector "at the tail of its nearest posting" and splits/merges/reassigns boundary vectors; a 1-byte per-vector version ("seven bits for re-assign version and one bit for deletion label") drops stale replicas at search time; crash recovery = periodic snapshot + WAL, with **block-level copy-on-write** and freed blocks held until the next snapshot "so all the data blocks modified in the interim can be rolled back". | Exists. Analogy **overstated**: SPFresh places a vector in its *nearest* partition and re-balances; Mechanism B places a posting in whichever block owns a dead or minimum slot. SPFresh is, however, direct prior art for Mechanism D's version tags *and* shows the CoW that D lacks (see §D). |
 | 14 | lmdb.tech/doc | LMDB `mdb.c` / `lmdb.h` (github.com/LMDB/lmdb, branch mdb.master) | [read] (source; lmdb.tech TLS failed) | dual meta pages, txn id written last | `mdb_env_write_meta`: meta slot `toggle = txnid & 1`; with `MDB_WRITEMAP` the fields are stored, then (non-x86 only) `__sync_synchronize()` "ITS#7969", then `mm_txnid` last, then `msync(MS_SYNC)` of the meta page; data pages are flushed and synced **before** the meta write (`mdb_page_flush` → `mdb_env_sync0` → `mdb_env_write_meta`). `mdb_env_pick_meta` takes the larger txnid. Pages reachable by a live reader are never overwritten (copy-on-write B+tree; "Read transactions prevent reuse of pages freed by newer write transactions"). `lmdb.h`: "Do not use LMDB databases on remote filesystems … possibly memory map sync". | Supported as a pattern; the brief omits the part that makes it safe (CoW, never overwrite reachable data; sync data before meta). |
 | 15 | researchgate 221301210 (Carmel et al.) | Carmel, Cohen, Fagin, Farchi, Herscovici, Maarek, Soffer, "Static index pruning for information retrieval systems", SIGIR 2001, pp. 43–50, doi 10.1145/383952.383958 | [snippet] (ResearchGate/ACM 403; Semantic Scholar record confirms authors; abstract elided); described in #16 [read] | ε-guarantee on top-k | Jiang et al. (#16): Carmel et al. "proposed two methods, UP, which uses a global cut-off on the impact scores of postings, and TCP, which selects the highest impact postings from each inverted list". | Citation correct; ε-guarantee not verified from the primary. |
@@ -264,8 +264,8 @@ case open.**
   situations such as when an index must be updated"; approximate bounds from
   tf_max "can be easily updated when new documents are added to a term's
   posting list"; being "greater than exact upper bounds, [they] limit the
-  skipping abilities of BMW, forcing more blocks to [be] processed" (e.g.
-  BM25, K=20: BMW −34% vs WAND with exact bounds, −17% with approximate).
+  skipping abilities of BMW, forcing more blocks to [be] processed" (for example,
+  BM25, K=20: BMW −34% versus WAND with exact bounds, −17% with approximate).
   ClueWeb12-B13. This is the cost side of Mechanism C, measured.
 - Macdonald, Ounis, Tonellotto, "Upper-bound approximations for dynamic
   pruning", TOIS 29(4):17 (2011) [read]: query-time approximate (looser)
@@ -320,14 +320,14 @@ case open.**
   summaries, 52% summary bytes saved, MS MARCO v1) is the only format-level
   discussion; it confirms the summary sub-components (bitfield ids, u8
   values, EF offsets, per-block f32 minimums/quants).
-- Sibling repos in the org (kannolo, vectorium, tachiom — all MIT): no update
+- Sibling repositories in the org (kannolo, vectorium, tachiom — all MIT): no update
   work seen at README level. The group's own curated list
   (TusKANNy/awesome-learned-sparse-retrieval, pushed 2026-08-04) lists
   Sinnamon as its only streaming/dynamic entry.
 - Spare bits: no upstream documentation of spare bits was found. This
-  repo's audit records each packed posting as `(forward_offset:48, len:16)`
+  repository's audit records each packed posting as `(forward_offset:48, len:16)`
   u64 (`docs/seismic_150m_testbed/09_CROSS_SHARD_MMAP_AUDIT.md` §file table),
-  i.e. **postings carry no weight** — eviction by minimum weight needs the
+  that is, **postings carry no weight** — eviction by minimum weight needs the
   side array brief 05 §2.3 proposes (or a forward-index read per candidate).
   The reader casts postings with `bytemuck::cast_slice` to `u64`
   (`.claude/plans/done/seismic-c1-mmap-spike.md`), which requires 8-byte
@@ -415,7 +415,7 @@ the slot pages it publishes.
 Differences from what was believed: the February 2026 blog gave the keyless
 budget as $0.01/day; the August 2026 docs give $0.10/day. "Keys mandatory"
 (brief 05 §1.1, `01_RESEARCH.md` §1.2) is no longer accurate for low
-volumes. `src/lib/openalex.py` (not edited here) documents "mailto polite
+volumes. `source/lib/openalex.py` (not edited here) documents "mailto polite
 pool (10 req/s)" and caps **calls** at 900/day; the budget is in **dollars**,
 so free singleton lookups should not count against it, while 900 search
 calls would cost $0.90 against a $1 key budget (or exceed the $0.10 keyless
@@ -453,7 +453,7 @@ budget after 100). The coordinator owns that fix.
 4. **§3 table and source list — corrections.** Sia/Havenask → Vespa Proton
    attributes (+ ScaleSearch), scalar fields only; delete the "~65% query
    time" number (NOT FOUND); "hybrid beats both" → "hybrid dominates
-   Immediate Merge; vs Logarithmic Merge it is a trade-off (HDD-era)";
+   Immediate Merge; versus Logarithmic Merge it is a trade-off (HDD-era)";
    Moffat & Mackenzie "extensible arrays, ~2 B/posting" → "linked-block
    extensible lists, ~2 B/posting for document-level frequency postings, no
    deletes" (extensible arrays = ADCS 2022); Rule & Mackenzie: append-only,

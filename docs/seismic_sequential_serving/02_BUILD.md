@@ -24,9 +24,9 @@ parallel path.
 
 1. **8 stock SEISMIC shards** — the G7 build, 150,413,098 docs, ~8.28 GB each,
    `global_shard{0..7}of8.index.seismic`.
-2. **8 converted C2 mmap dirs** — `global_shard{0..7}of8.mmap/` (flat doc-mapping
+2. **8 converted C2 mmap directories** — `global_shard{0..7}of8.mmap/` (flat doc-mapping
    layout: `document_mapping_strings.bin` + `document_mapping_offsets.bin`), one
-   sibling dir per shard, produced by `convert_shard_to_mmap.py`.
+   sibling directory per shard, produced by `convert_shard_to_mmap.py`.
 3. **A shard manifest** — JSON listing each shard's `index_path` + `mmap_dir`
    (same shape as `data/eval_results/seismic_c25_shards_150m_mmap.json`).
 4. **The SPLADE encoder** — `models/splade_onnx_fused` since 2026-07-09 D2
@@ -46,7 +46,7 @@ Run with the project venv (`/workspaces/sfu-library-thinclient/.venv/bin/python3
 2. **Convert each to the C2 mmap layout** (serial, ~7 min total, peak ~9.9 GB):
    `scripts/seismic_testbed/convert_shard_to_mmap.py`
    → `global_shard{0..7}of8.mmap/` + `seismic_c25_shards_150m_mmap.json`.
-   *Load-bearing:* the `.mmap/` dirs MUST be from the **current C2 writer**
+   *Load-bearing:* the `.mmap/` directories MUST be from the **current C2 writer**
    (strings+offsets). A stale C1a `document_mapping.bin` makes the C2 reader load
    `doc_mapping=None` → ids collapse to numeric → wrong results. (Same constraint
    the parallel path documents — restated here so this doc stands alone.)
@@ -70,7 +70,7 @@ feature. **Shipped** (mechanisms A + B): wired into `retriever._seismic_backend(
 which picks `SequentialSeismicBackend` directly; the serial branch (A) + the
 `--federation` CLI flag on the bench/testbed probe are live. Mechanism (B)
 (`MADV_DONTNEED` `release_pages`) requires the **rebuilt `.so`** —
-`cd spike/seismic_upstream && sudo env "PATH=$PATH" CARGO_HOME=/usr/local/cargo
+`cd spike/seismic_upstream && sudo environment "PATH=$PATH" CARGO_HOME=/usr/local/cargo
 RUSTUP_HOME=/usr/local/rustup <venv>/python -m maturin develop --release` — which
 adds `MmapSeismicIndex.release_pages()` additively (parallel never calls it). If the
 rebuilt `.so` is absent, `_fan_out`'s `hasattr` guard skips (B) and logs a debug
@@ -80,15 +80,15 @@ re-fault test verified on a synthetic shard; 150M latency unmeasured per `04`).
 
 ## Independence guarantees (why this can't destabilise the parallel build)
 
-- **Shared inputs are immutable.** The shards + mmap dirs are read-only at serve
+- **Shared inputs are immutable.** The shards + mmap directories are read-only at serve
   time; a serving mode cannot mutate them.
 - **No new persisted state.** Sequential writes nothing to disk that parallel reads
   (or vice-versa). No shared lock, spool, checkpoint, or sidecar.
 - **No concurrency assumption.** The parallel path's `ThreadPoolExecutor` is
   untouched; the serial branch introduces no thread/GIL coupling.
 - **Mode is process-local and exclusive.** Chosen once at `_seismic_backend()`
-  load from one env var; the two modes are never co-active in a process.
-- **Mmap-only, no silent fallback.** A missing `.mmap/` dir raises `RuntimeError`
+  load from one environment var; the two modes are never co-active in a process.
+- **Mmap-only, no silent fallback.** A missing `.mmap/` directory raises `RuntimeError`
   (never a silent stock Path-A reload that would re-introduce the ~137 GB anon
   floor) — identical safety contract to the parallel path, asserted in
   `03_TESTING.md`.
@@ -98,6 +98,6 @@ re-fault test verified on a synthetic shard; 150M latency unmeasured per `04`).
 Only if benchmarking (`04`) shows per-shard fault cost dominates: re-converting
 shards so each shard's hot inverted+summary side is **laid out contiguously** for
 sequential pre-fault. This is an *optional* future artifact change, explicitly NOT
-required for the first sequential serve, and would get its own versioned mmap dir
+required for the first sequential serve, and would get its own versioned mmap directory
 so it never overwrites the shared artifacts. Tracked here as design-only.
 </content>

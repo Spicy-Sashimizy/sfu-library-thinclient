@@ -13,12 +13,12 @@ verified over the OCI API on 2026-10-06, before the upgrade landed:
 
 - Broker box (`sfu-demo-broker`, Always-Free E2.1.Micro) RUNNING; `sfu-broker` + `sfu-watchdog.timer` active.
 - Serve instance TERMINATED by Oracle 2026-10-03 08:44 UTC (grace period end); its OCID now 404s. Until
-  the config change below the 24/7 window made the broker retry START every 60 s (2,795 failed calls).
+  the configuration change below the 24/7 window made the broker retry START every 60 s (2,795 failed calls).
 - Preserved: `SFU-thin-serverhosted-150M (Boot Volume)` 100 GB, `sfu-demo-idxvol` 200 GB, VCN/subnet,
   NSG `sfu-serve-locked`, reserved public IP `sfu-demo-public-ip` (unassigned). No re-seed needed.
 - Tenancy still `FREE_TRIAL` (expired) with E5 core limit 0, so nothing paid can launch until the upgrade lands.
 
-Done on the live broker 2026-10-06 (previous env kept as `demo.env.bak-24x7-pinned-20261006`, previous
+Done on the live broker 2026-10-06 (previous environment kept as `demo.env.bak-24x7-pinned-20261006`, previous
 code in `_bak_20261006/`):
 
 - **Click-only wake:** `DEMO_BUSINESS_DAYS=` (empty) — no hot window, so the compute starts only on a
@@ -39,7 +39,7 @@ code in `_bak_20261006/`):
   `rebuild_serve_instance.py --execute --hand-to-broker --notify` every 5 min; the preflight exits 2
   untouched while the E5 limit is 0, and the trigger disables itself once `rebuild.launched` exists.
   The rebuild launches E5.Flex 8 OCPU/64 GB from the preserved boot volume on 10.0.0.174, hands the
-  new OCID to the broker (env rewrite + restart + state = on-demand wake, so the reaper and caps apply
+  new OCID to the broker (environment rewrite + restart + state = on-demand wake, so the reaper and caps apply
   from the first minute), attaches the index volume (paravirtualized), re-assigns the reserved public
   IP and soft-reboots the guest.
 
@@ -53,7 +53,7 @@ code in `_bak_20261006/`):
 | Index volume attach (paravirtualized) | ATTACHED in 20 s |
 | Rebuild script end (public IP re-assigned, SOFTRESET issued, rc=0) | 19:46:03 — 57 s total; trigger disabled itself |
 | Serve `/health` 200 after the soft reboot; broker `BOOTING → UP` | by 19:47:06; 19:47:07 — ~2 min after the launch call |
-| Serve `warm=true` | by 19:51:36 — ~4.4 min after first health (5 s poll); vs 60.2 s on 2026-08-20 — first boot after a re-attach, single sample |
+| Serve `warm=true` | by 19:51:36 — ~4.4 min after first health (5 s poll); versus 60.2 s on 2026-08-20 — first boot after a re-attach, single sample |
 | Guest | `LABEL=idxvol /mnt/idxvol ext4 defaults,nofail,_netdev` mounted as `/dev/sdb`, 128 G used of 196 G; `sfu-serve` enabled + active; 62 GiB RAM |
 | Public `/arch-search` (fresh queries, informal n=5, incl. Cloudflare + broker hop) | 24.2 s, 21.8 s (first two after warm), then 9.8 s, 2.18 s, 2.07 s; 10 results each |
 
@@ -64,7 +64,7 @@ code in `_bak_20261006/`):
 |---|---|
 | First real stop (`DEMO_MAX_SESSION_MINUTES=60`) | SLEEP at 20:46:02 = 60.9 min after the 19:45 wake; SOFTSTOP issued 20:46:03; Oracle `STOPPED` by 20:47:08; broker accounted 1.014 h |
 | Click-wake of the STOPPED instance (test invite, from the broker box) | click 20:47:36 → serve `/health` 200 at **21.8 s** → broker UP at **27.9 s** → serve `warm=true` at **295 s** |
-| Serve warm-up breakdown (`sfu-serve` journal) | SPLADE ONNX 38 s → embedding model +122 s → cross-encoder +2 s → hot-set fault (6 queries) +110 s = **272.1 s**; vs 60.2 s on 2026-08-20 |
+| Serve warm-up breakdown (`sfu-serve` journal) | SPLADE ONNX 38 s → embedding model +122 s → cross-encoder +2 s → hot-set fault (6 queries) +110 s = **272.1 s**; versus 60.2 s on 2026-08-20 |
 | First queries after warm (`/arch-search` from the broker box) | 48.9 s, 11.5 s, 8.3 s (then ~2 s once warm, see the public-path rows above) |
 | Index volume ceiling (`/dev/sdb`, O_DIRECT) | seq 1 MiB QD1 114 MB/s, QD8 **132 MB/s**; random 4 KiB QD1 0.30 ms / 3,320 IOPS, QD16 35,140 IOPS; read_ahead 2048 KB. 200 GB Balanced (10 VPU) is throughput-bound: 13.8 GB hot set ÷ 130 MB/s ≈ 106 s, which is the hot-set row above |
 | Owner test stop (manual `sleep` + `mark_down`, nobody else connected) | SOFTSTOP → `STOPPED` in ~40 s; month runtime after both cycles 1.17 h |
@@ -120,13 +120,13 @@ python3 scripts/demo_broker/test_scheduler.py   # 13 tests, no deps
 | `do_client.py` | DigitalOcean v2 wrapper (boot-from-snapshot / attach-volume / destroy); dry-run default |
 | `oci_client.py` | **OCI wrapper** — START/SOFTSTOP one persistent instance, lifecycle-state map, IP short-circuit; API-key request signing (draft-cavage RSA-SHA256, stdlib urllib + `cryptography`, no `oci` SDK); dry-run default |
 | `cloud.py` | provider factory: `DEMO_CLOUD=do` (default) \| `oci` → the `wake`/`sleep`/`compute_ip`/`compute_active` protocol |
-| `config.py` | env-driven config + `validate()` preflight |
+| `config.py` | env-driven configuration + `validate()` preflight |
 | `tenants.py` | per-person invites + sessions + durable events + rate caps (sqlite) |
 | `notify.py` | push/webhook notifier (ntfy/Slack/Discord/generic); pure `build_payload` |
 | `mint_invite.py` | CLI to mint/list/revoke per-person invite links |
 | `rebuild_serve_instance.py` | rebuild the terminated serve instance from its preserved boot + index volumes (plan/preflight by default; `--execute`; `--hand-to-broker`) — 2026-10-06, unmeasured |
 | `rebuild_trigger.sh` + `systemd/sfu-rebuild-trigger.{service,timer}` | self-disabling 5-min trigger that runs the rebuild once the tenancy can launch paid shapes |
-| `app.py` | FastAPI: `/start` (invite+access info), `/status`, `/mcp` (per-session proxy), `/admin/report`, `/admin/dial`, `/health`, scheduler thread |
+| `app.py` | FastAPI: `/start` (invite+access information), `/status`, `/mcp` (per-session proxy), `/admin/report`, `/admin/dial`, `/health`, scheduler thread |
 | `dial.py` | **WI-3 memory dial** (`docs/deprecated/oci_demo/OCI_FREE_TIER_RESIDENT_DEMO.md` §3): live `MemoryHigh` rungs on the serve cgroup — systemd (`set-property --runtime`) or raw cgroup-v2 backend + CLI |
 | `watchdog.py` + `systemd/sfu-watchdog.{service,timer}` | read-only liveness watchdog → ntfy (see Watchdog section) |
 | `ntfy/` | compose + runbook for the NAS `sfu-ntfy` notification relay that `notify.py` / `watchdog.py` post to (`DEMO_NOTIFY_WEBHOOK`); moved 2026-10-11 from `deploy/ntfy/` |
@@ -140,8 +140,8 @@ or `=cgroup` (`DEMO_DIAL_CGROUP_DIR`); rung bounds `DEMO_DIAL_MIN_GB`/`MAX_GB`
 (4/64), `MemoryMax` backstop = rung + `DEMO_DIAL_GUARD_MB` (1536). Admin-token
 gated: `GET /admin/dial` = status, `POST /admin/dial?gb=12` = set a rung,
 `POST /admin/dial?off=1` = release. **Built + unit-tested 2026-08-18 (18 tests,
-fake cgroup dir / captured systemctl argv); the R1/R2 ladder has NOT been
-re-run under `MemoryHigh` — this dev container cannot host it (no systemd,
+fake cgroup directory / captured systemctl argv); the R1/R2 ladder has NOT been
+re-run under `MemoryHigh` — this development container cannot host it (no systemd,
 read-only cgroupfs, no docker socket; probed 2026-08-18) — so ladder-under-
 MemoryHigh remains EFFICACY UNMEASURED until the OCI Phase-5 dry run.**
 
@@ -184,7 +184,7 @@ reclaimed nothing fires — the heartbeat going missing is the signal.
 |---|---|---|
 | `DEMO_BROKER_LIVE` | `0` | `1` = make real cloud API calls (spend) |
 | `DEMO_CLOUD` | `do` | cloud provider: `do` \| `oci` |
-| `DIGITALOCEAN_ACCESS_TOKEN` | — | DO API token (already in repo `.env`) |
+| `DIGITALOCEAN_ACCESS_TOKEN` | — | DO API token (already in repository `.env`) |
 | `DEMO_DO_SIZE` | `g-16vcpu-64gb` | droplet tier (re-sized for Qdrant; see §0) |
 | `DEMO_DO_REGION` | `tor1` | DO region |
 | `DEMO_DO_SNAPSHOT_ID` | — | pre-baked image id (Phase 2) |
@@ -192,7 +192,7 @@ reclaimed nothing fires — the heartbeat going missing is the signal.
 | `DEMO_DO_FIREWALL_ID` | — | firewall locking `:8080` to the NAS IP |
 | `OCI_TENANCY_OCID` / `OCI_USER_OCID` / `OCI_FINGERPRINT` / `OCI_KEY_FILE` | — | OCI API-key signing identity (`OCI_KEY_PASSPHRASE` optional; literal or secret-file path) |
 | `OCI_REGION` | `ca-toronto-1` | OCI region (endpoint `iaas.<region>.oraclecloud.com`) |
-| `OCI_INSTANCE_OCID` | — | the ONE persistent demo instance — **static config, never created/destroyed** |
+| `OCI_INSTANCE_OCID` | — | the ONE persistent demo instance — **static configuration, never created/destroyed** |
 | `OCI_INSTANCE_IP` | — | its stable private IP; the default proxy path (no API call per request) |
 | `OCI_COMPARTMENT_OCID` | — | only for the VNIC-attachment IP fallback when `OCI_INSTANCE_IP` is unset |
 | `OCI_STOP_ACTION` | `SOFTSTOP` | `SOFTSTOP` (ACPI shutdown → power off) or `STOP` (hard, fallback) |
@@ -255,7 +255,7 @@ existing secret without copying it).
 **This deployment reuses the existing NAS `sfu-ntfy` server** (verified 2026-06-19,
 push accepted on topic `<ntfy-topic>`, which the owner's phone already
 subscribes to). The token is `rw`-scoped to `sfu-truenas-*`, so the demo publishes
-to that same topic. Env for the NAS broker (no secret in git — read the monitor's
+to that same topic. Environment for the NAS broker (no secret in git — read the monitor's
 existing file):
 ```bash
 DEMO_NOTIFY_KIND=ntfy
@@ -266,7 +266,7 @@ To split demo alerts onto their own topic (`sfu-truenas-demo`), mint a token on 
 NAS: `sudo docker exec sfu-ntfy ntfy access <user> 'sfu-truenas-*' rw` already
 covers it — just change the topic in the webhook URL.
 
-Manual test push: `python3 notify.py "hello"` (uses the env above).
+Manual test push: `python3 notify.py "hello"` (uses the environment above).
 
 ### Durable tracking + debug + reports
 - **sqlite** (`invites`/`sessions`/`events` tables, in the broker state db) survives
@@ -309,7 +309,7 @@ curl -s localhost:8088/health    # {"status":"ok","mode":"dry-run",...}
 ```
 
 **Cloudflare hostname** `demo.<domain>` → NAS broker `:8088` (same Cloudflare→NPM
-chain as ntfy; creds in repo `.env`). This is a **live DNS change — run it yourself
+chain as ntfy; creds in repository `.env`). This is a **live DNS change — run it yourself
 when ready** (it points a public name at the broker; do it after the broker is up):
 - NPM → New Proxy Host: `demo.<domain>` → `http://<nas-ip>:8088`, enable
   Websockets, request SSL. **Or** Cloudflare Tunnel public hostname →

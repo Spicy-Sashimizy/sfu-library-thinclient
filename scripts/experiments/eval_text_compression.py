@@ -54,7 +54,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("eval_text_compression")
 
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 SOURCE_URL = os.environ.get("SFU_MIGRATION_SOURCE",
                             "http://host.docker.internal:9200").rstrip("/")

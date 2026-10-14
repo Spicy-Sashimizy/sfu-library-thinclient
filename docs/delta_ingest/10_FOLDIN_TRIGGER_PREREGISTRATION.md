@@ -143,7 +143,7 @@ it, not even at swap time:
 of a folded updated doc lives in *s′* (a base-position shard) while its
 tantivy/meta/abstract copy still lives in a delta generation (§4: the
 non-SEISMIC legs do not fold into the base). `keep_hit`/`shard_result_filter`
-(`src/lib/thinclient/delta_layer.py` ~134–207) use one `superseded[id] →
+(`source/lib/thinclient/delta_layer.py` ~134–207) use one `superseded[id] →
 origin` map and one livedocs bitset for all legs. Required code: *s′* gets
 its own origin tag (`fold:s:k`) in `shard_origins`; `generations.json`
 carries per-leg newest origins (`seismic` vs `sections`); the livedocs bit

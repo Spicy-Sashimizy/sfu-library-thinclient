@@ -95,7 +95,7 @@ and would RuntimeError.
 **End-to-end verified:** `ParallelSeismicBackend` loads 8 persistent shards in
 1.2s, **150,413,098 total docs (exact)**, returns real OpenAlex ids. Cold
 first-query ~127s (page-fault-in + cold SPLADE encoder — the Tier 2 #5 cold-start
-item; warm is sub-second). Result-safety vs the prior 2026-06-29 build: n=10
+item; warm is sub-second). Result-safety versus the prior 2026-06-29 build: n=10
 mean overlap@10 **0.980**, 8/10 exact top-10 sets, 10/10 top-1 match (the 2
 non-exact are sub-rank-10 reordering, in the federation-gate 0.3% band) → the
 G6 PASS verdict holds on the rebuilt index.

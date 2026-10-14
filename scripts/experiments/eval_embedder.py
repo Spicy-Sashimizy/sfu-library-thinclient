@@ -8,7 +8,7 @@ same judge-cache harness, same OpenSearch _mget doc-text fetch, same NDCG@10 /
 MRR@10 computation and qualifying-query filter. The ONLY difference is scoring:
 the query and each candidate doc text are embedded SEPARATELY and ranked by
 cosine similarity (embeddings are L2-normalized, so cosine == dot product),
-exactly as src/lib/embedding.py does for the production semantic_similarity
+exactly as source/lib/embedding.py does for the production semantic_similarity
 rerank signal.
 
 Method
@@ -209,7 +209,7 @@ def evaluate_model(
 
     Embeds each query and all candidate doc texts separately (L2-normalized) and
     scores candidates by cosine similarity (== dot product on unit vectors), the
-    same scoring src/lib/embedding.py uses for the production rerank signal.
+    same scoring source/lib/embedding.py uses for the production rerank signal.
     """
     import numpy as np
     from sentence_transformers import SentenceTransformer

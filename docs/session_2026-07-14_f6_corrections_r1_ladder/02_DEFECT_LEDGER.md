@@ -12,8 +12,8 @@ lists the evidence file a future reader can re-check.
 ## #1 — F6 gate skipped the eager SPLADE load → 100% query failure
 
 - **Symptom:** F6 bench cells recorded cold p95 30 ms; `encode_ms` and
-  `traverse_ms` **0.0 for all 300 samples**; RSS peak 1.78 GB (vs 17.6 GB in
-  any real cell); load_seconds 88.6 (vs 2.8 baseline).
+  `traverse_ms` **0.0 for all 300 samples**; RSS peak 1.78 GB (versus 17.6 GB in
+  any real cell); load_seconds 88.6 (versus 2.8 baseline).
   Evidence: `q7_hybrid_cell_hybrid_20260714_041325_rep1.json` (invalid,
   committed in 0b4e9c3, superseded).
 - **Diagnosis:** every per-query call raised

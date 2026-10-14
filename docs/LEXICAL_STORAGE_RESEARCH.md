@@ -18,7 +18,7 @@
 
 ## 1. Executive summary table
 
-Ranking metric: (realistic compression ratio on ~1 KB English abstracts) × (decode speed vs budget) × (random-access fit). "Ratio" = original/compressed, *expected on this corpus* — flagged (M) measured in cited source on comparable data, (E) extrapolated/estimated, (C) vendor/author claim not independently reproduced.
+Ranking metric: (realistic compression ratio on ~1 KB English abstracts) × (decode speed versus budget) × (random-access fit). "Ratio" = original/compressed, *expected on this corpus* — flagged (M) measured in cited source on comparable data, (E) extrapolated/estimated, (C) vendor/author claim not independently reproduced.
 
 | Rank | Method | Ratio on ~1 KB abstracts | Decode speed | Random access | Fits 100-abstracts/300 ms? | Python/pip, license | Verdict |
 |---|---|---|---|---|---|---|---|
@@ -35,7 +35,7 @@ Ranking metric: (realistic compression ratio on ~1 KB English abstracts) × (dec
 | — | **FM-index / succinct text self-index** | ~0.4–1× of text | poor locality on disk | substring access, not doc-fetch oriented | technically yes for extraction, but no ranking benefit | sdsl-lite | Already ruled out; confirmed correct call (§4.4) |
 | — | **Store OpenAlex `abstract_inverted_index` natively** | <1× (it is *larger* than plain text) | n/a | n/a | n/a | n/a | Reconstruct once, store plain text compressed (§4.3) |
 
-**Bottom line:** Nothing neural fits the hot path. The realistic envelope for the abstract sidecar is **~2–4.5×** over raw UTF-8 (vs ~1.6–1.8× for naive per-doc zstd-6 without a dictionary), i.e. an estimated 150 GB raw-text-equivalent sidecar portion compressing to roughly **25–40 GB instead of ~60 GB** — combined with the already-measured 105 GB config, a plausible **~80–90 GB total** target. These are estimates; §6 gives the test protocol.
+**Bottom line:** Nothing neural fits the hot path. The realistic envelope for the abstract sidecar is **~2–4.5×** over raw UTF-8 (versus ~1.6–1.8× for naive per-doc zstd-6 without a dictionary), that is, an estimated 150 GB raw-text-equivalent sidecar portion compressing to roughly **25–40 GB instead of ~60 GB** — combined with the already-measured 105 GB configuration, a plausible **~80–90 GB total** target. These are estimates; §6 gives the test protocol.
 
 ---
 
@@ -50,18 +50,18 @@ The core mechanism in all of these: the LM provides next-token probabilities; an
 - Throughput: catastrophic. Per the FineZip authors, an LLMZip-style system with Llama3-8B needs **~9.5 days to compress 10 MB** (~0.044 MB/h) on an A6000 ([arXiv 2409.17141](https://arxiv.org/html/2409.17141v1)). Decompression is the same compute (must replay the LM). **Verdict: NO** — 5–6 orders of magnitude off the serving budget.
 
 **Language Modeling Is Compression** (Delétang et al., DeepMind, arXiv [2309.10668](https://arxiv.org/abs/2309.10668), ICLR 2024; [code](https://github.com/google-deepmind/language_modeling_is_compression))
-- Chinchilla-70B compresses enwik9 slices to **8.3%** of raw size (M) vs gzip 32.3%, LZMA2 23%. Important caveat the paper itself makes: counting the *model size* in the compressed size destroys the win for any corpus smaller than ~the model itself. For a fixed 150M-doc corpus with the model already shipped (Qwen3-1.7B), the amortization argument actually holds — the blocker is purely decode speed.
+- Chinchilla-70B compresses enwik9 slices to **8.3%** of raw size (M) versus gzip 32.3%, LZMA2 23%. Important caveat the paper itself makes: counting the *model size* in the compressed size destroys the win for any corpus smaller than ~the model itself. For a fixed 150M-doc corpus with the model already shipped (Qwen3-1.7B), the amortization argument actually holds — the blocker is purely decode speed.
 
 **ts_zip** (Bellard, [bellard.org/ts_zip](https://bellard.org/ts_zip/), 2023–2024)
 - RWKV 169M v4, 8-bit quantized, deterministic BF16 eval (reproducible across hardware — solves the bit-exactness-across-devices trap that GPU float nondeterminism creates for arithmetic coding).
-- Ratios (M): enwik8 **1.106 bpb**, enwik9 1.084 bpb, alice29.txt 1.142 bpb (vs xz 1.99/1.71/2.55) ≈ ~7× over raw.
-- Speed (C, author): "**up to 1 MB/s on a RTX 4090**" for compression *and* decompression; 4 GB RAM. On a thin-client laptop GPU expect 0.2–0.4 MB/s (E). 100 KB of abstracts ⇒ **~100 ms on a 4090 best case, 300 ms–1 s on laptop hardware**, while competing for the same GPU as the cross-encoder. Binaries only, no source, no license for redistribution. **Verdict: NO for hot path; plausible for a cold tier** (e.g., abstracts of docs never surfaced in top-1000 in query logs).
+- Ratios (M): enwik8 **1.106 bpb**, enwik9 1.084 bpb, alice29.txt 1.142 bpb (versus xz 1.99/1.71/2.55) ≈ ~7× over raw.
+- Speed (C, author): "**up to 1 MB/s on a RTX 4090**" for compression *and* decompression; 4 GB RAM. On a thin-client laptop GPU expect 0.2–0.4 MB/s (E). 100 KB of abstracts ⇒ **~100 ms on a 4090 best case, 300 ms–1 s on laptop hardware**, while competing for the same GPU as the cross-encoder. Binaries only, no source, no license for redistribution. **Verdict: NO for hot path; plausible for a cold tier** (for example, abstracts of docs never surfaced in top-1000 in query logs).
 
 **ts_sms** (Bellard, [bellard.org/ts_sms](https://bellard.org/ts_sms/), Dec 2024)
-- Same idea specialized for *short* texts: arithmetic-coding-compatible padding avoids encoding message length; example on page: 155-char message → 28 base64 chars vs Brotli's 88 (M, single example). Directly relevant evidence that LM coding keeps its advantage at ~1 KB scale (where zstd/Brotli lose theirs). Same speed/licensing objections as ts_zip.
+- Same idea specialized for *short* texts: arithmetic-coding-compatible padding avoids encoding message length; example on page: 155-char message → 28 base64 chars versus Brotli's 88 (M, single example). Directly relevant evidence that LM coding keeps its advantage at ~1 KB scale (where zstd/Brotli lose theirs). Same speed/licensing objections as ts_zip.
 
 **FineZip** (Mittu et al., arXiv [2409.17141](https://arxiv.org/abs/2409.17141), Sept 2024)
-- "Online memorization" (LoRA-finetune on the corpus being compressed) + dynamic (fixed-window) context ⇒ parallelizable batches. Llama-3-8B on A6000: 10 MB in **~4 h**; 4-bit quantized: **67 min (~9 MB/h)**, ratio 0.128→0.145 (vs gzip 0.324, bzip2 0.237, LLMZip 0.116) (M).
+- "Online memorization" (LoRA-finetune on the corpus being compressed) + dynamic (fixed-window) context ⇒ parallelizable batches. Llama-3-8B on A6000: 10 MB in **~4 h**; 4-bit quantized: **67 min (~9 MB/h)**, ratio 0.128→0.145 (versus gzip 0.324, bzip2 0.237, LLMZip 0.116) (M).
 - 54× faster than LLMZip is still ~5 orders of magnitude slower than zstd. The corpus-finetune idea (a LoRA adapter as a "dictionary") is the one transferable insight. **Verdict: NO for serving.**
 
 **LMCompress** (Li et al., *Nature Machine Intelligence* 7:794–799, May 2025; [paper](https://www.nature.com/articles/s42256-025-01033-7), arXiv [2407.07723](https://arxiv.org/abs/2407.07723))
@@ -71,7 +71,7 @@ The core mechanism in all of these: the LM provides next-token probabilities; an
 - The most practical 2026 datapoint: SmolLM2-**135M** + online predictor ensemble + 32-bit arithmetic coder, llama.cpp backend ("~7× faster single-token decode than PyTorch"), 500 MB GGUF, **1.2 GB VRAM/worker**. enwik8 **0.939 bpb** (M) — beats ts_zip by ~15%, CMIX by 44%, FineZip by 8%, with a 60× smaller model. Code availability not stated.
 - Even so: 0.939 bpb ≈ 8.5× ratio, but decode remains ~1 MB/s-class. A 135M model at ~2–5 ms/batched step ⇒ ~0.5–1.3 s for 100 abstracts on a discrete GPU (E). **Closest-to-viable neural option; still over budget and VRAM-expensive on a thin client.**
 
-**Can the shipped Qwen3-1.7B double as the decompressor?** Mechanically yes (its logits + arithmetic coding = a compressor, per DeepMind), and it would amortize model weights to zero. But: (a) per-token decode for 1.7B Q4 on laptop hardware is ~20–60 tok/s single-stream, ~1–3k tok/s well-batched (E from llama.cpp-class benchmarks, e.g. ~24 tok/s for Qwen3-class Q4 on M4 Pro, [llama.cpp #19366](https://github.com/ggml-org/llama.cpp/issues/19366), [Qwen speed docs](https://qwen.readthedocs.io/en/latest/getting_started/speed_benchmark.html)) ⇒ 25k tokens ≈ **8–25 s hot path**; (b) arithmetic coding requires **bit-exact reproducible logits** — any llama.cpp version bump, quantization change, GPU/CPU kernel difference silently corrupts the entire sidecar (ts_zip solves this with a custom deterministic runtime; llama.cpp does not guarantee it); (c) KV-cache + weights contend with reranker VRAM. **Verdict: NO for hot path; defensible only for cold-tier archival with a frozen, deterministic runtime.**
+**Can the shipped Qwen3-1.7B double as the decompressor?** Mechanically yes (its logits + arithmetic coding = a compressor, per DeepMind), and it would amortize model weights to zero. But: (a) per-token decode for 1.7B Q4 on laptop hardware is ~20–60 tok/s single-stream, ~1–3k tok/s well-batched (E from llama.cpp-class benchmarks, for example, ~24 tok/s for Qwen3-class Q4 on M4 Pro, [llama.cpp #19366](https://github.com/ggml-org/llama.cpp/issues/19366), [Qwen speed docs](https://qwen.readthedocs.io/en/latest/getting_started/speed_benchmark.html)) ⇒ 25k tokens ≈ **8–25 s hot path**; (b) arithmetic coding requires **bit-exact reproducible logits** — any llama.cpp version bump, quantization change, GPU/CPU kernel difference silently corrupts the entire sidecar (ts_zip solves this with a custom deterministic runtime; llama.cpp does not guarantee it); (c) KV-cache + weights contend with reranker VRAM. **Verdict: NO for hot path; defensible only for cold-tier archival with a frozen, deterministic runtime.**
 
 ### 2.2 Lossy: semantic / abstractive reconstruction
 
@@ -82,7 +82,7 @@ Distinct proposition: don't reconstruct bytes; store a short form whose *meaning
 - **SemanticZip** (arXiv [2605.24541](https://arxiv.org/html/2605.24541), May 2026): LLM-as-semantic-decompressor pilot; 19–46% token reduction; introduces **Critical Atom Recall / Weighted Atom Recall** as fidelity metrics. Authors are candid it's a 5-example pilot, no baselines — cite for the *measurement methodology*, not the numbers.
 - Degradation measurement (consensus across these): string metrics (ROUGE-L), semantic metrics (BERTScore), and — the only one that matters here — **end-task delta** (rerank-score shift, NDCG@10 on the existing harness). §6.2 operationalizes this.
 
-**Verdict:** the only neural family compatible with the budget, because decode is free. But it gambles the +0.12 NDCG@10 the reranker earns. Worth a *contained* experiment (§5, candidate 5) — e.g., LLMLingua-2 at conservative 2× on abstracts > 1.5 KB only — with an automatic abort threshold of, say, > 0.005 NDCG@10 loss.
+**Verdict:** the only neural family compatible with the budget, because decode is free. But it gambles the +0.12 NDCG@10 the reranker earns. Worth a *contained* experiment (§5, candidate 5) — for example, LLMLingua-2 at conservative 2× on abstracts > 1.5 KB only — with an automatic abort threshold of, say, > 0.005 NDCG@10 loss.
 
 ---
 
@@ -91,7 +91,7 @@ Distinct proposition: don't reconstruct bytes; store a short form whose *meaning
 ### 3.1 zstd with trained dictionaries — primary candidate
 
 - Mechanism: `zstd --train` (COVER/fastCOVER) builds a shared dictionary (typical 16–112 KB) used as implicit history for every tiny frame. Exactly designed for "many ~1 KB records" ([zstd homepage](https://facebook.github.io/zstd/), [manual](https://github.com/facebook/zstd/blob/dev/programs/zstd.1.md)).
-- Measured reference point: `github-users` set, ~10K records of ~1 KB — dictionary compression improves ratio dramatically (~2.6× → ~10×) *and* speeds up both directions on that JSON-heavy data (M, vendor benchmark). English prose has less boilerplate than JSON; expect **~2–3×** for abstracts with a 110 KB dict trained on 10–100 MB of abstracts (E — must measure). Train **per-domain dictionaries** (e.g., by OpenAlex topic/field: medicine vs physics abstracts share much more internal phrasing) and store a 1-byte dict ID per doc; this is the cheap version of "domain-specific static dictionaries" and typically buys another 5–15% (E).
+- Measured reference point: `github-users` set, ~10K records of ~1 KB — dictionary compression improves ratio dramatically (~2.6× → ~10×) *and* speeds up both directions on that JSON-heavy data (M, vendor benchmark). English prose has less boilerplate than JSON; expect **~2–3×** for abstracts with a 110 KB dict trained on 10–100 MB of abstracts (E — must measure). Train **per-domain dictionaries** (for example, by OpenAlex topic/field: medicine versus physics abstracts share much more internal phrasing) and store a 1-byte dict ID per doc; this is the cheap version of "domain-specific static dictionaries" and typically buys another 5–15% (E).
 - Caveat (M): with a dict on small independent blocks, *decompression slows 25–55%* at higher levels ([zstd issue #4175](https://github.com/facebook/zstd/issues/4175), Nov 2024) — from ~2 GB/s to ~550–700 MB/s. Irrelevant at our 0.33 MB/s requirement.
 - Random access: compress each abstract as an independent frame; offsets in a fixed-width table (or use the [seekable format](https://github.com/facebook/zstd/tree/dev/contrib/seekable_format) — note its own guidance: frames < 1 KB "hurt compression ratio considerably", which is precisely why the dictionary is mandatory here).
 - Availability: `zstandard` / stdlib `compression.zstd` (Python 3.14+), BSD. Degradation: none (lossless, stable format, dict must be versioned and immutable — losing the dict loses the data).
@@ -100,7 +100,7 @@ Distinct proposition: don't reconstruct bytes; store a short form whose *meaning
 ### 3.2 Brotli with custom/shared dictionaries
 
 - Brotli ships a built-in ~120 KiB static dictionary of English/HTML substrings — it already beats zstd on short English text at high levels; v1.1.0 adds *custom* shared dictionaries on top ([RFC draft](https://datatracker.ietf.org/doc/html/draft-vandevenne-shared-brotli-format-04), [Chrome write-up](https://developer.chrome.com/blog/shared-dictionary-compression), [DebugBear guide](https://www.debugbear.com/blog/shared-compression-dictionaries)). Web-delta numbers (84–90% smaller than plain Brotli) are for *versioned-resource* dictionaries — not transferable to abstracts; ignore as marketing for this use case.
-- Expected on abstracts: **~2.2–3×** at quality 9–11 with a trained dict (E); decode ~300–500 MB/s. `brotli` pip, MIT. Same random-access framing as zstd. **Fits budget: YES.** Worth a head-to-head vs zstd-dict; historically Brotli wins by ~5–10% on small English text, zstd wins on decode speed (both irrelevant margins here, so pick the better ratio).
+- Expected on abstracts: **~2.2–3×** at quality 9–11 with a trained dict (E); decode ~300–500 MB/s. `brotli` pip, MIT. Same random-access framing as zstd. **Fits budget: YES.** Worth a head-to-head versus zstd-dict; historically Brotli wins by ~5–10% on small English text, zstd wins on decode speed (both irrelevant margins here, so pick the better ratio).
 
 ### 3.3 FSST — random-access string compression
 
@@ -133,7 +133,7 @@ Lucene's stored fields already do block compression (16–128 KB chunks) in *doc
 
 ### 4.2 Dedup / MinHash clustering + delta chains
 
-- Storage-systems literature (post-dedup delta compression, e.g. [Ddelta](https://www.sciencedirect.com/science/article/abs/pii/S0166531614000790); MinHash + Union-Find near-dup clustering with ~400× clustering speedups reported) shows high gains **when corpora contain near-duplicates**. OpenAlex does: preprint vs published versions, retraction notices, multi-source merges of the same work.
+- Storage-systems literature (post-dedup delta compression, for example, [Ddelta](https://www.sciencedirect.com/science/article/abs/pii/S0166531614000790); MinHash + Union-Find near-dup clustering with ~400× clustering speedups reported) shows high gains **when corpora contain near-duplicates**. OpenAlex does: preprint versus published versions, retraction notices, multi-source merges of the same work.
 - But explicit delta-chains (bsdiff-style, chain depth > 1) break O(1) access and add fragility. The pragmatic version is §4.1: put near-dups in the same compression block and let zstd find the delta. A separate win available regardless: **exact/near-dup detection to store one abstract per cluster** with a pointer — pure win, no decode cost. Expected total: **5–15%** extra (E, corpus-dependent — measure dup rate first with a MinHash pass).
 
 ### 4.3 OpenAlex native `abstract_inverted_index` vs plain text
@@ -158,7 +158,7 @@ Lucene's stored fields already do block compression (16–128 KB chunks) in *doc
 
 ### 5.2 Impact quantization (8-bit)
 
-- BMP (Mallia, Suel, Tonellotto, SIGIR 2024, [arXiv 2405.01117](https://arxiv.org/abs/2405.01117), [pisa-engine/BMP](https://github.com/pisa-engine/BMP)) already **requires 8-bit quantized impacts**; measured quality cost of 8-bit quantization is negligible (≤1% RR@10 vs exhaustive in the BMP paper; Anserini-style quantization literature concurs; 4-bit costs ~0.05 recall@1000 for SPLADE per [superblock study, arXiv 2602.02883](https://arxiv.org/pdf/2602.02883)). Since the migration already adopts BMP, this is **done by construction** — just don't *also* keep float weights anywhere (the measured lossless config already drops SPLADE weights from _source; keep it that way).
+- BMP (Mallia, Suel, Tonellotto, SIGIR 2024, [arXiv 2405.01117](https://arxiv.org/abs/2405.01117), [pisa-engine/BMP](https://github.com/pisa-engine/BMP)) already **requires 8-bit quantized impacts**; measured quality cost of 8-bit quantization is negligible (≤1% RR@10 versus exhaustive in the BMP paper; Anserini-style quantization literature concurs; 4-bit costs ~0.05 recall@1000 for SPLADE per [superblock study, arXiv 2602.02883](https://arxiv.org/pdf/2602.02883)). Since the migration already adopts BMP, this is **done by construction** — just don't *also* keep float weights anywhere (the measured lossless configuration already drops SPLADE weights from _source; keep it that way).
 
 ### 5.3 Static index pruning
 
@@ -184,13 +184,13 @@ Explicitly **not** shortlisted: all LM-arithmetic-coding lossless methods (budge
 ### 6.2 Information-degradation test protocol
 
 **Lossless methods (1–4, 6-storage):**
-- *Bit-exactness:* SHA-256 of every reconstructed abstract vs original over the full 150M corpus (cheap streaming pass); any mismatch = disqualification. Re-run after every dictionary retrain or library version bump; pin dict bytes + codec version in the sidecar header.
+- *Bit-exactness:* SHA-256 of every reconstructed abstract versus original over the full 150M corpus (cheap streaming pass); any mismatch = disqualification. Re-run after every dictionary retrain or library version bump; pin dict bytes + codec version in the sidecar header.
 - *No quality testing needed* beyond that — but still re-run the rerank E2E latency benchmark (100-candidate fetch p50/p95/p99) on laptop-class hardware, cold page cache.
 
 **Lossy methods (5; also any future semantic store):**
-1. **Surface fidelity:** ROUGE-L and BERTScore (deberta-large-mnli or similar) of compressed vs original abstract, distribution over a 50K-doc stratified sample (stratify by field/topic and abstract length).
-2. **Reranker-input fidelity (the metric that matters):** for the existing eval query set, run the cross-encoder on (title + original abstract) vs (title + compressed abstract) for the same top-100 candidates; report per-pair **rerank-score delta** distribution and **Kendall-τ of the induced rankings**.
-3. **End-to-end:** NDCG@10 / MRR@10 / Recall@100 on the existing harness (the `benchmark_llm_judge` + nDCG eval already in `data/eval_results/`), lossy vs lossless store, ≥3 seeds where sampling applies. Acceptance gate: **ΔNDCG@10 ≥ −0.005** (i.e., spend at most ~4% of the reranker's +0.12 win), else abort.
+1. **Surface fidelity:** ROUGE-L and BERTScore (deberta-large-mnli or similar) of compressed versus original abstract, distribution over a 50K-doc stratified sample (stratify by field/topic and abstract length).
+2. **Reranker-input fidelity (the metric that matters):** for the existing eval query set, run the cross-encoder on (title + original abstract) versus (title + compressed abstract) for the same top-100 candidates; report per-pair **rerank-score delta** distribution and **Kendall-τ of the induced rankings**.
+3. **End-to-end:** NDCG@10 / MRR@10 / Recall@100 on the existing harness (the `benchmark_llm_judge` + nDCG eval already in `data/eval_results/`), lossy versus lossless store, ≥3 seeds where sampling applies. Acceptance gate: **ΔNDCG@10 ≥ −0.005** (that is, spend at most ~4% of the reranker's +0.12 win), else abort.
 4. **Adversarial slice:** repeat (2)–(3) on the hardest decile (longest abstracts, math/chem-notation-heavy fields) where token pruning plausibly deletes load-bearing content (numbers, negations, entity names — known LLMLingua failure modes).
 
 **Pruning (6-postings):** Recall@100 is the canary (it feeds the reranker), NDCG@10 the gate; sweep pruning rate and plot both — pick the knee.
@@ -200,7 +200,7 @@ Explicitly **not** shortlisted: all LM-arithmetic-coding lossless methods (budge
 ## 7. Source-quality notes
 
 - Measured-on-comparable-data (highest confidence): zstd dict mechanics + small-block dict slowdown (vendor benchmark + [issue #4175](https://github.com/facebook/zstd/issues/4175)); FSST VLDB numbers; FineZip/LLMZip throughput; BMP SIGIR results; Carmel/Lassance pruning curves; DeepMind/Nature ratio numbers.
-- Author-claimed, plausible, unreproduced: ts_zip "1 MB/s on RTX 4090"; Nacrith's "7× faster than PyTorch" and ratio table (single-author preprint, Feb 2026, no code); OnPair claims (Aug 2025, no public benchmarks vs FSST yet).
+- Author-claimed, plausible, unreproduced: ts_zip "1 MB/s on RTX 4090"; Nacrith's "7× faster than PyTorch" and ratio table (single-author preprint, Feb 2026, no code); OnPair claims (Aug 2025, no public benchmarks versus FSST yet).
 - Marketing-grade / not transferable: web shared-dictionary "84–90% smaller" figures (versioned-resource deltas, not fresh text); LLMLingua "20× with little loss" (task-specific; our consumer is a cross-encoder, not GPT-4 QA).
 - All ratio expectations for *this* corpus marked (E) are exactly that — the shortlist exists to replace them with measurements.
 
@@ -232,12 +232,12 @@ Explicitly **not** shortlisted: all LM-arithmetic-coding lossless methods (budge
 Per the UTF-8 encoding ([Wikipedia/UTF-8](https://en.wikipedia.org/wiki/UTF-8)): ASCII 1 B/char; Latin-ext/Greek/**Cyrillic/Arabic/Hebrew 2 B/char**; **CJK BMP (Han, kana, Hangul) 3 B/char**; supplementary-plane 4 B/char.
 
 - **Russian/Ukrainian:** ~same character count as an equivalent English abstract but 2 B/char on letters ⇒ **~1.7–1.9× bytes/doc** for the same content (E).
-- **Chinese/Japanese:** 3 B/char, but information density is far higher per character — Qwen's own rule of thumb is 1 token ≈ 3–4 chars English vs **1.5–1.8 chars Chinese** ([Qwen tokenization note](https://github.com/QwenLM/Qwen/blob/main/tokenization_note.md), (C/M vendor)). A Chinese abstract conveys equivalent content in ~⅓–¼ the characters, so **bytes/doc roughly comparable to English, sometimes smaller** (E).
+- **Chinese/Japanese:** 3 B/char, but information density is far higher per character — Qwen's own rule of thumb is 1 token ≈ 3–4 chars English versus **1.5–1.8 chars Chinese** ([Qwen tokenization note](https://github.com/QwenLM/Qwen/blob/main/tokenization_note.md), (C/M vendor)). A Chinese abstract conveys equivalent content in ~⅓–¼ the characters, so **bytes/doc roughly comparable to English, sometimes smaller** (E).
 - Net effect on the budget: per-language mean-bytes/doc differ enough (±2×) that the sidecar's bytes/doc accounting and any fixed-size block tuning (§4.1) should be computed **per language stratum**, not globally.
 
 ### 7.3 zstd trained dictionaries on mixed-language corpora — dilution is real but unmeasured in literature
 
-- **No published controlled study found** comparing one mixed-language trained dictionary vs per-language dictionaries (flagged research gap — our benchmark can be a first datapoint).
+- **No published controlled study found** comparing one mixed-language trained dictionary versus per-language dictionaries (flagged research gap — our benchmark can be a first datapoint).
 - Mechanism argues for dilution (analysis, E): COVER/fastCOVER scores candidate k-byte segments by *corpus-wide* estimated savings ([zstd dictionary system](https://deepwiki.com/facebook/zstd/5-command-line-interface), [python-zstandard docs](https://python-zstandard.readthedocs.io/en/latest/dictionaries.html)). On a 74%-English training mix, dictionary space is allocated ≈ proportional to language mass: a 110 KB dict gives Chinese ~2% ≈ 2 KB of useful history — effectively no dictionary for minority languages, while still paying full dict-management overhead.
 - Measured adjacent evidence (M): a mismatched/heterogeneous dictionary can make ratios *worse than no dictionary* ([zstd issue #1703](https://github.com/facebook/zstd/issues/1703)); vendor guidance is explicitly "one dictionary per type of content," small homogeneous samples ([zstd homepage](http://facebook.github.io/zstd/), [training-set sizing #3769](https://github.com/facebook/zstd/issues/3769)).
 - **Feasibility here:** every language ≥0.5% share has ≥750K abstracts (≫ the 10–100 MB training-set guidance) — training ~10–15 per-language (or per language×domain) dictionaries is trivial. The §3.1 design already reserves a 1-byte dict-ID per doc; language routing reuses it unchanged.
@@ -247,23 +247,23 @@ Per the UTF-8 encoding ([Wikipedia/UTF-8](https://en.wikipedia.org/wiki/UTF-8)):
 `data/eval_results/per_language_dicts_20260611.json`. Held-out protocol on the
 20k-abstract sample (112 KB dicts, zstd −19, fixed-seed 80/20 split per language,
 ≥ 300 docs): an own-language dictionary beats the shared all-language dictionary on
-every non-English stratum, bytes/doc own vs shared — ru 328 vs 450, fa 497 vs 626,
-ko 468 vs 616, zh 286 vs 420, pt 480 vs 599, id 502 vs 598, es 415 vs 482 (held-out
+every non-English stratum, bytes/doc own versus shared — ru 328 versus 450, fa 497 versus 626,
+ko 468 versus 616, zh 286 versus 420, pt 480 versus 599, id 502 versus 598, es 415 versus 482 (held-out
 n = 68…400); for English the shared dict costs +4.8 % (370 → 388 B/doc); the
-machine-code control shows own-vs-shared 530 vs 612, i.e. part of the gain is
+machine-code control shows own-vs-shared 530 versus 612, that is, part of the gain is
 sample-specific vocabulary, not language. This is the "first datapoint" the
 paragraph above asks for; dilution is real at this dictionary size.
 
 ### 7.4 Brotli's built-in dictionary and non-English text
 
-- The RFC 7932 static dictionary is **13,504 words of English, Spanish, Chinese, Hindi, Russian and Arabic** plus HTML/JS phrases, distilled from a 40-language corpus — i.e., less purely English-biased than folklore says, but Latin/web-weighted ([brotli author on HN, 2021](https://news.ycombinator.com/item?id=27163981)) (C, primary author).
+- The RFC 7932 static dictionary is **13,504 words of English, Spanish, Chinese, Hindi, Russian and Arabic** plus HTML/JS phrases, distilled from a 40-language corpus — that is, less purely English-biased than folklore says, but Latin/web-weighted ([brotli author on HN, 2021](https://news.ycombinator.com/item?id=27163981)) (C, primary author).
 - Same source (C): in brotli-vs-zstd web benchmarks, brotli "wins even when the static dictionary is filled with zeros" — its density edge comes from context modeling, not the dictionary; and Google deliberately benchmarked on a 93-language corpus where only 9.5% of documents were in dictionary-covered languages.
 - **No measured per-language penalty table exists publicly** (gap). Expectation (E): the built-in dict's advantage on *short* text is mostly an English/Latin effect and shrinks toward zero on ja/zh/ru; a *custom* trained dictionary (Brotli v1.1 shared-dictionary, §3.2) re-equalizes. Action: the §6.1 item-3 head-to-head must be **stratified by language**, with per-language custom dicts as a third arm.
 
 ### 7.5 Token-ID recoding is *broken*, not just worse, with an English WordPiece vocab
 
 - **bert-base-uncased disqualifier (M, documented behavior):** BERT's tokenizer space-splits every CJK-block character before WordPiece ([google-research/bert multilingual.md](https://github.com/google-research/bert/blob/master/multilingual.md)); characters absent from the 30K English vocab become **[UNK]** — WordPiece has *no byte fallback*, so recoding zh/ja abstracts through bert-base-uncased is **lossy and unrecoverable**, not merely inflationary. (Kana/Hangul fare no better: near-total [UNK] in an uncased English vocab.) Any token-recoding variant of §3.5 must therefore exclude this vocab outright.
-- Multilingual vocabs fix correctness and ratio: **XLM-R** sentencepiece (250K) achieves bytes/token compression competitive with the 1M-vocab XLM-V across languages (M, comparative studies; see fertility/compression-rate methodology in the tokenizer-evaluation literature, e.g. [language-specific tokenizer design overview](https://www.emergentmind.com/topics/language-specific-tokenizer-design)); **Qwen byte-level BPE** (151,643 vocab, byte fallback ⇒ lossless on arbitrary input) claims higher compression than competitors "in most languages" ([Qwen tech report, arXiv 2309.16609](https://arxiv.org/pdf/2309.16609)) (C/M vendor): ~3–4 chars/token English, ~1.5–1.8 chars/token Chinese.
+- Multilingual vocabs fix correctness and ratio: **XLM-R** sentencepiece (250K) achieves bytes/token compression competitive with the 1M-vocab XLM-V across languages (M, comparative studies; see fertility/compression-rate methodology in the tokenizer-evaluation literature, for example, [language-specific tokenizer design overview](https://www.emergentmind.com/topics/language-specific-tokenizer-design)); **Qwen byte-level BPE** (151,643 vocab, byte fallback ⇒ lossless on arbitrary input) claims higher compression than competitors "in most languages" ([Qwen tech report, arXiv 2309.16609](https://arxiv.org/pdf/2309.16609)) (C/M vendor): ~3–4 chars/token English, ~1.5–1.8 chars/token Chinese.
 - Byte-fallback caveat (E): scripts poorly covered by the vocab degrade to ~1 token/byte — the token stream can *exceed* raw UTF-8 for tail languages; entropy coding claws some back. Net position unchanged from §3.5: low priority — but if ever done, **the only admissible vocab is a byte-fallback multilingual one (Qwen/XLM-R class)**, which also matches the shipped Qwen3 reranker stack.
 
 ### 7.6 Language-aware compression routing
@@ -274,8 +274,8 @@ paragraph above asks for; dilution is real at this dictionary size.
 ### 7.7 Front coding (incremental encoding) — formal treatment and measured ratios
 
 - Folklore form = the user-cited trick ([SO 358240](https://stackoverflow.com/questions/358240), ~50–55% on sorted wordlists (M, anecdotal)): store common-prefix length + new suffix; formalized as incremental/front coding ([Wikipedia](https://en.wikipedia.org/wiki/Incremental_encoding); [Stanford IR Book, blocked storage](https://nlp.stanford.edu/IR-book/html/htmledition/blocked-storage-1.html) — k=4 blocking + front coding saved 1.2 MB + 2.4 MB on the 11.2 MB Reuters term list ≈ **~30% combined** (M)).
-- Rigorous benchmark: Brisaboa, Cánovas, Claude, Martínez-Prieto, Navarro, *Compressed String Dictionaries* (SEA 2011, [arXiv 1101.5506](https://arxiv.org/pdf/1101.5506)) (M): on 25.6M ClueWeb words / 18.5M URLs / 30.2M DBpedia URIs, best variants reach **12–30% of original size** with fast ops; **Hu-Tucker-compressed front coding (HTFC) dominates plain FC almost everywhere**; Re-Pair wins space on URLs only; FM-index loses across the board (consistent with §4.4). Production precedent: Apache Druid's segment string columns ([Imply incremental-encoding write-up](https://imply.io/blog/introducing-incremental-encoding-for-apache-druid-dictionary-encoded-columns/)).
-- **Random access** = block/bucket front coding: bucket headers stored raw, binary-search headers then sequentially decode ≤ bucket-size entries — microseconds per lookup (M, extract plots in 1101.5506). Utterly negligible vs the 300 ms budget.
+- Rigorous benchmark: Brisaboa, Cánovas, Claude, Martínez-Prieto, Navarro, *Compressed String Dictionaries* (SEA 2011, [arXiv 1101.5506](https://arxiv.org/pdf/1101.5506)) (M): on 25.6M ClueWeb words / 18.5M URLs / 30.2M DBpedia URIs, best variants reach **12–30% of original size** with fast operations; **Hu-Tucker-compressed front coding (HTFC) dominates plain FC almost everywhere**; Re-Pair wins space on URLs only; FM-index loses across the board (consistent with §4.4). Production precedent: Apache Druid's segment string columns ([Imply incremental-encoding write-up](https://imply.io/blog/introducing-incremental-encoding-for-apache-druid-dictionary-encoded-columns/)).
+- **Random access** = block/bucket front coding: bucket headers stored raw, binary-search headers then sequentially decode ≤ bucket-size entries — microseconds per lookup (M, extract plots in 1101.5506). Utterly negligible versus the 300 ms budget.
 
 ### 7.8 Where front coding already exists in this stack
 
@@ -284,7 +284,7 @@ paragraph above asks for; dilution is real at this dictionary size.
 
 ### 7.9 Succinct alternatives: MARISA/LOUDS tries, and what 100M keys cost
 
-- **marisa-trie** (LOUDS + recursive Patricia, [s-yata/marisa-trie](https://github.com/s-yata/marisa-trie); `pip install marisa-trie`): benchmark (M, [project docs](https://github.com/pytries/marisa-trie/blob/master/docs/benchmarks.rst)): **9,805,576 Wikipedia titles → 50.8 MB ≈ 5.2 B/key** (vs darts-clone 376 MB, tx-trie/LOUDS 127 MB); "50–100× less memory than a Python dict," µs lookups. Extrapolated (E): ~100M heterogeneous string keys ≈ 0.5–1 GB.
+- **marisa-trie** (LOUDS + recursive Patricia, [s-yata/marisa-trie](https://github.com/s-yata/marisa-trie); `pip install marisa-trie`): benchmark (M, [project docs](https://github.com/pytries/marisa-trie/blob/master/docs/benchmarks.rst)): **9,805,576 Wikipedia titles → 50.8 MB ≈ 5.2 B/key** (versus darts-clone 376 MB, tx-trie/LOUDS 127 MB); "50–100× less memory than a Python dict," µs lookups. Extrapolated (E): ~100M heterogeneous string keys ≈ 0.5–1 GB.
 - **pyahocorasick** is a multi-pattern *matching* automaton, not a compressed dictionary — not applicable to key storage here.
 - For **sorted numeric IDs** (our case, see below), succinct tries are the wrong tool: **Elias-Fano** encodes a sorted set of n integers from universe U in n·(⌈log₂(U/n)⌉ + 2) bits with O(1) `select` — the standard in PISA-class index toolkits.
 
@@ -300,7 +300,7 @@ paragraph above asks for; dilution is real at this dictionary size.
 
 **(c) SQLite id→rowid key index:** a `TEXT` unique index on 150M 11-char IDs costs ≈ full key + rowid varint + cell overhead ≈ 16–20 B/entry → **~2.5–3 GB** (E from 7.8 format). Two cheaper designs, in order:
 1. **Eliminate the index entirely:** `rowid = numeric part of the work ID` (`INTEGER PRIMARY KEY`, fits 2⁶³). Lookup = clustered b-tree walk on the rowid itself, zero extra storage. Works iff sidecar rows can live in ID order.
-2. If §4.1's **cluster order** wins the layout (it should), store blobs in cluster order and keep one external **Elias-Fano(IDs) + bit-packed position permutation** (150M × 27 bits ≈ 506 MB, or ×4 B plain = 600 MB): ID → position in O(1), mmap-friendly, no SQLite b-tree at all. Net saving vs naive SQLite index: **~2–2.5 GB**, and lookups drop from b-tree page walks to two array probes.
+2. If §4.1's **cluster order** wins the layout (it should), store blobs in cluster order and keep one external **Elias-Fano(IDs) + bit-packed position permutation** (150M × 27 bits ≈ 506 MB, or ×4 B plain = 600 MB): ID → position in O(1), mmap-friendly, no SQLite b-tree at all. Net saving versus naive SQLite index: **~2–2.5 GB**, and lookups drop from b-tree page walks to two array probes.
 - **Random-access cost:** every option above is sub-µs–µs per key; 100 lookups consume < 1 ms of the 300 ms budget. The budget is irrelevant to this entire section — these are size/simplicity decisions.
 
 ### 7.11 Verdict table
@@ -314,7 +314,7 @@ paragraph above asks for; dilution is real at this dictionary size.
 | Token recoding, bert-base-uncased vocab | n/a — **[UNK]-lossy on CJK** (M) | — | **Broken** | **NO — disqualified** |
 | Token recoding, Qwen/XLM-R byte-fallback vocab | ~2× pre-entropy; lossless (M/C) | per-doc O(1) | Good (byte fallback; tail langs inflate) | Low priority (unchanged §3.5) |
 | Front coding (block FC/HTFC) on string keys | dict → 12–30% of original (M, 1101.5506) | µs (bucket scan) | n/a | NO for W-IDs (see next row); keep in toolbox for true string keys |
-| **Elias-Fano / delta-varint** numeric ID index | **~0.9–2 B/key ≈ 130–300 MB** vs ~2.5–3 GB SQLite TEXT index (E) | O(1)/near-O(1), sub-µs | n/a | **YES — or better, rowid=numeric-ID for zero cost** |
+| **Elias-Fano / delta-varint** numeric ID index | **~0.9–2 B/key ≈ 130–300 MB** versus ~2.5–3 GB SQLite TEXT index (E) | O(1)/near-O(1), sub-µs | n/a | **YES — or better, rowid=numeric-ID for zero cost** |
 | marisa-trie (LOUDS) key store | ~5 B/key (M, 9.8M titles) | µs | n/a | NO for numeric IDs; revisit only for DOI/alias strings |
 | SQLite native TEXT key index | baseline (no prefix compression, full key/entry) | b-tree walk | n/a | NO — replace per 7.10(c) |
 
@@ -328,7 +328,7 @@ paragraph above asks for; dilution is real at this dictionary size.
 
 ## 8. MEASURED on this corpus (scripts/experiments/eval_text_compression.py, 2026-06-11)
 
-20,000 real abstracts (24 MB, avg 1,203 B/doc), random-access drill = 100
+20,000 real abstracts (24 MB, average 1,203 B/doc), random-access drill = 100
 random fetches (the rerank budget is 300 ms). Full JSON:
 `data/eval_results/text_compression_eval.json`.
 
@@ -361,10 +361,10 @@ simplicity. SLM decode: cold-tier/archival only, exactly as §2 concluded.
 
 ## 9. ALL-LEVERS measured matrix (scripts/experiments/eval_storage_levers.py, 2026-06-11)
 
-BMP on 100k real docs w/ production SPLADE vectors; recall@50 vs EXACT
+BMP on 100k real docs with production SPLADE vectors; recall@50 versus EXACT
 quantized dot-product ground truth at the production alpha=0.8:
 
-| variant | B/doc | vs b32/corpus | ms/q | R@50 |
+| variant | B/doc | versus b32/corpus | ms/q | R@50 |
 |---|---|---|---|---|
 | b32 corpus (as first built) | 1404.8 | — | 27.2 | 0.966 |
 | b32 clustered | 1160.1 | −17.4% | 13.3 | 0.960 |
@@ -374,12 +374,12 @@ quantized dot-product ground truth at the production alpha=0.8:
 
 Larger block-max blocks shrink metadata AND speed up pruning; clustering
 (section, top-SPLADE-term) makes compress_range's doc-id ranges denser.
-recall unchanged (0.967 vs 0.966) — block size doesn't change stored scores.
+recall unchanged (0.967 versus 0.966) — block size doesn't change stored scores.
 
 Other components: tantivy clustered ordering = **+0.7% (null result — skip)**;
 meta.sqlite recode (numeric PK + dict-zstd titles/DOIs + enum ints) =
-**1.679×** (166.8→99.4 B/doc, 200/200 round-trip); abstracts full config
-(clustered 32KB blocks + per-language dicts) = **351.8 B/doc (3.42×)** vs
+**1.679×** (166.8→99.4 B/doc, 200/200 round-trip); abstracts full configuration
+(clustered 32KB blocks + per-language dicts) = **351.8 B/doc (3.42×)** versus
 **546.0 B/doc** for the mainline-sim (Lucene-style 16KB zstd6 blocks, no
 dict) → the new tech beats Lucene's existing stored-fields optimization by
 **35.6%**; artifact cold-pack ratio measured **2.10×**.

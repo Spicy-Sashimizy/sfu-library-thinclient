@@ -17,7 +17,7 @@ import time
 from pathlib import Path
 
 REPO = Path("/workspaces/sfu-library-thinclient")
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "seismic_testbed"))
 
 from d2_ort_fusion_matrix import (  # noqa: E402

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Migrate the OpenSearch corpus into the thin-client stack
-(tantivy BM25F + BMP SPLADE + usearch dense + sidecars), sectioned hot/cold.
+(tantivy BM25F + usearch dense + sidecars), sectioned hot/cold. The SPLADE leg
+is SEISMIC, built by spike/delta_ingest, not here; the BMP shard emission this
+script used to drive was removed 2026-10-11 (code kept by the owner).
 
 Phases (all checkpointed in <index_root>/build_status.json):
-  1. EXPORT  sliced scroll from the source index (_source includes the
-     production sparse_field weights — no re-encoding needed) -> per-section
+  1. EXPORT  sliced scroll from the source index -> per-section
      zstd spool files. A slice that dies restarts cleanly (its files are
      deleted); completed slices are never re-exported.
   2. BUILD   per section: one streaming pass over its spools -> tantivy index
-     + BMP shards + meta.sqlite rows + abstracts.sqlite (hot sections only).
+     + meta.sqlite rows + abstracts.sqlite (hot sections only).
   2b. FLAT   (OPT-IN, --flat-sidecar) abstracts.sqlite.flat/ per section that
      has abstracts, via scripts/build_flat_blocks.py — staged build, four-arm
      byte-parity gate, atomic publish; a failed gate aborts the build.
@@ -57,10 +58,10 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("build_thinclient")
 
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
-from lib.thinclient.builder import (BMP_BLOCK_SIZE, META_SCHEMA, QUANT_SCALE,  # noqa: E402
-                                    SectionBuilder, build_dense_leg, open_meta_db)
+from lib.thinclient.builder import (META_SCHEMA, SectionBuilder,  # noqa: E402
+                                    build_dense_leg, open_meta_db)
 from lib.thinclient.packer import pack_section  # noqa: E402
 from lib.thinclient.sections import (ERAS, PERSONAS, SECTION_NAMES,  # noqa: E402
                                      SUBSECTION_NAMES, classify_doc, era_of)
@@ -69,7 +70,7 @@ SOURCE_URL = os.environ.get("SFU_MIGRATION_SOURCE",
                             "http://host.docker.internal:9200").rstrip("/")
 SOURCE_INDEX = os.environ.get("SFU_MIGRATION_INDEX", "openalex_works")
 EXPORT_FIELDS = ["title", "abstract", "publication_year", "type", "is_oa",
-                 "doi", "openalex_id", "sparse_field"]
+                 "doi", "openalex_id"]
 SCROLL_BATCH = 4000
 DENSE_VECS = REPO_ROOT / "data/dense_compression/vectors_600k.npy"
 DENSE_IDS = REPO_ROOT / "data/dense_compression/ids_600k.json"
@@ -213,20 +214,19 @@ def iter_slice(path: Path):
 
 
 def build_section_worker(root_str: str, section: str, hot_subs: list[str],
-                         keep_spool: bool, bmp_shard_docs: int) -> dict:
+                         keep_spool: bool) -> dict:
     """Traceback-logging wrapper: a task exception is otherwise invisible
     until the parent drains the pool (the 2026-06-12 med_bio failure sat
     silent for 40 min while its worker moved on to cs_math)."""
     try:
-        return _build_section(root_str, section, hot_subs, keep_spool,
-                              bmp_shard_docs)
+        return _build_section(root_str, section, hot_subs, keep_spool)
     except Exception:
         logger.exception("BUILD %s: worker failed", section)
         raise
 
 
 def _build_section(root_str: str, section: str, hot_subs: list[str],
-                   keep_spool: bool, bmp_shard_docs: int) -> dict:
+                   keep_spool: bool) -> dict:
     """Process-pool worker: builds one BASE section's spool into its two era
     sub-sections (sections/<base>__<era>/), with its OWN meta db
     (meta_<section>.sqlite, merged into meta.sqlite afterwards).
@@ -269,7 +269,6 @@ def _build_section(root_str: str, section: str, hot_subs: list[str],
             sub = f"{section}__{era}"
             b = builders[era] = SectionBuilder(
                 root, sub, hot=sub in hot_subs, meta_db=meta_db,
-                bmp_shard_docs=bmp_shard_docs,
                 resume_state=progress["eras"].get(era))
         return b
 
@@ -330,8 +329,7 @@ def merge_section_meta(root: Path, sections: list[str]) -> None:
 
 
 def phase_build(root: Path, status: dict, hot_sections: list[str],
-                keep_spool: bool, bmp_shard_docs: int,
-                build_workers: int) -> None:
+                keep_spool: bool, build_workers: int) -> None:
     spool_dir = root / "spool"
     todo = []
     for section in SECTION_NAMES:
@@ -354,7 +352,7 @@ def phase_build(root: Path, status: dict, hot_sections: list[str],
         with ProcessPoolExecutor(max_workers=build_workers,
                                  max_tasks_per_child=1) as pool:
             futs = {pool.submit(build_section_worker, str(root), s,
-                                hot_sections, keep_spool, bmp_shard_docs): s
+                                hot_sections, keep_spool): s
                     for s in todo}
             for fut in as_completed(futs):
                 section = futs[fut]
@@ -492,10 +490,8 @@ def write_manifest(root: Path, persona: str, hot_sections: list[str],
         "docs_exported": status["docs_exported"],
         "persona": persona,
         "hot_sections": hot_sections,
-        "splade_quant_scale": QUANT_SCALE,
         "engines": {"lexical": "tantivy 0.26 (BM25F title^3/abstract, freq-only)",
-                    "sparse": f"bmp 0.2.6 (8-bit block-max impacts, "
-                              f"bsize={BMP_BLOCK_SIZE}, clustered)",
+                    "sparse": "SEISMIC (built by spike/delta_ingest, not this script)",
                     "dense": "usearch b1 + int8 rescore (binary+rescore 32x)"},
     })
     for section in SUBSECTION_NAMES:
@@ -517,7 +513,6 @@ def main() -> None:
                         help="cap exported docs (validation builds)")
     parser.add_argument("--slices", type=int, default=8)
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--bmp-shard-docs", type=int, default=2_000_000)
     parser.add_argument("--build-workers", type=int, default=2,
                         help="parallel section builds (RAM-bound: ~6-8 GB each — "
                              "each worker runs TWO era builders; 3 workers "
@@ -548,8 +543,7 @@ def main() -> None:
                 root, args.persona, ",".join(hot), status["phase"])
 
     phase_export(root, status, args.slices, args.workers, args.limit)
-    phase_build(root, status, hot, args.keep_spool, args.bmp_shard_docs,
-                args.build_workers)
+    phase_build(root, status, hot, args.keep_spool, args.build_workers)
     if args.flat_sidecar:
         phase_flat_sidecar(root, status, args.flat_verify_ids,
                            args.flat_verify_blocks)

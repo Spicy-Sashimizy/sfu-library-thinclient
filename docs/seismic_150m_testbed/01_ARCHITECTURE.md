@@ -56,7 +56,7 @@ A category error worth stating once so it isn't re-attempted:
 - To get SEISMIC's geometry you would store SEISMIC's structures as *side files* in a
   tantivy segment and read **those**, bypassing tantivy's postings entirely. At that
   point tantivy is only an mmap `Directory` + segment lifecycle — you've **forked
-  SEISMIC onto tantivy's container**, i.e. you maintain a SEISMIC fork *and* a tantivy
+  SEISMIC onto tantivy's container**, that is, you maintain a SEISMIC fork *and* a tantivy
   integration. Double maintenance, for a substrate Lance gives you more cleanly.
 - **So Path C, if pursued, targets Lance (or a thin mmap file) as the container — not
   tantivy.** tantivy's job is the lexical leg, full stop.
@@ -105,7 +105,7 @@ compact format that **decoded per query** was 696 ms; the zero-decode
   layout constraint, not a likely wall** — but it is the make-or-break and must be a
   measured gate, not an assumption.
 - SEISMIC has **more surface for the wall than BMP did** (block summary *vectors*,
-  clustered blocks, truncated postings, forward vectors — vs BMP's simple POD pairs),
+  clustered blocks, truncated postings, forward vectors — versus BMP's simple POD pairs),
   so more structures must be laid out zero-decode, and the spike is the proof that
   getting it wrong costs ~27×.
 
@@ -164,7 +164,7 @@ measurement, not a guess → see G3, which now breaks RssAnon into forward-vs-in
 **Still gated by R-OWN + R-OBSOLETE.** Substrate-on-SEISMIC means forking SEISMIC's
 storage layer (a fork + the mmap layout + per-arch wheels, tracking upstream forever, G9),
 and the ECIR-2025 authors' own future work names "indexes that cannot fit in main
-memory" — they may ship on-disk SEISMIC first. **Re-check the repo for a native
+memory" — they may ship on-disk SEISMIC first. **Re-check the repository for a native
 on-disk mode before building Path C** (`04`/`05`).
 
 ## RAM model (why this can work where Qdrant can't)

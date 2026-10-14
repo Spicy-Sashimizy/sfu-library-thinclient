@@ -93,7 +93,7 @@ def download_part(entry: dict, parts_dir: Path) -> Path:
 
 def run_cli(args: list[str], log_path: Path) -> tuple[int, float, str]:
     env = dict(os.environ)
-    env["PYTHONPATH"] = str(REPO / "src") + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    env["PYTHONPATH"] = str(REPO / "source") + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
     cmd = [sys.executable, "-m", "spike.delta_ingest.cli", *args]
     log("$ " + " ".join(cmd))
     t0 = time.perf_counter()

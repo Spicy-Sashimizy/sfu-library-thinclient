@@ -1,0 +1,6232 @@
+{
+ "probe": "oci_demo_payload_manifest",
+ "generated_utc": "2026-10-12",
+ "repo_root": "/workspaces/sfu-library-thinclient",
+ "partial": false,
+ "options": {
+  "hash": false,
+  "include_dense": false,
+  "sqlite_free_abstracts": false
+ },
+ "served_shard_manifest": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+ "components": [
+  {
+   "name": "seismic_served_shards",
+   "note": "the 8 e5.v2 dotvbyte mmap shards named by the served manifest — the SPLADE/SEISMIC leg",
+   "files": 96,
+   "bytes": 44407492999,
+   "gb": 44.407
+  },
+  {
+   "name": "seismic_shard_manifest",
+   "note": "the served shard-set manifest itself (the pointer the retriever's promotion default resolves to)",
+   "files": 1,
+   "bytes": 7509,
+   "gb": 0.0
+  },
+  {
+   "name": "thinclient_meta",
+   "note": "meta.sqlite (filter + hydrate) + the index manifests",
+   "files": 3,
+   "bytes": 24908009121,
+   "gb": 24.908
+  },
+  {
+   "name": "thinclient_sections",
+   "note": "tantivy BM25F (10 sections) + the hot-section abstract sidecar (social_sciences__recent: abstracts.sqlite and/or the N5 flat block store abstracts.sqlite.flat/)",
+   "files": 383,
+   "bytes": 56126811564,
+   "gb": 56.127
+  },
+  {
+   "name": "models_serve_path",
+   "note": "SPLADE ONNX query encoder + dense v5 query encoder (shared with the embed-rerank stage, so it ships even with the dense leg dropped) + the cross-encoder reranker",
+   "files": 33,
+   "bytes": 873246127,
+   "gb": 0.873
+  },
+  {
+   "name": "seismic_portable_so",
+   "note": "WI-4's x86-64-v3 portable .so — runs on E4/E5 Flex with no recompile (an A1/ARM box needs an aarch64 build first)",
+   "files": 3,
+   "bytes": 5400886,
+   "gb": 0.005
+  },
+  {
+   "name": "code",
+   "note": "the serve path (src/), the GUI (web/) and the operational scripts (scripts/)",
+   "files": 507,
+   "bytes": 10295393,
+   "gb": 0.01
+  }
+ ],
+ "missing_paths": [],
+ "totals": {
+  "files": 1026,
+  "bytes": 126331263599,
+  "gb": 126.331,
+  "gib": 117.655
+ },
+ "files": [
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783733392024098000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150394584,
+   "mtime_ns": 1783733391971743500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206749517,
+   "mtime_ns": 1783733391307388200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3853883944,
+   "mtime_ns": 1783733357201631500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114834,
+   "mtime_ns": 1783733392044442900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150394584,
+   "mtime_ns": 1783733306777392100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3177984,
+   "mtime_ns": 1783996363537470900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1158556,
+   "mtime_ns": 1783996362655635100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2324850,
+   "mtime_ns": 1783996363076041300,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21878891,
+   "mtime_ns": 1783733392185917100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159211728,
+   "mtime_ns": 1783733387398215100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard0of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 645849,
+   "mtime_ns": 1783733392038933700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783976397015071800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150497944,
+   "mtime_ns": 1783976396965946500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206891778,
+   "mtime_ns": 1783976396024476500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3855726808,
+   "mtime_ns": 1783976350805443500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114926,
+   "mtime_ns": 1783976397061277500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150497944,
+   "mtime_ns": 1783976256224477800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3236034,
+   "mtime_ns": 1783996364759358400,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1158817,
+   "mtime_ns": 1783996363962270900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2359114,
+   "mtime_ns": 1783996364256331600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21895908,
+   "mtime_ns": 1783976397236819100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159877512,
+   "mtime_ns": 1783976390152365800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard1of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 646336,
+   "mtime_ns": 1783976397045021700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783976396867490100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150377824,
+   "mtime_ns": 1783976396815265100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206726411,
+   "mtime_ns": 1783976395859522400,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3851578696,
+   "mtime_ns": 1783976350907828400,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114882,
+   "mtime_ns": 1783976396915049700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150377824,
+   "mtime_ns": 1783976256325643100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3248011,
+   "mtime_ns": 1783996366097078800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1170055,
+   "mtime_ns": 1783996365318756000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2358573,
+   "mtime_ns": 1783996365604242300,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21887765,
+   "mtime_ns": 1783976397072818900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159232672,
+   "mtime_ns": 1783976390038022000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard2of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 646076,
+   "mtime_ns": 1783976396898415100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783974747547455000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150411592,
+   "mtime_ns": 1783974747501689900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206773029,
+   "mtime_ns": 1783974746869517700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3853548088,
+   "mtime_ns": 1783974716029340400,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114826,
+   "mtime_ns": 1783974747568671000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150411592,
+   "mtime_ns": 1783974667836068700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3207230,
+   "mtime_ns": 1783996367402969000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1176046,
+   "mtime_ns": 1783996366516881200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2390767,
+   "mtime_ns": 1783996367046544600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21877467,
+   "mtime_ns": 1783974747702344400,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159278088,
+   "mtime_ns": 1783974743044919500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard3of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 645797,
+   "mtime_ns": 1783974747562642100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783975563780881600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150460896,
+   "mtime_ns": 1783975563734858000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206840827,
+   "mtime_ns": 1783975563107968600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3858406400,
+   "mtime_ns": 1783975532023172700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114862,
+   "mtime_ns": 1783975563800978600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150460896,
+   "mtime_ns": 1783975483165498200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3214824,
+   "mtime_ns": 1783996368690841500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1166753,
+   "mtime_ns": 1783996367958623800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2324822,
+   "mtime_ns": 1783996368220957800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21883843,
+   "mtime_ns": 1783975563930609900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159368552,
+   "mtime_ns": 1783975559234003900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard4of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 645993,
+   "mtime_ns": 1783975563794979100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783976589938977200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150409736,
+   "mtime_ns": 1783976589891845500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206770046,
+   "mtime_ns": 1783976589226288800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3855107304,
+   "mtime_ns": 1783976548290873200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114902,
+   "mtime_ns": 1783976589968129200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150409736,
+   "mtime_ns": 1783976479524556600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3213476,
+   "mtime_ns": 1783996370042519900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1148221,
+   "mtime_ns": 1783996369140092600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2279438,
+   "mtime_ns": 1783996369548897100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21891309,
+   "mtime_ns": 1783976590138306800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159664172,
+   "mtime_ns": 1783976584787374100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard5of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 646185,
+   "mtime_ns": 1783976589958782500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783976591376716000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150374696,
+   "mtime_ns": 1783976591328289100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206722512,
+   "mtime_ns": 1783976590582702800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3852130048,
+   "mtime_ns": 1783976551293466600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114854,
+   "mtime_ns": 1783976591402453900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150374696,
+   "mtime_ns": 1783976482178757100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3217647,
+   "mtime_ns": 1783996371191839200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1139853,
+   "mtime_ns": 1783996370447777800,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2300192,
+   "mtime_ns": 1783996370723968500,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21882375,
+   "mtime_ns": 1783976591543193100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159417072,
+   "mtime_ns": 1783976586301756300,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard6of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 645943,
+   "mtime_ns": 1783976591394455200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/config.json",
+   "bytes": 312,
+   "mtime_ns": 1783976591888054700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/document_mapping_offsets.bin",
+   "bytes": 150377576,
+   "mtime_ns": 1783976591837560000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/document_mapping_strings.bin",
+   "bytes": 206726437,
+   "mtime_ns": 1783976591149122700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/forward_data.bin",
+   "bytes": 3856131520,
+   "mtime_ns": 1783976550561964600,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/forward_encoder.bin",
+   "bytes": 114874,
+   "mtime_ns": 1783976591918180100,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/forward_offsets.bin",
+   "bytes": 150377576,
+   "mtime_ns": 1783976481753273200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_full_touched.json",
+   "bytes": 3190542,
+   "mtime_ns": 1783996372487576000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_hot50_1.6gb.json",
+   "bytes": 1142547,
+   "mtime_ns": 1783996371739499700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/hotset_hot80_4.2gb.json",
+   "bytes": 2278703,
+   "mtime_ns": 1783996372018182200,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/manifest.json",
+   "bytes": 21886693,
+   "mtime_ns": 1783976592077579000,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/posting_lists.bin",
+   "bytes": 1159363176,
+   "mtime_ns": 1783976586983532900,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/seismic_150m/index/plan01/global_shard7of8.dotvbyte.e5.v2.mmap/token_to_id_map.bin",
+   "bytes": 646025,
+   "mtime_ns": 1783976591907229700,
+   "component": "seismic_served_shards"
+  },
+  {
+   "path": "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json",
+   "bytes": 7509,
+   "mtime_ns": 1783979432892325000,
+   "component": "seismic_shard_manifest"
+  },
+  {
+   "path": "data/thinclient_index/meta.sqlite",
+   "bytes": 24908001280,
+   "mtime_ns": 1781573592207934800,
+   "component": "thinclient_meta"
+  },
+  {
+   "path": "data/thinclient_index/manifest.json",
+   "bytes": 3690,
+   "mtime_ns": 1781591561453320700,
+   "component": "thinclient_meta"
+  },
+  {
+   "path": "data/thinclient_index/build_status.json",
+   "bytes": 4151,
+   "mtime_ns": 1781578821418295800,
+   "component": "thinclient_meta"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/.managed.json",
+   "bytes": 258,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295752000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295752000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.fast",
+   "bytes": 182,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.fieldnorm",
+   "bytes": 1930241,
+   "mtime_ns": 1781399747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.idx",
+   "bytes": 63487291,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.pos",
+   "bytes": 969457,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.store",
+   "bytes": 6386053,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/85ddd9bdc9ac40dd8f17472ea2ce15bd.term",
+   "bytes": 17356135,
+   "mtime_ns": 1781399753000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__archive/tantivy/meta.json",
+   "bytes": 1670,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/.managed.json",
+   "bytes": 1478,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295752000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295752000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.fast",
+   "bytes": 3000963,
+   "mtime_ns": 1781335257000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.fieldnorm",
+   "bytes": 22237007,
+   "mtime_ns": 1781335188000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.idx",
+   "bytes": 852972169,
+   "mtime_ns": 1781335257000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.pos",
+   "bytes": 11163488,
+   "mtime_ns": 1781335257000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.store",
+   "bytes": 75639238,
+   "mtime_ns": 1781335257000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/3249dd8c84554549895d8fcc24cbfe81.term",
+   "bytes": 114510337,
+   "mtime_ns": 1781335257000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.fast",
+   "bytes": 3380,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.fieldnorm",
+   "bytes": 24298,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.idx",
+   "bytes": 1320593,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.pos",
+   "bytes": 12821,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.store",
+   "bytes": 80382,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/95a8a7ea958b487cb838703098c1fe5c.term",
+   "bytes": 785350,
+   "mtime_ns": 1781394222000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.fast",
+   "bytes": 2766711,
+   "mtime_ns": 1781300304000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.fieldnorm",
+   "bytes": 20549096,
+   "mtime_ns": 1781300238000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.idx",
+   "bytes": 778127778,
+   "mtime_ns": 1781300304000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.pos",
+   "bytes": 10316146,
+   "mtime_ns": 1781300304000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.store",
+   "bytes": 69882875,
+   "mtime_ns": 1781300304000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/a8a1e79428164507873be91f5e6c1b53.term",
+   "bytes": 106265372,
+   "mtime_ns": 1781300304000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.fast",
+   "bytes": 3009399,
+   "mtime_ns": 1781388916000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.fieldnorm",
+   "bytes": 22321840,
+   "mtime_ns": 1781388849000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.idx",
+   "bytes": 855807291,
+   "mtime_ns": 1781388916000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.pos",
+   "bytes": 11205776,
+   "mtime_ns": 1781388916000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.store",
+   "bytes": 75912155,
+   "mtime_ns": 1781388916000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/d914c8cf285942518293237b491842d0.term",
+   "bytes": 114593361,
+   "mtime_ns": 1781388916000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.fast",
+   "bytes": 231291,
+   "mtime_ns": 1781399739000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.fieldnorm",
+   "bytes": 1718801,
+   "mtime_ns": 1781399731000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.idx",
+   "bytes": 78216869,
+   "mtime_ns": 1781399739000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.pos",
+   "bytes": 863973,
+   "mtime_ns": 1781399739000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.store",
+   "bytes": 5852776,
+   "mtime_ns": 1781399739000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e5dcb9b909e645368b9fcc478cfb16a1.term",
+   "bytes": 20142521,
+   "mtime_ns": 1781399739000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.fast",
+   "bytes": 2999127,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.fieldnorm",
+   "bytes": 22266776,
+   "mtime_ns": 1781399731000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.idx",
+   "bytes": 853671357,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.pos",
+   "bytes": 11178319,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.store",
+   "bytes": 75735088,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/e98e72676e3d4ceb8b3fb611e73efd7b.term",
+   "bytes": 114410557,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/cs_math__recent/tantivy/meta.json",
+   "bytes": 2274,
+   "mtime_ns": 1781399796000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/.managed.json",
+   "bytes": 258,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781301928000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781301928000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.fast",
+   "bytes": 182,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.fieldnorm",
+   "bytes": 598333,
+   "mtime_ns": 1781329549000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.idx",
+   "bytes": 33962109,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.pos",
+   "bytes": 300981,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.store",
+   "bytes": 2013302,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/5a401e496e204712b724792bcfeac7e9.term",
+   "bytes": 10948323,
+   "mtime_ns": 1781329553000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__archive/tantivy/meta.json",
+   "bytes": 1670,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/.managed.json",
+   "bytes": 2698,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781301928000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781301928000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.fast",
+   "bytes": 3138438,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.fieldnorm",
+   "bytes": 23251692,
+   "mtime_ns": 1781329540000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.idx",
+   "bytes": 1164326099,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.pos",
+   "bytes": 11672537,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.store",
+   "bytes": 80067482,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2557a1a0e182475d9a74e15eec041185.term",
+   "bytes": 124655120,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.fast",
+   "bytes": 201,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.fieldnorm",
+   "bytes": 338,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.idx",
+   "bytes": 14214,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.pos",
+   "bytes": 304,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.store",
+   "bytes": 889,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/2bf3b7bb5f36429b802faeb447e6fa21.term",
+   "bytes": 36225,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.fast",
+   "bytes": 3143386,
+   "mtime_ns": 1781314316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.fieldnorm",
+   "bytes": 23276803,
+   "mtime_ns": 1781314228000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.idx",
+   "bytes": 1164646010,
+   "mtime_ns": 1781314316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.pos",
+   "bytes": 11685529,
+   "mtime_ns": 1781314316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.store",
+   "bytes": 80147815,
+   "mtime_ns": 1781314316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/3e480e947f9e4911990ea055becf8a5a.term",
+   "bytes": 124648248,
+   "mtime_ns": 1781314316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.fast",
+   "bytes": 420,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.fieldnorm",
+   "bytes": 2025,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.idx",
+   "bytes": 137202,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.pos",
+   "bytes": 1320,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.store",
+   "bytes": 6379,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/48620405fe50418e8317a3a4487bafe0.term",
+   "bytes": 168831,
+   "mtime_ns": 1781310793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.fast",
+   "bytes": 198,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.fieldnorm",
+   "bytes": 307,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.idx",
+   "bytes": 13216,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.pos",
+   "bytes": 281,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.store",
+   "bytes": 793,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/51ff9dd86c1b437ba2d842ae6fb77525.term",
+   "bytes": 33950,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.fast",
+   "bytes": 1021,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.fieldnorm",
+   "bytes": 6838,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.idx",
+   "bytes": 407992,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.pos",
+   "bytes": 3917,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.store",
+   "bytes": 21859,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/756ca47dcf36448fb80fb3b4f103c5ea.term",
+   "bytes": 340211,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.fast",
+   "bytes": 197181,
+   "mtime_ns": 1781329547000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.fieldnorm",
+   "bytes": 1576112,
+   "mtime_ns": 1781329540000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.idx",
+   "bytes": 89289651,
+   "mtime_ns": 1781329547000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.pos",
+   "bytes": 792390,
+   "mtime_ns": 1781329547000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.store",
+   "bytes": 5455343,
+   "mtime_ns": 1781329547000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/9626ace386d74abf8a3802f37cfee9a8.term",
+   "bytes": 19035290,
+   "mtime_ns": 1781329547000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.fast",
+   "bytes": 3145720,
+   "mtime_ns": 1781321497000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.fieldnorm",
+   "bytes": 23283472,
+   "mtime_ns": 1781321413000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.idx",
+   "bytes": 1165141321,
+   "mtime_ns": 1781321497000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.pos",
+   "bytes": 11688371,
+   "mtime_ns": 1781321497000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.store",
+   "bytes": 80180328,
+   "mtime_ns": 1781321497000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/b01b32de79384afcb8aea434760d1769.term",
+   "bytes": 124780192,
+   "mtime_ns": 1781321497000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.fast",
+   "bytes": 408,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.fieldnorm",
+   "bytes": 1930,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.idx",
+   "bytes": 132243,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.pos",
+   "bytes": 1248,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.store",
+   "bytes": 6112,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/c28f635231164961bc6a94d1f169624f.term",
+   "bytes": 161551,
+   "mtime_ns": 1781325378000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.fast",
+   "bytes": 230,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.fieldnorm",
+   "bytes": 518,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.idx",
+   "bytes": 27756,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.pos",
+   "bytes": 440,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.store",
+   "bytes": 1483,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/d77fe29472dc42158868dacc3925a96e.term",
+   "bytes": 56534,
+   "mtime_ns": 1781317700000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.fast",
+   "bytes": 2931541,
+   "mtime_ns": 1781307379000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.fieldnorm",
+   "bytes": 21720683,
+   "mtime_ns": 1781307296000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.idx",
+   "bytes": 1079056966,
+   "mtime_ns": 1781307379000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.pos",
+   "bytes": 10904135,
+   "mtime_ns": 1781307379000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.store",
+   "bytes": 74768343,
+   "mtime_ns": 1781307379000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/e1a0a0cd6cc049c2a64502cf78053802.term",
+   "bytes": 116902689,
+   "mtime_ns": 1781307379000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/med_bio__recent/tantivy/meta.json",
+   "bytes": 2856,
+   "mtime_ns": 1781329619000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/.managed.json",
+   "bytes": 502,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.fast",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.fieldnorm",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.idx",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.pos",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.store",
+   "bytes": 123,
+   "mtime_ns": 1781295463000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/1a454d5ae6ad46b49b1c94f9d440eb27.term",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.fast",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.fieldnorm",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.idx",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.pos",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.store",
+   "bytes": 123,
+   "mtime_ns": 1781295463000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/3d16775a6d0a4bb2b08545be14845bdb.term",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.fast",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.fieldnorm",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.idx",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.pos",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.store",
+   "bytes": 123,
+   "mtime_ns": 1781295463000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/9931b5bc4e6d4deeb1d8fe2c8666b9eb.term",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.fast",
+   "bytes": 182,
+   "mtime_ns": 1781477979000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.fieldnorm",
+   "bytes": 950545,
+   "mtime_ns": 1781477973000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.idx",
+   "bytes": 33507278,
+   "mtime_ns": 1781477979000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.pos",
+   "bytes": 477762,
+   "mtime_ns": 1781477979000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.store",
+   "bytes": 3160649,
+   "mtime_ns": 1781477979000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/a0e577d77bcd4378bd469c3cc219641d.term",
+   "bytes": 20904643,
+   "mtime_ns": 1781477979000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.fast",
+   "bytes": 182,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.fieldnorm",
+   "bytes": 10681019,
+   "mtime_ns": 1781477972000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.idx",
+   "bytes": 356204649,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.pos",
+   "bytes": 5362116,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.store",
+   "bytes": 35509217,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/cacbce184eda4320963219936ad3d801.term",
+   "bytes": 160740082,
+   "mtime_ns": 1781478021000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.fast",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.fieldnorm",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.idx",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.pos",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.store",
+   "bytes": 123,
+   "mtime_ns": 1781295463000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/ebfec803ebab47e0867bc2d8a5349c0f.term",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.fast",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.fieldnorm",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.idx",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.pos",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.store",
+   "bytes": 123,
+   "mtime_ns": 1781295463000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/f9085773028844ea9267510e957caffa.term",
+   "bytes": 0,
+   "mtime_ns": 1781295461000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__archive/tantivy/meta.json",
+   "bytes": 1792,
+   "mtime_ns": 1781478344000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/.managed.json",
+   "bytes": 2942,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.fast",
+   "bytes": 14483983,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.fieldnorm",
+   "bytes": 109138188,
+   "mtime_ns": 1781478024000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.idx",
+   "bytes": 3701435310,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.pos",
+   "bytes": 54783676,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.store",
+   "bytes": 365812443,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/050ae841233a4054b721cb6ebb263485.term",
+   "bytes": 634567098,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.fast",
+   "bytes": 9921,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.fieldnorm",
+   "bytes": 78037,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.idx",
+   "bytes": 4400238,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.pos",
+   "bytes": 39660,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.store",
+   "bytes": 261752,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/25c0e4428b9f40adb86a619ee6dd4020.term",
+   "bytes": 4340376,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.fast",
+   "bytes": 10866,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.fieldnorm",
+   "bytes": 85597,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.idx",
+   "bytes": 4863599,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.pos",
+   "bytes": 43428,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.store",
+   "bytes": 287290,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/2f917b0d8ff44d849971a0526594c361.term",
+   "bytes": 4682612,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.fast",
+   "bytes": 16688,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.fieldnorm",
+   "bytes": 132157,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.idx",
+   "bytes": 6406370,
+   "mtime_ns": 1781308794000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.pos",
+   "bytes": 67173,
+   "mtime_ns": 1781308794000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.store",
+   "bytes": 430583,
+   "mtime_ns": 1781308794000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/486be628771c459ab41728c42b3dccf3.term",
+   "bytes": 5477765,
+   "mtime_ns": 1781308794000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.fast",
+   "bytes": 94313,
+   "mtime_ns": 1781398142000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.fieldnorm",
+   "bytes": 710961,
+   "mtime_ns": 1781398136000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.idx",
+   "bytes": 38438992,
+   "mtime_ns": 1781398142000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.pos",
+   "bytes": 357770,
+   "mtime_ns": 1781398142000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.store",
+   "bytes": 2384250,
+   "mtime_ns": 1781398142000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6117422f681c4dfba307eacb95290bdd.term",
+   "bytes": 19895402,
+   "mtime_ns": 1781398142000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.fast",
+   "bytes": 14380586,
+   "mtime_ns": 1781324315000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.fieldnorm",
+   "bytes": 108349600,
+   "mtime_ns": 1781323978000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.idx",
+   "bytes": 3663371285,
+   "mtime_ns": 1781324315000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.pos",
+   "bytes": 54387815,
+   "mtime_ns": 1781324315000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.store",
+   "bytes": 363200188,
+   "mtime_ns": 1781324316000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6832dc13cd0c410082c5bdffe1fbb639.term",
+   "bytes": 630253885,
+   "mtime_ns": 1781324315000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.fast",
+   "bytes": 94766,
+   "mtime_ns": 1781477956000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.fieldnorm",
+   "bytes": 717505,
+   "mtime_ns": 1781477950000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.idx",
+   "bytes": 38476206,
+   "mtime_ns": 1781477956000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.pos",
+   "bytes": 361155,
+   "mtime_ns": 1781477956000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.store",
+   "bytes": 2400884,
+   "mtime_ns": 1781477956000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/6b224e024f6d4493a92608ff3a335518.term",
+   "bytes": 20025191,
+   "mtime_ns": 1781477956000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.fast",
+   "bytes": 11989,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.fieldnorm",
+   "bytes": 94573,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.idx",
+   "bytes": 5388997,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.pos",
+   "bytes": 48127,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.store",
+   "bytes": 317471,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c829393dee3246e4abc5f1dfaecc4063.term",
+   "bytes": 5009713,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.fast",
+   "bytes": 11270,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.fieldnorm",
+   "bytes": 88821,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.idx",
+   "bytes": 5057911,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.pos",
+   "bytes": 45208,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.store",
+   "bytes": 298033,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/c95108d47ac342f78e69ae5d591894f7.term",
+   "bytes": 4795873,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.fast",
+   "bytes": 11281,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.fieldnorm",
+   "bytes": 88908,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.idx",
+   "bytes": 5022030,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.pos",
+   "bytes": 45274,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.store",
+   "bytes": 298148,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/f050ad4fafd249099a42b9f0ae1c286f.term",
+   "bytes": 4750301,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.fast",
+   "bytes": 10865,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.fieldnorm",
+   "bytes": 85580,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.idx",
+   "bytes": 4795894,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.pos",
+   "bytes": 43540,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.store",
+   "bytes": 287061,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/fe055b2c5ecd4441978b1f0cf7649cb0.term",
+   "bytes": 4624643,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.fast",
+   "bytes": 10213,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.fieldnorm",
+   "bytes": 80368,
+   "mtime_ns": 1781308792000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.idx",
+   "bytes": 4496773,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.pos",
+   "bytes": 40777,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.store",
+   "bytes": 269689,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/ff375f4d011f48ca9fa94284bf884e78.term",
+   "bytes": 4382103,
+   "mtime_ns": 1781308793000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/other__recent/tantivy/meta.json",
+   "bytes": 2988,
+   "mtime_ns": 1781478343000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/.managed.json",
+   "bytes": 258,
+   "mtime_ns": 1781495841000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781399798000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781399798000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.fast",
+   "bytes": 182,
+   "mtime_ns": 1781495840000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.fieldnorm",
+   "bytes": 657633,
+   "mtime_ns": 1781495837000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.idx",
+   "bytes": 31620671,
+   "mtime_ns": 1781495840000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.pos",
+   "bytes": 330848,
+   "mtime_ns": 1781495841000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.store",
+   "bytes": 2207352,
+   "mtime_ns": 1781495841000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/3541c007c49044ab9ac91ef3d672f783.term",
+   "bytes": 9215823,
+   "mtime_ns": 1781495840000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__archive/tantivy/meta.json",
+   "bytes": 1670,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/.managed.json",
+   "bytes": 2210,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781399798000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781399798000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.fast",
+   "bytes": 1893972,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.fieldnorm",
+   "bytes": 14204008,
+   "mtime_ns": 1781495839000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.idx",
+   "bytes": 466454372,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.pos",
+   "bytes": 7130984,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.store",
+   "bytes": 47975428,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/016a72764c114a108ac3d42c5975a5e1.term",
+   "bytes": 66270061,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.fast",
+   "bytes": 3648717,
+   "mtime_ns": 1781409747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.fieldnorm",
+   "bytes": 27679248,
+   "mtime_ns": 1781409684000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.idx",
+   "bytes": 851704875,
+   "mtime_ns": 1781409747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.pos",
+   "bytes": 13895030,
+   "mtime_ns": 1781409747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.store",
+   "bytes": 92698204,
+   "mtime_ns": 1781409747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/44ff53a4197b426ca9f9e29ba2478ab5.term",
+   "bytes": 104278595,
+   "mtime_ns": 1781409747000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.fast",
+   "bytes": 453461,
+   "mtime_ns": 1781487921000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.fieldnorm",
+   "bytes": 3626345,
+   "mtime_ns": 1781487913000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.idx",
+   "bytes": 97132786,
+   "mtime_ns": 1781487921000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.pos",
+   "bytes": 1821300,
+   "mtime_ns": 1781487921000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.store",
+   "bytes": 12060617,
+   "mtime_ns": 1781487921000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/48acd4edb0c24ccf9fd281aa73c5f4c6.term",
+   "bytes": 20076979,
+   "mtime_ns": 1781487921000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.fast",
+   "bytes": 379709,
+   "mtime_ns": 1781495100000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.fieldnorm",
+   "bytes": 3036325,
+   "mtime_ns": 1781495092000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.idx",
+   "bytes": 96780649,
+   "mtime_ns": 1781495100000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.pos",
+   "bytes": 1525215,
+   "mtime_ns": 1781495100000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.store",
+   "bytes": 10213938,
+   "mtime_ns": 1781495100000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5739afa017df489b929d5c047a5478f2.term",
+   "bytes": 19650937,
+   "mtime_ns": 1781495100000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.fast",
+   "bytes": 354011,
+   "mtime_ns": 1781490361000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.fieldnorm",
+   "bytes": 2830745,
+   "mtime_ns": 1781490353000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.idx",
+   "bytes": 94680755,
+   "mtime_ns": 1781490361000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.pos",
+   "bytes": 1421705,
+   "mtime_ns": 1781490361000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.store",
+   "bytes": 9352080,
+   "mtime_ns": 1781490361000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/5a351dab7108443d88baefd510abe103.term",
+   "bytes": 20390394,
+   "mtime_ns": 1781490361000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.fast",
+   "bytes": 3482103,
+   "mtime_ns": 1781486622000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.fieldnorm",
+   "bytes": 27855467,
+   "mtime_ns": 1781486559000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.idx",
+   "bytes": 851735346,
+   "mtime_ns": 1781486622000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.pos",
+   "bytes": 13983256,
+   "mtime_ns": 1781486622000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.store",
+   "bytes": 93339377,
+   "mtime_ns": 1781486622000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/ab964be8f5354b338850da41d7468b73.term",
+   "bytes": 103782317,
+   "mtime_ns": 1781486622000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.fast",
+   "bytes": 414845,
+   "mtime_ns": 1781492578000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.fieldnorm",
+   "bytes": 3139345,
+   "mtime_ns": 1781492570000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.idx",
+   "bytes": 96676743,
+   "mtime_ns": 1781492578000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.pos",
+   "bytes": 1577208,
+   "mtime_ns": 1781492579000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.store",
+   "bytes": 10597420,
+   "mtime_ns": 1781492579000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/b95552e6cc9a41a4b359205c266e5630.term",
+   "bytes": 19890252,
+   "mtime_ns": 1781492578000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.fast",
+   "bytes": 341113,
+   "mtime_ns": 1781489166000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.fieldnorm",
+   "bytes": 2727556,
+   "mtime_ns": 1781489158000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.idx",
+   "bytes": 97014533,
+   "mtime_ns": 1781489166000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.pos",
+   "bytes": 1370221,
+   "mtime_ns": 1781489166000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.store",
+   "bytes": 9325471,
+   "mtime_ns": 1781489166000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/c56f568e77be42de8c806e6b2c0891a5.term",
+   "bytes": 19989969,
+   "mtime_ns": 1781489166000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.fast",
+   "bytes": 393659,
+   "mtime_ns": 1781493874000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.fieldnorm",
+   "bytes": 3147925,
+   "mtime_ns": 1781493866000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.idx",
+   "bytes": 94766630,
+   "mtime_ns": 1781493874000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.pos",
+   "bytes": 1581357,
+   "mtime_ns": 1781493874000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.store",
+   "bytes": 10443672,
+   "mtime_ns": 1781493874000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/f6dddd136c6643c99e70813dc47bf97b.term",
+   "bytes": 19856016,
+   "mtime_ns": 1781493874000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/phys_eng__recent/tantivy/meta.json",
+   "bytes": 2635,
+   "mtime_ns": 1781495871000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/.managed.json",
+   "bytes": 258,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295459000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.fast",
+   "bytes": 182,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.fieldnorm",
+   "bytes": 3112207,
+   "mtime_ns": 1781487936000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.idx",
+   "bytes": 184473887,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.pos",
+   "bytes": 1563074,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.store",
+   "bytes": 10268268,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/5c2b0774153c49c185e58b0ede8e1ef0.term",
+   "bytes": 40707335,
+   "mtime_ns": 1781487953000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__archive/tantivy/meta.json",
+   "bytes": 1670,
+   "mtime_ns": 1781493866000000000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite",
+   "bytes": 13470433280,
+   "mtime_ns": 1781493865675739600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/block_dictids.npy",
+   "bytes": 1517135,
+   "mtime_ns": 1786929174829642400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/block_lengths.npy",
+   "bytes": 6068156,
+   "mtime_ns": 1786929174819611900,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/block_offsets.npy",
+   "bytes": 12136184,
+   "mtime_ns": 1786929174789463900,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/blocks.bin",
+   "bytes": 11131511857,
+   "mtime_ns": 1786929174731407900,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/dicts.json",
+   "bytes": 379,
+   "mtime_ns": 1786929174932086100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/flat_store.json",
+   "bytes": 367,
+   "mtime_ns": 1786929174837652700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/loc_b.npy",
+   "bytes": 93592420,
+   "mtime_ns": 1786929306328178200,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/loc_n.npy",
+   "bytes": 93592420,
+   "mtime_ns": 1786929306932221800,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/loc_off.npy",
+   "bytes": 46796274,
+   "mtime_ns": 1786929306522997600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/loc_wids.npy",
+   "bytes": 187184712,
+   "mtime_ns": 1786929305938488300,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/locator.json",
+   "bytes": 662,
+   "mtime_ns": 1786929306949065000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_arabic",
+   "bytes": 114688,
+   "mtime_ns": 1786929174904556800,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_cyrillic",
+   "bytes": 114688,
+   "mtime_ns": 1786929174885522500,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_greek",
+   "bytes": 114688,
+   "mtime_ns": 1786929174924085100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_han",
+   "bytes": 114688,
+   "mtime_ns": 1786929174914088300,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_hangul",
+   "bytes": 114688,
+   "mtime_ns": 1786929174895526400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_kana",
+   "bytes": 114688,
+   "mtime_ns": 1786929174927084500,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat/zdict_latin",
+   "bytes": 114688,
+   "mtime_ns": 1786929174876851600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/.managed.json",
+   "bytes": 1234,
+   "mtime_ns": 1781488011830600700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/.tantivy-meta.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295458840800600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/.tantivy-writer.lock",
+   "bytes": 0,
+   "mtime_ns": 1781295458846939600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.fast",
+   "bytes": 3034857,
+   "mtime_ns": 1781488011630265300,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.fieldnorm",
+   "bytes": 22487160,
+   "mtime_ns": 1781487919781042000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.idx",
+   "bytes": 1315659913,
+   "mtime_ns": 1781488011646807100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.pos",
+   "bytes": 11289004,
+   "mtime_ns": 1781488011755947800,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.store",
+   "bytes": 78237084,
+   "mtime_ns": 1781488011757949800,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/9dc52803c8de4e7fa1a901bda5adc21b.term",
+   "bytes": 138003714,
+   "mtime_ns": 1781488011632777700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.fast",
+   "bytes": 3038367,
+   "mtime_ns": 1781405854360400100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.fieldnorm",
+   "bytes": 22502740,
+   "mtime_ns": 1781405764112400000,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.idx",
+   "bytes": 1316390158,
+   "mtime_ns": 1781405854374674400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.pos",
+   "bytes": 11296878,
+   "mtime_ns": 1781405854463055700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.store",
+   "bytes": 78297353,
+   "mtime_ns": 1781405854465568200,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/c4923f0ebe7b402faf39613aaa2014c1.term",
+   "bytes": 137434826,
+   "mtime_ns": 1781405854362906700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.fast",
+   "bytes": 475021,
+   "mtime_ns": 1781487940064684500,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.fieldnorm",
+   "bytes": 3609216,
+   "mtime_ns": 1781487922721899400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.idx",
+   "bytes": 217562262,
+   "mtime_ns": 1781487940073711100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.pos",
+   "bytes": 1813029,
+   "mtime_ns": 1781487940085724400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.store",
+   "bytes": 11883961,
+   "mtime_ns": 1781487940089737100,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/de2c574e1a574f96aa67c95f5133bf6c.term",
+   "bytes": 34366466,
+   "mtime_ns": 1781487940066182300,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.fast",
+   "bytes": 3034006,
+   "mtime_ns": 1781310099471447400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.fieldnorm",
+   "bytes": 22500032,
+   "mtime_ns": 1781309998367735200,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.idx",
+   "bytes": 1316252285,
+   "mtime_ns": 1781310099486506700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.pos",
+   "bytes": 11295229,
+   "mtime_ns": 1781310099537100200,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.store",
+   "bytes": 78283576,
+   "mtime_ns": 1781310099539101300,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/e6eb93fd89fc4438a8511697925caf0a.term",
+   "bytes": 137838802,
+   "mtime_ns": 1781310099473903500,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.fast",
+   "bytes": 3033095,
+   "mtime_ns": 1781327415141121200,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.fieldnorm",
+   "bytes": 22493800,
+   "mtime_ns": 1781327317839321700,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.idx",
+   "bytes": 1315838099,
+   "mtime_ns": 1781327415173243900,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.pos",
+   "bytes": 11292333,
+   "mtime_ns": 1781327415340166500,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.store",
+   "bytes": 78266750,
+   "mtime_ns": 1781327415342681600,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/f486eceda17443258e302bf994d22cd1.term",
+   "bytes": 137808623,
+   "mtime_ns": 1781327415144121400,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "data/thinclient_index/sections/social_sciences__recent/tantivy/meta.json",
+   "bytes": 2156,
+   "mtime_ns": 1781488011782517800,
+   "component": "thinclient_sections"
+  },
+  {
+   "path": "models/splade_onnx_fused/.export_complete",
+   "bytes": 141,
+   "mtime_ns": 1783559078766401900,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/splade_onnx_fused/config.json",
+   "bytes": 618,
+   "mtime_ns": 1779653455000000000,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/splade_onnx_fused/model.onnx",
+   "bytes": 531854623,
+   "mtime_ns": 1783559078708524200,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/README.md",
+   "bytes": 94783,
+   "mtime_ns": 1779600140077538100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/config.json",
+   "bytes": 655,
+   "mtime_ns": 1779600139062526400,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/config_sentence_transformers.json",
+   "bytes": 283,
+   "mtime_ns": 1779600139045974800,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/model.safetensors",
+   "bytes": 133462128,
+   "mtime_ns": 1779600140026409500,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/modules.json",
+   "bytes": 429,
+   "mtime_ns": 1779600140072515000,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/sentence_bert_config.json",
+   "bytes": 241,
+   "mtime_ns": 1779600140060492900,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/special_tokens_map.json",
+   "bytes": 695,
+   "mtime_ns": 1779600140039537100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/tokenizer.json",
+   "bytes": 711781,
+   "mtime_ns": 1779600140058484500,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/tokenizer_config.json",
+   "bytes": 1540,
+   "mtime_ns": 1779600140037025800,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/vocab.txt",
+   "bytes": 231508,
+   "mtime_ns": 1779600140048453100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-academic-embed-v5/1_Pooling/config.json",
+   "bytes": 89,
+   "mtime_ns": 1779600140067001200,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/README.md",
+   "bytes": 4207,
+   "mtime_ns": 1779594791106030800,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/config.json",
+   "bytes": 709,
+   "mtime_ns": 1779594790302353400,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/config_sentence_transformers.json",
+   "bytes": 258,
+   "mtime_ns": 1779594790287000900,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/model.safetensors",
+   "bytes": 90866412,
+   "mtime_ns": 1779594790917166200,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/modules.json",
+   "bytes": 131,
+   "mtime_ns": 1779594790956859600,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/sentence_bert_config.json",
+   "bytes": 225,
+   "mtime_ns": 1779594790954856500,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/special_tokens_map.json",
+   "bytes": 695,
+   "mtime_ns": 1779594790933699900,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/tokenizer.json",
+   "bytes": 711649,
+   "mtime_ns": 1779594790951779100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/tokenizer_config.json",
+   "bytes": 1272,
+   "mtime_ns": 1779594790930706200,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1/vocab.txt",
+   "bytes": 231508,
+   "mtime_ns": 1779594790942245100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/config.json",
+   "bytes": 709,
+   "mtime_ns": 1781837966961833700,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/model.onnx",
+   "bytes": 90964640,
+   "mtime_ns": 1781837963296797300,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/model_quantized.onnx",
+   "bytes": 23156854,
+   "mtime_ns": 1781837966938227800,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/ort_config.json",
+   "bytes": 763,
+   "mtime_ns": 1781837966950237100,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/special_tokens_map.json",
+   "bytes": 695,
+   "mtime_ns": 1781837967296388700,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/tokenizer.json",
+   "bytes": 711649,
+   "mtime_ns": 1781837967324899300,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/tokenizer_config.json",
+   "bytes": 1463,
+   "mtime_ns": 1781837967289732500,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/sfu-cross-encoder-v1-onnx-int8/vocab.txt",
+   "bytes": 231508,
+   "mtime_ns": 1781837967308684200,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "models/model_registry.json",
+   "bytes": 1266,
+   "mtime_ns": 1791768249750083300,
+   "component": "models_serve_path"
+  },
+  {
+   "path": "spike/seismic_upstream/target/portable_so/v3/seismic/__init__.py",
+   "bytes": 310,
+   "mtime_ns": 1784244811213453200,
+   "component": "seismic_portable_so"
+  },
+  {
+   "path": "spike/seismic_upstream/target/portable_so/v3/seismic/seismic.cpython-311-x86_64-linux-gnu.so",
+   "bytes": 2700288,
+   "mtime_ns": 1784244811207449400,
+   "component": "seismic_portable_so"
+  },
+  {
+   "path": "spike/seismic_upstream/target/portable_so/seismic_x86_64_v3.so",
+   "bytes": 2700288,
+   "mtime_ns": 1784244780710292800,
+   "component": "seismic_portable_so"
+  },
+  {
+   "path": "src/README.md",
+   "bytes": 1618,
+   "mtime_ns": 1791838708929379000,
+   "component": "code"
+  },
+  {
+   "path": "src/sfu_library_mcp_http.py",
+   "bytes": 25997,
+   "mtime_ns": 1791646534662960000,
+   "component": "code"
+  },
+  {
+   "path": "src/sfu_library_mcp_server.py",
+   "bytes": 1208,
+   "mtime_ns": 1791646534658426500,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/README.md",
+   "bytes": 3717,
+   "mtime_ns": 1791771100589875000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/__init__.py",
+   "bytes": 0,
+   "mtime_ns": 1773192732302778200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/access_resolver.py",
+   "bytes": 4687,
+   "mtime_ns": 1791646534677643000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/analytics.py",
+   "bytes": 12615,
+   "mtime_ns": 1791837073693602000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/cache.py",
+   "bytes": 3077,
+   "mtime_ns": 1791763443277923600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/citations.py",
+   "bytes": 1761,
+   "mtime_ns": 1791836404564754100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/config.py",
+   "bytes": 8485,
+   "mtime_ns": 1791768218343570200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/embedding.py",
+   "bytes": 5491,
+   "mtime_ns": 1791763538649207600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/engagement.py",
+   "bytes": 5726,
+   "mtime_ns": 1791837292405817300,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/federated_search.py",
+   "bytes": 11571,
+   "mtime_ns": 1791763803221480900,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/formatters.py",
+   "bytes": 5024,
+   "mtime_ns": 1791763412976603900,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/hf_load_lock.py",
+   "bytes": 683,
+   "mtime_ns": 1784336519502872200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/logging_setup.py",
+   "bytes": 1840,
+   "mtime_ns": 1791646534667786400,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/model_registry.py",
+   "bytes": 1443,
+   "mtime_ns": 1791768241127250900,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/openalex.py",
+   "bytes": 19169,
+   "mtime_ns": 1791836533183976000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/opensearch_retriever.py",
+   "bytes": 7582,
+   "mtime_ns": 1791768271253683100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/reranker.py",
+   "bytes": 17839,
+   "mtime_ns": 1791768230793432500,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/result_cache.py",
+   "bytes": 12791,
+   "mtime_ns": 1791616021838347600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/retry.py",
+   "bytes": 2272,
+   "mtime_ns": 1791763504500049600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/semantic_scholar.py",
+   "bytes": 6734,
+   "mtime_ns": 1791761333828555600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/serve_query_log.py",
+   "bytes": 15602,
+   "mtime_ns": 1791836315135584700,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/sfu_databases.py",
+   "bytes": 8406,
+   "mtime_ns": 1791615880188036200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/speculation.py",
+   "bytes": 21542,
+   "mtime_ns": 1791616021831904400,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/speculative_rerank.py",
+   "bytes": 17867,
+   "mtime_ns": 1791763770190096700,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/tools.py",
+   "bytes": 71208,
+   "mtime_ns": 1791836381919406400,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/validators.py",
+   "bytes": 2115,
+   "mtime_ns": 1791763426248387100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/zotero.py",
+   "bytes": 23312,
+   "mtime_ns": 1791836396733061100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/CLAUDE.md",
+   "bytes": 2789,
+   "mtime_ns": 1791836525462203400,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/__init__.py",
+   "bytes": 379,
+   "mtime_ns": 1791761367932466700,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/abstracts.py",
+   "bytes": 40267,
+   "mtime_ns": 1791763844082954800,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/builder.py",
+   "bytes": 9120,
+   "mtime_ns": 1791769548211531400,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/delta_layer.py",
+   "bytes": 23540,
+   "mtime_ns": 1790874033931332700,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/dense_cache.py",
+   "bytes": 15561,
+   "mtime_ns": 1790295470221570500,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/dense_delta_merge.py",
+   "bytes": 10286,
+   "mtime_ns": 1790294810580468000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/doc_encoder.py",
+   "bytes": 13539,
+   "mtime_ns": 1790868598383303200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/livedocs.py",
+   "bytes": 5198,
+   "mtime_ns": 1790661190852881100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/oa_overlay.py",
+   "bytes": 7676,
+   "mtime_ns": 1790868718187710900,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/ordinals.py",
+   "bytes": 9632,
+   "mtime_ns": 1788232457490490100,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/packer.py",
+   "bytes": 7256,
+   "mtime_ns": 1788232457497001000,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/retriever.py",
+   "bytes": 68101,
+   "mtime_ns": 1791836320452430200,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/sections.py",
+   "bytes": 3255,
+   "mtime_ns": 1791763816192427600,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/seismic_backend.py",
+   "bytes": 4556,
+   "mtime_ns": 1791616063925628800,
+   "component": "code"
+  },
+  {
+   "path": "src/lib/thinclient/sharded_seismic_backend.py",
+   "bytes": 79024,
+   "mtime_ns": 1791761379516815700,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/__init__.py",
+   "bytes": 0,
+   "mtime_ns": 1773192732338015700,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/manual_smoke_mcp_tools.py",
+   "bytes": 935,
+   "mtime_ns": 1791646564875546800,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_cache.py",
+   "bytes": 2849,
+   "mtime_ns": 1791763443280923600,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_client_unit.py",
+   "bytes": 3625,
+   "mtime_ns": 1791761313702609800,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_config.py",
+   "bytes": 4071,
+   "mtime_ns": 1791761313694081400,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_daily_call_tracker.py",
+   "bytes": 4479,
+   "mtime_ns": 1788232457650069300,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_embedding.py",
+   "bytes": 5974,
+   "mtime_ns": 1791763656832024100,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_engagement_gui.py",
+   "bytes": 9653,
+   "mtime_ns": 1791837073681595900,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_federated_search.py",
+   "bytes": 13350,
+   "mtime_ns": 1791763792853168700,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_lambdamart.py",
+   "bytes": 3270,
+   "mtime_ns": 1791768249724051900,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_logging.py",
+   "bytes": 4153,
+   "mtime_ns": 1788232457695796000,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_metrics_log.py",
+   "bytes": 9501,
+   "mtime_ns": 1791836422750733300,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_openalex_client.py",
+   "bytes": 13496,
+   "mtime_ns": 1790319380168588600,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_query_encoders.py",
+   "bytes": 2146,
+   "mtime_ns": 1791768305582500300,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_reranker.py",
+   "bytes": 18120,
+   "mtime_ns": 1791763656827517900,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_reranker_onnx_ce.py",
+   "bytes": 6109,
+   "mtime_ns": 1790299461117454600,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_result_cache.py",
+   "bytes": 18051,
+   "mtime_ns": 1790661116956058900,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_retry.py",
+   "bytes": 1334,
+   "mtime_ns": 1791763510883302000,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_search_draft_stream.py",
+   "bytes": 9463,
+   "mtime_ns": 1790315977708626900,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_semantic_scholar_client.py",
+   "bytes": 6010,
+   "mtime_ns": 1788232457776449500,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_speculation.py",
+   "bytes": 17180,
+   "mtime_ns": 1791767601261998300,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_speculative_rerank.py",
+   "bytes": 22557,
+   "mtime_ns": 1791763770204948500,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_thinclient.py",
+   "bytes": 21015,
+   "mtime_ns": 1791836334258576600,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_tools_export_misc.py",
+   "bytes": 891,
+   "mtime_ns": 1791836655604830600,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_tools_federated.py",
+   "bytes": 4511,
+   "mtime_ns": 1788232457802975200,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_tools_rerank.py",
+   "bytes": 8835,
+   "mtime_ns": 1790321739136343500,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_tools_unit.py",
+   "bytes": 13928,
+   "mtime_ns": 1791836438395121800,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_validators.py",
+   "bytes": 2534,
+   "mtime_ns": 1791763432038391000,
+   "component": "code"
+  },
+  {
+   "path": "src/tests/test_zotero.py",
+   "bytes": 18898,
+   "mtime_ns": 1791763471104268600,
+   "component": "code"
+  },
+  {
+   "path": "web/CLAUDE.md",
+   "bytes": 1599,
+   "mtime_ns": 1791837373091281900,
+   "component": "code"
+  },
+  {
+   "path": "web/README.md",
+   "bytes": 5702,
+   "mtime_ns": 1791837373087281300,
+   "component": "code"
+  },
+  {
+   "path": "web/analytics.html",
+   "bytes": 3420,
+   "mtime_ns": 1791836989091686300,
+   "component": "code"
+  },
+  {
+   "path": "web/analytics.js",
+   "bytes": 81961,
+   "mtime_ns": 1791837636870011800,
+   "component": "code"
+  },
+  {
+   "path": "web/index_manager.html",
+   "bytes": 3430,
+   "mtime_ns": 1791836989099238400,
+   "component": "code"
+  },
+  {
+   "path": "web/index_manager.js",
+   "bytes": 97579,
+   "mtime_ns": 1791837636973680000,
+   "component": "code"
+  },
+  {
+   "path": "web/search.html",
+   "bytes": 3390,
+   "mtime_ns": 1791836989106241900,
+   "component": "code"
+  },
+  {
+   "path": "web/search.js",
+   "bytes": 174327,
+   "mtime_ns": 1791837636780770600,
+   "component": "code"
+  },
+  {
+   "path": "web/suite.html",
+   "bytes": 11671,
+   "mtime_ns": 1791836989114757000,
+   "component": "code"
+  },
+  {
+   "path": "web/lib/api.js",
+   "bytes": 24578,
+   "mtime_ns": 1791836636020295300,
+   "component": "code"
+  },
+  {
+   "path": "web/lib/base.css",
+   "bytes": 2969,
+   "mtime_ns": 1791646754157777100,
+   "component": "code"
+  },
+  {
+   "path": "web/lib/interface_prefs.js",
+   "bytes": 1984,
+   "mtime_ns": 1788232915579314700,
+   "component": "code"
+  },
+  {
+   "path": "web/lib/mock.js",
+   "bytes": 9563,
+   "mtime_ns": 1791836814559722300,
+   "component": "code"
+  },
+  {
+   "path": "web/lib/ui.js",
+   "bytes": 2183,
+   "mtime_ns": 1791761803758125700,
+   "component": "code"
+  },
+  {
+   "path": "web/src/_sidebar.jsx",
+   "bytes": 24090,
+   "mtime_ns": 1788232915500523800,
+   "component": "code"
+  },
+  {
+   "path": "web/src/analytics.jsx",
+   "bytes": 38356,
+   "mtime_ns": 1791837304170858000,
+   "component": "code"
+  },
+  {
+   "path": "web/src/index_manager.jsx",
+   "bytes": 49944,
+   "mtime_ns": 1791646846935118100,
+   "component": "code"
+  },
+  {
+   "path": "web/src/search.jsx",
+   "bytes": 119750,
+   "mtime_ns": 1791836654835284000,
+   "component": "code"
+  },
+  {
+   "path": "web/vendor/babel.min.js",
+   "bytes": 3137752,
+   "mtime_ns": 1781840384227512100,
+   "component": "code"
+  },
+  {
+   "path": "web/vendor/react-dom.production.min.js",
+   "bytes": 131835,
+   "mtime_ns": 1781840383740568000,
+   "component": "code"
+  },
+  {
+   "path": "web/vendor/react.production.min.js",
+   "bytes": 10751,
+   "mtime_ns": 1781840383629510200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/CLAUDE.md",
+   "bytes": 1828,
+   "mtime_ns": 1791756767216518400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/README.md",
+   "bytes": 4898,
+   "mtime_ns": 1791768642536572300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/build_flat_blocks.py",
+   "bytes": 31201,
+   "mtime_ns": 1788232456802958000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/build_thinclient_index.py",
+   "bytes": 24072,
+   "mtime_ns": 1791769579427654100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/build_web.mjs",
+   "bytes": 2483,
+   "mtime_ns": 1788232457869205700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/e2e_sweep.mjs",
+   "bytes": 19412,
+   "mtime_ns": 1791646754183779100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/eval_thinclient_parity.py",
+   "bytes": 17357,
+   "mtime_ns": 1791769785892895600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/prime_result_cache.py",
+   "bytes": 8083,
+   "mtime_ns": 1788232457167449700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/run_parity_safe.sh",
+   "bytes": 2531,
+   "mtime_ns": 1788232457171953700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/serve_http.sh",
+   "bytes": 233,
+   "mtime_ns": 1788232457174963800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/setup_cloudflare_mcp.sh",
+   "bytes": 3182,
+   "mtime_ns": 1788232457178963700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/snapshot_downloader.py",
+   "bytes": 36325,
+   "mtime_ns": 1791668332355994500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/stage_seismic_local.sh",
+   "bytes": 764,
+   "mtime_ns": 1788232457190523700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/sweep_interaction_log.txt",
+   "bytes": 10448,
+   "mtime_ns": 1784338038530464000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/sweep_stray_tantivy_files.py",
+   "bytes": 2127,
+   "mtime_ns": 1781305548168678500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/verify_web_jsdom.mjs",
+   "bytes": 50591,
+   "mtime_ns": 1791836936675584500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/verify_web_progress.mjs",
+   "bytes": 10855,
+   "mtime_ns": 1788232457967892600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/bmp_ingest_watchdog.sh",
+   "bytes": 4358,
+   "mtime_ns": 1791836455975768600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/eval_block_prefetch.py",
+   "bytes": 14769,
+   "mtime_ns": 1790382273746136700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/migration-150m.supervisor.conf",
+   "bytes": 1699,
+   "mtime_ns": 1790299278898138200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/qdrant-offbmp.supervisor.conf",
+   "bytes": 3199,
+   "mtime_ns": 1790299278909356300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/qdrant-serve.supervisor.conf",
+   "bytes": 1865,
+   "mtime_ns": 1782343139739944400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/restart_at_build_phase.sh",
+   "bytes": 1553,
+   "mtime_ns": 1791756473995991200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/seed_demo_volume.sh",
+   "bytes": 5690,
+   "mtime_ns": 1791756024842042700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/spike_qdrant_sparse.py",
+   "bytes": 26348,
+   "mtime_ns": 1791836455996573600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/wait_and_resume_migration.sh",
+   "bytes": 1572,
+   "mtime_ns": 1791756474017508500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/bmp_era/eval_parity_section_waves.py",
+   "bytes": 15684,
+   "mtime_ns": 1791836455985711800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/bmp_era/test_build_resume.py",
+   "bytes": 9628,
+   "mtime_ns": 1791769637301999700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/__init__.py",
+   "bytes": 213,
+   "mtime_ns": 1791756473686233900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/check_ce_direction.py",
+   "bytes": 7250,
+   "mtime_ns": 1791756473728047500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/deploy_versions.py",
+   "bytes": 13966,
+   "mtime_ns": 1791756473735839500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/eval_ce_v1_vs_base.py",
+   "bytes": 7328,
+   "mtime_ns": 1791756473743838000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/leg_breaker.py",
+   "bytes": 12660,
+   "mtime_ns": 1791756473751837900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/load_driver.py",
+   "bytes": 11004,
+   "mtime_ns": 1791756473759837100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/portable_bundle_updater.py",
+   "bytes": 27153,
+   "mtime_ns": 1791756473767846000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/reliability_soak.sh",
+   "bytes": 11818,
+   "mtime_ns": 1791756473775845500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/staging_serve.py",
+   "bytes": 16372,
+   "mtime_ns": 1791756473782898500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/update_demo.sh",
+   "bytes": 13817,
+   "mtime_ns": 1791756473790907800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/watchdog.py",
+   "bytes": 12644,
+   "mtime_ns": 1791756473798907700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi10_shard_isolation.py",
+   "bytes": 16571,
+   "mtime_ns": 1791756473806417800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi11_overload.sh",
+   "bytes": 7963,
+   "mtime_ns": 1791756473814415700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi12_ext4_f6_recount.py",
+   "bytes": 2083,
+   "mtime_ns": 1791756473822417200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi3_induced_failure.sh",
+   "bytes": 2138,
+   "mtime_ns": 1791756473830415900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi6_warmup_recover.sh",
+   "bytes": 5769,
+   "mtime_ns": 1791756473838417300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi7_warm_capacity.sh",
+   "bytes": 4461,
+   "mtime_ns": 1791756473846423200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi8_portable_manifest.py",
+   "bytes": 14104,
+   "mtime_ns": 1791756473855393200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/demo_dependability/wi9_fault_injection.py",
+   "bytes": 9950,
+   "mtime_ns": 1791756473863237000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/.dockerignore",
+   "bytes": 740,
+   "mtime_ns": 1791761508099183700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/Dockerfile.prod",
+   "bytes": 2454,
+   "mtime_ns": 1791761508108258900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/README.md",
+   "bytes": 2404,
+   "mtime_ns": 1791761522202576800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/deploy-rsync.sh",
+   "bytes": 4274,
+   "mtime_ns": 1791761508135950400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/deploy.sh",
+   "bytes": 2805,
+   "mtime_ns": 1791761508127437900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/docker-compose.prod.yml",
+   "bytes": 2100,
+   "mtime_ns": 1791761508116178900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/health_check.py",
+   "bytes": 6091,
+   "mtime_ns": 1791761508216213000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/healthcheck.sh",
+   "bytes": 4933,
+   "mtime_ns": 1791761508163913300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/logs.sh",
+   "bytes": 2354,
+   "mtime_ns": 1791761508154090400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/mcp_http.supervisor.conf",
+   "bytes": 1654,
+   "mtime_ns": 1791761508172003100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/requirements.prod.txt",
+   "bytes": 391,
+   "mtime_ns": 1791761508180524700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/deploy_opensearch_era/update.sh",
+   "bytes": 2852,
+   "mtime_ns": 1791761508145366000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_a2b_read.py",
+   "bytes": 15248,
+   "mtime_ns": 1791756473874236500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_b1_parity.py",
+   "bytes": 16163,
+   "mtime_ns": 1791756473882236000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_bench.py",
+   "bytes": 55012,
+   "mtime_ns": 1791756473890240000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_p1.py",
+   "bytes": 11869,
+   "mtime_ns": 1791756473898240500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_s0_1.py",
+   "bytes": 27205,
+   "mtime_ns": 1791756473906552300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_s0_2.py",
+   "bytes": 43237,
+   "mtime_ns": 1791756473915029300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_s0_3.py",
+   "bytes": 4002,
+   "mtime_ns": 1791756473923028100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_tail_read.py",
+   "bytes": 21701,
+   "mtime_ns": 1791756473931028400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/inplace_update/eval_inplace_w1_writeunit.py",
+   "bytes": 18248,
+   "mtime_ns": 1791756473938028000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/README.md",
+   "bytes": 1796,
+   "mtime_ns": 1791768642550730400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/benchmark_splade_optimizations.py",
+   "bytes": 44598,
+   "mtime_ns": 1791756134800333800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/benchmark_topic_export.py",
+   "bytes": 21579,
+   "mtime_ns": 1791756134806333000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/eval_splade_finetune_subset.py",
+   "bytes": 17261,
+   "mtime_ns": 1791756134812336100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/opensearch_retriever.py",
+   "bytes": 11367,
+   "mtime_ns": 1791768271256683700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/prune_topk_experiment.py",
+   "bytes": 11636,
+   "mtime_ns": 1791756134819109600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/opensearch_era/test_opensearch_retriever.py",
+   "bytes": 8156,
+   "mtime_ns": 1791768305589508800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/qdrant_uint8_sparse/eval_qdrant_uint8_sparse_small.py",
+   "bytes": 25744,
+   "mtime_ns": 1791756134766821200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/qdrant_uint8_sparse/test_qdrant_uint8_sparse.py",
+   "bytes": 8936,
+   "mtime_ns": 1791756134782335900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/archive/smallmachine_levers/sml_host_orchestrator.sh",
+   "bytes": 10252,
+   "mtime_ns": 1791756134841590800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/README.md",
+   "bytes": 22648,
+   "mtime_ns": 1791761534533388200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/app.py",
+   "bytes": 35046,
+   "mtime_ns": 1791320447140539200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/architecture_page.py",
+   "bytes": 65051,
+   "mtime_ns": 1791647064440847100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/build_demo_payload_manifest.py",
+   "bytes": 17418,
+   "mtime_ns": 1791836451138531800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/cloud.py",
+   "bytes": 1762,
+   "mtime_ns": 1791320392040148900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/config.py",
+   "bytes": 9512,
+   "mtime_ns": 1791316844261628300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/demo.env",
+   "bytes": 2248,
+   "mtime_ns": 1787303740356972800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/demo.env.example",
+   "bytes": 3431,
+   "mtime_ns": 1791668321987870900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/dial.py",
+   "bytes": 7815,
+   "mtime_ns": 1791320392056662200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/do_client.py",
+   "bytes": 3925,
+   "mtime_ns": 1788232456859850100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/mint_invite.py",
+   "bytes": 1959,
+   "mtime_ns": 1781838880886340200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/notify.py",
+   "bytes": 3166,
+   "mtime_ns": 1791647064446985800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/oci_client.py",
+   "bytes": 12048,
+   "mtime_ns": 1791320392083935100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/rebuild_serve_instance.py",
+   "bytes": 12812,
+   "mtime_ns": 1791316451995235600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/rebuild_trigger.sh",
+   "bytes": 1131,
+   "mtime_ns": 1791315242056048000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/scheduler.py",
+   "bytes": 5298,
+   "mtime_ns": 1791316844274626800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/seed_oci_volume.sh",
+   "bytes": 4122,
+   "mtime_ns": 1791756134748817600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/state.py",
+   "bytes": 6672,
+   "mtime_ns": 1791316844287694300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/tenants.py",
+   "bytes": 7273,
+   "mtime_ns": 1788232456895287100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_app.py",
+   "bytes": 7935,
+   "mtime_ns": 1791320392101651300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_dial.py",
+   "bytes": 7067,
+   "mtime_ns": 1791320392093234100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_oci_client.py",
+   "bytes": 15787,
+   "mtime_ns": 1791668311195346800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_scheduler.py",
+   "bytes": 7596,
+   "mtime_ns": 1791320392063661800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_state.py",
+   "bytes": 3182,
+   "mtime_ns": 1791320392109650400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_tenants.py",
+   "bytes": 5005,
+   "mtime_ns": 1791647064452856700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/test_watchdog.py",
+   "bytes": 3703,
+   "mtime_ns": 1788777378664788400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/watchdog.py",
+   "bytes": 6065,
+   "mtime_ns": 1791615517206279700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/ntfy/README.md",
+   "bytes": 4080,
+   "mtime_ns": 1791761534539472000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/ntfy/config.example.env",
+   "bytes": 350,
+   "mtime_ns": 1779670660173752800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/ntfy/docker-compose.yml",
+   "bytes": 1430,
+   "mtime_ns": 1791668330274260800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-broker.service",
+   "bytes": 1188,
+   "mtime_ns": 1791647064464530800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-rebuild-trigger.service",
+   "bytes": 462,
+   "mtime_ns": 1791647064481226900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-rebuild-trigger.timer",
+   "bytes": 211,
+   "mtime_ns": 1791315242066049100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-serve.service",
+   "bytes": 1628,
+   "mtime_ns": 1791647064469562200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-watchdog.service",
+   "bytes": 783,
+   "mtime_ns": 1791647064474621500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/demo_broker/systemd/sfu-watchdog.timer",
+   "bytes": 173,
+   "mtime_ns": 1788777378672745000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/arxiv_fetcher.py",
+   "bytes": 11545,
+   "mtime_ns": 1791668332318486000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/bench_dense_delta_index.py",
+   "bytes": 7306,
+   "mtime_ns": 1790295429433303200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/benchmark_embeddings.py",
+   "bytes": 12989,
+   "mtime_ns": 1791668332323001300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/benchmark_llm_judge.py",
+   "bytes": 33123,
+   "mtime_ns": 1791668332329002000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/benchmark_splade.py",
+   "bytes": 15844,
+   "mtime_ns": 1778366097388030000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/build_presentation_metrics.py",
+   "bytes": 30536,
+   "mtime_ns": 1791756025319916900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/ce_batch_invariance_check.py",
+   "bytes": 14619,
+   "mtime_ns": 1790319787631437500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/delta_ingest_foldin_del_fixture.py",
+   "bytes": 10758,
+   "mtime_ns": 1791575485170323700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/delta_ingest_m4f_p2_fixture.py",
+   "bytes": 8065,
+   "mtime_ns": 1790868881005102800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/dense_ablation_analysis.py",
+   "bytes": 9453,
+   "mtime_ns": 1787081848060820100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/dense_ablation_queryset.py",
+   "bytes": 63870,
+   "mtime_ns": 1791668332340019700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/dense_indexer_poc.py",
+   "bytes": 13297,
+   "mtime_ns": 1779607128435960300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/dense_pool_contamination.py",
+   "bytes": 6029,
+   "mtime_ns": 1786927795893633300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_compare.py",
+   "bytes": 7716,
+   "mtime_ns": 1791615441304506400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_cpu_only_serve_path.py",
+   "bytes": 23061,
+   "mtime_ns": 1790477470599556400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_cross_encoder.py",
+   "bytes": 14055,
+   "mtime_ns": 1779595080327741900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin.py",
+   "bytes": 54755,
+   "mtime_ns": 1791577781715111700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_f0.py",
+   "bytes": 27687,
+   "mtime_ns": 1791421998398193100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_f3f8.py",
+   "bytes": 41306,
+   "mtime_ns": 1791424232355240700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_f5.py",
+   "bytes": 49371,
+   "mtime_ns": 1791522145703499500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_f6.py",
+   "bytes": 10645,
+   "mtime_ns": 1791575536706232300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_f7.py",
+   "bytes": 6743,
+   "mtime_ns": 1791575280187151500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_foldin_gates.py",
+   "bytes": 13107,
+   "mtime_ns": 1790874275503955200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_livedocs_bitset.py",
+   "bytes": 24328,
+   "mtime_ns": 1790889430039160800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m1_2pass.py",
+   "bytes": 28247,
+   "mtime_ns": 1790828089600293300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m1_gate_off_parity.py",
+   "bytes": 22090,
+   "mtime_ns": 1790665914843075000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m1_o19_diag.py",
+   "bytes": 1350,
+   "mtime_ns": 1790834747563090300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m2_delta_recall.py",
+   "bytes": 53121,
+   "mtime_ns": 1790870157892787900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m3_bm25f_drift.py",
+   "bytes": 52189,
+   "mtime_ns": 1790868892936302500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m3_fulln_stitch.py",
+   "bytes": 8457,
+   "mtime_ns": 1790868784268889800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m4_read_amp.py",
+   "bytes": 90169,
+   "mtime_ns": 1790868670340507700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m4f.py",
+   "bytes": 44932,
+   "mtime_ns": 1790869092798162200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m5_reload.py",
+   "bytes": 18229,
+   "mtime_ns": 1790672662427011100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m6_throughput.py",
+   "bytes": 18625,
+   "mtime_ns": 1790868705866971600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m7_churn_filter.py",
+   "bytes": 20075,
+   "mtime_ns": 1790661216471618700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m7_seed.py",
+   "bytes": 21893,
+   "mtime_ns": 1790791697130524000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_m8_sidecar_ratio.py",
+   "bytes": 28410,
+   "mtime_ns": 1790791320019769600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o10_rust_livedocs.py",
+   "bytes": 20121,
+   "mtime_ns": 1790893069572232100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o14_base_reuse.py",
+   "bytes": 11116,
+   "mtime_ns": 1790829192764187900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o14_reuse_saving.py",
+   "bytes": 20870,
+   "mtime_ns": 1790871639607987300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o17_bitmap_check.py",
+   "bytes": 3073,
+   "mtime_ns": 1790895682053914500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o17_ingest_seed.py",
+   "bytes": 5289,
+   "mtime_ns": 1790869573470910900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py",
+   "bytes": 21420,
+   "mtime_ns": 1790896046195826100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o19_case_parse.py",
+   "bytes": 12181,
+   "mtime_ns": 1790871696758200100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_o7_streaming.py",
+   "bytes": 9792,
+   "mtime_ns": 1790828019072071700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_p2_multisection.py",
+   "bytes": 30337,
+   "mtime_ns": 1791084177849723800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_trigger.py",
+   "bytes": 14377,
+   "mtime_ns": 1791420719105185600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_twin_drift_baseline.py",
+   "bytes": 29158,
+   "mtime_ns": 1790873126438369900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_delta_ingest_twin_rebuild.py",
+   "bytes": 21809,
+   "mtime_ns": 1790664054349171200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_dense_compression.py",
+   "bytes": 24134,
+   "mtime_ns": 1791768332885160300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_dense_poc.py",
+   "bytes": 13651,
+   "mtime_ns": 1791768332889164400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_embedder.py",
+   "bytes": 15408,
+   "mtime_ns": 1779599993680979500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_fixed_shape_parity.py",
+   "bytes": 16463,
+   "mtime_ns": 1790370925576553900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_hydrate_once_ab.py",
+   "bytes": 14249,
+   "mtime_ns": 1790475842882162700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_lexical_lossless.py",
+   "bytes": 16636,
+   "mtime_ns": 1791768332893162300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_ordinals_cliff.py",
+   "bytes": 17979,
+   "mtime_ns": 1790303841937499300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_ordinals_cliff_capture.py",
+   "bytes": 5050,
+   "mtime_ns": 1790303143857205000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_per_language_dicts.py",
+   "bytes": 11353,
+   "mtime_ns": 1781207904910882000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_pipeline.py",
+   "bytes": 30017,
+   "mtime_ns": 1791768332897161100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_quant_fidelity.py",
+   "bytes": 21214,
+   "mtime_ns": 1784271477129231500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_result_cache_ab.py",
+   "bytes": 10562,
+   "mtime_ns": 1791615546878318800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_result_cache_parity.py",
+   "bytes": 6721,
+   "mtime_ns": 1791615546904649500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_sectioned_index.py",
+   "bytes": 20495,
+   "mtime_ns": 1791768332900164600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_speculation_ab.py",
+   "bytes": 46258,
+   "mtime_ns": 1791615546949789000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_speculative_multipass_ab.py",
+   "bytes": 12016,
+   "mtime_ns": 1790375590217777600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_storage_levers.py",
+   "bytes": 19793,
+   "mtime_ns": 1781162947836055800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_text_compression.py",
+   "bytes": 26745,
+   "mtime_ns": 1781159919348409600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/eval_warmcache_replay.py",
+   "bytes": 27986,
+   "mtime_ns": 1790299990725505700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/evaluate_sfu_queries.py",
+   "bytes": 39556,
+   "mtime_ns": 1791668332345868600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/export_ce_onnx_int8.py",
+   "bytes": 7496,
+   "mtime_ns": 1790299165884996300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/export_dense_encoder_onnx_int8.py",
+   "bytes": 11409,
+   "mtime_ns": 1790295712677137000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/kimi_vs_haiku_rebake.py",
+   "bytes": 11976,
+   "mtime_ns": 1791756134846601300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/make_diverse_queries.py",
+   "bytes": 6580,
+   "mtime_ns": 1779607383794086700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/mcp_followup_trace_analysis.py",
+   "bytes": 13371,
+   "mtime_ns": 1790316046801951800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/ndcg_splade_eval.py",
+   "bytes": 15276,
+   "mtime_ns": 1791668332351203600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/probe_delta_ingest_fold_dump_mem.py",
+   "bytes": 2379,
+   "mtime_ns": 1791149036682496300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/speculation_acceptance_rate.py",
+   "bytes": 16783,
+   "mtime_ns": 1791768336769337000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/speculation_gap_from_serve_log.py",
+   "bytes": 3852,
+   "mtime_ns": 1790315268016496400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/speculation_gap_split.py",
+   "bytes": 6619,
+   "mtime_ns": 1790316155584846100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/experiments/thin_client_poc.py",
+   "bytes": 13838,
+   "mtime_ns": 1781217802085395300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/a11y_scan.mjs",
+   "bytes": 4307,
+   "mtime_ns": 1788232457890365400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/enum_sweep.mjs",
+   "bytes": 5446,
+   "mtime_ns": 1788232457898927500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/eval_speculation_playwright.mjs",
+   "bytes": 3740,
+   "mtime_ns": 1791756024784488700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/invariants.mjs",
+   "bytes": 109,
+   "mtime_ns": 1788232457904955500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/lib.mjs",
+   "bytes": 6653,
+   "mtime_ns": 1791761934398183100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/model_walk.mjs",
+   "bytes": 8737,
+   "mtime_ns": 1788232457919939600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/monkey.mjs",
+   "bytes": 6497,
+   "mtime_ns": 1788232457927500700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/regression_seeds.json",
+   "bytes": 108,
+   "mtime_ns": 1784315311705522600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/resize_sweep.mjs",
+   "bytes": 5264,
+   "mtime_ns": 1788232457934018700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/run_all.mjs",
+   "bytes": 5003,
+   "mtime_ns": 1788232457941019200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/static_server.mjs",
+   "bytes": 2521,
+   "mtime_ns": 1788232457946189400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/stop_server.mjs",
+   "bytes": 678,
+   "mtime_ns": 1788232457952699900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/vendor/axe.min.js",
+   "bytes": 553273,
+   "mtime_ns": 1784314916295762500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/gui_testbed/vendor/gremlins.min.js",
+   "bytes": 231277,
+   "mtime_ns": 1784312669062662300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/build_linux_runtime.sh",
+   "bytes": 7032,
+   "mtime_ns": 1790482874879951500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/bundle_check.py",
+   "bytes": 10524,
+   "mtime_ns": 1790481808470559400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/bundle_tool.py",
+   "bytes": 9825,
+   "mtime_ns": 1790476549608232400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/pins.conf",
+   "bytes": 1217,
+   "mtime_ns": 1790476057523162500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/serving_requirements_linux.in",
+   "bytes": 1123,
+   "mtime_ns": 1790476264021730900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_linux/serving_requirements_linux.lock.txt",
+   "bytes": 10241,
+   "mtime_ns": 1790476334317693800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/01_filter_meta.py",
+   "bytes": 2708,
+   "mtime_ns": 1785821611469309300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/02_assemble_data.py",
+   "bytes": 6353,
+   "mtime_ns": 1788232457124646700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/03_seismic_full.py",
+   "bytes": 7342,
+   "mtime_ns": 1788232457130533700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/04_verify_serve.py",
+   "bytes": 4653,
+   "mtime_ns": 1788232457136985700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/05_windows_stage.py",
+   "bytes": 4799,
+   "mtime_ns": 1788232457142756900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/06_windows_buildkit.py",
+   "bytes": 5003,
+   "mtime_ns": 1788232457149833000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/07_windows_installer.py",
+   "bytes": 2606,
+   "mtime_ns": 1788232457155933900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/README.md",
+   "bytes": 3653,
+   "mtime_ns": 1785876899556782100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/MOVE-BACK.bat",
+   "bytes": 995,
+   "mtime_ns": 1791647046583927700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/README.md",
+   "bytes": 5349,
+   "mtime_ns": 1790642262732816300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/SETUP.bat",
+   "bytes": 947,
+   "mtime_ns": 1791647046575908100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/START.bat",
+   "bytes": 4128,
+   "mtime_ns": 1791647046567404300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/build_windows_runtime.ps1",
+   "bytes": 5086,
+   "mtime_ns": 1791647046593924600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/install_wizard.ps1",
+   "bytes": 31226,
+   "mtime_ns": 1791647046557349500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/regen_seismic_manifest.py",
+   "bytes": 1886,
+   "mtime_ns": 1788232457161935100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/serving_requirements_win.txt",
+   "bytes": 1391,
+   "mtime_ns": 1785876733256166900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/portable_socsci/windows/space_assistant.ps1",
+   "bytes": 8790,
+   "mtime_ns": 1785917468938929700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/build_eval_results_index.py",
+   "bytes": 5400,
+   "mtime_ns": 1791616019074666300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/check_script_placement.py",
+   "bytes": 8302,
+   "mtime_ns": 1791756025360024100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/dead_code_allow.json",
+   "bytes": 633,
+   "mtime_ns": 1791770766970861600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/dead_code_guard.py",
+   "bytes": 6067,
+   "mtime_ns": 1791759124358555100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/install_git_hooks.sh",
+   "bytes": 1509,
+   "mtime_ns": 1791755645597444100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/preflight.py",
+   "bytes": 9793,
+   "mtime_ns": 1791762096843146600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/symbol_inventory.py",
+   "bytes": 5232,
+   "mtime_ns": 1791762096837548500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/triage_audit.py",
+   "bytes": 12912,
+   "mtime_ns": 1791760576680575700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/repo_tools/hooks/pre-commit",
+   "bytes": 1767,
+   "mtime_ns": 1791755645605378600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/reproduce/README.md",
+   "bytes": 1736,
+   "mtime_ns": 1791670322448084500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/reproduce/rebuild_from_openalex.py",
+   "bytes": 11950,
+   "mtime_ns": 1791669453407604900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/reproduce/verify_rebuild.py",
+   "bytes": 4672,
+   "mtime_ns": 1791668070032364700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/HOST_PROMPT_E5_FULLCORPUS_COLD.md",
+   "bytes": 8700,
+   "mtime_ns": 1791668630180440000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/HOST_PROMPT_E7B_RAMCAP.md",
+   "bytes": 6780,
+   "mtime_ns": 1784271363437918000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/HOST_PROMPT_E8_STAGE2_DVV2.md",
+   "bytes": 6184,
+   "mtime_ns": 1791761607198272400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/HOST_PROMPT_G8B_FULLCORPUS.md",
+   "bytes": 10481,
+   "mtime_ns": 1791668630249882900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/HOST_PROMPT_G8_LATENCY.md",
+   "bytes": 8377,
+   "mtime_ns": 1784271363456075300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/SESSION_PROMPT_M8_KERNEL.md",
+   "bytes": 4567,
+   "mtime_ns": 1784271363461684800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/SESSION_PROMPT_OPEN_QUEUE.md",
+   "bytes": 8714,
+   "mtime_ns": 1790300021678200100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/_e8s2_ab_compare.py",
+   "bytes": 3378,
+   "mtime_ns": 1784271363473685900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/_e8s2_build_v2_manifest.py",
+   "bytes": 2627,
+   "mtime_ns": 1784271363479682900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/_e8s2_drive_shard.sh",
+   "bytes": 2434,
+   "mtime_ns": 1784271363485687900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/_e8s2_federated_quality.py",
+   "bytes": 1758,
+   "mtime_ns": 1784271363491685800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/_e8s2_hybrid_rebench.py",
+   "bytes": 2861,
+   "mtime_ns": 1784271363497690400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/build_persona_seismic.py",
+   "bytes": 12514,
+   "mtime_ns": 1784271483508324800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/build_plan01_150m_shards.py",
+   "bytes": 21918,
+   "mtime_ns": 1784271363510005300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/c0_format_wall_summary_bench.py",
+   "bytes": 25974,
+   "mtime_ns": 1790299349964584200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/c25_mmap_serve_validate.py",
+   "bytes": 13492,
+   "mtime_ns": 1784271363522090400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/convert_shard_to_mmap.py",
+   "bytes": 14432,
+   "mtime_ns": 1784271363528093700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/d1_int8_query_encoder.py",
+   "bytes": 13578,
+   "mtime_ns": 1784271483252997400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/d2_ort_fusion_matrix.py",
+   "bytes": 13959,
+   "mtime_ns": 1784271363539092800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/d2b_fused_exact_gate.py",
+   "bytes": 4045,
+   "mtime_ns": 1784271363545195100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e1_kprime_df_sweep.py",
+   "bytes": 20549,
+   "mtime_ns": 1784271363552328600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e5_derive_order.py",
+   "bytes": 4131,
+   "mtime_ns": 1784271363558189400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e5_rollout.sh",
+   "bytes": 1201,
+   "mtime_ns": 1784271363563738300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e5_shard_gates.py",
+   "bytes": 11751,
+   "mtime_ns": 1784271363569740600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e5_validate_and_manifest.py",
+   "bytes": 5123,
+   "mtime_ns": 1784271363575739900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e6_forward_codec_proto.py",
+   "bytes": 22231,
+   "mtime_ns": 1784271363581737900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e6b_fixedu8_quality.py",
+   "bytes": 4101,
+   "mtime_ns": 1784271363587736100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e7_dotvbyte_gates.py",
+   "bytes": 11244,
+   "mtime_ns": 1784271363593734500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e7_straddle_analysis.py",
+   "bytes": 5247,
+   "mtime_ns": 1784271363599747900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e7b_ramcap_bench.py",
+   "bytes": 8123,
+   "mtime_ns": 1784271363605748400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e8_dvv2_gates.py",
+   "bytes": 9334,
+   "mtime_ns": 1784271363610748700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/e8_stage0_perdoc_scale.py",
+   "bytes": 4773,
+   "mtime_ns": 1790300021792590700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/eval_seismic_parity.py",
+   "bytes": 15269,
+   "mtime_ns": 1790298302290958800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/f1_hotset_generator.py",
+   "bytes": 13549,
+   "mtime_ns": 1784271363628330900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/f3_pin_ab.py",
+   "bytes": 8448,
+   "mtime_ns": 1786927992552188600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/f4_floor_mlock_smoke.py",
+   "bytes": 3749,
+   "mtime_ns": 1786927460615043700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/f5_t1_pin_parity.py",
+   "bytes": 2102,
+   "mtime_ns": 1784271363640327900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/f6_prefault_hotset_bench.py",
+   "bytes": 5862,
+   "mtime_ns": 1784271363645838700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g2_param_sweep.py",
+   "bytes": 33210,
+   "mtime_ns": 1784271363652839400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g6_rrf_parity.py",
+   "bytes": 17469,
+   "mtime_ns": 1784271363658841500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g6_rrf_parity_fullcorpus.py",
+   "bytes": 16549,
+   "mtime_ns": 1784271363664839700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g8c_warm_matrix.sh",
+   "bytes": 4337,
+   "mtime_ns": 1784271363670840200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g8e_encode_traverse_split.py",
+   "bytes": 4507,
+   "mtime_ns": 1784271363676838500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g8f_shardmerge_profile_kprime.py",
+   "bytes": 6970,
+   "mtime_ns": 1784271363683324300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g8g_ab_perquery_vs_persistent.py",
+   "bytes": 6267,
+   "mtime_ns": 1784271363689721100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g8g_persistent_executor_gate.py",
+   "bytes": 6338,
+   "mtime_ns": 1784271363695315500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g_federation_overlap.py",
+   "bytes": 13628,
+   "mtime_ns": 1784271363701835400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/g_sweep_querycut_heapfactor.py",
+   "bytes": 10273,
+   "mtime_ns": 1784271363708769100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/j1_flat_sidecar_serving_ab.py",
+   "bytes": 37264,
+   "mtime_ns": 1787007816452959800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/j1_flat_sidecar_serving_ab.sh",
+   "bytes": 4306,
+   "mtime_ns": 1787007875493482800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/m2_pregate_query_integer_dot.py",
+   "bytes": 11633,
+   "mtime_ns": 1784271363721122800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/m7_pack_membership_sim.py",
+   "bytes": 5416,
+   "mtime_ns": 1790300021893226700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/m8_batch_kernel_gates.py",
+   "bytes": 9121,
+   "mtime_ns": 1786398575054466700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/measure_seismic_pruning.py",
+   "bytes": 12206,
+   "mtime_ns": 1784271363734739600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/measure_seismic_ram.py",
+   "bytes": 9457,
+   "mtime_ns": 1784271483519323800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/project_150m_ram.py",
+   "bytes": 12002,
+   "mtime_ns": 1784271363746854400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c1c2_stage0.py",
+   "bytes": 10103,
+   "mtime_ns": 1784271363752857600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_build_distill_set.py",
+   "bytes": 3843,
+   "mtime_ns": 1785265645797649900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_gate_student.py",
+   "bytes": 6540,
+   "mtime_ns": 1785266068165024700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_pregate.py",
+   "bytes": 6825,
+   "mtime_ns": 1784271363759368200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_teacher_from_onnx.py",
+   "bytes": 8916,
+   "mtime_ns": 1785265460635186500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_train_student.py",
+   "bytes": 9055,
+   "mtime_ns": 1785266238372096300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c4_train_student_v2.py",
+   "bytes": 10383,
+   "mtime_ns": 1785269215153215200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q11_c5_static_int8.py",
+   "bytes": 7681,
+   "mtime_ns": 1784271363765368400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q12_access_skew_probe.py",
+   "bytes": 10444,
+   "mtime_ns": 1784271363771454600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q12b_access_skew_production.py",
+   "bytes": 12402,
+   "mtime_ns": 1784271363777453800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q3_m8_survivors_per_block.py",
+   "bytes": 9951,
+   "mtime_ns": 1784271363783460600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q4_m2b_integer_dot_pregate.py",
+   "bytes": 10966,
+   "mtime_ns": 1784271363789673800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q6_e5_coaccess_sim.py",
+   "bytes": 13752,
+   "mtime_ns": 1790300021971877600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q6b_order_sweep.py",
+   "bytes": 11286,
+   "mtime_ns": 1784271363802271000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q6c_meta_order_sim.py",
+   "bytes": 7006,
+   "mtime_ns": 1784271363808271400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q7_hybrid_federation_bench.py",
+   "bytes": 17224,
+   "mtime_ns": 1784271363814303800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q8_posting_fault_attribution.py",
+   "bytes": 15936,
+   "mtime_ns": 1784271363820824100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/q9_floor_prefault_bench.py",
+   "bytes": 12053,
+   "mtime_ns": 1784271363826821900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r1_ram_ladder.py",
+   "bytes": 11366,
+   "mtime_ns": 1788207892298115800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r2_convergence_ladder.py",
+   "bytes": 10157,
+   "mtime_ns": 1784271363838828600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r2_host_orchestrator.sh",
+   "bytes": 2955,
+   "mtime_ns": 1791668630270531800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_cachestat_map.py",
+   "bytes": 9932,
+   "mtime_ns": 1784271363851339400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_capability_probe.sh",
+   "bytes": 10373,
+   "mtime_ns": 1784271363857342200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_host_orchestrator.sh",
+   "bytes": 13419,
+   "mtime_ns": 1791668630288614200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_inode_map.py",
+   "bytes": 8420,
+   "mtime_ns": 1784271363869339000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_join_analysis.py",
+   "bytes": 27329,
+   "mtime_ns": 1784271363875338200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_kernel_ledger_driver.py",
+   "bytes": 13069,
+   "mtime_ns": 1784271363881337400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_ledger.bt",
+   "bytes": 6318,
+   "mtime_ns": 1784271363887337300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_ledger_spliced.bt",
+   "bytes": 6994,
+   "mtime_ns": 1784271363893341800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_query_extent_map.py",
+   "bytes": 6883,
+   "mtime_ns": 1784271363898337800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_refault_probe.bt",
+   "bytes": 4139,
+   "mtime_ns": 1784271363905341400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_refault_probe_spliced.bt",
+   "bytes": 4815,
+   "mtime_ns": 1784271363911337800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_splice_probes.py",
+   "bytes": 5853,
+   "mtime_ns": 1784271363916340800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/r3_verify_cell.py",
+   "bytes": 18302,
+   "mtime_ns": 1784271363923339300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/ram_sweep.sh",
+   "bytes": 2157,
+   "mtime_ns": 1784271363929345100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/reconcile_legoverlap.py",
+   "bytes": 26209,
+   "mtime_ns": 1784271363935344600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/rejudge_seismic_leg_n120.py",
+   "bytes": 9921,
+   "mtime_ns": 1784271363941346300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/rejudge_stored_records.py",
+   "bytes": 9576,
+   "mtime_ns": 1784271363946861100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/run_g8_latency_noswap.sh",
+   "bytes": 8754,
+   "mtime_ns": 1784271363952860600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/seismic_backend.py",
+   "bytes": 947,
+   "mtime_ns": 1784271363958860100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/seismic_federated.py",
+   "bytes": 7516,
+   "mtime_ns": 1784271363963859900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/seismic_quality_eval.py",
+   "bytes": 9021,
+   "mtime_ns": 1784271481388697800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/seismic_result_parity.py",
+   "bytes": 4070,
+   "mtime_ns": 1784271363976334100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/serve_footprint_bench.py",
+   "bytes": 49841,
+   "mtime_ns": 1784271363984303400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/served_leg_quality_rejudge.py",
+   "bytes": 14939,
+   "mtime_ns": 1790477149380578900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/shard_scale.sh",
+   "bytes": 1590,
+   "mtime_ns": 1784271363989956700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/shard_spool.py",
+   "bytes": 8001,
+   "mtime_ns": 1784271363995955700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/spool_to_seismic_jsonl.py",
+   "bytes": 7119,
+   "mtime_ns": 1784271483530330200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/stage0_candidates.py",
+   "bytes": 4432,
+   "mtime_ns": 1790300022138351800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t1dprobe_access_histogram.py",
+   "bytes": 19221,
+   "mtime_ns": 1789255581325090100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t23_convergence_ladder.py",
+   "bytes": 13236,
+   "mtime_ns": 1790299393236708700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t23_host_orchestrator.sh",
+   "bytes": 4607,
+   "mtime_ns": 1788226837244321800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t23b_bar_inputs.py",
+   "bytes": 1663,
+   "mtime_ns": 1788298206539333000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t23b_host_orchestrator.sh",
+   "bytes": 5060,
+   "mtime_ns": 1788298444000957700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/t23b_mechanism_probe.py",
+   "bytes": 3427,
+   "mtime_ns": 1788299459854179200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi1_run_all_cells.sh",
+   "bytes": 1392,
+   "mtime_ns": 1784271364014010000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi1_seq_vs_par_federation.py",
+   "bytes": 19705,
+   "mtime_ns": 1784271364020071600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi2_query_log_replay.py",
+   "bytes": 6883,
+   "mtime_ns": 1784271364025582800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi4_portable_cpu_gates.py",
+   "bytes": 9227,
+   "mtime_ns": 1784271364031592200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi4_run_all_gates.sh",
+   "bytes": 1214,
+   "mtime_ns": 1784271364037589000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wi5_subset_selection.py",
+   "bytes": 12592,
+   "mtime_ns": 1784271364043102000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/seismic_testbed/wslrh_convergence_ladder.py",
+   "bytes": 30647,
+   "mtime_ns": 1790641936273098000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/__init__.py",
+   "bytes": 0,
+   "mtime_ns": 1777928999309978700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_abstract_locator.py",
+   "bytes": 17686,
+   "mtime_ns": 1788232457203127500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_abstract_store_readonly.py",
+   "bytes": 2337,
+   "mtime_ns": 1790828826928119300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_bm25f_parse_once.py",
+   "bytes": 4741,
+   "mtime_ns": 1790868473140796900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_bm25f_query_text.py",
+   "bytes": 2099,
+   "mtime_ns": 1790812528534881500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_bm25f_query_text_unicode.py",
+   "bytes": 4162,
+   "mtime_ns": 1790869273450911500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_dead_code_guard.py",
+   "bytes": 2067,
+   "mtime_ns": 1791759369894005800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_abs_route.py",
+   "bytes": 5423,
+   "mtime_ns": 1790868623588572900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_base_vectors.py",
+   "bytes": 8556,
+   "mtime_ns": 1790828431393509700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_bm25f_freeze_window.py",
+   "bytes": 5222,
+   "mtime_ns": 1790868915204212500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_buffer_refresh.py",
+   "bytes": 6187,
+   "mtime_ns": 1790791778767141800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_cli_root_and_gens.py",
+   "bytes": 3914,
+   "mtime_ns": 1790828686513674000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_generation_paths.py",
+   "bytes": 3613,
+   "mtime_ns": 1790868457765668100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_ingest.py",
+   "bytes": 13356,
+   "mtime_ns": 1791763902529894600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_ingest_layout_cadence.py",
+   "bytes": 11675,
+   "mtime_ns": 1790868581605136000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_livedocs.py",
+   "bytes": 8318,
+   "mtime_ns": 1790662558191352400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_partition_stream.py",
+   "bytes": 6171,
+   "mtime_ns": 1790827876609128300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_seed.py",
+   "bytes": 6782,
+   "mtime_ns": 1790791439362467300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_delta_serving_fixes.py",
+   "bytes": 11204,
+   "mtime_ns": 1790828286351179900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_demo_payload_manifest.py",
+   "bytes": 11453,
+   "mtime_ns": 1791836451150078200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_dense_cache_v2.py",
+   "bytes": 10556,
+   "mtime_ns": 1790295272403552300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_doc_encoder_runtime_label.py",
+   "bytes": 2949,
+   "mtime_ns": 1790868518092389300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_doc_status.py",
+   "bytes": 5915,
+   "mtime_ns": 1790304195595526100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_env_gates_doc.py",
+   "bytes": 11205,
+   "mtime_ns": 1791833748940662800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_flat_block_builder.py",
+   "bytes": 17363,
+   "mtime_ns": 1788232457224677600,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_e2e.py",
+   "bytes": 6108,
+   "mtime_ns": 1790874374103140100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_f0_builder.py",
+   "bytes": 6819,
+   "mtime_ns": 1791421867314234100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_f2_harness.py",
+   "bytes": 9771,
+   "mtime_ns": 1791152786753458300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_f3f8_harness.py",
+   "bytes": 6294,
+   "mtime_ns": 1791421710686049300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_f5_crash.py",
+   "bytes": 10885,
+   "mtime_ns": 1791421832368118800,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_guard.py",
+   "bytes": 16472,
+   "mtime_ns": 1791424489443574300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_masks.py",
+   "bytes": 9870,
+   "mtime_ns": 1790874124936415900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_routing.py",
+   "bytes": 6026,
+   "mtime_ns": 1790873644465503300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_foldin_trigger.py",
+   "bytes": 9942,
+   "mtime_ns": 1791420438364060400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_meta_staging.py",
+   "bytes": 13999,
+   "mtime_ns": 1788232457232181900,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_oa_bitmap.py",
+   "bytes": 12885,
+   "mtime_ns": 1791769618031846100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_ordinals_guard.py",
+   "bytes": 9508,
+   "mtime_ns": 1788232457238481200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_p2_multisection_harness.py",
+   "bytes": 4262,
+   "mtime_ns": 1791072189789246400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_public_hygiene.py",
+   "bytes": 4443,
+   "mtime_ns": 1791669792136928100,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_requirements_cover_imports.py",
+   "bytes": 5415,
+   "mtime_ns": 1791836644670440500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_script_placement.py",
+   "bytes": 2199,
+   "mtime_ns": 1791755682538524200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_seismic_delta_group.py",
+   "bytes": 4379,
+   "mtime_ns": 1790868722616919200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_seismic_sequential.py",
+   "bytes": 21256,
+   "mtime_ns": 1788232457246994200,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_seismic_shard_staging.py",
+   "bytes": 3821,
+   "mtime_ns": 1790708628723978700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_serve_footprint_g8_matrix.py",
+   "bytes": 6153,
+   "mtime_ns": 1788232457252635400,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_serve_query_log.py",
+   "bytes": 10560,
+   "mtime_ns": 1788232457259646300,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_served_seismic_path.py",
+   "bytes": 12061,
+   "mtime_ns": 1788232457266821000,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_snapshot_downloader_durability.py",
+   "bytes": 6302,
+   "mtime_ns": 1790300270502019700,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_thinclient_stack.py",
+   "bytes": 24272,
+   "mtime_ns": 1791769618026131500,
+   "component": "code"
+  },
+  {
+   "path": "scripts/tests/test_wslrh_convergence_ladder.py",
+   "bytes": 10305,
+   "mtime_ns": 1790642049892836400,
+   "component": "code"
+  }
+ ],
+ "hash_stats": {
+  "hashed_this_run": 0,
+  "reused_from_prior": 0
+ }
+}

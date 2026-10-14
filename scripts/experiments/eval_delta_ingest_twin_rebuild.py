@@ -368,7 +368,7 @@ def cmd_convert(a):
 # ── parity ──────────────────────────────────────────────────────────────────
 def cmd_parity(a):
     os.environ.setdefault("SFU_SEISMIC_PREFLOOR", "2")
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO / "scripts/seismic_testbed"))
     from e6_forward_codec_proto import load_queries
     from lib.opensearch_retriever import encode_splade

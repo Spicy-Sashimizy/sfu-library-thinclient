@@ -6,7 +6,7 @@
 converter + reader SHIPPED and gated on the real 18.8M shard0. Parity PASSED
 on shard0 (0.995 — but this was the best-case shard; full-corpus is marginal,
 see the §7.6 update below); gate (b) warm latency RECLEARED at 0.957× by the native rebuild
-(§7.1); gate (c) landed at 0.560 vs the 0.55 bar with the micro-lever space
+(§7.1); gate (c) landed at 0.560 versus the 0.55 bar with the micro-lever space
 exhausted (§7.1–§7.4). The decisive E7b RAM-capped re-bench (§7.5, host,
 2026-07-03) then CONFIRMED the pre-registered promotion hypothesis: at a 4 GB
 cap f16 cliffs (warm p50 1.3–1.9 s, ~100–173k majflt/pass) while dotvbyte
@@ -38,7 +38,7 @@ proxied. See §7.5.**
 
 From the 09 audit (all measured): the forward index is **85% of shard bytes**
 (shard0: 6.74 GB of 7.9 GB) and is read as **~350 B random probes split across
-two files** (`forward_components.bin` u16 + `forward_values.bin` f16), i.e.
+two files** (`forward_components.bin` u16 + `forward_values.bin` f16), that is,
 **≈ 2.09 expected 4 KB page faults per scored candidate** — and
 candidates-scored is the page-touch elephant (60–90k/shard/query *est.*).
 File-backed pages bypass zram/zswap (`08_LATENCY_RESEARCH.md` §E), so the only
@@ -140,7 +140,7 @@ same 40% on the forward component. *est.* until E6-impl measures it.
 
 Method: 40 diverse queries (the E1 workload), baseline engine search on the
 real mmap shard0 (all-terms, query_cut=all, hf=0.8, k′=200 — recall-max
-params), then every returned candidate re-scored in Python two ways: exact
+parameters), then every returned candidate re-scored in Python two ways: exact
 f32-from-f16 (sanity-anchored against the engine's own scores) and under SFR1
 per-doc-u8 values. Overlap of the re-ranked lists:
 
@@ -155,7 +155,7 @@ per-doc-u8 values. Overlap of the re-ranked lists:
 candidates. It does not capture the second-order effect of quantized scores on
 the heap-min block-skip test during traversal (bounded by the 0.33% score
 error). The implementation must re-run the E-series parity convention
-(overlap@10 vs the f16 shard on the same 40 queries, plus the T1
+(overlap@10 versus the f16 shard on the same 40 queries, plus the T1
 sequential-parallel identity) before any converted shard serves.
 
 ## 5. Implementation (E7 — SHIPPED 2026-07-03, built on DotVByte, not custom SFR1)
@@ -164,13 +164,13 @@ sequential-parallel identity) before any converted shard serves.
 the vendored vectorium fork already carried a complete SIMD Stream-VByte packed
 forward (`DotVByteFixedU8Encoder` + `PackedSparseDataset` + an owned search
 path + `convert_dataset_into` range rewriting) with a **trained component
-remap handled inside the encoder** — i.e. §2.2's remap idea with zero
+remap handled inside the encoder** — that is, §2.2's remap idea with zero
 consistency surface (posting lists/summaries stay in the original id space;
 the query evaluator remaps on densify). Its value type `FixedU8Q` is a GLOBAL
 1/64 fixed-point scale rather than SFR1's per-doc scale; re-running the E6
 phase-C proxy with FixedU8Q semantics measured **overlap@10 0.995 — identical
-to SFR1's** (overlap@50 0.9945 vs 0.9975). With quality equal, reuse won over
-the custom codec. SFR1's per-doc scale + LEB128 spec (§1–§2) stays on record
+to SFR1's** (overlap@50 0.9945 versus 0.9975). With quality equal, reuse won over
+the custom codec. SFR1's per-doc scale + LEB128 specification (§1–§2) stays on record
 as the fallback design (~6% smaller records) had the gate failed.
 
 What shipped (all in the spike forks; main-repo record =
@@ -178,11 +178,11 @@ What shipped (all in the spike forks; main-repo record =
 `spike/toolkit_fork`; fork-local commit c987160):
 
 1. **Converter** — `convert_f16_dir_to_dotvbyte` (`mmap_io.rs`) + the
-   `convert_f16_to_dotvbyte` bin: **file-level f16 `.mmap` dir → dotvbyte
-   `.mmap` dir** (the K=8 `.index.seismic` sources are gone from /tmp; the
-   persistent mmap dirs are the artifact of record, so the converter never
+   `convert_f16_to_dotvbyte` bin: **file-level f16 `.mmap` directory → dotvbyte
+   `.mmap` directory** (the K=8 `.index.seismic` sources are gone from /tmp; the
+   persistent mmap directories are the artifact of record, so the converter never
    needs an owned index load). Forward re-encoded via the existing trained
-   `From` impl; **only each packed posting's u64 is rewritten**
+   `From` implementation; **only each packed posting's u64 is rewritten**
    (elem-offset:48|nnz:16 → word-offset:48|word-len:16); block offsets,
    summaries, EliasFano bytes copied verbatim ⇒ the block-skip math is
    bit-identical to the f16 shard. Measured on shard0 (2026-07-03): 18.8M docs
@@ -205,19 +205,19 @@ What shipped (all in the spike forks; main-repo record =
 
 ## 6. Shard0 artifacts (2026-07-03)
 
-| Dir | Bytes (whole dir) | Forward bytes |
+| Directory | Bytes (whole directory) | Forward bytes |
 |---|---|---|
 | `global_shard0of8.mmap` (f16) | 8.08 GB | 6.74 GB |
 | `global_shard0of8.dotvbyte.mmap` | 5.38 GB (**1.50×**) | 3.97 GB (**1.70×**) |
 
-(1.70× vs SFR1's prototyped 1.80×: Stream-VByte control bytes + u64 record
+(1.70× versus SFR1's prototyped 1.80×: Stream-VByte control bytes + u64 record
 padding + bisection-remap-vs-dfrank differences. Conversion report:
 `convert_f16_to_dotvbyte` stdout, logged in the E7 result JSON's meta.)
 
 ## 7. E7 gate results (2026-07-03) — the pre-registered §5 gates, honestly
 
 Run: `scripts/seismic_testbed/e7_dotvbyte_gates.py`, 40 diverse queries,
-recall-max params (all terms, qc=all, hf=0.8, k′=200), release_pages before
+recall-max parameters (all terms, qc=all, hf=0.8, k′=200), release_pages before
 each cold pass (E1 method). Result
 `data/eval_results/seismic_e7_dotvbyte_gates_20260703_0032.json`. **Verdict:
 `E7_GATE_FAIL: b_latency,c_pages`.**
@@ -237,9 +237,9 @@ each cold pass (E1 method). Result
 | Gate | Bar | Measured | Verdict |
 |---|---|---|---|
 | (a) parity overlap@10 | ≥ 0.99 | **0.995** (min 0.90) — exactly the E6/E6b proxy prediction | **PASS** |
-| (b) warm traverse p50 | ≤ 1.07× f16 | **1.223×** (7.12 ms vs 5.82 ms) | **FAIL** |
-| (c) cold majflt | ≤ 0.55× f16 | **0.591×** (69,148 vs 116,974) | **FAIL (narrow)** |
-| — cold traverse p50 | (not a gate) | **0.70×** (470 ms vs 672 ms — 1.43× faster) | — |
+| (b) warm traverse p50 | ≤ 1.07× f16 | **1.223×** (7.12 ms versus 5.82 ms) | **FAIL** |
+| (c) cold majflt | ≤ 0.55× f16 | **0.591×** (69,148 versus 116,974) | **FAIL (narrow)** |
+| — cold traverse p50 | (not a gate) | **0.70×** (470 ms versus 672 ms — 1.43× faster) | — |
 
 Reading, without spin:
 
@@ -263,12 +263,12 @@ Reading, without spin:
   track exists) and loses ~1.3 ms/query when everything is already cached.
 
 **Decision: NOT promoted to serving default (gates failed as registered).**
-The converted shard0 dir is kept as the E7 artifact. Owed follow-ups, in
+The converted shard0 directory is kept as the E7 artifact. Owed follow-ups, in
 information-per-cost order:
 
 - **E7b — the RAM-constrained re-bench (the decisive one):** repeat the
   f16-vs-dotvbyte comparison under the A1 #3 container-cap method at the
-  operating point where the f16 corpus no longer fits page cache (e.g. 24 GB
+  operating point where the f16 corpus no longer fits page cache (for example, 24 GB
   for 8 f16 shards). Hypothesis: dotvbyte's −41% faults dominates and its
   warm-CPU penalty is invisible next to re-fault stalls; if TRUE at a cap
   where f16 has cliffed and dotvbyte has not, promotion is justified for
@@ -303,7 +303,7 @@ gather even with `target-cpu=native` (LLVM portable-SIMD gap; the researched
 "last-resort gather tune" was *not* taken). cargo unit tests 5/5 PASS at
 native (FMA float-rounding did not break parity). **Gate b: ROBUSTLY
 RECLEARED** — deliverable arm E1 (native-only, k′=200): 0.957 / 0.946 / 0.976
-(3/3 PASS, median 0.957 ≤ 1.07), vs control A's 1.338 / 1.436 (0/2). Native
+(3/3 PASS, median 0.957 ≤ 1.07), versus control A's 1.338 / 1.436 (0/2). Native
 also roughly halved f16's warm p50 (AVX2 benefits it too). **Parity held at
 0.995 throughout. SHIP — zero-risk, highest-leverage.**
 
@@ -327,7 +327,7 @@ NOT clear gate c either — it is not an escape hatch.
 
 **Net same-footing verdict:** 1 of the 2 failed bars robustly recleared —
 **gate b, via the free native rebuild** (the .so is already rebuilt in the
-venv). **Gate c remains OPEN** (best honest config = 0.591); Fix #2 refuted,
+venv). **Gate c remains OPEN** (best honest configuration = 0.591); Fix #2 refuted,
 the next lever is Fix #3 (batch `MADV_WILLNEED` per posting block), *not*
 `MADV_RANDOM`. **E7 still NOT promoted** (gate c open), but the native build
 is the shippable delta and closes the warm-latency gap decisively. E7b (the
@@ -351,7 +351,7 @@ Fix #2). objdump verified 25 madvise call sites in the rebuilt .so.
 **Result: REFUTED** (Arm F, 3 runs, k′=200, warm_repeats=15):
 
 - **Gate c (the target): NO effect.** majflt ratio **0.591 unchanged** (f16
-  116,954 / dv 69,124 vs base 116,982 / 69,149). Cold latency also unchanged
+  116,954 / dv 69,124 versus base 116,982 / 69,149). Cold latency also unchanged
   (f16 646→686 ms, dv 428→435 ms, within noise). The async-readahead hypothesis
   is falsified on this kernel/WSL2 — the kernel did not honor `MADV_WILLNEED`
   on these ranges, or the default readahead already overlaps the faults enough
@@ -423,7 +423,7 @@ symmetrically: a measurement-calibration fix, not a dv-preferring optimization.
 | Fix #4 (prefloor on)  | **0.572** ×2 | 111,882 | 64,051 | ~5,093 ≈ ~5,096 ≈ **~1.27 GB / 4 KiB** |
 
 - **The calibration is genuine.** The floor prefault stripped an *identical*
-  ~5,000-page constant from both codecs (~5,093 f16 vs ~5,096 dv), exactly as
+  ~5,000-page constant from both codecs (~5,093 f16 versus ~5,096 dv), exactly as
   expected for the posting-lists (1.16 GB) + doc-mapping (0.36 GB) ≈ 1.52 GB
   floor ÷ 4 KiB ≈ 5,000 faults. The ratio moved in the gate's intended
   direction (0.591 → 0.572) — proof the floor was the model/measurement
@@ -483,9 +483,9 @@ absorbs a straddling record's continuation page** (the second page is pulled in
 the same I/O and never counts as a separate major fault), so alignment removed
 ~nothing — while the +2.7% pad diluted incidental page-sharing between
 candidates, adding ~1.3k faults. Consistent on every footing (prefloor=0:
-0.591→0.602; prefloor=2: 0.560→0.572). Cold latency unchanged (373 vs 381 ms).
+0.591→0.602; prefloor=2: 0.560→0.572). Cold latency unchanged (373 versus 381 ms).
 **DO NOT SHIP `--page-align`** for gate c; the converter capability + test stay
-in the fork (they are the mechanism proof for any future placement work, e.g.
+in the fork (they are the mechanism proof for any future placement work, for example,
 E5 clustering). The `…dotvbyte_pa.mmap` shard0 artifact was deleted after
 measurement (reproducible in 203 s; the 9 result JSONs are the record).
 
@@ -495,7 +495,7 @@ measurement (reproducible in 203 s; the 9 result JSONs are the record).
 the per-winner `id_from_range` binary searches — never by candidate reads,
 which go through posting-pack ranges — so it is a symmetric constant exactly
 like the Fix #4 floor, not part of the codec the 0.55 bar models. Measured: it
-strips **−3,197 (f16) vs −3,200 (dv)** faults — identical constants, the same
+strips **−3,197 (f16) versus −3,200 (dv)** faults — identical constants, the same
 symmetry signature as Fix #4's ~5,093/~5,096.
 
 **The arm table** (Arm-G native .so, k′=200, warm_repeats=15, 40 queries,
@@ -519,7 +519,7 @@ the micro-lever space is exhausted BY EXPERIMENT: MADV_RANDOM (×3.7 faults),
 MADV_WILLNEED (no-op), page alignment (+2%), plus THP/COLLAPSE/SEQUENTIAL ruled
 out by kernel docs and readahead tuning blocked by the drvfs mount. 0.560 is
 the codec's real fault advantage on this platform: **~1.05 effective
-pages/candidate for dv vs ~1.9 for f16 — the bar's ~2→1 model was right about
+pages/candidate for dv versus ~1.9 for f16 — the bar's ~2→1 model was right about
 the mechanism and ~0.01–0.02 optimistic about the endpoint.** The remaining
 honest moves, in information-per-cost order:
 
@@ -624,7 +624,7 @@ shard0 (0.995); the other 7 shards were `*est.*` until E7c converted them
 (2026-07-04) and G8b measured all 8 for *footprint*. G8d closes the quality
 side: the **identical** gate-a convention (40 diverse queries, k′=200, hf=0.8,
 all-terms; `e7_dotvbyte_gates.py`, gate-a only) re-run per-shard on all 8 dv
-shards vs their f16 twins (both twins of one shard co-resident, ~14 GiB — fits
+shards versus their f16 twins (both twins of one shard co-resident, ~14 GiB — fits
 the 32 GB everyday cap, no RAM bump). Read-only (Rule Zero: no shard file
 modified during the run; verified `find -newermt`). Host WSL, HOSTPY.
 
@@ -646,7 +646,7 @@ aggregate `g8d_8shard_parity_summary_20260705.json`.
 **Reading:**
 - **The corpus average (0.9906) clears 0.99, but the per-shard gate does not
   hold uniformly** — shards 1 and 2 sit at 0.985 (≈1.5% of top-10 slots differ
-  from f16 vs the ≤1% the gate allows). `all_8_shards_pass_0.99 = false`.
+  from f16 versus the ≤1% the gate allows). `all_8_shards_pass_0.99 = false`.
 - **Shard0 (0.995) was the favorable shard**, ~0.005 above the corpus average.
   The promotion's recorded quality evidence was therefore the best-case slice,
   not a representative one. This does **not** reverse the promotion — dotvbyte
@@ -677,7 +677,7 @@ also produced a binding protocol change: quality gates now run on shards 1–2
 
 > **E8 Stage-0 MEASURED (2026-07-08): GO.** The per-doc-scale proxy re-score
 > on real shard-1/2 candidates (n=100) ranked at overlap@10 **0.997 / 0.993**
-> vs FixedU8Q's 0.985 / 0.984 on the same queries — the §2.4 error advantage
+> versus FixedU8Q's 0.985 / 0.984 on the same queries — the §2.4 error advantage
 > survives ranking, and the FixedU8Q arm reproduces G8d's 0.985 (method
 > validation). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`,
 > `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. Next: Stage 1
@@ -713,7 +713,7 @@ n≥100; pre-registered in `11_EXPERIMENT_BACKLOG.md` §WI-4):**
 Verdict JSONs `data/eval_results/wi4_verdict_{v3,v2}_global_shard{1,2}*.json`;
 per-variant top-k `wi4_topk_{variant,native}_shard{1,2}.json`; driver
 `scripts/seismic_testbed/wi4_portable_cpu_gates.py` (each variant runs in its own
-subprocess + the join computes overlap@10 vs the native reference).
+subprocess + the join computes overlap@10 versus the native reference).
 
 **Two findings:**
 
@@ -725,7 +725,7 @@ subprocess + the join computes overlap@10 vs the native reference).
    (v2 was predicted "marginal"; it is exact). The parity risk the gate exists to
    catch did not materialize — a portable target is parity-safe.
 2. **v3 PASSES both gates and is the shippable portable target.** Warm p50
-   1.69–1.70 ms vs native 1.75–1.77 ms — v3 is **slightly faster** (0.956–0.968×),
+   1.69–1.70 ms versus native 1.75–1.77 ms — v3 is **slightly faster** (0.956–0.968×),
    within run-to-run noise of native (the v3 scheduling is not worse). v3 keeps
    the AVX2+FMA win the native rebuild earned (§7.1) while being portable to any
    x86-64-v3 CPU (2013+, Haswell-class — the overwhelming majority of end-user

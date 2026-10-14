@@ -13,12 +13,12 @@ disagree, the record wins. Nothing was running and the latency lock
 
 | Part | State | Record |
 |---|---|---|
-| Delta layer (ingest → buffer → generations → masks → compaction), gate `SFU_DELTA_ROOT` | Built, default OFF. M1, M2, M3, M5, M4-compaction PASS; `09` promotion conditions P1–P4 hold for the fallback stack (layout `per_base_section` + L3, L4, L5): F-SLOPE 1.31 ms/gen vs 8.0. **Not declared eligible** — waits for the owner (§3 item 1) | `spike/delta_ingest/M4F_FINDINGS.md`; `data/eval_results/delta_ingest_M4F_20261001.json` |
+| Delta layer (ingest → buffer → generations → masks → compaction), gate `SFU_DELTA_ROOT` | Built, default OFF. M1, M2, M3, M5, M4-compaction PASS; `09` promotion conditions P1–P4 hold for the fallback stack (layout `per_base_section` + L3, L4, L5): F-SLOPE 1.31 ms/gen versus 8.0. **Not declared eligible** — waits for the owner (§3 item 1) | `spike/delta_ingest/M4F_FINDINGS.md`; `data/eval_results/delta_ingest_M4F_20261001.json` |
 | Layout `single` | FAIL on doc 11 bar A (delta docs of one subject rank better); L2 killed, fallback in force | `11_P2_MULTISECTION_PREREGISTRATION.md` |
-| F-COMP (compaction latency) | FAIL as recorded on the repeat (interval −1.1 to +10.7 ms vs ±8); R3 of 2026-10-04 shows no compaction residue (x8c − x1 −5.5 ms, CI −15.7 to +4.8). Not on promotion route (a) | key `R3_per_base_section` |
+| F-COMP (compaction latency) | FAIL as recorded on the repeat (interval −1.1 to +10.7 ms versus ±8); R3 of 2026-10-04 shows no compaction residue (x8c − x1 −5.5 ms, CI −15.7 to +4.8). Not on promotion route (a) | key `R3_per_base_section` |
 | Churn filter M7 | FAIL (most touched records are new works); a property of the data, a running cost | `spike/delta_ingest/BASE_HASH_SEED_FINDINGS.md` |
-| Fold-in F2 (quality parity) | **PASS on fold 1 and fold 2** at the federated level (owner decision 2026-10-04); shard-own QD 0.9780 vs 0.9820 stays on record. Q-d still on a fixture without deletions | `spike/delta_ingest/FOLDIN_FINDINGS.md`; doc 10 addendum 2026-10-04 |
-| Fold-in F4 (build cost) | Build record of fold 3 within every bar **as amended 2026-10-05** (wall 23.9 min; peak tree 11.37 GiB vs 11.5; scratch 59.50 GB vs 60; output 13.83 GB). Margins are thin on memory (0.13 GiB) and scratch (0.5 GB). Publish stage and duty cycle not measured | doc 10 addendum 2026-10-05; keys `F4_build_fold3`, `F4_amended_bar_20261005` |
+| Fold-in F2 (quality parity) | **PASS on fold 1 and fold 2** at the federated level (owner decision 2026-10-04); shard-own QD 0.9780 versus 0.9820 stays on record. Q-d still on a fixture without deletions | `spike/delta_ingest/FOLDIN_FINDINGS.md`; doc 10 addendum 2026-10-04 |
+| Fold-in F4 (build cost) | Build record of fold 3 within every bar **as amended 2026-10-05** (wall 23.9 min; peak tree 11.37 GiB versus 11.5; scratch 59.50 GB versus 60; output 13.83 GB). Margins are thin on memory (0.13 GiB) and scratch (0.5 GB). Publish stage and duty cycle not measured | doc 10 addendum 2026-10-05; keys `F4_build_fold3`, `F4_amended_bar_20261005` |
 | Fold-in F1, F3, F5, F6, F8, F0, F7 | NOT RUN. F1 needs trigger code that does not exist | doc 10 §6 |
 
 Three folds of shard 0 (13 GB each, unpublished, same inputs) are at
@@ -81,7 +81,7 @@ fold 3 was not put through F2.
    O2 two-freeze residual; O14 locators for shards 1–7; M2 on a second
    section; 9-shard pilot M10.
 
-Commands that worked on 2026-10-04 (run from the repo root with
+Commands that worked on 2026-10-04 (run from the repository root with
 `/home/vscode/work/venv_local/bin/python3`; smoke any measure with
 `--limit 3 --lock none` first):
 
@@ -170,9 +170,9 @@ still open, nothing recorded as decided.
 |---|---|---|
 | 1 Deletions fixture for Q-d | **DONE.** Fixture `/home/vscode/work/delta_ingest/foldin/fixture_n8_del` (Stage-0 data was usable, no deviation): 1,131,292 tombstones, 8,465 superseded base docs, 20,112 superseded delta copies, 32,155 live shard-0 delta docs; s′ = 17,691,720 docs. **F4 within every amended bar** (wall 23.7 min, tree peak 10.86 GiB — margin 0.64, scratch 55.99 GB, output 13.08 GB; 10 GB bar still FAIL). **F2 PASS** (federated overlap@10 0.9983 / 1.0000; ΔNDCG@10 −0.0004, CI −0.0012 to +0.0001; **Q-d 0 leaks**, masks removed 96,283 / 184,251 raw candidates on L / F). Fold output `/home/vscode/work/delta_ingest/foldin_del/shard0/fold1` (unpublished) | `data/eval_results/delta_ingest_foldin_20261008.json` keys `F4_build_fold_del`, `F2_fold_del`; FOLDIN_FINDINGS §2026-10-08 |
 | 2 Trigger code + F1 | **DONE, F1 PASS** 20/20 on both roots; (b) not implemented (needs F0) | `spike/delta_ingest/trigger.py`; `data/eval_results/delta_ingest_foldin_f1_20261008.json` |
-| 3 F8 + F3 | Harness `scripts/experiments/eval_delta_ingest_foldin_f3f8.py`; **RUN 01:59–03:28Z: F8 FAIL** (reload ≤ 1.22 s PASS; first-query p50 2.17× warm vs ≤ 2× FAIL) and **F3 FAIL** (p50 ratio 1.014 PASS; Δ(F, n0) +5.76 ms, CI upper 13.57 vs 8.0 FAIL; Δ(L, F) −1.5 ms). Not §8 kills; fold-in not promotable under §9 as measured. Setup needed two harness fixes first (85918e64, 46b85c0c) | `data/eval_results/delta_ingest_foldin_f3f8_20261008.json`; FOLDIN_FINDINGS §"F8 and F3 RESULTS" |
+| 3 F8 + F3 | Harness `scripts/experiments/eval_delta_ingest_foldin_f3f8.py`; **RUN 01:59–03:28Z: F8 FAIL** (reload ≤ 1.22 s PASS; first-query p50 2.17× warm versus ≤ 2× FAIL) and **F3 FAIL** (p50 ratio 1.014 PASS; Δ(F, n0) +5.76 ms, CI upper 13.57 versus 8.0 FAIL; Δ(L, F) −1.5 ms). Not §8 kills; fold-in not promotable under §9 as measured. Setup needed two harness fixes first (85918e64, 46b85c0c) | `data/eval_results/delta_ingest_foldin_f3f8_20261008.json`; FOLDIN_FINDINGS §"F8 and F3 RESULTS" |
 | 4 F5 | Harness `scripts/experiments/eval_delta_ingest_foldin_f5.py`; three crash-safety defects fixed before any trial (60ba0fc1). **RUN, PASS 60/60** (2026-10-09 19:44Z; 50 fold-build + 10 publish kills; split by two host pauses, resumed with exact seeded kill times, 2fd0db84) | `data/eval_results/delta_ingest_foldin_f5_20261008.json` key `F5` |
-| F0 (needed by F7 and doc 13) | **RUN 2026-10-08: FAIL** — Δ(g1M) − Δ(n1) +17.93 ms, CI 10.60–23.20 vs ≤ 8.0; **c = 21.35 ms per million delta docs** (CI 12.62–27.63; upper bound, g1M kept its SEISMIC shard); doc 10 §8: sections tier FLAGGED. **Doc 13 written** (`13_FULL_REBUILD_TRIGGER_PREREGISTRATION.md`) | `data/eval_results/delta_ingest_foldin_f0_20261008.json`; FOLDIN_FINDINGS §"F0 RESULT" |
+| F0 (needed by F7 and doc 13) | **RUN 2026-10-08: FAIL** — Δ(g1M) − Δ(n1) +17.93 ms, CI 10.60–23.20 versus ≤ 8.0; **c = 21.35 ms per million delta docs** (CI 12.62–27.63; upper bound, g1M kept its SEISMIC shard); doc 10 §8: sections tier FLAGGED. **Doc 13 written** (`13_FULL_REBUILD_TRIGGER_PREREGISTRATION.md`) | `data/eval_results/delta_ingest_foldin_f0_20261008.json`; FOLDIN_FINDINGS §"F0 RESULT" |
 
 Next: F7 (trigger values; F0 and the publish wall 15.1 s are now in) and
 **doc 13 — full-rebuild trigger**, WRITTEN 2026-10-08 after F0 landed
@@ -251,7 +251,7 @@ After L3–L5 the delta adds 1.31 ms/gen, so none is needed for a bar today.
 Already covered here (coverage check): tiered merging / live-generation cap
 (`02_DESIGN.md` §1.7, L1), fewer stores (L2), grouped small segments (L5),
 owner-routed probes (L3), parse once (L4), livedocs + Rust gather skip (O10),
-stamped cache key (R1), prefault before serving (doc 10 §4), rebuild vs local
+stamped cache key (R1), prefault before serving (doc 10 §4), rebuild versus local
 maintenance (§5 above), overlay-scored updates (`08_…` #1), real-time designs
 of the same shape (`01_RESEARCH.md` §2). Earlybird reference:
 [snippet] https://cs.uwaterloo.ca/~jimmylin/publications/Busch_etal_ICDE2012.pdf

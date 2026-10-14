@@ -7,7 +7,7 @@ with a pre-registered bar; no stage's bar is retrofitted to the result.
 
 > **AMENDED 2026-07-05 (post-G8d — binding for every future quality gate):**
 > 1. **Worst-case-shard rule.** G8d (`seismic_150m_testbed/10_…` §7.6) measured
->    shard0 as the *best-case* parity shard (0.995 vs corpus mean 0.9906;
+>    shard0 as the *best-case* parity shard (0.995 versus corpus mean 0.9906;
 >    shards 1–2 = 0.985). All Stage-0 and Stage-2 quality gates now run on
 >    **shard 1 or shard 2** (both when cheap), never shard0-only. A
 >    shard0-only quality PASS is not promotable.
@@ -155,7 +155,7 @@ RUSTFLAGS='-C target-cpu=native' maturin develop --release  \
   # installs into .venv/lib/python3.11/site-packages/seismic/
 ```
 - Verify the build: `objdump -d .venv/.../seismic.cpython-311-x86_64-linux-gnu.so | grep -c vfmadd`
-  (should be ~88 for a native build; 0 for a baseline SSE2 build with no env).
+  (should be ~88 for a native build; 0 for a baseline SSE2 build with no environment).
 - Verify importability: `/workspaces/sfu-library-thinclient/.venv/bin/python3 -c "import seismic; print('OK')"`.
 - For aarch64 (Stage 4 runtime): set the target triple in the maturin build
   (`--target aarch64-...`) — requires the cross-linker; the type-check gate

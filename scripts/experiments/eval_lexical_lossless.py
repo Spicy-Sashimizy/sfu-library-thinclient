@@ -46,7 +46,7 @@ import requests
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("eval_lexical_lossless")
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "source"))
 
 REPO_ROOT = Path(__file__).parent.parent
 DEFAULT_DIVERSE = REPO_ROOT / "data/eval_results/diverse_queries.json"
@@ -229,7 +229,13 @@ def build_variant_index(name: str, subset_docs: int) -> dict:
 
 def parity_check(variants: dict[str, dict], queries: list[str]) -> dict[str, dict]:
     """Run BM25F + SPLADE on every variant index, compare to base top-50."""
-    from lib.opensearch_retriever import OpenSearchRetriever
+    import importlib.util as _ilu
+    # class archived 2026-10-11 to scripts/archive/opensearch_era; load it by path
+    _osp = __import__('pathlib').Path(__file__).resolve().parents[1] / 'archive' / 'opensearch_era' / 'opensearch_retriever.py'
+    _osspec = _ilu.spec_from_file_location('opensearch_retriever_archived', _osp)
+    _osmod = _ilu.module_from_spec(_osspec)
+    _osspec.loader.exec_module(_osmod)
+    OpenSearchRetriever = _osmod.OpenSearchRetriever
 
     def hits_for(index: str, query: str, mode: str) -> list[tuple[str, float]]:
         r = retrievers[index]

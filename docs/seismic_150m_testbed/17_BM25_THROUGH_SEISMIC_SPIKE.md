@@ -3,7 +3,7 @@
 **Status:** ACTIVE — spike COMPLETE, measured. **Verdict: technically feasible and
 quality-neutral, but it buys nothing — RECOMMEND NOT ADOPTING.**
 **Corpus:** 207,973-doc subset of `social_sciences__recent` (NOT 150M).
-**Code:** `spike/bm25_seismic/` · **Results:** `data/eval_results/bm25_seismic_spike_*.json`
+**Code:** `spike/bm25_seismic/` (corpus: `01_build_corpus.py --blocks 9000`) · **Results:** `data/eval_results/bm25_seismic_spike_*.json`
 
 ---
 
@@ -22,7 +22,7 @@ The mirror question — **can tantivy read SPLADE vectors?** — is measured in 
 
 Every `data/` read used `sqlite3` URI `mode=ro`. Nothing was written under
 `data/thinclient_index/` or `data/seismic_150m/`; all artifacts live in
-`spike/bm25_seismic/work/` (gitignored). No serving code, env gate, routing, or
+`spike/bm25_seismic/work/` (gitignored). No serving code, environment gate, routing, or
 MCP path was touched, and the LLM judge used a spike-local cache — the canonical
 `llm_judge_cache.json` and `seismic_kimi_judge_cache.json` were never opened.
 
@@ -47,7 +47,7 @@ under impact pruning:
 | **B `idf_in_query`** | `sat` per field-namespaced term | `boost*idf_f(t)` |
 
 **Validated against tantivy** before any engine work: brute-force vectors
-reproduce tantivy's own BM25F to ~0.02% (top hit 71.942 vs tantivy 71.953 —
+reproduce tantivy's own BM25F to ~0.02% (top hit 71.942 versus tantivy 71.953 —
 the residual is tantivy's u8 fieldnorm quantisation), overlap@10 0.90–1.00.
 So any downstream gap is the engine's, not the algebra's.
 
@@ -67,14 +67,14 @@ BM25. `SeismicIndexLV` must be selected up front from a counted vocabulary
 ## 3. Rank fidelity: SEISMIC reproduces exact BM25F essentially perfectly
 
 `03_fidelity_gate.py`, variant A, 120 SFU eval queries, production serving
-params (`query_cut=10`, `heap_factor=0.8`).
+parameters (`query_cut=10`, `heap_factor=0.8`).
 Result: `data/eval_results/bm25_seismic_spike_fidelity_idf_in_doc_20260801_2221.json`
 *(pointer corrected 2026-09-01: the originally cited `…_2157.json` is one of the
 retired `.INVALID` runs described in the harness-bug note below; the table's
 numbers are from the corrected rerun, which also exists as an identical
 `…_2233.json` repeat.)*
 
-| metric vs **exact** BM25F (brute force) | SEISMIC | tantivy |
+| metric versus **exact** BM25F (brute force) | SEISMIC | tantivy |
 |---|---|---|
 | overlap@10 | **0.9992** | 0.9908 |
 | NDCG@10 (gain = exact BM25F score) | **1.0000** | 0.9997 |
@@ -119,7 +119,7 @@ owned-RAM load, not the mmap path production would actually use.
 
 ## 4. Why the fidelity is perfect — and why that is bad news
 
-**At production params SEISMIC's pruning never engages.**
+**At production parameters SEISMIC's pruning never engages.**
 
     global budget = n_postings * dim = 3500 * 710,047 = 2.485 billion
     actual postings                                   =  26.1 million
@@ -127,7 +127,7 @@ owned-RAM load, not the mmap path production would actually use.
 
 (Careful with `idx.nnz`: it reports the **forward** index and does not move when
 the inverted lists are pruned — the `n_postings=9` build below reports the same
-26,127,568 while its build log shows avg posting list 2.69 against 36.8
+26,127,568 while its build log shows average posting list 2.69 against 36.8
 unpruned. So `nnz` is not evidence either way; the budget arithmetic is.)
 
 SEISMIC's pruning budget scales with the **vocabulary**, and BM25's vocabulary
@@ -156,7 +156,7 @@ data point, not measured)**.
 | SEISMIC variant A, `n_postings=9` | 555 MB — 7.1× | 2,669 B | 1,111 s | — |
 
 Variant B is *larger* because field-namespacing splits each term into
-`title`/`abstract` components: dim 845,049 vs 710,047 and nnz 27.9M vs 26.1M.
+`title`/`abstract` components: dim 845,049 versus 710,047 and nnz 27.9M versus 26.1M.
 
 > **Caveat — these are STOCK `.index.seismic` (bincode, f32) sizes, not the
 > serving format.** Production converts to the f16 mmap layout and then to
@@ -169,7 +169,7 @@ Variant B is *larger* because field-namespacing splits each term into
 > production form.
 
 The per-posting view is the cleaner one, because it is codec-independent in
-spirit: tantivy **2.98 B/posting** (delta-gap + bitpacked doc ids and tf) vs
+spirit: tantivy **2.98 B/posting** (delta-gap + bitpacked doc ids and tf) versus
 stock SEISMIC **66.67 B/posting**. Tantivy's compression depends on postings
 being sorted integer runs — which is exactly the structure SEISMIC gives up in
 order to make block-skipping possible. That is why the gap is structural and why
@@ -183,15 +183,15 @@ per-doc)** replacing 29 GB — an order of magnitude past the entire current ind
 ### 5a. Can it be shrunk to tantivy's size? No — quality collapses first
 
 `n_postings=9` is the setting at which the global budget finally drops below the
-corpus's postings (6.4M vs 26.1M) and the pruning engages — build log: avg
-posting list **2.69** vs 36.8 unpruned.
+corpus's postings (6.4M versus 26.1M) and the pruning engages — build log: average
+posting list **2.69** versus 36.8 unpruned.
 Result: `data/eval_results/bm25_seismic_spike_fidelity_idf_in_doc_np9_20260801_2230.json`
 
-| variant A vs exact BM25F | `n_postings=3500` (1,742 MB) | `n_postings=9` (555 MB) |
+| variant A versus exact BM25F | `n_postings=3500` (1,742 MB) | `n_postings=9` (555 MB) |
 |---|---|---|
 | overlap@10 | **0.9992** | **0.3942** |
 | top-1 match | 1.000 | 0.600 |
-| NDCG@10 vs exact | 1.0000 | 0.8748 |
+| NDCG@10 versus exact | 1.0000 | 0.8748 |
 | recall of exact top-10 within top-**100** | 1.000 | **0.3942** |
 
 The last row is the important one: over-fetching to depth 100 recovers **nothing**
@@ -226,7 +226,7 @@ only via the "fake words" trick (emit token `t` `round(w*70)` times), and the
 only scorer that reads it is BM25, whose `k1`/`b` are fixed in Rust and not
 settable from the Python bindings.
 
-| metric vs exact SPLADE dot product | raw query boost | idf-corrected boost |
+| metric versus exact SPLADE dot product | raw query boost | idf-corrected boost |
 |---|---|---|
 | overlap@10 | **0.485** | 0.466 |
 | top-1 match | **0.342** | 0.308 |
@@ -243,7 +243,7 @@ Encoding cost is *not* the problem: the tf-repetition index was 4.5 MB for
 20k docs (3,128.8 tokens/doc after repetition) and built in 2.6 s — tantivy
 stores `(doc, tf)` pairs, so repeating a token costs nothing extra on disk.
 The blocker is purely the scorer. Making tantivy serve SPLADE means implementing
-a custom `Query`/`Weight`/`Scorer` in Rust — i.e. exactly the from-scratch
+a custom `Query`/`Weight`/`Scorer` in Rust — that is, exactly the from-scratch
 scorer work the effort/ROI verdict already priced.
 
 ## 7. LLM-judged search quality: **no degradation** (the "does it get worse?" gate)
@@ -251,7 +251,7 @@ scorer work the effort/ROI verdict already priced.
 `04_quality_ab.py`, 120 SFU eval queries, TREC-pooled (union of all three arms'
 top-10; each (query, doc) pair graded once and shared, 1,211 pairs). Judge:
 `claude-haiku-4-5-20251001` via `claude -p` — **$0**, the same judge regime the
-repo's canonical numbers use — with a spike-local cache
+repository's canonical numbers use — with a spike-local cache
 (`work/spike_judge_cache.json`); `llm_judge_cache.json` and
 `seismic_kimi_judge_cache.json` were never touched.
 Result: `data/eval_results/bm25_seismic_spike_quality_idf_in_doc_20260801_2227.json`
@@ -262,9 +262,9 @@ Result: `data/eval_results/bm25_seismic_spike_quality_idf_in_doc_20260801_2227.j
 | `exact_vec` (exact BM25F) | 0.8629 | 0.8672 | 0.9268 | 0.5017 | 1.5325 |
 | `seismic_idf_in_doc` | **0.8621** | 0.8672 | 0.9268 | 0.5008 | 1.5308 |
 
-**Δ vs tantivy = −0.0057 NDCG@10 (−0.66%)** — noise at n=120. And the split is
-attributable: `exact_vec` is itself −0.57% vs tantivy (that is the 28-char token
-truncation + tantivy's fieldnorm quantisation), while **SEISMIC vs exact BM25F is
+**Δ versus tantivy = −0.0057 NDCG@10 (−0.66%)** — noise at n=120. And the split is
+attributable: `exact_vec` is itself −0.57% versus tantivy (that is the 28-char token
+truncation + tantivy's fieldnorm quantisation), while **SEISMIC versus exact BM25F is
 −0.0008 (−0.08%)**. The engine contributes essentially nothing to the difference.
 
 So swapping the lexical leg to SEISMIC would not measurably change what users
@@ -276,14 +276,14 @@ see. The case against it is cost (§5), not quality.
 
 **Feasible, quality-neutral, and not worth doing.** BM25 vectors go through
 SEISMIC at overlap@10 0.9992 against exact BM25F with **no measurable search
-quality change** (−0.66% NDCG@10 vs tantivy, of which the engine accounts for
+quality change** (−0.66% NDCG@10 versus tantivy, of which the engine accounts for
 −0.08%; §7). The swap is genuinely low-risk on quality.
 
 It fails on cost, and it fails at both ends of the only lever:
 
-- At production params it is **22.4× tantivy on disk** (1,742 MB vs 77.8 MB;
-  *est.* ~1.26 TB vs 29 GB at 150M) — and it is exact only because the pruning
-  budget is 95× oversized, i.e. SEISMIC is behaving as a plain clustered
+- At production parameters it is **22.4× tantivy on disk** (1,742 MB versus 77.8 MB;
+  *est.* ~1.26 TB versus 29 GB at 150M) — and it is exact only because the pruning
+  budget is 95× oversized, that is, SEISMIC is behaving as a plain clustered
   inverted index, which is what tantivy already is.
 - Turn the pruning on hard enough to matter and quality collapses to **0.3942
   overlap / 0.600 top-1** while still costing **7.1×** tantivy — and depth-100
@@ -347,13 +347,13 @@ compressed postings**. That yields one engine, at ~3 B/posting, mmap'd, no JVM,
 serving BM25F *and* SPLADE.
 
 Scope and risks of B (unestimated — no spike run):
-- A Rust crate + Python binding; the repo already vendors forks, so this is
+- A Rust crate + Python binding; the repository already vendors forks, so this is
   familiar ground.
 - Impact quantisation is already a solved constant here (`QUANT_SCALE=70`).
 - The real work is **pruning**: a naive custom scorer has no block-max skipping,
   so SPLADE's 64-term queries would traverse full lists. Restoring it means
   storing a per-block max impact and wiring it into tantivy's block-max WAND —
-  i.e. building an impact-ordered index inside tantivy. That is the substantive
+  that is, building an impact-ordered index inside tantivy. That is the substantive
   piece, and it is exactly the "new scorer inside tantivy" the earlier
   effort/ROI verdict priced.
 
@@ -396,7 +396,7 @@ mmap/low-RAM · 150M docs):
 | **Qdrant** | ✅ dense + sparse + BM25-via-FastEmbed | ✅ Rust | ⚠️ server | ❌ mutable-first | ❌ **measured here: OOMs at 150M, needs ≥64 GB** |
 | Elasticsearch / OpenSearch | ✅ | ❌ JVM | ❌ | ❌ | ✅ |
 
-**Verdict vs `archive/sparse_engine_project/WHY_NO_FOSS.md` (2026-06-25).** That doc's
+**Verdict versus `archive/sparse_engine_project/WHY_NO_FOSS.md` (2026-06-25).** That doc's
 core claim — the no-JVM + immutable + all-three-legs + 150M intersection is
 empty — **still holds**, with one update: **Infinity now has an in-process
 embedded mode**, moving it from "a whole new DB to adopt" to "a library you could
@@ -471,7 +471,7 @@ remain *projected*, unmeasured.
 
 The 24 GB → est. 9–12 GB size projection in §8 is **not** validated or refuted
 here; this spike measured latency only. The on-disk figures the bench prints
-(161 MB tantivy vs 39 MB SQLite) are **not** a size comparison — the tantivy
+(161 MB tantivy versus 39 MB SQLite) are **not** a size comparison — the tantivy
 indexes also carry indexed abstract text the SQLite file does not hold.
 
 ### Side finding, and the more valuable one: `PRAGMA cache_size`
@@ -542,8 +542,8 @@ Four arms, same ids, same filter. p50 ms, warm, spike corpus:
 
 All four arms returned identical survivor sets at both selectivities.
 
-**Pushing the filter into the query saves essentially nothing** — 5.82 vs 5.87
-ms at 100 ids, 19.70 vs 20.88 at 1000 — even at 5.6% selectivity, where it
+**Pushing the filter into the query saves essentially nothing** — 5.82 versus 5.87
+ms at 100 ids, 19.70 versus 20.88 at 1000 — even at 5.6% selectivity, where it
 avoids fetching 94% of the rows. That is the informative part: **the cost is the
 `term_set_query` id fan-out itself, not the row fetching and not the Python
 mask.** C1's promised saving was never where the time goes, so removing the mask
@@ -593,7 +593,7 @@ either direction, and the C1 comparison had to be re-run against the real index.
 - Ids are **real** (random existing rowids, found by PK probing rather than
   scanning) and **disjoint across repetitions**, so no rep warms another.
 
-p50 ms, 10-section fan-out vs production `meta.sqlite`:
+p50 ms, 10-section fan-out versus production `meta.sqlite`:
 
 | ids | sqlite (default cache) | sqlite (64 MB) | sqlite (1 GB) | tantivy ×10 fan-out | tantivy / best sqlite |
 |---|---|---|---|---|---|
@@ -721,7 +721,7 @@ abandoned as not decision-relevant, since C3's flat file removes both.)*
 
 **Block reads are 93% of the cost at k=100.** The locator is 1.3–9.2%. And
 random ids touch one distinct block each (22 docs/block, so no sharing), at a
-rock-steady **1.29 ms/block** — min ≈ p50 ≈ max, i.e. pure cold random I/O.
+rock-steady **1.29 ms/block** — min ≈ p50 ≈ max, that is, pure cold random I/O.
 
 ### The locator half of C3 is a regression
 
@@ -752,7 +752,7 @@ in a file of exactly the production size:
 | 50 | 64.52 ms | 16.76 ms | **3.85× faster** |
 | 100 | 129.41 ms | 33.94 ms | **3.81× faster** |
 
-0.34 ms/block vs 1.29. Applied to the dominant stage, projected k=100 hydration
+0.34 ms/block versus 1.29. Applied to the dominant stage, projected k=100 hydration
 becomes ~1.75 (locator, kept in SQLite) + 33.94 + 5.07 ≈ **40.8 ms, down from
 136.9 — a ~3.4× speedup** on abstract hydration. *(Projection, not an
 end-to-end measurement: no flat-file store was built. The probe measures the
@@ -860,7 +860,7 @@ may degrade differently. The ratio is the claim, not the absolute.
 
 The first size run used synthetic titles and reported Lance 3.23× smaller. That
 was **wrong** — formulaic titles dictionary-compress far better than real ones.
-Re-run on the **first 2M real rows of production `meta.sqlite`** (avg title 88
+Re-run on the **first 2M real rows of production `meta.sqlite`** (average title 88
 chars):
 
 | | Lance | SQLite | ratio |
@@ -945,7 +945,7 @@ not the bottleneck — only the term dictionary is.
 
 The ratios span 22×–2491× and are **noisy** — absolute times are sub-millisecond,
 so small variance moves the multiple a lot (an independent earlier run measured
-the k=100 mask at 0.405 ms vs 1.012 ms here). **The durable claim is not a
+the k=100 mask at 0.405 ms versus 1.012 ms here). **The durable claim is not a
 specific multiple**: it is that the ordinal path stays sub-millisecond to
 low-milliseconds at every k where SQLite costs 38–400 ms — one to three orders
 of magnitude, reproduced across two independent runs.
@@ -1037,7 +1037,7 @@ and is required before this becomes a plan:
 > **`meta.sqlite` removal now has a measured route** (doc 18 §15, 2026-08-03),
 > reversing the "can never be removed" reading of §13's latency-grounds
 > rejection: a per-record zstd title/DOI store plus the already-built ordinal
-> columns replaces it for **14.69 GB vs 24.91 GB** while `_hydrate` gets
+> columns replaces it for **14.69 GB versus 24.91 GB** while `_hydrate` gets
 > *faster* (0.70× mainline). **Nothing is built**, and the latency half is a
 > 1M-doc extrapolation, not a 150M result. Until it is built, the ordinal
 > arrays remain **additive** to the 24.9 GB rather than a replacement.

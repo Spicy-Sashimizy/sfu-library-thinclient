@@ -66,7 +66,7 @@
 - **NO-GO** on **borrowing Lucene's docid or routing** (`04_LUCENE_BORROW.md`
   §6) — they are the opposite of the idea's only novel parts.
 - **NO-GO** on shipping any of it to the serving path **without measured
-  numbers** (per the repo's efficacy rule): no "should improve X" in docs.
+  numbers** (per the repository's efficacy rule): no "should improve X" in docs.
 - **NO-GO** on touching the lexical/dense legs — sparse-leg only.
 
 ## One-line verdict

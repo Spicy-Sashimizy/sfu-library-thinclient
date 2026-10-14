@@ -4,7 +4,7 @@
 
 **2026-07-17. DESIGN SPEC (owner-requested). Implementation delegated to the
 deployprep wave-5 drive session; this doc is the contract.** Grounded in the
-research below + this repo's measured latencies (WI-1/6/7/11).
+research below + this repository's measured latencies (WI-1/6/7/11).
 
 ## 1. Search-progress indication (honest, threshold-staged)
 
@@ -66,6 +66,13 @@ localStorage):**
 notices, and the backend pill can NEVER be hidden — reliability signals are
 not clutter (ties to `WEBGUI_RELIABILITY_RESEARCH.md` L4).
 
+**Analytics app data rule (2026-10-12):** the "About this index" app shows only figures
+the `/analytics` bundle supplies; a panel without data renders an explicit state
+("Not wired: <reason>", "Awaiting click data: N of 20 clicks"), never a placeholder
+number. In mock mode every panel is a "live backend unavailable" stub and the demo
+banner stays. Engagement posting from the search app is invisible to the user and never
+affects the banner, degraded notices or backend pill.
+
 **Constraints:** no serving-path/API changes; pixel work stays inside
 `web/`; a11y baseline (base.css) preserved; suite shell keeps hidden apps
 unmounted (don't load iframes for toggled-off apps — that's also a
@@ -73,4 +80,4 @@ reliability win); e2e sweep extended to cover default-bare state, each
 toggle, persistence across reload, and skeleton/countdown states with zero
 console errors and zero layout shift.
 
-*Sources: [NN/g skeleton vs progress vs spinner](https://www.nngroup.com/videos/skeleton-screens-vs-progress-bars-vs-spinners/) · [NN/g Skeleton Screens 101](https://www.nngroup.com/articles/skeleton-screens/) · [Response time in UX](https://www.fundament.design/p/response-time-in-ux) · [skeleton-vs-spinner evidence](https://www.onething.design/post/skeleton-screens-vs-loading-spinners) · [IxDF progressive disclosure](https://ixdf.org/literature/topics/progressive-disclosure) · [Algolia search-UX density](https://www.algolia.com/blog/ux/information-density-and-progressive-disclosure-search-ux) · [UXPin progressive disclosure](https://www.uxpin.com/studio/blog/what-is-progressive-disclosure/)*
+*Sources: [NN/g skeleton versus progress versus spinner](https://www.nngroup.com/videos/skeleton-screens-vs-progress-bars-vs-spinners/) · [NN/g Skeleton Screens 101](https://www.nngroup.com/articles/skeleton-screens/) · [Response time in UX](https://www.fundament.design/p/response-time-in-ux) · [skeleton-vs-spinner evidence](https://www.onething.design/post/skeleton-screens-vs-loading-spinners) · [IxDF progressive disclosure](https://ixdf.org/literature/topics/progressive-disclosure) · [Algolia search-UX density](https://www.algolia.com/blog/ux/information-density-and-progressive-disclosure-search-ux) · [UXPin progressive disclosure](https://www.uxpin.com/studio/blog/what-is-progressive-disclosure/)*

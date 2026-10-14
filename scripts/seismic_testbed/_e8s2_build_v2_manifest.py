@@ -12,7 +12,7 @@ import json, sys, time
 from pathlib import Path
 
 REPO = Path("/workspaces/sfu-library-thinclient")
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 PLAN01 = REPO / "data/seismic_150m/index/plan01"
 V1 = REPO / "data/eval_results/seismic_c25_shards_150m_mmap_e5.json"
 OUT = REPO / "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json"

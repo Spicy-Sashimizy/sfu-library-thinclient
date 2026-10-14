@@ -23,7 +23,7 @@ path: **p50 53.8 ms = encode 19.5 + traverse 33.7** (2026-07-08, doc 08 §A4).
 Every traversal-side lever is measured or queued; nothing else touches ~36%
 of *every* query. The literature ceiling is dramatic: inference-free learned
 sparse retrieval (Li-LSR, arXiv 2505.01452) replaces the query transformer
-with a per-token score lookup (~0.8 ms vs ~24 ms encode) *without* losing
+with a per-token score lookup (~0.8 ms versus ~24 ms encode) *without* losing
 quality on MS MARCO/BEIR — but only when the query side is trained/derived
 against the SAME doc space. That constraint is the whole design problem here.
 
@@ -56,7 +56,7 @@ over the vocab (weights = term importances, including *expansion* terms that
 never appear in the text). Training = contrastive ranking loss on
 query–doc pairs (hard negatives) + distillation from a cross-encoder
 teacher + a **FLOPS/L1 sparsity regularizer** that directly controls how
-many nonzeros docs/queries get — i.e. index size and traversal cost are
+many nonzeros docs/queries get — that is, index size and traversal cost are
 *training-time knobs*, not just serving knobs. Query and doc sides may be
 the same model (symmetric — our setup) or two models trained jointly
 (Efficient-SPLADE pairs a BERT-tiny query encoder with a large doc encoder;
@@ -82,7 +82,7 @@ family fails outright, C5 opportunistically alongside any run.
 ## 4. Gates (pre-registered — inherited from the D-track)
 
 1. **Stage-0, fully offline, per candidate:** n≥100 real queries; merged
-   federated overlap@10 vs the served fp32 encoder **≥ 0.99** (the bar that
+   federated overlap@10 versus the served fp32 encoder **≥ 0.99** (the bar that
    killed D1 and FastGelu), measured on worst-case shards 1–2 AND the merged
    8-shard top-10; overlap@50 recorded as the tail check; same-process
    interleaved A/B only (D2 methodology rule). Result JSON
@@ -113,7 +113,7 @@ encode + full shard rebuild + E7 dv conversion + E5 reorder + every gate
 re-run — the same pipeline as REBUILD_TO_PERSISTENT_PATH plus conversions),
 the calculus changes from "derive" to "choose/train the pair jointly":
 
-- **Off-the-shelf pair** (e.g. OpenSearch doc-v3 + its lookup query side,
+- **Off-the-shelf pair** (for example, OpenSearch doc-v3 + its lookup query side,
   or Efficient-SPLADE large-doc + tiny-query): zero training cost,
   production-proven inference-free query path — but generic-domain
   (MS MARCO-trained), fixed vocab, and no control over sparsity/index
@@ -127,7 +127,7 @@ the calculus changes from "derive" to "choose/train the pair jointly":
      C1's approximation exact by construction and deleting the encoder
      permanently;
   3. **Index-geometry control** — the FLOPS regularizer tunes nnz/doc
-     against OUR posting-list/page-touch economics (docs 09/10/13), i.e.
+     against OUR posting-list/page-touch economics (docs 09/10/13), that is,
      the index size and cold-path cost become training-time levers.
 - **Cost either way** is dominated by the re-encode + rebuild, not the
   training — so *if* the branch is ever taken, custom (or
@@ -139,9 +139,9 @@ the calculus changes from "derive" to "choose/train the pair jointly":
 ### 5.1 The training-tier prechecks that PRODUCE the custom-vs-shelf verdict
 
 (Registered 2026-07-10, after the cheap tier measured out — §6. All three
-are GPU/training-tier, multi-day; none can run in the dev container alone.)
+are GPU/training-tier, multi-day; none can run in the development container alone.)
 
-> **CORRECTION 2026-07-28:** the "none can run in the dev container" clause is
+> **CORRECTION 2026-07-28:** the "none can run in the development container" clause is
 > stale — the current container has working CUDA access to the host's RTX
 > 4070 Ti SUPER (16 GB VRAM; verified `torch 2.6.0+cu124`
 > `cuda.is_available()=True` in the project venv). The C4 distillation build
@@ -157,13 +157,13 @@ are GPU/training-tier, multi-day; none can run in the dev container alone.)
 1. **C4 distillation build (decides the last same-space candidate):**
    truncate the served model to 4 layers, distill on real+pseudo queries
    (doc titles from meta.sqlite as pseudo-queries; teacher = the served
-   12-layer model's qvecs; loss = ranking-aware, e.g. margin-MSE on sampled
+   12-layer model's qvecs; loss = ranking-aware, for example, margin-MSE on sampled
    doc pairs). Gate = §4 unchanged (0.99 merged + shards 1–2). PASS moots
    the re-encode branch at ~4–8× encode; KILL closes same-space entirely.
 2. **Domain pilot (shelf arm):** encode a ~1M-doc corpus slice with an
    off-the-shelf inference-free pair (OpenSearch doc-v3-distill + its
    lookup query side); build a small SEISMIC index on the slice; score the
-   n=120 LLM-judge query set vs the same slice under the served model.
+   n=120 LLM-judge query set versus the same slice under the served model.
    Measures the actual domain-mismatch cost — the fact that decides if
    shelf is in the running at all.
 3. **Fine-tune probe (custom arm):** same shelf doc model, briefly
@@ -179,17 +179,17 @@ are GPU/training-tier, multi-day; none can run in the dev container alone.)
   The §5.1 precheck-1 training-tier build, run in-container on the 4070 Ti
   SUPER (per the §5.1 correction). Full pre-registration doc 11 §Q11-C4.
   Teacher = torch reconstruction of the served encoder from the ONNX
-  initializers, parity max|Δ| 6.7e-5 / top-64 overlap 1.0 vs the ONNX
+  initializers, parity max|Δ| 6.7e-5 / top-64 overlap 1.0 versus the ONNX
   session (`q11_c4_teacher_parity_20260728_1905.json`). Distill set 480k
   meta.sqlite titles + 97 real queries (gate/judge sets held out). Round 1
   (qvec-MSE in serving space, 3 epochs): gate **merged 0.690 / shards
-  0.643–0.667** overlap@10 vs bar 0.99
+  0.643–0.667** overlap@10 versus bar 0.99
   (`q11_c4_distill_gate_20260728_2007.json`). Escalation round (single,
   pre-registered; margin-MSE over 40k REAL shard-1/2 forward doc vectors +
   6 more epochs): gate **merged 0.760 / shard1 0.726 / shard2 0.752**,
   proxy and losses plateaued — an objective/capacity ceiling, not
   undertraining (`q11_c4_distill_gate_20260728_2127.json`). Encode p50
-  17.65 vs fused 29.90 ms (1.69×, student unfused — moot at KILL). KALE's
+  17.65 versus fused 29.90 ms (1.69×, student unfused — moot at KILL). KALE's
   92.5% retention did NOT transfer to a 0.99-overlap regime: distillation
   recovered 0.46 → 0.76, nowhere near the bar. Scripts
   `scripts/seismic_testbed/q11_c4_{teacher_from_onnx,build_distill_set,train_student,train_student_v2,gate_student}.py`.
@@ -239,8 +239,8 @@ are GPU/training-tier, multi-day; none can run in the dev container alone.)
   destroyed, not merely degraded — AND encode p50 228 ms = **5.5× slower**
   on this CPU (QDQ without a VNNI path; timing contended but the direction
   is unambiguous). With D1's dynamic-int8 at 0.79, the int8-encoder family
-  has now measured 0.006–0.79 across its spectrum vs the 0.99 bar —
-  **the family is dead**; milder configs (op-exclusions, weights-only)
+  has now measured 0.006–0.79 across its spectrum versus the 0.99 bar —
+  **the family is dead**; milder configurations (op-exclusions, weights-only)
   remain unmeasured but are bounded by the same asymmetry evidence.
   `scripts/seismic_testbed/q11_c5_static_int8.py`,
   `data/eval_results/q11_c5_static_int8_20260710_0252.json`.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — P2 STEP 1: build a persona-sized `.bmp` from spool_backup.
 
 Loads ONE section from `spool_backup/` and builds it via the stock

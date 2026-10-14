@@ -61,7 +61,7 @@ def main() -> None:
 
     import numpy as np  # noqa: F401  (used in _spearman)
     import sys
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     import lib.reranker as reranker
     from sentence_transformers import CrossEncoder
 

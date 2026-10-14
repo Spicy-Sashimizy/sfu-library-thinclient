@@ -66,7 +66,7 @@ def ndcg_at_k(gains_in_order: list[float], k: int) -> float:
 
 
 def main() -> None:
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from sentence_transformers import CrossEncoder
 
     qrels = json.loads(QRELS.read_text())["topics"]

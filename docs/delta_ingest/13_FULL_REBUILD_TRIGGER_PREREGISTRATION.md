@@ -23,7 +23,7 @@ shards (optionally re-sharded), packer/hot-cold lists, and an emptied delta.
 1. **The sections tier never folds.** tantivy, meta and abstract copies of
    every updated or new doc stay in the delta's consolidated generation
    (doc 10 §4: no rebuild input, because the base tantivy does not store
-   `title`/`abstract` — `src/lib/thinclient/builder.py` schema `stored=False`,
+   `title`/`abstract` — `source/lib/thinclient/builder.py` schema `stored=False`,
    checked 2026-10-08 — and the base export spool is gone).
 2. **Base dead copies are never reclaimed** in tantivy/meta/sidecars
    (`02_DESIGN.md` §4 item 8); a fold removes them only from SEISMIC.

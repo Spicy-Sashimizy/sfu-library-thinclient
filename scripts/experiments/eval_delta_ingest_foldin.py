@@ -241,7 +241,7 @@ def cmd_encode(a) -> int:
     enc = {s: src["encoded"][name] for s, name in SETS.items()}
     texts = {s: src["texts"][name] for s, name in SETS.items()}
     assert len(enc["QT"]) == 120 and len(enc["QD"]) == 100
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     os.chdir(REPO)
     from lib.opensearch_retriever import encode_splade
     qa = json.loads(QA_QUERIES.read_text())
@@ -429,7 +429,7 @@ def cmd_build(a) -> int:
 
 # ── F-arm preview root ──────────────────────────────────────────────────────
 def make_preview(delta_root: Path, shard: int, fold: int | None, fold_root: Path, out_dir: Path, cfg=None) -> dict:
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO))
     from spike.delta_ingest import foldin
     delta_root = Path(delta_root)
@@ -565,7 +565,7 @@ def leg_query(r, b, origins: list, terms: list, shard: int, truth: dict, route: 
 
 def cmd_measure(a) -> int:
     t_start = time.time()
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO))
     os.chdir(REPO)
     import logging

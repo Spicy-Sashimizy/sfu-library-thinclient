@@ -47,7 +47,7 @@ from datetime import datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "seismic_testbed"))
 
 log = logging.getLogger("q7_bench")

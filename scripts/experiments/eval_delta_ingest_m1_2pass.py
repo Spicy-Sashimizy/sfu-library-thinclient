@@ -320,7 +320,7 @@ def child(args) -> int:
 
 def snapshot(commit: str, scratch: Path) -> Path:
     snap = scratch / f"code_{commit[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src | tar -x -C {snap}", shell=True)
         for name in ("models", "data", ".env"):
@@ -363,7 +363,7 @@ def run_arm(arm: str, args, snap: Path, env: dict, scratch: Path, deadline: floa
     cmd = lock + ["nice", "-n", "10"] + (["taskset", "-c", cpus] if cpus else []) + [
         args.python or sys.executable, str(snap / "scripts" / "experiments" / Path(__file__).name),
         "child", "--arm", arm, "--passes", str(args.passes), "--scratch", str(scratch),
-        "--limit-topics", str(args.limit_topics), "--src", str(snap / "src")] + (
+        "--limit-topics", str(args.limit_topics), "--src", str(snap / "source")] + (
         ["--deadline", args.deadline] if args.deadline else [])
     attempts = []
     rc = None
@@ -410,7 +410,7 @@ def drive(args) -> int:
                  "parallel": args.parallel, "lock": "NONE (--no-lock)" if args.no_lock else ("flock -s " if args.lock_shared else "flock ") + LOCK,
                  "model_files": model_checksums(base_env),
                  "dirty_src_at_launch_not_measured": subprocess.check_output(
-                     ["git", "-C", str(REPO), "status", "--short", "src"], text=True).splitlines(),
+                     ["git", "-C", str(REPO), "status", "--short", "source"], text=True).splitlines(),
                  "empty_root": {"path": str(empty_root), "listing_before": dir_listing(empty_root)},
                  "arms": {}}
     (scratch / "drive.json").write_text(json.dumps(drive_rec, indent=1) + "\n")

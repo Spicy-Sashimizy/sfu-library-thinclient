@@ -22,11 +22,11 @@ The bet (design-only until measured): `8 × per_shard_swapfree ≪ 76 s`.
 
 Reuse the clean-measurement discipline from
 [`../seismic_150m_testbed/08_LATENCY_RESEARCH.md`](../seismic_150m_testbed/08_LATENCY_RESEARCH.md) §A:
-1. **Warm vs cold:** run ≥2 passes; report **warm p50** (a one-pass cold number is
+1. **Warm versus cold:** run ≥2 passes; report **warm p50** (a one-pass cold number is
    fault-storm noise, the G8 mistake).
 2. **`vmtouch`** before each run to record shard residency; optionally pre-warm.
 3. **Encode/traverse split on** (`search_with_timing`, already shipped) so a high
-   p50 is attributed to the SPLADE encoder vs SEISMIC traversal — not left a
+   p50 is attributed to the SPLADE encoder versus SEISMIC traversal — not left a
    mystery (the G8 `efce80e` fix).
 4. Pin the query set to the existing 40/120-query parity set for comparability.
 
@@ -35,7 +35,7 @@ Reuse the clean-measurement discipline from
 | Metric | Source | Why |
 |---|---|---|
 | p50 / p95 / mean latency | wall clock, warm pass | the demo-usability verdict |
-| encode_ms vs traverse_ms | `search_with_timing` | which term to optimise next |
+| encode_ms versus traverse_ms | `search_with_timing` | which term to optimise next |
 | per-shard traverse_ms | serial loop timing | is one shard a straggler? |
 | peak RssFile | `/proc/self/status` | G-SEQ-1 (bounded RAM) |
 | **VmSwap** | `/proc/self/status` | **G-SEQ-3 precondition — must be 0** |
@@ -49,7 +49,7 @@ passes + the split). Results → `data/eval_results/seismic_seq_vs_par_<date>.js
 > **Update 2026-06-30 — H3 + H4 now have supporting evidence from the C1 sweep**
 > (`08_LATENCY_RESEARCH.md` §C1, `seismic_sweep_c1_querycut_heapfactor_20260630.json`,
 > measured on the 100K testbed index `[OURS]`). The warm encode/traverse split came
-> back **encode ~26–35 ms vs traverse 1.7–6.7 ms** — i.e. the SPLADE fp16 encoder is
+> back **encode ~26–35 ms versus traverse 1.7–6.7 ms** — that is, the SPLADE fp16 encoder is
 > the dominant warm term and SEISMIC traversal is cheap. This **strengthens the
 > whole sequential case**: the cost sequential adds is the *traverse* term (sum-of-
 > shards), which is the small one; the dominant *encode* (~30 ms) is paid **once per
@@ -60,12 +60,12 @@ passes + the split). Results → `data/eval_results/seismic_seq_vs_par_<date>.js
 > (~30 ms, corpus-independent) does. The numbers below are the 150M re-measurement.
 
 - **H1:** sequential warm p50 on the 31.6 GB box is **single-digit seconds** (8 ×
-  swap-free per-shard), vs parallel's ~76 s swap-storm. *(If false → KILL per `00`.)*
+  swap-free per-shard), versus parallel's ~76 s swap-storm. *(If false → KILL per `00`.)*
   *(C1 evidence makes the optimistic end likely — traverse is the cheap term.)*
 - **H2:** sequential `VmSwap == 0` while parallel `VmSwap > 0` on the same box. *(The
   mechanism check — bounded working set actually avoids swap.)*
 - **H3 — SUPPORTED (100K, `[OURS]`):** the encode/traverse split shows the SPLADE
-  encoder is the **dominant** warm term (~30 ms vs ~few ms traverse), and it runs
+  encoder is the **dominant** warm term (~30 ms versus ~few ms traverse), and it runs
   once/query regardless of mode → the int8 encoder lever (`08` §D) helps **both**
   modes and is the top latency lever after the swap fix; gate on overlap@10 parity.
   Re-confirm the magnitudes at 150M.
@@ -129,7 +129,7 @@ shape of each mode:
 | **T1 parity** | — | — | **BIT_IDENTICAL 0/2000 × 2 reps** | P4 mandatory ✅ |
 
 **Headline numbers (recomputed from the raw JSON, F6 discipline):**
-- **P1 (warm latency):** sequential warm p50 **5.29×** parallel (248 vs 47 ms) —
+- **P1 (warm latency):** sequential warm p50 **5.29×** parallel (248 versus 47 ms) —
   the cost of sum-of-shards over max-of-shards; **P1 prediction (1.5–4×) modestly
   exceeded.** Encode is once-per-query near-neutral (1.16×, H3 reconfirmed): the
   entire warm gap is the traverse term (8.05×), the small-per-shard cost summed
@@ -137,11 +137,11 @@ shape of each mode:
   second, demo-usable, but the cheaper-and-faster-simultaneously hope from the
   100K testbed model did **not** survive the 150M re-measurement (traverse is no
   longer negligible at full corpus; the doc-04 optimistic model flagged this).
-- **P2 (cold latency):** sequential cold p50 **0.98×** parallel (2572 vs 2623 ms)
+- **P2 (cold latency):** sequential cold p50 **0.98×** parallel (2572 versus 2623 ms)
   — reaffirms doc 13 §5's finding that 8-way cold fan-out contends on the 9p
   channel; sequential (one shard faulting at a time) is not slower and marginally
   faster cold. **P2 PASS.**
-- **P3 (peak RSS):** sequential peak RssFile **0.27 GB** vs parallel **11.74 GB**
+- **P3 (peak RSS):** sequential peak RssFile **0.27 GB** versus parallel **11.74 GB**
   — **0.023× (×44 less resident)**. The resident-bounding deliverable, robustly
   measured even with RAM ample: mechanism B (`release_pages` after each shard)
   holds sequential's working set to ~a shard's transient forward pages + the
@@ -158,7 +158,7 @@ constrained 31.6 GB host** — this container's 64 GB cannot reproduce swap-stor
 parallel, so H1's "≪ 76 s" comparison is unmeasured here and recorded as the open
 host-queue item. What IS decided: on a host where parallel CAN run swap-free
 (≥ ~16 GB), **parallel is the faster-serving choice** (warm 5.29× cheaper) and
-sequential's value is **exclusively the RAM floor** (0.023× resident) — i.e.
+sequential's value is **exclusively the RAM floor** (0.023× resident) — that is,
 sequential earns its keep ONLY where parallel can't fit (the original motivation,
 vindicated on the resident axis, measured at last). Open lever for the warm gap
 (P1 exceeded, pending: is 250 ms demo-usable enough?): the H4 free dials — query_cut

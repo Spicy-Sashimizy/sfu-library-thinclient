@@ -20,14 +20,15 @@ MCP_HTTP_PORT=8080 ../.venv/bin/python3 -m uvicorn sfu_library_mcp_http:app --ho
 |---|---|
 | `suite.html` | shell; keeps one iframe per app **alive** and toggles them (no reload/flash on switch); shows a loader until an app mounts; **refuses to mount iframes for apps toggled off** in Settings → Interface (shows a notice instead) and tears them down when toggled off mid-session |
 | `search.html` / `analytics.html` / `index_manager.html` | thin HTML shells that load the **precompiled** `*.js` |
-| `src/*.jsx` | **editable source** for each app (`_sidebar.jsx` is prepended into every app by the build) |
+| `source/*.jsx` | **editable source** for each app (`_sidebar.jsx` is prepended into every app by the build) |
 | `search.js` / `analytics.js` / `index_manager.js` | **auto-generated** by the build — do not edit |
-| `lib/api.js` | `window.SFUApi` — live backend calls (`health`, `search`, `searchStream`, `speculate`, `analytics`, `unpack`) with mock fallback; surfaces HTTP 429 as `{source:"retry", retryAfter}` and passes through `degraded`/`degraded_shards` |
+| `lib/api.js` | `window.SFUApi` — live backend calls (`health`, `search`, `searchStream`, `speculate`, `analytics`, `unpack`, plus the `engagement` event client added 2026-10-12) with mock fallback; surfaces HTTP 429 as `{source:"retry", retryAfter}` and passes through `degraded`/`degraded_shards` |
 | `lib/mock.js` | `window.SFUMock` — sample/fallback data |
 | `lib/ui.js` | `window.SFUUI` — the demo-data corner pill |
-| `lib/interface_prefs.js` | `window.SFUUI` bare-bones Interface prefs (§2): localStorage-persisted toggles for which nav items/apps are shown; broadcasts `suiteInterfacePrefs` so the shell unmounts toggled-off apps |
+| `lib/interface_prefs.js` | extends `window.SFUUI` (created by `lib/ui.js`) with the bare-bones Interface prefs (§2): localStorage-persisted toggles for which nav items/apps are shown; broadcasts `suiteInterfacePrefs` so the shell unmounts toggled-off apps |
 | `lib/base.css` | shared UX/accessibility baseline (reduced-motion, focus rings, responsive) |
 | `vendor/` | React 18.3.1 + ReactDOM (served) + Babel-standalone (build-time only) |
+| `CLAUDE.md` | agent rules for this directory (contracts, verify commands, `?v=duckN` cache-token rotation, engagement literal pinning) |
 
 ## Live vs. demo data
 
@@ -69,19 +70,23 @@ reload); the browser-level sweep is `scripts/e2e_sweep.mjs` PASS 6.
 `GET /health`, `POST /api/search`, `POST /api/search_stream` (only when the
 server advertises the draft stream, gate `SFU_SEARCH_DRAFT_STREAM`),
 `POST /api/speculate` (gate `SFU_SEARCH_SPECULATE`), `GET /analytics`,
-`POST /api/unpack`. As of 2026-10-11 the GUI calls nothing else: the
-`SFUApi.indexStatus`/`personas`/`engagement` clients were removed (no caller;
-the Index Manager renders static constants and no GUI action posts engagement
-events), though the server still serves `/api/index_status`, `/api/personas`
-and `/engagement`. See `docs/THIN_CLIENT_SWAP.md` → "Web GUI" for details.
+`POST /api/unpack`, `POST /engagement`. The `SFUApi.indexStatus`/`personas`
+clients were removed 2026-10-11 (no caller); the server still serves
+`/api/index_status` and `/api/personas`. Since 2026-10-12 the search app posts
+engagement events through `SFUApi.engagement` (per-tab session id in
+`sessionStorage`, batched `{events:[...]}` flushes with `fetch(..., {keepalive:
+true})` every 2 s or at 50 events, `navigator.sendBeacon` on `pagehide`; never
+posts in mock mode), and the analytics app ("About this index") renders every
+panel of the `/analytics` bundle, stub panels as "Not wired: <reason>". See
+`docs/THIN_CLIENT_SWAP.md` → "Web GUI" for details.
 
 ## Editing & build
 
 The apps are **precompiled** for fast loads (no in-browser Babel). To change an
-app, edit its source in `web/src/<app>.jsx`, then rebuild:
+app, edit its source in `web/source/<app>.jsx`, then rebuild:
 
 ```bash
-node scripts/build_web.mjs        # compiles src/*.jsx -> web/*.js (uses vendored Babel)
+node scripts/build_web.mjs        # compiles source/*.jsx -> web/*.js (uses vendored Babel)
 ```
 
 `lib/*.js`, `lib/base.css`, and `suite.html` are plain JS/CSS — edit directly, no

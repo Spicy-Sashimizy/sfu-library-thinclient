@@ -3,7 +3,7 @@
 **Status:** ACTIVE — BUILD COMPLETE (2026-06-28); serve half — C2.5 mmap binding GREEN + persona-validated (2026-06-28); the 150M shard-to-mmap conversion is the turnkey next step (driver shipped, run not started). **Solves:** the 150M build-RAM wall, *losslessly*, on a 32 GB host, with **no JVM**.
 
 - **Federation gate PASSED 2026-06-28** (the one quality variable this plan
-  introduces). 2-shard federated vs 1-shard single over the same 929k med_bio docs:
+  introduces). 2-shard federated versus 1-shard single over the same 929k med_bio docs:
   overlap@10 **0.9967** over 60 queries (58/60 bit-identical, 2/60 at 0.9) →
   `FEDERATION_RESULT_SAFE` (bar ≥0.98, STOP <0.95). Per-shard pruning/k-means
   perturbation is ~0.3% of top-10. **A sharded 150M build is result-safe to trust a
@@ -79,17 +79,17 @@ CPU for a lot of build-RAM safety.)
 
 ## Build steps
 
-1. **Shard the spool deterministically.** Hash `oaid → shard_id` (e.g.
+1. **Shard the spool deterministically.** Hash `oaid → shard_id` (for example,
    `xxhash(oaid) % K`) so a doc always lands in the same shard and re-runs are
    reproducible. Reuse `spool_to_seismic_jsonl.py` with a `--shard k/K` filter to
    emit `med_bio_shard{0..K-1}.jsonl`. (Hash-partition, NOT range — keeps shards
    balanced in nnz so build-RAM is even.)
-2. **Build each shard with DEFAULTS** (parity-matched to the G2 config: n_postings
+2. **Build each shard with DEFAULTS** (parity-matched to the G2 configuration: n_postings
    3500, centroid_fraction 0.1, summary_energy 0.4, max_fraction 1.5, doc_cut 15) via
    `build_persona_seismic.py`, one shard at a time (a serial queue; never two
    concurrent builds — that would stack the RSS). Record peak_rss / on_disk per shard.
 3. **Persist a shard manifest** (`shards.json`): K, doc counts, paths, the hash seed,
-   build params, per-shard nnz. This is the source of truth for the serving layer.
+   build parameters, per-shard nnz. This is the source of truth for the serving layer.
 
 ## Serving layer (the federation)
 
@@ -99,7 +99,7 @@ A thin Rust (or Python-over-pyseismic) wrapper:
    page cache holds hot forward pages.
 2. **Query fan-out:** run the query against all K shards **in parallel** (rayon /
    thread pool). Each returns its local top-`k'` (over-fetch: `k' = k + buffer`,
-   e.g. top-200 per shard for a global top-50).
+   for example, top-200 per shard for a global top-50).
 3. **Merge:** SEISMIC scores are inner products on a shared vocabulary, so per-shard
    scores are **directly comparable** — merge by raw score, take global top-k. (No
    score normalization needed: same query vector, same dot-product space.)
@@ -118,13 +118,13 @@ A thin Rust (or Python-over-pyseismic) wrapper:
 
 ## Risks / honest caveats
 
-- **Per-shard vs global pruning (the one real quality variable).** SEISMIC computes
+- **Per-shard versus global pruning (the one real quality variable).** SEISMIC computes
   its posting-pruning and k-means *within* each shard, so K-shard top-k is **not
   bit-identical** to a single 150M index. Each shard is still ~18–30M docs (well above
   the persona degeneracy threshold), so the perturbation is expected to be small —
   but it MUST be measured before trusting a G6 result on the sharded index:
-  build a 2-shard vs 1-shard index over the *same* 4M docs, compare overlap@10.
-  Pre-registered: if 2-shard vs 1-shard overlap ≥ 0.98, federation is result-safe;
+  build a 2-shard versus 1-shard index over the *same* 4M docs, compare overlap@10.
+  Pre-registered: if 2-shard versus 1-shard overlap ≥ 0.98, federation is result-safe;
   if < 0.95, fan-out is itself perturbing results and the shard count must drop.
 - **Engineering cost is real.** Shard manager + parallel fan-out + merge + manifest
   is new code (not a flag). Estimate: a focused build, not a one-liner.

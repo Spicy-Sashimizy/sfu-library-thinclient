@@ -94,7 +94,7 @@ pass-1 lesson), so cells and the live demo cannot share the box. Therefore:
   24 GB + margin); ≥ 20 GB free disk maintained on idxvol.
 - **N6 — dev-container isolation.** Nothing in this tier's work modifies the
   dev container's infra: no edits to judged harnesses (Tier-1 spike files,
-  `r2_convergence_ladder.py` at its judged commits), no src/ or MCP-server
+  `r2_convergence_ladder.py` at its judged commits), no source/ or MCP-server
   changes, no local venv installs. New scripts/docs only.
 
 ## 4. Design (two phases, mirroring R1→R2)

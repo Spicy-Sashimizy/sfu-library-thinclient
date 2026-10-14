@@ -45,7 +45,7 @@ covers this.
 
 ## O8 assessment (not fixed: not serving-side)
 
-- The labels are class attributes in `src/lib/thinclient/doc_encoder.py`:
+- The labels are class attributes in `source/lib/thinclient/doc_encoder.py`:
   `SpladeDocEncoder.backend = "pytorch_fp16"` (line ~92) even on CPU, where
   the model stays fp32, and `SpladeDocEncoderTRT.backend =
   "onnxruntime_trt_iob_fp16"` (~166) even when ORT falls back from TensorRT

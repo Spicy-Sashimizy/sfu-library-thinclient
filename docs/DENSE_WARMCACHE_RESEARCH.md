@@ -3,7 +3,7 @@
 **Status:** ACTIVE — v1 shipped; all four success metrics MEASURED 2026-09-25.
 
 The "index that builds itself from what users request" line of research, re-traced
-and turned into the v1 implementation in `src/lib/thinclient/dense_cache.py`.
+and turned into the v1 implementation in `source/lib/thinclient/dense_cache.py`.
 
 ## Where the idea comes from
 
@@ -72,7 +72,7 @@ Regression suite for all three: `scripts/tests/test_dense_cache_v2.py`
 
 #### 1. `merge_dense_delta(index_root)` — IMPLEMENTED; CORRECTNESS MEASURED, SERVING EFFICACY UNMEASURED
 
-`src/lib/thinclient/dense_delta_merge.py` (CLI: `PYTHONPATH=src
+`source/lib/thinclient/dense_delta_merge.py` (CLI: `PYTHONPATH=src
 .venv/bin/python3 -m lib.thinclient.dense_delta_merge <index_root>`, verified
 2026-09-25). Bulk-rebuilds the three seed
 artifacts from seed ∪ delta and truncates `delta.sqlite`:
@@ -84,7 +84,7 @@ artifacts from seed ∪ delta and truncates `delta.sqlite`:
   `ids.json` ↔ `rescore_int8.npy` ↔ `b1.usearch` ↔ `manifest.json`'s `dense`
   block (`DenseDeltaMergeError`).
 - **Atomic per artifact**: `<name>.tmp-<pid>` → fsync → `os.replace`, in the
-  order rescore → b1 → ids, with the dir fsynced after; the delta is truncated
+  order rescore → b1 → ids, with the directory fsynced after; the delta is truncated
   only once all three renames land, so a crash costs a re-merge, never a
   document. An `O_EXCL` `dense/.merge.lock` keeps two merges from interleaving.
 - Seed bits are read back out of the seed index (`Index.get`), never
@@ -117,7 +117,7 @@ results `data/eval_results/dense_delta_index_bench_20260925_0018.json`):
 50 queries × synthetic 384-d unit vectors with planted 20-doc neighbourhoods,
 `fetch=200`, top-10, through the real `DenseWarmCache.search`; 16-core host.
 
-| delta rows | brute p50 / p95 (ms) | usearch p50 / p95 (ms) | p50 speedup | recall@10 vs exact — brute / usearch | bulk build | incremental add |
+| delta rows | brute p50 / p95 (ms) | usearch p50 / p95 (ms) | p50 speedup | recall@10 versus exact — brute / usearch | bulk build | incremental add |
 |---:|---:|---:|---:|---:|---:|---:|
 | 10,000 | 1.38 / 1.72 | 0.72 / 0.83 | **1.9×** | 1.000 / 0.914 | 0.30 s | 149 µs/row |
 | 100,000 | 12.38 / 14.37 | 1.49 / 1.90 | **8.3×** | 1.000 / 0.990 | 1.86 s | 227 µs/row |
@@ -159,7 +159,7 @@ engines, CPU only):
 | batch=32 throughput | 142.9 docs/s | **256.7 docs/s** |
 
 Embedding parity (load-independent): cosine(torch, int8) **mean 0.99493, min
-0.99062**; cosine(sentence-transformers, torch) = 1.000000, i.e. the script's
+0.99062**; cosine(sentence-transformers, torch) = 1.000000, that is, the script's
 hand-written CLS-pool + L2-norm reproduces the served transform exactly, so the
 0.995 is quantization alone. Top-3 neighbour agreement over the 8 distinct
 benchmark topics: **0.958** (the all-64-texts top-5 number, 0.766, is
@@ -184,8 +184,9 @@ is **NOT** measured — and cannot pay off while the leg is off.
 
 #### 4. OpenAlex live-API ingest hook — NOT IMPLEMENTED
 
-(`openalex.py:_push_to_opensearch` repurpose.) v1 still captures the dominant
-path (local legs) only.
+(`openalex.py:_push_to_opensearch` repurpose.) **2026-10-11:** `_push_to_opensearch`
+was removed, so there is nothing to repurpose; the ingest path is `spike/delta_ingest/`
+(`docs/delta_ingest/`). v1 still captures the dominant path (local legs) only.
 
 ### Success metrics — pre-registration (2026-09-01)
 
@@ -197,15 +198,15 @@ path (local legs) only.
    `top_k × OVERFETCH` candidates to rescore, so the stage is a lossy
    prefilter, not an exact scan).
 3. p95 `search_rrf` unchanged with cache on.
-4. Cache-hit fraction of the dense leg vs query count.
+4. Cache-hit fraction of the dense leg versus query count.
 
 ### Success metrics — MEASURED 2026-09-25
 
 | # | Metric | Before → After | Verdict |
 |---|---|---|---|
-| 1 | dense-leg recall@50 vs judged qrels, first 10 queries → last 80 | **0.107 → 0.348** (seed-only baseline flat: 0.109 → 0.141) | **growth confirmed** |
-| 2 | delta search vs exact int8 top-50 over the same delta | mean **0.9978**, min **0.94**, 3/240 queries below 0.97 | **mean PASSES the 0.97 bar, worst case FAILS**; not exact |
-| 3 | p95 `search_rrf` cache on vs off | p50 **3560.5 → 3592.0 ms (+31.5, +0.9%)**; p95 **8890.2 → 8287.8 ms (−602, cache-on *faster*)** | **unchanged — PASSES**, and the wrong-signed p95 bounds the noise floor |
+| 1 | dense-leg recall@50 versus judged qrels, first 10 queries → last 80 | **0.107 → 0.348** (seed-only baseline flat: 0.109 → 0.141) | **growth confirmed** |
+| 2 | delta search versus exact int8 top-50 over the same delta | mean **0.9978**, min **0.94**, 3/240 queries below 0.97 | **mean PASSES the 0.97 bar, worst case FAILS**; not exact |
+| 3 | p95 `search_rrf` cache on versus off | p50 **3560.5 → 3592.0 ms (+31.5, +0.9%)**; p95 **8890.2 → 8287.8 ms (−602, cache-on *faster*)** | **unchanged — PASSES**, and the wrong-signed p95 bounds the noise floor |
 | 4 | cache-hit fraction of the dense leg, first 10 → last 80 queries | **0.000 → 0.592** | **rises as designed** |
 
 - **Script**: `scripts/experiments/eval_warmcache_replay.py`
@@ -223,7 +224,7 @@ path (local legs) only.
 
 Metric 1 says "on a replayed query log". The served log
 `data/eval_results/serve_query_log.jsonl` **cannot be replayed**: `store_raw`
-(`SFU_SERVE_QUERY_LOG_RAW`) was never set, so `src/lib/serve_query_log.py`
+(`SFU_SERVE_QUERY_LOG_RAW`) was never set, so `source/lib/serve_query_log.py`
 writes `query_norm: ""` for every entry and keeps only
 `query_hash = sha1(query_norm)[:16]`. Audited by the harness at run time:
 **2,254 entries, 2,254 with an empty `query_norm`, 733 distinct hashes, zero
@@ -254,7 +255,7 @@ already been replayed:
 | 100–159 | 60 | **0.262** | 0.139 |
 | 160–239 | 80 | **0.348** | 0.141 |
 
-Mean over all 240: **0.2603 cache-on vs 0.1395 seed-only, +0.1207 absolute
+Mean over all 240: **0.2603 cache-on versus 0.1395 seed-only, +0.1207 absolute
 (+86.6% relative)**. The seed-only arm is flat by construction (a static index
 cannot learn), which is the negative control. **The payoff appears between 25
 and 50 queries**, matching the LOCALIZED §5 expectation of ~10–50.
@@ -325,7 +326,7 @@ dense leg's own cost.
 
 **Provenance of the two runs.** The first metric-3 pass ran inside the replay
 process while another agent's Qdrant eval and an ONNX microbench were running:
-`load1 = 11.5` on 16 cores, and it produced p95 on 8564.8 vs off 9650.4 — the
+`load1 = 11.5` on 16 cores, and it produced p95 on 8564.8 versus off 9650.4 — the
 same impossible sign, larger. It is kept in
 `warmcache_metrics_20260925.json` **labelled contaminated**. The authoritative
 numbers above come from `warmcache_metric3_isolated_20260925.json`, taken after

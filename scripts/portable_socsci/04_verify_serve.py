@@ -23,7 +23,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 BUNDLE = Path(os.environ.get("BUNDLE", "/var/tmp/portable_socsci_bundle"))
 BINDEX = BUNDLE / "thinclient_index"

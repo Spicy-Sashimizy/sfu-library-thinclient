@@ -88,7 +88,7 @@ documents that larger storage caches take proportionally long to warm.
 
 1. **The inversion as an observed, quantified phenomenon** — no source found
    reporting a smaller RAM cap beating a larger one on the same workload at
-   a fixed wall-clock/pass window in latency terms (our 12 GB 20 ms vs
+   a fixed wall-clock/pass window in latency terms (our 12 GB 20 ms versus
    16 GB 129 ms at pass 3, thrice-replicated).
 2. **The per-page × per-query attribution join** — eBPF request tracing
    exists for DBMSs (Domaschka et al., ICPE '23 companion,

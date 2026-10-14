@@ -1,4 +1,6 @@
-"""Read-only decoder for one c1a-layout SEISMIC mmap shard (f16 twin format).
+"""> **CLOSED MEASURED 2026-09-30** — the pre-registered GO rule of `06_INPLACE_SPIKE_PLAN.md` read NO-GO: bar S0-1 measured a long-list dead-slot coverage of **0.019** (95 % CI 0.018–0.020) against 0.80. In one quarter 27 % of shard 0's docs are updated and 15 % more are new while deletions free 6 %, and a list cannot grow, so dead-slot reuse cannot absorb the churn (`inplace_s0_20260930.json`). Nothing in-place replaces it: updates stay with delta generations (`docs/delta_ingest/`). The v3 encoder/decoder is exact (B1 460/460, +1.3 % per query) and the +tail variant was built, but they remove the wrong obstacle. Full record: `docs/archive/inplace_update/06_INPLACE_SPIKE_PLAN.md` results table and §"NO-GO 2026-09-30". Not current; do not resume.
+
+Read-only decoder for one c1a-layout SEISMIC mmap shard (f16 twin format).
 
 Layout of posting_lists.bin (spike/seismic_upstream/src/mmap_io.rs,
 read_posting_lists): per list, in manifest order, POD sections each aligned to

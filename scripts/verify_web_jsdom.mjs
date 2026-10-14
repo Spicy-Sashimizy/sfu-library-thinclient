@@ -36,9 +36,16 @@ function makeDom({ online, searchResponder, io }) {
   }
 
   const searchBodies = [];
+  const fetchCalls = [];
+  const engagementPosts = [];
   window.fetch = (url, opts) => {
     const u = String(url);
+    fetchCalls.push(u);
     if (!online) return Promise.reject(new Error('offline: network down'));
+    if (u.endsWith('/engagement')) {
+      engagementPosts.push({ url: u, opts, body: JSON.parse(opts.body) });
+      return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({ recorded: 1 }) });
+    }
     if (u.includes('/health')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(HEALTH_LIVE) });
     if (u.includes('/api/search')) {
       const body = opts && opts.body ? JSON.parse(opts.body) : {};
@@ -46,7 +53,6 @@ function makeDom({ online, searchResponder, io }) {
       const data = searchResponder ? searchResponder(body) : SEARCH_LIVE;
       return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(data) });
     }
-    if (u.includes('/api/index_status')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({ metrics: {} }) });
     if (u.includes('/analytics')) return Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({ panels: {} }) });
     return Promise.resolve({ ok: false, status: 404, headers: { get: () => null }, json: () => Promise.resolve({}) });
   };
@@ -74,7 +80,7 @@ function makeDom({ online, searchResponder, io }) {
   evalIn(read('lib/ui.js'), 'ui.js');
   evalIn(read('lib/interface_prefs.js'), 'interface_prefs.js');
 
-  return { dom, window, errors, evalIn, ioInstances, searchBodies };
+  return { dom, window, errors, evalIn, ioInstances, searchBodies, fetchCalls, engagementPosts };
 }
 
 async function mountApp(html, opts) {
@@ -494,6 +500,234 @@ try {
   record('GUI stream: sequential mode → stream never used', !calls.some((u) => u.includes('search_stream')), calls.filter((u) => u.includes('/api/')).join(','));
   assertNoErrors('GUI stream sequential — console errors', errors);
 } catch (e) { record('GUI stream sequential — threw', false, String(e).slice(0, 300)); }
+
+
+const ENGAGE_KEYS = new Set(['ts', 'session_id', 'kind', 'query', 'rank', 'doc_id', 'action_type', 'refined_from']);
+const PY_KINDS = ['query', 'impression', 'result_click', 'action'];
+const PY_ACTIONS = (() => {
+  const src = readFileSync(path.join(ROOT, 'source', 'lib', 'engagement.py'), 'utf8');
+  const m = src.match(/^ACTION_TYPES = \{([^}]*)\}/m);
+  return m ? Array.from(m[1].matchAll(/"([a-z_]+)"/g)).map((x) => x[1]) : [];
+})();
+const validateLikeServer = (ev) => {
+  if (!ev || typeof ev !== 'object') return 'not an object';
+  if (!String(ev.session_id || '').trim()) return 'session_id missing';
+  if (!PY_KINDS.includes(ev.kind)) return 'bad kind ' + ev.kind;
+  if (typeof ev.ts !== 'string' || !ev.ts) return 'ts missing';
+  if (ev.rank != null && !Number.isInteger(ev.rank)) return 'rank not int';
+  if (ev.kind === 'action' && !PY_ACTIONS.includes(ev.action_type)) return 'bad action_type ' + ev.action_type;
+  const extra = Object.keys(ev).filter((k) => !ENGAGE_KEYS.has(k));
+  if (extra.length) return 'unknown keys ' + extra.join(',');
+  return null;
+};
+const postedEvents = (posts) => posts.flatMap((p) => (p.body && p.body.events) || []);
+
+try {
+  const { window, errors, engagementPosts } = await mountApp('search.html', { online: true, searchResponder: pagedResponder });
+  submitQuery(window, 'engagement query one');
+  await sleep(150);
+  window.SFUApi.engagement.flush();
+  let evs = postedEvents(engagementPosts);
+  const q1 = evs.filter((e) => e.kind === 'query');
+  const imps = evs.filter((e) => e.kind === 'impression');
+  const ranks = imps.map((e) => e.rank).join(',');
+  const sid = evs.length ? evs[0].session_id : '';
+  record('engagement: search posts one query event to /engagement',
+    q1.length === 1 && q1[0].query === 'engagement query one' && engagementPosts.every((p) => p.url.endsWith('/engagement')),
+    JSON.stringify(q1));
+  record('engagement: one impression per displayed result, rank 1..N, doc_id = DOI',
+    imps.length === 10 && ranks === '1,2,3,4,5,6,7,8,9,10' && imps[0].doc_id === '10.0/p1' && imps.every((e) => e.query === 'engagement query one'),
+    'n=' + imps.length + ' ranks=' + ranks + ' doc0=' + (imps[0] && imps[0].doc_id));
+  record('engagement: every event carries the same per-tab session id',
+    !!sid && evs.every((e) => e.session_id === sid) && window.sessionStorage.getItem('sfu_engagement_session_v1') === sid,
+    'sid=' + sid);
+
+  const card3 = window.document.querySelector('[data-result-id="P3"]');
+  card3.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await sleep(40);
+  const card2 = window.document.querySelector('[data-result-id="P2"]');
+  card2.querySelector('[data-testid="sfu-card-access"]').dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  card2.querySelector('[data-testid="sfu-card-save"]').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await sleep(40);
+  const before = engagementPosts.length;
+  window.SFUApi.engagement.flush();
+  evs = postedEvents(engagementPosts.slice(before));
+  const click = evs.find((e) => e.kind === 'result_click');
+  const abs = evs.find((e) => e.kind === 'action' && e.action_type === 'abstract');
+  record('engagement: card click posts result_click with its rank + doc_id + query',
+    !!click && click.rank === 3 && click.doc_id === '10.0/p3' && click.query === 'engagement query one',
+    JSON.stringify(click || null));
+  record('engagement: opening the detail posts action=abstract for the same rank',
+    !!abs && abs.rank === 3 && abs.doc_id === '10.0/p3', JSON.stringify(abs || null));
+  const pdf = evs.find((e) => e.kind === 'action' && e.action_type === 'pdf');
+  const save = evs.find((e) => e.kind === 'action' && e.action_type === 'save');
+  record('engagement: access link → action=pdf, bookmark → action=save (rank 2)',
+    !!pdf && pdf.rank === 2 && !!save && save.rank === 2, JSON.stringify({ pdf, save }));
+
+  submitQuery(window, 'engagement query two');
+  await sleep(150);
+  const before2 = engagementPosts.length;
+  window.SFUApi.engagement.flush();
+  const q2 = postedEvents(engagementPosts.slice(before2)).find((e) => e.kind === 'query');
+  record('engagement: a follow-up search carries refined_from = previous query',
+    !!q2 && q2.query === 'engagement query two' && q2.refined_from === 'engagement query one', JSON.stringify(q2 || null));
+
+  const all = postedEvents(engagementPosts);
+  const bad = all.map(validateLikeServer).filter(Boolean);
+  const shapeOk = engagementPosts.every((p) => p.opts.method === 'POST' && p.opts.keepalive === true
+    && /json/.test(p.opts.headers['Content-Type']) && Array.isArray(p.body.events) && Object.keys(p.body).join(',') === 'events'
+    && p.body.events.length <= 50);
+  record('engagement: batch flush = POST {events:[...]} keepalive, every event passes validate_event rules',
+    shapeOk && bad.length === 0 && all.length > 0 && PY_ACTIONS.length > 0,
+    'batches=' + engagementPosts.length + ' events=' + all.length + (bad.length ? ' bad=' + bad.slice(0, 3).join('|') : ''));
+  record('engagement: client ACTION_TYPES/KINDS identical to lib/engagement.py',
+    JSON.stringify(window.SFUApi.engagement.ACTION_TYPES.slice().sort()) === JSON.stringify(PY_ACTIONS.slice().sort())
+    && JSON.stringify(window.SFUApi.engagement.KINDS.slice().sort()) === JSON.stringify(PY_KINDS.slice().sort()),
+    'client=' + window.SFUApi.engagement.ACTION_TYPES.join(',') + ' server=' + PY_ACTIONS.join(','));
+  assertNoErrors('engagement wiring — console errors', errors);
+} catch (e) { record('engagement wiring — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors } = makeDom({ online: true });
+  const sent = [];
+  const queue = [];
+  const fakeSetTimeout = (fn, ms) => { const id = { fn, ms }; queue.push(id); return id; };
+  const fakeClearTimeout = (id) => { const i = queue.indexOf(id); if (i >= 0) queue.splice(i, 1); };
+  const q = window.SFUApi.createEngagementQueue({ maxBatch: 3, delayMs: 2000, setTimeout: fakeSetTimeout, clearTimeout: fakeClearTimeout, send: (b, why) => sent.push({ b, why }), now: () => '2026-10-12T00:00:00Z' });
+  const okPush = q.push({ session_id: 's', kind: 'impression', rank: 1, doc_id: 'd1', query: 'x' });
+  const rejected = [
+    q.push({ session_id: 's', kind: 'nope' }),
+    q.push({ session_id: '', kind: 'query' }),
+    q.push({ session_id: 's', kind: 'action', action_type: 'teleport' }),
+    q.push({ session_id: 's', kind: 'impression', rank: 'x' }),
+  ];
+  record('engagement queue: invalid events rejected client-side (same rules as validate_event)',
+    okPush && rejected.every((r) => r === false) && q.size === 1, 'size=' + q.size);
+  record('engagement queue: first event arms one flush timer, nothing sent yet', q.pending && queue.length === 1 && sent.length === 0, 'timers=' + queue.length);
+  q.push({ session_id: 's', kind: 'action', action_type: 'save', doc_id: 'd1' });
+  record('engagement queue: further events reuse the armed timer', queue.length === 1 && q.size === 2, 'timers=' + queue.length);
+  queue[0].fn();
+  record('engagement queue: timer flush sends one {events:[...]} batch and empties the queue',
+    sent.length === 1 && sent[0].why === 'timer' && sent[0].b.events.length === 2 && q.size === 0 && sent[0].b.events[0].ts === '2026-10-12T00:00:00Z',
+    JSON.stringify(sent[0] && sent[0].b));
+  q.push({ session_id: 's', kind: 'query', query: 'a' });
+  q.push({ session_id: 's', kind: 'query', query: 'b' });
+  q.push({ session_id: 's', kind: 'query', query: 'c' });
+  record('engagement queue: reaching maxBatch flushes immediately', sent.length === 2 && sent[1].why === 'full' && sent[1].b.events.length === 3 && !q.pending, 'sent=' + sent.length);
+  const throwing = window.SFUApi.createEngagementQueue({ send: () => { throw new Error('boom'); }, setTimeout: fakeSetTimeout, clearTimeout: fakeClearTimeout });
+  throwing.push({ session_id: 's', kind: 'query', query: 'z' });
+  let threw = false;
+  try { throwing.flush('pagehide'); } catch (e) { threw = true; }
+  record('engagement queue: a failing transport never throws into the UI', !threw, 'threw=' + threw);
+  assertNoErrors('engagement queue — console errors', errors);
+} catch (e) { record('engagement queue — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors, fetchCalls } = await mountApp('search.html', { online: false });
+  submitQuery(window, 'offline engagement query');
+  await sleep(150);
+  const card = window.document.querySelector('[data-result-id]');
+  if (card) card.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await sleep(30);
+  window.SFUApi.engagement.flush();
+  await sleep(10);
+  record('engagement: mock mode (backend offline) posts nothing',
+    window.SFUApi.engagement.mode() === 'mock' && !fetchCalls.some((u) => u.endsWith('/engagement')) && window.SFUApi.engagement.pending() === 0 && !!card,
+    'mode=' + window.SFUApi.engagement.mode() + ' calls=' + fetchCalls.filter((u) => u.endsWith('/engagement')).length);
+  record('engagement: mock mode keeps the demo banner (integrity floor)', !!window.document.getElementById('sfu-demo-pill'), 'pill=' + !!window.document.getElementById('sfu-demo-pill'));
+  assertNoErrors('engagement mock mode — console errors', errors);
+} catch (e) { record('engagement mock mode — threw', false, String(e).slice(0, 300)); }
+
+const ANALYTICS_FIXTURE = {
+  generated_for: 'research_analytics_dashboard',
+  panels: {
+    kpis: { status: 'ok', ndcg_mean_best: 0.6534, best_method: 'splade', k: 10, eval_queries: 120, judged_pairs: 4034, judge: 'fixture-judge', timestamp: '2026-05-16T20:45:46', source: 'data/eval_results/benchmark_llm_judge_final.json',
+      methods: [{ method: 'bm25', label: 'BM25F (local)', mean_ndcg: 0.6249, mean_mrr: 0.6562, mean_p_at_k: 0.5108 }, { method: 'splade', label: 'SPLADE (local)', mean_ndcg: 0.6534, mean_mrr: 0.6625, mean_p_at_k: 0.6033 }] },
+    ndcg_by_subject: { status: 'ok', primary_method: 'rrf', subjects: [{ subject: 'Music', ndcg: 0 }, { subject: 'Physics', ndcg: 0.8123 }] },
+    reranker_signal: { status: 'ok', source: 'heuristic_weights', axes: [{ signal: 'semantic_similarity', weight: 0.35 }, { signal: 'recency', weight: 0.15 }] },
+    position_bias: { status: 'awaiting_click_data', source: 'gui', total_clicks: 3, total_impressions: 40, min_clicks_required: 20, note: 'Propensity feeds IPS debiasing of click labels.',
+      curve: [{ rank: 1, impressions: 20, clicks: 2, click: 0.1, propensity: 1.0 }, { rank: 2, impressions: 20, clicks: 1, click: 0.05, propensity: 0.5 }, { rank: 3, impressions: 0, clicks: 0, click: 0, propensity: null }] },
+    model_versions: { status: 'ok', updated: '2026-06-05', versions: [{ component: 'embedder', version: 'v5', date: '2026-05-24', ndcg: 0.7717, status: 'active', available: true }] },
+    session_replay: { status: 'ok', source: 'gui', sessions: [{ session_id: 'g-fixture-sess', start: '2026-10-12T10:00:00+00:00', n_queries: 2, n_clicks: 1, n_actions: 2,
+      queries: [{ query: 'fixture query', ts: '2026-10-12T10:00:00+00:00', results: [] }, { query: 'fixture query refined', refined_from: 'fixture query', results: [{ doc_id: '10.0/fx', rank: 4, actions: ['abstract', 'pdf'] }] }] }] },
+    index_shape: { status: 'ok', total_docs: 1234567, n_sections: 10, n_subjects: 5, era_boundary_year: 2010, rrf_k: 60, built: '2026-06-16T03:00:21', source: 'data/thinclient_index/manifest.json',
+      subjects: [{ subject: 'other', label: 'Other / unrouted', docs: 600000 }, { subject: 'med_bio', label: 'Medicine & biology', docs: 634567 }], eras: [{ era: 'archive', docs: 234567 }, { era: 'recent', docs: 1000000 }] },
+    embedding_drift: { status: 'stub', reason: 'UMAP export not wired' },
+    access_funnel: { status: 'stub', reason: 'access-resolver logging not wired' },
+    oa_equity: { status: 'stub', reason: 'OA-by-subject export not wired' },
+  },
+};
+
+async function mountAnalytics(responder) {
+  const dom = new JSDOM(`<!DOCTYPE html><html><body><div id="root"></div></body></html>`, { url: 'http://localhost/app/analytics.html', runScripts: 'outside-only', pretendToBeVisual: true });
+  const { window } = dom;
+  window.requestAnimationFrame = (cb) => setTimeout(() => cb(Date.now()), 0);
+  window.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
+  const calls = [];
+  window.fetch = (url) => { calls.push(String(url)); return responder(String(url)); };
+  const errors = [];
+  window.console.error = (...a) => { errors.push(a.map(String).join(' ')); };
+  window.addEventListener('error', (e) => { errors.push('windowerror: ' + (e.error ? e.error.stack : e.message)); });
+  const styleEl = window.document.createElement('style');
+  styleEl.textContent = read('analytics.html').match(/<style>([\s\S]*?)<\/style>/)[1] + '\n' + read('lib/base.css');
+  window.document.head.appendChild(styleEl);
+  for (const f of ['vendor/react.production.min.js', 'vendor/react-dom.production.min.js', 'lib/mock.js', 'lib/api.js', 'lib/ui.js', 'analytics.js']) {
+    try { window.eval(read(f)); } catch (e) { errors.push('EVAL ' + f + ': ' + e.message); throw e; }
+  }
+  await sleep(80);
+  for (const id of ['sfu-operator-toggle', 'sfu-engagement-toggle']) {
+    const b = window.document.querySelector(`[data-testid="${id}"]`);
+    if (b) b.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  }
+  await sleep(40);
+  return { window, errors, calls };
+}
+const okJson = (data) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve(data) });
+const panelState = (w, n) => { const el = w.document.querySelector(`[data-panel="${n}"]`); return el ? el.getAttribute('data-state') : null; };
+const NINE = ['kpis', 'ndcg_by_subject', 'reranker_signal', 'model_versions', 'position_bias', 'session_replay', 'embedding_drift', 'access_funnel', 'oa_equity'];
+
+try {
+  const { window, errors, calls } = await mountAnalytics((u) => u.includes('/analytics') ? okJson(ANALYTICS_FIXTURE) : okJson({ status: 'ok', tools: 12 }));
+  const states = NINE.map((n) => n + '=' + panelState(window, n));
+  const want = NINE.map((n) => n + '=' + ANALYTICS_FIXTURE.panels[n].status);
+  record('analytics: all nine panels render with their bundle status', states.join(',') === want.join(',') && calls.some((u) => u.endsWith('/analytics')), states.join(' '));
+  const text = window.document.body.textContent;
+  const stubs = window.document.querySelectorAll('[data-testid="sfu-panel-stub"]');
+  record('analytics: the three stub panels say "Not wired: <reason>", no figures',
+    stubs.length === 3 && /Not wired: UMAP export not wired/.test(text) && /Not wired: access-resolver logging not wired/.test(text) && /Not wired: OA-by-subject export not wired/.test(text),
+    'stub notices=' + stubs.length);
+  const awaiting = window.document.querySelector('[data-testid="sfu-awaiting-clicks"]');
+  const pbRows = window.document.querySelectorAll('[data-testid="sfu-position-bias"] tbody tr').length;
+  record('analytics: position_bias awaiting state shows click count vs threshold + raw counts',
+    !!awaiting && /3 of the 20 clicks/.test(awaiting.textContent) && pbRows === 2 && /gui|search GUI/.test(text),
+    (awaiting ? awaiting.textContent.slice(0, 80) : 'no notice') + ' rows=' + pbRows);
+  const sess = window.document.querySelector('[data-session="g-fixture-sess"]');
+  record('analytics: session replay renders query → clicked result → actions',
+    !!sess && /fixture query refined/.test(sess.textContent) && /refined from/.test(sess.textContent) && /#4/.test(sess.textContent) && /abstract/.test(sess.textContent) && /pdf/.test(sess.textContent),
+    sess ? sess.textContent.slice(0, 120) : 'no session node');
+  const kpiRows = window.document.querySelectorAll('[data-testid="sfu-kpi-methods"] tbody tr').length;
+  const modelRows = window.document.querySelectorAll('[data-testid="sfu-model-versions"] tbody tr').length;
+  record('analytics: kpis method table, model_versions table, reranker weights, subject NDCG from the bundle',
+    kpiRows === 2 && /0\.653/.test(text) && modelRows === 1 && /semantic similarity/.test(text) && /0\.812/.test(text) && /Physics/.test(text),
+    'kpiRows=' + kpiRows + ' modelRows=' + modelRows);
+  record('analytics: index facts + disclosures sourced from index_shape/reranker_signal',
+    /1,234,567/.test(text) && /600,000 documents/.test(text) && /recency weight \(0\.15\)/.test(text) && /k = 60/.test(text) && panelState(window, 'index_shape') === 'ok',
+    'facts ok=' + /1,234,567/.test(text));
+  const banned = ['0.967', '0.966', '600k', '600k-vector', '150,413,098', '41.2M', '18432', 'top 64'].filter((s) => text.includes(s));
+  record('analytics: no prototype placeholder figure survives', banned.length === 0, banned.length ? 'found ' + banned.join(',') : 'none of the prototype figures present');
+  assertNoErrors('analytics fixture — console errors', errors);
+} catch (e) { record('analytics fixture — threw', false, String(e).slice(0, 300)); }
+
+try {
+  const { window, errors } = await mountAnalytics(() => Promise.reject(new Error('offline')));
+  const states = NINE.map((n) => panelState(window, n));
+  const text = window.document.body.textContent;
+  record('analytics: backend offline → every panel an explicit stub, no figures',
+    states.every((s) => s === 'stub') && /Not wired: live backend unavailable/.test(text) && !/\d{1,3},\d{3},\d{3}/.test(text),
+    states.join(','));
+  record('analytics: backend offline → demo banner shown (integrity floor)', !!window.document.getElementById('sfu-demo-pill'), 'pill=' + !!window.document.getElementById('sfu-demo-pill'));
+  assertNoErrors('analytics offline — console errors', errors);
+} catch (e) { record('analytics offline — threw', false, String(e).slice(0, 300)); }
 
 console.log('\n================ jsdom GUI verification ================');
 let pass = 0, fail = 0;

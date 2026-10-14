@@ -34,7 +34,7 @@ only — no index was loaded and nothing was measured to write it.
   `<base>__<era>` the generation's docs fall into (`DocRecord.section()`,
   `records.py:73`). On the M4 roots that is **10 sections / 10 abstract
   stores for `root_n1`, 38 for `root_n4`, 72 for `root_n8`** (counted
-  2026-10-01). `_bm25f_leg` (`src/lib/thinclient/retriever.py` ~985–1027)
+  2026-10-01). `_bm25f_leg` (`source/lib/thinclient/retriever.py` ~985–1027)
   calls `parse_query` twice per section per query; `fetch_abstracts`
   (~1427–1440) probes every store in turn for every still-missing id, so a
   base id with no local base abstract (remote fetch stubbed in M4) probes
@@ -77,7 +77,7 @@ only — no index was loaded and nothing was measured to write it.
 - **Memory bound:** ≤ 8 retrievers per process (M4 ran 5 + prime); the run
   aborts (not a result) if MemAvailable < 6 GB or the process `VmSwap` grows
   by > 2 GB.
-- **Record per run:** `git rev-parse HEAD`, the measured `src/` snapshot
+- **Record per run:** `git rev-parse HEAD`, the measured `source/` snapshot
   (`git archive <commit> src`, as M4), host samples, arm order seeds.
 - **Results:** `data/eval_results/delta_ingest_M4F_<YYYYMMDD>.json` (one key
   per run: `parity`, `R1`, `R2`, `R3`); findings

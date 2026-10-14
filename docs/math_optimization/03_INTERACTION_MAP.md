@@ -38,7 +38,7 @@ also in the query* gathers 0, and the FMA after it multiplies nothing. An
   saving the FMA saves only the arithmetic third, not the (already-cheap)
   gather. Probably the lowest-value option.
 - **ISA risk:** **medium if hand-written** (`_mm256_testz_si256` is x86-only);
-  **low if `std::simd`** `Mask` ops are used (they lower per-target). Use
+  **low if `std::simd`** `Mask` operations are used (they lower per-target). Use
   `std::simd`.
 
 ## M2 — Integer dot, query also quantized to 6-bit (the headline)
@@ -60,7 +60,7 @@ disappears, plus the dense query table shrinks 115 KB → 29 KB.
   by construction. See `06_PREGATE_RESULTS.md`. The 5-bit floor probe (0.9875)
   and the 7/8-bit intentional-saturation demo (0.995/0.9975) bracket the
   quality-vs-saturation trade.
-- **ISA risk:** **low if `std::simd` int ops** (widening + mul-add lowers to
+- **ISA risk:** **low if `std::simd` int operations** (widening + mul-add lowers to
   `vpmaddubsw` on x86, `UDOT` on Apple aarch64, scalar on baseline — one
   source, three targets). **High if hand-`vpmaddubsw`** with no aarch64 twin.
   Prefer `std::simd`. See `04_ISA_PORTABILITY_RULES.md`.

@@ -41,7 +41,7 @@ topics) are the "off" arm of §4. Raw: `/home/vscode/work/delta_ingest/oa/premis
 ## 2. Design
 
 House style of `docs/delta_ingest/02_DESIGN.md`. Code: builder
-`spike/delta_ingest/oa_bitmap.py`, reader `src/lib/thinclient/oa_overlay.py`,
+`spike/delta_ingest/oa_bitmap.py`, reader `source/lib/thinclient/oa_overlay.py`,
 gate `SFU_OA_BITMAP` (default OFF; `docs/ENV_GATES.md`; invariants
 `docs/CODE_INVARIANTS.md` §oa_overlay). Tests `scripts/tests/test_oa_bitmap.py` (15, tmp trees).
 
@@ -131,8 +131,8 @@ min_year=2010 arm is the same within 6 docs (8,053 → 3,588). Wall 399 s
 Script `scripts/experiments/eval_delta_ingest_o17_oa_bitmap.py drive --arms pre,offon`
 (no bitmap). Two child processes under `flock -s`, venv mirror + local models,
 `SequentialSeismicBackend`, health checks clean (CE loaded, no failure
-signature, 0 degraded rows). `pre` = HEAD a18d8295 `src` with the O17 serving
-commit ef206dde reverse-applied; `off` = HEAD `src`, `SFU_OA_BITMAP` unset.
+signature, 0 degraded rows). `pre` = HEAD a18d8295 `source` with the O17 serving
+commit ef206dde reverse-applied; `off` = HEAD `source`, `SFU_OA_BITMAP` unset.
 120 topics (natural form) of `dense_ablation_qrels_20260817.json`, top_k 50,
 rerank to 10. Results `data/eval_results/delta_ingest_O17_gate_off_identity_20261001.json`.
 

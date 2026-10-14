@@ -35,7 +35,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "demo_dependability"))
 
 os.environ.setdefault("SFU_DEMO_LEG_BREAKER", "1")

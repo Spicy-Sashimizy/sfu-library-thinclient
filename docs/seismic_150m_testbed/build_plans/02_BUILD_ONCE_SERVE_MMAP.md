@@ -50,7 +50,7 @@ Then `wsl --shutdown` and reopen. Gives ~78 GB addressable — a ~57 GB peak bui
 fits in physical RAM with the tail safely in swap. **Caveat:** don't run heavy
 Windows workloads during the build; 10 GB host headroom is tight.
 
-**Option B — a transient cloud/loan box** (≥64 GB, e.g. an r-class VM for a few
+**Option B — a transient cloud/loan box** (≥64 GB, for example, an r-class VM for a few
 hours). Build, copy the on-disk index back, discard the box. SEISMIC's own authors
 built on 64–124 GB machines, so this is the designed-for configuration.
 
@@ -58,7 +58,7 @@ built on 64–124 GB machines, so this is the designed-for configuration.
 
 1. On the build host, generate the full 150M JSONL from the spool
    (`spool_to_seismic_jsonl.py`, no `--limit`) — ~123 GB compressed spool → JSONL.
-2. `build_persona_seismic.py` with DEFAULTS (parity config: n_postings 3500,
+2. `build_persona_seismic.py` with DEFAULTS (parity configuration: n_postings 3500,
    centroid_fraction 0.1, summary_energy 0.4, max_fraction 1.5, doc_cut 15). Record
    peak_rss / build_seconds / on_disk_gb — this is also the **first true measured
    150M build point** (replaces the projection in G7).
@@ -85,7 +85,7 @@ built on 64–124 GB machines, so this is the designed-for configuration.
   unacceptable, either provision more serving RAM or move to Plan 01 (sharding
   reduces the per-query hot set).
 - **WSL2 Option A starves Windows** during the build window — schedule accordingly.
-- **One-time, not repeatable cheaply.** Every re-index (param change, corpus update)
+- **One-time, not repeatable cheaply.** Every re-index (parameter change, corpus update)
   re-incurs the big-box build. If re-indexing is frequent, Plan 01 (always-32 GB) is
   structurally better.
 - **Does NOT fix quality.** Same 0.479 as single-index G2. Unblocks G6 only.

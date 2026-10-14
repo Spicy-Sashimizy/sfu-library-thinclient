@@ -45,8 +45,8 @@ All of doc 01's claims **CONFIRMED**: vLLM v0.23 plugin (no fork,
 buffers; ROUTER-SPLIT keeps CUDA graphs with one eager gap
 (`vllm::sluice_stream_gap` — pointer/content split, captured pieces point at
 slot buffers whose *contents* the gap rewrites). Numbers: DeepSeek-V2-Lite
-27 → **135.7 tok/s (5.4×)** vs classic eager gap; Qwen3-30B-A3B batch=8
-offloaded **864.5 tok/s vs 742.3 resident (+16%)**. Negative results verbatim:
+27 → **135.7 tok/s (5.4×)** versus classic eager gap; Qwen3-30B-A3B batch=8
+offloaded **864.5 tok/s versus 742.3 resident (+16%)**. Negative results verbatim:
 `SLUICE_RS_STAGED` **−6–8%**, `SLUICE_LAZY_STEP` **−12–17%**, GEMM-graph
 parked on five documented capture hazards. Correctness: md5-equal tokens over
 8,000 gap calls; bit-identical under 11,497 forced misses.
@@ -158,7 +158,7 @@ The honest mapping is unflattering in three ways doc 01 under-weighted:
    (evaluate summaries → batch-prefetch surviving ranges → score), a real
    restructuring of `posting_list.rs::search`, not a hint bolt-on.
 2. **The cold path has no spare I/O channel.** Our own measurement: cold
-   *sequential* beats cold *parallel* (2159 vs 2687 ms) because 8-way
+   *sequential* beats cold *parallel* (2159 versus 2687 ms) because 8-way
    concurrent faulting **contends on the 9p/disk channel**. Prefetch is more
    concurrency on that same channel. colibrì overlaps disk with *compute*
    (GEMMs); our cold queries are I/O-dominated with little compute to hide
@@ -201,10 +201,10 @@ residency and I/O scheduling only). All env-gated OFF by default.
 
 | Candidate | Touches | Interactions & gotchas |
 |---|---|---|
-| **#1 telemetry (Q12)** | `scripts/seismic_testbed/q12_access_skew_probe.py` (new, done); reads pyo3 `search_visited` | Zero serving change. Word-offset→page mapping is layout-aware (dv: ×8; f16: ×2). If promoted to always-on serving telemetry later: a `Counter` + periodic JSON dump in `_SeismicBackendBase.search_encoded`, ~30 lines, off the hot path (visited return adds a Vec copy per query — measure before enabling per-query in prod) |
-| **#2 LRU/pin tier** | `mmap_io.rs`: new pyo3 hooks `prefault_ranges(pages)` / `mlock_ranges(pages)` / `release_pages_except(pages)` (extend the existing `prefault_floor`/`release_pages` lineage); `sharded_seismic_backend.py`: load hot-set sidecar (the `.coli_usage` analog, e.g. `<shard>.mmap/hotset.json`) at construction, prefault/mlock it Q9-style | (a) **`MADV_DONTNEED` fails with EINVAL on mlocked ranges** — `release_pages` must become range-splitting around pinned extents, or mechanism B flips to `MADV_PAGEOUT` for unpinned ranges; (b) pin budget must come off `MemAvailable` (colibrì discipline) minus the Q9 floor; (c) composes with Q7 hybrid — a warm pin tier lowers cold traverse, so the adaptive flip threshold self-adjusts (no change needed, it's derived from observed cold); (d) E5 reorder makes hot extents contiguous → store the hot set as extents, not pages; (e) sidecar is per-`forward_reordered` layout — a re-reorder or dv-v2 (E8 Stage-2) reconversion **invalidates the hot set** → key it on the manifest's `forward_format_version` + `forward_reordered` |
-| **#3 PILOT analog** | `spike/seismic_upstream/src/posting_list.rs` (two-phase or block-skip predictor), new I/O worker + SPSC ring in Rust, hooks in `inverted_index.rs` traversal | Parity-safe only if strictly hint-issuing (no reordered scoring). Preconditions: Q12 locality GO **and** cold-channel headroom measurement (new micro-bench: fault throughput 1-thread vs 2 vs 4 on `forward_data.bin`). Interacts destructively with sequential serving (mechanism B evicts what prefetch loaded) — parallel/hybrid-warm arm only |
-| **#4 pread reader** | `mmap_io.rs` forward read path + vectorium `MmapPackedSparseDataset` (second storage impl), buffer-pool module | Escalation only after #2 measurably hits the kernel-policy ceiling. Keeps posting lists mmap'd (they're the prefaulted floor); forward only. O_DIRECT variant interacts with 9p (untested on drvfs/9p — likely unsupported or slow; host-tier ext4 only) |
+| **#1 telemetry (Q12)** | `scripts/seismic_testbed/q12_access_skew_probe.py` (new, done); reads pyo3 `search_visited` | Zero serving change. Word-offset→page mapping is layout-aware (dv: ×8; f16: ×2). If promoted to always-on serving telemetry later: a `Counter` + periodic JSON dump in `_SeismicBackendBase.search_encoded`, ~30 lines, off the hot path (visited return adds a Vec copy per query — measure before enabling per-query in production) |
+| **#2 LRU/pin tier** | `mmap_io.rs`: new pyo3 hooks `prefault_ranges(pages)` / `mlock_ranges(pages)` / `release_pages_except(pages)` (extend the existing `prefault_floor`/`release_pages` lineage); `sharded_seismic_backend.py`: load hot-set sidecar (the `.coli_usage` analog, for example, `<shard>.mmap/hotset.json`) at construction, prefault/mlock it Q9-style | (a) **`MADV_DONTNEED` fails with EINVAL on mlocked ranges** — `release_pages` must become range-splitting around pinned extents, or mechanism B flips to `MADV_PAGEOUT` for unpinned ranges; (b) pin budget must come off `MemAvailable` (colibrì discipline) minus the Q9 floor; (c) composes with Q7 hybrid — a warm pin tier lowers cold traverse, so the adaptive flip threshold self-adjusts (no change needed, it's derived from observed cold); (d) E5 reorder makes hot extents contiguous → store the hot set as extents, not pages; (e) sidecar is per-`forward_reordered` layout — a re-reorder or dv-v2 (E8 Stage-2) reconversion **invalidates the hot set** → key it on the manifest's `forward_format_version` + `forward_reordered` |
+| **#3 PILOT analog** | `spike/seismic_upstream/src/posting_list.rs` (two-phase or block-skip predictor), new I/O worker + SPSC ring in Rust, hooks in `inverted_index.rs` traversal | Parity-safe only if strictly hint-issuing (no reordered scoring). Preconditions: Q12 locality GO **and** cold-channel headroom measurement (new micro-bench: fault throughput 1-thread versus 2 versus 4 on `forward_data.bin`). Interacts destructively with sequential serving (mechanism B evicts what prefetch loaded) — parallel/hybrid-warm arm only |
+| **#4 pread reader** | `mmap_io.rs` forward read path + vectorium `MmapPackedSparseDataset` (second storage implementation), buffer-pool module | Escalation only after #2 measurably hits the kernel-policy ceiling. Keeps posting lists mmap'd (they're the prefaulted floor); forward only. O_DIRECT variant interacts with 9p (untested on drvfs/9p — likely unsupported or slow; host-tier ext4 only) |
 
 Cross-cutting: everything keys off the served E5 dv manifest
 (`seismic_c25_shards_150m_mmap_e5.json`); E8 Stage-2 (dv-v2 8-shard
@@ -262,15 +262,15 @@ What the numbers say beyond the bar arithmetic (recorded, not a verdict):
 
 ## §6 Estimated uplift & worth-developing verdicts (all *est.* unless cited)
 
-Envelope anchors (measured): container cold p50 ~2.2–2.7 s vs warm 80–101 ms
+Envelope anchors (measured): container cold p50 ~2.2–2.7 s versus warm 80–101 ms
 (≈25× cold/warm gap = the absolute ceiling for *any* caching lever);
 RAM-capped host sequential warm≈cold 15.8 s (the regime the levers target).
 
-| Candidate | Regime it helps | Uplift (*est.*) | Dev cost | Verdict |
+| Candidate | Regime it helps | Uplift (*est.*) | Development cost | Verdict |
 |---|---|---|---|---|
 | **#1 telemetry** | none (decision value only) | 0× serving; decides #2/#3 | ~0.5 day — **spent, done as Q12** | ✅ **DO (done)** |
-| **#2 LRU/pin** | RAM-capped host (32 GB, 15.8 s floor); also faster process-cold warmup via hot-set prefault | if Q12 GO (hot-set-80 ≤ 4 GB): **~2–4× p50** on the capped host (pin absorbs ~50–80% of per-pass re-faults; capacity misses keep the rest); if Q12 uniform: **~1.0× (nothing)**. Served container today: ~1.0× warm (already RAM-speed), moderate cold-start win from prefaulting the hot set (bounded by the 25× envelope, realistically **1.3–2× cold p50**) | ~2–4 days (pyo3 range hooks + sidecar + backend wiring + EINVAL-splitting) | ⚖️ **CONDITIONAL — Q12 measured GRAY (live-leaning: hot-set-80 4.20 GB vs the 4 GB bar, repeat 85%; §5). Next gate = production-shaped query log; do not build before that AND E8 Stage-2 lands.** Revised uplift with the measured curve: a 1.6 GB pin covers 50% of touches / 4.2 GB covers 80% → on the capped host, **~1.5–3× p50** (*est.*, down from 2–4× — skew is moderate, not colibrì-grade) |
-| **#3 PILOT analog** | cold queries on hosts with idle I/O channel | **≤1.3× cold, 1.0× warm** — and plausibly <1.0× (channel contention; three adjacent negative results) | ~1–2 weeks (Rust traversal restructure + worker + ring) | ❌ **PARK** — two preconditions (Q12 GO + channel headroom), poor risk/reward vs #2 |
+| **#2 LRU/pin** | RAM-capped host (32 GB, 15.8 s floor); also faster process-cold warmup via hot-set prefault | if Q12 GO (hot-set-80 ≤ 4 GB): **~2–4× p50** on the capped host (pin absorbs ~50–80% of per-pass re-faults; capacity misses keep the rest); if Q12 uniform: **~1.0× (nothing)**. Served container today: ~1.0× warm (already RAM-speed), moderate cold-start win from prefaulting the hot set (bounded by the 25× envelope, realistically **1.3–2× cold p50**) | ~2–4 days (pyo3 range hooks + sidecar + backend wiring + EINVAL-splitting) | ⚖️ **CONDITIONAL — Q12 measured GRAY (live-leaning: hot-set-80 4.20 GB versus the 4 GB bar, repeat 85%; §5). Next gate = production-shaped query log; do not build before that AND E8 Stage-2 lands.** Revised uplift with the measured curve: a 1.6 GB pin covers 50% of touches / 4.2 GB covers 80% → on the capped host, **~1.5–3× p50** (*est.*, down from 2–4× — skew is moderate, not colibrì-grade) |
+| **#3 PILOT analog** | cold queries on hosts with idle I/O channel | **≤1.3× cold, 1.0× warm** — and plausibly <1.0× (channel contention; three adjacent negative results) | ~1–2 weeks (Rust traversal restructure + worker + ring) | ❌ **PARK** — two preconditions (Q12 GO + channel headroom), poor risk/reward versus #2 |
 | **#4 pread+LRU reader** | same as #2, past the kernel ceiling | uplift over #2 unknown; bounded by whatever #2 leaves (eviction-policy losses: TLB shootdowns, kswapd — CIDR 2022 says 2–20× exists *in general*, our residual after #2 is the open question) | ~2–3 weeks | ❌ **DEFER** — escalation only, after #2 ships and measurably plateaus |
 | **skew→uniform outcome** | — | if Q12 shows uniform access: **close the whole streaming-tier track**, remediation stays Tier-2 #5 (no-swap host / mlock-floor) — colibrì's own concession ("RAM cap, not disk speed, is the binding constraint on small machines") applies verbatim | 0 | the honest exit |
 

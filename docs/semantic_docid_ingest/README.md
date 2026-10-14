@@ -19,9 +19,9 @@ This is a *thinking trail*, not a commitment. The headline recommendation is in
 
 | Doc | What it is |
 |---|---|
-| [`00_CONCEPT_AND_CONTEXT.md`](00_CONCEPT_AND_CONTEXT.md) | The full idea trail: generative retrieval (DSI/NCI/SEAL) applicability, MoE applicability, "Meaning A vs B" of autoregressive doc-IDs, and the two hard constraints (any-hardware/elastic, immutable sparse leg). |
+| [`00_CONCEPT_AND_CONTEXT.md`](00_CONCEPT_AND_CONTEXT.md) | The full idea trail: generative retrieval (DSI/NCI/SEAL) applicability, MoE applicability, "Meaning A versus B" of autoregressive doc-IDs, and the two hard constraints (any-hardware/elastic, immutable sparse leg). |
 | [`01_ARCHITECTURE.md`](01_ARCHITECTURE.md) | The design that survives the constraints: ID-as-routing-address, the immutable-segment LSM loop, elastic prefix-depth sharding, interaction with the existing sharding + mmap infra. |
-| [`02_SPIKE_PLAN.md`](02_SPIKE_PLAN.md) | Stage-1 spike: what to build (rule-based ID, no ML), what to measure (resident-set vs segment count, query fan-out, flush latency), success/kill criteria. |
+| [`02_SPIKE_PLAN.md`](02_SPIKE_PLAN.md) | Stage-1 spike: what to build (rule-based ID, no ML), what to measure (resident-set versus segment count, query fan-out, flush latency), success/kill criteria. |
 | [`03_GO_NO_GO.md`](03_GO_NO_GO.md) | Simplified should/should-not + explicit GOs and NO-GOs. The decision page. |
 | [`DECISION_TRAIL.md`](DECISION_TRAIL.md) | Dated log of how the conclusion was reached, including the Lucene reality-check that shrank the novelty. |
 

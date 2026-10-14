@@ -23,7 +23,7 @@ The prior project killed the bespoke mmap-BMP engine on **two measured axes**
 | Axis | mmap-BMP result | SEISMIC |
 |---|---|---|
 | **Pruning at scale** | ❌ **linear in corpus** — WAND prunes ~nothing on 64-term SPLADE (worst query scored 95% of all blocks) → ~557K block-scores/q @150M | ✅ **designed to prune** (geometric blocks + summary vectors), **validated at 138M** |
-| **RAM cure** | ❌ half-built (inverted side ~334 B/doc → ~50 GB @150M) | ❓ **open** — FOSS impl is RAM-resident; cure is the work |
+| **RAM cure** | ❌ half-built (inverted side ~334 B/doc → ~50 GB @150M) | ❓ **open** — FOSS implementation is RAM-resident; cure is the work |
 | **No-JVM / embeddable** | ✅ (Rust fork) | ✅ (pure Rust, MIT, `pyseismic-lsr`) |
 
 SEISMIC trades BMP's fatal-and-unfixable axis (pruning) for an *open* one (RAM). That

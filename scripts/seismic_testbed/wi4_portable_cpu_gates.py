@@ -45,7 +45,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "seismic_testbed"))
 
 TOP_K = 50
@@ -88,7 +88,7 @@ def run_variant_topk(variant_dir, variant_label, shard_dir, queries, model_path,
     script = f"""
 import sys, json, os
 sys.path.insert(0, {str(variant_dir)!r})
-sys.path.insert(0, 'src')
+sys.path.insert(0, 'source')
 sys.path.insert(0, 'scripts/seismic_testbed')
 import numpy as np
 import seismic as _s

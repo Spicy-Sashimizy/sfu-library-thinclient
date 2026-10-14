@@ -26,7 +26,7 @@ was built from the same token space, and the identical encoded query is sent to
 each. So per-shard scores live in the **same dot-product space** → directly
 comparable. A global top-k is just "take each shard's local top-k′, merge by raw
 score, keep the best k." **Merging by score is order-independent** — visiting
-shards sequentially vs concurrently cannot change the merged set. Therefore:
+shards sequentially versus concurrently cannot change the merged set. Therefore:
 
 > **Sequential top-k ≡ parallel top-k, bit-for-bit** (same `k′` over-fetch). This
 > is what makes sequential a *serving* change with **zero quality impact** — the
@@ -126,7 +126,7 @@ physically cannot reach a `SequentialSeismicBackend` instance. The shared merge 
 ONE pure function, so the two methods cannot silently drift (the cascade vector
 that matters most for a system whose correctness story is "bit-identical top-k").
 
-- `src/lib/thinclient/sharded_seismic_backend.py`
+- `source/lib/thinclient/sharded_seismic_backend.py`
   - `ParallelSeismicBackend` / `SequentialSeismicBackend` — each owns its `_fan_out`
     (the ONLY per-query behavior that differs); inherits a private construction +
     thin-wrapper shell. `SequentialSeismicBackend._fan_out` is the serial loop
@@ -134,12 +134,12 @@ that matters most for a system whose correctness story is "bit-identical top-k")
     `ParallelSeismicBackend._fan_out` is the `ThreadPoolExecutor` fan-out
     (persistent per-backend pool since 2026-07-08 G8g — built once in
     `__init__`; per-instance, so no cross-class shared state).
-  - `_merge_topk` (module fn) — the ONE shared score-merge, order-independent →
+  - `_merge_topk` (module function) — the ONE shared score-merge, order-independent →
     bit-identical top-k across both classes (the load-bearing property).
   - `ShardedSeismicBackend` — back-compat `__new__` selector returning the matching
     concrete class (default `parallel`); kept so the load-bearing parity harnesses
     constructing it with NO `federation` kwarg keep working unchanged.
-- `src/lib/thinclient/retriever.py` `_seismic_backend()` → reads
+- `source/lib/thinclient/retriever.py` `_seismic_backend()` → reads
   `SFU_SEISMIC_FEDERATION` (`parallel` default | `sequential`) and picks the
   concrete class directly.
 - `scripts/seismic_testbed/serve_footprint_bench.py` +

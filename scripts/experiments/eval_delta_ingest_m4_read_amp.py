@@ -286,7 +286,7 @@ def ols(xs: list[float], ys: list[float]) -> float | None:
 
 
 def _spike_imports():
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO))
     from spike.delta_ingest.base import DEFAULT_INDEX_ROOT, BaseIndex
     from spike.delta_ingest.buffer import BufferWriter
@@ -754,7 +754,7 @@ def child(args) -> int:
 
 def snapshot_src(commit: str) -> Path:
     snap = WORK / f"code_{commit[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src | tar -x -C {snap}", shell=True)
         for name in ("models", "data", ".env"):
@@ -806,7 +806,7 @@ def drive(args) -> int:
             cmd = ["flock", LOCK, sys.executable, str(Path(__file__).resolve()), "child", "--arm", a,
                    "--federation", f, "--round", str(r), "--passes", str(args.passes),
                    "--warmup", str(args.warmup), "--rows-out", str(rows_out),
-                   "--limit-topics", str(args.limit_topics), "--src", str(snap / "src"),
+                   "--limit-topics", str(args.limit_topics), "--src", str(snap / "source"),
                    "--quiet-wait", str(args.quiet_wait)]
             tw = time.time()
             with open(logp, "a") as fh:
@@ -1235,7 +1235,7 @@ def inproc_drive(args) -> int:
             cmd = ["flock", LOCK, sys.executable, str(Path(__file__).resolve()), "inproc", "--federation", fed,
                    "--arms", args.arms, "--passes", str(args.passes), "--warmup", str(args.warmup),
                    "--rows-out", str(rows_out), "--limit-topics", str(args.limit_topics),
-                   "--src", str(snap / "src"), "--quiet-wait", str(args.quiet_wait),
+                   "--src", str(snap / "source"), "--quiet-wait", str(args.quiet_wait),
                    "--inline-wait", str(args.inline_wait), "--seed", str(args.seed)]
             with open(logp, "a") as fh:
                 fh.write(f"=== attempt {attempt} {utc()} ===\n")
@@ -1574,7 +1574,7 @@ def main() -> int:
     ch.add_argument("--warmup", type=int, default=1)
     ch.add_argument("--rows-out", required=True)
     ch.add_argument("--limit-topics", type=int, default=0)
-    ch.add_argument("--src", default=str(REPO / "src"))
+    ch.add_argument("--src", default=str(REPO / "source"))
     ch.add_argument("--quiet-wait", type=int, default=600)
     ip = sub.add_parser("inproc")
     ip.add_argument("--federation", required=True, choices=["parallel", "sequential"])
@@ -1583,7 +1583,7 @@ def main() -> int:
     ip.add_argument("--warmup", type=int, default=1)
     ip.add_argument("--rows-out", required=True)
     ip.add_argument("--limit-topics", type=int, default=0)
-    ip.add_argument("--src", default=str(REPO / "src"))
+    ip.add_argument("--src", default=str(REPO / "source"))
     ip.add_argument("--quiet-wait", type=int, default=900)
     ip.add_argument("--inline-wait", type=int, default=120)
     ip.add_argument("--seed", type=int, default=20260929)

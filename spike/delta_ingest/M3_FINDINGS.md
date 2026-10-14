@@ -178,7 +178,7 @@ Updated docs lose a little, and nothing in the base is pushed out by them.
 
 ## Issue found, not fixed
 
-`ThinClientRetriever._bm25f_leg` (`src/lib/thinclient/retriever.py`, the
+`ThinClientRetriever._bm25f_leg` (`source/lib/thinclient/retriever.py`, the
 `idx.parse_query(text, ["title"])` line in `_bm25f_leg`) raises
 `ValueError: Syntax Error` on queries containing upper-case `IN` and similar
 operator words. The sanitiser removes only non-alphanumerics. This hit 10 of

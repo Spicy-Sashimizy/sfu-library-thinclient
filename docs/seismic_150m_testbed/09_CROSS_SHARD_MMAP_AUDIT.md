@@ -25,7 +25,7 @@ Two questions, answered from the existing evidence base + code:
    calibration, grouping related works)?
 2. **MMAP EFFICIENCY** — which index-structure choices determine
    pages-touched-per-query under mmap serving, and which are changeable at
-   query time vs only by rebuild?
+   query time versus only by rebuild?
 
 ---
 
@@ -44,7 +44,7 @@ Two questions, answered from the existing evidence base + code:
   one SPLADE token space, receive the identical encoded qvec, and forward
   values are per-value deterministic f16 quantization — so per-shard scores are
   the same dot products and merge raw (`_merge_topk`,
-  `src/lib/thinclient/sharded_seismic_backend.py:199`). Parallel ≡ sequential
+  `source/lib/thinclient/sharded_seismic_backend.py:199`). Parallel ≡ sequential
   bit-identical (T1, `scripts/tests/test_seismic_sequential.py`); the only
   per-shard divergence is clustering/pruning approximation, measured at 0.33%
   of top-10 (federation overlap 0.9967, `seismic_federation_overlap_929k.json`,
@@ -53,7 +53,7 @@ Two questions, answered from the existing evidence base + code:
   is one global DB (id → title/doi/year/type/is_oa/section for all 150M docs,
   shard-independent by construction). Filters and version-grouping are
   correctly done post-merge at the meta layer (already partly implemented:
-  `retriever._post_filter`, `src/lib/thinclient/retriever.py:739`). DOI-based
+  `retriever._post_filter`, `source/lib/thinclient/retriever.py:739`). DOI-based
   grouping of versions across shards is a cheap top-k post-pass — prevalence
   UNMEASURED.
 - **The best query-time win is `k'`, MEASURED via E1 (2026-07-02).** Dropping
@@ -69,7 +69,7 @@ Two questions, answered from the existing evidence base + code:
   live use would be an in-engine gather-selection change (§2.2), not a
   query-time knob.
 - **Page economics:** the forward index is **85% of shard bytes** (shard0:
-  forward 6.74 GB vs inverted+summary 1.17 GB, `build_global_shard0.json`,
+  forward 6.74 GB versus inverted+summary 1.17 GB, `build_global_shard0.json`,
   2026-06-30) and is touched by **random ~350 B reads per candidate doc**
   (~87.6 nnz × 2 B components + 2 B values) → ≈ 2 random 4 KB pages per scored
   candidate across two separate files. Candidates-scored, not list length, is
@@ -98,7 +98,7 @@ manifest `hash_fn` field. Measured consequences:
 
 - Doc balance max/min 1.001–1.0017 across all 40 section-shards
   (`data/eval_results/seismic_plan01_shards_150m.json`, built 2026-06-30).
-- Each shard ≈ 18.8 M docs, avg 87.6 nnz/doc, dim 28,700–28,725.
+- Each shard ≈ 18.8 M docs, average 87.6 nnz/doc, dim 28,700–28,725.
 
 Because the hash ignores content, **every shard is an i.i.d. 1/8 sample**: the
 year histogram, section mix, type mix, and is_oa rate of shard 3 are the same
@@ -139,7 +139,7 @@ over-fetch multiplier for filtered queries (`OVERFETCH_FILTERED`) compensates
 for filter loss. Under hash sharding this is correct and also the best
 possible: there is nothing to prune. The only routes to pruning are
 partitioning changes (§1.4). What IS available cheaply today: **pre-checking
-degenerate filters** (e.g. `year_range` entirely outside the corpus range)
+degenerate filters** (for example, `year_range` entirely outside the corpus range)
 before paying the 8-shard fan-out — micro-win, UNMEASURED.
 
 **(ii) Cross-shard score calibration — unnecessary by construction.**
@@ -156,7 +156,7 @@ Three stacked reasons, all in code:
    statistics, but they only steer the block-skip approximation; final scores
    come from the forward f16 values.
 So raw scores merge exactly (`_merge_topk`), and the measured evidence agrees:
-federation overlap@10 0.9967 vs a single index over the same docs (2-shard
+federation overlap@10 0.9967 versus a single index over the same docs (2-shard
 gate, 2026-06-28, `seismic_federation_overlap_929k.json` + `_mmap` twin), and
 the sequential/parallel bit-identical T1 test. **Do not add a calibration
 layer; it can only distort an already-exact merge.** The residual 0.33%
@@ -164,7 +164,7 @@ divergence is per-shard k-means/pruning approximation, not score skew.
 
 **(iii) Grouping versions/parts of the same work across shards — feasible
 today, post-merge, at ~zero cost.** Different W-ids of the same work (preprint
-vs published, parts of a book) hash to different shards, but grouping never
+versus published, parts of a book) hash to different shards, but grouping never
 needed co-location: the merged top-k is ≤ tens of docs and `_hydrate` already
 fetches their meta rows. A DOI-keyed collapse (keep best-scoring W-id per DOI,
 attach the rest as `other_versions`) is an O(k) dict pass. Two honest
@@ -220,7 +220,7 @@ on shard0 (`seismic_e1_kprime_df_sweep_20260702_2314.json`, 40 diverse
 queries):
 - **Pass all terms + small `query_cut` (the correct lever):** fewer lists
   traversed, full-query scoring preserved. But recall is NOT free at 150M —
-  overlap@10 vs the all-terms baseline is **0.865 @ qc=5, 0.9275 @ qc=10,
+  overlap@10 versus the all-terms baseline is **0.865 @ qc=5, 0.9275 @ qc=10,
   0.9425 @ qc=15, 0.96 @ qc=20**, and only **qc=all reaches ≥0.99** (0.9875 at
   k'=50, 0.995 at k'=100). **This CONTRADICTS the C1 sweep's 0.995 @ qc=10**
   (`seismic_sweep_c1_querycut_heapfactor_20260630.json`) — that was on a 100k
@@ -242,7 +242,7 @@ for a top-50. Under uniform 1/8 sampling the global top-50 spreads
 ~Binomial(50, 1/8)/shard (mean 6.25), so 200 is generously oversized (audit
 §0). Measured: at fixed `query_cut`, dropping `k'` from 200→50 is
 **overlap-neutral (Δ ≤ 0.005)** and cuts warm traversal ~1.4–1.7× with fewer
-faults (e.g. qc=all: k'=200 baseline 5.95 ms → **k'=100 4.22 ms @ overlap
+faults (for example, qc=all: k'=200 baseline 5.95 ms → **k'=100 4.22 ms @ overlap
 0.995 (recall-safe, 1.41×)** → k'=50 3.54 ms @ 0.9875 (1.68×); majflt on the
 qc=5 cold pass 610→26→0 as k' drops 200→100→50). Mechanism confirmed: a
 smaller `k'` heap fills sooner, its k-th score rises, and the `heap_factor`
@@ -253,7 +253,7 @@ served default from 200 to 100 is recall-safe on this shard; a federated G6-
 style re-check before flipping the production default is the owed follow-up.
 
 > **FOLLOW-UP PAID + FLIPPED (G8f, 2026-07-08).** The federated-level gate
-> ran at n=100 on the served dv path: merged top-k overlap (k'=100 vs
+> ran at n=100 on the served dv path: merged top-k overlap (k'=100 versus
 > k'=200) **overlap@10 0.999 / overlap@50 0.994**, federated traverse
 > **1.47× faster** (38.3 → 26.0 ms p50) — E1's per-shard 1.41× carries to
 > the federation. **Served default flipped to `max(2×top_k, 100)`**
@@ -283,7 +283,7 @@ style re-check before flipping the production default is the owed follow-up.
 
 ### 3.1 On-disk layout, measured (shard0 of 8, 18,799,322 docs)
 
-From the persistent converted dir
+From the persistent converted directory
 `data/seismic_150m/index/plan01/global_shard0of8.mmap/` (listed 2026-07-02) and
 the build split (`data/eval_results/build_global_shard0.json`, 2026-06-30):
 
@@ -298,7 +298,7 @@ the build split (`data/eval_results/build_global_shard0.json`, 2026-06-30):
 | `manifest.json` | 21.9 MB | parsed once → owned | load-time only |
 
 Whole-corpus totals: 8 shards, 62 GB converted (du 2026-07-01), forward =
-**85%** of index bytes at 150M (vs 38% at 2M — the split flipped with scale;
+**85%** of index bytes at 150M (versus 38% at 2M — the split flipped with scale;
 `06_FINDINGS.md` G7 row, 2026-06-28).
 
 ### 3.2 Pages touched per query — the traversal model (from code)
@@ -346,7 +346,7 @@ measurement.
 flat-then-cliff — warm p50 65–80 ms while the touched set fits page cache,
 **~650× cliff to 42 s** one step below it (A1 #3, measured 2026-06-30,
 container-cap sweep 48→24 GB). Every page you stop touching moves the knee
-left, i.e. shrinks the box the corpus serves from. And per `08_LATENCY_RESEARCH.md`
+left, that is, shrinks the box the corpus serves from. And per `08_LATENCY_RESEARCH.md`
 §E (2026-07-01): **file-backed mmap pages bypass zram/zswap** — an evicted page
 is a disk re-fault, never a µs decompress. So under `load_mode=mmap` the only
 levers that exist are *fewer pages touched* and *smaller on-disk blocks*.
@@ -355,14 +355,14 @@ levers that exist are *fewer pages touched* and *smaller on-disk blocks*.
 
 | Lever | Changes | Mechanism on pages | Class | Evidence |
 |---|---|---|---|---|
-| `query_cut` (`SFU_SEISMIC_QUERY_CUT`) | which posting lists are **gathered** from (NOT which terms score — §2.1) | fewer lists → fewer blocks → fewer candidates | **MATH — env, no rebuild** | **MEASURED 2026-07-02 (E1)**: at 18.8M, qc=10 → overlap@10 **0.9275** (below 0.99), only qc=all clears 0.99 → **the 100k 0.995@qc=10 does NOT transfer; keep served default at all-terms** (C1 caveat answered NEGATIVE) |
-| `heap_factor` (`SFU_SEISMIC_HEAP_FACTOR`) | block-skip aggressiveness | fewer blocks → fewer forward candidate pages | **MATH — env** | MEASURED inert-to-mild in 0.6–0.8 (same sweep) |
-| `k'` (`SFU_SEISMIC_K_PRIME`) | per-shard heap size | heap-min rises sooner → more block skips | **MATH — env** | **MEASURED 2026-07-02 (E1)**: 200→100 recall-safe (overlap@10 0.995) at 1.41× warm; 200→50 at 0.9875/1.68× — the shippable lever |
+| `query_cut` (`SFU_SEISMIC_QUERY_CUT`) | which posting lists are **gathered** from (NOT which terms score — §2.1) | fewer lists → fewer blocks → fewer candidates | **MATH — environment, no rebuild** | **MEASURED 2026-07-02 (E1)**: at 18.8M, qc=10 → overlap@10 **0.9275** (below 0.99), only qc=all clears 0.99 → **the 100k 0.995@qc=10 does NOT transfer; keep served default at all-terms** (C1 caveat answered NEGATIVE) |
+| `heap_factor` (`SFU_SEISMIC_HEAP_FACTOR`) | block-skip aggressiveness | fewer blocks → fewer forward candidate pages | **MATH — environment** | MEASURED inert-to-mild in 0.6–0.8 (same sweep) |
+| `k'` (`SFU_SEISMIC_K_PRIME`) | per-shard heap size | heap-min rises sooner → more block skips | **MATH — environment** | **MEASURED 2026-07-02 (E1)**: 200→100 recall-safe (overlap@10 0.995) at 1.41× warm; 200→50 at 0.9875/1.68× — the shippable lever |
 | df-aware term selection | which terms enter `query_cut` | drops max-cost terms first | **MATH — Python-side + one offline df table** | UNMEASURED (E1) |
 | carried heap floor (sequential) | initial skip threshold per shard | later shards skip warm-up blocks | MATH but needs a **small pyo3 API addition** (no index change) | UNMEASURED (E4) |
 | `madvise(MADV_RANDOM)` on the two forward files | kernel readahead | stops speculative readahead around each ~350 B candidate read — default readahead can fault up to 32 extra pages per miss (*est.*, kernel-default 128 KB window; actual amplification UNMEASURED) | **`.so` rebuild only — index files untouched** | named design-only in `08` §A3; the reader today applies `WILLNEED|SEQUENTIAL` only inside the `touch_slab` fault-in helper (`mmap_io.rs:778-798`), nothing on the query path |
 | `MADV_DONTNEED` after shard (mechanism B) | peak resident, not pages touched | bounds resident ≈ 1 shard; each query still re-faults | shipped (sequential only) | MEASURED 2026-07-01: anon floor 1.01 GB but warm ≈ cold 15.9 s on the 32 GB box (`seismic_serve_bench_sequential_20260701.json`) — release trades latency for floor, exactly as designed |
-| `n_postings` ↓ (e.g. 3500→2000) | posting-list lengths → blocks → candidates AND summary bytes | fewer step-1 pages and fewer candidates | **LAYOUT — full shard rebuild** | G2 swept it **UP** to saturation and proved top-10 bit-identical (2026-06-27, `seismic_g2_npostings_sweep.json`); the DOWN direction (smaller index, same results?) was never tested — E3 |
+| `n_postings` ↓ (for example, 3500→2000) | posting-list lengths → blocks → candidates AND summary bytes | fewer step-1 pages and fewer candidates | **LAYOUT — full shard rebuild** | G2 swept it **UP** to saturation and proved top-10 bit-identical (2026-06-27, `seismic_g2_npostings_sweep.json`); the DOWN direction (smaller index, same results?) was never tested — E3 |
 | `centroid_fraction` | block count/size per list | finer blocks = sharper skips but more summary bytes; coarser = fewer summary pages but blunter skips | **LAYOUT — rebuild** | measured on quality (±0.003, 2026-06-27); page-cost axis UNMEASURED |
 | `summary_energy` α | summary nnz per block | step-1 pages | **LAYOUT — rebuild** | quality-inert in the 0.4→0.9 sweep (2026-06-27); size axis: index grew 1.69→5.28 GB at α 0.9 — so α↓ *shrinks*, floor at default 0.4 |
 | forward value/component width (DotVByte ~32% smaller fwd @1.2× decode; 4-bit summaries ~30-35%) | on-disk bytes per candidate/summary | same touches, smaller pages-per-candidate footprint → more of the index fits cache | **LAYOUT + reader fork** (writer AND `MmapSparseStorage` change) | **E6 design + E7 IMPLEMENTATION (2026-07-03)**: dotvbyte forward shipped (shard0 fwd 6.74→3.97 GB, majflt −41%, cold 1.43× faster, parity 0.995); warm recleared 0.957× by the native rebuild. **E7b RAM-capped verdict (2026-07-03, host): PROMOTED for RAM-constrained deploys** — at a 4 GB cap f16 cliffs (warm p50 1.3–1.9 s, ~100–173k majflt/pass) while dotvbyte stays warm (3.3 ms, 0 majflt); f16 stays default when RAM is ample. See `10_FORWARD_COMPRESSION_DESIGN.md` §7.5 |
@@ -433,10 +433,10 @@ and the est. in §3.3 is falsified.
 proven-inert lever).** Rebuild ONE 18.8M shard at n_postings ∈ {2000, 1000}
 (build ~19 min + convert ~7 min/shard at ~10 GB peak RSS per the G7/C2.5
 measurements — fits the 31.6 GB host serially), measure on-disk size,
-posting_lists.bin size, traverse p50, overlap@10 vs the n=3500 shard on the
+posting_lists.bin size, traverse p50, overlap@10 versus the n=3500 shard on the
 same queries. Rationale: G2 proved raising n_postings changes nothing
 bit-identically; if lowering it also holds overlap ~1.0, the inverted side +
-candidate counts shrink for free. Kill: overlap@10 < 0.98 vs the current shard
+candidate counts shrink for free. Kill: overlap@10 < 0.98 versus the current shard
 at n_postings=2000 (then the default is already at the quality edge and the
 lever is dead downward too).
 
@@ -444,7 +444,7 @@ lever is dead downward too).
 Add `initial_threshold` to `MmapSeismicIndex.search` (seed the heap-min used
 at `mmap_index.rs:313`), thread it through
 `SequentialSeismicBackend._fan_out`. Metrics: per-shard blocks-evaluated (add
-a counter) + traverse p50 on 2 shards, ≤40 queries; top-k equality vs today's
+a counter) + traverse p50 on 2 shards, ≤40 queries; top-k equality versus today's
 sequential run. Cost: small Rust+Python change + test run; no rebuild. Kill:
 blocks-evaluated in shard 2 falls <20% (warm-up loss is negligible and the
 change isn't worth the API surface).
@@ -453,7 +453,7 @@ change isn't worth the API surface).
 only after E1–E3 land).** Extend `convert_shard_to_mmap.py` with a permutation
 pass: order docs by a cheap semantic key (section‖year‖top-SPLADE-term, no ML)
 and remap all packed-posting offsets + doc-mapping. Metrics: majflt/query and
-pages-touched (RssFile delta) vs the unpermuted shard, SAME queries, parity
+pages-touched (RssFile delta) versus the unpermuted shard, SAME queries, parity
 bit-identical (hard gate — any score drift is a bug). Cost: converter work +
 one shard re-convert (~10 GB RSS, minutes) + bench hours; the riskiest
 engineering of the five. Kill: majflt/query reduction <15% — then forward

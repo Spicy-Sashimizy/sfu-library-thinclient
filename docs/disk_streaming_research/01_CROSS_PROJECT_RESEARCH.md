@@ -24,7 +24,7 @@ UNMEASURED**; the testable ones are framed as candidate hypotheses at the end.
 > `seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md` §Q12).
 
 **The framing.** colibrì (*JustVugg/colibri*) streams 744B-param MoE expert
-weights from disk to run GLM-5.2 in ~25 GB RAM. Our repo streams a SEISMIC
+weights from disk to run GLM-5.2 in ~25 GB RAM. Our repository streams a SEISMIC
 sparse index from disk to serve 150M docs on a 32 GB host. The structure is the
 same shape — *a small resident "dense" tier + a bulk "streamed" tier selected
 on demand by a per-query routing step (the router, resp. the query_cut posting
@@ -50,7 +50,7 @@ attention, shared experts, embeddings) and a **streamed expert tier** (~370 GB
 on disk at int4), loading an expert only when the router selects it (top-8 of
 256 per layer). Mechanisms, in decreasing transfer-relevance to us:
 
-| Mechanism | colibrì impl | Why it might transfer / not |
+| Mechanism | colibrì implementation | Why it might transfer / not |
 |---|---|---|
 | **Per-layer LRU of the streamed tier** | `ESlot[]` per layer + monotonic `eclock`; linear-scan LRU eviction; auto-sized from `MemAvailable` | Our only eviction policy today is the kernel page cache, which we cannot steer. A software LRU above it is the biggest *untried* lever. |
 | **`pread` (not mmap) for the streamed tier** | coalesced `pread` of contiguous expert weights; optional O_DIRECT 4K-aligned path | mmap gives us the kernel's eviction+readahead, which (per our MADV\_ findings below) we cannot tune to win. A `pread` + explicit-LRU reader would give the control the LRU/pin levers need. Biggest architectural lift; foundational. |
@@ -62,7 +62,7 @@ on disk at int4), loading an expert only when the router selects it (top-8 of
 
 ## The honest map: where our code mirrors colibrì (and what's missing)
 
-Our repo *is* a disk-streaming system in the same shape. The mapping, with file
+Our repository *is* a disk-streaming system in the same shape. The mapping, with file
 anchors (absolute paths for cross-dir reference):
 
 | colibrì concept | Our equivalent | File | Status |
@@ -75,15 +75,15 @@ anchors (absolute paths for cross-dir reference):
 | `MADV_WILLNEED` per-query prefetch | per-range WILLNEED tested | `spike/seismic_upstream/src/mmap_io.rs` | **REFUTED** (see below) |
 | `MADV_RANDOM` | `leak_mmap_advise(.., false)` everywhere; tested on f16 forward | `spike/seismic_upstream/src/mmap_io.rs` (`leak_mmap_advise`) | **REFUTED** (see below) |
 | `MADV_DONTNEED` release between shards | `release_pages` (sequential mechanism B) | `spike/seismic_upstream/src/mmap_io.rs` (`release_pages`) | IMPLEMENTED |
-| Router-lookahead prefetch (PILOT) | *none* | — | MISSING (research step, not a config flip) |
-| Usage-tracking / hot pin | *none* (the hybrid flip is adaptive on latency, not usage) | `src/lib/thinclient/sharded_seismic_backend.py` (`HybridSeismicBackend`) | MISSING (telemetry half is cheap to add) |
-| Per-shard sequential streaming | `SequentialSeismicBackend` (one shard resident → DONTNEED → next) | `src/lib/thinclient/sharded_seismic_backend.py` | IMPLEMENTED, **LATENCY REFUTED at 150M** (see below) |
-| Host RAM ≥ resident set | `ParallelSeismicBackend` (ThreadPoolExecutor, all shards resident) | `src/lib/thinclient/sharded_seismic_backend.py` | IMPLEMENTED |
-| Cold→warm adaptive flip | `HybridSeismicBackend` (state signal, seq→par flip) | `src/lib/thinclient/sharded_seismic_backend.py` (`_maybe_flip`) | IMPLEMENTED (Q7) |
+| Router-lookahead prefetch (PILOT) | *none* | — | MISSING (research step, not a configuration flip) |
+| Usage-tracking / hot pin | *none* (the hybrid flip is adaptive on latency, not usage) | `source/lib/thinclient/sharded_seismic_backend.py` (`HybridSeismicBackend`) | MISSING (telemetry half is cheap to add) |
+| Per-shard sequential streaming | `SequentialSeismicBackend` (one shard resident → DONTNEED → next) | `source/lib/thinclient/sharded_seismic_backend.py` | IMPLEMENTED, **LATENCY REFUTED at 150M** (see below) |
+| Host RAM ≥ resident set | `ParallelSeismicBackend` (ThreadPoolExecutor, all shards resident) | `source/lib/thinclient/sharded_seismic_backend.py` | IMPLEMENTED |
+| Cold→warm adaptive flip | `HybridSeismicBackend` (state signal, seq→par flip) | `source/lib/thinclient/sharded_seismic_backend.py` (`_maybe_flip`) | IMPLEMENTED (Q7) |
 
 **The one genuinely missing idea class:** colibrì has **four** cache tiers in
 software (LRU → pin → page cache → disk) and **software-driven prediction**
-(PILOT). We have **two** tiers (RAM-resident vs page-cache-as-L2) and **zero
+(PILOT). We have **two** tiers (RAM-resident versus page-cache-as-L2) and **zero
 prediction** — every cold access is a reactive fault. sluice confirms the same
 for GPU expert offloading (strictly reactive there too). That gap is the single
 biggest thing to learn from these projects, and it lines up exactly with the
@@ -112,7 +112,7 @@ path*.
 
 ## Candidate experiments (ranked, grounded, parity-safe)
 
-All would be spike-harness experiments in `scripts/seismic_testbed/`, behind env
+All would be spike-harness experiments in `scripts/seismic_testbed/`, behind environment
 gates, parity-guarded by the T1 bit-identical invariant (none touch the shared
 `_merge_topk`, so all are results-preserving). These are **candidates only** —
 not yet pre-registered into `seismic_150m_testbed/11_EXPERIMENT_BACKLOG.md`. If
@@ -146,9 +146,9 @@ adopted, register them there with bars before running.
    #1 must show locality first, and the prefetch MUST be (a) off the hot path
    on a worker, (b) batched, (c) drop-on-full — to survive our refutation of
    the inline per-range WILLNEED (which the kernel ignored + added syscall
-   overhead). The predictor needs candidate starts *predicted* (e.g. from
+   overhead). The predictor needs candidate starts *predicted* (for example, from
    posting-list block-skips before evaluation); `search_raw_visited` currently
-   returns `visited` only *after* the fact. Real research step, not a config
+   returns `visited` only *after* the fact. Real research step, not a configuration
    flip.
 
 4. **`pread`-backed forward reader with explicit LRU (lower priority,

@@ -46,7 +46,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 _spec = importlib.util.spec_from_file_location(
     "eval_fixed_shape_parity", REPO / "scripts/experiments/eval_fixed_shape_parity.py")

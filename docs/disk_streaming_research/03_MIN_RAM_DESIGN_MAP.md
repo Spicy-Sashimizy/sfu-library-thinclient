@@ -88,7 +88,7 @@ nothing.
 > memory-pressure pass exists in this container; default stays 0**;
 > §5 step 2).
 > F6 prefault remains the proven lever (2.8× cold p95, all shapes).
-> Recommended config: `THIN_CLIENT_SWAP.md` env register.
+> Recommended configuration: `THIN_CLIENT_SWAP.md` environment register.
 
 Fixed costs (measured): anon serving floor ~1.1 GB (Path-C), structural floor
 ~1.5 GB, SPLADE ORT encoder ~0.7 GB (*est.* — measure before quoting). dv
@@ -123,7 +123,7 @@ pin (1.6 / 4.2 GB total, correctly scoped) is the real min-RAM lever.
 
 | Deploy shape | Combo (dial settings) | Guaranteed RSS (*est.*) | Expected behavior (*est.*) |
 |---|---|---|---|
-| **Localized min-RAM (6 GB cap)** — the H5 cell | sequential-only + F4 floor-pin + F3 pin @ **1.6 GB** (hot-50) + F5 release-except | ~1.1 + 1.5 + 1.6 + 0.7 ≈ **4.9 GB** locked; ~1 shard transient on top → fits 6 GB | ~50% of candidate touches never fault (Q12 curve); per-query cost ≈ Σ shards over the *other* 50% → vs today's H5 prediction (tens of s/query) plausibly **~2× better p50**; floor never re-faults |
+| **Localized min-RAM (6 GB cap)** — the H5 cell | sequential-only + F4 floor-pin + F3 pin @ **1.6 GB** (hot-50) + F5 release-except | ~1.1 + 1.5 + 1.6 + 0.7 ≈ **4.9 GB** locked; ~1 shard transient on top → fits 6 GB | ~50% of candidate touches never fault (Q12 curve); per-query cost ≈ Σ shards over the *other* 50% → versus today's H5 prediction (tens of s/query) plausibly **~2× better p50**; floor never re-faults |
 | **32 GB host (the G8 regime)** | hybrid (F6) + F4 + F3 @ **4.2 GB** (hot-80) + F5 on the cold arm | ~7.5 GB locked, rest of RAM = Tier C | the 15.8 s warm≈cold sequential floor attacked from two sides: 80% of touches pinned + Tier C holds much of the residual → **~1.5–3× p50** (doc 02 §6 revised est.); paraphrase-like traffic (62% warm-hit, measured) benefits most |
 | **RAM-rich server (≥ 40 GB free)** | parallel, F3 @ **0** (pin dial off), F4 optional | ~2.6 GB + page cache grows to working set | pinning adds nothing when nothing is evicted (doc 02 §3.2) — the dial exists precisely so this shape pays zero |
 | **Cold-start-sensitive (any shape)** | + prefault (not mlock) the F2 sidecar extents at load, Q9-style | no locked delta | first queries hit a pre-warmed hot set: cold p50 → warm-ish for the hot fraction (*est.* 1.3–2× cold, doc 02 §6) |
@@ -202,8 +202,8 @@ bit-identical by construction (residency-only levers; T1 untouched).
    delta equal to the reported byte count (kernel-side confirmation); the
    shard's complete navigation floor is **153.1 MB of the 1,159.2 MB slab
    (13.2%)**, so the budget pinned the top 13% of it. Full-register default
-   = 8 × ~20 MB ≈ **160 MB vs the old 13.4 GB (671× less)**. Result parity
-   gate-ON vs gate-OFF: **5/5 queries bit-identical** (top-10 ids+scores,
+   = 8 × ~20 MB ≈ **160 MB versus the old 13.4 GB (671× less)**. Result parity
+   gate-ON versus gate-OFF: **5/5 queries bit-identical** (top-10 ids+scores,
    capture files byte-identical; `seismic_result_parity.py`).
 
    **LATENCY A/B RUN 2026-08-17 (idle host, NOT RAM-capped): 2 of 3
@@ -223,7 +223,7 @@ bit-identical by construction (residency-only levers; T1 untouched).
    `VmLck` delta equal to the reported bytes; the complete navigation floor
    across the register is **1,225,697,128 B**, so the 160 MB budget pins 13.0%
    of it. Warm p95 **105.6 → 95.0 ms** and warm mean **67.2 → 63.4 ms** are
-   nominally BETTER with the gate on, i.e. mlock costs nothing per query;
+   nominally BETTER with the gate on, that is, mlock costs nothing per query;
    `anon_floor` moves 1.1359 → 1.1370 GB (+1.1 MB) and `VmRSS` peak 17.61 →
    17.73 GB (+0.12 GB ≈ the locked bytes). **Cost that was not on anyone's
    list:** load time **2.8 s → 91.4 s**, because the mlock walk faults the
@@ -237,7 +237,7 @@ bit-identical by construction (residency-only levers; T1 untouched).
    no RAM cap, so nothing here forced the navigation pages to compete for
    reclaim. mlock'd pages are unevictable by kernel semantics and `VmLck`
    proves the lock landed, but "the pages survive pressure" was asserted, not
-   observed. The cold arm (p50 968.5 vs 1199.1 ms, 0.81×) looks favourable and
+   observed. The cold arm (p50 968.5 versus 1199.1 ms, 0.81×) looks favourable and
    is **not claimable**: n=100 single-pass with p95 6.8/8.8 s, a spread that
    dwarfs the difference. So: the A/B licenses *enabling* the gate on a host
    that wants it (it is free and bit-identical), and does not demonstrate a
@@ -280,7 +280,7 @@ bit-identical by construction (residency-only levers; T1 untouched).
    Bars (pre-registered 2026-08-17): warm p50 ON ≤ 1.05× OFF (mlock adds no
    per-query work), zero navigation-page re-faults under a memory-pressure
    pass, parity 0 mismatches. Anything else = keep default-off.
-3. F3 `mlock_ranges` + budget check; A/B on the 32 GB host vs pin-off. **BUILT
+3. F3 `mlock_ranges` + budget check; A/B on the 32 GB host versus pin-off. **BUILT
    2026-07-14; MECHANISM VERIFIED; latency A/B HOST-GATED**: `mlock_ranges(extents)`
    pyo3 hook (greedy by touch count in Python, budget-capped at
    min(`SFU_SEISMIC_PIN_BUDGET_GB`, MemAvailable − 1.5 GB floor − 1.0 GB
@@ -288,7 +288,7 @@ bit-identical by construction (residency-only levers; T1 untouched).
    sidecar at construction + applies the cap (the no-OOM guarantee). Manual 8-shard
    pin: 0.782 GB pinned cleanly (the no-op fallback kicks in past the memlock
    ceiling, no crash). LATECNY A/B **HOST-GATED**: the 15.8 s warm≈cold regime is
-   a 32 GB HOST phenomenon; this dev container (54 GB MemAvailable) is already
+   a 32 GB HOST phenomenon; this development container (54 GB MemAvailable) is already
    RAM-speed at warm → no latency uplift measurable here. Requires the
    operator's constrained-host run (G8 regime).
 4. F5 `release_pages_except` (needed only for the sequential/hybrid-cold arm;
@@ -306,9 +306,9 @@ bit-identical by construction (residency-only levers; T1 untouched).
 5. Re-run T1 bit-identity + the G6 overlap harness with pinning ON. **DONE
    2026-07-14 — 20/20 BIT-IDENTICAL**: `ParallelSeismicBackend` (2 shards, E8 v2,
    F3 pin 1.6 GB dial = 0.4 GB pinned) produces bit-identical top-50 oaid-order
-   on 20/20 diverse queries vs pin-OFF (`_t1_pin_{off,on}.json`). Residency-only
+   on 20/20 diverse queries versus pin-OFF (`_t1_pin_{off,on}.json`). Residency-only
    levers → T1 by construction; asserted empirically. Run out-of-process (3
-   backends × 2 shards exceeds the dev container's ~50 GB VmSize ceiling).
+   backends × 2 shards exceeds the development container's ~50 GB VmSize ceiling).
 6. Cold-start prefault-hotset-at-load (the cold-p95 lever). **DONE 2026-07-14 —
    MEASURED (corrected)**: `prefault_ranges(extents)` pyo3 hook + `prefault_hotset`
    backend method; gate `SFU_SEISMIC_PREFLOOR_HOTSET=1`.
@@ -326,12 +326,12 @@ bit-identical by construction (residency-only levers; T1 untouched).
    gate OFF cold p50 666-676 ms / p95 **4656-4686 ms**; gate ON cold p50
    373-490 ms / p95 **1464-1884 ms (median 1674)** → **~2.8× cold-p95, ~1.5×
    cold-p50, warm unchanged** (52-55 ms both arms)
-   (`f6_prefault_hotset_20260714.json` vs `f6_gateoff_baseline_20260714.json`).
-   Result parity gate-ON vs gate-OFF: **10/10 queries identical** (top-10 ids +
+   (`f6_prefault_hotset_20260714.json` versus `f6_gateoff_baseline_20260714.json`).
+   Result parity gate-ON versus gate-OFF: **10/10 queries identical** (top-10 ids +
    scores, 2026-07-14; harness promoted to
    `scripts/seismic_testbed/seismic_result_parity.py` — run it for every
    residency-lever enable, incl. the F3 constrained-host A/B).
-   Attribution note (corrected 2026-07-14 audit): warm improving 117→54 ms vs
+   Attribution note (corrected 2026-07-14 audit): warm improving 117→54 ms versus
    the 2026-07-13 baseline is an **operating-conditions confound (CPU
    contention), not a module win** — evidence: encode (pure ONNX, no Rust)
    also halved 30.4→16.7 ms; the 01:00 rebench on the OLD .so under co-load
@@ -345,7 +345,7 @@ bit-identical by construction (residency-only levers; T1 untouched).
    memory pressure the prefaulted pages are evicted and need F3 mlock to stay
    resident. Prefault = the cold-start lever; mlock = the durability lever.
 
-Kill-switch discipline: everything behind env gates (`SFU_SEISMIC_PIN_BUDGET_GB=0`
+Kill-switch discipline: everything behind environment gates (`SFU_SEISMIC_PIN_BUDGET_GB=0`
 = today's behavior exactly). F4 behind `SFU_SEISMIC_MLOCK_FLOOR=0`. F6 behind
 `SFU_SEISMIC_PREFLOOR_HOTSET=0`. All default-off → byte-identical to the
 pre-program path. **The rescope preserved this (2026-08-17):**
@@ -353,7 +353,7 @@ pre-program path. **The rescope preserved this (2026-08-17):**
 unrecognized → OFF (fail-safe: a typo can never pin gigabytes), `1` → the
 rescoped navigation floor, `full` → the 2026-07-14 whole-slab pin. With the
 gate off, the load path executes the identical statements it did before the
-rescope (the only edit on the OFF path is the env decode, which yields the same
+rescope (the only edit on the OFF path is the environment decode, which yields the same
 `False` for unset/`0`); empirically the gate-OFF and gate-ON parity captures are
 byte-identical files. A pre-rescope-binary arm was NOT re-run (the machine was
 running the WS-A parity eval on 2026-08-17) — OFF-path identity is established

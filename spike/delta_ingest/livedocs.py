@@ -1,6 +1,6 @@
 """Writer for the base livedocs tombstone bitset (item C, 2026-09-29).
 
-Format and reader: `src/lib/thinclient/livedocs.py`. One bitset per publish,
+Format and reader: `source/lib/thinclient/livedocs.py`. One bitset per publish,
 rebuilt from the ledger (tombstones + base docs superseded by a delta copy),
 written to `<delta_root>/livedocs/base-<stamp>.liv` via tmp + fsync +
 `os.replace`, and named (path, crc32, ordinal space) in `generations.json`,

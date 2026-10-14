@@ -8,7 +8,7 @@ the serve itself (``SFU_CACHE_PRESEED``) covers the cold-start case; this
 script covers the no-restart case.
 
 Seed list = the live landing-page example queries (read from their SOURCE
-``web/src/search.jsx`` — the file ``scripts/build_web.mjs`` compiles into
+``web/source/search.jsx`` — the file ``scripts/build_web.mjs`` compiles into
 ``web/search.js`` — so the seeds track the landing screen even when someone
 edits the JSX examples; the source is authoritative, not the compiled
 artifact) + the owner-extensible list in
@@ -43,7 +43,7 @@ import urllib.error
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-SEARCH_JSX = REPO / "web" / "src" / "search.jsx"
+SEARCH_JSX = REPO / "web" / "source" / "search.jsx"
 SEED_FILE = REPO / "data" / "eval_results" / "demo_seed_queries.txt"
 
 DEFAULT_LIMIT = 50

@@ -119,15 +119,11 @@ export async function mockApi(page, mode = 'live', opts = {}) {
     await page.route('**/health', r => r.abort());
     await page.route('**/api/**', r => r.abort());
     await page.route('**/analytics', r => r.abort());
-    await page.route('**/engagement', r => r.abort());
     return;
   }
   await page.route('**/health', r => r.fulfill({ json: { status: 'ok', tools: 12, warm: true } }));
-  await page.route('**/api/index_status', r => r.fulfill({ json: { metrics: {}, pack: {}, unpack_jobs: [] } }));
-  await page.route('**/api/personas', r => r.fulfill({ json: { personas: [], sections: [], live_sections: [] } }));
   await page.route('**/api/unpack', r => r.fulfill({ json: { ok: true, message: 'queued (mock)' } }));
   await page.route('**/analytics', r => r.fulfill({ json: { panels: {} } }));
-  await page.route('**/engagement', r => r.fulfill({ json: { recorded: true } }));
   await page.route('**/api/search', async r => {
     if (mode === 'hang') { await sleep(opts.hangMs || 15000); }
     if (mode === '429') return r.fulfill({ status: 429, headers: { 'Retry-After': '3' }, json: {} });

@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 
-> **Note 2026-10-11 (codebase triage):** Path A's supervisor config moved to
+> **Note 2026-10-11 (codebase triage):** Path A's supervisor configuration moved to
 > `scripts/archive/deploy_opensearch_era/mcp_http.supervisor.conf` (archived
 > with the rest of the legacy `deploy/` tooling). Its
 > `/workspaces/sfu-library-mcp-training/` paths never existed in this container,
@@ -16,8 +16,8 @@ Streamable HTTP transport, `/mcp` endpoint):
 
 | Path | Use from | Server it hits | Always on? |
 |------|----------|----------------|------------|
-| A. Local stdio bridge | Claude Desktop on the dev box | dev devcontainer (`:8080`) | only while the dev box + devcontainer are up |
-| B. Public HTTPS connector | Claude **mobile / web / desktop, anywhere** | **NAS** prod container (`:8080`) | yes — NAS is always on (`restart: unless-stopped`) |
+| A. Local stdio bridge | Claude Desktop on the development box | development devcontainer (`:8080`) | only while the development box + devcontainer are up |
+| B. Public HTTPS connector | Claude **mobile / web / desktop, anywhere** | **NAS** production container (`:8080`) | yes — NAS is always on (`restart: unless-stopped`) |
 
 For off-network / phone use, **use Path B** — Claude reaches custom connectors
 from Anthropic's *cloud*, not from your device, so the endpoint must be public

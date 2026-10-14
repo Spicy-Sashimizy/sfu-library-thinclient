@@ -10,11 +10,11 @@ UNMEASURED unless it cites a result file.**
 > **M7 KILLED 2026-07-08** (Q2, all-miss-pack 0.194 < 0.3 bar). **M2b
 > KILLED 2026-07-10** (Q4, gate a 0.987/0.983 < 0.99) → **M6 KILLED
 > transitively same day** (Q5; the cpuid inventory never ran — moot). **M8
-> pre-gate GO 2026-07-10** (Q3, median 18 candidates/block vs bar 4); the
+> pre-gate GO 2026-07-10** (Q3, median 18 candidates/block versus bar 4); the
 > register-blocked kernel build itself was planned
 > (`.claude/plans/m8-register-blocked-kernel.md`, now in done/) and **BUILT
 > + MEASURED 2026-08-10 — gate c REVERT, ships in-tree DEFAULT-OFF**
-> (bit-identity gate a 100/100; warm ratio 1.0223/1.0435 vs the ≥1.00
+> (bit-identity gate a 100/100; warm ratio 1.0223/1.0435 versus the ≥1.00
 > revert bar — full RESULT under §M8 below). M9's
 > "unless M6+M7 both land" condition is therefore unreachable — M9 and M10
 > remain parked/dead. This doc extends the M1–M5
@@ -45,7 +45,7 @@ A/B showed the remaining fan-out overhead is GIL result-materialization +
 contention, not an executor cost — **encode is now the largest single
 addressable component**, doc 08 §A4 G8g note. 2026-07-09: dynamic-int8
 quantization of the query encoder was gated and KILLED — overlap@10 ≈ 0.79
-vs the fp32-encoded index — and the lossless mechanism shipped instead:
+versus the fp32-encoded index — and the lossless mechanism shipped instead:
 **ORT bert fusion (exact GELU) promoted as the served encoder default,
 encode 1.11× / overlap@10 0.999 / paired e2e −5.6 ms p50**; thread pinning
 and spinning-off refuted. Doc 08 §D.)* Kernel wins multiply only in three regimes:
@@ -148,7 +148,7 @@ anyway) or `_mm256_dpbusd_avx_epi32` (AVXVNNI, no AVX-512 requirement) ↔
 `vdotq_u32` (NEON dotprod). Scalar fallback mandatory as the third arm.
 
 **Pre-gates (in order, cheapest first):**
-1. **cpuid inventory** — does the dev container / host / DO droplet CPU
+1. **cpuid inventory** — does the development container / host / DO droplet CPU
    report `avx_vnni` or `avx512_vnni` (`lscpu | grep vnni`), and does the ARM
    target report `asimddp`? *If no serving CPU has it, M6 is parked, zero
    code written.* UNMEASURED.
@@ -166,7 +166,7 @@ anyway) or `_mm256_dpbusd_avx_epi32` (AVXVNNI, no AVX-512 requirement) ↔
   query bytes = signed operand.** Swapped, doc values >127 (measured max 208
   in u8 scale) are reinterpreted negative and silently corrupt scores.
 - Runtime dispatch (`is_x86_feature_detected!("avxvnni")`) — the .so must
-  not SIGILL on the 2019-era dev container; compile-time-only gating via
+  not SIGILL on the 2019-era development container; compile-time-only gating via
   `target-cpu=native` stays env-only (04 rule 4).
 
 **Value `*est.*`:** medium — the arithmetic third shrinks ~4×, but the
@@ -183,7 +183,7 @@ kernel-level speedups but on gather-free layouts.
 gather; M7 moves the test **before** the gather:
 
 1. Build once per query: a **membership bitmap** over the component space —
-   dim 28,702 bits ≈ **3.6 KB, L1-resident** (vs the 115 KB dense f32 query
+   dim 28,702 bits ≈ **3.6 KB, L1-resident** (versus the 115 KB dense f32 query
    table, which can only be L2). Optionally alongside: the query as a sorted
    `(u16 id, weight)` list, nnz ≤ 64 (02's measured cap; ~10 under
    query_cut=10).
@@ -195,7 +195,7 @@ gather; M7 moves the test **before** the gather:
 3. Hit lanes only: fetch the weight — from the dense table as today, or by
    SIMD intersection of the sorted id lists (doc blob ids are already
    term-sorted within a blob, `dotvbyte_fixedu8.rs:490-496`). Literature:
-   for similar-size sorted lists (doc nnz ~88 vs query ≤64) Inoue's V1
+   for similar-size sorted lists (doc nnz ~88 versus query ≤64) Inoue's V1
    block intersection wins; galloping only wins at strongly skewed sizes
    (query_cut=10 regime) — both SIMD-friendly and portable.
 
@@ -216,7 +216,7 @@ wins on cache residency even with no packs skipped) and measure.
 **Quality risk: none by construction** — f32 semantics unchanged; skipped
 lanes contributed exactly 0.0. (Same class as M1: no gate-a exposure.)
 
-**ISA risk: low** — `std::simd` masks + integer ops throughout; no hand
+**ISA risk: low** — `std::simd` masks + integer operations throughout; no hand
 intrinsics needed. No shard rebuild; evaluator-only.
 
 **Value `*est.*`:** medium-high for the warm kernel: removes up to ~77% of
@@ -235,7 +235,7 @@ Rust.
 > rate 0.7646 reproduces 06's 76.7% inventory, validating the sim.
 > Recorded consequences: (a) M7's pack-skip leg is dead at the current
 > LANES=8 pack width; (b) the bitmap-gather *cache-residency* observation
-> (3.6 KB L1 vs 115 KB L2 query table) was pre-assigned only to the
+> (3.6 KB L1 versus 115 KB L2 query table) was pre-assigned only to the
 > 0.3–0.5 band, so it is NOT promoted by this result — if it resurfaces,
 > it does so as a new pre-registered row, likely folded into M8's batch
 > loop; (c) M1 (post-gather FMA skip) inherits the same anti-clustering
@@ -319,7 +319,7 @@ Vec + view-array construction) costs more than the interleave ILP buys.
   (patch `spike/seismic_upstream_m8_batch.patch`); vectorium tracked
   directly.
 - **Gate a (bit-identity) PASS** — hard=0, tie_swaps=0, **100/100 lists on
-  every cell** (shards 1–2 × {f16, dv-e5.v2} × {batch ON, OFF}) vs the
+  every cell** (shards 1–2 × {f16, dv-e5.v2} × {batch ON, OFF}) versus the
   pre-M8 .so baseline (n=100 diverse, k'=100, saved encoded queries
   replayed). `m8_batch_kernel_gatea_20260810.json` (+ baseline
   `m8_pre_baseline.json`, untracked, 1.6 MB). **First run FAILED on the
@@ -337,7 +337,7 @@ Vec + view-array construction) costs more than the interleave ILP buys.
   sequential pytest suite 19/19 (after fixing a pre-existing Python
   manifest-form bug in `retriever._first_manifest_mmap_dir`, a335cb0).
 - **Gate c (warm traverse p50, one-process paired ON/OFF ×3 reps) —
-  REVERT:** shard1 **2.161 vs 2.114 ms = 1.0223×**, shard2 **2.310 vs
+  REVERT:** shard1 **2.161 versus 2.114 ms = 1.0223×**, shard2 **2.310 versus
   2.213 ms = 1.0435×** (bars: PROMOTE ≤0.95, KEEP <1.00, REVERT ≥1.00;
   p90 1.00×/1.05×). `m8_batch_kernel_gatec_20260810.json`.
 - **Gate d (federated, info-only): not run — moot after REVERT** (kernel
@@ -401,7 +401,7 @@ width, or at minimum `vcvtph2ps` batching can shrink convert cost.
 ## Recommended order (the decision, not just the menu)
 
 > **AMENDED 2026-07-05, same day (post-G8d, doc 10 §7.6):** G8d measured the
-> dv parity budget as nearly spent — corpus mean 0.9906 vs f16, shards 1–2 at
+> dv parity budget as nearly spent — corpus mean 0.9906 versus f16, shards 1–2 at
 > 0.985, accepted as marginal. That demotes the lossy candidates (M2b, M6 add
 > query-quantization loss on top of an already-marginal parity) and promotes
 > the quality-free ones. **The executing order is now M7 sim → M8 instrument
@@ -412,7 +412,7 @@ width, or at minimum `vcvtph2ps` batching can shrink convert cost.
 > order below stands as the pre-G8d record.
 >
 > **AMENDED 2026-07-08 (Stage-0 results in):** E8 Stage-0 **GO**
-> (per-doc 0.997/0.993 vs FixedU8Q 0.985/0.984, shards 1–2, n=100 —
+> (per-doc 0.997/0.993 versus FixedU8Q 0.985/0.984, shards 1–2, n=100 —
 > `data/eval_results/e8_stage0_perdoc_scale_20260708.json`) and M7 Stage-0
 > **KILL** (all-miss-pack rate 0.194, §M7 above). **The executing order is
 > now E8 Stage-1 → M8 instrument → M2b → M6.**

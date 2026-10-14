@@ -63,8 +63,8 @@ SCRATCH = Path("/home/vscode/work/delta_ingest/oa/eval")
 OUT = REPO / "data/eval_results/delta_ingest_O17_oa_bitmap_20261001.json"
 LOCK = "/tmp/sfu_latency_measure.lock"
 O17_SERVING_COMMIT = "ef206dde"
-O17_FILES = ("src/lib/thinclient/retriever.py", "src/lib/result_cache.py",
-             "src/lib/thinclient/oa_overlay.py")
+O17_FILES = ("source/lib/thinclient/retriever.py", "source/lib/result_cache.py",
+             "source/lib/thinclient/oa_overlay.py")
 PY = "/home/vscode/work/venv_local/bin/python3"
 MODEL_ENV = {"SFU_SPLADE_MODEL_PATH": "/home/vscode/work/models_local/splade_onnx_fused",
              "SFU_CE_MODEL_PATH": "/home/vscode/work/models_local/sfu-cross-encoder-v1",
@@ -219,14 +219,14 @@ def git(*a, cwd=REPO) -> str:
 def snapshots(scratch: Path, need_pre: bool = True) -> dict:
     head = git("rev-parse", "HEAD").strip()
     snap = scratch / f"code_{head[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {head} src | tar -x -C {snap}", shell=True)
         for name in ("models", "data", ".env"):
             if not (snap / name).exists():
                 (snap / name).symlink_to(REPO / name)
     pre = scratch / f"code_{head[:8]}_pre_o17"
-    if need_pre and not (pre / "src").exists():
+    if need_pre and not (pre / "source").exists():
         pre.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {head} src | tar -x -C {pre}", shell=True)
         for name in ("models", "data", ".env"):
@@ -251,7 +251,7 @@ def drive(args) -> int:
     procs = []
     cpus = {"pre": "0-3", "off": "0-3", "offon": "4-7", "on": "4-7"}
     for arm in args.arms.split(","):
-        src = (sn["pre"] if arm == "pre" else sn["snap"]) + "/src"
+        src = (sn["pre"] if arm == "pre" else sn["snap"]) + "/source"
         cmd = ["flock", "-s", LOCK, "nice", "-n", "10", "taskset", "-c", cpus[arm], PY,
                str(Path(__file__).resolve()), "child", "--arm", arm, "--src", src,
                "--scratch", str(scratch), "--limit-topics", str(args.limit_topics)]

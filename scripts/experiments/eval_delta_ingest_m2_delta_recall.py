@@ -252,7 +252,7 @@ def snapshot(commit: str) -> Path:
     """git archive of src + spike/delta_ingest at `commit` (other agents edit
     the live tree concurrently); data/models/.env/seismic binaries symlinked."""
     snap = WORK / f"code_{commit[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src spike/delta_ingest | tar -x -C {snap}",
                               shell=True)
@@ -283,7 +283,7 @@ def scan_log(path: Path) -> dict:
 def sample_corpus() -> dict:
     """Deterministic 50k sample (rule in the header) -> FIX/corpus_a.jsonl."""
     import numpy as np
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.abstracts import AbstractStore
     out_json = FIX / "sample.json"
     if out_json.exists():
@@ -382,7 +382,7 @@ def run_cli(snap: Path, cmd: list[str], log: Path) -> dict:
 
 
 def verify_root() -> dict:
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.livedocs import HEADER_LEN, read_header
     gj = json.loads((ROOT / "generations.json").read_text())
     sm = json.loads((ROOT / "shard_manifest.json").read_text())
@@ -444,7 +444,7 @@ def build_fixture(args) -> int:
     smoke_log = FIX / "smoke.log"
     with open(smoke_log, "w") as fh:
         rc = subprocess.call(["nice", "-n", "10", "taskset", "-c", "8-15", str(REPO / ".venv/bin/python3"),
-                              __file__, "smoke", "--src", str(snap / "src")], cwd=str(REPO),
+                              __file__, "smoke", "--src", str(snap / "source")], cwd=str(REPO),
                              env=child_env("delta"), stdout=fh, stderr=subprocess.STDOUT)
     rec["smoke"] = {"rc": rc, "scan": scan_log(smoke_log)}
     sj = FIX / "smoke.json"
@@ -695,7 +695,7 @@ def drive_arm(args) -> int:
     tag = "probe" if args.probe else (args.tag or args.arm)
     log = WORK / f"log_{tag}.txt"
     cmd = ["nice", "-n", "10", "taskset", "-c", "8-15", args.python or str(REPO / ".venv/bin/python3"), __file__,
-           "arm-child", "--arm", args.arm, "--src", str(snap / "src"), "--n", str(args.n), "--tag", tag]
+           "arm-child", "--arm", args.arm, "--src", str(snap / "source"), "--n", str(args.n), "--tag", tag]
     if args.rows_tag:
         cmd += ["--rows-tag", args.rows_tag]
     if args.probe:
@@ -816,7 +816,7 @@ def drive_exact(args) -> int:
     else:
         env.pop("SFU_SEISMIC_PREFLOOR", None)
     cmd = ["nice", "-n", "10", "taskset", "-c", "8-15", str(REPO / ".venv/bin/python3"), __file__,
-           "exact-child", "--params", args.params, "--src", str(snap / "src")]
+           "exact-child", "--params", args.params, "--src", str(snap / "source")]
     with open(log, "w") as fh:
         rc = subprocess.call(cmd, cwd=str(REPO), env=env, stdout=fh, stderr=subprocess.STDOUT)
     (WORK / f"drive_exact_{args.params}.json").write_text(json.dumps(
@@ -927,7 +927,7 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("build-fixture")
     s = sub.add_parser("smoke")
-    s.add_argument("--src", default=str(REPO / "src"))
+    s.add_argument("--src", default=str(REPO / "source"))
     for name in ("arm", "probe"):
         a = sub.add_parser(name)
         a.add_argument("--arm", choices=["base", "delta"], default="delta")

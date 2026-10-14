@@ -109,7 +109,7 @@ printf '%s\n' \
 
 # 4. serve-path source ----------------------------------------------------------
 mkdir -p "$OUT/app/src"
-( cd "$REPO/src" && find lib -type f -name '*.py' -print0 | sort -z \
+( cd "$REPO/source" && find lib -type f -name '*.py' -print0 | sort -z \
     | xargs -0 -I{} install -D -m 0644 {} "$OUT/app/src/{}" )
 install -m 0644 "$REPO/src/sfu_library_mcp_http.py" "$REPO/src/sfu_library_mcp_server.py" "$OUT/app/src/"
 
@@ -131,7 +131,7 @@ T_ASM=$(now)
 
 # 6. manifest -------------------------------------------------------------------
 GIT_HEAD="$(git -C "$REPO" rev-parse HEAD)"
-SRC_DIRTY="$(git -C "$REPO" status --porcelain -- src/lib src/sfu_library_mcp_http.py src/sfu_library_mcp_server.py | wc -l)"
+SRC_DIRTY="$(git -C "$REPO" status --porcelain -- source/lib source/sfu_library_mcp_http.py source/sfu_library_mcp_server.py | wc -l)"
 META=$(printf '{"recipe_version":%s,"pbs_tag":"%s","pbs_asset":"%s","pbs_sha256":"%s","python_version":"%s","seismic_so_source":"%s","seismic_so_sha256":"%s","lock_sha256":"%s","source_git_head":"%s","source_dirty_files":%s,"env_contract":["SFU_THINCLIENT_INDEX_ROOT","SFU_SEISMIC_SHARD_MANIFEST","SFU_SPLADE_MODEL_PATH","SFU_EMBEDDING_MODEL_PATH","SFU_CE_MODEL_PATH"]}' \
   "$BUNDLE_RECIPE_VERSION" "$PBS_TAG" "$PBS_ASSET" "$PBS_SHA256" "$PBS_PY_VERSION" \
   "$SEISMIC_SO_REL" "$SEISMIC_SO_SHA256" "$(sha256sum "$LOCK" | cut -d' ' -f1)" \

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# CLOSED SUPERSEDED 2026-07-06 — BMP shard-wave parity recorder; the BMP 150M artifacts were deleted 2026-06-25 and SEISMIC promoted 2026-07-06 (docs/SEISMIC_ARCHIVE_SPLIT.md, docs/archive/bmp_decommission_plan/). Moved from scripts/ root 2026-10-11; its recorded numbers stay cited in docs/BENCHMARK_METHODOLOGY.md
+# CLOSED SUPERSEDED 2026-07-06 — BMP shard-wave parity recorder; the BMP 150M artifacts were deleted 2026-06-25 and SEISMIC promoted 2026-07-06 (docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md, docs/archive/bmp_decommission_plan/). Moved from scripts/ root 2026-10-11; its recorded numbers stay cited in docs/BENCHMARK_METHODOLOGY.md
 """Section/shard-wave thin-client parity recorder — produces a record-tc record
 on a host too small to hold the ~211 GB SPLADE set in one process.
 
@@ -58,7 +58,7 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 from lib.thinclient.retriever import (  # noqa: E402
     BMP_ALPHA, BMP_BETA, BMP_RESIDENT_RATIO, QUANT_SCALE, SPLADE_QUERY_TERMS,

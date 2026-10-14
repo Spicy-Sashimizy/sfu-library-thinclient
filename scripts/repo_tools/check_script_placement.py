@@ -92,7 +92,7 @@ def check_placement(rel: str) -> list[str]:
     out: list[str] = []
     if len(parts) == 1:
         if ext in CODE_EXT:
-            out.append("code file at the repository root; put it in src/, scripts/<family>/ or spike/<track>/")
+            out.append("code file at the repository root; put it in source/, scripts/<family>/ or spike/<track>/")
         return out
     top = parts[0]
     if top == "scripts":
@@ -101,10 +101,10 @@ def check_placement(rel: str) -> list[str]:
                 out.append("new file at scripts/ root; the root holds only the operator entry points listed in scripts/README.md, so put it in a family directory")
         elif parts[1] not in SCRIPTS_FAMILIES and ext in CODE_EXT:
             out.append(f"unknown scripts family '{parts[1]}'; allowed: {', '.join(sorted(SCRIPTS_FAMILIES))}")
-    elif top == "src":
+    elif top == "source":
         if len(parts) == 2:
             if ext in CODE_EXT and parts[1] not in SRC_ROOT_ALLOW:
-                out.append("new file at src/ root; serving code goes in src/lib/ (or src/lib/thinclient/), tests in src/tests/")
+                out.append("new file at source/ root; serving code goes in source/lib/ (or source/lib/thinclient/), tests in source/tests/")
         elif parts[1] not in SRC_FAMILIES and ext in CODE_EXT:
             out.append(f"unknown src subdirectory '{parts[1]}'; allowed: {', '.join(sorted(SRC_FAMILIES))}")
     elif top == "spike":

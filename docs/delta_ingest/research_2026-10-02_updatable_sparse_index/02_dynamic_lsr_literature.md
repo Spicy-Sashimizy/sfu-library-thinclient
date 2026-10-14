@@ -1,6 +1,6 @@
 # Dynamic / updatable indexes for learned sparse retrieval (LSR): 2024–2026 literature and code survey
 
-**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repository root `research_notes/`/`reports/` 2026-10-10)
 
 Compiled 2026-10-02. Evidence tags: **[read]** = I opened the full paper PDF, source code or page and read the passage; **[snippet]** = search-result snippet or abstract only; **[inferred]** = my own derivation from cited facts (not a claim made by any source). PDFs were fetched from arXiv or author pages and text-extracted locally; GitHub facts come from `gh api` and shallow clones on 2026-10-02.
 
@@ -13,7 +13,7 @@ Context used for the inferences: 150M SPLADE vectors served from immutable SEISM
 ## 1. Rule & Mackenzie (ECIR 2026) and related Moffat/Mackenzie immediate-access indexing
 
 ### Takeaway
-Rule & Mackenzie take the Moffat–Mackenzie "LinkedBlock" immediate-access index (a fixed-size in-memory slab of chained fixed-size blocks, one chain per term) and adapt it to LSR. On MS MARCO v1 (8.8M passages) with SPLADEv3 it indexes at ≤~6 µs/doc and uses roughly as much space as PISA/Lucene. Its exact MaxScore queries are 2–6× slower than PISA (83.3 ms vs 35.9 ms). It is append-only, with no delete or update. It is meant as a small "fresh tier" that is later folded into the static index. It is not a mechanism for growing pruned or clustered lists.
+Rule & Mackenzie take the Moffat–Mackenzie "LinkedBlock" immediate-access index (a fixed-size in-memory slab of chained fixed-size blocks, one chain per term) and adapt it to LSR. On MS MARCO v1 (8.8M passages) with SPLADEv3 it indexes at ≤~6 µs/doc and uses roughly as much space as PISA/Lucene. Its exact MaxScore queries are 2–6× slower than PISA (83.3 ms versus 35.9 ms). It is append-only, with no delete or update. It is meant as a small "fresh tier" that is later folded into the static index. It is not a mechanism for growing pruned or clustered lists.
 
 ### Cited findings
 **Rule & Mackenzie, "Fast, Compact, Immediate-Access Indexing for Learned Sparse Retrieval Systems", ECIR 2026 (LNCS 16485), pp. 1-ff.** PDF: https://JMMackenzie.io/pdf/rm26-ecir.pdf ; Springer: https://link.springer.com/chapter/10.1007/978-3-032-21324-2_1
@@ -45,12 +45,12 @@ Rule & Mackenzie take the Moffat–Mackenzie "LinkedBlock" immediate-access inde
   DeeperImpact at 8.8M: PISA 28.6, LB-MS 90.7. LinkedBlock is "2 to 6× longer" than PISA/Lucene. MaxScore gives a 2–2.6× speedup over naive for LSR. The reference implementation with the same enhancements runs ~75 ms for the LSR indexes — [read]
 - All of these are exact (rank-safe) DAAT queries over unpruned lists. No comparison with SEISMIC or any approximate engine is reported. SEISMIC appears only as citation [6] — [read]
 - Future work suggested by the authors: block-based dynamic pruning (BMW-like) on LinkedBlock, LSR-tailored compression, and "revisiting other efficient static LSR systems in the context of dynamic document streams" — [read]
-- Code: https://github.com/JMMackenzie/lslb — Apache-2.0, C/C++, 15 commits, last push 2025-10-22. Binaries for stream indexing and conjunctive/disjunctive querying (plain and quantized). Configured for WSJ1/Robust/Wiki — [read] (gh api + repo page)
+- Code: https://github.com/JMMackenzie/lslb — Apache-2.0, C/C++, 15 commits, last push 2025-10-22. Binaries for stream indexing and conjunctive/disjunctive querying (plain and quantized). Configured for WSJ1/Robust/Wiki — [read] (gh api + repository page)
 
 **Moffat & Mackenzie, "Efficient Immediate-Access Dynamic Indexing", IPM 60(3) 103248 (2023; arXiv 2211.06030).** PDF: https://JMMackenzie.io/pdf/mm23-ipm.pdf
 - "incremental document-level indexing using as little as two bytes per posting". Indexing rate is "two gigabytes/minute". Conjunctive Boolean queries take "just a few milliseconds" while ingesting concurrently. Net memory is "less than half the space required by the best previous mechanism" — [read]
 - Largest collection: English Wikipedia (Apr 2022), 2,444,347,604 postings at document level / 996,277,511, 6,477,362 docs. Robust04 and WSJ1 are smaller. Hardware: single core, 2× Xeon Gold 6144, 512 GiB — [read]
-- Wikipedia: Count-only 420.7 s vs Count+Index 574.5 s ("over a gigabyte per minute") — [read]
+- Wikipedia: Count-only 420.7 s versus Count+Index 574.5 s ("over a gigabyte per minute") — [read]
 - Capacity: with B=64 and h=4-byte links, the slab tops out at 256 GiB, which supports ">100 billion postings" — [read]
 - Total cost in bytes/posting for Wikipedia, document-level (Table 13):
 
@@ -73,7 +73,7 @@ Rule & Mackenzie take the Moffat–Mackenzie "LinkedBlock" immediate-access inde
 
 ### Updater separability
 - (1) The updater is the posting-append path: hash to head, jump to the tail, VByte-append, update the block max. It is algorithmically trivial and separable as an idea. As code it is tied to its own slab/linked-block layout, and query processing walks that layout — [inferred from read structure]
-- (2) Code is C/C++ under Apache-2.0 (lslb, immediate-access). Both are research binaries (stream indexer + query tools), not packaged libraries — [read] repo pages
+- (2) Code is C/C++ under Apache-2.0 (lslb, immediate-access). Both are research binaries (stream indexer + query tools), not packaged libraries — [read] repository pages
 - (3) Translation to SEISMIC: LinkedBlock holds docID-ordered, unpruned, unclustered full posting lists. Its natural output is "a normal static compressed inverted index" — [read]. Building SEISMIC blocks from it still needs SEISMIC's per-list static pruning (global top-λ), clustering and summary computation. Converting back into SEISMIC therefore amounts to a SEISMIC build over the merged lists, or at least over every touched list — [inferred]
 - It has no delete or update path, so the 27% updates and 6% deletes would need a separate tombstone/version layer — [inferred from "no deletion" [read]]
 
@@ -106,7 +106,7 @@ Through 2026-09 there is no published SEISMIC variant that supports insert, upda
   | Seismic λ=4e4, κ=20 (with κ-NN graph) | 98.4 GB | 16.6 h |
   | Seismic no κ-NN, λ=6e4 | 98.5 GB | 0.5 h |
 
-  The κ-NN graph costs (⌊log2(n−1)⌋+1)·n·κ bits, i.e. 27 bits/doc. Seismic answers in 3 ms at 98% accuracy@10 (2× budget), and HNSW is 6.9× slower. Each NUMA node had 256 GiB — [read] https://arxiv.org/pdf/2501.11628. Internal inconsistency: the text says sparse HNSW "takes about 12.5 hours" while Table 1 says 10.1 h — [read]
+  The κ-NN graph costs (⌊log2(n−1)⌋+1)·n·κ bits, that is, 27 bits/doc. Seismic answers in 3 ms at 98% accuracy@10 (2× budget), and HNSW is 6.9× slower. Each NUMA node had 256 GiB — [read] https://arxiv.org/pdf/2501.11628. Internal inconsistency: the text says sparse HNSW "takes about 12.5 hours" while Table 1 says 10.1 h — [read]
 - Forward Index Compression for LSR (ECIR 2026, arXiv 2602.05445; Bruch, Fontana, Nardini, Rulli, Venturini): evaluates integer codecs on SEISMIC's forward index. DotVByte (a StreamVByte variant) gets "a space reduction of up to 22% over Uncompressed with similar query latency" for Splade and LiLsr. Recursive Graph Bisection docID reordering is evaluated as a further lever. Nothing on updates — [read] https://arxiv.org/pdf/2602.05445
 - "Efficient Sketching and Nearest Neighbor Search Algorithms for Sparse Vector Sets" (arXiv 2509.24815, JACM under review, same authors) has no update/insert procedure for the index in the text I grepped — [read] https://arxiv.org/pdf/2509.24815
 - TusKANNy/seismic repository (https://github.com/TusKANNy/seismic) — [read] gh api + clone, 2026-10-02:
@@ -117,12 +117,12 @@ Through 2026-09 there is no published SEISMIC variant that supports insert, upda
   - None of the 19 issues mentions updates, inserts or deletes.
 - README comparison (splade-v3, MS MARCO, single thread, Core Ultra 7 265K):
 
-  | Engine | MRR@10 | Avg query time | Memory |
+  | Engine | MRR@10 | Average query time | Memory |
   |---|---|---|---|
   | DSP | 40.28 | 745 µs | 24.0 GB |
   | Seismic | 40.27 | 185 µs | 7.9 GB |
 
-  Source: [read] repo README
+  Source: [read] repository README
 - No "Seismic-Wave" incremental variant exists. "SeismicWave" is the kNN-graph-paired variant above — [read]/[snippet]
 - Third-party remark (Carlson, Xie, Shah, Yang, "Efficiency Optimizations for Superblock-based Sparse Retrieval", arXiv 2602.02883): LSP/0's advantage includes "avoiding the need of a KNN graph which is complex to maintain with all-pair document-level comparison during search data update" — [read] https://arxiv.org/pdf/2602.02883
 - OpenSearch neural sparse ANN (SEISMIC on `sparse_vector`, "Introduced 3.3"; native C++ engine "Introduced 3.9") — [read] https://docs.opensearch.org/latest/vector-search/ai-search/neural-sparse-ann/ and https://docs.opensearch.org/latest/vector-search/performance-tuning-sparse/
@@ -222,7 +222,7 @@ The BigANN 2023 sparse-track winners (PyANNs, GrassRMA) are HNSW-based. That tra
 - (3) A translation from graph to SEISMIC does not exist; graph neighbours carry no per-term posting information — [inferred]
 
 ### Gaps
-- PyANNs/GrassRMA repos were not inspected for insert/delete APIs or licences.
+- PyANNs/GrassRMA repositories were not inspected for insert/delete APIs or licences.
 - No published delete/update measurement exists for any sparse-graph index at 100M scale.
 
 ---
@@ -291,7 +291,7 @@ The classic literature frames the choice as in-place extension versus re-merge v
   - Lester et al. "immediately merged with a single on-disk index … growing merging costs … not asymptotically efficient" (only 2 indexes to query).
   - Hierarchical/logarithmic merging is "asymptotically efficient, but requires that queries be processed against … a logarithmic-bounded number of on-disk indexes".
   - Büttcher & Clarke "consider a range of hybrid strategies that blend these two approaches".
-  - Extensible-list schemes (Const/Expon/Triangle; Shoens/Tomasic short vs long blocks; Brown et al. 16–8192-byte size palette) handle in-memory list growth.
+  - Extensible-list schemes (Const/Expon/Triangle; Shoens/Tomasic short versus long blocks; Brown et al. 16–8192-byte size palette) handle in-memory list growth.
 - Büttcher & Clarke, "A Hybrid Approach to Index Maintenance in Dynamic Text Retrieval Systems", ECIR 2006, and "Hybrid index maintenance for contiguous inverted lists", Inf. Retr. 2008 (doi 10.1007/s10791-007-9042-8): long posting lists are updated in place and short lists by merge, which is faster than either pure strategy. Contiguous lists favour queries, discontiguous lists favour updates — [snippet] https://link.springer.com/chapter/10.1007/11735106_21 ; https://www.researchgate.net/publication/220479957_Hybrid_Index_Maintenance_for_Contiguous_Inverted_Lists
 - Lester, Zobel, Williams, "Efficient online index maintenance for contiguous inverted lists" (IPM 2006) / "In-place versus re-build versus re-merge" (2004) — [snippet: titles only] https://www.researchgate.net/publication/222688290_Efficient_online_index_maintenance_for_contiguous_inverted_lists
 - Deletes in classic inverted indexes: "Deletions are a complex challenge in all inverted file-based retrieval systems, because of the need to withdraw postings from the middle of lists, and then adjust neighboring d-gaps" — [read] Moffat & Mackenzie 2023
@@ -329,16 +329,16 @@ No. The 2023 sparse track was static (build + batch query on 8.8M MS MARCO SPLAD
   - Deleting 1M random vectors: Sinnamon "about an order of magnitude faster" per deletion than LinScan-Roaring.
   - Exact docs/s and ms/deletion values appear only in Figure 12 (plots). They are not extractable as text, so no numbers are recorded here.
   - Written in Rust.
-  - The paper has no clustering or static pruning. Retrieval is coordinate-at-a-time over full lists plus sketch scoring, followed by exact re-ranking of k′ candidates (e.g. k′ = 5,000–20,000).
+  - The paper has no clustering or static pruning. Retrieval is coordinate-at-a-time over full lists plus sketch scoring, followed by exact re-ranking of k′ candidates (for example, k′ = 5,000–20,000).
 - LinScan code: https://github.com/pinecone-io/research-bigann-linscan — MIT, Rust, last push 2023-06-19 — [read gh api]
-- No 2024–2026 BigANN successor with a sparse streaming track was found. The big-ann-benchmarks repo is still active (MIT, last push 2026-07-13), but I did not find a new sparse-streaming track in it — [read gh api]; [gap: repo contents not inspected]
+- No 2024–2026 BigANN successor with a sparse streaming track was found. The big-ann-benchmarks repository is still active (MIT, last push 2026-07-13), but I did not find a new sparse-streaming track in it — [read gh api]; [gap: repository contents not inspected]
 - Production LSM-style sparse systems: Milvus keeps inserts in in-memory "growing segments" until flush/compaction before building SPARSE_INVERTED_INDEX — [snippet] https://milvus.io/docs/sparse-inverted-index.md. OpenSearch uses the per-segment SEISMIC build (§2).
 
 ### Updater separability
 - Sinnamon:
   - (1) The insert/delete logic (append id to per-coordinate Roaring lists; write or recycle a sketch column; remove id on delete) is simple and separable as an algorithm. It maintains unpruned docID lists plus a sketch matrix, not SEISMIC's pruned clustered blocks — [inferred from read]
   - (2) The LinScan baseline is Rust/MIT. I did not locate a public Sinnamon repository — [read]/[gap]
-  - (3) Sinnamon lists could act as an exact or approximate fresh tier. Folding them into SEISMIC would require SEISMIC's pruning, clustering and summarisation over the affected lists, i.e. a (partial or full) build — [inferred]
+  - (3) Sinnamon lists could act as an exact or approximate fresh tier. Folding them into SEISMIC would require SEISMIC's pruning, clustering and summarisation over the affected lists, that is, a (partial or full) build — [inferred]
 
 ### Gaps
 - Sinnamon's numeric insert/delete throughput is not recorded (figure-only).
@@ -361,11 +361,11 @@ The table below combines evidence from §§1–7. Tags: [read] = paper/code read
 |---|---|---|---|---|---|
 | LinkedBlock (Rule & Mackenzie 2026; Moffat & Mackenzie 2023) | Yes, trivial append path; insert-only [read] | C/C++, Apache-2.0 (lslb, immediate-access) [read] | No; research binaries [read] | Full docID-ordered unpruned lists, converts to a "normal static" index [read]. SEISMIC needs pruning + clustering + summaries [inf] | Yes, for every touched list or a full build [inf] |
 | Apoptosic (Eades et al. 2022) | Sliding-window expiry only [read, secondary] | Not checked | — | Cannot feed a conventional index build [read, secondary] | — |
-| BMP / SP / LSP | No updater exists [read code] | Rust, Apache-2.0 [read] | Builders only [read] | DocID-range blocks vs per-term clusters; incompatible block semantics [inf] | Yes [inf] |
+| BMP / SP / LSP | No updater exists [read code] | Rust, Apache-2.0 [read] | Builders only [read] | DocID-range blocks versus per-term clusters; incompatible block semantics [inf] | Yes [inf] |
 | SEISMIC itself | No updater exists [read code] | Rust, MIT (+ citation licence) [read] | Build only [read] | — | — |
 | OpenSearch SEISMIC-per-segment | Yes, as architecture (Lucene segments, tombstones, merges) [read] | Apache-2.0 OpenSearch (licence not re-checked) [inf] | Not separable from Lucene/OpenSearch as code [inf] | Each segment is its own SEISMIC index [read] | Yes, per merged segment [read] |
 | Sparse HNSW / kANNolo / PyANNs | Graph insert is separable but maintains a graph [inf]. kANNolo: batch build only [read] | kANNolo Rust, MIT [read] | No [read] | Graph ≠ postings. Could maintain only SEISMIC's optional κ-NN graph [inf] | N/A [inf] |
-| Sinnamon / LinScan | Yes: per-coordinate Roaring append/remove + sketch column [read] | LinScan Rust, MIT; Sinnamon repo not found [read] | LinScan is a small Rust crate-like repo; library use not verified [inf] | Unpruned lists + sketch; SEISMIC pruning/clustering needed [inf] | Yes [inf] |
+| Sinnamon / LinScan | Yes: per-coordinate Roaring append/remove + sketch column [read] | LinScan Rust, MIT; Sinnamon repository not found [read] | LinScan is a small Rust crate-like repository; library use not verified [inf] | Unpruned lists + sketch; SEISMIC pruning/clustering needed [inf] | Yes [inf] |
 | SPFresh / LIRE | Protocol separable on paper [read]. Code coupled to SPTAG + SPDK + RocksDB [read] | C++, MIT [read] | No [read] | Per-doc insert becomes ~nnz per-list block appends. Split = recluster one list's oversized block. NPA reassign derived for L2 geometry, unverified for IP summaries; static top-λ pruning has no analogue [inf] | Not necessarily, if adapted. Unpublished [inf] |
 | FreshDiskANN StreamingMerge | Merge idea separable; code Vamana-specific [read]/[inf] | Rust/C++, MIT (microsoft/DiskANN) [read] | No [inf] | Delta index + change-proportional merge would need per-list re-prune/re-cluster for touched lists [inf] | Partial (touched lists) if built; unpublished [inf] |
 | Geometric / logarithmic merge; Büttcher–Clarke hybrid | Merge policy fully format-agnostic. Hybrid in-place needs mutable long lists [read secondary]/[inf] | None found [inf] | — | Each merge = SEISMIC build of merged segment [inf] | Yes [inf] |

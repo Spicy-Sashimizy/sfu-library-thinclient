@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 REPO = Path("/workspaces/sfu-library-thinclient")
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "seismic_testbed"))
 
 import numpy as np  # noqa: E402

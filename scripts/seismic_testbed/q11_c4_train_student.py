@@ -26,7 +26,7 @@ import time
 from pathlib import Path
 
 REPO = Path("/workspaces/sfu-library-thinclient")
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 import torch  # noqa: E402
 import torch.nn.functional as F  # noqa: E402

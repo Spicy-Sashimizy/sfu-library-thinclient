@@ -102,7 +102,7 @@ alongside.
 - Harness: `scripts/experiments/eval_delta_ingest_m1_2pass.py` (pre-run note
   commit 497da6c8, `--no-lock` option f821e370 — not used)
 - Measured code: `git archive d985b70d src` (HEAD at launch; contains
-  6f5dd471, 585f3cab, 8a51e48f, 37937f6b, 99e2b663); no dirty `src/` files
+  6f5dd471, 585f3cab, 8a51e48f, 37937f6b, 99e2b663); no dirty `source/` files
   at launch.
 - Launch: the launcher waited until Agent A's M4 process had exited and the
   latency lock was free, then both children ran under `flock -s` (lock never
@@ -159,7 +159,7 @@ Cause inside tantivy's parser NOT investigated (unmeasured).
 NOT RUN. The time existed after M1 (06:04Z) but the 2026-09-29 harness
 (`scripts/experiments/eval_delta_ingest_livedocs_bitset.py`) has no
 topic-offset option, imports `lib` from the shared working tree (which
-holds another agent's uncommitted `src/lib/thinclient/delta_layer.py`
+holds another agent's uncommitted `source/lib/thinclient/delta_layer.py`
 edit), and was written against the parallel backend, while the stage-dir-
 empty default now selects the sequential one. Changing that harness and
 re-validating it was not safe in the remaining window.

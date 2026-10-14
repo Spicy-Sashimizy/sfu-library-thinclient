@@ -23,7 +23,7 @@ borderline-pass caveat in `06_PREGATE_RESULTS.md` warned.
   ties-to-even, `q_u6 = clip(round(w / q_max · 63), 0, 63)`; rescale
   `s_q·s_d = (q_max/63)·(1/64)` applied once per candidate.
 - **Switch:** `SFU_SEISMIC_M2_INT6=1` (read once per evaluator construction,
-  i.e. per query). **Default OFF = byte-identical pre-M2 f32 path** (asserted
+  that is, per query). **Default OFF = byte-identical pre-M2 f32 path** (asserted
   by test). Only the dotvbyte forward is affected — the f16 forward uses a
   different encoder/evaluator, so the served path (f16 mmap shards) never
   executes this code regardless of the env.
@@ -49,7 +49,7 @@ Result file: `data/eval_results/seismic_m2_t1_20260703.json`.
 
 ## Stage 2 — E7 gates (gate a FAILS at n=100; the decisive result)
 
-Same footing as the Arm-E1 anchor (`global_shard0of8` f16 vs dotvbyte twins,
+Same footing as the Arm-E1 anchor (`global_shard0of8` f16 versus dotvbyte twins,
 k′=200, heap_factor 0.8, warm_repeats 5, no prefloor). Three runs:
 
 | Run | Result file | gate a overlap@10 (bar ≥0.99) | gate b warm ratio (bar ≤1.07) | gate c majflt ratio (bar ≤0.55) |
@@ -64,10 +64,10 @@ k′=200, heap_factor 0.8, warm_repeats 5, no prefloor). Three runs:
   the dv-baseline — and that pushes gate a below the 0.99 bar at the
   well-powered n. The n=40 pass at exactly 0.99 was the small-n artifact the
   pre-gate caveat pre-registered ("re-run at larger n before promoting").
-- **Speed:** the win is real — warm p50 ratio **0.930 vs 0.993 control**
+- **Speed:** the win is real — warm p50 ratio **0.930 versus 0.993 control**
   (~6% faster warm traverse than the f32 dv kernel on the same queries;
-  dv 2.11 ms vs f16 2.27 ms p50).
-- **Pages:** gate c is bit-identical under int6 (majflt 83,219 vs control
+  dv 2.11 ms versus f16 2.27 ms p50).
+- **Pages:** gate c is bit-identical under int6 (majflt 83,219 versus control
   83,209 — noise). Confirms (again) gate c is structural, not a math
   property; no dot-kernel change touches it.
 
@@ -92,7 +92,7 @@ gate a already blocks M2 anyway.
 ## Disposition & what could revive M2
 
 - **Kernel stays in-tree, default OFF** — it is correct (kernel-match test),
-  portable (aarch64 clean), measurably faster (0.93 vs 0.99 warm ratio), and
+  portable (aarch64 clean), measurably faster (0.93 versus 0.99 warm ratio), and
   the honest record of a bar-driven no-promote. Do NOT enable
   `SFU_SEISMIC_M2_INT6` on any quality-bearing path.
 - **The resolution/saturation trade is now measured end-to-end:** 6-bit query

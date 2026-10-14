@@ -8,7 +8,7 @@
 > p50 1.46–1.51×, warm neutral-to-faster); **served default flipped to the E5
 > manifest** `data/eval_results/seismic_c25_shards_150m_mmap_e5.json`
 > (`retriever.py`; one-env rollback to the plain-dv manifest). Served
-> federated top-10 A/B exact-order vs dv (§5). Parent experiment:
+> federated top-10 A/B exact-order versus dv (§5). Parent experiment:
 > `09_CROSS_SHARD_MMAP_AUDIT.md` §3.4 (E5) gated by
 > `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q6 (**GO 2026-07-09**, sim 0.376–0.400, bar ≤0.45).
 
@@ -27,7 +27,7 @@ position-independent, so the reorder is quality-free *by construction*
 
 ## 1. Ordering-method research (run BEFORE implementation — this section)
 
-All cells: unique-4KiB-forward-pages/query vs the shipped layout, real
+All cells: unique-4KiB-forward-pages/query versus the shipped layout, real
 `search_visited` candidate sets, shards 1–2, n=100, k'=200/hf=0.8/qc=all
 (Q6 methodology; identity = 1.000 exactly, random control ≈ 1.01).
 
@@ -64,7 +64,7 @@ identity, with a clean mechanism explanation: the shipped forward order IS
 already section-ordered (insertion order = section spools concatenated,
 09 §3.4), so the bespoke DB key carries no information the baseline lacks
 — its era/topic granularity (10 distinct sections over 18.8M docs) is
-~2M-doc blocks vs the 4 KiB-page granularity the fault problem lives at.
+~2M-doc blocks versus the 4 KiB-page granularity the fault problem lives at.
 `meta_section_year_home` = **0.7675** ≈ the home-term key alone (0.71–0.74)
 — the meta fields add nothing on top of the SPLADE term. Both far outside
 the ≤0.4227 displacement bar. Join method note: chunked-IN sqlite lookups
@@ -152,7 +152,7 @@ Module-by-module “what would a new doc need”:
 ## 4. Rollout (Rule Zero: never touch served artifacts)
 
 1. Converter + cargo parity test on a synthetic index (fork).
-2. Shard1 f16 + dv reordered into NEW dirs (`*.e5.mmap`), gates §2.3.
+2. Shard1 f16 + dv reordered into NEW directories (`*.e5.mmap`), gates §2.3.
 3. On pass: remaining shards (background, ~disk +1 shard transient; 550 GB
    free measured 2026-07-09), new manifest JSON alongside the C2.5/dv ones,
    flip via `SFU_SEISMIC_SHARD_MANIFEST` (one-env rollback, same as the
@@ -184,12 +184,12 @@ Module-by-module “what would a new doc need”:
   | Gate | Bar | Measured | Verdict |
   |---|---|---|---|
   | parity | hard==0 | hard 0, tie-swaps 0 | ✅ bit-identical |
-  | pages (cold majflt) | ≤0.60 | **0.5317** (37,760 vs 71,024) | ✅ −47% faults |
+  | pages (cold majflt) | ≤0.60 | **0.5317** (37,760 versus 71,024) | ✅ −47% faults |
   | latency (warm p50) | ≤1.05 | **0.8945** | ✅ 1.12× faster |
-  | (cold p50, informational) | — | **0.6842** (≈59 vs 87 ms) | 1.46× faster |
+  | (cold p50, informational) | — | **0.6842** (≈59 versus 87 ms) | 1.46× faster |
 
   Result `data/eval_results/e5_shard_gates_20260709_0917.json`. **Measured
-  majflt 0.53 vs the sim's 0.376–0.400:** the sim modeled f16 (2 forward
+  majflt 0.53 versus the sim's 0.376–0.400:** the sim modeled f16 (2 forward
   files, 2 pages/candidate); this is the single-file dv geometry under
   `PREFLOOR=2` (posting-list + doc-mapping + forward-offsets floors
   stripped symmetrically), so the residual is `forward_data.bin` faults
@@ -200,8 +200,8 @@ Module-by-module “what would a new doc need”:
   (fix committed; the confound guard reports `E5_CACHE_CONFOUNDED` if an
   arm ever reads 0 again).
 - **2026-07-09 shard2 gates — E5_ALL_GATES_PASS (2nd worst-case shard).**
-  parity 0 hard / 0 tie-swaps; cold majflt **0.5401** (38,334 vs 70,977);
-  cold p50 **0.6614** (~49 vs ~74 ms, 1.51× faster); warm p50 **0.9168**.
+  parity 0 hard / 0 tie-swaps; cold majflt **0.5401** (38,334 versus 70,977);
+  cold p50 **0.6614** (~49 versus ~74 ms, 1.51× faster); warm p50 **0.9168**.
   Near-identical to shard1 → the win is shard-independent (structural block
   co-access, as Q6b predicted). `e5_shard_gates_20260709_2115.json`.
 - **2026-07-09 8-shard ROLLOUT + SERVED.** All 8 dv shards converted
@@ -210,21 +210,21 @@ Module-by-module “what would a new doc need”:
   (`e5_validate_and_manifest.py`, `_e5_validate.log`). e5 served manifest
   written + `retriever.py` default flipped to it (one-env rollback to the
   dv manifest; a set `SFU_SEISMIC_SHARD_MANIFEST` still wins). **Served
-  federated A/B (dv manifest vs e5 manifest, 5 queries top-10): exact-order
+  federated A/B (dv manifest versus e5 manifest, 5 queries top-10): exact-order
   identical, overlap@10 1.00** — the reorder is invisible to results, only
   cold latency moved. Full 8-shard e5 backend loads 150,413,098 docs in
   3.1 s, returns real OpenAlex ids. Converter surfaced one portability bug
   fixed mid-rollout: `posting_lists.bin` may end on a sub-8-byte tail
   (shard5), so the perm-walk views the 8-aligned prefix (commit in log).
 - **2026-07-09 FULL-FEDERATED 150M COLD A/B — E5 CONFIRMED AT SCALE.** The
-  gap this design doc left open (per-shard win vs federated end-to-end) is
+  gap this design doc left open (per-shard win versus federated end-to-end) is
   closed, measured in-container (the `HOST_PROMPT_E5_FULLCORPUS_COLD.md`
   protocol adapted: `drop_caches` denied → full-inventory
   `posix_fadvise(DONTNEED)`; verified fresh-process mmaps on 9p re-fault
   cold regardless of Linux page cache, so every bench invocation's pass 0
   is naturally Linux-cold). 8-shard parallel federation, 40 q × 3 passes,
   dv/e5 alternating × 2 reps, all cells VmSwap 0.0 + warm ≪ cold (gate
-  clean): **federated cold p50 dv 4960/4838 ms vs e5 2687/2891 ms →
+  clean): **federated cold p50 dv 4960/4838 ms versus e5 2687/2891 ms →
   median ratio 0.569 (1.76× faster)**, cold traverse ratio ~0.55 ≈ the
   per-shard majflt 0.53–0.54 — the layout win carries fully through
   federation; warm neutral (80–110 ms both arms). Pre-registered ≤0.80
@@ -232,7 +232,7 @@ Module-by-module “what would a new doc need”:
   refuted. **Secondary finding:** the sequential-e5 cell's cold p50
   (**2159 ms**) beat parallel-e5 (2687 ms) — 8-way parallel cold faulting
   contends on the 9p channel — while bounding VmRSS peak at **1.34 GB**
-  (vs 25.2 GB parallel); cold-sensitive RAM-constrained deploys should
+  (versus 25.2 GB parallel); cold-sensitive RAM-constrained deploys should
   prefer sequential federation. Caveat: Linux-cold over 9p/drvfs (Windows
   file cache not evicted, symmetric across arms) — the paired ratio is
   the verdict; the host runbook stays available for a true-disk-cold

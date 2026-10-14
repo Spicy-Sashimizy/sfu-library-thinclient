@@ -12,7 +12,7 @@ that threshold is OFF; all unset = nothing ever fires (doc 10: nothing ships ON
 until F7) — and writes the result to `<delta_root>/trigger.json` (latest, atomic)
 and one line of `<delta_root>/trigger_log.jsonl`. It only REPORTS: it never
 builds or publishes a fold (that stays `cli.py fold-build` / the operator's
-`publish-fold`). Serving never reads either file, and nothing under `src/`
+`publish-fold`). Serving never reads either file, and nothing under `source/`
 imports this module, so the gate-off path (`SFU_DELTA_ROOT` unset) is untouched.
 
 Definitions as coded (implementation readings, doc 10 addendum 2026-10-08):

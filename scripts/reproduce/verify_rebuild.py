@@ -53,8 +53,8 @@ def verify(env: dict[str, str] | None = None, queries: list[str] | None = None, 
     os.environ.setdefault("SFU_SPLADE_BACKEND", "seismic")
     os.environ.setdefault("SFU_SEISMIC_LOAD_MODE", "mmap")
     os.environ.setdefault("SFU_DENSE_LEG", "0")
-    if str(REPO / "src") not in sys.path:
-        sys.path.insert(0, str(REPO / "src"))
+    if str(REPO / "source") not in sys.path:
+        sys.path.insert(0, str(REPO / "source"))
     collector = _Collect()
     logging.getLogger().addHandler(collector)
     from lib.thinclient.retriever import ThinClientRetriever

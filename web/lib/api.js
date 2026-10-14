@@ -115,6 +115,7 @@
   }
 
   function shapeLive(data, p, limit) {
+    noteSource("live");
     const raw = (data && data.results) || [];
     return {
       results: raw.map(normalizeResult),
@@ -131,6 +132,7 @@
   }
 
   function mockPage(p, limit) {
+    noteSource("mock");
     const all = (window.SFUMock && window.SFUMock.results) || [];
     const mock = all.slice(0, limit);
     return {
@@ -176,6 +178,202 @@
     return missing / d.length;
   }
 
+  const ENGAGEMENT_KINDS = ["query", "impression", "result_click", "action"];
+  const ENGAGEMENT_ACTION_TYPES = ["abstract", "tldr", "pdf", "citation", "zotero", "save"];
+  const ENGAGEMENT_SESSION_KEY = "sfu_engagement_session_v1";
+  const ENGAGEMENT_FLUSH_MS = 2000;
+  const ENGAGEMENT_MAX_BATCH = 50;
+  const ENGAGEMENT_MAX_QUEUE = 500;
+  const ENGAGEMENT_TEXT_MAX = 300;
+
+  let backendMode = "unknown";
+  function noteSource(source) {
+    if (source === "live" || source === "mock") backendMode = source;
+  }
+
+  function engagementDocId(r) {
+    if (!r) return "";
+    const doi = String(r.doi || "").replace(/^https?:\/\/(dx\.)?doi\.org\//i, "");
+    return doi || String(r.openalex_id || r.id || "");
+  }
+
+  function shapeEngagementEvent(ev, nowIso) {
+    if (!ev || typeof ev !== "object") return null;
+    const sid = String(ev.session_id == null ? "" : ev.session_id).trim();
+    const kind = String(ev.kind == null ? "" : ev.kind).trim();
+    if (!sid || ENGAGEMENT_KINDS.indexOf(kind) < 0) return null;
+    const out = { ts: String(ev.ts || nowIso || new Date().toISOString()), session_id: sid, kind: kind };
+    if (ev.query != null) out.query = String(ev.query).slice(0, ENGAGEMENT_TEXT_MAX);
+    if (ev.doc_id != null && ev.doc_id !== "") out.doc_id = String(ev.doc_id);
+    if (ev.rank != null) {
+      const n = Number(ev.rank);
+      if (!Number.isInteger(n)) return null;
+      out.rank = n;
+    }
+    if (kind === "action") {
+      const at = String(ev.action_type == null ? "" : ev.action_type).trim();
+      if (ENGAGEMENT_ACTION_TYPES.indexOf(at) < 0) return null;
+      out.action_type = at;
+    }
+    if (ev.refined_from != null && ev.refined_from !== "") out.refined_from = String(ev.refined_from).slice(0, ENGAGEMENT_TEXT_MAX);
+    return out;
+  }
+
+  function createEngagementQueue(opts) {
+    opts = opts || {};
+    const maxBatch = opts.maxBatch || ENGAGEMENT_MAX_BATCH;
+    const maxQueue = opts.maxQueue || ENGAGEMENT_MAX_QUEUE;
+    const delayMs = opts.delayMs != null ? opts.delayMs : ENGAGEMENT_FLUSH_MS;
+    const send = typeof opts.send === "function" ? opts.send : function () {};
+    const _setTimeout = opts.setTimeout || function (fn, ms) { return setTimeout(fn, ms); };
+    const _clearTimeout = opts.clearTimeout || function (id) { return clearTimeout(id); };
+    const _now = opts.now || function () { return new Date().toISOString(); };
+    let queue = [];
+    let timer = null;
+    let dropped = 0;
+
+    function clear() { if (timer != null) { _clearTimeout(timer); timer = null; } }
+    function drain() {
+      const batches = [];
+      while (queue.length) batches.push({ events: queue.splice(0, maxBatch) });
+      return batches;
+    }
+    function flush(reason) {
+      clear();
+      const batches = drain();
+      batches.forEach(function (b) { try { send(b, reason || "timer"); } catch (e) {  } });
+      return batches.length;
+    }
+    function push(ev) {
+      const shaped = shapeEngagementEvent(ev, _now());
+      if (!shaped) return false;
+      if (queue.length >= maxQueue) { queue.shift(); dropped++; }
+      queue.push(shaped);
+      if (queue.length >= maxBatch) flush("full");
+      else if (timer == null) timer = _setTimeout(function () { timer = null; flush("timer"); }, delayMs);
+      return true;
+    }
+    return {
+      push: push,
+      flush: flush,
+      drain: drain,
+      get size() { return queue.length; },
+      get pending() { return timer != null; },
+      get dropped() { return dropped; },
+    };
+  }
+
+  function randomId() {
+    try {
+      const c = window.crypto;
+      if (c && typeof c.getRandomValues === "function") {
+        const a = new Uint8Array(12);
+        c.getRandomValues(a);
+        return "g-" + Array.prototype.map.call(a, function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join("");
+      }
+    } catch (e) {  }
+    return "g-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+  }
+
+  let engagementSid = null;
+  function engagementSessionId() {
+    if (engagementSid) return engagementSid;
+    let sid = null;
+    try { sid = window.sessionStorage.getItem(ENGAGEMENT_SESSION_KEY); } catch (e) { sid = null; }
+    if (!sid) {
+      sid = randomId();
+      try { window.sessionStorage.setItem(ENGAGEMENT_SESSION_KEY, sid); } catch (e) {  }
+    }
+    engagementSid = sid;
+    return sid;
+  }
+
+  function postEngagement(batch, reason) {
+    const body = JSON.stringify(batch);
+    const url = BASE + "/engagement";
+    if (reason === "pagehide") {
+      try {
+        if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function"
+            && navigator.sendBeacon(url, new Blob([body], { type: "application/json" }))) return;
+      } catch (e) {  }
+    }
+    try {
+      const p = fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true });
+      if (p && typeof p.catch === "function") p.catch(function () {  });
+    } catch (e) {  }
+  }
+
+  const engagementQueue = createEngagementQueue({ send: postEngagement });
+  const engagementCtx = { query: null, lastQuery: null, shown: {}, impressed: {} };
+
+  function track(ev) {
+    try {
+      if (backendMode !== "live") return false;
+      ev.session_id = engagementSessionId();
+      return engagementQueue.push(ev);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  const engagement = {
+    KINDS: ENGAGEMENT_KINDS.slice(),
+    ACTION_TYPES: ENGAGEMENT_ACTION_TYPES.slice(),
+    docId: engagementDocId,
+    sessionId: engagementSessionId,
+    shapeEvent: shapeEngagementEvent,
+    mode: function () { return backendMode; },
+    query: function (q) {
+      try {
+        const text = String(q == null ? "" : q).trim();
+        if (!text) return false;
+        const prev = engagementCtx.lastQuery;
+        engagementCtx.query = text;
+        engagementCtx.lastQuery = text;
+        engagementCtx.shown = {};
+        engagementCtx.impressed = {};
+        return track({ kind: "query", query: text, refined_from: prev && prev !== text ? prev : null });
+      } catch (e) { return false; }
+    },
+    impressions: function (q, results) {
+      let n = 0;
+      try {
+        const text = String(q == null ? (engagementCtx.query || "") : q).trim();
+        (results || []).forEach(function (r, i) {
+          if (!r) return;
+          const docId = engagementDocId(r);
+          engagementCtx.shown[r.id] = { rank: i + 1, doc_id: docId, query: text };
+          const key = text + "\u0001" + docId;
+          if (engagementCtx.impressed[key]) return;
+          if (track({ kind: "impression", query: text, rank: i + 1, doc_id: docId })) {
+            engagementCtx.impressed[key] = true;
+            n++;
+          }
+        });
+      } catch (e) {  }
+      return n;
+    },
+    click: function (result) {
+      try {
+        const c = (result && engagementCtx.shown[result.id]) || null;
+        return track({ kind: "result_click", query: c ? c.query : null, rank: c ? c.rank : null, doc_id: c ? c.doc_id : engagementDocId(result) });
+      } catch (e) { return false; }
+    },
+    action: function (result, actionType) {
+      try {
+        if (ENGAGEMENT_ACTION_TYPES.indexOf(actionType) < 0) return false;
+        const c = (result && engagementCtx.shown[result.id]) || null;
+        return track({ kind: "action", action_type: actionType, query: c ? c.query : null, rank: c ? c.rank : null, doc_id: c ? c.doc_id : engagementDocId(result) });
+      } catch (e) { return false; }
+    },
+    flush: function (reason) { try { return engagementQueue.flush(reason); } catch (e) { return 0; } },
+    pending: function () { return engagementQueue.size; },
+  };
+
+  try {
+    window.addEventListener("pagehide", function () { engagement.flush("pagehide"); });
+  } catch (e) {  }
+
   const draftStats = { streams: 0, drafts: 0, finalOnly: 0, fallbacks: 0, swaps: 0, pinnedSwaps: 0, reshuffleN: 0, reshuffleSum: 0, lastReshuffle: null };
 
   function recordReshuffle(rate) {
@@ -185,22 +383,18 @@
   }
 
   const SFUApi = {
-    _online: null, 
-
-    isOnline() { return this._online; },
-
     async health() {
       try {
         const data = await req("/health", { method: "GET" });
-        this._online = true;
         
         
         
         
         
+        noteSource("live");
         return { data: data, source: "live", warm: data && data.warm !== undefined ? !!data.warm : true, sequential: !!(data && data.sequential), draftStream: !!(data && data.search_draft_stream) && !(data && data.sequential) };
       } catch (e) {
-        this._online = false;
+        noteSource("mock");
         return { data: { status: "offline" }, source: "mock", warm: false, sequential: false, draftStream: false };
       }
     },
@@ -214,7 +408,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(buildSearchArgs(query, filters, p)),
         });
-        this._online = true;
         return shapeLive(data, p, limit);
       } catch (e) {
         
@@ -222,7 +415,6 @@
         if (e && e.status === 429 && Number.isFinite(e.retryAfter)) {
           return { source: "retry", retryAfter: e.retryAfter, page: p, pageSize: PAGE_SIZE, hasMore: false, results: [], notes: [], meta: { count: 0 } };
         }
-        this._online = false;
         return mockPage(p, limit);
       }
     },
@@ -251,7 +443,6 @@
         draftStats.fallbacks++;
         return this.search(query, filters, p);
       }
-      const self = this;
       let sawDraft = false;
       const run = async function () {
         const reader = res.body.getReader();
@@ -284,13 +475,11 @@
       };
       try {
         const data = await withTimeout(run(), TIMEOUT_MS);
-        self._online = true;
         if (!sawDraft) draftStats.finalOnly++;
         const out = shapeLive(data, p, limit);
         out.hadDraft = sawDraft;
         return out;
       } catch (e) {
-        self._online = false;
         const out = mockPage(p, limit);
         out.hadDraft = sawDraft;
         return out;
@@ -301,33 +490,9 @@
       try {
         const q = panel ? ("?panel=" + encodeURIComponent(panel)) : "";
         const data = await req("/analytics" + q, { method: "GET" });
-        this._online = true;
         return { data: data, source: "live" };
       } catch (e) {
-        this._online = false;
         return { data: (window.SFUMock && window.SFUMock.analytics) || {}, source: "mock" };
-      }
-    },
-
-    async indexStatus() {
-      try {
-        const data = await req("/api/index_status", { method: "GET" });
-        this._online = true;
-        return { data: data, source: "live" };
-      } catch (e) {
-        this._online = false;
-        return { data: (window.SFUMock && window.SFUMock.indexStatus) || {}, source: "mock" };
-      }
-    },
-
-    async personas() {
-      try {
-        const data = await req("/api/personas", { method: "GET" });
-        this._online = true;
-        return { data: data, source: "live" };
-      } catch (e) {
-        this._online = false;
-        return { data: (window.SFUMock && window.SFUMock.personas) || {}, source: "mock" };
       }
     },
 
@@ -341,19 +506,6 @@
         return { data: data, source: "live" };
       } catch (e) {
         return { data: { ok: false, message: "Backend unavailable (demo mode)." }, source: "mock" };
-      }
-    },
-
-    async engagement(evt) {
-      try {
-        await req("/engagement", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(evt),
-        });
-        return { source: "live" };
-      } catch (e) {
-        return { source: "mock" };
       }
     },
 
@@ -533,6 +685,8 @@
     out.reshuffleMean = draftStats.reshuffleN ? draftStats.reshuffleSum / draftStats.reshuffleN : null;
     return out;
   };
+  SFUApi.engagement = engagement;
+  SFUApi.createEngagementQueue = createEngagementQueue;
   SFUApi.reshuffleRate = reshuffleRate;
   SFUApi.parseSSE = parseSSE;
 
@@ -543,5 +697,4 @@
   SFUApi.mergePages = mergePages;
 
   window.SFUApi = SFUApi;
-  window.SFUApi.normalizeResult = normalizeResult;
 })();

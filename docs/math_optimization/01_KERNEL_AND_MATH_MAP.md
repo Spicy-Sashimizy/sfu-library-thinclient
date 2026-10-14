@@ -139,7 +139,7 @@ operates on `Simd<u8, 8>`, so on x86-64 the active arms are the SSSE3 16-lane
 
 **Important asymmetry: the AVX2 `avx2_pshufb` is additionally
 `#[cfg(target_arch="...")]`-guarded so it physically compiles out on non-x86.
-The kernel's `std::simd` ops are *not* cfg-guarded — they rely on the compiler
+The kernel's `std::simd` operations are *not* cfg-guarded — they rely on the compiler
 backend.** This is the load-bearing portability property: the kernel has no
 hand-written fallback because `std::simd` *is* the portable fallback.
 
@@ -154,10 +154,10 @@ hand-written fallback because `std::simd` *is* the portable fallback.
 - The shipped `.so` is built by **maturin** (`seismic_upstream/pyproject.toml`:
   `requires=["maturin>=1.2.3"]`, `[tool.maturin] features=["default","python"]`),
   which invokes `cargo build --release` with crate-type `["cdylib","lib"]`.
-- **Native rebuild = env var only:** `RUSTFLAGS='-C target-cpu=native' cargo
+- **Native rebuild = environment var only:** `RUSTFLAGS='-C target-cpu=native' cargo
   build --release` (`spike/seismic_upstream/scripts/run_experiments.py:62`).
   Commit `223aca5` (E7 "Arm B native anchor", 2026-07-03) records that the
-  rebuild was done via that env, with **no code change**, and the `.so` was
+  rebuild was done via that environment, with **no code change**, and the `.so` was
   reinstalled to the venv. Its measured effect (from the commit): "+54 packed
   `vfmadd..ps`, +14k `ymm` regs, +185 `vpshufb` (baseline SSE2 had 0/294/26)."
 

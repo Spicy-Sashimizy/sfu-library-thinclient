@@ -3,7 +3,7 @@
 **Status:** ACTIVE
 
 Consolidated 2026-09-01 from code comments (the rules were previously stated
-only in `src/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
+only in `source/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 `arxiv_fetcher.py`). The code is authoritative.
 
 ## Circuit breaker & retry (lib/retry.py)
@@ -11,8 +11,12 @@ only in `src/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 - **One breaker failure per LOGICAL request** — recorded only on the final
   exhausted attempt. Recording per-attempt over-counts (max_retries=3 ⇒ 4
   failures) and trips a threshold-5 breaker after a single failing
-  request. This rule is pinned by `src/tests/test_retry.py` and applies in
-  every client.
+  request. This rule applies in every client and is pinned on the live
+  clients by `source/tests/test_openalex_client.py::TestOpenAlexCircuitBreakerWithRetries`
+  and `source/tests/test_semantic_scholar_client.py::TestS2CircuitBreakerWithRetries`
+  (repointed 2026-10-11: the unused `retry_with_backoff` decorator and its
+  `test_retry.py` cases were removed; lib/retry.py now holds only the
+  `CircuitBreaker`).
 - HALF_OPEN allows exactly ONE test request through.
 - **4xx (except 429) is not a service outage**: 404 is normal for
   missing-DOI/ID lookups, 400 is a malformed filter — treat as not-found,
@@ -62,7 +66,7 @@ only in `src/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
   `remote_abstract_fetcher=_get_openalex().fetch_abstracts_by_ids` and
   `openalex_api_key=cfg.openalex_api_key`. Remote abstracts for ids missing
   from the local sidecar therefore go through the SHARED client: `api_key`
-  query param (else `mailto`), daily tracker, circuit breaker, 5-minute
+  query parameter (else `mailto`), daily tracker, circuit breaker, 5-minute
   response cache. Before 2026-09-25 the retriever called
   `api.openalex.org/works` directly with `mailto` only, outside all of these.
 - Request shape: `GET /works?filter=openalex_id:W1|W2|…&per-page=<n>&select=id,abstract_inverted_index`,
@@ -94,12 +98,8 @@ only in `src/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 
 ## Live-API ↔ local-index write policy
 
-- **When the target index is served by the SPLADE leg, every document MUST
-  carry a `sparse_field`.** The live search path cannot SPLADE-encode (no
-  transformer in the fire-and-forget daemon thread), so live results are
-  NEVER pushed to a SPLADE-served index — un-encoded docs would be
-  invisible to the SPLADE leg AND pollute the index. SPLADE encoding is
-  offline only (`splade_indexer.py` / `opensearch_sync.py`). Skip is the
-  safe default (pinned by `src/tests/test_openalex_push.py`).
-- `publication_year` is an integer field — coerce the YYYY prefix,
-  malformed → None, never a string.
+- **CLOSED 2026-10-11:** the OpenAlex→OpenSearch push (`OpenAlexClient._push_to_opensearch`,
+  the `opensearch_*` constructor parameters, `_coerce_year`, the `local_opensearch_enabled`
+  feature gate and `source/tests/test_openalex_push.py`) was removed; the ingest path is
+  `spike/delta_ingest/` (`docs/delta_ingest/`). The live OpenAlex client no longer writes
+  to any local index.

@@ -46,7 +46,7 @@
 #                            (except deliberately, in situation S3, where
 #                            antagonist_scan.sh --cgroup joins it).
 # meta.sqlite is NOT separated out. In the deployed stack it is opened
-# in-process by ThinClientRetriever._load() (src/lib/thinclient/retriever.py:
+# in-process by ThinClientRetriever._load() (source/lib/thinclient/retriever.py:
 # 541-553) with a plain sqlite3 connection — no separate service, no separate
 # cgroup — so its page cache genuinely competes with the seismic mmaps under
 # one memory.max. Phase 2 MEASURES that, it does not engineer around it. Note
@@ -115,7 +115,7 @@ DRIVER_EXTRA="${DRIVER_EXTRA:-}"     # e.g. "--hydrate --weight metadata"
 
 # Serving env gates. Defaults chosen so the POLICY is the only thing acting on
 # residency; every one of these is a documented gate read by
-# src/lib/thinclient/sharded_seismic_backend.py.
+# source/lib/thinclient/sharded_seismic_backend.py.
 #   PREFLOOR_HOTSET=1 is what every t23 orchestrator exports (t23_host_
 #   orchestrator.sh:33) and phase-B/C quarantine results that lack it — but it
 #   PREFAULTS the same F1 hot set the policy is being asked to protect, which

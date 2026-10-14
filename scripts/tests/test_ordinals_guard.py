@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 from lib.thinclient.ordinals import (MANIFEST_KEY, STAMP_FILE,  # noqa: E402
                                      OrdinalSpace, OrdinalSpaceMismatch,

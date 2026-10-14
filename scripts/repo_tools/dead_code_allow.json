@@ -1,0 +1,4 @@
+{
+ "web/lib/interface_prefs.js::INTERFACE_PREF_DEFAULTS": "Interface-prefs contract seam (GUI_BAREBONES_PROGRESS_SPEC.md \u00a72): exported so the shell/tests can enumerate the pref keys; the jsdom + progress verify suites are its spec (codebase triage 2026-10-11, web ledger rows 28-30; owner may drop it with those checks)",
+ "web/lib/interface_prefs.js::writeInterfacePrefs": "Interface-prefs contract seam (GUI_BAREBONES_PROGRESS_SPEC.md \u00a72): the write half of the localStorage prefs API the verify suites drive; kept as the documented counterpart of readInterfacePrefs (codebase triage 2026-10-11, web ledger rows 28-30)"
+}

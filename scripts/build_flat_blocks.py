@@ -78,7 +78,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 from lib.thinclient.abstracts import (  # noqa: E402
     DICTS_STAMP, FLAT_ID_KEY, FLAT_STAMP, LOCATOR_STAMP, AbstractStore,

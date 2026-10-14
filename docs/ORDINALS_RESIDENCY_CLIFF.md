@@ -48,7 +48,7 @@ to the addressing change, and in this container
 ### Ordinal-space authorisation
 
 `data/thinclient_index/manifest.json` carries **no** `ordinal_space_id`, so
-`load_if_enabled` fails closed and ordinals cannot be switched on by env here.
+`load_if_enabled` fails closed and ordinals cannot be switched on by environment here.
 The harness therefore constructs `OrdinalSpace(dir, {"ordinal_space_id": ...})`
 directly — the same call `load_if_enabled` makes — and **proves the pairing
 first** rather than asserting it: `ordinal_space.json`'s recorded source
@@ -216,8 +216,8 @@ the ordinal arm never fell back to SQLite — it is a pure ordinal measurement.
 |---|---|:--:|
 | **B1** `S(c_lo)/S(c_hi) ≥ 3` | 4.484 / 3.615 = **1.240** | **FAIL** |
 | **B2** `O(c_lo)/O(c_hi) ≤ 1.5` | 1.196 / 1.007 = **1.188** | **PASS** |
-| **B3** `(S/O)(c_lo) ≥ 2·(S/O)(c_hi)` | 3.749 vs 7.180 | **FAIL** |
-| **B4** majflt ratio ≥ 10 at `c_lo` | 0 vs 0 — **VOID**, see below | — |
+| **B3** `(S/O)(c_lo) ≥ 2·(S/O)(c_hi)` | 3.749 versus 7.180 | **FAIL** |
+| **B4** majflt ratio ≥ 10 at `c_lo` | 0 versus 0 — **VOID**, see below | — |
 | **B5** parity, every rung, every query | **0 mismatches / 240 comparisons** | **PASS** |
 
 **B4 was a bad instrument and the pre-registration is what makes that

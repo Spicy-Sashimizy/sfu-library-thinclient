@@ -16,7 +16,7 @@ The parallel federation serve loads all 8 shards and searches them concurrently,
 which means the **whole ~66 GB working set is touched at once**. On the 31.6 GB
 host that forces the kernel to swap, and queries spend their time page-faulting
 from swap, not searching (G8: ~76 s/query, swap-confounded — `[OURS]`). The RAM
-**floor** is already a decisive SEISMIC win (anon ~0.14 GB index vs Qdrant ~17 GB
+**floor** is already a decisive SEISMIC win (anon ~0.14 GB index versus Qdrant ~17 GB
 `[OURS]`); the problem is purely the *transient* working set under parallelism on
 a small box.
 
@@ -55,10 +55,10 @@ bounded phases, sequential disk access, minimise random faults) — see
    stream ≤ ~1 shard + encoder (target: well under the host RAM, **VmSwap stays 0**).
 2. **G-SEQ-2 — Result-equivalence.** Sequential top-k is **identical** to parallel
    top-k for the same query (merge-by-raw-score is order-independent — see
-   `01_ARCHITECTURE.md`). A demo must not change answers vs the validated pipeline.
+   `01_ARCHITECTURE.md`). A demo must not change answers versus the validated pipeline.
 3. **G-SEQ-3 — Demo-usable latency on the current box.** p50 in a band a human demo
    tolerates (target: single-digit seconds, ideally low), **measured swap-free**.
-4. **G-SEQ-4 — Clean coexistence.** Selectable by one env flag; never co-active with
+4. **G-SEQ-4 — Clean coexistence.** Selectable by one environment flag; never co-active with
    parallel; mmap-only with no silent Path-A fallback. **Implemented as two distinct
    classes** (`ParallelSeismicBackend` for server-side, `SequentialSeismicBackend` for
    localized/RAM-efficient) sharing pure helpers, no shared mutable instance state →

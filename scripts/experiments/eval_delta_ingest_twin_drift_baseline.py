@@ -102,7 +102,7 @@ def log(msg: str):
 
 
 def cmd_encode(a):
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO / "scripts/seismic_testbed"))
     os.chdir(REPO)
     from e6_forward_codec_proto import load_queries

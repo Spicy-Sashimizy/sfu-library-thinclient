@@ -14,7 +14,7 @@ import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 from lib.thinclient import oa_overlay as ov  # noqa: E402
@@ -228,8 +228,7 @@ def _tiny_root(tmp_path: Path, n: int = 600) -> Path:
     b = SectionBuilder(root, "social_sciences__recent", hot=True, meta_db=meta)
     for i in range(1, n + 1):
         b.add({"id": f"W{i}", "title": f"politics paper {i}", "abstract": f"politics text {i}",
-               "publication_year": 2015, "type": "article", "doi": f"10.1/{i}",
-               "sparse_field": {"politics": 1.2, f"t{i % 7}": 0.8}})
+               "publication_year": 2015, "type": "article", "doi": f"10.1/{i}"})
     b.finish()
     meta.commit()
     meta.close()

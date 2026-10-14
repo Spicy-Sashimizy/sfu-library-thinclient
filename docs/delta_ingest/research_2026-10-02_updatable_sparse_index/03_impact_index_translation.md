@@ -1,9 +1,9 @@
 # Impact-quantized inverted index as a SPLADE "translation layer" (tantivy / Lucene / PISA)
 
-**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repository root `research_notes/`/`reports/` 2026-10-10)
 
 Research notes compiled 2026-10-02. Markers: **[read]** = I opened and read the source (paper PDF text, source file, doc page); **[snippet]** = search-result snippet only; **[inferred]** = my derivation from cited facts, not stated by any source.
-Code read at: tantivy `master` commit `1f9e49da` (2026-09-30, Cargo version `0.27.0`, unreleased); tantivy crate tarball `0.26.2` from crates.io (published 2026-09-08); tantivy-py `master` commit `46b25280` (2026-10-01, package version `0.26.2`, depends on `tantivy = "0.26.2"`, pyo3 0.29). This repo pins `tantivy>=0.26.0` (`requirements.txt:25`) and the venv has tantivy-py `0.26.0` installed.
+Code read at: tantivy `master` commit `1f9e49da` (2026-09-30, Cargo version `0.27.0`, unreleased); tantivy crate tarball `0.26.2` from crates.io (published 2026-09-08); tantivy-py `master` commit `46b25280` (2026-10-01, package version `0.26.2`, depends on `tantivy = "0.26.2"`, pyo3 0.29). This repository pins `tantivy>=0.26.0` (`requirements.txt:25`) and the venv has tantivy-py `0.26.0` installed.
 
 **Scope note from the owner (added mid-task).** The idea under test is to take *only the updater* (insert/update/delete/merge machinery) of an existing engine and plug it into our system, perhaps through a translation layer. It is *not* to adopt a whole engine. These notes therefore keep two options apart:
 - **(a) Full replacement for the sparse leg.** tantivy's writer, deletes and merges maintain a SPLADE impact index, *and* tantivy's query path answers the sparse queries. This replaces SEISMIC for that data. The latency consequence is in Q1/Q2/Q4.
@@ -21,7 +21,7 @@ On MS MARCO passage (8.8M docs), exact DaaT on SPLADE takes about 100–220 ms/q
   - Lucene: BM25 0.187 / 40.1 / 661; uniCOIL-T5 0.352 / 222.3 / 1,313; **SPLADEv2 0.369 / 2,140.0 / 4,987**.
   - PISA MaxScore: BM25 0.187 / 8.3 / 739; uniCOIL-T5 0.352 / 36.9 / 1,358; **SPLADEv2 0.369 / 220.3 / 4,326**.
   - JASS exact: SPLADEv2 0.369 / 314.0 / 3,813. JASS approximate (ρ = 1M postings): SPLADEv2 **0.324** / 15.3, which is a loss of more than 12% RR@10.
-  - SPLADEv2 vs BM25 slowdown: about 50× in Lucene and about 25× in PISA [read].
+  - SPLADEv2 versus BM25 slowdown: about 50× in Lucene and about 25× in PISA [read].
   - In PISA, WAND, BMW and VBMW on SPLADEv2 averaged **619 / 681 / 553 ms**, all slower than MaxScore at 220 ms. The paper says these algorithms are "working hard" to find skippable documents when "few documents can actually be skipped" in exact evaluation [read].
   - Term statistics (Table 2): SPLADEv2 documents have 229.4 unique terms and a sum of weights of 10,794.8. Queries have 25.0 unique terms and a weight sum of 2,037.8. The vocabulary has 28,131 terms, against 2.66M for BM25. SPLADEv2 queries carry about 4× more unique terms than uniCOIL [read].
   - Example "wacky" query weights: "and" 225 (a subword of "androgen"), "is" 70, "the" 56, and the comma "," 68 [read].
@@ -54,7 +54,7 @@ On MS MARCO passage (8.8M docs), exact DaaT on SPLADE takes about 100–220 ms/q
   - At 1M docs: PISA 5.93, Lucene 6.91, LB-MS 12.1
   - The paper states Lucene "has been heavily optimized for learned sparse retrieval, employing vectorization, compression codecs tailored to impact-based indexes, and document re-ordering by default" [read]. The Lucene version number is not stated in the text I read.
 - **Anserini regressions for SPLADE++ ED** (`-impact -pretokenized`) [read] — [v1 page](https://github.com/castorini/anserini/blob/master/docs/reproduce/from-document-collection/msmarco-v1-passage.splade-pp-ed.onnx.md), [v2 page](https://github.com/castorini/anserini/blob/master/docs/reproduce/from-document-collection/msmarco-v2-passage.splade-pp-ed.onnx.md):
-  - `-impact` means "not to encode BM25 doc lengths into Lucene's norms"; `-pretokenized` means no further tokenization. Collection type: `JsonVectorCollection`. Its loader repeats each token `cnt` times, i.e. the pseudo-doc trick (`JsonVectorCollection.java` lines 84–85).
+  - `-impact` means "not to encode BM25 doc lengths into Lucene's norms"; `-pretokenized` means no further tokenization. Collection type: `JsonVectorCollection`. Its loader repeats each token `cnt` times, that is, the pseudo-doc trick (`JsonVectorCollection.java` lines 84–85).
   - MS MARCO v1 dev: RR@10 **0.3828**, R@1000 **0.9831** (8,841,823 docs).
   - MS MARCO **v2** dev: MRR@100 **0.1558**, R@100 0.6020, R@1000 **0.8223**. The pre-encoded v2 corpus tar is 66 GB.
   - **No latency or index-size numbers** are given on these pages [read].
@@ -101,12 +101,12 @@ On MS MARCO v1 SPLADE, SEISMIC reports 0.19–0.53 ms single-thread at 90–97% 
 - **BMP**, Table 3, approximate, k=10, SPLADE. With the raw BM index: b=64, α=0.75 gives **2.7 ms at RR@10 37.45**; b=32, α=0.85 gives 3.2 ms at 37.97, against exhaustive 38.11. Safe BMP (b=16, k=10) takes 11.0 ms, against MaxScore 120.6 [read] — [arXiv PDF](https://arxiv.org/pdf/2405.01117).
 
 ### Inferences
-- At equal high recall on 8.8M docs, SEISMIC is about **200–500× faster than exact PISA/Lucene MaxScore** (0.2–0.5 ms vs about 100 ms for SPLADE cocondenser). Against modern Lucene's 36 ms on SPLADEv3 (a different model and machine), the gap is about 70–190× [inferred: cross-paper ratio, different hardware].
+- At equal high recall on 8.8M docs, SEISMIC is about **200–500× faster than exact PISA/Lucene MaxScore** (0.2–0.5 ms versus about 100 ms for SPLADE cocondenser). Against modern Lucene's 36 ms on SPLADEv3 (a different model and machine), the gap is about 70–190× [inferred: cross-paper ratio, different hardware].
 - Our deployment: SEISMIC at about 65 ms warm p50 across 8 mmap shards on one host. That is far above the 3 ms in-RAM v2 number, which points to mmap/page-cache effects rather than algorithm cost. So the relative penalty of moving to an impact index under the *same* mmap regime may be smaller than the in-RAM paper ratios suggest. Both engines would then be bound by page faults, and an inverted index reads whole posting lists, so it touches more bytes per query than SEISMIC's pruned blocks [inferred, unmeasured].
 
 ### Gaps
-- There is no head-to-head SEISMIC vs Lucene/PISA/tantivy on mmap or out-of-RAM indexes; SEISMIC's own authors list it as future work.
-- There is no SEISMIC vs exact inverted index comparison on 138M+ docs.
+- There is no head-to-head SEISMIC versus Lucene/PISA/tantivy on mmap or out-of-RAM indexes; SEISMIC's own authors list it as future work.
+- There is no SEISMIC versus exact inverted index comparison on 138M+ docs.
 
 ---
 
@@ -127,7 +127,7 @@ Query-side levers (query-term pruning, two-phase, token pruning) give 2–10× o
 - **Static pruning (Lassance et al.):** "only able to speed up query processing by 2–4× over Pisa on E-Splade ... ineffective on Splade", as reported by the SEISMIC authors [read] — [arXiv 2404.18812](https://arxiv.org/pdf/2404.18812).
 - **Guided Traversal (GT):** DeepImpact went from 19.5 to 4.8 ms mean at equal RR@10 (4×). It could not be applied to SPLADE because the vocabularies do not match [read] — [arXiv 2204.11314](https://arxiv.org/pdf/2204.11314). The 2GTI-Fast variant was slower than 45 ms on SPLADE, per the BMP authors [read] — [arXiv 2405.01117](https://arxiv.org/pdf/2405.01117).
 - **SaaT/JASS approximate:** 15.3 ms on SPLADEv2, but with an RR@10 loss above 12%. At about 52 ms, the loss is about 3% [read] — [arXiv 2110.11540](https://arxiv.org/pdf/2110.11540).
-- **Approximate scale-out inside OpenSearch** (Q5(b)): SEISMIC per Lucene segment on 1.29B docs at 90% recall takes **11.77 ms avg (P99 27 ms)**, against "neural sparse" on the inverted index at 125.12 ms avg (P99 397.21 ms) and BM25 at 41.52 ms. It needs about 53 GB of memory per data node (OpenSearch 3.3, blog dated 2025-10-28) [read — WebFetch summary] — [OpenSearch blog](https://opensearch.org/blog/scaling-neural-sparse-search-to-billions-of-vectors-with-approximate-search/).
+- **Approximate scale-out inside OpenSearch** (Q5(b)): SEISMIC per Lucene segment on 1.29B docs at 90% recall takes **11.77 ms average (P99 27 ms)**, against "neural sparse" on the inverted index at 125.12 ms average (P99 397.21 ms) and BM25 at 41.52 ms. It needs about 53 GB of memory per data node (OpenSearch 3.3, blog dated 2025-10-28) [read — WebFetch summary] — [OpenSearch blog](https://opensearch.org/blog/scaling-neural-sparse-search-to-billions-of-vectors-with-approximate-search/).
 
 ### Inferences
 - With a stock tantivy query path, only query-side levers are available: dropping low-weight query terms, and a two-phase "top-N terms retrieve, full-vector rescore". The rescore could use our existing forward vectors. From the numbers above, expect about 2–7× over unpruned, not the 100× gap to SEISMIC [inferred].
@@ -161,11 +161,11 @@ Exact impact scoring needs a Rust custom `Query`/`Weight`/`Scorer`. That scorer 
 
 ### Inferences
 - **Option (a) on stock tantivy-py is not exact SPLADE.** A `BooleanQuery` of `BoostQuery(TermQuery(t), q_t)` over a pseudo-doc field scores Σ q_t·idf_t·2.2·tf/(tf + 1.2·norm). That is a saturating and idf-reweighted function of the impact, so tf = 10 and tf = 100 differ by about 10%, not 10×. Disabling fieldnorms (Rust-only) makes the norm constant but leaves the saturation and idf in place. Ranking quality would have to be re-measured; it is not a faithful translation [inferred from `bm25.rs`].
-- **Exact option (a) needs a Rust extension.** A custom `Weight`/`Scorer` would read `freqs()` as impacts and implement its own MaxScore/BMW in `for_each_pruning`. Block bounds could be recovered from the stored (fieldnorm_id, tf) pair: with fieldnorms disabled, the BM25-argmax pair is the max tf in the block, since tf_factor is monotone in tf at fixed norm. But the bound is only reachable through a `Bm25Weight` score, so one would invert BM25 or recompute. Impacts ≥ 255 lose their block bound, because the code maps 255 to u32::MAX, i.e. an unbounded block. A 0–254 quantization fits [inferred].
+- **Exact option (a) needs a Rust extension.** A custom `Weight`/`Scorer` would read `freqs()` as impacts and implement its own MaxScore/BMW in `for_each_pruning`. Block bounds could be recovered from the stored (fieldnorm_id, tf) pair: with fieldnorms disabled, the BM25-argmax pair is the max tf in the block, since tf_factor is monotone in tf at fixed norm. But the bound is only reachable through a `Bm25Weight` score, so one would invert BM25 or recompute. Impacts ≥ 255 lose their block bound, because the code maps 255 to u32::MAX, that is, an unbounded block. A 0–254 quantization fits [inferred].
 - **Pseudo-doc ingest cost.** Our 85 terms with 8-bit impacts mean thousands of token occurrences per doc through the tokenizer. Rule & Mackenzie measured Lucene at 100–500 µs/doc for SPLADEv3 pseudo-docs (up to 40 min for 8.8M docs) [read — Springer link above]. tantivy is unmeasured [inferred].
 - **Latency consequence of option (a), order-of-magnitude only.**
   - Per shard: 150M/8 = 18.75M docs × 85 ≈ 1.59B postings, about 1.07× the SPLADEv3 MS MARCO volume (1.48B).
-  - PISA/Lucene MaxScore takes about 36 ms there at k=10 in RAM. tantivy has no MaxScore, only BMW, which PISA measured at about 5× slower than MaxScore on SPLADE (614 vs 121 ms).
+  - PISA/Lucene MaxScore takes about 36 ms there at k=10 in RAM. tantivy has no MaxScore, only BMW, which PISA measured at about 5× slower than MaxScore on SPLADE (614 versus 121 ms).
   - So a stock-tantivy BMW query is plausibly on the order of **hundreds of ms per shard single-thread, in RAM, with ≤ 25 query terms**. Our 64-term queries and mmap would add to that.
   - Compare the current SEISMIC p50 of about 65 ms. With aggressive query-term pruning (β ≈ 0.3–0.5) plus a two-phase rescore, a 2–7× reduction is the published range.
   - None of this is measured on tantivy [inferred; unmeasured].
@@ -227,7 +227,7 @@ tantivy-py exposes no `merge()`, no merge-policy setter and no plugin registrati
 - **OpenSearch neural-search (option (b) in production).** `SparseCodec extends FilterCodec` (name `Sparse10010Codec`, delegate `Lucene101Codec`) overrides `docValuesFormat()`, `postingsFormat()` and `compoundFormat()`.
   - `SparseDocValuesFormat` wraps the delegate consumer with `SparseDocValuesConsumer` and `NativeDocValuesConsumer`.
   - On flush (`addBinaryField`) and on `merge(...)`, it reads each doc's sparse vector from BINARY doc values, but only if `shouldRunSeisPredicate(segmentInfo, field)` passes. It inserts the vector, byte-quantized, into a per-segment forward index keyed by `(segmentInfo, field)`, and the clustered SEISMIC postings are written through `SparsePostingsConsumer`/`ClusteredPostingTermsWriter`.
-  - On merge it clears the cache entries of the merged-away segments [read: `src/main/java/org/opensearch/neuralsearch/sparse/codec/SparseCodec.java`, `SparseDocValuesFormat.java`, `SparseDocValuesConsumer.java` ll. 44–103, via `gh api`] — [neural-search repo](https://github.com/opensearch-project/neural-search/tree/main/src/main/java/org/opensearch/neuralsearch/sparse/codec).
+  - On merge it clears the cache entries of the merged-away segments [read: `src/main/java/org/opensearch/neuralsearch/sparse/codec/SparseCodec.java`, `SparseDocValuesFormat.java`, `SparseDocValuesConsumer.java` ll. 44–103, via `gh api`] — [neural-search repository](https://github.com/opensearch-project/neural-search/tree/main/src/main/java/org/opensearch/neuralsearch/sparse/codec).
   - The earliest commit touching `SparseCodec.java` is dated 2025-09-03 [read].
   - Operational guidance: "Set the approximate threshold to 5M documents and force merge segments to between 5M and 10M documents". The benchmark ran 10 force-merged SEISMIC segments per node, about 8.5M docs each, at about 1 GB RAM per 1M docs [read — WebFetch summary] — [OpenSearch blog 2025-10-28](https://opensearch.org/blog/scaling-neural-sparse-search-to-billions-of-vectors-with-approximate-search/).
 
@@ -273,7 +273,7 @@ Lucene supports learned-sparse impacts natively. `FeatureField` stores a positiv
 ## Q7. Index size per posting (impact-quantized) vs SEISMIC, scaled to 150M × 85 ≈ 12.75B postings
 
 ### Takeaway
-Measured impact-index sizes for SPLADE on MS MARCO v1 work out to about 17–20 bits per posting (Lucene and PISA, 8-bit-range impacts, BP reordering for PISA). That gives roughly **27–31 GB for 12.75B postings**. SEISMIC's published indexes (forward index plus pruned clustered inverted lists) are about 45–51 bits per stored nonzero, i.e. about 2–3× larger per nonzero. A tantivy figure has not been measured.
+Measured impact-index sizes for SPLADE on MS MARCO v1 work out to about 17–20 bits per posting (Lucene and PISA, 8-bit-range impacts, BP reordering for PISA). That gives roughly **27–31 GB for 12.75B postings**. SEISMIC's published indexes (forward index plus pruned clustered inverted lists) are about 45–51 bits per stored nonzero, that is, about 2–3× larger per nonzero. A tantivy figure has not been measured.
 
 ### Cited Findings
 - Rule & Mackenzie (ECIR 2026), SPLADEv3, 1,483,571,102 postings: **PISA 3,379 MiB, Lucene 3,032 MiB**, LinkedBlock (dynamic) 3,265–3,441 MiB [read — Springer link above].

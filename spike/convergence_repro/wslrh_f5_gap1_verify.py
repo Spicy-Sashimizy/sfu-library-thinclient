@@ -247,7 +247,7 @@ def run_arm(args) -> dict:
     os.environ.setdefault("SFU_SEISMIC_PREFLOOR_HOTSET", "1")
     if args.so_dir:
         sys.path.insert(0, args.so_dir)
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     import seismic  # noqa: E402  (resolved through sys.path above)
     so_path = Path(seismic.__file__).parent / "seismic.cpython-311-x86_64-linux-gnu.so"
     M = seismic.MmapSeismicIndex

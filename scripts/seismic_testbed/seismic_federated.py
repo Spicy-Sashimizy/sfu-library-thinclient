@@ -57,13 +57,13 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 # Canonical implementation lives in the served package so the live retriever's
 # `SFU_SPLADE_BACKEND=seismic` branch can import it without depending on
 # `scripts/`. This module re-exports it (mirrors `seismic_backend.py` shim) so
 # all testbed harnesses keep `from seismic_federated import ShardedSeismicBackend`
-# unchanged. Canonical: src/lib/thinclient/sharded_seismic_backend.py.
+# unchanged. Canonical: source/lib/thinclient/sharded_seismic_backend.py.
 # The two concrete serving classes are also exported for new code; the
 # ShardedSeismicBackend selector remains for back-compat (defaults to parallel).
 from lib.thinclient.sharded_seismic_backend import (  # noqa: E402,F401

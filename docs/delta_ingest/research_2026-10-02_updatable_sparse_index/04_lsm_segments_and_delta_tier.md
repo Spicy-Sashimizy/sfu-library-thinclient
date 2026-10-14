@@ -1,10 +1,10 @@
 # LSM / segment-based update machinery, per-segment query overhead, and a mutable exact delta tier
 
-**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repository root `research_notes/`/`reports/` 2026-10-10)
 
 Compiled 2026-10-02. Context: 150M-doc hybrid system (SPLADE via 8 immutable mmap SEISMIC shards + tantivy BM25F + RRF + CE rerank; 16 cores, 32-48 GB RAM, 1x16 GB GPU). Measured: each live delta generation adds ~20-28 ms p50 (target +8 ms/gen). The cost splits into ~11 ms/gen sparse fan-out, ~5 ms/gen lexical per-section parse/merge, and ~5 ms/gen abstract-store probes.
 
-Markers: **[read]** means the source was opened and read (the full page or the extracted PDF text). **[snippet]** means a search-result snippet only. **[inferred]** means my own derivation, with the arithmetic shown. **[local-bench]** means a synthetic micro-benchmark run on this host on 2026-10-02. The script is `/tmp/claude-1000/-workspaces-sfu-library-thinclient/4e24eda4-ae7d-47ca-b274-66a1a52510d4/scratchpad/exact_taat_bench.py`, which is outside the repo and not reproducible from git. The host is an AMD Ryzen 7 5700X3D (8C/16T), and the benchmark ran single-threaded with scipy 1.17.1 and numpy 2.4.3.
+Markers: **[read]** means the source was opened and read (the full page or the extracted PDF text). **[snippet]** means a search-result snippet only. **[inferred]** means my own derivation, with the arithmetic shown. **[local-bench]** means a synthetic micro-benchmark run on this host on 2026-10-02. The script is `/tmp/claude-1000/-workspaces-sfu-library-thinclient/4e24eda4-ae7d-47ca-b274-66a1a52510d4/scratchpad/exact_taat_bench.py`, which is outside the repository and not reproducible from git. The host is an AMD Ryzen 7 5700X3D (8C/16T), and the benchmark ran single-threaded with scipy 1.17.1 and numpy 2.4.3.
 
 Owner scope (added 2026-10-02 mid-task): the goal is to adopt only the **updater** portion of another product (insert/update/delete/merge machinery), possibly through a translation layer, while SEISMIC + tantivy stay the serving engines. The "Updater separability" question below covers this.
 
@@ -24,7 +24,7 @@ Every production engine bounds the live segment count through a size-tiered or l
 - deletesPctAllowed = 20
 - forceMergeDeletesPctAllowed = 10%
 
-TMP differs from LogByteSizeMergePolicy in three ways. It can "merge non-adjacent segment[s]", it "separates how many segments are merged at once from how many segments are allowed per tier", and it "does not over-merge (i.e. cascade merges)". Source: [Lucene TMP javadoc 9.12](https://lucene.apache.org/core/9_12_0/core/org/apache/lucene/index/TieredMergePolicy.html).
+TMP differs from LogByteSizeMergePolicy in three ways. It can "merge non-adjacent segment[s]", it "separates how many segments are merged at once from how many segments are allowed per tier", and it "does not over-merge (that is, cascade merges)". Source: [Lucene TMP javadoc 9.12](https://lucene.apache.org/core/9_12_0/core/org/apache/lucene/index/TieredMergePolicy.html).
 
 **Lucene merge-on-refresh/commit (Lucene 8.7.0, `IndexWriterConfig.setMaxFullFlushMergeWaitMillis`)** [read]:
 - Purpose: merge tiny segments during commit/refresh so that the published point-in-time never references them.
@@ -44,7 +44,7 @@ Source: [McCandless, 2021-03-19](https://blog.mikemccandless.com/2021/03/open-so
 - A third-party blog claims p99 dropped from 120 to 45 ms with refresh_interval 30 s + a larger buffer + merge max_thread_count 1. Its quality is unverified and it is not a primary source: [markaicode](https://markaicode.com/benchmarks/elasticsearch-production-benchmark-latency/) [snippet].
 
 **Quickwit StableLogMergePolicy** [read]:
-- Defaults: merge_factor 10, max_merge_factor 12, min_level_num_docs 100,000, maturation_period 48h, split_num_docs_target 10,000,000. Source: [Quickwit index config](https://quickwit.io/docs/configuration/index-config).
+- Defaults: merge_factor 10, max_merge_factor 12, min_level_num_docs 100,000, maturation_period 48h, split_num_docs_target 10,000,000. Source: [Quickwit index configuration](https://quickwit.io/docs/configuration/index-config).
 - Source code: splits are sorted by recency and assigned to levels where `l_0 = 3 x min_level_num_docs` and `l_N = min(num_docs(split)*3, split_num_docs_target)`, so each level is at least 3x the previous one, giving a log scale. A split stops merging once it is mature (reaches the target size, or is older than maturation_period). Source: [stable_log_merge_policy.rs](https://github.com/quickwit-oss/quickwit/blob/main/quickwit/quickwit-indexing/src/merge_policy/stable_log_merge_policy.rs).
 - The docs only say that shorter commit timeouts produce smaller splits and more merge overhead. No published search-latency-vs-split-count number was found [read].
 
@@ -173,7 +173,7 @@ For sparse vectors specifically, Qdrant's mutable sparse index is an exact inver
   - Seal threshold = `dataCoord.segment.maxSize` (1024 MB) x `sealProportion` (0.12), which is about 123 MB.
   - Sparse fields support only SPARSE_INVERTED_INDEX / SPARSE_WAND.
   - The interim index "occupies CPU resources, which can affect search latency".
-  - Sources: [datacoord config](https://milvus.io/docs/configure_datacoord.md); [discussion 41890](https://github.com/milvus-io/milvus/discussions/41890); [discussion 35554](https://github.com/milvus-io/milvus/discussions/35554); [sparse index](https://milvus.io/docs/sparse-inverted-index.md).
+  - Sources: [datacoord configuration](https://milvus.io/docs/configure_datacoord.md); [discussion 41890](https://github.com/milvus-io/milvus/discussions/41890); [discussion 35554](https://github.com/milvus-io/milvus/discussions/35554); [sparse index](https://milvus.io/docs/sparse-inverted-index.md).
   - No latency numbers for brute-force growing-segment search were found.
 - **Turbopuffer (architecture doc)** [read]:
   - Every write adds a WAL file. There is 1 WAL entry per second per namespace, and concurrent writes are batched. Write latency is "p50=165ms for 500kB".
@@ -406,7 +406,7 @@ They take a list of (id, num_docs, deletes, time/size) and return groups to merg
 - Input is `quickwit_metastore::SplitMetadata` (num_docs, time range, maturity, ...).
 - The merge executor downloads and merges tantivy splits, so it is format-bound.
 - Source: [quickwit merge_policy/mod.rs](https://github.com/quickwit-oss/quickwit/blob/main/quickwit/quickwit-indexing/src/merge_policy/mod.rs).
-- GitHub reports the repo licence as Apache-2.0 [read].
+- GitHub reports the repository licence as Apache-2.0 [read].
 
 **Lucene** [inferred, from prior knowledge, not re-read this session]:
 - `MergePolicy.findMerges(MergeTrigger, SegmentInfos, MergeContext)` operates on Lucene `SegmentCommitInfo`. `IndexWriter` owns flush, merge execution, liveDocs and commit points.
@@ -423,7 +423,7 @@ They take a list of (id, num_docs, deletes, time/size) and return groups to merg
 
 **RocksDB (C++)** [read/inferred]:
 - Compaction styles plus user `MergeOperator` / compaction filters, operating on ordered KV SSTs [read: merge operator wiki].
-- Licence: GitHub API reports GPL-2.0 for the primary licence file. The repo is dual-licensed GPLv2 / Apache-2.0 [inferred from repo layout, not re-read].
+- Licence: GitHub API reports GPL-2.0 for the primary licence file. The repository is dual-licensed GPLv2 / Apache-2.0 [inferred from repository layout, not re-read].
 - Usable as an opaque-blob store but not as a manager of externally built index segments.
 
 **Formats bound to their own engines** [inferred from the architecture docs read above; none is shipped as a standalone library]:

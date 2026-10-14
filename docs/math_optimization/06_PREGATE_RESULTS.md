@@ -5,7 +5,7 @@
 > **UPDATE 2026-07-03 (same day, post-implementation):** the borderline-pass
 > caveat below was vindicated. The M2 Rust kernel was implemented and the
 > larger-n re-run **refuted the 0.99**: at n=100 (same footing, same-session
-> f32 control) int6 overlap@10 = **0.984 FAIL** vs control 0.991 — the n=40
+> f32 control) int6 overlap@10 = **0.984 FAIL** versus control 0.991 — the n=40
 > 0.99 was a small-n artifact. **M2 is NOT promoted** (env-gated OFF). The
 > Stage-0 GO verdict below stands as the correct cheap go-signal for the
 > *Rust edit*; the promotion verdict is `07_M2_IMPLEMENTATION_RESULTS.md`.
@@ -22,7 +22,7 @@ the math changes are worth a Rust edit.
 candidates per query (40 queries, K_PRIME=200, HEAP_FACTOR=0.8 — served
 defaults) on `global_shard0of8.mmap` (the f16-forward shard, 18.8M docs),
 re-scored in pure Python under integer-dot arithmetic (doc → FixedU8`<U6>`,
-query → N-bit int). overlap@10 of re-ranked list vs f32 baseline.
+query → N-bit int). overlap@10 of re-ranked list versus f32 baseline.
 
 | Mode | query bits | query int range | overlap@10 mean | overlap@10 min | overlap@50 mean | saturation | bar ≥0.99 |
 |---|---|---|---|---|---|---|---|

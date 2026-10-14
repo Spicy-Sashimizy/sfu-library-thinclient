@@ -23,7 +23,7 @@
 | Persona SEISMIC index builder | P1 | read `spool_backup` sparse_field → SEISMIC `index()`; param-match Qdrant recall@k |
 | `SFU_SPLADE_BACKEND=seismic` shim | P1 | drop-in next to `qdrant`/`bmp` in the retriever — Path A |
 | RAM-floor probe for SEISMIC | P2 | RssAnon + jemalloc-ctl before/after load; per-doc normalization |
-| Pruning probe | P2 | instrument SEISMIC traversal for candidates_scored/query on the 0.93M vs 2.0M shards |
+| Pruning probe | P2 | instrument SEISMIC traversal for candidates_scored/query on the 0.93M versus 2.0M shards |
 | (if P1/P2 green) 150M build harness | P4 | build full index; watch `MemAvailable` for OOM; record on-disk size |
 | (only if Path C) mmap forward/inverted store | P5 | SEISMIC blocks+summaries on an immutable mmap substrate read zero-decode — **default raw `memmap2`+`bytemuck` / `redb`** (the proven path; not tantivy; Lance only if dense unification becomes a goal). Term dict = mmap'd `fst`. The build; gate behind G9. See `01_ARCHITECTURE.md` Path C substrate table |
 | (Path B control) OpenSearch+SEISMIC re-index | P2/P4 | the JVM fallback baseline to beat on the ownership math |
@@ -32,10 +32,10 @@
 
 | Item | Phase | Notes |
 |---|---|---|
-| SEISMIC param map (λ, n-postings, block size, query-cut) → Qdrant-recall parity | P1 | match recall *first*, read latency *after* |
+| SEISMIC parameter map (λ, n-postings, block size, query-cut) → Qdrant-recall parity | P1 | match recall *first*, read latency *after* |
 | 150M host (≥64 GB for Qdrant baseline; SEISMIC build peak TBD) | P4 | the 31.6 GB host **cannot** hold Qdrant-150M (OOMs) — Path A/C build-peak must be measured before committing a host |
 | ECIR-2025 results tables (RAM/latency @138M) | P0/P4 | `arXiv:2501.11628` PDF didn't decode in fetch — pull the tables to set the G8 expectation |
-| SEISMIC on-disk/mmap status re-check before P5 | pre-P5 | the FOSS gap may close upstream; re-verify the repo before building Path C |
+| SEISMIC on-disk/mmap status re-check before P5 | pre-P5 | the FOSS gap may close upstream; re-verify the repository before building Path C |
 
 ## "Definition of ready" per phase
 
@@ -45,4 +45,4 @@
 - **P3:** P2 green (G3/G4); LLM-judge harness pointed at the SEISMIC backend.
 - **P4:** P3 green (G6); a ≥64 GB host secured; SEISMIC build-peak RAM measured at
   persona to project the 150M peak before committing the host.
-- **P5:** P4 green; the build-vs-buy numbers (Path C cost vs Path B value) in hand.
+- **P5:** P4 green; the build-vs-buy numbers (Path C cost versus Path B value) in hand.

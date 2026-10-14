@@ -143,70 +143,27 @@ const MOCK_DATABASES = [
 ];
 
 
+const ANALYTICS_OFFLINE = { status: "stub", reason: "live backend unavailable (demo mode), no figures shown" };
 const ANALYTICS = {
-  generated_at: null,
+  generated_for: "research_analytics_dashboard",
   panels: {
-    kpis: { status: "ok", documents: 150413098, snapshot: "June 2026 snapshot",
-            queries_30d: 18432, median_latency_ms: 71 },
-    ndcg_by_subject: { status: "ok", subjects: [
-      { subject: "Natural Sciences", ndcg: 0.58 },
-      { subject: "Health & Medicine", ndcg: 0.61 },
-      { subject: "Social Sciences", ndcg: 0.54 },
-      { subject: "Engineering & CS", ndcg: 0.59 },
-      { subject: "Arts & Humanities", ndcg: 0.49 },
-    ] },
-    reranker_signal: { status: "ok", source: "heuristic_weights", axes: [
-      { signal: "title_match", weight: 0.31 },
-      { signal: "abstract_match", weight: 0.24 },
-      { signal: "recency", weight: 0.15 },
-      { signal: "citation_count", weight: 0.12 },
-    ] },
-    position_bias: { status: "awaiting_click_data", curve: [] },
-    model_versions: { status: "ok", updated: null, models: {
-      reranker: "sfu-cross-encoder-v1-int8", parser: "Qwen3-1.7B", sparse: "SPLADE bert-base" } },
-    session_replay: { status: "awaiting_click_data", sessions: [] },
+    kpis: ANALYTICS_OFFLINE,
+    ndcg_by_subject: ANALYTICS_OFFLINE,
+    reranker_signal: ANALYTICS_OFFLINE,
+    position_bias: ANALYTICS_OFFLINE,
+    model_versions: ANALYTICS_OFFLINE,
+    session_replay: ANALYTICS_OFFLINE,
+    index_shape: ANALYTICS_OFFLINE,
+    embedding_drift: ANALYTICS_OFFLINE,
+    access_funnel: ANALYTICS_OFFLINE,
+    oa_equity: ANALYTICS_OFFLINE,
   },
 };
 
-
-const INDEX_STATUS = {
-  metrics: {
-    available: true,
-    live_sections: ["social_sciences__recent", "natural_sciences__recent"],
-    legs: { bm25f: { ms: 34 }, splade: { ms: 41 }, dense: { ms: 12 }, fusion: { ms: 6 } },
-    dense_cache: { cached_docs: 38412, cap: 500000, hit_rate: 0.62 },
-  },
-  pack: { packed_sections: [
-    { id: "social_sciences__recent", base: "social_sciences", era: "recent", docsM: 27.4, live_gb: 20.5, packed_gb: 9.8, ratio: "2.1x" },
-    { id: "social_sciences__archive", base: "social_sciences", era: "archive", docsM: 12.1, live_gb: 9.0, packed_gb: 4.3, ratio: "2.1x" },
-    { id: "natural_sciences__recent", base: "natural_sciences", era: "recent", docsM: 31.2, live_gb: 23.1, packed_gb: 10.9, ratio: "2.1x" },
-    { id: "health_medicine__recent", base: "health_medicine", era: "recent", docsM: 41.2, live_gb: 30.4, packed_gb: 14.2, ratio: "2.1x" },
-    { id: "engineering_cs__recent", base: "engineering_cs", era: "recent", docsM: 22.7, live_gb: 16.8, packed_gb: 7.9, ratio: "2.1x" },
-    { id: "arts_humanities__recent", base: "arts_humanities", era: "recent", docsM: 15.6, live_gb: 11.5, packed_gb: 5.4, ratio: "2.1x" },
-  ] },
-  unpack_jobs: {},
-};
-
-
-const PERSONAS = {
-  personas: {
-    all_hot: { hot: ["social_sciences__recent","natural_sciences__recent","health_medicine__recent","engineering_cs__recent","arts_humanities__recent"], kind: "Testbed · all sections hot", testbed: true },
-    political_science: { hot: ["social_sciences__recent"], kind: "Subject · recent era", testbed: false },
-    biomedical: { hot: ["health_medicine__recent"], kind: "Subject · recent era", testbed: false },
-    cs_ml: { hot: ["engineering_cs__recent"], kind: "Subject · recent era", testbed: false },
-  },
-  sections: ["natural_sciences","health_medicine","social_sciences","engineering_cs","arts_humanities"],
-  era_boundary_year: 2010,
-  live_sections: ["social_sciences__recent","natural_sciences__recent"],
-  cold_sections: ["health_medicine__recent","engineering_cs__recent","arts_humanities__recent"],
-  active_profile: "political_science",
-};
 
 window.SFUMock = {
   results: MOCK_RESULTS,
   databases: MOCK_DATABASES,
   analytics: ANALYTICS,
-  indexStatus: INDEX_STATUS,
-  personas: PERSONAS,
 };
 })();

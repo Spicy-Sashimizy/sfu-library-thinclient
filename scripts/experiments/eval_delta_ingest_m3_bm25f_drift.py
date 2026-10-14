@@ -581,7 +581,7 @@ def child(args) -> int:
 
 def snapshot_src(commit: str) -> Path:
     snap = WORK / f"code_{commit[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src | tar -x -C {snap}", shell=True)
         for name in ("models", "data", ".env"):
@@ -639,7 +639,7 @@ def drive(args) -> int:
         log = runs / f"{arm}_{part}.log"
         arm = f"{arm}:{part}"
         cmd = ["nice", "-n", "10", "taskset", "-c", cpus, sys.executable, str(local_harness),
-               "child", "--arm", arm.split(":")[0], "--src", str(snap / "src"),
+               "child", "--arm", arm.split(":")[0], "--src", str(snap / "source"),
                "--out", str(runs / f"{arm.replace(':', '_')}.json"),
                "--deadline", args.deadline, "--n-a", str(args.n_a), "--parts", part, "--ready", str(READY)]
         if args.a_start:

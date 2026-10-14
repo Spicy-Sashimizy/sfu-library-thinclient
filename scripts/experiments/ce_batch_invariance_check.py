@@ -43,7 +43,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "source"))
 
 QUERY = "lifestyle interventions delivered in primary care that prevent type 2 diabetes"
 WORDS = ("diabetes prevention primary care lifestyle intervention randomized trial cohort "

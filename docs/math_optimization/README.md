@@ -21,13 +21,13 @@ and the staged, pre-registered testing protocol.
 | Doc | What it is |
 |---|---|
 | `00_CONTEXT_AND_CORRECTIONS.md` | What this arc is, the corrections to earlier framing (math gate is GREEN, the failure is memory), and the source-of-truth hierarchy |
-| `01_KERNEL_AND_MATH_MAP.md` | The grounded kernel map: `DotVbyteFixedu8::dot_product` line-by-line, the three "thirds" (decode/gather/arith), the data types, the layout asymmetry, the objdump evidence (vpgatherdd=0), the build config |
+| `01_KERNEL_AND_MATH_MAP.md` | The grounded kernel map: `DotVbyteFixedu8::dot_product` line-by-line, the three "thirds" (decode/gather/arith), the data types, the layout asymmetry, the objdump evidence (vpgatherdd=0), the build configuration |
 | `02_DB_QUIRKS_JUSTIFYING_MATH_CHANGES.md` | The measured corpus properties (doc values ≤3.25 & non-negative, nnz mean 87.6, FixedU8Q fidelity 0.995, query cap 64, BMP u8×u8 precedent) that make integer-dot and query-shrink viable |
 | `03_INTERACTION_MAP.md` | What each math change (M1–M5) touches in files, whether it forces a shard rebuild, the ISA risk, the footguns (saturation, M5's 88× duplication blocker) |
 | `04_ISA_PORTABILITY_RULES.md` | *The iPhone/ARM discipline.* Full x86-intrinsic inventory, the x86→aarch64 instruction mapping (vpmaddubsw↔UDOT), the build-config rules, the cross-compile CI gate |
 | `05_TESTING_PROTOCOL.md` | The staged protocol (Stage 0 Python pre-gate → Stage 1 T1 bit-identical → Stage 2 E7 gates → Stage 3 150M serve → Stage 4 aarch64 parity), each with pre-registered bars and result-file conventions |
 | `06_PREGATE_RESULTS.md` | **MEASURED** pre-gate results: the `query_int` integer-dot pre-gate (M2 GO, overlap@10 0.99) + the aarch64 cross-compile status + the zero-gather inventory (76.7%). The borderline 0.99 was later refuted at n=100 — see 07 |
-| `07_M2_IMPLEMENTATION_RESULTS.md` | **MEASURED (2026-07-03)** M2 implementation verdict: kernel correct + portable + ~6% faster warm, but **gate a FAILS at n=100** (0.984 vs 0.99 bar; f32 control 0.991) → env-gated OFF, NOT promoted. Includes the M2b (i32-widen, 7-bit) revival path |
+| `07_M2_IMPLEMENTATION_RESULTS.md` | **MEASURED (2026-07-03)** M2 implementation verdict: kernel correct + portable + ~6% faster warm, but **gate a FAILS at n=100** (0.984 versus 0.99 bar; f32 control 0.991) → env-gated OFF, NOT promoted. Includes the M2b (i32-widen, 7-bit) revival path |
 | `08_FURTHER_MATH_CANDIDATES.md` | **PRE-REGISTERED 2026-07-05; M7 MEASURED-KILLED 2026-07-08** — the researched M6–M10 candidate map beyond 03's M1–M5: M6 VNNI/UDOT hardware integer dot (`vpdpbusd`↔`UDOT`, i32 accumulate kills the saturation that killed M2 — 7-bit query), M7 query-membership bitmap + intersection dot (**KILLED by the Stage-0 sim: all-miss-pack rate 0.194 <0.3 — hits anti-cluster**), M8 batched multi-candidate scoring (register blocking, quality-free), M9 shuffle-LUT (Quicker ADC lineage — poor-fit analysis recorded), M10 native-f16 (premise unverified). Includes the dotvbyte-index-DB impact table (only M9 would force re-conversion), leverage map, and external sources. **Order after 2026-07-08 Stage-0 results: E8 Stage-1 → M8 instrument → M2b → M6** (see TL;DR) |
 
 ## TL;DR (updated 2026-07-08)
@@ -35,7 +35,7 @@ and the staged, pre-registered testing protocol.
 - **Stage-0 results (2026-07-08, shards 1–2, n=100):** **M7 KILLED** —
   all-miss-pack rate 0.194 (<0.3 bar); query hits anti-cluster, the pack
   skip never fires (08 §M7, `data/eval_results/m7_pack_membership_sim_20260708.json`).
-  **E8 Stage-0 GO** — per-doc u8 scale 0.997/0.993 vs FixedU8Q 0.985/0.984
+  **E8 Stage-0 GO** — per-doc u8 scale 0.997/0.993 versus FixedU8Q 0.985/0.984
   (`data/eval_results/e8_stage0_perdoc_scale_20260708.json`). **Executing
   order is now E8 Stage-1 → M8 → M2b → M6** (08 §Recommended-order).
 
@@ -64,8 +64,8 @@ and the staged, pre-registered testing protocol.
   (`scripts/seismic_testbed/HOST_PROMPT_E7B_RAMCAP.md`).
 - **M2 (integer dot, query quantized to 6-bit) — IMPLEMENTED 2026-07-03,
   NOT PROMOTED.** The Rust kernel (`dot_product_int6`, `SFU_SEISMIC_M2_INT6`
-  env gate, default OFF) is correct (bit-matches the Python pre-gate model),
-  aarch64-clean, and ~6% faster warm (E7 gate b 0.930 vs 0.993 f32 control,
+  environment gate, default OFF) is correct (bit-matches the Python pre-gate model),
+  aarch64-clean, and ~6% faster warm (E7 gate b 0.930 versus 0.993 f32 control,
   n=100). But **gate a (parity) FAILS at n=100: overlap@10 0.984 < 0.99 bar**
   (f32 control 0.991 on the same queries — int6 costs −0.007). The n=40
   pre-gate 0.99 was a small-n artifact, as 06's borderline caveat warned.

@@ -41,19 +41,19 @@ This is the only compression worth doing for the build wall, and it's done at th
 **SPLADE model / ingestion** side, not in SEISMIC:
 
 1. Apply top-k masking (keep the k highest-weight terms/doc) or a higher DF-FLOPS
-   regularization to drop avg_nnz/doc from 76.7 toward a target (e.g. 40).
+   regularization to drop avg_nnz/doc from 76.7 toward a target (for example, 40).
 2. **Prune the Qdrant reference leg identically** — otherwise the G2 comparison is
    apples-to-oranges. This turns the exercise into a legitimate "do we ship a leaner
    SPLADE?" experiment, not a hack.
 3. Re-run G2 overlap@10 at the new nnz. Pre-registered: nnz reduction is only
    acceptable if overlap@10 does **not** fall materially below the current 0.479
-   (i.e. it must not make the already-failing quality worse). Record before→after.
+   (that is, it must not make the already-failing quality worse). Record before→after.
 
 ## Build steps (if pursued)
 
 1. Choose target nnz/doc; regenerate the sparse field with top-k masking.
 2. Rebuild a 2M persona index at the new nnz; measure peak RSS (confirm the linear
-   forward shrink) AND G2 overlap@10 vs an identically-pruned Qdrant.
+   forward shrink) AND G2 overlap@10 versus an identically-pruned Qdrant.
 3. If quality holds: build at scale (combine with Plan 01 sharding or Plan 02).
 4. For serving: enable `SeismicIndexDotVByte` for the ~12–22 % disk/page-cache win.
 

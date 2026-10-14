@@ -3,7 +3,7 @@
 
 Idempotent. Copies the Windows launcher + installer files to the bundle ROOT
 (CRLF for .bat/.ps1 so they behave on Windows) and refreshes the serving files
-touched by the search-queue work (web/ + the /health sequential flag in src/).
+touched by the search-queue work (web/ + the /health sequential flag in source/).
 Run this after 05/06 whenever the installer or those serving files change, then
 sync the changed files onto the USB.
 
@@ -26,10 +26,10 @@ ROOT_FILES = [
 ]
 RUNTIME_FILES = [
     ("web/search.js",                  "web/search.js",                  False),
-    ("web/src/search.jsx",             "web/src/search.jsx",             False),
+    ("web/source/search.jsx",             "web/source/search.jsx",             False),
     ("web/lib/api.js",                 "web/lib/api.js",                 False),
     ("web/lib/interface_prefs.js",     "web/lib/interface_prefs.js",     False),
-    ("src/sfu_library_mcp_http.py",    "src/sfu_library_mcp_http.py",    False),
+    ("source/sfu_library_mcp_http.py",    "source/sfu_library_mcp_http.py",    False),
 ]
 
 

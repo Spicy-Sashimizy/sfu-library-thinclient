@@ -14,9 +14,9 @@ documentation is `docs/README.md`.
 ## Run and test
 
 ```bash
-.venv/bin/python3 -m pytest -q              # whole suite: src/tests + scripts/tests (pytest.ini)
-.venv/bin/python3 -m pytest src/tests -q    # the fast half
-/usr/local/bin/ruff check src --select F    # unused imports / names
+.venv/bin/python3 -m pytest -q              # whole suite: source/tests + scripts/tests (pytest.ini)
+.venv/bin/python3 -m pytest source/tests -q    # the fast half
+/usr/local/bin/ruff check source --select F    # unused imports / names
 ```
 
 Some `scripts/tests` need the local index or a memory profile and skip or
@@ -33,7 +33,7 @@ substantial-change gate). Policy and the exact rules:
 1. **Code wins over docs.** If a doc contradicts the code, fix the doc in the
    same commit you noticed it.
 2. **Same-commit doc rule.** A commit that changes architecture, defaults,
-   measured numbers, env gates or file locations updates the affected doc in
+   measured numbers, environment gates or file locations updates the affected doc in
    that commit (`docs/THIN_CLIENT_SWAP.md`, `docs/STORAGE_BUDGET_150M.md`,
    `docs/README.md`, the `CODE_INVARIANTS*` ledgers).
 3. **Measured claims only.** A new module or lever is not done until its
@@ -49,7 +49,7 @@ substantial-change gate). Policy and the exact rules:
    `docs/README.md` row. `scripts/tests/test_doc_status.py` enforces the
    status vocabulary.
 6. **Moving files:** `git mv`, then repoint every citing path in the same
-   commit (`git grep -n '<name>' -- docs scripts spike web .claude src`).
+   commit (`git grep -n '<name>' -- docs scripts spike web .claude source`).
 7. **Git hygiene:** stage files explicitly (never `git add .` — the working
    tree holds multi-GB runtime state), commit immediately, push. Absolute
    dates only (2026-10-10, never "today").

@@ -44,7 +44,7 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 # The flipped served manifest (E8 dv-v2, 2026-07-14). Q12 used the E5 dv-v1
 # manifest; the v2 reconversion invalidated any prior sidecar, hence the rerun.

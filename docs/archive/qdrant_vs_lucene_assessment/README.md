@@ -1,12 +1,12 @@
 # Qdrant vs Lucene/OpenSearch — Sparse-Leg Assessment (2026-06-25)
 
-> **CLOSED SUPERSEDED 2026-07-06** — the "should we swap off Qdrant back to Lucene?" question was answered instead by promoting SEISMIC federated mmap (`docs/SEISMIC_ARCHIVE_SPLIT.md`). The RAM analysis and OOM findings remain the recorded evidence base for that move. Not current; do not resume.
+> **CLOSED SUPERSEDED 2026-07-06** — the "should we swap off Qdrant back to Lucene?" question was answered instead by promoting SEISMIC federated mmap (`docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md`). The RAM analysis and OOM findings remain the recorded evidence base for that move. Not current; do not resume.
 
 **Status:** CLOSED SUPERSEDED 2026-07-06
 
 > **Status note 2026-09-01:** this assessment predates the SEISMIC promotion —
 > since 2026-07-06 the served SPLADE backend is SEISMIC federated mmap
-> (`docs/SEISMIC_ARCHIVE_SPLIT.md`), with Qdrant as the env-gated rollback
+> (`docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md`), with Qdrant as the env-gated rollback
 > slated for the archival container. The RAM analysis and OOM findings below
 > remain the recorded evidence base for that move.
 

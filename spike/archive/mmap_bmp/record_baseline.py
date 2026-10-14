@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — STEP 1: record the load-into-RAM BMP baseline.
 
 Runs the CURRENT (stock, load-into-memory) `bmp.Searcher` over the existing test

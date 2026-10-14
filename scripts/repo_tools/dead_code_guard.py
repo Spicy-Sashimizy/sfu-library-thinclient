@@ -1,13 +1,13 @@
-"""Unreferenced-symbol guard for the product tree (src/ and web/lib), with an allowlist.
+"""Unreferenced-symbol guard for the product tree (source/ and web/lib), with an allowlist.
 
 Lifecycle: library
 Doc: docs/infrastructure/SCRIPT_HYGIENE_POLICY.md
 
-Every ``def``/``class`` in product Python (``src/`` outside ``src/tests/``)
+Every ``def``/``class`` in product Python (``source/`` outside ``source/tests/``)
 and every top-level ``function``/``window.X.y = `` export in ``web/lib/*.js``
 must be referenced by name somewhere other than its own definition line:
 inside its own file (a second occurrence of the identifier), or in another
-tracked file under ``src/ scripts/ spike/ web/ deploy/ .claude/`` that is
+tracked file under ``source/ scripts/ spike/ web/ deploy/ .claude/`` that is
 not a test and not under an ``archive/`` directory. A symbol whose only
 references are tests is reported as TEST-ONLY; one with no reference at all
 as DEAD. Both fail the guard unless ``dead_code_allow.json`` (next to this
@@ -31,8 +31,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 ALLOW = Path(__file__).resolve().with_name("dead_code_allow.json")
-REF_SCOPES = ("src/", "scripts/", "spike/", "web/", "deploy/", ".claude/")
-PRODUCT_PY = ("src/",)
+REF_SCOPES = ("source/", "scripts/", "spike/", "web/", "deploy/", ".claude/")
+PRODUCT_PY = ("source/",)
 PRODUCT_JS = ("web/lib/",)
 TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 JS_DEF = re.compile(r"^\s*(?:async\s+)?function\s+([A-Za-z_$][\w$]*)|^\s*window\.(?:SFUApi|SFUMock|SFUUI)\.([A-Za-z_$][\w$]*)\s*=", re.M)

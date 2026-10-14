@@ -580,7 +580,7 @@ def _query_records(topics: list[dict]) -> list[dict]:
 
 def cmd_pool(args) -> None:
     os.environ["SFU_DENSE_WARMCACHE"] = "0"      # never write into the served root
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.retriever import ThinClientRetriever
 
     root = Path(args.index_root).resolve()       # ABSOLUTE — see module docstring
@@ -697,7 +697,7 @@ def cmd_hydrate(args) -> None:
     weaker gradebook than the protocol deserves. Docs still missing an abstract
     after this stage are judged on title and flagged `title_only` in the qrels."""
     import requests
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.retriever import _invert_abstract
 
     docs = json.loads(DOCS_FILE.read_text())

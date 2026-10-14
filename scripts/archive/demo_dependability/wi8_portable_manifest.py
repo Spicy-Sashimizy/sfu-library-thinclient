@@ -44,7 +44,7 @@ def _probe_imports() -> dict:
     excluded — the manifest is what a Qdrant-free bundle needs)."""
     probe = r'''
 import os, sys, json, importlib.metadata as md
-sys.path.insert(0, "src")
+sys.path.insert(0, "source")
 os.environ.setdefault("SFU_DEMO_STAGING_PORT", "0")  # not binding a port
 # Configure the Qdrant-free seismic serve path the bundle targets:
 os.environ["SFU_SPLADE_BACKEND"] = "seismic"          # NOT qdrant
@@ -175,7 +175,7 @@ def _staging_probe() -> dict:
     served-default flip. Reports what actually happened (the F6 honest verdict)."""
     probe = r'''
 import os, sys, json, importlib, importlib.util
-sys.path.insert(0, "src")
+sys.path.insert(0, "source")
 # Qdrant-free path:
 os.environ["SFU_SPLADE_BACKEND"] = "seismic"
 os.environ["SFU_SEISMIC_FEDERATION"] = "parallel"

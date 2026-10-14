@@ -24,7 +24,7 @@ Earlier framing: "the failed 22% is pure matrix-math cost."
 
 **Corrected:** the math gate (gate b) **PASSED on 2026-07-03** via the free
 native rebuild — `warm_p50_ratio = 0.957` (bar ≤1.07), dotvbyte warm p50
-1.995 ms vs f16 baseline 2.084 ms (dotvbyte is now *faster* than f16).
+1.995 ms versus f16 baseline 2.084 ms (dotvbyte is now *faster* than f16).
 See `data/eval_results/seismic_e7_RECLEAR_VERDICT.json`
 (`final_same_footing_verdict_2026-07-03`, pinned to deliverable Arm E1).
 
@@ -77,7 +77,7 @@ Earlier framing asserted "~7% query/doc overlap" and "~90% zero FMA lanes."
   `data/eval_results/seismic_e6_forward_codec_proto_20260702_2346.json`
   → `phase_a_stats`.
 - "~7% overlap" is **not a code/repo-cited figure.** The "~7%" string in the
-  repo refers to Qdrant index *page-cacheability*
+  repository refers to Qdrant index *page-cacheability*
   (`docs/archive/bmp_decommission_plan/DO_SIZING.md:17`, `docs/THIN_CLIENT_SWAP.md:506`),
   not query/doc term overlap. Marked `*est.*`.
 - "~90% zero FMA lanes" was **not measured anywhere** — a conceptual

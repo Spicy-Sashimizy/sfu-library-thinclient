@@ -44,7 +44,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 SRC = Path("/home/vscode/work/delta_ingest/foldin/fixture_n8")
 DEST = Path("/home/vscode/work/delta_ingest/foldin/fixture_n8_del")

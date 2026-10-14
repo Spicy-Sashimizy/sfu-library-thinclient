@@ -12,7 +12,7 @@ validation build (`data/thinclient_1m`), full method detail in
 
 | Component | As built | Lever | After | Notes |
 |---|---|---|---|---|
-| BMP SPLADE shards | 167.6 GB | bsize 256 + clustered (section, top-SPLADE-term) insertion | **76.7 GB** | −54.2% at recall@50 0.967 vs 0.966; also −61% query latency |
+| BMP SPLADE shards | 167.6 GB | bsize 256 + clustered (section, top-SPLADE-term) insertion | **76.7 GB** | −54.2% at recall@50 0.967 versus 0.966; also −61% query latency |
 | tantivy BM25F | 44.5 GB | clustered ordering tested: **+0.7% — null result, not adopted** | 44.8 GB | tantivy already delta/bit-packs postings; ordering didn't help |
 | Abstract sidecar | 64.7 GB | clustered 32 KB blocks + per-(section×language) zstd-19 dicts (3.42×) | **52.9 GB** | bit-exact; 100-doc rerank fetch ≪ 300 ms budget |
 | meta.sqlite | 24.1 GB | numeric PK (W-id digits) + dict-zstd titles/DOIs + enum-int type/section (1.679×) | **14.4 GB** | round-trip verified 200/200 |
@@ -34,8 +34,8 @@ sub-sections packed): **≈ 104 GB** on disk — hot live 34.0 GB (incl. 26.3M
 abstracts), packed cold 45.0 GB (live 84.3 GB → **1.875×** aggregate, range
 1.86–2.01×), `meta.sqlite` **24.9 GB**, dense 0.36 GB. Excludes the reclaimable
 131 GB `spool_backup/` build intermediate. The 1.875× ratio confirms the est.
-below that b256 packs under the 2.10× bsize-32 figure; the +9 GB vs the ≈ 95 GB
-estimate is entirely `meta.sqlite` (24.9 GB built vs 14 GB assumed). Source:
+below that b256 packs under the 2.10× bsize-32 figure; the +9 GB versus the ≈ 95 GB
+estimate is entirely `meta.sqlite` (24.9 GB built versus 14 GB assumed). Source:
 `data/thinclient_index/manifest.json`, `logs/migration_150m.log` (DONE
 2026-06-16T03:00:21).
 
@@ -60,7 +60,7 @@ shards resident at once → **~211 GB**. Every other leg is mmap/paged and serve
 > **UPDATE (2026-07-14):** the SPLADE leg serves **SEISMIC** (not Qdrant — that
 > narrative above is historical), and as of the E8 dv-v2 flip (`fcfcfb2`) the
 > served shards are `global_shard{0..7}of8.dotvbyte.e5.v2.mmap` (~5.54 GB each,
-> ~44 GB total; **+0.67%** vs the v1 e5 dv shards). Both v2.e5 **and** v1.e5
+> ~44 GB total; **+0.67%** versus the v1 e5 dv shards). Both v2.e5 **and** v1.e5
 > (+ plain-dv) shard sets are retained on disk as the one-env rollback ladder,
 > so seismic index storage is currently ~2× the served set until an older set is
 > reclaimed. See `docs/THIN_CLIENT_SWAP.md` + `seismic_150m_testbed/12` §3 Q1.
@@ -91,9 +91,9 @@ no dup id field (−1.0%).
 
 ## 2. BMP matrix (100k real docs, production SPLADE vectors, alpha=0.8)
 
-| variant | B/doc | vs b32/corpus | ms/q | recall@50 vs exact |
+| variant | B/doc | versus b32/corpus | ms/q | recall@50 versus exact |
 |---|---|---|---|---|
-| b32 corpus (paper config, first build) | 1404.8 | — | 27.2 | 0.966 |
+| b32 corpus (paper configuration, first build) | 1404.8 | — | 27.2 | 0.966 |
 | b32 clustered | 1160.1 | −17.4% | 13.3 | 0.960 |
 | b64 clustered | 961.9 | −31.5% | 14.1 | 0.962 |
 | b128 clustered | 789.5 | −43.8% | 13.6 | 0.966 |
@@ -117,13 +117,13 @@ no dup id field (−1.0%).
 
 Measured head-to-head on the same 20k abstracts: mainline-style storage
 (16 KB zstd-6 blocks, no trained dict ≈ Lucene stored-fields format) =
-**546.0 B/doc**; the recommended sidecar config = **351.8 B/doc** → the new
+**546.0 B/doc**; the recommended sidecar configuration = **351.8 B/doc** → the new
 tech beats the mainline's existing optimization by **35.6%**.
 
 | Mainline state | @150M | Degradation |
 |---|---|---|
 | Original live index | 274 GB | — |
-| Existing lossless config (`combined2`) | 141.3 GB | none (80/80 score parity, measured 2026-06-10) |
+| Existing lossless configuration (`combined2`) | 141.3 GB | none (80/80 score parity, measured 2026-06-10) |
 | + abstracts externalized into the recommended sidecar | **≈ 112 GB** | **zero ranking change** (extern_display variant measured score-identical; sidecar bit-exact). Operational: sidecar joins the update pipeline; `_reindex` can no longer rebuild abstracts from the index alone |
 | + BP doc-ID reordering (only untested lever left) | ≈ 106–111 GB *est.* | lossless (equal-score tie order only) |
 
@@ -136,9 +136,9 @@ all-live / ~10 GB persona steady.
 ## 4. Degradation accounting (why "lossless" is justified)
 
 - Stored text: SHA-256 bit-exact round trips (abstracts, titles, DOIs).
-- IDs: exact integer encodings (delta-varint 2.66 B/id, 4.5× vs raw).
+- IDs: exact integer encodings (delta-varint 2.66 B/id, 4.5× versus raw).
 - BMP bsize/ordering: changes storage layout, not stored scores; recall@50
-  0.967 vs 0.966 baseline at the production alpha=0.8.
+  0.967 versus 0.966 baseline at the production alpha=0.8.
 - Doc reordering: scores order-invariant; only equal-score tie order shuffles
   (same accepted caveat as force_merge in the original evals).
 - Pre-existing (independent of these levers, previously validated): BMP 8-bit

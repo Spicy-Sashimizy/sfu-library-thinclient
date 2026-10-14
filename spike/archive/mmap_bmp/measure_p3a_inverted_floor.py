@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — P3a (evidence-only): the inverted-side anon floor (ledger row 4).
 
 The zero-decode cure (R3-v2) relaid the FORWARD index as mmap'd POD and got

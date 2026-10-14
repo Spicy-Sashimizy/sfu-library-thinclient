@@ -1,0 +1,249 @@
+.pommel/
+.pommel
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Python virtual environment
+.venv/
+
+# Spike scratch space (vendored external crates, Rust target/, throwaway builds —
+# never commit; lives on the 9p C: mount under the repo path).
+.scratch/
+
+
+# ============================================
+# CLAUDEBOX SECRET PROTECTION - .gitignore
+# ============================================
+# This file protects sensitive information from being committed to git.
+# Add this to your project's .gitignore file.
+
+# ============================================
+# CREDENTIALS & SECRETS
+# ============================================
+
+# Environment files
+.env
+.env.*
+*.env
+.envrc
+
+# API Keys & Tokens
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*_rsa
+*_rsa.pub
+*_dsa
+*_dsa.pub
+*_ecdsa
+*_ecdsa.pub
+*_ed25519
+*_ed25519.pub
+
+# OAuth & Credentials
+credentials.json
+oauth*.json
+client_secret*.json
+service_account*.json
+*credentials*.json
+*secrets*.json
+*token*.json
+auth.json
+config.secret.json
+secrets.yaml
+secrets.yml
+
+# AWS
+.aws/
+aws_credentials
+*.aws
+
+# Azure
+.azure/
+azure.json
+azure-credentials.json
+
+# GCP/Google Cloud
+gcloud/
+application_default_credentials.json
+*.gcp.json
+
+# Database
+*.sqlite
+*.db
+database.yml
+database.json
+
+# ============================================
+# SENSITIVE DIRECTORIES
+# ============================================
+
+credentials/
+secrets/
+private/
+.secrets/
+.private/
+.credentials/
+certs/
+
+# ============================================
+# COMMON SENSITIVE PATTERNS
+# ============================================
+
+# Config files that might contain secrets
+*config.local.*
+*config.prod.*
+*config.production.*
+settings.local.*
+local_settings.*
+*.local.json
+*.local.yaml
+*.local.yml
+
+# Backup files (may contain secrets)
+*.bak
+*.backup
+*.old
+*~
+
+# ============================================
+# IDE & EDITOR SECRETS
+# ============================================
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+
+# JetBrains
+.idea/
+*.iml
+
+# ============================================
+# CLAUDEBOX SPECIFIC
+# ============================================
+
+# Pommel cache (contains file paths)
+.pommel
+
+# Local overrides
+*.local
+
+
+# Session logs (contain PII like names/emails)
+202[0-9]-*.txt
+
+# Stale backup files
+*.backup[0-9]*
+*.before-fix
+*.pre-fix-backup
+
+# deploy local configs (may contain domains/ports/tokens — keep out of git)
+deploy/**/config.env
+
+# Trained model artifacts (large, regeneratable)
+models/sfu-academic-embed-*/
+logs/
+
+# OpenAlex API response cache (regenerated on demand)
+data/openalex_eval_cache.json
+
+# Q3.1 mined hard negatives (large, regeneratable via scripts/mine_hard_negatives.py
+# + scripts/merge_negatives.py against the local OpenSearch index)
+data/training/
+
+# Training artifacts from the earlier training pipeline — not needed in this
+# repository (removed 2026-06-26). Regeneratable from the training pipeline.
+data/sfu_training_triplets.clean.jsonl
+data/splits/
+data/vram_reserve.json
+
+.claude/.session_start_head
+.claude/.preflight_stamp.json
+
+# Pommel daemon binaries (53 MB, provisioned by ClaudeBox — not source)
+.pommel-bin/
+
+# Runtime state mutated by every server/eval/migration run — never commit.
+# (Blanket `git add .` staging of files like these produced ~47 GB of
+# orphaned git objects; see the CLAUDE.md staging rule.)
+benchmark_results.json
+data/solr_cache.json
+data/eval_results/llm_judge_cache.json
+data/openalex_snapshot/download_checkpoint.json
+data/openalex_snapshot/indexer_checkpoint.json
+data/openalex_cite_cache.json
+spike/seismic_upstream/
+spike/ebpf_pagecache/cache_ext_upstream/
+# SEISMIC 150M served artifacts (8-shard mmap dirs + G7 sources + section
+# spool) — 66 GB+ of regenerable index artifacts. Persistent on disk (survives
+# /tmp wipes), never committed. See docs/seismic_150m_testbed/ + the C2.5 manifest.
+data/seismic_150m/index/
+data/seismic_150m/jsonl/
+
+# repo-hygiene 2026-07-17 (REPO_AUDIT)
+.qdrant-initialized
+.tools/
+.handoff_extract/
+*_temp.onnx
+*.data
+benchmark_optimization_results.json
+scripts/sweep_interaction_log.txt
+tmpclaude-*
+
+# GUI testbed (deployprep wave 6, WI-16): trace zips stay local (multi-MB),
+# only failure screenshots are committed as evidence. The static_server is
+# ephemeral. See scripts/gui_testbed/.
+data/eval_results/gui_testbed_artifacts/**/*.trace.zip
+scripts/gui_testbed/sweep_interaction_log.txt
+
+# Spike build artifacts (indexes, DBs) — multi-hundred-MB, rebuildable
+spike/*/work/
+spike/*/work_lance/
+spike/*/.venv-lance/
+spike/*/work_n5/
+spike/*/work_ordinals/
+spike/*/work_ordinals_full/
+
+# repo-hygiene 2026-08-14: runtime state + regenerable artifacts
+# Runtime state mutated by every serve/watchdog run — never commit
+data/eval_results/serve_query_log.jsonl
+data/watchdog_status.json
+# Q11-C4 distillation training set (53 MB, regenerable via
+# scripts/seismic_testbed/q11_c4_build_distill_set.py; campaign KILLED 2026-07-28)
+data/eval_results/_q11_c4_distill_set.jsonl
+# Local index/spike build outputs (multi-GB, rebuildable)
+data/thinclient_index/
+data/qdrant_spike/
+# Model artifacts (large, regeneratable/downloadable — models/ keeps only
+# small tracked root files)
+models/sfu-cross-encoder-*/
+models/sfu-splade-*/
+models/splade_onnx*/
+models/trt_engine_cache/
+# JS deps (web tooling)
+node_modules/
+
+# ---- Dev harness: Claude Code / ClaudeBox / Pommel ----
+# The software is source/ scripts/ web/ spike/ docs/ data/eval_results/. The
+# container, dashboards, code-search sidecar and host launchers are the
+# owner's local tooling and are not part of the public tree.
+.claude/prompts/
+.claude/settings.local.json
+.claudebox/
+.devcontainer/
+docker-compose.pommel.yml
+.pommelignore
+launchers/
+docs/infrastructure/POMMEL_ACCESS.md
+docs/infrastructure/HOST_BROWSER_ACCESS.md
+docs/deprecated/POMMEL_SETUP_GUIDE.md
+deploy/truenas_monitor/
+.git-crypt/
+/.env.example
+/.env.template

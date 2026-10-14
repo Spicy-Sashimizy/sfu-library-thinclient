@@ -22,7 +22,7 @@ loads it, and measures parity, correctness and cost.
 
 ## 1. How livedocs works today (code reading, 2026-10-01)
 
-- Bitset: one bit per base ordinal (`src/lib/thinclient/livedocs.py`; ordinal =
+- Bitset: one bit per base ordinal (`source/lib/thinclient/livedocs.py`; ordinal =
   dense address over the base `meta.sqlite`, sorted by W-id number). Written by
   `spike/delta_ingest/livedocs.py` at publish, named in `generations.json`.
 - Serving: `DeltaLayer.attach_seismic` installs `shard_result_filter` as the

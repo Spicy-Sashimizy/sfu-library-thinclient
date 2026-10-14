@@ -1,33 +1,36 @@
+# Regenerated 2026-10-12 from the imports of source/ and scripts/ (scripts/tests/test_requirements_cover_imports.py pins this)
 # Core MCP server
-mcp>=1.26.0
-requests>=2.31.0
-starlette>=0.40.0
-uvicorn>=0.40.0
-pydantic>=2.0.0
+mcp>=1.26
+requests>=2.32
+starlette>=0.52
+uvicorn>=0.40
 
 # Zotero integration
-pyzotero>=1.5.0
-
-# Search reranking
-rank_bm25>=0.2.2
+pyzotero>=1.10
 
 # Embedding models for local semantic reranking
-sentence-transformers>=3.0.0
-onnxruntime>=1.17.0
-optimum[onnxruntime]>=1.17.0
-numpy>=1.24.0
+sentence-transformers>=5.4
+torch>=2.6
+transformers>=4.57
+onnxruntime>=1.26
+optimum[onnxruntime]>=2.1
+numpy>=2.4
 
 # Testing
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
+pytest>=9.0
+pytest-asyncio>=1.3
 
 # Thin-client search stack (no-JVM serving backend)
-tantivy>=0.26.0
-bmp>=0.2.6
-usearch>=2.20.0
-zstandard>=0.22.0
-orjson>=3.9.0
+tantivy>=0.26
+usearch>=2.25
+zstandard>=0.25
+orjson>=3.11
+# seismic (pyseismic-lsr 0.4.0): NOT from PyPI. Built locally from the patched fork, see docs/REPRODUCIBILITY.md §3 (spike/seismic_upstream + spike/seismic_upstream_fork.patch).
 
-# Storage/compression evals
-brotli>=1.1.0
-py3langid>=0.3.0
+# Demo broker (scripts/demo_broker)
+fastapi>=0.129
+cryptography>=46.0
+
+# Evals (optional; scripts/experiments storage/compression harnesses, not needed to serve)
+brotli>=1.2
+py3langid>=0.3

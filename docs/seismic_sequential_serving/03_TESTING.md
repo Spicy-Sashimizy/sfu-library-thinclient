@@ -24,9 +24,9 @@ the parallel path's code or fixtures beyond reading the shared **read-only** sha
 | ID | Asserts | How | Pass bar |
 |---|---|---|---|
 | **T1 Result-equivalence** | sequential top-k ≡ parallel top-k (same query, same k′) | run both modes over the same query set, compare merged top-50 sets + scores | **bit-identical** (the merge-by-raw-score order-independence proof, `01_ARCHITECTURE.md`) |
-| **T2 RAM-bounded** | peak resident ≈ ~1 shard, not ~8 | `/proc/self/status` RssFile high-water across a query stream, sequential vs parallel | sequential peak materially < parallel peak; **near ~1-shard** with mechanism (B) |
+| **T2 RAM-bounded** | peak resident ≈ ~1 shard, not ~8 | `/proc/self/status` RssFile high-water across a query stream, sequential versus parallel | sequential peak materially < parallel peak; **near ~1-shard** with mechanism (B) |
 | **T3 Swap-free** | no anon paged to swap on the 31.6 GB box | sample `VmSwap` across the stream | **VmSwap stays 0** (the whole point — no swap-storm) |
-| **T4 No silent fallback** | missing `.mmap/` dir never silently re-loads stock Path-A | point manifest at an absent mmap dir | raises `RuntimeError`, does **not** load |
+| **T4 No silent fallback** | missing `.mmap/` directory never silently re-loads stock Path-A | point manifest at an absent mmap directory | raises `RuntimeError`, does **not** load |
 | **T5 Degrade contract** | a backend failure degrades to the BM25F leg | inject an encode/search failure | RRF still fuses other legs; no crash |
 | **T6 Encode/traverse split** | `search_with_timing` attributes sequential runs | run the timed path in sequential mode | returns `(results, encode_ms, traverse_ms)`; traverse = Σ per-shard |
 
@@ -45,7 +45,7 @@ for q in queries:
     assert all(abs(s-p) < 1e-6 for (_,s),(_,p) in zip(seq, par))
 ```
 
-A mismatch is a real bug (e.g. an off-by-one in the merge or a dropped shard), not
+A mismatch is a real bug (for example, an off-by-one in the merge or a dropped shard), not
 an approximation — this is a hard equality gate.
 
 ## T2/T3 in detail — the RAM win, measured not assumed

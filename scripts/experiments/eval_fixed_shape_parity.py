@@ -22,7 +22,7 @@ Passes, in order:
   ON    gate ON (SFU_SEARCH_SPECULATIVE_RERANK=1)      -> arm (iii)
 Then, with no index access, on the fused list captured in pass OFF:
   OLD   the pre-change scoring (arm (i)): ``lib.embedding.compute_similarity``
-        replaced by the version at git BASE (``git show BASE:src/lib/embedding.py``
+        replaced by the version at git BASE (``git show BASE:source/lib/embedding.py``, or ``BASE:src/lib/embedding.py`` for a base before 2026-10-13,
         executed as a separate module) and ``lib.reranker._ce_score_pairs``
         replaced by BASE's one-line call ``ce.predict(pairs).tolist()`` —
         the only two scoring lines that changed in lib/reranker.py.
@@ -57,7 +57,7 @@ from datetime import date
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 TOPICS = REPO / "data/eval_results/dense_ablation_qrels_20260817.json"
 DATE = date.today().isoformat()
@@ -84,10 +84,13 @@ def ids(docs):
 
 
 def load_base_embedding(base: str):
-    src = subprocess.check_output(["git", "-C", str(REPO), "show", f"{base}:src/lib/embedding.py"], text=True)
+    rel = "source/lib/embedding.py"
+    if subprocess.run(["git", "-C", str(REPO), "cat-file", "-e", f"{base}:{rel}"], capture_output=True).returncode != 0:
+        rel = "src/lib/embedding.py"
+    src = subprocess.check_output(["git", "-C", str(REPO), "show", f"{base}:{rel}"], text=True)
     mod = types.ModuleType("base_embedding")
-    mod.__file__ = str(REPO / "src/lib/embedding.py")
-    exec(compile(src, f"{base}:src/lib/embedding.py", "exec"), mod.__dict__)
+    mod.__file__ = str(REPO / "source/lib/embedding.py")
+    exec(compile(src, f"{base}:{rel}", "exec"), mod.__dict__)
     return mod
 
 

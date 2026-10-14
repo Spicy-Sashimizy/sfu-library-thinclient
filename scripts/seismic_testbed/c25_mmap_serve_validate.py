@@ -95,8 +95,8 @@ def main() -> int:
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-    # Make src/ importable for lib.opensearch_retriever.encode_splade.
-    sys.path.insert(0, str(REPO_ROOT / "src"))
+    # Make source/ importable for lib.opensearch_retriever.encode_splade.
+    sys.path.insert(0, str(REPO_ROOT / "source"))
 
     import numpy as np  # noqa: E402
     import seismic  # noqa: E402

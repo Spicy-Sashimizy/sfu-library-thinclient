@@ -6,8 +6,8 @@ campaign) or hand-driven.
 
 ## Phase 0 — container birth (one session)
 1. Copy this seed: `bash /workspaces/sfu-library-thinclient/scaffold/portable_client_seed/import_fixtures.sh <this-repo-root>`
-   (imports goldens + manifest + spec snapshots; then `mv` seed docs into
-   place: CLAUDE.md → repo root, CONTRACT.md, BOOTSTRAP_PLAN.md → `docs/`).
+   (imports goldens + manifest + specification snapshots; then `mv` seed docs into
+   place: CLAUDE.md → repository root, CONTRACT.md, BOOTSTRAP_PLAN.md → `docs/`).
 2. `cargo init --name sfu-portable` workspace: crates `parity` (the differ),
    `orchestrate` (RRF/dispatch/hydration, empty), `bundle` (updater, empty).
 3. `.gitignore`: `/artifacts/`, `/bundles/`, `target/`, imported binaries.
@@ -16,7 +16,7 @@ campaign) or hand-driven.
 ## Phase 1 — parity harness BEFORE features
 5. `parity` crate: load `fixtures/topk_goldens_*/`, run the seismic crate
    (git dep on the oracle's fork) over an imported shard, diff (id, score)
-   bit-exact. Bar: green vs native goldens on x86-64-v3 build.
+   bit-exact. Bar: green versus native goldens on x86-64-v3 build.
 6. CI (GitHub Actions): fmt + clippy + parity-on-fixture-stub per PR.
 
 ## Phase 2 — the cross-build probe (the iPhone-hypothesis gate)
@@ -37,7 +37,7 @@ campaign) or hand-driven.
     chunked fetch. Fixture-bundle proof like the oracle's 2026-07-17 run.
 
 ## Open decisions to force early (do not let them drift)
-- Windows: native port vs Linux/WSL2-only (halves or doubles scope).
+- Windows: native port versus Linux/WSL2-only (halves or doubles scope).
 - Model licenses (SPLADE/dense) — blocker for ANY public handout.
 - Subset corpus: blocked on oracle-side host-tier spool re-export +
   `cited_by_count` (oracle doc 16) — the client can be built and gated

@@ -76,7 +76,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 from spike.inplace_update import prep  # noqa: E402
 from spike.inplace_update.shard import ShardView, load_token_to_id  # noqa: E402

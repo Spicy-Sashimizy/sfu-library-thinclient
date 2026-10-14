@@ -6,7 +6,7 @@ The main goal is to provide a unified dataset/encoder interface that can be shar
 [Seismic](https://github.com/TusKANNy/seismic) and [kANNolo](https://github.com/TusKANNy/kannolo).
 
 If you are new to KNN: *exhaustive* KNN searches score every vector in the dataset and return the top‑k closest results.
-That is accurate but slow at scale. ANN indexes (HNSW, IVF, Seismic, etc.) trade a bit of accuracy for speed by building extra data structures (e.g., proximity graphs, inverted indexes) on top of the same dataset/encoder primitives.
+That is accurate but slow at scale. ANN indexes (HNSW, IVF, Seismic, etc.) trade a bit of accuracy for speed by building extra data structures (for example, proximity graphs, inverted indexes) on top of the same dataset/encoder primitives.
 
 Vectorium includes an exhaustive search API (`Dataset::search`) and a binary executable for ground-truth computation on CPU. For state‑of‑the‑art ANN indexing, use these tools: [Seismic](https://github.com/TusKANNy/seismic) and [kANNolo](https://github.com/TusKANNy/kannolo).
 

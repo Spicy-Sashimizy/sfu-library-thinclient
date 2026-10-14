@@ -21,7 +21,7 @@ in ≈ 162 s (244 s with the driver's verify step, whose cost is the one-time
 query-model load), serve check PASS
 (`data/eval_results/reproduce_openalex_50k_2026-10-10.json`).
 
-Rules: the work dir must be local disk outside the repo's `data/` tree; the
+Rules: the work directory must be local disk outside the repository's `data/` tree; the
 driver forces one generation per run (`--flush-docs`/`--buffer-max-docs`
 raised), so keep a run under ~1 M works on a 32 GB host (*est.*); it needs
 the two Rust tools under `spike/seismic_upstream/target/release/` and the

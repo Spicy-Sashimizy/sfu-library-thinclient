@@ -63,11 +63,11 @@ import numpy as np
 import scipy.sparse as sp
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "source"))
 log = logging.getLogger("bm25seismic.tantivy_splade")
 
 # Mirrors the repo's BMP u8 impact constant (QUANT_SCALE=70, see
-# src/lib/thinclient/CLAUDE.md) so the quantisation is the one this project
+# source/lib/thinclient/CLAUDE.md) so the quantisation is the one this project
 # already validated for sparse impacts, not an arbitrary choice.
 QUANT_SCALE = 70
 SPLADE_QUERY_TERMS = 64        # retriever.py's serve constant

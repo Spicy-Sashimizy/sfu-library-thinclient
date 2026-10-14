@@ -182,7 +182,7 @@ time below is INVALID as a throughput number.
 
 ## O15 — AbstractStore read-only by construction
 
-- **Defect.** `AbstractStore.__init__` (`src/lib/thinclient/abstracts.py`)
+- **Defect.** `AbstractStore.__init__` (`source/lib/thinclient/abstracts.py`)
   connected with `sqlite3.connect(str(path))` — read-write; any stray write
   statement on a reader (serving, seed, evals) would modify a served sidecar.
 - **Test (failing first).** `scripts/tests/test_abstract_store_readonly.py`
@@ -198,7 +198,7 @@ time below is INVALID as a throughput number.
   PRAGMA table_info (checked). Invariant added to `docs/CODE_INVARIANTS.md`
   §abstracts.py. Regression suites green: test_abstract_locator,
   test_build_resume, test_flat_block_builder, test_thinclient_stack,
-  src/tests/test_thinclient, test_delta_seed, test_delta_serving_fixes,
+  source/tests/test_thinclient, test_delta_seed, test_delta_serving_fixes,
   test_delta_ingest (131 tests, 2026-10-01).
 - **Residual.** A sidecar left with a hot rollback journal can no longer be
   recovered by a reader (read-only cannot roll back); it errors instead of

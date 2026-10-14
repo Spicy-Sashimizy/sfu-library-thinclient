@@ -21,7 +21,7 @@ Measures (records to data/eval_results/):
     neighbour agreement on the benchmark texts
 
 Serving: models/sfu-academic-embed-v5-onnx-int8 is consumed by the
-`SFU_DENSE_ENCODER_ONNX=1` gate in src/lib/thinclient/dense_cache.py
+`SFU_DENSE_ENCODER_ONNX=1` gate in source/lib/thinclient/dense_cache.py
 (default OFF; docs/ENV_GATES.md).
 
 Usage:

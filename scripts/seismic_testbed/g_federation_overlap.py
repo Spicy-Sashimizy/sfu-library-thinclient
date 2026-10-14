@@ -47,7 +47,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from eval_seismic_parity import overlap, load_queries  # noqa: E402

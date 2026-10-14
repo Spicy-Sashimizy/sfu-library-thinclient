@@ -1,4 +1,4 @@
-/* AUTO-GENERATED from src/analytics.jsx by scripts/build_web.mjs — do not edit. */
+/* AUTO-GENERATED from source/analytics.jsx by scripts/build_web.mjs — do not edit. */
 const NIcon = ({
   name,
   size = 16,
@@ -1419,48 +1419,82 @@ const Icon = ({
     }
   }, I[name] || null);
 };
-const DISCLOSURES = [{
-  id: 1,
-  tone: "warn",
-  icon: "database",
-  title: "One source — and it has a shape",
-  what: "Everything searchable comes from a single OpenAlex snapshot (June 2026). OpenAlex is strong on journal articles and conference papers, and noticeably thin on books, theses, grey literature, humanities monographs, and non-English venues.",
-  matters: "If a work isn't in that snapshot, no search here can surface it — no matter how you phrase the query.",
-  todo: "For books and humanities, also use the library catalogue and subject databases."
-}, {
-  id: 2,
-  tone: "warn",
-  icon: "globe",
-  title: "Tuned for English",
-  what: "The semantic model (a bert-base-uncased SPLADE encoder) and every section's vocabulary are English-only. Meaning-based matching effectively doesn't apply to other languages.",
-  matters: "Scholarship in other languages — including Indigenous-language work and non-English-venue research — ranks lower or is missed entirely.",
-  todo: "Search your key terms in the source language too, and lean on language-specific databases."
-}, {
-  id: 3,
-  tone: "warn",
-  icon: "route",
-  title: "One discipline per query",
-  what: "The router assigns each query to a single subject bucket, in priority order. Roughly 7 million documents sit in an unrouted \u201cother\u201d bucket the router rarely reaches.",
-  matters: "A cross-disciplinary topic gets sent to just one discipline's section — the other side of the topic is never searched.",
-  todo: "Re-run under a different subject profile, or use \u201cWiden search\u201d on the coverage card attached to your results."
-}, {
-  id: 4,
-  tone: "warn",
-  icon: "clock",
-  title: "Recent by default",
-  what: "The index is split at the year 2010. The default reader profile favours 2010-onward material, and the ranker adds a recency weight (0.15) on top.",
-  matters: "Pre-2010 foundational and historical work ranks lower, and an active date filter can prune it from the search entirely.",
-  todo: "Remove the date filter from the coverage card to bring older eras back into scope."
-}, {
-  id: 5,
-  tone: "good",
-  icon: "scale",
-  title: "Ranked by text, not by prestige",
-  what: "Results are ordered purely by how well their text matches your query. Citation counts, journal impact, and author reputation play no part in ranking.",
-  matters: "This avoids a rich-get-richer bias — but it also means a highly-cited landmark paper gets no automatic lift. Judge quality yourself.",
-  todo: null,
-  positive: true
-}];
+const fmtInt = n => n == null || !Number.isFinite(Number(n)) ? "—" : Number(n).toLocaleString("en-US");
+const fmtMillions = n => n == null ? "—" : (Number(n) / 1e6).toFixed(1) + "M";
+const fmt3 = x => x == null || !Number.isFinite(Number(x)) ? "—" : Number(x).toFixed(3);
+const fmtDate = s => s ? String(s).slice(0, 10) : null;
+const pctOf = (part, total) => total ? Math.round(part / total * 1000) / 10 : 0;
+const panelOf = (bundle, name) => {
+  if (bundle === null) return {
+    status: "loading"
+  };
+  const p = bundle && bundle.panels ? bundle.panels[name] : null;
+  return p && typeof p === "object" ? p : {
+    status: "missing"
+  };
+};
+function liveFacts(shape, signal) {
+  const ok = shape.status === "ok";
+  const recency = signal.status === "ok" && Array.isArray(signal.axes) ? (signal.axes.find(a => a.signal === "recency") || {}).weight : null;
+  const other = ok ? (shape.subjects || []).find(s => s.subject === "other") : null;
+  return {
+    ok,
+    total: ok ? shape.total_docs : null,
+    built: ok ? fmtDate(shape.built) : null,
+    boundary: ok ? shape.era_boundary_year : null,
+    nSections: ok ? shape.n_sections : null,
+    nSubjects: ok ? shape.n_subjects : null,
+    nEras: ok ? (shape.eras || []).length : null,
+    otherDocs: other ? other.docs : null,
+    otherPct: other && shape.total_docs ? pctOf(other.docs, shape.total_docs) : null,
+    recency: recency != null ? recency : null,
+    rrfK: ok ? shape.rrf_k : null
+  };
+}
+function buildDisclosures(f) {
+  return [{
+    id: 1,
+    tone: "warn",
+    icon: "database",
+    title: "One source — and it has a shape",
+    what: "Everything searchable comes from a single OpenAlex snapshot" + (f.built ? " (index built " + f.built + ")" : "") + ". OpenAlex is strong on journal articles and conference papers, and noticeably thin on books, theses, grey literature, humanities monographs, and non-English venues.",
+    matters: "If a work isn't in that snapshot, no search here can surface it — no matter how you phrase the query.",
+    todo: "For books and humanities, also use the library catalogue and subject databases."
+  }, {
+    id: 2,
+    tone: "warn",
+    icon: "globe",
+    title: "Tuned for English",
+    what: "The semantic model (a bert-base-uncased SPLADE encoder) and every section's vocabulary are English-only. Meaning-based matching effectively doesn't apply to other languages.",
+    matters: "Scholarship in other languages — including Indigenous-language work and non-English-venue research — ranks lower or is missed entirely.",
+    todo: "Search your key terms in the source language too, and lean on language-specific databases."
+  }, {
+    id: 3,
+    tone: "warn",
+    icon: "route",
+    title: "One discipline per query",
+    what: "The router assigns each query to a single subject bucket, in priority order. " + (f.otherDocs != null ? fmtInt(f.otherDocs) + " documents (" + f.otherPct + "% of the index) sit in the unrouted “other” bucket the router rarely reaches." : "Documents no subject vocabulary matched sit in an unrouted “other” bucket the router rarely reaches."),
+    matters: "A cross-disciplinary topic gets sent to just one discipline's section — the other side of the topic is never searched.",
+    todo: "Re-run under a different subject profile, or use “Widen search” on the coverage card attached to your results."
+  }, {
+    id: 4,
+    tone: "warn",
+    icon: "clock",
+    title: "Recent by default",
+    what: "The index is split by era" + (f.boundary ? " at the year " + f.boundary : "") + ". The default reader profile favours recent material, and the ranker adds a recency weight" + (f.recency != null ? " (" + f.recency + ")" : "") + " on top.",
+    matters: "Older foundational and historical work ranks lower, and an active date filter can prune it from the search entirely.",
+    todo: "Remove the date filter from the coverage card to bring older eras back into scope."
+  }, {
+    id: 5,
+    tone: "good",
+    icon: "scale",
+    title: "Ranked by text, not by prestige",
+    what: "Results are ordered purely by how well their text matches your query. Citation counts, journal impact, and author reputation play no part in ranking.",
+    matters: "This avoids a rich-get-richer bias — but it also means a highly-cited landmark paper gets no automatic lift. Judge quality yourself.",
+    todo: null,
+    positive: true
+  }];
+}
 const DisclosureCard = ({
   d,
   n
@@ -1604,76 +1638,26 @@ const DisclosureCard = ({
     }
   }, d.todo)))));
 };
-const TOTAL_DOCS = 150413098;
-const fmtM = n => (n / 1e6).toFixed(1) + "M";
-const DISCIPLINES = [{
-  name: "Health & Medicine",
-  v: 41.2,
-  color: "var(--c-red)"
-}, {
-  name: "Natural Sciences",
-  v: 38.0,
-  color: "var(--c-teal)"
-}, {
-  name: "Engineering & CS",
-  v: 24.8,
-  color: "var(--c-indigo)"
-}, {
-  name: "Social Sciences",
-  v: 22.4,
-  color: "var(--c-amber)"
-}, {
-  name: "Arts & Humanities",
-  v: 17.0,
-  color: "var(--c-violet)"
-}, {
-  name: "Other / unrouted",
-  v: 7.0,
-  color: "oklch(72% 0.012 250)"
-}];
-const ERAS = [{
-  name: "2010 – present",
-  pct: 63,
-  color: "var(--c-teal)"
-}, {
-  name: "pre-2010",
-  pct: 37,
-  color: "oklch(72% 0.012 250)"
-}];
-const LANGS = [{
-  name: "English",
-  pct: 76
-}, {
-  name: "Chinese",
-  pct: 6
-}, {
-  name: "Spanish",
-  pct: 4
-}, {
-  name: "German",
-  pct: 3
-}, {
-  name: "French",
-  pct: 3
-}, {
-  name: "Other (40+ languages)",
-  pct: 8
-}];
 const Panel = ({
   icon,
   title,
   sub,
-  children
+  children,
+  name,
+  state
 }) => /*#__PURE__*/React.createElement("section", {
+  "data-panel": name,
+  "data-state": state,
   style: {
     background: "var(--bg-panel)",
     border: "1px solid var(--border-light)",
     borderRadius: "var(--radius-lg)",
-    padding: "24px 26px",
+    padding: "22px 24px",
     display: "flex",
     flexDirection: "column",
-    gap: 18,
-    boxShadow: "var(--shadow-sm)"
+    gap: 16,
+    boxShadow: "var(--shadow-sm)",
+    minWidth: 0
   }
 }, /*#__PURE__*/React.createElement("header", {
   style: {
@@ -1696,7 +1680,11 @@ const Panel = ({
 }, /*#__PURE__*/React.createElement(Icon, {
   name: icon,
   size: 16
-})), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+})), /*#__PURE__*/React.createElement("div", {
+  style: {
+    minWidth: 0
+  }
+}, /*#__PURE__*/React.createElement("h3", {
   style: {
     fontFamily: "var(--font-serif)",
     fontSize: 16.5,
@@ -1704,30 +1692,93 @@ const Panel = ({
     color: "var(--text)",
     lineHeight: 1.2
   }
-}, title), /*#__PURE__*/React.createElement("p", {
+}, title), sub && /*#__PURE__*/React.createElement("p", {
   style: {
     fontSize: 12,
     color: "var(--text-muted)",
-    marginTop: 2
+    marginTop: 2,
+    overflowWrap: "anywhere"
   }
 }, sub))), children);
-const DisciplineBars = () => {
-  const max = Math.max(...DISCIPLINES.map(d => d.v));
+const Notice = ({
+  tone = "neutral",
+  children,
+  testid
+}) => {
+  const bg = tone === "warn" ? "var(--c-amber-soft)" : "var(--bg-soft)";
+  return /*#__PURE__*/React.createElement("div", {
+    "data-testid": testid,
+    style: {
+      display: "flex",
+      gap: 10,
+      padding: "11px 14px",
+      background: bg,
+      borderRadius: 8
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "info",
+    size: 15,
+    style: {
+      color: tone === "warn" ? "var(--c-amber-ink)" : "var(--text-muted)",
+      flexShrink: 0,
+      marginTop: 1
+    }
+  }), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--text-secondary)",
+      lineHeight: 1.55,
+      minWidth: 0,
+      overflowWrap: "anywhere"
+    }
+  }, children));
+};
+const PanelFallback = ({
+  panel,
+  minHeight = 0
+}) => {
+  if (panel.status === "loading") {
+    return /*#__PURE__*/React.createElement("div", {
+      "data-testid": "sfu-panel-loading",
+      "aria-busy": "true",
+      style: {
+        minHeight,
+        background: "var(--bg-soft)",
+        borderRadius: 8
+      }
+    });
+  }
+  if (panel.status === "missing") {
+    return /*#__PURE__*/React.createElement(Notice, {
+      testid: "sfu-panel-missing"
+    }, "Not in the analytics bundle served by this backend.");
+  }
+  return /*#__PURE__*/React.createElement(Notice, {
+    testid: "sfu-panel-stub"
+  }, "Not wired: ", panel.reason || "no data source yet", ".");
+};
+const Bars = ({
+  rows,
+  valueLabel,
+  labelWidth = 180
+}) => {
+  const max = Math.max(...rows.map(r => r.v), 0) || 1;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
-      gap: 11
+      gap: 10
     }
-  }, DISCIPLINES.map(d => /*#__PURE__*/React.createElement("div", {
-    key: d.name,
+  }, rows.map(r => /*#__PURE__*/React.createElement("div", {
+    key: r.key || r.name,
     style: {
       display: "grid",
-      gridTemplateColumns: "132px 1fr 52px",
+      gridTemplateColumns: `minmax(0, ${labelWidth}px) minmax(0, 1fr) 64px`,
       alignItems: "center",
       gap: 12
     }
   }, /*#__PURE__*/React.createElement("span", {
+    title: r.name,
     style: {
       fontSize: 12.5,
       color: "var(--text)",
@@ -1735,18 +1786,18 @@ const DisciplineBars = () => {
       overflow: "hidden",
       textOverflow: "ellipsis"
     }
-  }, d.name), /*#__PURE__*/React.createElement("div", {
+  }, r.name), /*#__PURE__*/React.createElement("div", {
     style: {
-      height: 14,
+      height: 12,
       background: "var(--bg-soft)",
       borderRadius: 4,
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: `${d.v / max * 100}%`,
+      width: `${r.v / max * 100}%`,
       height: "100%",
-      background: d.color,
+      background: r.color || "var(--c-teal)",
       borderRadius: 4
     }
   })), /*#__PURE__*/React.createElement("span", {
@@ -1756,7 +1807,7 @@ const DisciplineBars = () => {
       color: "var(--text-secondary)",
       textAlign: "right"
     }
-  }, d.v, "M"))));
+  }, valueLabel(r)))));
 };
 const StackBar = ({
   rows
@@ -1824,56 +1875,479 @@ const StackBar = ({
     fontSize: 11.5,
     color: "var(--text-secondary)"
   }
-}, r.pct, "%")))));
-const LangBars = () => {
-  const palette = ["var(--c-teal)", "var(--c-indigo)", "var(--c-amber)", "var(--c-violet)", "var(--c-green)", "oklch(72% 0.012 250)"];
-  return /*#__PURE__*/React.createElement(StackBar, {
-    rows: LANGS.map((l, i) => ({
-      ...l,
-      color: palette[i]
-    }))
-  });
+}, r.detail, " \xB7 ", r.pct, "%")))));
+const SUBJECT_COLORS = ["oklch(72% 0.012 250)", "var(--c-amber)", "var(--c-red)", "var(--c-indigo)", "var(--c-teal)", "var(--c-violet)", "var(--c-green)"];
+const ShapeSection = ({
+  shape
+}) => {
+  const ok = shape.status === "ok";
+  const subjects = ok ? shape.subjects || [] : [];
+  const eras = ok ? shape.eras || [] : [];
+  const total = ok ? shape.total_docs : 0;
+  const b = ok ? shape.era_boundary_year : null;
+  const eraName = e => e === "recent" ? b ? b + " – present" : "recent" : e === "archive" ? b ? "pre-" + b : "archive" : e;
+  const eraRows = eras.map((e, i) => ({
+    name: eraName(e.era),
+    pct: pctOf(e.docs, total),
+    detail: fmtMillions(e.docs),
+    color: e.era === "recent" ? "var(--c-teal)" : "oklch(72% 0.012 250)"
+  }));
+  const subjRows = subjects.map((s, i) => ({
+    key: s.subject,
+    name: s.label || s.subject,
+    v: s.docs,
+    color: s.subject === "other" ? SUBJECT_COLORS[0] : SUBJECT_COLORS[1 + i % (SUBJECT_COLORS.length - 1)]
+  }));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      justifyContent: "space-between",
+      gap: 16,
+      marginBottom: 16,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    style: {
+      fontFamily: "var(--font-serif)",
+      fontSize: 21,
+      fontWeight: 500,
+      color: "var(--text)"
+    }
+  }, "The shape of the index"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--text-muted)",
+      overflowWrap: "anywhere"
+    }
+  }, ok ? `Section manifest ${shape.source}${shape.built ? " · built " + fmtDate(shape.built) : ""}` : "Section manifest")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1.3fr 1fr",
+      gap: 18
+    },
+    className: "dist-grid",
+    "data-panel": "index_shape",
+    "data-state": shape.status
+  }, /*#__PURE__*/React.createElement(Panel, {
+    icon: "route",
+    title: "By subject bucket",
+    sub: "Documents per router bucket, both eras"
+  }, ok ? /*#__PURE__*/React.createElement(Bars, {
+    rows: subjRows,
+    valueLabel: r => fmtMillions(r.v)
+  }) : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: shape,
+    minHeight: 150
+  })), /*#__PURE__*/React.createElement(Panel, {
+    icon: "clock",
+    title: "By era",
+    sub: b ? `Split at the ${b} boundary` : "Split by publication era"
+  }, ok ? /*#__PURE__*/React.createElement(StackBar, {
+    rows: eraRows
+  }) : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: shape,
+    minHeight: 110
+  }))));
 };
-const OP_METRICS = [{
-  label: "NDCG@10",
-  value: "0.561",
-  note: "mean over the eval set"
-}, {
-  label: "Recall@50",
-  value: "0.967",
-  note: "vs 0.966 un-quantized"
-}, {
-  label: "RRF k",
-  value: "60",
-  note: "rank-fusion constant"
-}, {
-  label: "Dense seed",
-  value: "600k",
-  note: "+ warm-cache delta"
-}];
-const LEG_LATENCY = [{
-  leg: "Keyword (tantivy)",
-  ms: 34,
-  color: "var(--c-teal)"
-}, {
-  leg: "Semantic-sparse (SPLADE)",
-  ms: 88,
-  color: "var(--c-indigo)"
-}, {
-  leg: "Semantic-dense",
-  ms: 61,
-  color: "var(--c-violet)"
-}, {
-  leg: "Rerank + fuse",
-  ms: 47,
-  color: "var(--c-amber)"
-}];
-const OperatorSection = ({
-  metrics = OP_METRICS,
-  latency = LEG_LATENCY
+const SubHead = ({
+  children
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: "0.07em",
+    textTransform: "uppercase",
+    color: "var(--text-muted)",
+    marginBottom: 10
+  }
+}, children);
+const tableCell = {
+  padding: "6px 10px",
+  borderBottom: "1px solid var(--border-light)",
+  textAlign: "left",
+  fontSize: 12,
+  whiteSpace: "nowrap"
+};
+const tableHead = {
+  ...tableCell,
+  fontSize: 10.5,
+  fontWeight: 600,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  color: "var(--text-muted)"
+};
+const Table = ({
+  cols,
+  rows,
+  testid
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    overflowX: "auto",
+    maxWidth: "100%"
+  }
+}, /*#__PURE__*/React.createElement("table", {
+  "data-testid": testid,
+  style: {
+    borderCollapse: "collapse",
+    width: "100%"
+  }
+}, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, cols.map(c => /*#__PURE__*/React.createElement("th", {
+  key: c.key,
+  style: {
+    ...tableHead,
+    textAlign: c.num ? "right" : "left"
+  }
+}, c.label)))), /*#__PURE__*/React.createElement("tbody", null, rows.map((r, i) => /*#__PURE__*/React.createElement("tr", {
+  key: i
+}, cols.map(c => /*#__PURE__*/React.createElement("td", {
+  key: c.key,
+  style: {
+    ...tableCell,
+    textAlign: c.num ? "right" : "left",
+    fontFamily: c.num ? "var(--font-mono)" : "inherit",
+    color: "var(--text-secondary)"
+  }
+}, c.render ? c.render(r) : r[c.key] == null ? "—" : String(r[c.key]))))))));
+const QualityPanel = ({
+  kpis
+}) => {
+  const ok = kpis.status === "ok" && Array.isArray(kpis.methods) && kpis.methods.length > 0;
+  const k = kpis.k || 10;
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "kpis",
+    state: kpis.status,
+    icon: "chart",
+    title: `Retrieval quality · LLM-judged NDCG@${k}`,
+    sub: ok ? `${fmtInt(kpis.eval_queries)} eval queries · ${fmtInt(kpis.judged_pairs)} judged pairs · ${fmtDate(kpis.timestamp) || "undated"} · ${kpis.source || ""}` : null
+  }, ok ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Table, {
+    testid: "sfu-kpi-methods",
+    cols: [{
+      key: "label",
+      label: "Method",
+      render: r => r.label + (r.method === kpis.best_method ? " ★" : "")
+    }, {
+      key: "mean_ndcg",
+      label: `NDCG@${k}`,
+      num: true,
+      render: r => fmt3(r.mean_ndcg)
+    }, {
+      key: "mean_mrr",
+      label: "MRR",
+      num: true,
+      render: r => fmt3(r.mean_mrr)
+    }, {
+      key: "mean_p_at_k",
+      label: `P@${k}`,
+      num: true,
+      render: r => fmt3(r.mean_p_at_k)
+    }],
+    rows: kpis.methods
+  }), kpis.judge && /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--text-muted)",
+      overflowWrap: "anywhere"
+    }
+  }, "Judge: ", kpis.judge, ". \u2605 best mean NDCG.")) : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: kpis,
+    minHeight: 120
+  }));
+};
+const SubjectNdcgPanel = ({
+  panel,
+  k
+}) => {
+  const ok = panel.status === "ok" && Array.isArray(panel.subjects);
+  const subjects = ok ? panel.subjects : [];
+  const zeros = subjects.filter(s => !s.ndcg).length;
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "ndcg_by_subject",
+    state: panel.status,
+    icon: "chart",
+    title: `NDCG@${k || 10} by subject`,
+    sub: ok ? `Method ${panel.primary_method || "—"} · ${subjects.length} subjects, lowest first${zeros ? ` · ${zeros} at 0.000` : ""}` : null
+  }, ok ? subjects.length ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxHeight: 280,
+      overflowY: "auto",
+      paddingRight: 4
+    }
+  }, /*#__PURE__*/React.createElement(Bars, {
+    rows: subjects.map(s => ({
+      key: s.subject,
+      name: s.subject,
+      v: s.ndcg || 0,
+      color: "var(--c-indigo)"
+    })),
+    valueLabel: r => fmt3(r.v)
+  })) : /*#__PURE__*/React.createElement(Notice, null, "No per-subject breakdown in the benchmark file.") : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: panel,
+    minHeight: 120
+  }));
+};
+const SignalPanel = ({
+  panel
+}) => {
+  const ok = panel.status === "ok" && Array.isArray(panel.axes);
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "reranker_signal",
+    state: panel.status,
+    icon: "scale",
+    title: "Ranking signals",
+    sub: ok ? `Heuristic reranker weights (${panel.source || "weights"})` : null
+  }, ok ? /*#__PURE__*/React.createElement(Bars, {
+    labelWidth: 160,
+    rows: panel.axes.map(a => ({
+      key: a.signal,
+      name: a.signal.replace(/_/g, " "),
+      v: Number(a.weight) || 0,
+      color: "var(--c-amber)"
+    })),
+    valueLabel: r => String(r.v)
+  }) : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: panel,
+    minHeight: 120
+  }));
+};
+const ModelsPanel = ({
+  panel
+}) => {
+  const ok = panel.status === "ok" && Array.isArray(panel.versions);
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "model_versions",
+    state: panel.status,
+    icon: "server",
+    title: "Model versions",
+    sub: ok ? `Registry updated ${panel.updated || "—"}` : null
+  }, ok ? /*#__PURE__*/React.createElement(Table, {
+    testid: "sfu-model-versions",
+    cols: [{
+      key: "component",
+      label: "Component"
+    }, {
+      key: "version",
+      label: "Version"
+    }, {
+      key: "date",
+      label: "Date"
+    }, {
+      key: "ndcg",
+      label: "NDCG",
+      num: true,
+      render: r => r.ndcg == null ? "—" : fmt3(r.ndcg)
+    }, {
+      key: "status",
+      label: "Status"
+    }, {
+      key: "available",
+      label: "On disk",
+      render: r => r.available == null ? "—" : r.available ? "yes" : "no"
+    }],
+    rows: panel.versions
+  }) : /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: panel,
+    minHeight: 120
+  }));
+};
+const STUB_TITLES = {
+  embedding_drift: {
+    title: "Embedding drift",
+    icon: "globe"
+  },
+  access_funnel: {
+    title: "Access funnel",
+    icon: "route"
+  },
+  oa_equity: {
+    title: "Open-access equity",
+    icon: "scale"
+  }
+};
+const StubPanel = ({
+  name,
+  panel
+}) => /*#__PURE__*/React.createElement(Panel, {
+  name: name,
+  state: panel.status,
+  icon: STUB_TITLES[name].icon,
+  title: STUB_TITLES[name].title
+}, panel.status === "stub" || panel.status === "missing" || panel.status === "loading" ? /*#__PURE__*/React.createElement(PanelFallback, {
+  panel: panel,
+  minHeight: 40
+}) : /*#__PURE__*/React.createElement(Notice, null, "Status ", String(panel.status), ": this page has no renderer for this panel's data yet."));
+const sourceLabel = s => s === "gui" ? "search GUI sessions" : s === "server" ? "server-side impressions (MCP path)" : "no engagement rows yet";
+const PositionBiasPanel = ({
+  panel
+}) => {
+  const known = panel.status === "ok" || panel.status === "awaiting_click_data";
+  const curve = known ? panel.curve || [] : [];
+  const shown = curve.filter(c => c.impressions || c.clicks);
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "position_bias",
+    state: panel.status,
+    icon: "chart",
+    title: "Position bias \xB7 P(click | rank)",
+    sub: known ? `Counting ${sourceLabel(panel.source)} · ${fmtInt(panel.total_impressions)} impressions · ${fmtInt(panel.total_clicks)} clicks` : null
+  }, !known ? /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: panel,
+    minHeight: 80
+  }) : /*#__PURE__*/React.createElement(React.Fragment, null, panel.status === "awaiting_click_data" && /*#__PURE__*/React.createElement(Notice, {
+    tone: "warn",
+    testid: "sfu-awaiting-clicks"
+  }, "Awaiting click data: ", fmtInt(panel.total_clicks), " of the ", fmtInt(panel.min_clicks_required), " clicks needed before propensities are estimated. Rows below are raw counts only."), shown.length ? /*#__PURE__*/React.createElement(Table, {
+    testid: "sfu-position-bias",
+    cols: [{
+      key: "rank",
+      label: "Rank",
+      num: true
+    }, {
+      key: "impressions",
+      label: "Impressions",
+      num: true,
+      render: r => fmtInt(r.impressions)
+    }, {
+      key: "clicks",
+      label: "Clicks",
+      num: true,
+      render: r => fmtInt(r.clicks)
+    }, {
+      key: "click",
+      label: "P(click)",
+      num: true,
+      render: r => fmt3(r.click)
+    }, {
+      key: "propensity",
+      label: "Propensity",
+      num: true,
+      render: r => r.propensity == null ? "—" : fmt3(r.propensity)
+    }],
+    rows: shown
+  }) : /*#__PURE__*/React.createElement(Notice, null, "No impressions recorded yet. Searches made in the search app post them from first use."), panel.note && /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--text-muted)"
+    }
+  }, panel.note)));
+};
+const MAX_SESSIONS = 20;
+const SessionReplayPanel = ({
+  panel
+}) => {
+  const known = panel.status === "ok" || panel.status === "awaiting_click_data";
+  const sessions = known ? panel.sessions || [] : [];
+  return /*#__PURE__*/React.createElement(Panel, {
+    name: "session_replay",
+    state: panel.status,
+    icon: "history",
+    title: "Session replay",
+    sub: known ? `Query → clicked result → actions, newest session first · ${sourceLabel(panel.source)}` : null
+  }, !known ? /*#__PURE__*/React.createElement(PanelFallback, {
+    panel: panel,
+    minHeight: 80
+  }) : sessions.length === 0 ? /*#__PURE__*/React.createElement(Notice, {
+    tone: "warn",
+    testid: "sfu-awaiting-sessions"
+  }, "Awaiting click data: no search sessions recorded yet.") : /*#__PURE__*/React.createElement("div", {
+    "data-testid": "sfu-sessions",
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      maxHeight: 420,
+      overflowY: "auto",
+      paddingRight: 4
+    }
+  }, sessions.slice(0, MAX_SESSIONS).map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.session_id,
+    "data-session": s.session_id,
+    style: {
+      border: "1px solid var(--border-light)",
+      borderRadius: 8,
+      padding: "10px 12px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      fontSize: 11.5,
+      color: "var(--text-muted)",
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-mono)",
+      overflowWrap: "anywhere"
+    }
+  }, String(s.session_id).slice(0, 14)), /*#__PURE__*/React.createElement("span", null, s.start ? String(s.start).replace("T", " ").slice(0, 16) : "—"), /*#__PURE__*/React.createElement("span", null, s.n_queries, " queries \xB7 ", s.n_clicks, " clicks \xB7 ", s.n_actions, " actions")), (s.queries || []).map((q, qi) => /*#__PURE__*/React.createElement("div", {
+    key: qi,
+    style: {
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--text)",
+      overflowWrap: "anywhere"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search",
+    size: 12,
+    style: {
+      marginRight: 6,
+      color: "var(--text-muted)"
+    }
+  }), q.query || "(no query text)", q.refined_from && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "var(--text-muted)"
+    }
+  }, " \xB7 refined from \u201C", q.refined_from, "\u201D")), (q.results || []).map((r, ri) => /*#__PURE__*/React.createElement("div", {
+    key: ri,
+    style: {
+      marginLeft: 20,
+      marginTop: 3,
+      fontSize: 12,
+      color: "var(--text-secondary)",
+      display: "flex",
+      gap: 8,
+      flexWrap: "wrap",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-mono)"
+    }
+  }, "#", r.rank == null ? "?" : r.rank), /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflowWrap: "anywhere",
+      minWidth: 0
+    }
+  }, r.doc_id || "(unknown doc)"), (r.actions || []).map((a, ai) => /*#__PURE__*/React.createElement("span", {
+    key: ai,
+    style: {
+      fontSize: 10.5,
+      padding: "1px 6px",
+      borderRadius: 4,
+      background: "var(--c-teal-soft)",
+      color: "oklch(34% 0.07 200)"
+    }
+  }, a)))))))), sessions.length > MAX_SESSIONS && /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--text-muted)"
+    }
+  }, sessions.length - MAX_SESSIONS, " older sessions not shown.")));
+};
+const Collapsible = ({
+  icon,
+  title,
+  sub,
+  testid,
+  children
 }) => {
   const [open, setOpen] = React.useState(false);
-  const maxMs = Math.max(...latency.map(l => l.ms));
   return /*#__PURE__*/React.createElement("section", {
     style: {
       background: "var(--bg-panel)",
@@ -1883,6 +2357,8 @@ const OperatorSection = ({
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("button", {
+    "data-testid": testid,
+    "aria-expanded": open,
     onClick: () => setOpen(o => !o),
     style: {
       width: "100%",
@@ -1907,11 +2383,12 @@ const OperatorSection = ({
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement(Icon, {
-    name: "wrench",
+    name: icon,
     size: 16
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      flex: 1
+      flex: 1,
+      minWidth: 0
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1919,13 +2396,13 @@ const OperatorSection = ({
       fontWeight: 600,
       color: "var(--text)"
     }
-  }, "Operator & methodology"), /*#__PURE__*/React.createElement("div", {
+  }, title), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--text-muted)",
       marginTop: 1
     }
-  }, "Measured-quality metrics and per-engine timing \u2014 for people maintaining or auditing the system.")), /*#__PURE__*/React.createElement(Icon, {
+  }, sub)), /*#__PURE__*/React.createElement(Icon, {
     name: open ? "chevronDown" : "chevronRight",
     size: 16,
     style: {
@@ -1933,192 +2410,165 @@ const OperatorSection = ({
     }
   })), open && /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "4px 26px 26px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 10,
-      padding: "11px 14px",
-      background: "var(--c-amber-soft)",
-      borderRadius: 8,
-      marginBottom: 20
-    }
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "info",
-    size: 15,
-    style: {
-      color: "var(--c-amber-ink)",
-      flexShrink: 0,
-      marginTop: 1
-    }
-  }), /*#__PURE__*/React.createElement("p", {
-    style: {
-      fontSize: 12.5,
-      color: "var(--text-secondary)",
-      lineHeight: 1.55
-    }
-  }, "These are engineering measurements, not a quality guarantee. A single NDCG figure says how well the ranker reproduced a labelled test set \u2014 it does ", /*#__PURE__*/React.createElement("strong", null, "not"), " certify that any given search was complete or unbiased. The disclosures above are the honest answer to that question.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(4, 1fr)",
-      gap: 12,
-      marginBottom: 22
-    },
-    className: "op-grid"
-  }, metrics.map(m => /*#__PURE__*/React.createElement("div", {
-    key: m.label,
-    style: {
-      padding: "14px 16px",
-      background: "var(--bg-soft)",
-      borderRadius: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10.5,
-      fontWeight: 600,
-      letterSpacing: "0.07em",
-      textTransform: "uppercase",
-      color: "var(--text-muted)",
-      marginBottom: 6
-    }
-  }, m.label), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "var(--font-serif)",
-      fontSize: 26,
-      fontWeight: 500,
-      color: "var(--text)",
-      lineHeight: 1
-    }
-  }, m.value), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: "var(--text-muted)",
-      marginTop: 5
-    }
-  }, m.note)))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 600,
-      letterSpacing: "0.07em",
-      textTransform: "uppercase",
-      color: "var(--text-muted)",
-      marginBottom: 12
-    }
-  }, "Per-engine latency \xB7 median ms"), /*#__PURE__*/React.createElement("div", {
-    style: {
+      padding: "4px 26px 26px",
       display: "flex",
       flexDirection: "column",
-      gap: 10
+      gap: 18
     }
-  }, latency.map(l => /*#__PURE__*/React.createElement("div", {
-    key: l.leg,
+  }, children));
+};
+const OperatorSection = ({
+  bundle,
+  facts
+}) => {
+  const kpis = panelOf(bundle, "kpis");
+  return /*#__PURE__*/React.createElement(Collapsible, {
+    testid: "sfu-operator-toggle",
+    icon: "wrench",
+    title: "Operator & methodology",
+    sub: "Measured-quality metrics, ranking signals and model versions \u2014 for people maintaining or auditing the system."
+  }, /*#__PURE__*/React.createElement(Notice, {
+    tone: "warn"
+  }, "These are engineering measurements, not a quality guarantee. A single NDCG figure says how well the ranker reproduced a labelled test set \u2014 it does ", /*#__PURE__*/React.createElement("strong", null, "not"), " certify that any given search was complete or unbiased. The disclosures above are the honest answer to that question."), /*#__PURE__*/React.createElement(QualityPanel, {
+    kpis: kpis
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "190px 1fr 44px",
-      alignItems: "center",
-      gap: 12
+      gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
+      gap: 18
     }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement(SubjectNdcgPanel, {
+    panel: panelOf(bundle, "ndcg_by_subject"),
+    k: kpis.k
+  }), /*#__PURE__*/React.createElement(SignalPanel, {
+    panel: panelOf(bundle, "reranker_signal")
+  })), /*#__PURE__*/React.createElement(ModelsPanel, {
+    panel: panelOf(bundle, "model_versions")
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SubHead, null, "Not wired yet"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12.5,
-      color: "var(--text)"
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))",
+      gap: 14
     }
-  }, l.leg), /*#__PURE__*/React.createElement("div", {
-    style: {
-      height: 12,
-      background: "var(--bg-soft)",
-      borderRadius: 4,
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: `${l.ms / maxMs * 100}%`,
-      height: "100%",
-      background: l.color,
-      borderRadius: 4
-    }
-  })), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontFamily: "var(--font-mono)",
-      fontSize: 11.5,
-      color: "var(--text-secondary)",
-      textAlign: "right"
-    }
-  }, l.ms)))), /*#__PURE__*/React.createElement("p", {
+  }, ["embedding_drift", "access_funnel", "oa_equity"].map(n => /*#__PURE__*/React.createElement(StubPanel, {
+    key: n,
+    name: n,
+    panel: panelOf(bundle, n)
+  })))), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 12,
       color: "var(--text-muted)",
       lineHeight: 1.6,
-      marginTop: 20,
       maxWidth: "78ch"
     }
-  }, "Three retrieval legs run in parallel and are combined with Reciprocal Rank Fusion (k = 60). The dense leg is a 600k-vector seed plus a warm-cache delta against the full ", TOTAL_DOCS.toLocaleString(), "-document corpus, so semantic coverage is query-driven, not exhaustive. SPLADE keeps the top 64 query terms; impact weights are 8-bit quantized. Index split at era boundary 2010, 5 subjects \xD7 2 eras = 10 sections.")));
+  }, "Retrieval legs are combined with Reciprocal Rank Fusion", facts.rrfK != null ? ` (k = ${facts.rrfK})` : "", facts.total != null ? ` over ${fmtInt(facts.total)} documents` : "", ".", facts.nSections != null ? ` The index is split into ${facts.nSections} sections (${facts.nSubjects} subject buckets × ${facts.nEras} eras${facts.boundary ? `, boundary ${facts.boundary}` : ""}).` : ""));
 };
-const FACTS = [{
-  label: "Documents",
-  value: TOTAL_DOCS.toLocaleString()
-}, {
-  label: "Source",
-  value: "OpenAlex",
-  sub: "June 2026 snapshot"
-}, {
-  label: "Sections",
-  value: "10",
-  sub: "5 subjects × 2 eras"
-}, {
-  label: "Era boundary",
-  value: "2010",
-  sub: "recent vs historical"
-}];
-function deriveLive(bundle) {
-  const panels = bundle && bundle.panels || {};
-  const kpis = panels.kpis || {};
-  const ndcg = panels.ndcg_by_subject || {};
-  const facts = FACTS.map(f => {
-    if (f.label === "Documents" && kpis.documents) return {
-      ...f,
-      value: Number(kpis.documents).toLocaleString()
-    };
-    if (f.label === "Source" && kpis.snapshot) return {
-      ...f,
-      sub: kpis.snapshot
-    };
-    return f;
-  });
-  let metrics = OP_METRICS;
-  if (ndcg.status === "ok" && Array.isArray(ndcg.subjects) && ndcg.subjects.length) {
-    const mean = ndcg.subjects.reduce((a, s) => a + (s.ndcg || 0), 0) / ndcg.subjects.length;
-    metrics = OP_METRICS.map(m => m.label === "NDCG@10" ? {
-      ...m,
-      value: mean.toFixed(3)
-    } : m);
-  }
-  return {
-    facts,
-    metrics
-  };
-}
+const EngagementSection = ({
+  bundle
+}) => /*#__PURE__*/React.createElement(Collapsible, {
+  testid: "sfu-engagement-toggle",
+  icon: "history",
+  title: "Search engagement",
+  sub: "Click-through and session data posted by the search app \u2014 position bias and session replay."
+}, /*#__PURE__*/React.createElement(PositionBiasPanel, {
+  panel: panelOf(bundle, "position_bias")
+}), /*#__PURE__*/React.createElement(SessionReplayPanel, {
+  panel: panelOf(bundle, "session_replay")
+}));
+const Facts = ({
+  facts,
+  loading
+}) => {
+  const v = x => loading ? "…" : x;
+  const rows = [{
+    label: "Documents",
+    value: v(facts.total != null ? fmtInt(facts.total) : "—"),
+    sub: facts.ok || loading ? "in the served index" : "index manifest unavailable"
+  }, {
+    label: "Source",
+    value: "OpenAlex",
+    sub: v(facts.built ? "index built " + facts.built : "build date unavailable")
+  }, {
+    label: "Sections",
+    value: v(facts.nSections != null ? String(facts.nSections) : "—"),
+    sub: v(facts.nSubjects != null ? `${facts.nSubjects} subjects × ${facts.nEras} eras` : "unavailable")
+  }, {
+    label: "Era boundary",
+    value: v(facts.boundary != null ? String(facts.boundary) : "—"),
+    sub: "recent vs historical"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 14,
+      flexWrap: "wrap"
+    },
+    "data-testid": "sfu-facts"
+  }, rows.map(f => /*#__PURE__*/React.createElement("div", {
+    key: f.label,
+    style: {
+      flex: "1 1 200px",
+      minWidth: 180,
+      padding: "18px 22px",
+      background: "var(--bg-panel)",
+      border: "1px solid var(--border-light)",
+      borderRadius: "var(--radius)",
+      boxShadow: "var(--shadow-sm)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 500,
+      letterSpacing: "0.07em",
+      textTransform: "uppercase",
+      color: "var(--text-muted)",
+      marginBottom: 7
+    }
+  }, f.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-serif)",
+      fontSize: 25,
+      fontWeight: 500,
+      color: "var(--text)",
+      lineHeight: 1
+    }
+  }, f.value), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--text-muted)",
+      marginTop: 5,
+      minHeight: 18
+    }
+  }, f.sub))));
+};
 const App = () => {
-  const [{
-    facts,
-    metrics
-  }, setLive] = React.useState({
-    facts: FACTS,
-    metrics: OP_METRICS
-  });
+  const [bundle, setBundle] = React.useState(null);
+  const [source, setSource] = React.useState(null);
   React.useEffect(() => {
     let cancelled = false;
-    if (window.SFUApi) {
+    if (window.SFUApi && typeof window.SFUApi.analytics === "function") {
       window.SFUApi.analytics().then(res => {
         if (cancelled) return;
-        if (res.source === "live") setLive(deriveLive(res.data));
+        setSource(res.source);
+        setBundle(res && res.data && typeof res.data === "object" ? res.data : {});
+      }).catch(() => {
+        if (!cancelled) {
+          setSource("mock");
+          setBundle({});
+        }
       });
+    } else {
+      setSource("mock");
+      setBundle({});
     }
     return () => {
       cancelled = true;
     };
   }, []);
+  const loading = bundle === null;
+  const shape = panelOf(bundle, "index_shape");
+  const facts = liveFacts(shape, panelOf(bundle, "reranker_signal"));
+  const disclosures = buildDisclosures(facts);
   const goSearch = () => {
     if (window.parent !== window) window.parent.postMessage({
       suiteNav: "search"
@@ -2130,7 +2580,8 @@ const App = () => {
       height: "100%",
       minHeight: "100vh"
     },
-    "data-screen-label": "About this index"
+    "data-screen-label": "About this index",
+    "data-analytics-source": source || "pending"
   }, /*#__PURE__*/React.createElement(SuiteSidebar, {
     app: "analytics",
     active: "analytics"
@@ -2139,7 +2590,8 @@ const App = () => {
       flex: 1,
       overflow: "auto",
       display: "flex",
-      flexDirection: "column"
+      flexDirection: "column",
+      minWidth: 0
     }
   }, /*#__PURE__*/React.createElement("header", {
     style: {
@@ -2191,54 +2643,19 @@ const App = () => {
     name: "arrowLeft",
     size: 14
   }), " Back to search")), /*#__PURE__*/React.createElement("div", {
+    className: "an-body",
     style: {
       padding: "28px 48px 56px",
       display: "flex",
       flexDirection: "column",
       gap: 28,
-      maxWidth: 1180
+      maxWidth: 1180,
+      minWidth: 0
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 14,
-      flexWrap: "wrap"
-    }
-  }, facts.map(f => /*#__PURE__*/React.createElement("div", {
-    key: f.label,
-    style: {
-      flex: "1 1 200px",
-      minWidth: 180,
-      padding: "18px 22px",
-      background: "var(--bg-panel)",
-      border: "1px solid var(--border-light)",
-      borderRadius: "var(--radius)",
-      boxShadow: "var(--shadow-sm)"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 500,
-      letterSpacing: "0.07em",
-      textTransform: "uppercase",
-      color: "var(--text-muted)",
-      marginBottom: 7
-    }
-  }, f.label), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "var(--font-serif)",
-      fontSize: 25,
-      fontWeight: 500,
-      color: "var(--text)",
-      lineHeight: 1
-    }
-  }, f.value), f.sub && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--text-muted)",
-      marginTop: 5
-    }
-  }, f.sub)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Facts, {
+    facts: facts,
+    loading: loading
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "baseline",
@@ -2265,60 +2682,17 @@ const App = () => {
       flexDirection: "column",
       gap: 14
     }
-  }, DISCLOSURES.map((d, i) => /*#__PURE__*/React.createElement(DisclosureCard, {
+  }, disclosures.map((d, i) => /*#__PURE__*/React.createElement(DisclosureCard, {
     key: d.id,
     d: d,
     n: i + 1
-  })))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "baseline",
-      justifyContent: "space-between",
-      gap: 16,
-      marginBottom: 16,
-      flexWrap: "wrap"
-    }
-  }, /*#__PURE__*/React.createElement("h2", {
-    style: {
-      fontFamily: "var(--font-serif)",
-      fontSize: 21,
-      fontWeight: 500,
-      color: "var(--text)"
-    }
-  }, "The shape of the index"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12,
-      color: "var(--text-muted)"
-    }
-  }, "Approximate \xB7 section manifests, June 2026")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "1.3fr 1fr",
-      gap: 18
-    },
-    className: "dist-grid"
-  }, /*#__PURE__*/React.createElement(Panel, {
-    icon: "route",
-    title: "By discipline",
-    sub: "How the router's buckets divide the corpus"
-  }, /*#__PURE__*/React.createElement(DisciplineBars, null)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 18
-    }
-  }, /*#__PURE__*/React.createElement(Panel, {
-    icon: "clock",
-    title: "By era",
-    sub: "Split at the 2010 boundary"
-  }, /*#__PURE__*/React.createElement(StackBar, {
-    rows: ERAS
-  })), /*#__PURE__*/React.createElement(Panel, {
-    icon: "globe",
-    title: "By language",
-    sub: "Semantic matching applies to English only"
-  }, /*#__PURE__*/React.createElement(LangBars, null))))), /*#__PURE__*/React.createElement(OperatorSection, {
-    metrics: metrics
+  })))), /*#__PURE__*/React.createElement(ShapeSection, {
+    shape: shape
+  }), /*#__PURE__*/React.createElement(OperatorSection, {
+    bundle: bundle,
+    facts: facts
+  }), /*#__PURE__*/React.createElement(EngagementSection, {
+    bundle: bundle
   }), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 12,
@@ -2333,8 +2707,10 @@ const App = () => {
   }, "coverage card"), " shown at the top of every result set."))), /*#__PURE__*/React.createElement("style", null, `
         @media (max-width: 1024px) {
           .dist-grid { grid-template-columns: 1fr !important; }
-          .op-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .disc-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .an-body { padding: 20px 16px 40px !important; }
         }
       `));
 };

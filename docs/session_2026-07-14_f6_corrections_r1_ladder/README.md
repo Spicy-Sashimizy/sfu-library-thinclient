@@ -24,16 +24,16 @@ stack — the reasoning deserves a durable record, not just commit messages.
 > (harness + records: `spike/convergence_repro/`). Read the artifact's addenda
 > before quoting its status.
 
-| `06_KERNEL_PAGE_RECLAIM_INTERNALS.md` | The precise "how does the kernel actually decide" write-up: not-LRU (accessed bit → 2Q double-clock → shadow-entry refault feedback → pressure-scaled aging), the "binary choice vs accumulated state" correction, MGLRU's explicit PID controller, academic lineage (CLOCK/2Q/LIRS/CLOCK-Pro/ARC), verified topology (WSL2 kernel 6.18.33.1, lru_gen absent → classic two-list), and the one-line mapping of each mechanism to this session's measurements |
+| `06_KERNEL_PAGE_RECLAIM_INTERNALS.md` | The precise "how does the kernel actually decide" write-up: not-LRU (accessed bit → 2Q double-clock → shadow-entry refault feedback → pressure-scaled aging), the "binary choice versus accumulated state" correction, MGLRU's explicit PID controller, academic lineage (CLOCK/2Q/LIRS/CLOCK-Pro/ARC), verified topology (WSL2 kernel 6.18.33.1, lru_gen absent → classic two-list), and the one-line mapping of each mechanism to this session's measurements |
 
 ## One-paragraph summary
 
 The E8 dv-v2 flip landed and a GLM 5.2 drive session (via claude-code-router →
-NeuralWatt, launched in the dev container) executed the disk-streaming program
+NeuralWatt, launched in the development container) executed the disk-streaming program
 Phases 0–6, committing a headline "cold p95 4.6 s → 30 ms (~150×)" that a
 corrections pass proved was **300/300 silently-failed queries scored as 0 ms
 no-ops**. Five defects were fixed and the honest number measured: **cold p95
-4.66 s → 1.67 s (~2.8×), parity 10/10** (`f6_prefault_hotset_20260714.json` vs
+4.66 s → 1.67 s (~2.8×), parity 10/10** (`f6_prefault_hotset_20260714.json` versus
 `f6_gateoff_baseline_20260714.json`, fix commit 2203d9b, corrections 43c090e).
 A trust audit then killed a second false attribution (warm 117→54 ms was CPU
 contention, not the .so rebuild — 1919855). The R1 RAM-ladder (E7b's method on

@@ -17,7 +17,7 @@ From WI-8 (2026-07-17, this container, as-is):
 
 | Artifact | Role | 150M size | Subset ~10–15M *est.* (≈×0.07–0.1) |
 |---|---|---|---|
-| SEISMIC shard mmap dirs ×8 (dv, e5_v2) | SPLADE leg (postings+forward) | 66.24 GB | ~5–7 GB |
+| SEISMIC shard mmap directories ×8 (dv, e5_v2) | SPLADE leg (postings+forward) | 66.24 GB | ~5–7 GB |
 | `meta.sqlite` | hydration (title/DOI/year/type) | 24.91 GB | ~1.8–2.5 GB |
 | packed lexical (tantivy) | BM25F leg | 44.98 GB | ~3.2–4.5 GB |
 | dense (usearch) | dense leg | 0.36 GB | ~0.03 GB (persona-scale today) |
@@ -40,7 +40,7 @@ without re-encoding the corpus with the exact served model).
   larger download than the thing it would rebuild. Filtering to a 10–15M
   subset via the paged API instead is rate-limited and takes days.
 - The killer is derived artifacts: SPLADE doc encoding for 10–15M docs is
-  GPU-tier work (this repo's own bulk encodes ran on the RTX 4070 Ti; the
+  GPU-tier work (this repository's own bulk encodes ran on the RTX 4070 Ti; the
   container memory rule "never plan CPU-only for bulk-encode" exists for
   this reason). End users have no GPU by assumption (that is the entire
   portable premise), and encoder/corpus coupling means a user-side encode
@@ -68,7 +68,7 @@ Precedent says this is the industry-normal shape for exactly our situation:
 ### Recommendation — Option C: prebuilt subset artifacts + live tail (hybrid)
 1. **Installer is small** (Tauri shell + v3 .so + models ≈ 4 GB ceiling,
    CPU-wheels pending per WI-8 delta); on first run it downloads the
-   **subset bundle per-artifact, per-shard**: each shard dir, the meta
+   **subset bundle per-artifact, per-shard**: each shard directory, the meta
    slice, the lexical index — each entry sha256'd in the WI-14 bundle
    manifest (already built + proven on fixtures 2026-07-17). Resumable
    HTTP with byte ranges; optional torrent with webseed for cost/scale
@@ -105,7 +105,7 @@ Precedent says this is the industry-normal shape for exactly our situation:
 
 1. WI-5 host-tier unblock (spool re-export + `cited_by_count`) → real
    subset artifact sizes replace every *est.* above.
-2. zstd wire-gain probe on one dv shard dir + meta slice (cheap, decides §2.2).
+2. zstd wire-gain probe on one dv shard directory + meta slice (cheap, decides §2.2).
 3. Licensing: OpenAlex data CC0 ✅; SPLADE/dense **model** licenses = the
    open WI-8 delta item (owner-gated before any public handout).
 4. Download-UX proof: WI-14 `updater_check/apply` against a real mirror

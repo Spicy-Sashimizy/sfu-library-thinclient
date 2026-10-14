@@ -16,7 +16,7 @@ upstream source at a pinned commit, and nothing in this spike is a runtime
 measurement.
 
 Upstream: `cache_ext` (SOSP 2025), cloned at `cache_ext_upstream/`
-(commit `c50236c`, gitignored nested repo per the `spike/seismic_upstream`
+(commit `c50236c`, gitignored nested repository per the `spike/seismic_upstream`
 convention; its `linux` submodule — the kernel fork
 `cache-ext/linux-cache-ext @ 7442a927`, base v6.6.8 — is NOT initialized).
 Code files authored by an Opus agent under session-lead direction
@@ -46,7 +46,7 @@ supplied from outside.** The framework can *apply* a hot set; it cannot
 
 **(b) cache_ext requires MGLRU OFF.** `shrink_lruvec()` short-circuits into
 `lru_gen_shrink_lruvec()` *before* the cache_ext block
-(`mm/vmscan.c:6439` vs `:6465`). So cache_ext is a replacement for
+(`mm/vmscan.c:6439` versus `:6465`). So cache_ext is a replacement for
 classic LRU, never a third arm beside MGLRU — and the bar it must clear on
 our workload is **beating classic** (whose refault-activation Tier-1d
 measured as already good), not beating MGLRU.
@@ -92,7 +92,7 @@ measured as already good), not beating MGLRU.
   full_touched **7.08 GiB**, against 41.14 GiB mmap'd across the 8 shards
   (5 files per shard; sidecars cover `forward_data.bin` only —
   `posting_lists.bin` at 8.64 GiB and the doc-mapping files have no hot
-  map and are policy-managed-but-cold under the default watch dir, a
+  map and are policy-managed-but-cold under the default watch directory, a
   measured-not-engineered confound recorded in the bench header).
 - **No policy change was needed for production scale:** worst-case map
   occupancy 77,648 chunks of 262,144 (30%).
@@ -119,7 +119,7 @@ measured as already good), not beating MGLRU.
 | `cache_ext_hotset.patch` | One hunk wiring the policy into upstream `policies/Makefile`. | `git apply --check` PASSES against the clone |
 | `load_hotset.py` | `chunks` (t1d result JSON → chunk table; ranking reconstruction self-checked, `--limit-mib` truncation, `--corrupt-frac/--corrupt-seed`, `--epoch 1` for the post-switch hot set of an E8 cell), `stack-chunks` (production sidecars → multi-inode table + per-file summary, page_size asserted, extents bounds-checked), `refresh` (rewrites the pinned map at runtime), `attach`, `stats`. | `chunks`/`stack-chunks`/knobs EXERCISED against real sidecars and a real t1d result; `attach`/`stats`/`refresh` untested (need the kernel) |
 | `bench_mmap_visibility.sh` | Three arms (baseline / empty-table FIFO control / hot table) reusing `../convergence_repro/t1d_cell.py` unchanged; samples stats before and after teardown to separate the `zap_pte_range` burst; guards on a `-cache-ext` kernel and disables MGLRU. | `bash -n` clean; runnable only on a cache_ext kernel |
-| `bench_stack_phase2.sh` | Phase-2 bench: real-stack replay (t23 ladder) in a policy cgroup, 3 arms, sidecar table regenerated on-box, env gates per THIN_CLIENT_SWAP, optional antagonist, `sfu-serve` stopped. | `bash -n` clean; cache_ext kernel only |
+| `bench_stack_phase2.sh` | Phase-2 bench: real-stack replay (t23 ladder) in a policy cgroup, 3 arms, sidecar table regenerated on-box, environment gates per THIN_CLIENT_SWAP, optional antagonist, `sfu-serve` stopped. | `bash -n` clean; cache_ext kernel only |
 | `bench_matrix.sh` + `situations_battery.conf` | Situations runner for the E-battery (23 rows E7/E1/E3/E2/E4/E6): drives upstream policy loaders (fifo/s3fifo/sampling/lhd/mru/mglru) and ours, `table=auto|none|path` + knob passthrough, E8 refresh trigger keyed on the driver's pass lines, E8 workload switch passed through to the driver (`switch_at=`/`switch_seed=`/`switch_skew=`, `refresh_table=auto-epoch1`). | `bash -n` + parser dry-run clean |
 | `stack_replay.py` | S4/S6 driver: query weighting (proxy documented in-file), `--hydrate` (sqlite traffic — t23 never touches meta.sqlite), S6 drift mixture (`step`/`ramp` schedules between two REAL pre-encoded query lists, realized mixture logged per replay; convergence early-stop disabled under a schedule). | `py_compile` + offline scheduler exercise |
 | `antagonist_scan.sh` | Rate-limited sequential scan for S2 (outside cgroup) / S3 (inside); read-only. | `bash -n` clean |
@@ -139,8 +139,8 @@ generated from the *running* cache_ext kernel — so policies build only on
 the target box. Runtime: cgroup v2 memory controller, swap off, MGLRU off.
 
 WSL2 risk list (flagged, unverified): no grub — boot via `.wslconfig
-kernel=` with a hand-built bzImage; the kernel config is a real merge of
-Microsoft's WSL2 config onto their 6.6.8 tree (not a fragment append);
+kernel=` with a hand-built bzImage; the kernel configuration is a real merge of
+Microsoft's WSL2 configuration onto their 6.6.8 tree (not a fragment append);
 pahole/dwarves needed for BTF; WSL2's balloon shares reclaim pressure with
 the host. Bare-metal Linux (or a Cloudlab-style box) is the low-risk route
 for first light.
@@ -186,7 +186,7 @@ BTF present at `/sys/kernel/btf/vmlinux`.
 | `MGLRU` | `CONFIG_LRU_GEN_ENABLED=y` — cache_ext needs it OFF (§1b) | moot while the above hold |
 
 `CONFIG_CACHE_EXT` does not exist as a symbol: cache_ext is an out-of-tree
-research patch against v6.6.8, not an upstream config option. Nothing short
+research patch against v6.6.8, not an upstream configuration option. Nothing short
 of booting WSL2 on a hand-built `-cache-ext` bzImage (§4) changes rows 2–4.
 
 ### 7.2 Toolchain installed (container only; host kernel untouched)

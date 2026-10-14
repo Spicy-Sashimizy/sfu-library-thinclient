@@ -40,7 +40,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("storage_levers")
 
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 CORPUS = REPO_ROOT / "data/thin_client_poc/docs_100000.jsonl"
 SAMPLE = REPO_ROOT / "data/text_compression_sample.jsonl.gz"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — STEP 2: run the FORKED mmap BMP build and gate it.
 
 Loads the forked `bmp` (built per FORK_BMP.md into a THROWAWAY venv — never the

@@ -89,7 +89,7 @@ For reviewing a hand-intrinsic kernel, here's what each x86 op maps to:
 | `vpmaddubsw` (u8×i8→i16, paired) | `UDOT`/`SDOT` (u8×u8→u32, 4-wide) — ARMv8.4+; else `vmull_u8` + `vmlal` | M2's integer dot. **Prefer `std::simd` int widening+mul-add** so LLVM picks `vpmaddubsw`/`UDOT` automatically |
 | `vpgatherdd` | **none** (NEON gather is scalar `ldar` sequence) | M3: gather is scalar on both ISAs — a hand-AVX2 gather gives x86-only gain with no portable twin (Rule 2 / M3 exception) |
 | `vfmadd132ps` (FMA) | `fmla` (f32, always available); `vfmlaq_f16` (FP16, ARMv8.2) | already portable via `std::simd` `mul_add` |
-| `vptest` / `vtestz` | `cmtst` / `umin` | M1: use `std::simd` `Mask` ops (`Mask::all_false`), not intrinsics |
+| `vptest` / `vtestz` | `cmtst` / `umin` | M1: use `std::simd` `Mask` operations (`Mask::all_false`), not intrinsics |
 | `vpshufb` / `_mm_shuffle_epi8` (SSSE3) | `vqtbl1q_u8` (NEON tbl) | already used in `swizzle.rs`, already cfg-guarded |
 | `vpmaddwd` (i16→i32 widening) | `smlal`/`smlal2` | M2's i32 widen stage if >6-bit query is ever needed |
 
@@ -130,7 +130,7 @@ installs to root-owned `/usr/local/rustup/toolchains/nightly-.../lib/rustlib/`,
 so sudo is required.)
 
 The cargo registry/git caches (`/usr/local/cargo/registry`,
-`/usr/local/cargo/git`) must be user-writable; on this dev container they were
+`/usr/local/cargo/git`) must be user-writable; on this development container they were
 made writable via `sudo chown -R vscode:vscode /usr/local/cargo/registry
 /usr/local/cargo/git` (2026-07-03) — the same dev-container pattern as the
 root-owned venv (`CLAUDE.md`). If a future clone hits permission errors on

@@ -99,7 +99,7 @@ One-time (then periodic) sync of `/mnt/idxvol` payload + web build
 
 - **Yes as disaster recovery / exit insurance:** if OCI is ever dropped or
   the volume lost, the demo is rebuildable without re-deriving from the
-  dev tree. Replaces an OCI Object Storage backup (*est.* ~CAD 5/mo
+  development tree. Replaces an OCI Object Storage backup (*est.* ~CAD 5/mo
   avoided).
 - **No as a launch-time data source:** restoring 126 GB from a
   residential uplink per wake is hours-to-days — incompatible with a
@@ -119,7 +119,7 @@ a Cloudflare tunnel (pattern already proven for ntfy). Cost ≈ 0.
   exactly the levers — no-residue load + warmup — that shrink the serving
   need toward the 13.8 GB hot set + ~1 GB anon. If S1 passes, ~16–20 GB
   of free NAS RAM serves the full 150M index (*est.* until phase B).
-- **NAS specs (measured over SSH 2026-09-02):** x86_64, 4 cores, 23 GiB
+- **NAS specifications (measured over SSH 2026-09-02):** x86_64, 4 cores, 23 GiB
   RAM with only ~6 GiB available (apps resident), ~1.9 TB free on MAIN
   (existing `MAIN/sfu-library-mcp` dataset). Consequence: parallel
   serving (needs ≥25 GB cold) is OUT; option C is viable ONLY in
@@ -165,6 +165,6 @@ experiment; do not block the 09-03 decision on it.
 | Tenancy upgrade decision | user | 2026-09-03 |
 | Killswitch 25 h cap test | session | before unattended PAYG |
 | Cold-store sync to TrueNAS | session (needs NAS reachable/ssh) | before 2026-09-03 |
-| NAS specs (CPU/RAM/disk/uplink) for option C | user | when convenient |
+| NAS specifications (CPU/RAM/disk/uplink) for option C | user | when convenient |
 | Idle-stop threshold choice | user | with A |
 | A1/aarch64 feasibility check | session | post-trial |

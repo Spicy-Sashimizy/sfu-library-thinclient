@@ -42,7 +42,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 FIX = Path("/home/vscode/work/delta_ingest/corpus_a")

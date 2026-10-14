@@ -61,9 +61,9 @@ corpus sample.
 | ≥ 2010 | 1,986,985 | 99.4% | BLOCKED |
 
 Total corpus = **150,413,098 docs** (the G6/G7 build figure, `TOTAL_DOCS` in
-`serve_footprint_bench.py`). 10 sections (from the filesystem `sections/` dir —
+`serve_footprint_bench.py`). 10 sections (from the filesystem `sections/` directory —
 the SQL `GROUP BY section` is also 9p-slow, so the section inventory uses the
-dir listing instead).
+directory listing instead).
 
 **The full-corpus year cut is the host-tier follow-on** (a native-ext4 host
 counts in ~seconds; the 9p bottleneck is a container-mount artifact, not a data
@@ -75,7 +75,7 @@ is 9p-blocked from corroborating it here. Recorded — not silent.
 
 The pilot shard build (`scripts/seismic_testbed/build_persona_seismic.py --jsonl`)
 needs the pre-encoded `sparse_field` **spool** (`data/thinclient_index/spool/
-*.jsonl.zst`) — and the spool dir is **absent** (the root CLAUDE.md notes spool
+*.jsonl.zst`) — and the spool directory is **absent** (the root CLAUDE.md notes spool
 re-derivation; the EXPORT step of `build_thinclient_index.py` produces it from
 the source index, which isn't running here). So the ~1M-doc pilot build through
 the existing index-build path is **not runnable in-container** — the selection

@@ -3,7 +3,7 @@ Usage: probe_delta_ingest_fold_dump_mem.py <workers> <out.jsonl on local disk>; 
 import os, sys, time, json, threading
 from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(REPO), str(REPO / "src")]
+sys.path[:0] = [str(REPO), str(REPO / "source")]
 from spike.delta_ingest.foldin import dump_fold_jsonl
 
 def tree(pid):

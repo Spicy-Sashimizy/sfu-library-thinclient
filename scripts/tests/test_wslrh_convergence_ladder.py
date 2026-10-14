@@ -23,7 +23,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 DRIVER = REPO / "scripts" / "seismic_testbed" / "wslrh_convergence_ladder.py"
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 R2_KEYS = {"probe", "date", "cap", "cgroup_memory_max", "manifest", "queries",
            "top_k", "load_s", "prefault_gate", "convergence",

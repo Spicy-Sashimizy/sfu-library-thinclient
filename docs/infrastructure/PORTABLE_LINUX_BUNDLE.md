@@ -34,16 +34,16 @@ manifest), `bundle_check.py` (shipped in the bundle as `bin/bundle_check.py`:
   BUILD_REPORT.json      wall-clock of this build (outside the manifest)
 ```
 
-**The import-path recipe (replaces the venv's tilted-name dirs).** The dev
-venv's `~~ismic` / `~-ismic` / `~yseismic` dirs are pip's half-uninstalled
+**The import-path recipe (replaces the venv's tilted-name directories).** The development
+venv's `~~ismic` / `~-ismic` / `~yseismic` directories are pip's half-uninstalled
 leftovers from swapping `.so` variants in place. The bundle never installs a
 seismic wheel: the `.so` sits in `ext/seismic/` and one `.pth` file in
 site-packages appends `ext/` and `app/src/` to `sys.path` with **relative**
-paths (CPython's `site` resolves `.pth` lines against the site-packages dir),
+paths (CPython's `site` resolves `.pth` lines against the site-packages directory),
 so the path is fixed by the layout, not by the build location. Nothing else in
 the bundle provides a `seismic` module, so there is no precedence question.
 
-**Wheel set (CPU only).** Mirrors the dev venv (§(a) of the manifest) with the
+**Wheel set (CPU only).** Mirrors the development venv (§(a) of the manifest) with the
 two GPU dists swapped: `torch 2.6.0+cu124` → **`torch 2.6.0+cpu`** (from
 `download.pytorch.org/whl/cpu`), dist `onnxruntime-gpu 1.26.0` →
 **`onnxruntime 1.26.0`**. torch stays because the full serve path needs it:
@@ -62,11 +62,11 @@ Zotero MCP tools are unavailable in the bundle.
 no model weights. The bundle's `lib/` resolves its repo-root defaults to
 `app/`, where nothing lives, so these must be set:
 
-| Env var | Points at | Note |
+| Environment var | Points at | Note |
 |---|---|---|
 | `SFU_THINCLIENT_INDEX_ROOT` (or `ThinClientRetriever(index_root=…)`) | `data/thinclient_index/` | tantivy sections, `meta.sqlite`, `packed/` |
-| `SFU_SEISMIC_SHARD_MANIFEST` | a shard manifest JSON | **required**: the default-manifest auto-pick only fires when the index root equals the repo's own `data/thinclient_index`. The served manifests record repo-root-relative `mmap_dir` paths, which the bundle would re-anchor at `app/`; pass a manifest with absolute paths (`bundle_check.py smoke --anchor <repo>` writes a temp absolute copy) |
-| `SFU_SPLADE_MODEL_PATH` | a dir holding `model.onnx` **and** the bert-base-uncased tokenizer files | ⚠ the served `models/splade_onnx_fused/` has only `model.onnx` + `config.json`; in the repo the tokenizer is borrowed from code-relative `models/sfu-academic-embed-v{1,4-bge,4-mini}` (`lib/opensearch_retriever.py` `_TOKENIZER_FALLBACK_DIRS`), which the bundle's code cannot see — see smoke attempt 1 below. A handout must ship the tokenizer inside the SPLADE dir (`bundle_check.py smoke --splade-tokenizer` builds a symlinked composite) |
+| `SFU_SEISMIC_SHARD_MANIFEST` | a shard manifest JSON | **required**: the default-manifest auto-pick only fires when the index root equals the repository's own `data/thinclient_index`. The served manifests record repo-root-relative `mmap_dir` paths, which the bundle would re-anchor at `app/`; pass a manifest with absolute paths (`bundle_check.py smoke --anchor <repo>` writes a temp absolute copy) |
+| `SFU_SPLADE_MODEL_PATH` | a directory holding `model.onnx` **and** the bert-base-uncased tokenizer files | ⚠ the served `models/splade_onnx_fused/` has only `model.onnx` + `config.json`; in the repository the tokenizer is borrowed from code-relative `models/sfu-academic-embed-v{1,4-bge,4-mini}` (`lib/opensearch_retriever.py` `_TOKENIZER_FALLBACK_DIRS`), which the bundle's code cannot see — see smoke attempt 1 below. A handout must ship the tokenizer inside the SPLADE directory (`bundle_check.py smoke --splade-tokenizer` builds a symlinked composite) |
 | `SFU_EMBEDDING_MODEL_PATH` | `models/sfu-academic-embed-v5/` | embed-rerank stage (not dense-only) |
 | `SFU_CE_MODEL_PATH` | `models/sfu-cross-encoder-v1/` | else the reranker falls back to the HF-hub id `cross-encoder/ms-marco-MiniLM-L-6-v2` (network) |
 
@@ -122,7 +122,7 @@ the highest wheel tag in the lock is `cryptography … manylinux_2_34` (pulled i
 by `mcp` → `pyjwt[crypto]`), so **the bundle's host floor is glibc 2.34 +
 x86-64-v3 (AVX2/FMA)**. Only verified on this host's glibc 2.36.
 
-**Relocation: PASS.** The built dir was `mv`ed to
+**Relocation: PASS.** The built directory was `mv`ed to
 `/tmp/claude-1000/portable_linux/moved/some/other/bundle_relocated` and the
 import check re-run from cwd `/var`: PASS, 4.4 s, every resolved path under
 the new location. The smoke below also ran from the moved copy.
@@ -137,8 +137,8 @@ copy), query "social capital and civic participation", `top_k=10`,
   it.** 10 hits came back, but the log carried `SEISMIC SPLADE leg failed (No
   local bert-base-uncased tokenizer found for SPLADE …)` — the SPLADE leg fell
   back to BM25F only, silently as far as the hit list goes. Cause: the tokenizer
-  lookup described in the env table above. This is a real handout-contract gap
-  in the served model dir, not a bundle defect.
+  lookup described in the environment table above. This is a real handout-contract gap
+  in the served model directory, not a bundle defect.
 - **Attempt 2 (lock held 04:19:16–04:19:36Z): PASS** with
   `--splade-tokenizer models/sfu-academic-embed-v1`: 10 hits (8 with a local
   abstract), SEISMIC served from the bundle's own `ext/seismic/…so`, no
@@ -168,11 +168,11 @@ copy), query "social capital and civic participation", `top_k=10`,
   only). The CPU serve-path latency on this host (not from the bundle) is in
   `PORTABLE_STACK_MANIFEST.md` §(d) row 6 (2026-09-27).
 - **ONNX cross-encoder** (`SFU_CE_ONNX=1`) looks for
-  `models/sfu-cross-encoder-v1-onnx-int8` relative to the code, i.e. inside
-  `app/`; there is no env override, so it cannot be enabled in the bundle
+  `models/sfu-cross-encoder-v1-onnx-int8` relative to the code, that is, inside
+  `app/`; there is no environment override, so it cannot be enabled in the bundle
   without a code change.
 - **Shipping the SPLADE tokenizer in the model dir.** The smoke proves a
-  composite dir works; no handout-ready SPLADE dir (ONNX + tokenizer) has
-  been built, and the served dir is left as is.
+  composite directory works; no handout-ready SPLADE directory (ONNX + tokenizer) has
+  been built, and the served directory is left as is.
 - **Lower-ISA fallback** (the v2 `.so`, doc 10 §7.7) is not wired in; the
   recipe ships v3 only.

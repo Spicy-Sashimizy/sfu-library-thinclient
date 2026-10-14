@@ -33,7 +33,7 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 FOLDIN = Path("/home/vscode/work/delta_ingest/foldin")

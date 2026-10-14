@@ -7,7 +7,7 @@ import json, sys, statistics, time
 from pathlib import Path
 
 REPO = Path("/workspaces/sfu-library-thinclient")
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts" / "seismic_testbed"))
 from q7_hybrid_federation_bench import run_cell, _cold_p50, _warm_p50, _vmswap_gb
 

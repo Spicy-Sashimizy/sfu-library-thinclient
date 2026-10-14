@@ -103,7 +103,7 @@ def dump_json(path: Path, obj) -> None:
 
 
 def _paths():
-    for p in (str(REPO), str(REPO / "src")):
+    for p in (str(REPO), str(REPO / "source")):
         if p not in sys.path:
             sys.path.insert(0, p)
 
@@ -564,7 +564,7 @@ def main() -> int:
     i = sub.add_parser("inproc")
     i.add_argument("--root", default=str(G1M_ROOT))
     i.add_argument("--rows-out", required=True)
-    i.add_argument("--src", default=str(REPO / "src"))
+    i.add_argument("--src", default=str(REPO / "source"))
     i.add_argument("--passes", type=int, default=2)
     i.add_argument("--warmup", type=int, default=1)
     i.add_argument("--limit-topics", type=int, default=0)

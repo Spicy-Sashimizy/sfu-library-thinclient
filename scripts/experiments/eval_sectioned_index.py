@@ -45,7 +45,7 @@ import zstandard
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("eval_sectioned")
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "source"))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from eval_lexical_lossless import (  # noqa: E402
@@ -261,7 +261,13 @@ def unpack_section(name: str) -> dict:
 
 
 def parity(original: str, restored: str) -> dict:
-    from lib.opensearch_retriever import OpenSearchRetriever
+    import importlib.util as _ilu
+    # class archived 2026-10-11 to scripts/archive/opensearch_era; load it by path
+    _osp = __import__('pathlib').Path(__file__).resolve().parents[1] / 'archive' / 'opensearch_era' / 'opensearch_retriever.py'
+    _osspec = _ilu.spec_from_file_location('opensearch_retriever_archived', _osp)
+    _osmod = _ilu.module_from_spec(_osspec)
+    _osspec.loader.exec_module(_osmod)
+    OpenSearchRetriever = _osmod.OpenSearchRetriever
     records = json.loads((REPO_ROOT / "data/eval_results/diverse_queries.json").read_text())
     queries = []
     seen: set[str] = set()

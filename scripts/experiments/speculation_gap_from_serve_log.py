@@ -7,7 +7,7 @@ instrumentation). For every `mode=federated` row that carries per-leg
 timings, gap_ms = leg_ms.total - leg_ms.bm25f - leg_ms.splade (- dense when
 present).
 
-What the gap contains, by construction (src/lib/thinclient/retriever.py
+What the gap contains, by construction (source/lib/thinclient/retriever.py
 `search()` records the leg ms BEFORE `_hydrate`; tools.py
 `search_academic_structured` measures `total` around router.search +
 `_maybe_rerank`): per-leg hydrate (meta rows + abstract sidecar + OpenAlex

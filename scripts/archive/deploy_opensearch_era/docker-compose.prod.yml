@@ -1,0 +1,50 @@
+# Duck Library MCP Server — Production Deployment on TrueNAS
+# > **CLOSED SUPERSEDED 2026-10-11** — OpenSearch-era droplet+TrueNAS deploy tooling; current deployment is scripts/demo_broker/ (OCI demo) and scripts/serve_http.sh locally
+# Usage: sudo docker compose -f deploy/docker-compose.prod.yml up -d
+
+services:
+  sfu-library-mcp:
+    container_name: sfu-library-mcp
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.prod
+    ports:
+      - "8080:8080"
+    secrets:
+      - zotero_api_key
+      - zotero_user_id
+    volumes:
+      - /mnt/MAIN/sfu-library-mcp/logs:/app/logs
+      - /mnt/MAIN/sfu-library-mcp/data:/app/data
+    environment:
+      - SFU_LOG_FILE=/app/logs/sfu-library-mcp.log
+      - SFU_LOG_LEVEL=INFO
+      - MCP_HTTP_HOST=0.0.0.0
+      - MCP_HTTP_PORT=8080
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 512m
+    restart: unless-stopped
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+secrets:
+  zotero_api_key:
+    file: /mnt/MAIN/sfu-library-mcp/secrets/zotero_api_key
+  zotero_user_id:
+    file: /mnt/MAIN/sfu-library-mcp/secrets/zotero_user_id

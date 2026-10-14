@@ -9,12 +9,12 @@ Windows decision pending.
 
 **What this project is NOT:** the research testbed. Indexes are built,
 measured, and gated in `sfu-library-thinclient` (the artifact factory +
-parity oracle). This repo never builds or mutates index artifacts.
+parity oracle). This repository never builds or mutates index artifacts.
 
 ## THE PARITY GATE (non-negotiable, the founding rule)
 
 No client release — no merged serving-path PR — without **bit-exact top-k
-(ids AND scores) against the current golden fixtures** from the oracle repo
+(ids AND scores) against the current golden fixtures** from the oracle repository
 (`fixtures/` here, imported via `scripts/import_fixtures.sh`). This is the
 WI-4 methodology inherited from the oracle: fixed query set → expected
 top-10 per shard → diff. A parity failure is a STOP, never a tolerance.
@@ -23,16 +23,16 @@ top-10 per shard → diff. A parity failure is a STOP, never a tolerance.
 
 - `CONTRACT.md` pins: bundle-manifest schema version, fixture-set date,
   artifact checksums source. Bump explicitly; never consume unpinned.
-- If the oracle repo re-converts shards (e.g. E8 stages) the fixture set
-  date CHANGES and this repo re-imports + re-gates before adopting.
-- Absolute dates only (e.g. 2026-07-17), never "current"/"latest".
+- If the oracle repository re-converts shards (for example, E8 stages) the fixture set
+  date CHANGES and this repository re-imports + re-gates before adopting.
+- Absolute dates only (for example, 2026-07-17), never "current"/"latest".
 
 ## Repo hygiene
 
 - NO index artifacts, models, or fixtures-derived binaries in git — this
-  repo stays CI-friendly small. `fixtures/` holds JSON goldens only (KBs);
+  repository stays CI-friendly small. `fixtures/` holds JSON goldens only (KBs);
   bundles are downloaded/imported to gitignored paths.
-- Standard git flow, but inherit one rule from the oracle repo: stage
+- Standard git flow, but inherit one rule from the oracle repository: stage
   explicitly, never `git add .` (imported bundles land in-tree gitignored;
   don't tempt fate).
 - Rust: `cargo fmt` + `clippy -D warnings` from day one; portable CPU
@@ -42,7 +42,7 @@ top-10 per shard → diff. A parity failure is a STOP, never a tolerance.
 
 ## Key upstream references (read before designing)
 
-In the oracle repo (`sfu-library-thinclient`):
+In the oracle repository (`sfu-library-thinclient`):
 - `docs/infrastructure/PORTABLE_STACK_MANIFEST.md` — what a bundle contains
   + the installer delta list (Windows/mmap, CPU wheels, licensing, spool).
 - `docs/infrastructure/PORTABLE_DATA_SHIPPING_RESEARCH.md` — DECIDED:

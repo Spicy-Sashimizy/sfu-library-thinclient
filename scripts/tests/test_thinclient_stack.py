@@ -1,5 +1,5 @@
 """Regression suite for the thin-client stack (2026-06-11 batch):
-meta v1/v2 schema, era sub-sections + pruning, abstracts v1/v2/v3,
+meta v1/v2 schema, era sub-sections + pruning, abstracts v3 (pre-v3 refused),
 dense warm cache, MCP index-management tools.
 
 Run: .venv/bin/python3 -m pytest scripts/tests/test_thinclient_stack.py -q
@@ -15,14 +15,13 @@ import pytest
 import zstandard
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO / "scripts"))
 
 from lib.thinclient.builder import (SectionBuilder, encode_meta_id,  # noqa: E402
                                     open_meta_db)
 from lib.thinclient.retriever import ThinClientRetriever, _era_skip  # noqa: E402
-from lib.thinclient.sections import (PERSONAS, SUBSECTION_NAMES, era_of,  # noqa: E402
-                                     subsection_name)
+from lib.thinclient.sections import PERSONAS, SUBSECTION_NAMES, era_of  # noqa: E402
 import lib.thinclient.abstracts as A  # noqa: E402
 
 EN = ("This study examines the political economy of climate adaptation in "
@@ -35,8 +34,7 @@ ZH = "本文研究沿海地区气候适应的政治经济学，基于比较调�
 def _mkdoc(i: int, year: int = 2015, section_word: str = "politics") -> dict:
     return {"id": f"W{i}", "title": f"{section_word} paper {i}",
             "abstract": f"{section_word} text {i}", "publication_year": year,
-            "type": "article", "is_oa": i % 2 == 0, "doi": f"10.1/{i}",
-            "sparse_field": {section_word: 1.2, f"t{i % 7}": 0.8}}
+            "type": "article", "is_oa": i % 2 == 0, "doi": f"10.1/{i}"}
 
 
 def _build_index(root: Path, n: int = 600, hot: bool = True) -> None:
@@ -96,7 +94,7 @@ def test_meta_v1_text_schema_still_served(tmp_path):
 def test_era_helpers_and_personas():
     assert era_of(2015) == "recent" and era_of(1995) == "archive"
     assert era_of(None) == "archive"
-    assert subsection_name("cs_math", 2020) == "cs_math__recent"
+    assert "cs_math__recent" in SUBSECTION_NAMES
     assert PERSONAS["political_science"] == ["social_sciences__recent"]
     assert "social_sciences__archive" in PERSONAS["historical"]
     assert all(s.endswith("__recent") for s in PERSONAS["contemporary"])
@@ -122,7 +120,7 @@ def test_build_worker_era_routing(tmp_path):
                       + "\n").encode())
         zw.close()
     infos = B.build_section_worker(str(tmp_path), "social_sciences",
-                                   ["social_sciences__recent"], True, 2_000_000)
+                                   ["social_sciences__recent"], True)
     assert infos["social_sciences__recent"]["docs"] == 200
     assert infos["social_sciences__recent"]["hot"]
     assert not infos["social_sciences__archive"]["hot"]
@@ -160,7 +158,6 @@ def test_abstracts_v3_roundtrip(tmp_path):
     assert w.finish() == len(docs)
 
     r = A.AbstractStore(tmp_path / "a.sqlite")
-    assert r._v3
     fetched = r.fetch(list(docs))
     assert fetched == docs
     db = sqlite3.connect(tmp_path / "a.sqlite")
@@ -211,7 +208,7 @@ def test_abstracts_flat_survives_dropping_the_blocks_table(tmp_path):
     db.close()
 
     r = A.AbstractStore(p)
-    assert r._v3 and r._flat is not None
+    assert r._flat is not None
     assert r.fetch(list(docs)) == docs
 
 
@@ -251,28 +248,14 @@ def test_abstracts_half_built_sidecar_falls_back(tmp_path):
     assert r.fetch(list(docs)) == docs
 
 
-def test_abstracts_v1_v2_read_compat(tmp_path):
+def test_abstracts_pre_v3_store_refused(tmp_path):
     p1 = tmp_path / "v1.sqlite"
     db = sqlite3.connect(p1)
     db.executescript("CREATE TABLE abs (id TEXT PRIMARY KEY, z BLOB);"
                      "CREATE TABLE meta (k TEXT PRIMARY KEY, v BLOB);")
-    db.execute("INSERT INTO abs VALUES (?,?)",
-               ("W1", zstandard.ZstdCompressor(level=19).compress(b"old v1")))
     db.commit(); db.close()
-    assert A.AbstractStore(p1).fetch(["W1"]) == {"W1": "old v1"}
-
-    p2 = tmp_path / "v2.sqlite"
-    db = sqlite3.connect(p2)
-    db.executescript(
-        "CREATE TABLE abs (id TEXT PRIMARY KEY, z BLOB, d INTEGER NOT NULL DEFAULT 0);"
-        "CREATE TABLE meta (k TEXT PRIMARY KEY, v BLOB);")
-    zd = zstandard.train_dictionary(
-        112 * 1024, [(RU + str(i)).encode() for i in range(400)])
-    db.execute("INSERT INTO meta VALUES ('zdict_ru', ?)", (zd.as_bytes(),))
-    cc = zstandard.ZstdCompressor(level=19, dict_data=zd)
-    db.execute("INSERT INTO abs VALUES (?,?,1)", ("WR1", cc.compress(RU.encode())))
-    db.commit(); db.close()
-    assert A.AbstractStore(p2).fetch(["WR1"]) == {"WR1": RU}
+    with pytest.raises(RuntimeError, match="not a v3 abstracts store"):
+        A.AbstractStore(p1)
 
 
 @pytest.fixture
@@ -444,7 +427,8 @@ def test_rrf_provenance_is_opt_in_and_ranking_neutral():
 
 
 def test_search_rrf_ranking_unchanged_with_provenance(tmp_path, monkeypatch):
-    """Same assertion through the real served path (tantivy + BMP legs)."""
+    """Same assertion through the real served path (tantivy BM25F leg; no
+    SEISMIC shards here, so the SPLADE leg takes its BM25F fallback)."""
     monkeypatch.setenv("SFU_DENSE_WARMCACHE", "0")
     _build_index(tmp_path)
     r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)

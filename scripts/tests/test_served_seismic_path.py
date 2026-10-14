@@ -42,7 +42,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 _VOCAB = ["cell", "receptor", "membrane", "signal", "kinase", "phosphory",
           "transduc", "protein", "gene", "express"]

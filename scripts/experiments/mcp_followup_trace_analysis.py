@@ -12,7 +12,7 @@ Q2  How often does a session run a second search within a short window, and
     how does its result set overlap the first (Jaccard of result ids)?
 Q3  Does the in-process works cache that tools._cache_works fills after a
     search already serve the follow-up tools for those ids?  Answered by
-    static inspection (ast) of src/lib/tools.py: which cache/remote calls
+    static inspection (ast) of source/lib/tools.py: which cache/remote calls
     each follow-up handler makes.
 
 Trace sources inventoried (every one found in the repo on 2026-09-25):
@@ -20,7 +20,7 @@ Trace sources inventoried (every one found in the repo on 2026-09-25):
   - tools._persist_metric JSONL (SFU_METRICS_LOG_PATH; default in-repo logs/mcp_metrics.jsonl)
   - serve query-log             (data/eval_results/serve_query_log.jsonl, lib/serve_query_log.py)
   - engagement log              (SFU_ENGAGEMENT_LOG_PATH, default logs/engagement_log.jsonl;
-                                 backs web/src/analytics.jsx via lib/analytics.py)
+                                 backs web/source/analytics.jsx via lib/analytics.py)
   - any data/eval_results file naming a follow-up tool (Playwright / eval drives)
 
 Read-only.  Does not touch data/thinclient_index.
@@ -35,7 +35,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "src/lib/tools.py"
+TOOLS = ROOT / "source/lib/tools.py"
 SERVE_LOG = ROOT / "data/eval_results/serve_query_log.jsonl"
 METRICS_LOG = ROOT / "logs/mcp_metrics.jsonl"
 ENGAGEMENT_LOG = Path(os.environ.get("SFU_ENGAGEMENT_LOG_PATH",
@@ -87,8 +87,8 @@ def inventory() -> dict:
         "sessions": len({r.get("session") for r in serve}),
         "date_range": [serve[0]["ts"], serve[-1]["ts"]] if serve else None,
         "emitters": [
-            "src/lib/tools.py search_academic_structured (GUI /api/search only)",
-            "src/sfu_library_mcp_http.py _log_cache_served_hit (GUI result-cache hits)",
+            "source/lib/tools.py search_academic_structured (GUI /api/search only)",
+            "source/sfu_library_mcp_http.py _log_cache_served_hit (GUI result-cache hits)",
         ],
         "mcp_tool_rows": 0,
         "note": ("Written only by the GUI structured search path and its "
@@ -123,7 +123,7 @@ def inventory() -> dict:
         "exists": ENGAGEMENT_LOG.is_file(),
         "rows": len(eng),
         "kinds": dict(Counter(r.get("kind") for r in eng)),
-        "note": ("Backs web/src/analytics.jsx (lib/analytics.py position_bias "
+        "note": ("Backs web/source/analytics.jsx (lib/analytics.py position_bias "
                  "and session_replay panels). Has session_id + doc_id + "
                  "action_type (abstract|tldr|pdf|citation|zotero) but is "
                  "client-posted GUI engagement, not MCP tool calls."),

@@ -136,7 +136,7 @@ All at production scale unless stated. Sources: `data/eval_results/`.
 
 ### 4.1 The mask and the key lookup (`c6_ordinal_20260802_0704.json`)
 
-150M rows, mmap'd columnar arrays, vs the measured production SQLite baselines
+150M rows, mmap'd columnar arrays, versus the measured production SQLite baselines
 in `c1_production_scale_20260802_0529.json`:
 
 | k | ordinal mask | W-id→ordinal (binary search) | `meta.sqlite` |
@@ -149,7 +149,7 @@ in `c1_production_scale_20260802_0529.json`:
 Binary search landed on the exact row at every k. **The ratios (22×–2491×) are
 noisy and are NOT the claim** — absolute times are sub-millisecond, so small
 variance moves the multiple a lot (an independent earlier run measured the k=100
-mask at 0.405 ms vs 1.012 ms here). The claim is the *band*: sub-millisecond to
+mask at 0.405 ms versus 1.012 ms here). The claim is the *band*: sub-millisecond to
 low-milliseconds where SQLite costs 38–400 ms, reproduced across two runs.
 
 ### 4.2 Residency is the mechanism (`c6_ordinal_*`)
@@ -330,7 +330,7 @@ the same cached search path; MPHF arms are distribution-independent.)
 **Verdict against the pre-registered bar (≤ 100 MB AND ≤ 100 ns/key end to end):
 FAIL, on size, decisively.**
 1. *Size.* The only arms that give an exact membership answer — which §6 risk 2
-   makes non-optional — are 1,260 MB and 1,861 MB, i.e. **larger** than the
+   makes non-optional — are 1,260 MB and 1,861 MB, that is, **larger** than the
    1,203 MB sorted array they were meant to replace. The smallest verified
    arm, an 8-bit fingerprint, is 207 MB and still wrongly accepts 0.39% of
    non-members. The bar was in fact unreachable for *any* exact structure: the
@@ -342,7 +342,7 @@ FAIL, on size, decisively.**
    deferral reasoning above that is ~1 ms of a ~50 ms query at k = 1000, and
    the warm MPHF numbers are flattered by this CPU's 96 MB L3 holding the whole
    56 MB MPHF. Cold, the exact MPHF arm is no better than the binary search
-   (48.0 vs 43.5 µs mean): both are page-fault-bound on a 1.2 GB array.
+   (48.0 versus 43.5 µs mean): both are page-fault-bound on a 1.2 GB array.
 
 **What this corrects.** §3's "~27× smaller" and §4.2's "1.20 GB → ~45 MB /
 → ~0.8 GB total" counted the MPHF but not its verification payload. §3's own
@@ -366,7 +366,7 @@ deliberately not done.
 
 **N4 — end-to-end prototype on one section (the real test).** Rewrite
 `_post_filter` and `_hydrate` against ordinal arrays for
-`social_sciences__recent` only, behind an env gate, and measure whole-query
+`social_sciences__recent` only, behind an environment gate, and measure whole-query
 latency — not primitives. *Bar:* a **record-tc byte-parity gate** against the
 current retriever, the same bar `eval_parity_section_waves.py` holds. Parity is
 non-negotiable; speed without it is meaningless.
@@ -447,7 +447,7 @@ byte-identical to `AbstractStore.fetch`. Same id set, zero mismatches.
 > passthrough mount), so it is like-for-like and not the §14 error — but with
 > both sides on **local disk**, the identical payload move measures **1.21×**.
 > §16 also shows the locator this section deliberately left in SQLite is worth a
-> further **4.55×**, i.e. §9 optimised the smaller half.
+> further **4.55×**, that is, §9 optimised the smaller half.
 >
 > **CORRECTION 2026-08-02 (audit): N5 is a latency lever, NOT a space lever.**
 > §7 above described N5 as worth "~3.4× on abstract hydration and ~2.2 GB". The
@@ -457,7 +457,7 @@ byte-identical to `AbstractStore.fetch`. Same id set, zero mismatches.
 > keeps the locator in SQLite, so that envelope stays. Measured on
 > `social_sciences__recent`: sqlite 13.47 GB + sidecar 11.15 GB = **24.62 GB
 > with both present**, and ~13.49 GB after `DROP TABLE blocks; VACUUM;` —
-> i.e. roughly where it started. Adopt N5 for the 2.89×, not for space.
+> that is, roughly where it started. Adopt N5 for the 2.89×, not for space.
 
 **Doc 17 §11 projected ~3.4×; the measured end-to-end is 2.89×.** The projection
 took the block stage's 3.8× and assumed it carried through; the locator and
@@ -522,7 +522,7 @@ this time, but caught by a question rather than by discipline.
 > code change and the filter stage went 222.2 → **4.0 ms** on its own. Ordinals
 > then take it 4.0 → 1.5 ms: a further 2.7×, worth **2.5 ms (2.0%)** of the
 > query, which is *inside* §14's ±4% noise floor. Read every multiple below as
-> "ordinals vs SQLite-on-9p", not "ordinals vs SQLite". The parity results and
+> "ordinals versus SQLite-on-9p", not "ordinals versus SQLite". The parity results and
 > the build numbers are unaffected.
 
 ### N3 — ordinal artifacts built from the real `meta.sqlite`
@@ -552,7 +552,7 @@ but it is still an extrapolation, and **the full 150M pass was not run**.
 - Code: `spike/meta_consolidation/10_n4_postfilter_parity.py`
 - Results: `data/eval_results/n4_postfilter_20260802_0805.json`
 - Arms: production `_meta_rows` + `_post_filter` (reproduced from
-  `retriever.py:988-1044`) vs `searchsorted` + vectorised mask. **No rebuild of
+  `retriever.py:988-1044`) versus `searchsorted` + vectorised mask. **No rebuild of
   tantivy, SEISMIC or usearch** — per §10, the legs keep emitting W-ids.
 
 **PARITY GATE: PASS — 360 trials across 3 filter shapes, 0 mismatches.** The
@@ -575,7 +575,7 @@ filter that reorders the legs' ranking is wrong no matter how fast it is.
 k=1000, against 400.8 ms measured over the full 150M id range (§4.1) — because
 candidates are drawn from the ordinal-covered first 25M ids, a narrower and
 more cache-friendly slice. The **ordinal arm is scale-independent** (1.013 ms
-here vs 0.956 ms at full 150M, §4.1). So 120–211× is the *conservative* figure;
+here versus 0.956 ms at full 150M, §4.1). So 120–211× is the *conservative* figure;
 at full corpus coverage the production side rises to ~400 ms while the ordinal
 side does not move, putting the true ratio nearer 400×. **The 120–211× band is
 what was measured; the ~400× is inference.**
@@ -607,7 +607,7 @@ engine and no rebuild of anything**.
 dangerous property of the design*; it was designed but not built, and nothing
 should ship before it exists.
 
-- Code: `src/lib/thinclient/ordinals.py` — `OrdinalSpace`, `write_stamp`,
+- Code: `source/lib/thinclient/ordinals.py` — `OrdinalSpace`, `write_stamp`,
   `load_if_enabled`. **Read by nothing yet**: no serving path imports it, and
   it is inert unless `SFU_THINCLIENT_ORDINALS` names a directory.
 - Tests: `scripts/tests/test_ordinals_guard.py` — 12/12 pass 2026-08-02; the
@@ -624,7 +624,7 @@ the corpus, because two builds of the same corpus are still *different ordinal
 spaces* and a content hash would invite treating "same corpus" as "same
 addresses".
 
-Each refusal has its own test: rebuilt arrays vs an old manifest, unstamped
+Each refusal has its own test: rebuilt arrays versus an old manifest, unstamped
 manifest, missing stamp file, truncated arrays (the `--rows` under-estimate
 case, which the build now also refuses outright).
 
@@ -722,7 +722,7 @@ band also means the two headline multiples should be read as "≈3×", not as
 3.20 and 2.70 precisely.
 
 **p90 tails are not usable and no tail claim is made** — they invert in places
-(splade k=10: ordinal p90 858.6 ms vs production 154.1 ms) because tail is
+(splade k=10: ordinal p90 858.6 ms versus production 154.1 ms) because tail is
 dominated by page faults in a shared page cache at this sample size.
 
 ### Where the query actually goes (production arm, splade k=50)
@@ -750,8 +750,8 @@ replacing. (`fetch_abstracts` at 6.9% is separately addressed by N5's 2.89×.)
 
 ### Residency is a deployment PRECONDITION, not an implementation detail
 
-The first N6 attempt ran the ordinal arrays from the repo path, which is **9p**
-in this container, and the ordinal arm measured **2973 ms vs production's
+The first N6 attempt ran the ordinal arrays from the repository path, which is **9p**
+in this container, and the ordinal arm measured **2973 ms versus production's
 362 ms — 8× SLOWER**, parity still PASS. A `searchsorted` over the 1.20 GB
 `wids.npy` is ~27 random accesses per id; at 500 candidates that is ~13,500
 random page faults, and on 9p at ~0.5 ms/fault that is ~3 s.
@@ -970,7 +970,7 @@ and unlike those it also ships a silent-wrong-answer failure mode.
    and everything ordinals can still win on the target is **4.0 → 1.5 ms**.
    Building a `meta.sqlite` staging path would be a **no-op on the droplet**,
    exactly as SEISMIC staging already is. (An earlier draft of this section
-   hedged this as "may simply not exist there"; the repo had already answered
+   hedged this as "may simply not exist there"; the repository had already answered
    it and the hedge is withdrawn.)
 4. Concurrency, the dense leg, and the warm-cache `unresolved` merge path are
    all still unmeasured (§13 status list), and all of them inherit this
@@ -1032,7 +1032,7 @@ order-randomised per trial, titles/DOIs compared byte-for-byte against
 `meta.sqlite` on the same ids. Baseline reads the **staged** copy (local disk),
 because per §14 measuring against the 9p copy would flatter every design ~50×.
 
-| design | p50 (50 hits) | vs mainline | payload B/doc | replacement total | vs `meta.sqlite` |
+| design | p50 (50 hits) | versus mainline | payload B/doc | replacement total | versus `meta.sqlite` |
 |---|---|---|---|---|---|
 | `sqlite_mainline` | 0.2324 ms | 1.00× | — | 24.91 GB | — |
 | `raw` (u64 offsets, uncompressed mmap) | 0.1424 ms | 0.61× | 142.1 | 24.52 GB | **−0.39 GB** |
@@ -1054,7 +1054,7 @@ here. Its blocks hold **230 docs**; `_hydrate`'s 50 ids are scattered, so a
 lookup decompresses ~230 records to read one, 50 times over. Abstracts can
 afford that because a ~1.5 KB abstract amortises the block; a **142 B** record
 cannot. `zstd_perdoc` is the abstracts **v1/v2** shape — one record decompressed
-per lookup — and it keeps 62% of the block design's compression (76.7 vs
+per lookup — and it keeps 62% of the block design's compression (76.7 versus
 36.5 B/doc against 142.1 raw) at 17× its speed.
 
 ### The sampling bias that nearly got recorded as a result
@@ -1113,8 +1113,8 @@ stays and the reachable target is **4 → 3**, abstracts only.)*
 > **CONFIRMED AND EXTENDED 2026-08-17 (§23).** This section's two central
 > filesystem/cache claims were re-tested against the **published** sidecar and
 > both hold: (a) the payload move is worth ~2.9× on 9p and far less on local
-> disk — measured 2.876× vs 1.091× warm, reproducing the 2.89×/1.21× split;
-> (b) the cold/warm gap is real — 2.546× cold vs 1.091× warm on local disk. Two
+> disk — measured 2.876× versus 1.091× warm, reproducing the 2.89×/1.21× split;
+> (b) the cold/warm gap is real — 2.546× cold versus 1.091× warm on local disk. Two
 > refinements: this section's cold explanation (SQLite's `docs` pages) is
 > **local-disk-only** — on 9p the SQLite arm never warms *at all* while the
 > mmap'd locator does, so the cold multiple is *smaller* than the warm one
@@ -1136,7 +1136,7 @@ reclassified N5 as a latency lever and *not* a space lever — and why
 only way to find a document's bytes.
 
 The locator is `docs(id TEXT PRIMARY KEY, b, off, n)` over **23,398,073 rows** —
-a B-tree over variable-length TEXT W-ids, i.e. exactly the sparse-key search
+a B-tree over variable-length TEXT W-ids, that is, exactly the sparse-key search
 §1 is about. tantivy lost that job because it is a search engine being asked to
 do random access. **Flat arrays were never tried.**
 
@@ -1146,7 +1146,7 @@ do random access. **Flat arrays were never tried.**
 **all three stores on local disk** (`overlay`), so no arm gains a filesystem
 advantage — the §14 discipline.
 
-| arm | p50 | mean | p90 | p50 vs mainline |
+| arm | p50 | mean | p90 | p50 versus mainline |
 |---|---|---|---|---|
 | `mainline` (sqlite blocks + sqlite locator) | 5.092 ms | 5.362 | 6.488 | 1.00× |
 | `flat_only` (flat blocks + sqlite locator) = **N5 as shipped** | 4.194 ms | 3.309 | 5.970 | 1.21× |
@@ -1228,7 +1228,7 @@ this had to be reconstructed from the work directory.
 > pass first, so it never saw that a **freshly started** process serving flat
 > is **0.919×** sqlite until its 421 MB locator is resident.
 
-- Code: `src/lib/thinclient/abstracts.py` — `AbstractLocator` (the fail-closed
+- Code: `source/lib/thinclient/abstracts.py` — `AbstractLocator` (the fail-closed
   identity gate), `build_ordinal_locator`, `build_flat_sidecar` now stamps a
   `flat_store_id`, `AbstractStore.fetch` routes through the locator when present
   and verified.
@@ -1272,7 +1272,7 @@ flat sidecar. `test_abstract_locator.py` asserts each refusal.
 **all on local disk (`overlay`)**, every arm warmed, `mainline_ctrl` a second
 identical SQLite store as the noise floor. 20,000-id byte-parity gate.
 
-| arm (all via shipped `AbstractStore.fetch`) | p50 | mean | p90 | vs mainline |
+| arm (all via shipped `AbstractStore.fetch`) | p50 | mean | p90 | versus mainline |
 |---|---|---|---|---|
 | `mainline` (sqlite blocks + sqlite `docs`) | 3.547 ms | 3.607 | 3.781 | 1.00× |
 | `flat_only` (flat blocks + sqlite `docs`) | 3.250 | 3.317 | 3.505 | 1.09× |
@@ -1335,7 +1335,7 @@ GB**. 23,398,073 rows, `skipped_non_wid = 0`.
 
 ## 18. C10 EXECUTED (2026-08-03): a section served with `abstracts.sqlite` **deleted**
 
-- Code: `src/lib/thinclient/abstracts.py` — `dump_dict_sidecar`,
+- Code: `source/lib/thinclient/abstracts.py` — `dump_dict_sidecar`,
   `build_flat_sidecar` now rehomes dicts, `AbstractStore` SQLite-free mode
   (`_sqlite_free`, `_db is None`); `retriever.py` opens a store on the flat
   sidecar's presence, not the `.sqlite` file's.
@@ -1370,7 +1370,7 @@ order-randomised, all on local disk (`overlay`), warmed, 20,000-id parity gate.
 `sqlite_free` is opened on a directory holding **only** the flat sidecar — no
 `abstracts.sqlite`.
 
-| arm | p50 | mean | p90 | vs mainline |
+| arm | p50 | mean | p90 | versus mainline |
 |---|---|---|---|---|
 | `mainline` (sqlite blocks + sqlite `docs`) | 3.512 ms | 3.644 | 4.119 | 1.00× |
 | `flat_ordinal` (flat + locator, sqlite present) | 2.952 | 3.053 | 3.360 | 1.19× |
@@ -1379,7 +1379,7 @@ order-randomised, all on local disk (`overlay`), warmed, 20,000-id parity gate.
 
 Parity **PASS on all four**, `_db is None` on the free arm **asserted**, noise
 floor **0.69%**. The SQLite-free path is indistinguishable from the
-sqlite-present locator path (2.948 vs 2.952) and holds the no-regression gate —
+sqlite-present locator path (2.948 versus 2.952) and holds the no-regression gate —
 consistent with §17: removing the connection changes nothing about the read
 path, which was already flat blocks + ordinal locator.
 
@@ -1425,12 +1425,12 @@ re-measure latency, staged, because "the 0.70× is not yet a result." So C11
 streamed the whole store — 150,413,098 records, `title\x00doi` per-doc zstd-19
 against one trained dict, indexed by the global ordinal (offsets[ordinal]),
 verifying `docs.id == wids[ordinal]` row-by-row as it went (2,981 s, 50,453
-docs/s). Then it measured `meta_store` vs the **staged** `meta.sqlite` on the
+docs/s). Then it measured `meta_store` versus the **staged** `meta.sqlite` on the
 same ids, interleaved, warmed, §14 discipline.
 
 ### The result: the size held, the speed collapsed
 
-| arm | p50 | mean | p90 | vs mainline |
+| arm | p50 | mean | p90 | versus mainline |
 |---|---|---|---|---|
 | `sqlite_mainline` (staged meta.sqlite) | **0.331 ms** | 0.376 | 0.554 | 1.00× |
 | **`meta_store` (perdoc zstd, ordinal-indexed)** | **28.74 ms** | 37.73 | 87.06 | **0.012× — 87× SLOWER** |
@@ -1438,7 +1438,7 @@ same ids, interleaved, warmed, §14 discipline.
 
 Parity **PASS** (byte-identical title/DOI, NULL sentinel intact). Size **held
 exactly as projected**: 12.32 GB store (73.9 B/doc) + 0.75 filter + 1.20 wids =
-14.27 GB, **−10.64 GB** vs 24.91 GB. **Size extrapolates; latency does not** —
+14.27 GB, **−10.64 GB** versus 24.91 GB. **Size extrapolates; latency does not** —
 §15's 0.70× was a 1M-doc, page-cache-resident artifact, and at 150.4M the store
 is a **87× regression**. The operator gate is no-regression; this fails it by
 almost two orders of magnitude. **The route is dead as designed.**
@@ -1466,7 +1466,7 @@ not. A fast, uncompressed baseline is the hard one to beat.
 ### What (if anything) is left for meta
 
 The only C7 design that avoids decompression is **`raw`** (uncompressed mmap +
-u64 offsets), and §15 measured it at **−0.39 GB** — i.e. it saves *nothing*
+u64 offsets), and §15 measured it at **−0.39 GB** — that is, it saves *nothing*
 (the 24.9 GB is mostly the title/DOI text, and uncompressed it is ~the same
 size). So the meta route faces a **size/speed conflict abstracts never had**:
 save space (compress) → lose the speed gate; hold the speed gate (raw) → save
@@ -1479,7 +1479,7 @@ is 87×.
 
 ### NOT SETTLED
 
-1. ~~**C12 (queued): Lance `take` vs raw vs perdoc vs SQLite.**~~ **DONE — §20.
+1. ~~**C12 (queued): Lance `take` versus raw versus perdoc versus SQLite.**~~ **DONE — §20.
    Nothing beats warm SQLite; meta consolidation stops here.**
 2. **The filter columns still stand.** year/type/is_oa/section as ordinal
    columns (§12) are a real, separate −0.75-GB-for-1.96-GB-resident lever for
@@ -1507,7 +1507,7 @@ C5 rejected Lance on its BTREE *scalar index* (a searcher, 255 ms) and **never
 measured positional take**, which is Lance's real random-access path and is
 exactly ordinal addressing. That is the number that changed — so it was measured.
 
-| arm | p50 | mean | p90 | vs mainline | store | saves |
+| arm | p50 | mean | p90 | versus mainline | store | saves |
 |---|---|---|---|---|---|---|
 | `sqlite_mainline` | **0.302 ms** | 1.712 | 4.035 | 1.00× | — | — |
 | `raw_mmap` (uncompressed) | 0.695 | 2.831 | 7.454 | **0.43× (2.3× slower)** | 17.68 GB | 5.28 GB |
@@ -1522,10 +1522,10 @@ percentile. Noise floor 4.12%.
 ### What the numbers say
 
 - **Lance `take` is the *slowest* on p50 (21×) despite compressing the *best*.**
-  Its columnar string encoding beat zstd-19 per-doc (10.80 vs 12.32 GB, saving
+  Its columnar string encoding beat zstd-19 per-doc (10.80 versus 12.32 GB, saving
   12.16 GB), but a 50-row scattered `take` pays fixed per-call overhead
   (fragment lookup + columnar decode + Arrow Table materialization) that dwarfs
-  the payoff. Lance's "2000× random access vs Parquet" is a throughput/scan
+  the payoff. Lance's "2000× random access versus Parquet" is a throughput/scan
   claim; it does not describe a 50-id point-gather. **The number that changed
   changed the wrong way** — addressed by `take`, Lance is worse than the
   hand-rolled store, not better. C5's rejection stands, now on both axes.
@@ -1581,7 +1581,7 @@ raw + Lance stores as arms. **Quirk the reader must handle:**
 so the reader sorts the 50 ordinals, scans, and reindexes to request order, and
 that cost is counted.
 
-| arm | p50 | mean | p90 | vs mainline | store | saves |
+| arm | p50 | mean | p90 | versus mainline | store | saves |
 |---|---|---|---|---|---|---|
 | `sqlite_mainline` | **0.449 ms** | 12.22 | 36.05 | 1.00× | — | — |
 | `lance_take` | 6.89 | 7.02 | 8.04 | 0.065× (15×) | 10.80 GB | 12.16 GB |
@@ -1602,7 +1602,7 @@ of a warm uncompressed B-tree read.** Vortex's FSST/cascade encoding is superb
 for size and wrong for a 50-id scattered point-gather.
 
 *Caveat, stated plainly:* this run's noise floor was **18.28%** and the SQLite
-baseline's mean/p90 were inflated (12 / 36 ms vs C12's 1.7 / 4.0) — five
+baseline's mean/p90 were inflated (12 / 36 ms versus C12's 1.7 / 4.0) — five
 multi-GB stores now share the page cache, so the box was under pressure. **The
 p50 verdict is robust anyway** — 27× is an order of magnitude past the noise,
 and a clean baseline (C11's 0.33 ms) would make the ratio *worse*, not better.
@@ -1621,7 +1621,7 @@ scale — C11–C13 map the whole size/speed frontier and none of it does.
 
 **Synthesis + the one untested design:**
 `spike/meta_consolidation/META_CONSOLIDATION_FEASIBILITY.md` aggregates C1–C13,
-the five root causes, per-store specs, and the **C14 bespoke proposal** (an FSST
+the five root causes, per-store specifications, and the **C14 bespoke proposal** (an FSST
 row-store with a *compiled* gather — the only combination the frontier points at
 but no test tried). DESIGN ONLY, unmeasured; ~1-in-3 odds on the strict gate.
 
@@ -1676,7 +1676,7 @@ which nothing caught, so a build killed midway through `np.save` would leave a
 directory that takes the section down on next open instead of falling back to
 v3.
 
-> **FIXED 2026-08-17** (`src/lib/thinclient/abstracts.py`, `_open_flat`). The
+> **FIXED 2026-08-17** (`source/lib/thinclient/abstracts.py`, `_open_flat`). The
 > failure modes were measured rather than assumed: truncated data section →
 > `ValueError("mmap length is greater than file size")`; zero-byte file →
 > `EOFError("No data left in file")`; header-corrupt file → `ValueError`
@@ -1727,7 +1727,7 @@ buy minutes and cost a correctness surface.
 
 **5. Additive only.** Source opened read-only; refuses to overwrite a published
 sidecar; refuses to reuse a staging directory containing any file it did not
-write; verification views are symlinks in a temp dir outside the index tree.
+write; verification views are symlinks in a temp directory outside the index tree.
 Revert stays `rm -rf <section>/abstracts.sqlite.flat`.
 
 ### The production run — RUN 2026-08-17, GATE PASS, PUBLISHED
@@ -1874,8 +1874,8 @@ directory.
 ### The arms — and the finding that `AbstractStore` has no env gate
 
 `AbstractStore` serves flat **iff `<name>.flat/` `is_dir()`**. There is no
-env var, no manifest flag, nothing to switch. The arms are therefore built the
-way this repo already builds them — **symlink views in a temp directory outside
+environment var, no manifest flag, nothing to switch. The arms are therefore built the
+way this repository already builds them — **symlink views in a temp directory outside
 the index tree**, the same mechanism `build_flat_blocks.py`'s own gate and
 §17's harness use — so **no published file was moved, renamed or written**:
 
@@ -1912,7 +1912,7 @@ real), and **0 B freed on 9p** — see the 9p page-cache finding below.
 
 ### Result 1 — this container (9p), `real_top50`, 300 interleaved trials
 
-| arm | p50 | p95 | p99 | mean | per-doc p50 | vs `sqlite` |
+| arm | p50 | p95 | p99 | mean | per-doc p50 | versus `sqlite` |
 |---|---|---|---|---|---|---|
 | `sqlite` | 45.679 ms | 67.729 | 73.934 | 45.401 | 2.038 ms | 1.00× |
 | **`flat`** | **15.886** | **17.629** | 19.499 | 15.379 | **0.696** | **2.876×** (p95 **3.84×**) |
@@ -1947,7 +1947,7 @@ regime (2.951 → 2.628 at `real_top50`).
 disk, fully warm, against real ranked result sets, the shipped flat+ordinal path
 measures **1.086–1.105×**, not 1.18×. Same sign, no regression, smaller. §17's
 figure came from random ids on a spike-built store; the honest production
-claim is now **"~1.09×, i.e. neutral"**. The durable win remains **−1.90 GB and
+claim is now **"~1.09×, that is, neutral"**. The durable win remains **−1.90 GB and
 a database removed**, exactly as §17 concluded — the arithmetic survives, the
 multiple shrinks.
 
@@ -1956,16 +1956,16 @@ locator is resident — previously unrecorded.** The `0.919×` row is not noise
 (the noise floor in that run was 0.46%) and it is not a seed effect: rerunning
 the *same seed 17* once the store was warm gave 1.091×. It is the flat arm
 faulting in its **421 MB of mmap'd `loc_*.npy`** — visible as a tail, flat p95
-9.597 ms vs sqlite's 3.526 and flat mean 3.238 vs p50 2.075, all of which are
+9.597 ms versus sqlite's 3.526 and flat mean 3.238 versus p50 2.075, all of which are
 gone by the next run. §17's harness never saw this because it warmed every arm
 with a 20,000-id parity pass first. **Operationally: the sidecar has a
 warm-up cost a restarting server pays and `abstracts.sqlite` does not.**
 
 **3. §16/§17's cold-vs-warm mechanism is CONFIRMED on local disk and INVERTED on
 9p.** Pre-registered bar B5 said the cold multiple must exceed the warm one, and
-on local disk it does — **2.546× cold vs 1.091× warm**, which is §16's "the
+on local disk it does — **2.546× cold versus 1.091× warm**, which is §16's "the
 `docs` B-tree costs ~4 ms cold and ~0.24 ms hot" landing exactly as predicted.
-On 9p it **fails**: cold 1.79× vs warm 2.876×, because the caching asymmetry
+On 9p it **fails**: cold 1.79× versus warm 2.876×, because the caching asymmetry
 runs the other way (below).
 
 ### The 9p page cache does not hold for `abstracts.sqlite` — but it does for the sidecar
@@ -1997,7 +1997,7 @@ does not hold" stated for the abstract store specifically, and measured.
 | B2 warm no-regression | PASS | PASS warm / **FAIL first touch** | finding 2 |
 | B3 warm p50 ≥ 1.18× | PASS 2.876× — but flagged a 9p artifact by its own rule (>1.5×) | **FAIL, 1.091×** | finding 1 |
 | B4 warm p95 no-regression | PASS 3.84× | PASS warm / FAIL first touch | |
-| B5 cold multiple > warm | **FAIL** (1.79× vs 2.876×) | **PASS** (2.546× vs 1.091×) | finding 3 |
+| B5 cold multiple > warm | **FAIL** (1.79× versus 2.876×) | **PASS** (2.546× versus 1.091×) | finding 3 |
 | B6 bytes | **DIFFERS by 1,408 B** | — | below |
 | B7 miss asymmetry (directional) | not observed | not observed | below |
 
@@ -2036,7 +2036,7 @@ unmeasured.**
 
 ### The mitigation is BUILT — `SFU_ABSTRACTS_PREFAULT=1` (2026-08-18)
 
-- Code: `src/lib/thinclient/abstracts.py` — `AbstractLocator.prefault()` +
+- Code: `source/lib/thinclient/abstracts.py` — `AbstractLocator.prefault()` +
   the module-level `_touch_pages()`, called from `AbstractStore._open_locator`
   behind the gate; `PREFAULT_ENV = "SFU_ABSTRACTS_PREFAULT"`.
 - Tests: `scripts/tests/test_abstract_locator.py` — **39 tests, all pass
@@ -2064,7 +2064,7 @@ its benefit is the thing that is still unmeasured.
 **Fail-open, deliberately.** Pre-faulting is residency-only: it reads read-only
 pages and writes nothing, so it cannot change an answer and no failure of it is
 a reason to refuse to serve. Errors are logged and recorded in
-`AbstractStore.prefault_stats`; the store carries on with a cold locator, i.e.
+`AbstractStore.prefault_stats`; the store carries on with a cold locator, that is,
 gate-off behaviour. This is the opposite of the locator identity gate (§17),
 which fails **closed** because *that* one can return wrong bytes.
 
@@ -2076,7 +2076,7 @@ columns in %.0f ms`.
 **The 12 new tests**, all synthetic: gate off by default → `prefault_stats is
 None` and fetches unchanged; only `"1"` enables (5 negatives); all four columns
 touched with `bytes` equal to the columns' summed `nbytes`; **fetches
-byte-identical gate-on vs gate-off** at 3 rows and at 6,000 rows (a locator
+byte-identical gate-on versus gate-off** at 3 rows and at 6,000 rows (a locator
 spanning many pages, so the strided touch does real work); a raising
 `_touch_pages` is non-fatal and leaves serving unaffected; SQLite-free mode
 (the deployed shape, §18) pre-faults; no locator ⇒ no stats dict.
@@ -2085,7 +2085,7 @@ spanning many pages, so the strided touch does real work); a raising
 section restaged to local disk (`stage`, 19/19 files, identity gate re-checked),
 `posix_fadvise(DONTNEED)` over all 19 files with the measured `Cached:` delta
 recorded (**23.85 GB freed** first eviction, 1.03 GB before the second run —
-i.e. each run started from the same fully-evicted state), then one fresh-process
+that is, each run started from the same fully-evicted state), then one fresh-process
 `interleaved` run per arm-state, seed 17, defaults (300 trials × 4 regimes,
 20k-id windowed gate):
 
@@ -2111,7 +2111,7 @@ Two findings, one of them a correction:
 
 **Verdict: default stays OFF.** There is no measured query-time penalty left to
 earn back; the gate is a correct, cheap belt-and-suspenders for a long-lived
-process that wants deterministic first-query latency (e.g. a demo box warming
+process that wants deterministic first-query latency (for example, a demo box warming
 at boot), and that is the honest extent of the claim. Results:
 `data/eval_results/j1_flat_serving_firsttouch_off_20260818.json`,
 `..._firsttouch_prefault_20260818.json`.

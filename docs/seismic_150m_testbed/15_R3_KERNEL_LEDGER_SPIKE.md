@@ -10,7 +10,7 @@ session per §6. Results in §7 below (verdicts: #1 REFUTED, #2 UNCLEAR-downdr,
 
 R2 measured *what* happens (backlog §R2; `session_2026-07-14_f6_corrections_r1_ladder/04_CONVERGENCE_ARTIFACT.md`
 §7): the cliff sits at 10–11 GB, and the fixed-window inversion (12 GB pass-3
-p50 21 ms vs 16 GB 124 ms) is carried by *where* residual faults land across
+p50 21 ms versus 16 GB 124 ms) is carried by *where* residual faults land across
 queries — 12 GB's residue misses the median query — not by the smaller cap
 finishing the sort first. But that mechanism statement is still an inference
 from per-pass aggregates (majflt totals + cgroup counters). R3 asks the kernel
@@ -41,7 +41,7 @@ the coarsest tier (cgroup `memory.stat`). R3 goes finer:
 2. **`workingset_refault()` probe (kprobe/kfunc).** The refault distance and
    the activation decision are computed inline in that function; a probe
    captures `(ino, pgoff, refault_distance, activated?)` per refault event.
-   This watches the 04-doc §4 link being decided: residue placement vs
+   This watches the 04-doc §4 link being decided: residue placement versus
    active-list size. If distance extraction from the shadow entry proves
    impractical under the WSL2 kernel's BTF, the minimum viable probe is
    `(ino, pgoff, activated?)` — still enough for expectation 2's activation
@@ -49,7 +49,7 @@ the coarsest tier (cgroup `memory.stat`). R3 goes finer:
 3. **`cachestat()` extent-residency maps (kernel ≥ 6.5).** Between passes,
    snapshot per-extent `cache / evicted / recently_evicted` counts for every
    shard slab — a literal picture of where the residue sits at pass k under
-   12 GB vs 16 GB, far cheaper than mincore loops. Fallback if the syscall is
+   12 GB versus 16 GB, far cheaper than mincore loops. Fallback if the syscall is
    missing: mincore (residency bit only, no evicted/recently_evicted — the
    maps lose the shadow-entry half; note it).
 
@@ -67,7 +67,7 @@ Four keyed datasets per cell, joined on `(ino, pgoff→extent)` and pass window:
 
 Deliverable tables per instrumented cell: (a) residue map at each pass
 boundary; (b) residual-fault attribution per query at the fixed pass-3
-window; (c) refault-distance distribution vs `active_file` size per pass.
+window; (c) refault-distance distribution versus `active_file` size per pass.
 
 ## §3 Capability gate G-R3-0 (WSL2 — must pass before any cell)
 
@@ -91,7 +91,7 @@ latency — it can shift reclaim timing itself. Therefore:
 - Every instrumented cap gets an **uninstrumented control cell** in the same
   session, same binary, cache dropped identically.
 - Bars: instrumented converged p50 ≤ **1.10×** its control; ledger perf-buffer
-  drop rate ≤ **1%**. Fail → downsample (e.g. pgoff sampling) and rerun.
+  drop rate ≤ **1%**. Fail → downsample (for example, pgoff sampling) and rerun.
 - **Latency numbers are only ever quoted from control cells.** Instrumented
   cells contribute residency/attribution state, never headline latency.
 
@@ -138,8 +138,8 @@ Cells (REQ-2 controls + REQ-3g/3h instrumented re-runs, all 2026-07-16):
 | 16g | instr (r3fix) | near_zero | 5 | 103,917 | 37.82 | 0 | 1.072× pass-3 / **1.120× steady** | INVALID only on overhead; ledger+refault clean |
 | 12g | instr (r3h) | near_zero | 5 | 242,525 | 18.42 | 0 | **1.006× steady** | **VALID** |
 
-The R2 inversion reproduces in the controls: 12g pass-3 p50 20.26 ms vs 16g
-129.28 ms (R2: 21 vs 124 ms) — the smaller cap beats the larger at the fixed
+The R2 inversion reproduces in the controls: 12g pass-3 p50 20.26 ms versus 16g
+129.28 ms (R2: 21 versus 124 ms) — the smaller cap beats the larger at the fixed
 window. Latency is quoted ONLY from control cells (doc 15 §4).
 
 **Verdicts on the four pre-registered expectations** (full evidence + file paths
@@ -160,7 +160,7 @@ in `data/eval_results/_r3_ledger_summary.md` and `_r3_join_analysis.json`):
    cgroup counter within 1.8% (12g) / 0.3% (16g). The Che/Fagin link is
    watched at per-pass count granularity, not per-event distance.
 3. **The sort, pictured — CONFIRMED.** pass-0 evicted: 12g 3.17 GB (already
-   sorting) vs 16g 0.0 GB (held the full working set, not yet sorting) — the
+   sorting) versus 16g 0.0 GB (held the full working set, not yet sorting) — the
    §2.2 asymmetry pictured at page granularity. 12g drains to 10.13 GB (the
    ~10–11 GB repeat set). 16g's *live-tracer* drain to 13.43 GB is
    observer-perturbed (the tracer + cachestat snapshots added pressure); the

@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 from lib.serve_query_log import (  # noqa: E402
     QueryLogger, _normalize_query, _sha1, _staging_default,

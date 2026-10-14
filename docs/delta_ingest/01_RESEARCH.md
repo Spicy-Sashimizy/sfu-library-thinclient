@@ -33,7 +33,7 @@ pricing all changed.
   explicit old→new map; `locations[].id` values survive the merge and are the
   trail. *Inference:* merged-away works appear in `deleted_ids`.
 - Churn: one indexed changefile page gave **2026-02-19 works changefile =
-  3,171,968 records, 10.1 GB**. *Inference:* ~95M touched works/month, i.e.
+  3,171,968 records, 10.1 GB**. *Inference:* ~95M touched works/month, that is,
   ~15% of all records, dominated by citation-count bumps. `updated_date` is
   "the last change to anything in the work object — **including citation-
   count increases**". A content-hash diff is therefore load-bearing: without
@@ -110,10 +110,10 @@ bounds the segment count.** That is exactly what `02_DESIGN.md` builds.
 
 ## 4. tantivy-py 0.22–0.26
 
-- Incremental add works: open the existing dir with one writer,
+- Incremental add works: open the existing directory with one writer,
   `add_document`, `commit` → a new segment. `delete_documents_by_term` (raw
   field only — issue #297: deletes on a tokenized field silently miss) and
-  `delete_documents_by_query` (0.25.0+, 2025-09-09). Repo pins 0.26.
+  `delete_documents_by_query` (0.25.0+, 2025-09-09). Repository pins 0.26.
 - **Not exposed:** `merge(segment_ids)`, `set_merge_policy`. LogMergePolicy
   defaults: min_num_segments_in_merge 8, max_docs_before_merge 10M — so
   10M+-doc base segments never re-merge, and small segments merge only when

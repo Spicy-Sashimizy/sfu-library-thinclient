@@ -52,7 +52,7 @@ def main() -> int:
     import logging
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.sharded_seismic_backend import (  # noqa: E402
         ParallelSeismicBackend, _postings_nav_runs)
 

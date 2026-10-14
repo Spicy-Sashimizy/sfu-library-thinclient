@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — ZERO-DECODE (R3-v2) G1 consistency diff at persona scale.
 
 The 1M G1 (compare_flat.py, 50/50) already proved the v2 layout matches stock on

@@ -11,7 +11,7 @@ UNMEASURED as of 2026-09-01)":
 
 METRIC 1 CANNOT BE COMPUTED ON THE SERVED QUERY LOG AS PRE-REGISTERED.
 `data/eval_results/serve_query_log.jsonl` is PII-safe by construction
-(`src/lib/serve_query_log.py`: `query_norm` is stored only when
+(`source/lib/serve_query_log.py`: `query_norm` is stored only when
 `SFU_SERVE_QUERY_LOG_RAW=1`, which was never set) — all 2,254 entries carry
 `query_norm == ""` and only `query_hash = sha1(query_norm)[:16]`, which is not
 invertible. 733 distinct hashes, zero recoverable query strings. The served log
@@ -56,7 +56,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 DEFAULT_QUERIES = REPO / "data/eval_results/dense_ablation_queries.json"
 DEFAULT_QRELS = REPO / "data/eval_results/dense_ablation_qrels_20260817.json"

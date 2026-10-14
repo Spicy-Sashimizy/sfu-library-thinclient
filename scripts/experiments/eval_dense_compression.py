@@ -65,7 +65,7 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("eval_dense_compression")
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "source"))
 
 REPO_ROOT = Path(__file__).parent.parent
 DEFAULT_JUDGE_CACHE = REPO_ROOT / "data/eval_results/llm_judge_cache.json"
@@ -240,7 +240,13 @@ def fetch_lexical_legs(queries: list[dict], top_k: int) -> dict[str, dict[str, l
     if cache_path.exists():
         logger.info("Loading cached BM25F/SPLADE rankings")
         return json.loads(cache_path.read_text())
-    from lib.opensearch_retriever import OpenSearchRetriever
+    import importlib.util as _ilu
+    # class archived 2026-10-11 to scripts/archive/opensearch_era; load it by path
+    _osp = __import__('pathlib').Path(__file__).resolve().parents[1] / 'archive' / 'opensearch_era' / 'opensearch_retriever.py'
+    _osspec = _ilu.spec_from_file_location('opensearch_retriever_archived', _osp)
+    _osmod = _ilu.module_from_spec(_osspec)
+    _osspec.loader.exec_module(_osmod)
+    OpenSearchRetriever = _osmod.OpenSearchRetriever
     retriever = OpenSearchRetriever(url=opensearch_url(), index="openalex_works",
                                     splade_model_path=SPLADE_ONNX, timeout=30)
 

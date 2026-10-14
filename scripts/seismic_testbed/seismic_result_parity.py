@@ -37,7 +37,7 @@ DEFAULT_MANIFEST = "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json"
 
 
 def capture(args) -> None:
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.sharded_seismic_backend import (  # noqa: E402
         HybridSeismicBackend, ParallelSeismicBackend)
     cls = {"hybrid": HybridSeismicBackend,

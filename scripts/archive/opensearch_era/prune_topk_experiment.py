@@ -32,7 +32,7 @@ import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 OS_URL = "http://claudebox-sfu-library-mcp-training-opensearch:9200"
 SOURCE_INDEX = "openalex_works_splade_eval"   # read-only source of real SPLADE docs

@@ -622,18 +622,18 @@ def prelever_snapshot(args) -> int:
     """`git archive <commit> src` + the lever commits' src diffs reverse-applied."""
     commit = args.commit or M4.git_commit()
     dst = SERVE / f"code_{commit[:8]}_prelever"
-    if not (dst / "src").exists():
+    if not (dst / "source").exists():
         dst.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src | tar -x -C {dst}", shell=True)
         for c in reversed(args.levers.split(",")):
-            diff = subprocess.check_output(["git", "-C", str(REPO), "show", "--format=", c, "--", "src"])
+            diff = subprocess.check_output(["git", "-C", str(REPO), "show", "--format=", c, "--", "source"])
             subprocess.run(["patch", "-R", "-p1", "-d", str(dst), "--no-backup-if-mismatch"], input=diff,
                            check=True)
         for name in ("models", "data", ".env"):
             if not (dst / name).exists():
                 (dst / name).symlink_to(REPO / name)
     left = subprocess.run(["grep", "-rln", "SFU_DELTA_ABS_ROUTE\\|SFU_BM25F_PARSE_ONCE\\|SFU_SEISMIC_DELTA_GROUP",
-                           str(dst / "src")], capture_output=True, text=True).stdout.split()
+                           str(dst / "source")], capture_output=True, text=True).stdout.split()
     print(json.dumps({"snapshot": str(dst), "commit": commit, "levers_reverted": args.levers.split(","),
                       "gate_names_left": left}))
     return 1 if left else 0
@@ -857,7 +857,7 @@ def main() -> int:
     p = sub.add_parser("parity")
     p.add_argument("--roots", default="n8,n1")
     p.add_argument("--rows-out", required=True)
-    p.add_argument("--src", default=str(REPO / "src"))
+    p.add_argument("--src", default=str(REPO / "source"))
     p.add_argument("--limit-topics", type=int, default=0)
     s = sub.add_parser("prelever-snapshot")
     s.add_argument("--commit", default="")
@@ -880,7 +880,7 @@ def main() -> int:
     i.add_argument("--warmup", type=int, default=1)
     i.add_argument("--rows-out", required=True)
     i.add_argument("--limit-topics", type=int, default=0)
-    i.add_argument("--src", default=str(REPO / "src"))
+    i.add_argument("--src", default=str(REPO / "source"))
     i.add_argument("--quiet-wait", type=int, default=900)
     i.add_argument("--inline-wait", type=int, default=120)
     i.add_argument("--seed", type=int, default=SEED)

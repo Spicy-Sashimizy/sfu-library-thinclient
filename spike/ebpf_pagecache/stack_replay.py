@@ -28,7 +28,7 @@ Three things the frozen t23 driver deliberately cannot do:
      policy's cold list with the seismic mmaps. **The t23 driver never touches
      meta.sqlite**: it calls `sb.search_encoded()` on the sharded backend
      directly, while meta.sqlite is only read by the full retriever
-     (`ThinClientRetriever._meta_rows`, src/lib/thinclient/retriever.py:1150).
+     (`ThinClientRetriever._meta_rows`, source/lib/thinclient/retriever.py:1150).
      So "sqlite shares the serving cgroup" is TRUE of the deployed serving
      process and FALSE of the t23 replay — S4 needs this driver to make it
      true again.
@@ -106,7 +106,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 MANIFEST = "data/eval_results/seismic_c25_shards_150m_mmap_e5_v2.json"
 ENCODED = "data/eval_results/e7b_encoded_queries.json"
@@ -142,7 +142,7 @@ class MetaHydrator:
     """The retriever's meta.sqlite read path, reduced to what S4 needs.
 
     Connection factory and SELECT are lifted from
-    src/lib/thinclient/retriever.py:325-358 (`_connect_meta`) and :1160-1163
+    source/lib/thinclient/retriever.py:325-358 (`_connect_meta`) and :1160-1163
     (`_meta_rows`), including the numeric-id branch, so the SQLite access
     pattern under the cap is the deployed one. Staging (SFU_META_STAGE_DIR)
     is deliberately NOT used: staging copies the DB somewhere else, which is

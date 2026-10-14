@@ -75,5 +75,5 @@ curl -H "Authorization: Bearer tk_xxptoken" -H "Title: test" \
 Should buzz your phone from anywhere.
 
 ## Don't-impede notes
-256 MB / 0.5 CPU cap, own dataset dir, single host port in your free range. Does
+256 MB / 0.5 CPU cap, own dataset directory, single host port in your free range. Does
 not touch the 18 production containers or NPM's existing hosts (it only *adds* one).

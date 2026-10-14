@@ -32,7 +32,7 @@ weights nor the expansion terms — it cannot supply forward-index data).
 
 ## Build steps
 
-1. **Pick the canonical store.** Cheapest: a single on-disk KV (e.g. an
+1. **Pick the canonical store.** Cheapest: a single on-disk KV (for example, an
    `oaid → {title, abstract, …}` mmap'd store or SQLite) that both serving paths read
    by id. (Qdrant can also *be* this store via id-only points + `on_disk_payload`.)
 2. **Strip duplicates from the engines:**

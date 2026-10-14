@@ -2,17 +2,19 @@
 
 **Status:** ACTIVE — ablation verdict DROP (2026-08-18) is the standing answer.
 
+2026-10-12: owner decision KEEP the code (default OFF); the measured verdict above is unchanged (`infrastructure/OWNER_DECISIONS_2026-10-12.md`).
+
 Two questions, answered separately:
 
 1. **Can the OCI demo payload ship without the dense leg?** Yes — verified, and
-   there is now a single env gate for it (`SFU_DENSE_LEG=0`). §1–§3.
+   there is now a single environment gate for it (`SFU_DENSE_LEG=0`). §1–§3.
 2. **Should it?** The recorded dense wins were measured on an index that was
    **built to contain the eval's answers** — measured 2026-08-17 at **90.3%
-   ground-truth coverage vs 0.399% for a random subset of the same size, 226×
+   ground-truth coverage versus 0.399% for a random subset of the same size, 226×
    enrichment**. Those numbers are an **upper bound**, not production benefit,
    and the standard query set **cannot** settle keep/drop because it has **zero
    held-out topics**. §4–§6. A **fresh 120-topic judged set was built 2026-08-18**
-   (§7) whose dense-pool contamination is **17.98% vs the standard set's 90.3%**.
+   (§7) whose dense-pool contamination is **17.98% versus the standard set's 90.3%**.
    **The ablation RAN 2026-08-18 — VERDICT: DROP from the payload** (Δ_all
    −0.0077, 95% CI [−0.0153, −0.0001], significantly negative; no coverage band
    positive), and `SFU_DENSE_LEG` is DEFAULT OFF in code since 2026-08-18. §7
@@ -77,7 +79,7 @@ components are live (an absent `dense/` and a disabled leg both report
 `dense_vectors: 0`, so the vector count alone cannot distinguish them).
 
 **Demo payload recipe — dense excluded:** omit the three files above from the
-upload; since 2026-08-18 **no env var is needed** (off is the default). Saves
+upload; since 2026-08-18 **no environment var is needed** (off is the default). Saves
 0.357 GB of payload (0.3% of the ~108 GB served total — the partition matters
 for *cleanliness and per-query cost*, not for disk).
 
@@ -99,13 +101,13 @@ gate commit `1ebfd78`, +7 with the §7 prerequisites):
   at `retriever.py` "`if not self._dense and not (cache and cache.info()["docs"])`"
   precedes `encode_dense`, so a missing leg costs no encoder time;
 - **five repeat `dense_search()` calls emit zero log records** — no per-query
-  error spam (other legs may warn once for their own reasons, e.g. an ambient
+  error spam (other legs may warn once for their own reasons, for example, an ambient
   `SFU_SPLADE_BACKEND=seismic` with no shard manifest falling back to BM25F;
   that is a different leg's degradation path and the test scopes around it);
 - `search_rrf(include_dense=True)` returns a **fused ranking over the surviving
   legs** (`include_dense and self._dense` short-circuits);
 - the `dense` leg never appears in a per-leg metrics **window**
-  (`_leg_snapshot_for_log` / `_leg_delta_for_log`), i.e. it consumed no time;
+  (`_leg_snapshot_for_log` / `_leg_delta_for_log`), that is, it consumed no time;
 - `reload()` round-trips with `dense_vectors: 0`.
 
 `test_dense_leg_env_gate` — `SFU_DENSE_LEG=0`, warm cache left at its default:
@@ -169,7 +171,7 @@ Two recorded evals, 360 query records / 120 LLM-judged topics, judge threshold
 grade ≥ 2, gain `2^grade − 1`:
 
 **`data/eval_results/dense_poc_eval.json`** — retrieval-only, RRF k=60,
-2-leg `RRF(BM25F+SPLADE)` vs 3-leg `+dense`:
+2-leg `RRF(BM25F+SPLADE)` versus 3-leg `+dense`:
 
 | Stratum | nDCG@10 2-leg | nDCG@10 3-leg | Δ | recall@50 2-leg → 3-leg |
 |---|---:|---:|---:|---|
@@ -190,7 +192,7 @@ reranked top-10:
 The **directional** reading is the credible part and it is consistent: the
 benefit **survives reranking** rather than being an artifact the cross-encoder
 would have recovered anyway, and it is **concentrated in natural-language
-queries** (+0.1699 vs +0.0171 post-rerank) — which is exactly the traffic shape
+queries** (+0.1699 versus +0.0171 post-rerank) — which is exactly the traffic shape
 an MCP/chat client produces.
 
 ---
@@ -213,7 +215,7 @@ Measured against the *served* `data/thinclient_index/dense/ids.json`
 | Relevant judged docs (grade ≥ 2) over the query set | 2,107 |
 | …present in the served dense pool | **1,903 = 90.3%** |
 | All judged docs in pool | 3,390 / 4,034 = 84.0% |
-| **Enrichment vs a random 600k subset** | **226×** |
+| **Enrichment versus a random 600k subset** | **226×** |
 | Topics fully covered / partially / **held-out (zero relevant in pool)** | 50 / 70 / **0** |
 
 Consequences:
@@ -221,7 +223,7 @@ Consequences:
 1. **The deltas in §4 are an UPPER bound on production benefit, not a lower
    bound.** In those evals the dense leg searched a 250×-smaller haystack that
    had been seeded with ~90% of the answers, while BM25F/SPLADE searched all
-   150M. The repo's own scripts disagree about this in their printed caveats —
+   150M. The repository's own scripts disagree about this in their printed caveats —
    `eval_pipeline.py` says "Absolute deltas are therefore **OPTIMISTIC / an
    upper bound**, NOT production magnitudes", `eval_dense_poc.py` says dense's
    contribution "is a **LOWER BOUND**". For the *deployed* configuration
@@ -241,7 +243,7 @@ Consequences:
 
 Note the distractor fill was not a random sample either — it was a plain
 OpenSearch scroll (`dense_indexer_poc.py`, `SCROLL_BATCH = 1000`, no sort/seed),
-i.e. **index order**. The "0.399% for a random subset" row is therefore the
+that is, **index order**. The "0.399% for a random subset" row is therefore the
 *counterfactual* (what an unbiased same-size subset would have covered), not a
 description of how the distractors were drawn.
 
@@ -278,11 +280,11 @@ longer unmeasured — all four were MEASURED 2026-09-25**
 `data/eval_results/warmcache_metrics_20260925.json`): on a 240-query replay
 that grew a delta 0 → 17,316 docs, the dense leg's recall@50 against judged
 qrels rose **0.107 → 0.348** while the seed-only control stayed flat at ~0.14,
-and the leg's cache-hit fraction rose **0.000 → 0.592**. Metric 2 (delta vs
+and the leg's cache-hit fraction rose **0.000 → 0.592**. Metric 2 (delta versus
 exact) measures **mean 0.9978 / min 0.94**, so the pre-registration's claim
 that v1's brute force is "trivially exact" is false. Metric 3 (p95
 `search_rrf` with the cache on) is **unchanged**: p50 +31.5 ms (+0.9%), and
-the p95 delta comes out −6.8% — the wrong sign, i.e. the host's noise floor
+the p95 delta comes out −6.8% — the wrong sign, that is, the host's noise floor
 rather than a win. **None of that reverses
 §7's verdict** — it measures the cache's own coverage growth, not fused nDCG,
 and the leg stays default-OFF. Metric 1's pre-registered input (the served
@@ -348,7 +350,7 @@ it decides *ship/don't ship the 0.4% leg* without requiring the full encode.
 > **Question answered 2026-08-18 (operator direction): the leg is now DEFAULT
 > OFF in code** (`SFU_DENSE_LEG` unset ⇒ off; only the literal `1` enables) —
 > to stay off until the full corpus is dense-encoded (not the 600k snippet)
-> and the leg re-measures positive. See §1 "Env gates".
+> and the leg re-measures positive. See §1 "Environment gates".
 
 ---
 
@@ -425,10 +427,10 @@ load — same shape as the §8 smoke's 128 s observation, smaller because the
 model files were OS-cached). ⚠ Protocol deviation, recorded: the "page cache
 dropped between arms" step was impossible in this container
 (`/proc/sys/vm/drop_caches` read-only; uniform pre-warm also impossible —
-118 GB index vs 56 GB RAM). Quality metrics are unaffected (`SFU_DENSE_WARMCACHE=0`,
+118 GB index versus 56 GB RAM). Quality metrics are unaffected (`SFU_DENSE_WARMCACHE=0`,
 fresh process per arm as specified), but **cross-arm latency comparisons are
-biased** (arm B ran second, over a page cache arm A had warmed — e.g. its
-splade p50 reads 149 ms vs arm A's 609 ms) and MUST NOT be quoted as an
+biased** (arm B ran second, over a page cache arm A had warmed — for example, its
+splade p50 reads 149 ms versus arm A's 609 ms) and MUST NOT be quoted as an
 ablation latency result. The dense leg's *own* timings above are unaffected by
 arm order (nothing dense-side was pre-warmed).
 
@@ -469,10 +471,10 @@ topics (§5). The requirement was a **fresh judged set**:
 - ≥ 100 new topics, drawn from the same subject spread, **judged after** the set
   is drawn (same LLM-judge protocol, grade ≥ 2 = relevant, gain `2^grade − 1`);
 - each topic classified by `scripts/experiments/dense_pool_contamination.py`
-  into **HELD-OUT** (zero relevant docs in `dense/ids.json`) vs **IN-POOL**;
+  into **HELD-OUT** (zero relevant docs in `dense/ids.json`) versus **IN-POOL**;
 - **the HELD-OUT stratum is the decision stratum.** The IN-POOL stratum is
   reported for contrast only and must never be quoted as production benefit;
-- keyword vs natural-language paraphrase pairs kept, since §4's only robust
+- keyword versus natural-language paraphrase pairs kept, since §4's only robust
   finding is that the effect is natural-language-shaped.
 
 **That set now exists** (`scripts/experiments/dense_ablation_queryset.py`,
@@ -503,7 +505,7 @@ construction statistics.
 **50**. The `pool` stage aborts if a probe query exceeds 25.
 
 **Contamination fell 5× — the point of the exercise.** Fraction of relevant
-judged docs sitting inside the served 600k dense pool: **17.98%** on this set vs
+judged docs sitting inside the served 600k dense pool: **17.98%** on this set versus
 **90.3%** on `diverse_queries.json` (§5). No topic exceeds 50% coverage, where
 the old set had **50/120 topics at 100%**.
 
@@ -570,7 +572,7 @@ marked superseded.
 | `data/eval_results/dense_ablation_qrels_20260817.json` | per-topic judgments: grade, `gain = 2^grade − 1`, `relevant`, `in_dense_pool`, `title_only`, plus per-topic `dense_pool_coverage` |
 | `data/eval_results/dense_ablation_judge_cache_20260817.json` | the judge cache (`judge_key||openalex_id → grade`) — pass it as `--judge-cache` |
 | `data/eval_results/dense_ablation_topics_20260817.json` | the draw (committed before judging) |
-| `data/eval_results/dense_ablation_pool_20260817.json` | the pooling record: per-form leg top-50s, fused list, `rrf_legs`, env |
+| `data/eval_results/dense_ablation_pool_20260817.json` | the pooling record: per-form leg top-50s, fused list, `rrf_legs`, environment |
 | `data/eval_results/dense_ablation_pool_docs_20260817.json` | title+abstract for every pooled doc (what the judge saw) |
 | `data/eval_results/dense_ablation_queryset_20260817.json` | provenance/summary |
 
@@ -594,7 +596,7 @@ the fused top-k) and **settles neither**; the arms decide that.
 
 Identical queries, `top_k`, filters, rerank path; one variable.
 
-| Arm | Config |
+| Arm | Configuration |
 |---|---|
 | **A** | `SFU_DENSE_LEG=0` — RRF(BM25F + SPLADE) |
 | **B** | dense on — RRF(BM25F + SPLADE + dense). *Was "default" when the arms ran 2026-08-18; since the post-verdict default flip, a re-run must set `SFU_DENSE_LEG=1` explicitly or arm B silently becomes arm A.* |
@@ -646,8 +648,8 @@ an arm file. Also report **dense∩bm25f / dense∩splade overlap@50**
 pair involving dense. Plus IN-POOL-stratum deltas, for contrast only.
 
 **Cost (reported alongside, and decisive if quality is a tie):** per-leg p50/p95
-ms from `_record_leg` / `serve_query_log`, **split into query-encode vs
-usearch-search vs int8-rescore vs post-filter**, plus arm-level end-to-end p50/p95.
+ms from `_record_leg` / `serve_query_log`, **split into query-encode versus
+usearch-search versus int8-rescore versus post-filter**, plus arm-level end-to-end p50/p95.
 A quality tie plus a non-trivial encode cost ⇒ drop.
 
 ### Command
@@ -689,7 +691,7 @@ version of it:**
    back to the default E8 dv-v2 shard manifest when its root **equals**
    `<repo>/data/thinclient_index`; a relative path fails that comparison, so
    `SFU_SPLADE_BACKEND=seismic` raises and the SPLADE leg **silently degrades to
-   BM25F** (`bm25f∩splade@50 = 50`, i.e. one leg counted twice). This is the
+   BM25F** (`bm25f∩splade@50 = 50`, that is, one leg counted twice). This is the
    actual cause of the §8 smoke run's fake SPLADE leg.
 
 `--rerank` defaults to `none` (a cheap retrieval-only record, no model loads);
@@ -702,7 +704,7 @@ Both are code-only + synthetic-test changes; **no ablation measurement was
 taken**, and the remaining blocker is unchanged: a **fresh judged query set**
 with a HELD-OUT stratum.
 
-**P1 — RRF leg provenance** (`src/lib/thinclient/retriever.py`). `search_rrf`
+**P1 — RRF leg provenance** (`source/lib/thinclient/retriever.py`). `search_rrf`
 gained an **opt-in** `with_provenance: bool = False`; the default return shape
 is exactly what it was, so every existing caller (serve path, `leg_breaker`'s
 guardian — which fuses independently anyway, `portable_socsci/04_verify_serve`,
@@ -798,14 +800,14 @@ the results-file paths, and the decision the rule produced.
     identical per-subject counts, 0 reuse of its `judge_key`s (both asserted at
     draw time), each with a keyword form + a natural-language paraphrase → 240
     query records.
-  - **Pooling** (TREC-style, untimed, full 3-leg config so the pool holds what
+  - **Pooling** (TREC-style, untimed, full 3-leg configuration so the pool holds what
     *either* arm could surface): top-50 per leg + fused top-50 per form, union
     over both forms per topic → **25,614 unique docs**, per-topic pool mean
     **216.0**. `search_rrf_detailed` + `rrf_legs` provenance recorded.
     `SFU_DENSE_WARMCACHE=0` throughout, so nothing was written into the served
     index root.
   - **SPLADE leg proven real before judging**: `bm25f∩splade@50` = **5.53** mean
-    over 240 forms vs the parity run's 5.35 (a silent BM25F fallback reads 50);
+    over 240 forms versus the parity run's 5.35 (a silent BM25F fallback reads 50);
     the `pool` stage aborts above 25.
   - **Judged** 25,919 pairs with **`claude-haiku-4-5-20251001`** via the
     `claude` CLI subprocess, 0–3 topical relevance on the **natural-language**
@@ -814,7 +816,7 @@ the results-file paths, and the decision the rule produced.
     sidecars (58.1% title-only, evenly across legs) + OpenAlex backfill → 11.0%
     title-only, flagged per doc.
   - **Contamination fell 5×**: **17.98%** of relevant docs inside the served
-    600k dense pool vs **90.3%** for `diverse_queries.json`; no topic above 50%
+    600k dense pool versus **90.3%** for `diverse_queries.json`; no topic above 50%
     coverage where the old set had 50/120 at 100%.
   - **The pre-registered binary stratification came out DEGENERATE — 4 HELD-OUT
     topics**, and this is structural, not sample size (rate 3.3% ⇒ ≈7 even at
@@ -844,7 +846,7 @@ the results-file paths, and the decision the rule produced.
     arm nDCG 0).
 
 - **2026-08-17** — doc created. `SFU_DENSE_LEG` gate + graceful-degradation
-  tests landed in commit `1ebfd78` (`src/lib/thinclient/retriever.py`,
+  tests landed in commit `1ebfd78` (`source/lib/thinclient/retriever.py`,
   `scripts/tests/test_thinclient_stack.py`; the gate was authored for this doc
   and was absorbed into that commit by a concurrent staging race in the shared
   working tree — the content is intact and pushed). Contamination measured:
@@ -854,7 +856,7 @@ the results-file paths, and the decision the rule produced.
 - **2026-08-17** — §7 **PREREQUISITES IMPLEMENTED** (code + synthetic tests
   only; **the ablation itself is still NOT RUN**, same blocker: a fresh judged
   query set with a HELD-OUT stratum).
-  - P1 opt-in RRF leg provenance — `src/lib/thinclient/retriever.py`
+  - P1 opt-in RRF leg provenance — `source/lib/thinclient/retriever.py`
     (`search_rrf(..., with_provenance=True)` → `rrf_legs`;
     `search_rrf_detailed()` → `results` + per-leg rankings + per-leg ms).
     Default return shape unchanged; bit-identical ranking pinned by
@@ -869,7 +871,7 @@ the results-file paths, and the decision the rule produced.
     synthetic provenance, ranking-neutrality ×2, `search_rrf_detailed`,
     `SFU_DENSE_LEG=0` ⇒ no dense provenance, and 2 for the harness's pure
     functions). `scripts/tests/test_serve_query_log.py` 13 passed. (The legacy
-    `src/tests/test_thinclient.py` has 3 failures — `test_sections_disjoint_and_complete`,
+    `source/tests/test_thinclient.py` has 3 failures — `test_sections_disjoint_and_complete`,
     `test_splade_leg_via_bmp`, `test_abstract_sidecar_roundtrip` — verified
     **pre-existing** by stashing the change and re-running; unrelated to RRF.)
   - **SMOKE ONLY, decides nothing:** one 3-query run against the real
@@ -878,8 +880,8 @@ the results-file paths, and the decision the rule produced.
     `data/eval_results/dense_ablation_smoke_B_20260817.json`. It proves the
     surface end-to-end (3/3 queries recorded, all three legs + `rrf_legs`
     present). **Do not quote its numbers**: n=3, and the SPLADE leg fell back to
-    BM25F (hence `bm25f_splade_overlap@50 = 50`, i.e. the two legs were the same
-    leg). *(Cause corrected 2026-08-18 — it was NOT "the ambient env had no
+    BM25F (hence `bm25f_splade_overlap@50 = 50`, that is, the two legs were the same
+    leg). *(Cause corrected 2026-08-18 — it was NOT "the ambient environment had no
     `SFU_SEISMIC_SHARD_MANIFEST`" as this entry originally said: an unset
     manifest is fine, `_seismic_backend` defaults to the E8 dv-v2 manifest. The
     real cause is a **relative** `--index-root`, which fails that default's

@@ -50,7 +50,7 @@ the next cache-state-destroying cell. Driver:
 > never replaced by verdict cells, so these rows read as pending when they are not.
 
 All latency-only: the quality side of each knob is already measured (E1
-k′=100 recall-safe; C1 query_cut=10 overlap@10 0.995 vs all-terms;
+k′=100 recall-safe; C1 query_cut=10 overlap@10 0.995 versus all-terms;
 heap_factor swept in `seismic_sweep_c1_querycut_heapfactor_20260630.json`).
 40 queries, 1 pass, NO drop_caches (that's the point), parallel federation
 unless stated. f16 AND dv arms each.
@@ -58,9 +58,9 @@ unless stated. f16 AND dv arms each.
 | id | hypothesis | prediction (*est.*, write-before-run) | decision rule |
 |---|---|---|---|
 | **H1 k′** | k′=100 halves candidates → shrinks dv's decode-proportional warm cost more than f16's (doc 10 §7 owed follow-up) | both arms speed up; dv warm Δ(k′200→100) ≥ f16's Δ; dv/f16 warm ratio moves toward ≤1.0 | if dv ratio at k′=100 ≤ 1.0, record "k′=100 erases the dv warm penalty" in doc 10; else record the residual | — **DONE 2026-07-05 (G8c warm matrix; `data/eval_results/g8c_{dv,f16}_warm_kp100_qcall_hf08_20260705.json` against the `kp200_qcall_hf08` twins). Verdict row never written back into this table — stale, not pending.**
-| **H2 query_cut** | qc=10 (C1 lever) gives ~4× traverse speedup at full corpus, same as the 2026-06-30 container sweep | fed warm p50 drops ~3–4× vs all-terms in BOTH arms | the clean full-corpus C1 number goes in `08_LATENCY_RESEARCH.md` §C1 (currently container-scale only) | — **DONE 2026-07-05 (`data/eval_results/g8c_{dv,f16}_warm_kp200_qc10_hf08_20260705.json` — the C1 lever of `08_LATENCY_RESEARCH.md` §C1 re-measured at full corpus). Verdict row never written back — stale, not pending.**
+| **H2 query_cut** | qc=10 (C1 lever) gives ~4× traverse speedup at full corpus, same as the 2026-06-30 container sweep | fed warm p50 drops ~3–4× versus all-terms in BOTH arms | the clean full-corpus C1 number goes in `08_LATENCY_RESEARCH.md` §C1 (currently container-scale only) | — **DONE 2026-07-05 (`data/eval_results/g8c_{dv,f16}_warm_kp200_qc10_hf08_20260705.json` — the C1 lever of `08_LATENCY_RESEARCH.md` §C1 re-measured at full corpus). Verdict row never written back — stale, not pending.**
 | **H3 heap_factor** | hf 0.7/0.8/1.0 moves warm p50 ≤ ±15% at full corpus (it was mild in the container sweep) | monotone mild trend | record; if >±25% at any point, flag for a quality re-check before adopting | — **DONE 2026-07-05 (`data/eval_results/g8c_{dv,f16}_warm_kp200_qcall_hf{07,08,10}_20260705.json` — the three-point hf sweep). Verdict row never written back — stale, not pending.**
-| **H4 warm scaling** | A1 #4 said 8× docs → 1.6× warm p50; the 150M federated warm p50 should be ~1.5–2× the E7b single-shard 2.9 ms once encode is subtracted | traverse-only warm p50 / single-shard warm ∈ [1.3, 2.5] | outside range → the fan-out merge or GIL is a bigger cost than modeled; profile before optimizing anything else | — **DONE 2026-07-05 / 2026-07-08 (G8c warm matrix plus the G8e split, `g8e_encode_traverse_split_20260708.json`: federated warm p50 64.2 ms = encode 20.0 + traverse/fan-out/merge 43.7 ms, single-shard kernel only ~3–6 ms — i.e. the fan-out merge IS the dominant cost, H4's 'profile before optimizing anything else' branch). Verdict row never written back — stale, not pending.**
+| **H4 warm scaling** | A1 #4 said 8× docs → 1.6× warm p50; the 150M federated warm p50 should be ~1.5–2× the E7b single-shard 2.9 ms once encode is subtracted | traverse-only warm p50 / single-shard warm ∈ [1.3, 2.5] | outside range → the fan-out merge or GIL is a bigger cost than modeled; profile before optimizing anything else | — **DONE 2026-07-05 / 2026-07-08 (G8c warm matrix plus the G8e split, `g8e_encode_traverse_split_20260708.json`: federated warm p50 64.2 ms = encode 20.0 + traverse/fan-out/merge 43.7 ms, single-shard kernel only ~3–6 ms — that is, the fan-out merge IS the dominant cost, H4's 'profile before optimizing anything else' branch). Verdict row never written back — stale, not pending.**
 
 ## Tier 2 — host capped cells beyond G8b's core (deploy-shape hypotheses)
 
@@ -73,8 +73,8 @@ unless stated. f16 AND dv arms each.
 
 | id | hypothesis | prediction (*est.*) | decision rule |
 |---|---|---|---|
-| **H5 sequential + dv @6G cap** | THE localized-deploy cell: sequential federation (one shard resident, mechanism release) over dv shards (3.10 GiB each) serves the FULL 150M corpus inside a 6 GB cap — the thing parallel/f16 needs 41+ GiB for | no OOM, no thrash *within* a shard; per-query cost ≈ Σ per-shard cold-ish traverses (tens of seconds/query, the mechanism-B trade measured 2026-07-01: warm≈cold 15.9 s at 32 GB) | if it completes clean at 6G, record in `docs/LOCALIZED_DEPLOYMENT_PLAN.md` + sequential-serving docs as the measured RAM floor for full-corpus serving; if it thrashes, sequential's real floor is >1 shard | — **STILL OPEN 2026-09-25 (never run; no capped sequential cell exists in `data/eval_results/`)**. Bounded but not answered by deployprep WI-1 (2026-07-16, `docs/seismic_sequential_serving/04_BENCHMARKING.md`): sequential peak RssFile 0.023× parallel (0.27 vs 11.74 GB) with anon ~1.1 GB — far inside 6 GB, but measured uncapped, so the no-thrash-at-6G claim is still untested. Not listed as open work in `docs/README.md`'s Active tables or this folder's `README.md`.
-| **H6 sequential @58 uncapped** | sequential's page-release makes it pay ~cold cost per shard even with free RAM (mechanism, not RAM, bound) | p50 ≫ parallel warm; similar to its 32 GB number | quantifies what sequential mode costs when RAM is NOT scarce (its only regime advantage is the floor) | — **DONE 2026-07-05 (`data/eval_results/g8c_{dv,f16}_seq_uncapped_20260705.json`)**, and superseded in substance by deployprep WI-1 2026-07-16 (warm p50 5.29× parallel, 248 vs 47 ms — sequential's value is the RAM floor, not warm speed).
+| **H5 sequential + dv @6G cap** | THE localized-deploy cell: sequential federation (one shard resident, mechanism release) over dv shards (3.10 GiB each) serves the FULL 150M corpus inside a 6 GB cap — the thing parallel/f16 needs 41+ GiB for | no OOM, no thrash *within* a shard; per-query cost ≈ Σ per-shard cold-ish traverses (tens of seconds/query, the mechanism-B trade measured 2026-07-01: warm≈cold 15.9 s at 32 GB) | if it completes clean at 6G, record in `docs/LOCALIZED_DEPLOYMENT_PLAN.md` + sequential-serving docs as the measured RAM floor for full-corpus serving; if it thrashes, sequential's real floor is >1 shard | — **STILL OPEN 2026-09-25 (never run; no capped sequential cell exists in `data/eval_results/`)**. Bounded but not answered by deployprep WI-1 (2026-07-16, `docs/seismic_sequential_serving/04_BENCHMARKING.md`): sequential peak RssFile 0.023× parallel (0.27 versus 11.74 GB) with anon ~1.1 GB — far inside 6 GB, but measured uncapped, so the no-thrash-at-6G claim is still untested. Not listed as open work in `docs/README.md`'s Active tables or this folder's `README.md`.
+| **H6 sequential @58 uncapped** | sequential's page-release makes it pay ~cold cost per shard even with free RAM (mechanism, not RAM, bound) | p50 ≫ parallel warm; similar to its 32 GB number | quantifies what sequential mode costs when RAM is NOT scarce (its only regime advantage is the floor) | — **DONE 2026-07-05 (`data/eval_results/g8c_{dv,f16}_seq_uncapped_20260705.json`)**, and superseded in substance by deployprep WI-1 2026-07-16 (warm p50 5.29× parallel, 248 versus 47 ms — sequential's value is the RAM floor, not warm speed).
 | **H7 dv @24G** (already in G8b core) | locates dv's own full-corpus cliff | 24G < ~25 GiB working set → cliff or near-cliff | brackets the dv deploy floor between 24 and 28 GB | — **DONE 2026-07-04 (`data/eval_results/g8b_fullcorpus_dv_cap24G.json`; verdict in `10_FORWARD_COMPRESSION_DESIGN.md` §7.5 — dv serves at the 24–32 GB caps where f16 thrashes).**
 
 Sequential cells use `--queries 10 --passes 2` (each query costs ~8 shard
@@ -89,14 +89,14 @@ traverses; 40×3 would take hours for no extra information).
 
 | id | hypothesis | method | status |
 |---|---|---|---|
-| **E5 co-access reordering** | docs scored together share pages after a co-access permute of the forward index → majflt ↓ beyond dv's 0.560 (the one remaining fault-count lever, doc 10 §7.4) | SIMULATE FIRST at page-touch granularity with the §7.4 pack-walk method (`e7_straddle_analysis.py` lineage) using real query candidate sets; only build the converter/id-indirection if the sim clears ~0.45 | PRE-REGISTERED, sim not written | — **DONE 2026-07-09 (Q6 sim GO — buildable order 0.376–0.400, worst shard 0.393 vs the 0.45 bar, `q6_e5_coaccess_sim_20260709.json`; converter + 8-shard rollout SERVED, commits `6170e1d` and `8f05aeb`; doc 13 §5, `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q6). E5 is the served forward layout.**
+| **E5 co-access reordering** | docs scored together share pages after a co-access permute of the forward index → majflt ↓ beyond dv's 0.560 (the one remaining fault-count lever, doc 10 §7.4) | SIMULATE FIRST at page-touch granularity with the §7.4 pack-walk method (`e7_straddle_analysis.py` lineage) using real query candidate sets; only build the converter/id-indirection if the sim clears ~0.45 | PRE-REGISTERED, sim not written | — **DONE 2026-07-09 (Q6 sim GO — buildable order 0.376–0.400, worst shard 0.393 versus the 0.45 bar, `q6_e5_coaccess_sim_20260709.json`; converter + 8-shard rollout SERVED, commits `6170e1d` and `8f05aeb`; doc 13 §5, `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q6). E5 is the served forward layout.**
 | **M2b i32-widen** | M2's gate-a fail (0.984 @ n=100) is i16 accumulator saturation; widening to i32 recovers ≥0.99 at ~half of M2's projected speedup | kernel variant behind the existing `SFU_SEISMIC_M2_INT6` plumbing; gate a at n=100 FIRST (the n=40→100 lesson, `math_optimization/07`) | **KILLED 2026-07-10** — gate a FAIL 0.987/0.983 < 0.99 (Q4, `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` ledger) | — **DONE 2026-07-10 (measured KILL: gate a 0.987/0.983 < 0.99 at n=100, `q4_m2b_pregate_20260710.json`; roadmap Q4).**
-| **E3 n_postings-down** | n_postings below default shrinks the index at zero quality cost (the UP direction proved inert 2026-06-27; DOWN was never run) | one rebuilt shard0 variant + parity vs f16 baseline | BLOCKED on build budget (shard rebuild ~hours; /tmp sources gone — needs spool re-derivation) | — **STILL OPEN 2026-09-25** (unchanged: needs a shard rebuild from `data/thinclient_index/spool_backup`; parked in `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` §Parked as "do not re-derive"). Not listed as open work in `docs/README.md`'s Active tables or this folder's `README.md`.
-| **M7 bitmap/intersection sim** (2026-07-05) | moving the query-membership test *before* the gather (3.6 KB L1 bitmap vs 115 KB L2 dense table) skips most packs — the 76.7% zero-lane waste has enough pack-level clustering to matter | Stage-0 Python lane-accounting sim on real candidate sets: distribution of query-hits per 8-lane pack; bars pre-registered in `math_optimization/08_FURTHER_MATH_CANDIDATES.md` (all-miss-pack rate ≥0.5 GO / <0.3 KILL); dv shards serve as-is either way | **KILLED 2026-07-08** — all-miss-pack rate **0.194** (shard1 0.197, shard2 0.190; bar <0.3 = KILL): hits anti-cluster, ~80% of packs contain ≥1 query hit. Per-lane zero rate 0.7646 reproduces 06's 76.7% anchor. `scripts/seismic_testbed/m7_pack_membership_sim.py`, `data/eval_results/m7_pack_membership_sim_20260708.json`; verdict details `math_optimization/08` §M7 | — **DONE 2026-07-08 (measured KILL: all-miss-pack rate 0.194 < the 0.3 bar, `m7_pack_membership_sim_20260708.json`; roadmap Q2).**
+| **E3 n_postings-down** | n_postings below default shrinks the index at zero quality cost (the UP direction proved inert 2026-06-27; DOWN was never run) | one rebuilt shard0 variant + parity versus f16 baseline | BLOCKED on build budget (shard rebuild ~hours; /tmp sources gone — needs spool re-derivation) | — **STILL OPEN 2026-09-25** (unchanged: needs a shard rebuild from `data/thinclient_index/spool_backup`; parked in `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` §Parked as "do not re-derive"). Not listed as open work in `docs/README.md`'s Active tables or this folder's `README.md`.
+| **M7 bitmap/intersection sim** (2026-07-05) | moving the query-membership test *before* the gather (3.6 KB L1 bitmap versus 115 KB L2 dense table) skips most packs — the 76.7% zero-lane waste has enough pack-level clustering to matter | Stage-0 Python lane-accounting sim on real candidate sets: distribution of query-hits per 8-lane pack; bars pre-registered in `math_optimization/08_FURTHER_MATH_CANDIDATES.md` (all-miss-pack rate ≥0.5 GO / <0.3 KILL); dv shards serve as-is either way | **KILLED 2026-07-08** — all-miss-pack rate **0.194** (shard1 0.197, shard2 0.190; bar <0.3 = KILL): hits anti-cluster, ~80% of packs contain ≥1 query hit. Per-lane zero rate 0.7646 reproduces 06's 76.7% anchor. `scripts/seismic_testbed/m7_pack_membership_sim.py`, `data/eval_results/m7_pack_membership_sim_20260708.json`; verdict details `math_optimization/08` §M7 | — **DONE 2026-07-08 (measured KILL: all-miss-pack rate 0.194 < the 0.3 bar, `m7_pack_membership_sim_20260708.json`; roadmap Q2).**
 | **M6 VNNI/UDOT pre-gates** (2026-07-05) | `vpdpbusd`/`UDOT` i32 accumulation removes the i16 saturation that capped M2 at 6-bit → 7-bit query clears the 0.99 quality bar at n=100 (pre-gate model exists; 0.995 at n=40) | (1) cpuid inventory across dev/host/DO CPUs (`lscpu \| grep vnni`, ARM `asimddp`); (2) `m2_pregate_query_integer_dot.py` at 7-bit, n=100; gated behind M2b's verdict — see `math_optimization/08` §M6 | **KILLED 2026-07-10** — transitively by M2b's Q4 gate-a FAIL (Q5, `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` ledger); cpuid inventory never run (moot) | — **DONE 2026-07-10 (killed transitively by Q4's FAIL — same arithmetic width; the cpuid inventory was moot and never run; roadmap Q5).**
-| **M8 survivors-per-block instrument** (2026-07-05) | surviving posting blocks contribute ≥4 candidates on average → batched (register-blocked) scoring has material batch width | 20-line counter in the traverse path (or offline from posting-block stats); if typical batch <2, M8 dies on paper — `math_optimization/08` §M8 | PRE-REGISTERED, not run | — **DONE: instrument 2026-07-10 (GO — median 18 candidates/block vs the bar of 4, `q3_m8_survivors_per_block_20260710.json`) and the register-blocked kernel BUILT + MEASURED 2026-08-10 — gate a bit-identity 100/100, gate c warm 1.0223×/1.0435× ⇒ REVERT; ships in-tree DEFAULT-OFF behind `SFU_SEISMIC_M8_BATCH` (`m8_batch_kernel_gate{a,c}_20260810.json`, `math_optimization/08` §M8). The 'PRE-REGISTERED, not run' status cell is stale.**
+| **M8 survivors-per-block instrument** (2026-07-05) | surviving posting blocks contribute ≥4 candidates on average → batched (register-blocked) scoring has material batch width | 20-line counter in the traverse path (or offline from posting-block stats); if typical batch <2, M8 dies on paper — `math_optimization/08` §M8 | PRE-REGISTERED, not run | — **DONE: instrument 2026-07-10 (GO — median 18 candidates/block versus the bar of 4, `q3_m8_survivors_per_block_20260710.json`) and the register-blocked kernel BUILT + MEASURED 2026-08-10 — gate a bit-identity 100/100, gate c warm 1.0223×/1.0435× ⇒ REVERT; ships in-tree DEFAULT-OFF behind `SFU_SEISMIC_M8_BATCH` (`m8_batch_kernel_gate{a,c}_20260810.json`, `math_optimization/08` §M8). The 'PRE-REGISTERED, not run' status cell is stale.**
 | **E7 readahead on ext4** | gate-c's 0.560 is partly drvfs; on a native ext4 host the fault profile may differ | would need shards copied to ext4 — **violates Rule Zero on this host** (no space guarantee); only for a future machine with a second SSD | PARKED | — **CLOSED-UNRUNNABLE 2026-09-25** — the row's own precondition ("only for a future machine with a second SSD") can no longer be met: cloud access ended 2026-09-25 (the OCI E5 host and every DigitalOcean droplet are gone) and the only surviving machine is the 31 GB local WSL2 host whose `data/` is the same 9p mount Rule Zero protects (`docs/infrastructure/README.md` banner).
-| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 vs f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** vs FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. **Stage-1 GO 2026-07-10** — v2 codec/converter/reader shipped (format version 2, per-doc f16 vmax record head); all 4 pre-registered bars PASS on both shards: overlap@10 **0.997/0.993** (= the Stage-0 proxy exactly), size **+0.67%** (the *est.* −6% did NOT materialize — the u8 re-distribution compresses the same, the f16 heads add ~+0.7%), warm p50 **0.985×/1.039×**, T1 bit-identity 0/0. `scripts/seismic_testbed/e8_dvv2_gates.py`, `data/eval_results/e8_dvv2_stage1_shard{1,2}_20260710.json`. **Stage 2 COMPLETE 2026-07-13** (8/8 shards re-converted, corpus-mean 0.9955) + **served-default flip 2026-07-14** — see `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1 | — **DONE 2026-07-14 (Stage 0 GO 2026-07-08 → Stage 1 GO 2026-07-10 → Stage 2 8/8 shards 2026-07-13 at corpus mean 0.9955 → served-default flip 2026-07-14, commit `fcfcfb2`; `THIN_CLIENT_SWAP.md` §SPLADE leg).**
+| **E8 dv-v2 per-doc value scale** (2026-07-05) | the accepted marginal parity (G8d: corpus 0.9906, shards 1–2 = 0.985, doc 10 §7.6) is recoverable at zero serve-time cost — SFR1's per-doc linear u8 scale (doc 10 §2.4: rel-L2 0.329%, ~4× better than global schemes) grafted into the dv container as format v2 lifts shards 1–2 ≥0.99 and corpus mean ≥0.995 (*est.*) at ≤±2% size (*est.*, SFR1 suggests ~−6%) | Stage-0 FIRST (zero Rust): e6b-lineage proxy re-scored under per-doc-u8 on shard-1/2 candidates, n=100 (bars pre-registered in `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1); on GO → version-bumped encoder/loader in `spike/vectorium_fork`, convert shards 1–2 only, gate-a n=100 versus f16 twins; full 8-shard re-conversion only after both pass | **Stage-0 GO 2026-07-08** — per-doc overlap@10 **0.997 (shard1) / 0.993 (shard2)** versus FixedU8Q 0.985/0.984 on the same n=100 candidates (both bars cleared; the FixedU8Q proxy reproduces G8d's measured 0.985 on these shards, validating the method). `scripts/seismic_testbed/e8_stage0_perdoc_scale.py`, `data/eval_results/e8_stage0_perdoc_scale_20260708.json`. **Stage-1 GO 2026-07-10** — v2 codec/converter/reader shipped (format version 2, per-doc f16 vmax record head); all 4 pre-registered bars PASS on both shards: overlap@10 **0.997/0.993** (= the Stage-0 proxy exactly), size **+0.67%** (the *est.* −6% did NOT materialize — the u8 re-distribution compresses the same, the f16 heads add ~+0.7%), warm p50 **0.985×/1.039×**, T1 bit-identity 0/0. `scripts/seismic_testbed/e8_dvv2_gates.py`, `data/eval_results/e8_dvv2_stage1_shard{1,2}_20260710.json`. **Stage 2 COMPLETE 2026-07-13** (8/8 shards re-converted, corpus-mean 0.9955) + **served-default flip 2026-07-14** — see `docs/archive/seismic_150m_testbed/12_EXECUTION_ROADMAP.md` Q1 | — **DONE 2026-07-14 (Stage 0 GO 2026-07-08 → Stage 1 GO 2026-07-10 → Stage 2 8/8 shards 2026-07-13 at corpus mean 0.9955 → served-default flip 2026-07-14, commit `fcfcfb2`; `THIN_CLIENT_SWAP.md` §SPLADE leg).**
 
 ### Q12 access-skew / hot-set telemetry probe (2026-07-13, disk_streaming_research candidate #1)
 
@@ -107,7 +107,7 @@ transferred to SPLADE query traffic). Method: for n=120 topic-independent
 queries (1 paraphrase per `original_query` from `diverse_queries.json`, served
 shape k′=100/hf=0.8, E5 dv manifest), collect each query's `search_visited`
 forward-range starts per shard (word offsets ×8 = bytes → 4 KiB page ids;
-dv records avg ~165 B ≪ page, so start-page ≈ touched page), histogram page
+dv records average ~165 B ≪ page, so start-page ≈ touched page), histogram page
 touches across queries. Secondary stat: within-topic overlap on a 20-topic ×
 3-paraphrase subset (repeat-traffic upper bound).
 
@@ -115,7 +115,7 @@ touches across queries. Secondary stat: within-topic overlap on a 20-topic ×
   Zipf-ish — top 10% of touched pages carry ≥50% of touches; cross-topic
   repeat fraction (pages touched by ≥2 of 120 queries, weighted by touches)
   ≥25%; hot-set-80 (pages covering 80% of touches) ≤ ~4 GB across 8 shards
-  (vs ~25 GB dv forward total).
+  (versus ~25 GB dv forward total).
 - **Decision rule:** hot-set-80 ≤ 4 GB AND repeat ≥25% → disk_streaming
   candidates #2/#3 (software LRU/pin, PILOT-analog prefetch) stay live —
   register their full experiments here before building. hot-set-80 > 8 GB OR
@@ -225,7 +225,7 @@ scoring path → T1 bit-identical by construction.
 `MmapSeismicIndex.mlock_ranges(extents)` pins page extents in the
 `forward_data.bin` slab, budget-capped: pin ≤
 min(`SFU_SEISMIC_PIN_BUDGET_GB`, `MemAvailable` − ~1.5 GB floor − headroom),
-largest-coverage (touch-count) extents first. A/B vs pin-off on the 32 GB
+largest-coverage (touch-count) extents first. A/B versus pin-off on the 32 GB
 host regime (the 15.8 s warm≈cold cell, measured 2026-07-01). The doc-02 §6
 *est.* uplift to beat is ~1.5–3× p50 — treat as *est.*, NOT a bar; the bars
 below are the actual pre-registration.
@@ -272,7 +272,7 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
   `scripts/seismic_testbed/f4_floor_mlock_smoke.py`): **19,980,288 B locked in
   929 ranges in 1.6 s**, `VmLck` delta equal to the reported bytes; the shard's
   whole navigation floor is 153.1 MB of the 1,159.2 MB slab (13.2%); parity
-  gate-ON vs OFF **5/5 bit-identical**. **Also corrected:** the "Q9 ~5,000
+  gate-ON versus OFF **5/5 bit-identical**. **Also corrected:** the "Q9 ~5,000
   pages = 20 MB constant floor" this backlog cited as the rescope target was a
   unit error — doc 10 §7.3 measured 5,093 major FAULTS carrying ~1.27 GB of
   readahead pages; there is no 20 MB slab. F4 LATENCY EFFICACY still
@@ -284,7 +284,7 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
   sudo memlock ceiling at ~shard 4, no crash — the no-op fallback). The
   `load_hotset_and_pin` budget check (min(dial, MemAvailable − 1.5 − 1.0))
   works. F3 EFFICACY (latency) HOST-GATED: the 15.8 s warm≈cold regime is a
-  32 GB HOST phenomenon (62 GB index > 32 GB RAM); this dev container has 54 GB
+  32 GB HOST phenomenon (62 GB index > 32 GB RAM); this development container has 54 GB
   MemAvailable → warm p50 is already RAM-speed → pin-tier latency uplift is
   NOT measurable here. Latency A/B requires the operator's constrained-host run.
 - **F5 `release_pages_except`**: hook built; NOT exercised (only relevant in
@@ -296,10 +296,10 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
   2026-07-14** (`_t1_pin_off.json` / `_t1_pin_on.json`):
   `ParallelSeismicBackend` (2 shards, E8 v2) with `SFU_SEISMIC_PIN_BUDGET_GB=1.6`
   (0.4 GB pinned) produces bit-identical top-50 oaid-order on 20/20 diverse
-  queries vs pin-OFF. The pin tier is residency-only (`_merge_topk`/scoring/
+  queries versus pin-OFF. The pin tier is residency-only (`_merge_topk`/scoring/
   decode untouched) → T1 by construction; asserted empirically. Run
   out-of-process (1 backend, 2 subprocesses) because 3 backends × 2 shards
-  exceeds the dev container's ~50 GB VmSize ceiling.
+  exceeds the development container's ~50 GB VmSize ceiling.
 - **Dev-container VmSize ceiling (~50 GB, WSL2)**: 8-shard mmap = 44 GB +
   SPLADE ONNX = 6 GB; the full `from_manifest` pin path (ONNX eager + 8 shards
   + mlock + sidecar manifest read) MemoryErrors reading the 22 MB shard
@@ -319,7 +319,7 @@ Hooks: `mmap_index.rs` `mlock_ranges` + `release_pages_except` (Phase 4 F5);
 > failure as a ~0 ms no-op. Five defects fixed in commit 2203d9b; the numbers
 > below are the corrected re-measurement.
 
-**MEASURED 2026-07-14 (corrected)** (`f6_prefault_hotset_20260714.json` vs
+**MEASURED 2026-07-14 (corrected)** (`f6_prefault_hotset_20260714.json` versus
 `f6_gateoff_baseline_20260714.json`; paired same-.so A/B, q7 hybrid
 fadvise-DONTNEED protocol, 100 q × 3 passes × 2 reps per arm, 0 failed
 queries): at load, prefault (NOT mlock) the F2 sidecar's hot extents into
@@ -328,7 +328,7 @@ the page cache via the `prefault_ranges` .so hook (gate
 Gate OFF: cold p50 666-676 ms, cold p95 **4656-4686 ms**. Gate ON: cold p50
 373-490 ms, cold p95 **1464-1884 ms (median 1674)**. → **~2.8× cold-p95,
 ~1.5× cold-p50, warm unchanged** (52-55 ms both arms). VmSwap 0.
-Attribution (corrected 2026-07-14 audit): warm improving 117→54 ms vs the
+Attribution (corrected 2026-07-14 audit): warm improving 117→54 ms versus the
 2026-07-13 baseline is an operating-conditions confound (CPU contention),
 not a module win — encode (pure ONNX) also halved 30.4→16.7 ms, the 01:00
 old-.so rebench under co-load still showed warm 115-126 ms, and the .so
@@ -336,7 +336,7 @@ rebuild used no target-cpu flags. Quiet-host warm ≈54 ms; co-loaded ≈120 ms.
 Not prefault either way (warm identical in both arms). The gate-OFF cold
 p95 matches the 2026-07-13 baseline (4576-4896 ms) — cold p95 is disk-bound
 and immune to the confound — so the cold-p95 gain is genuinely the
-prefault's. Result parity ON vs OFF:
+prefault's. Result parity ON versus OFF:
 **10/10 identical** (top-10 ids + scores,
 `scripts/seismic_testbed/seismic_result_parity.py`).
 
@@ -362,7 +362,7 @@ TRAVERSAL-ONLY (encode excluded by design).
 | 32G | 605 / 1275 ms | **18 ms** | 0 | fits |
 | 24G | 584 / 1279 ms | **19 ms** | 0 | fits |
 | 16G | 942 / 2176 ms | 135 ms | 15k | marginal (WS ≈ cap) |
-| 12G | 1855 / 4589 ms | 22 ms | 2.4k | boundary w/ hysteresis (converges pass 3) |
+| 12G | 1855 / 4589 ms | 22 ms | 2.4k | boundary with hysteresis (converges pass 3) |
 | 8G | 3392 / 7211 ms | **2135 ms** | 261k | sustained thrash (warm≈cold) |
 | 6G | 4802 / 10949 ms | **4924 ms** | 550k | sustained thrash, ~5 s/query |
 
@@ -398,7 +398,7 @@ churn, so the pin insured the wrong pages; (b) the locked 1.64 GB came out of
 the same budget the un-pinned remainder streams through (at 6G: usable cache
 ~4.9 → ~3.3 GB → bigger per-pass deficit). Doc 02 §3.2's own "cannot beat
 capacity math" bound applied. Only benefit observed: a modest cold-pass
-prefault effect at 8G (pass 1 3.09 s vs 3.39 s). Remaining untested pin
+prefault effect at 8G (pass 1 3.09 s versus 3.39 s). Remaining untested pin
 value: protection against EXTERNAL cache competitors (not self-thrash) — a
 different regime, pre-registered here as an open question, plus the
 F4 navigation-floor pin (RESCOPED 2026-08-17 to ~20 MB/shard, ~160 MB total;
@@ -406,7 +406,7 @@ built + residency-measured, latency UNMEASURED — see the F4 entry above).
 
 **F5 release-except cell (2026-07-14, `r1_cap16g_f5rel_20260714.json`) —
 NULL RESULT as built, with a diagnosed scope bug.** Pass-for-pass identical
-to the plain 16G cell (966/460/125 ms vs 942/463/135 ms; majflt 104k/56k/15k
+to the plain 16G cell (966/460/125 ms versus 942/463/135 ms; majflt 104k/56k/15k
 both). Tell: post-release RssFile UNCHANGED (14.32 GB) despite "released
 16.45 GB" — the hook only covers the **forward_data slab**, whose pages were
 mostly non-resident at that moment anyway; the actual load residue lives in
@@ -466,9 +466,9 @@ fadvise-DONTNEED-except-hot or extending the hook beyond the forward slab.
 > for a shippable build). Re-running the 16 GB F5 cell requires its own
 > pre-registration.
 
-**Quality under squeeze: 40/40 bit-identical (ids + scores) vs the uncapped
+**Quality under squeeze: 40/40 bit-identical (ids + scores) versus the uncapped
 reference in ALL THREE stressed cells** (8G-pin, 6G-pin, 16G-F5;
-`r1_results_*.json` vs `r1_results_uncapped_ref.json`) — pressure is
+`r1_results_*.json` versus `r1_results_uncapped_ref.json`) — pressure is
 latency-only, empirically confirmed at up to ~590k faults/pass.
 
 ### R2 fine convergence ladder (pre-registered AND MEASURED 2026-07-14)
@@ -482,13 +482,13 @@ Headline: **converged steady state is a flat 17.9–18.9 ms at every cap
 size.** Verdicts on the four pre-registered expectations: (1) cliff —
 CONFIRMED; (2) passes-to-converge rising with cap — NOT CONFIRMED at pass
 granularity (flat 4–5, ±1 rep-to-rep), but the pass-3 fixed-window inversion
-REPRODUCED (12g p50 21 ms vs 16g 124 ms; R1 read 22 vs 135) with a refined
+REPRODUCED (12g p50 21 ms versus 16g 124 ms; R1 read 22 versus 135) with a refined
 mechanism — the inversion is carried by residual-fault distribution across
 queries, not by the smaller cap finishing the whole sort first; (3)
 pressure-scaled aging — CONFIRMED by direct cgroup observation (pass-1
 pgscan monotone 24g:0 → 17g:0.56M → 11g:3.5M → 6g:7.1M; ws_refault → 0 at
 convergence above the cliff; active_file ends 0.2 GB at 24g — no pressure,
-no promotion — vs 7.5–8.8 GB at 11g); (4) replicate spread — CONFIRMED
+no promotion — versus 7.5–8.8 GB at 11g); (4) replicate spread — CONFIRMED
 small (converged p50 18.1–18.9 ms across all drained cells). Caveat: the
 near-zero stop rule (majflt ≤ 2,500) can leave 0.5–2k residual faults that
 inflate the final-pass p50 to 21–36 ms (14/16/17g rep-1 cells) — quote
@@ -518,7 +518,7 @@ latencies remain TRAVERSAL-ONLY.
 
 Pre-registered expectations (*est.* until measured):
 
-1. Converged p50 vs cap is a monotonic step; the cliff (jump from ~20 ms to
+1. Converged p50 versus cap is a monotonic step; the cliff (jump from ~20 ms to
    seconds) sits in [9, 12] GB, and its location is an empirical measurement
    of the repeat set (current estimate ~10–11 GB).
 2. Passes-to-converge RISES with cap inside the marginal band (Che/Fagin
@@ -565,7 +565,7 @@ verdicts + numbers + paths below each, as of 2026-07-16):
    ledger × query-map join shows 12 GB's residual faults concentrated in
    extents touched only by its slow-tail queries (median query untouched),
    while 16 GB's residual faults land in extents shared by the median query —
-   i.e. per-query residual-fault concentration is markedly higher at 12 GB
+   that is, per-query residual-fault concentration is markedly higher at 12 GB
    than at 16 GB, and the specific slow queries are nameable with their
    extents.
    - **MEASURED 2026-07-16 — REFUTED.** pass-3 per-query DEL extents: 12g
@@ -576,7 +576,7 @@ verdicts + numbers + paths below each, as of 2026-07-16):
      queries (the query-extent map shows 19.6% of extents — 2050/10471 — touch
      all 40 queries; only 1.8% touch a single query), so residual faults
      *cannot* concentrate per-query. The inversion mechanism (artifact §7.2)
-     is convergence-trajectory position at the fixed window (12g mid-sort vs
+     is convergence-trajectory position at the fixed window (12g mid-sort versus
      16g near-converged at pass-3), not per-query fault concentration. Files:
      `r3_join_analysis.json` (cells.12g_instr / 16g_instr `(b)_*`); join
      `scripts/seismic_testbed/r3_join_analysis.py`; cells
@@ -594,8 +594,8 @@ verdicts + numbers + paths below each, as of 2026-07-16):
      walk `$folio->mapping->host->i_ino` + `$folio->index` resolved — verified
      real inodes + extent-aligned pgoffs), and the probe's ×512-scaled count
      matches the kernel's OWN `workingset_refault_file` cgroup counter within
-     **1.8%** at 12g (6538 sampled ×512 = 3.35M vs cgroup 3.29M) and **0.3%**
-     at 16g (1.27M vs 1.26M) — so the *count* is sound, only the *distance*
+     **1.8%** at 12g (6538 sampled ×512 = 3.35M versus cgroup 3.29M) and **0.3%**
+     at 16g (1.27M versus 1.26M) — so the *count* is sound, only the *distance*
      half is downgraded. Activation is inferred downstream (a refault event is
      an inactive→evaluation event; true activation deduced by whether an ADD
      follows for the same (ino,pgoff) in the reclaim batch). The Che/Fagin link
@@ -609,7 +609,7 @@ verdicts + numbers + paths below each, as of 2026-07-16):
    - **MEASURED 2026-07-16 — CONFIRMED (the asymmetry pictured; the 16g
      live-tracer drain is observer-perturbed, the pre-fix dead-tracer run
      corroborates).** pass-0 (post-load) evicted: 12g=**3.17 GB** (already
-     pressure-sorting) vs 16g=**0.0 GB** (held the full ~14.3 GB working set,
+     pressure-sorting) versus 16g=**0.0 GB** (held the full ~14.3 GB working set,
      not yet sorting) — the artifact §2.2 "16g not yet sorting / 12g sorting"
      asymmetry pictured at page granularity. 12g drains to cache **10.13 GB**
      (the ~10–11 GB repeat set) by convergence. 16g's *live-tracer* drain
@@ -626,7 +626,7 @@ verdicts + numbers + paths below each, as of 2026-07-16):
      overhead; the 16g r3fix overhead 1.120× is a recorded-FAIL.** Ledger
      drop=0 both cells (no "Lost N events" line in clean streams of 31,620 /
      174,992 ADD-DEL events; an overrun would show a Lost line or anomalously
-     low count, e.g. the pre-fix REQ-3g 12g had lost=62,145 explicitly).
+     low count, for example, the pre-fix REQ-3g 12g had lost=62,145 explicitly).
      Overhead at steady-state (min-majflt pass, the pass-shape-invariant
      reference): 12g r3h **1.006×** PASS (instr 18.42 / ctrl 18.31 ms); 16g
      r3fix **1.120×** FAIL (16g's converged regime IS a ~2000-fault residual
@@ -681,7 +681,7 @@ only prior attempt was G8 swap-contaminated), `04_BENCHMARKING.md` (method ready
 150M numbers unmeasured), doc 13 §5 (the E5 A/B cold method — fresh-process mmaps
 on 9p are naturally Linux-cold; `posix_fadvise(DONTNEED)` forces real faults;
 pass 0 = cold, passes ≥1 = warm). Purpose: the clean head-to-head the README owes
-— sequential vs parallel federation over the served e5_v2 shards, warm AND cold,
+— sequential versus parallel federation over the served e5_v2 shards, warm AND cold,
 reporting p50/p95 latency, peak RSS bound per mode, and T1 result parity.
 
 - **Why this container, not the 31.6 GB box:** the 64 GB container (54.8 GB
@@ -691,7 +691,7 @@ reporting p50/p95 latency, peak RSS bound per mode, and T1 result parity.
   IS measurable here, cleanly and swap-free: (a) the latency shape of each mode
   (parallel ≈ max-shard, sequential ≈ Σ-shards) on real 150M shards warm+cold;
   (b) the peak-RssFile bound (sequential mechanism B `release_pages` keeps ~1
-  shard resident vs parallel's full working set — the resident-set ratio is the
+  shard resident versus parallel's full working set — the resident-set ratio is the
   deliverable here even when RAM is ample); (c) T1 bit-identical parity at the
   served k'=100 shape. The swap-avoidance story (the 31.6 GB demo case) stays a
   literature+prior-evidence claim, clearly marked — this run does NOT re-prove it.
@@ -770,7 +770,7 @@ discipline), doc 12's asset map (the fork at `spike/seismic_upstream/`). Purpose
 today's served `.so` is `target-cpu=native` (this exact CPU; SIGILL on a host
 lacking the instructions) → it cannot ship to end users. Build portable
 `x86-64-v3` (AVX2+FMA+BMI1/2) and `x86-64-v2` (SSE4.2+SSSE3, the broadest x86-64
-baseline) variants, re-run the established gates vs native on the served e5_v2
+baseline) variants, re-run the established gates versus native on the served e5_v2
 shards. **The production .so is NEVER overwritten/unlinked** — variants live
 beside it at `spike/seismic_upstream/target/portable_so/{v3,v2}/seismic/*.so`,
 loadable by explicit `sys.path` prepend (an explicit path, never the venv default).
@@ -782,13 +782,13 @@ loadable by explicit `sys.path` prepend (an explicit path, never the venv defaul
   `scripts/seismic_testbed/wi4_portable_cpu_gates.py` runs each variant (and
   native) in its own subprocess (the variant + native `seismic` can't coexist
   in one process), reusing the E7 `run_pass` cold+warm helper. Then a join step
-  computes overlap@10 (variant-top10 vs native-top10) + warm-traverse ratio.
+  computes overlap@10 (variant-top10 versus native-top10) + warm-traverse ratio.
 - **Gates (the established E7 bars, math/05 worst-case-shard + n≥100):**
   - **gate a (parity):** overlap@10 ≥ **0.99**, n=100, on shard 1 AND shard 2
     (both worst-case per G8d §7.6 — never shard0-only). A CPU-target change that
     reorders FMA could alter float rounding → different top-k; this gate must
     hold. *est.*: v3 uses the SAME packed SIMD as native (objdump v3 100 vfmadd/
-    13979 ymm vs native 76/15392) → parity should hold near bit-identical; v2
+    13979 ymm versus native 76/15392) → parity should hold near bit-identical; v2
     (SSE, no FMA) is the riskier one (different rounding path).
   - **gate b (warm latency):** variant warm traverse p50 / native ≤ **1.07×**.
     *est.:* v3 ≈ native (same FMA path, maybe slightly different scheduling); v2
@@ -834,7 +834,7 @@ Prior art REUSED (not reinvented — per drive-prompt instruction):
   pyo3 hook over the F2 hotset sidecar) — COLD p95 4600→1674 ms (−2.9 s,
   ~2.75×) measured 2026-07-14 (`f6_prefault_hotset_20260714.json`); cold p50
   ~431 ms. Its own caveat flags the win is the **first cold query of a fresh
-  process WITHOUT eviction** — i.e. exactly the cold-restart scenario.
+  process WITHOUT eviction** — that is, exactly the cold-restart scenario.
 - **Q9 floor prefault** (`SFU_SEISMIC_PREFLOOR_AT_LOAD=1`) — REFUTED 2026-07-10
   (`q9_floor_prefault_20260710.json`): cold p50 ratio ON/OFF 1.025 (ON
   *slower*), load +104 s, warm 1.097, anon +0.06 GB → all bars FAIL. The
@@ -845,26 +845,26 @@ Hypotheses (write-before-run):
 - **H1 (warmup query set):** replaying a fixed warmup query set at startup
   faults the forward pages real queries touch → first-post-restart `/search`
   p50 drops below the cold floor; recovery-to-first-good-QUERY (not just
-  healthy /health) lands inside the load window (vs null in WI-3).
+  healthy /health) lands inside the load window (versus null in WI-3).
 - **H2 (F6 hotset composition):** composing the F6 hotset prefault with the
   warmup queries shifts the cold-tail (p95) more than warmup queries alone
   (F6 targets structural hot extents; warmup queries target forward data).
 - **H3 (no result drift):** warmup is read-only page-touching + real queries;
-  recall parity vs the unwarmmed serve is bit-identical (overlap@10 = 1.0).
+  recall parity versus the unwarmmed serve is bit-identical (overlap@10 = 1.0).
 
 Bars:
 - recovery-to-first-good-QUERY after SIGKILL < WI-3's window (which = ∞ / null)
-  and ≤ 2× the watchdog's health-recovery (2.4 s) → i.e. first real `/search`
+  and ≤ 2× the watchdog's health-recovery (2.4 s) → that is, first real `/search`
   completes warm in ≤ ~5 s of the kill.
 - warmup-set size bounded (≤ ~64 queries · low top_k) so startup (re)start
   cost stays < ~60 s (F6 load ~ +1 s in-container; warmup queries dominate).
 - warm p50 unchanged by the hook once warm (hook is startup-only).
-- overlap@10 warmup-on vs warmup-off = 1.0 (no drift) on the probe set.
+- overlap@10 warmup-on versus warmup-off = 1.0 (no drift) on the probe set.
 - If H1 returns a smaller win than the bar, record honestly and escalate the
   remaining cold gap (a non-staging, owner-gated mlock/pin tier) — don't claim it closed.
 
 Verdict goes here + `docs/deprecated/oci_demo/DEMO_DEPENDABILITY.md` (append to the
-existing induced-failure section, before vs after the hook). Result JSONs:
+existing induced-failure section, before versus after the hook). Result JSONs:
 `data/eval_results/wi6_*{before,after}*.json`. **No served-default flip**
 (the hook is staging-env-gated, off by default; the served path is unchanged).
 
@@ -896,7 +896,7 @@ container's 9p mount keeps the bar unmet here.
   **host-tier mlock/pin tier** (owner-gated, not done here) — F6 prefault makes
   pages reclaimable, so a process restart re-faults; mlock makes them
   non-reclaimable, surviving a restart without re-faulting. **The bar WOULD be
-  met on a native-ext4 host** (cold faulting ms-scale there vs 9p's seconds) and
+  met on a native-ext4 host** (cold faulting ms-scale there versus 9p's seconds) and
   with an mlock'd hot set on 9p. A longer-window (360 s) re-run is in flight to
   capture the real 9p warm-recovery number; that lands in
   `DEMO_DEPENDABILITY.md` + here.
@@ -911,7 +911,7 @@ demo's real capacity figure + the input the DO-sizing doc needs.
 Hypotheses:
 - **H1:** a pre-warmed serve (majflt quiet, working set resident) holds p50
   ≤ ~150 ms and p95 ≤ ~500 ms at concurrency 1–16 under steady strangers'
-  traffic, with 0% errors (vs the cold 4–6 s p50 / graceful-degradation shape).
+  traffic, with 0% errors (versus the cold 4–6 s p50 / graceful-degradation shape).
 - **H2:** throughput scales near-linearly with concurrency up to the GIL/pyseismic
   fan-out ceiling, then flattens (the ThreadingHTTPServer concurrency story).
 
@@ -981,7 +981,7 @@ corrupts/renames real shards (via mocks/env/wrappers/small FIXTURE copies only).
 | hypothesis | Today a dead/hung leg fails the whole query (BM25F leg throws → 5xx; encoder hang → client timeout storm). A per-leg timeout budget + a circuit breaker (N consecutive leg failures → skip leg, retry-probe after cooldown) + RRF over surviving legs with a `degraded:[legs]` flag + `/health` `degraded` state between ok/dead + encoder-failure→lexical degrade lets a dependable demo SERVE DEGRADED RESULTS instead of failing the query. |
 | prediction (*est.*) | Under each induced single-leg fault (SPLADE hung, dense erroring, encoder down): 0% 5xx on the faulted queries (degraded instead), results still returned (BM25F leg still answers), `degraded` flag names the right leg, breaker recovers (re-admits the leg) within cooldown after the fault clears. p50 of ACCEPTED queries during the fault ≤ ~2× the unfaulted p50. |
 | decision rule | bars PASS if all four hold: (a) no 5xx storm under any single-leg fault, (b) >0 results returned for every fault class, (c) `degraded:[…]` names exactly the injected leg, (d) breaker re-admits the leg (degrade clears) after cooldown once the fault clears. FAIL otherwise (record which bar broke). |
-| gate envs | `SFU_DEMO_LEG_BREAKER=1`, `SFU_DEMO_LEG_TIMEOUT_S` (default 30), `SFU_DEMO_LEG_BREAKER_N` (default 3 consecutive fails), `SFU_DEMO_LEG_BREAKER_COOLDOWN_S` (default 8). All default OFF = wave-1 behavior. |
+| gate environment variables | `SFU_DEMO_LEG_BREAKER=1`, `SFU_DEMO_LEG_TIMEOUT_S` (default 30), `SFU_DEMO_LEG_BREAKER_N` (default 3 consecutive fails), `SFU_DEMO_LEG_BREAKER_COOLDOWN_S` (default 8). All default OFF = wave-1 behavior. |
 | result | `data/eval_results/wi9_*.json`; verdict → `DEMO_DEPENDABILITY.md` §WI-9. |
 
 **MEASURED 2026-07-17** (`wi9_fault_injection_20260717_022742.json`): **PASS — 20/20
@@ -997,9 +997,9 @@ per-fault p50/p95 → `DEMO_DEPENDABILITY.md` §WI-9.
 | field | value |
 |---|---|
 | hypothesis | The owner requires: if ANY one of the 8 SEISMIC shards fails (missing/truncated/unreadable file, search exception, hang/timeout), the OTHER 7 keep working independently. Per-shard LOAD AND per-shard SEARCH fault boundaries in BOTH federation classes (`ParallelSeismicBackend` + `SequentialSeismicBackend`): a failed-to-load or failed-to-search or timed-out shard is marked failed + skipped; the federation merges surviving shards' results with `degraded_shards:[…]`; `/health` reports it; a retry-probe re-admits on recovery. Hash sharding ⇒ a lost shard costs a BOUNDED ~1/8 of recall with no score-comparability issue (doc 09: calibration unnecessary by construction). |
-| prediction (*est.*) | Under each single-shard fault class (absent file, truncated fixture, search exception, hang/timeout): the other 7 shards load+serve (0% 5xx), overlap@10 + recall retention vs the full 8-shard federation ≈ 7/8 (=0.875, the bounded-loss claim), latency during the fault ≤ ~the full-federation p95 (no pileup), and re-admission works (the shard rejoins after the fault clears). The PARALLEL + SEQUENTIAL classes both isolate (the cascade design: _fan_out is the only per-method behavior). |
+| prediction (*est.*) | Under each single-shard fault class (absent file, truncated fixture, search exception, hang/timeout): the other 7 shards load+serve (0% 5xx), overlap@10 + recall retention versus the full 8-shard federation ≈ 7/8 (=0.875, the bounded-loss claim), latency during the fault ≤ ~the full-federation p95 (no pileup), and re-admission works (the shard rejoins after the fault clears). The PARALLEL + SEQUENTIAL classes both isolate (the cascade design: _fan_out is the only per-method behavior). |
 | decision rule | bars PASS if all hold: (a) other 7 serve under every fault class with 0% throw-ups, (b) recall retention@10 ∈ [0.80, 0.95] for a dropped shard (≈7/8 bounded), (c) `degraded_shards:[shard]` names the right shard, (d) re-admission clears the flag after the fault clears, (e) BOTH parallel + sequential classes pass. |
-| gate envs | `SFU_SEISMIC_SHARD_FAULT_BOUNDARY=1` (load+search fault isolation), `SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S` (default 30), re-admit cooldown `SFU_SEISMIC_SHARD_REPROBE_S` (default 10). Default OFF = bit-identical federation (T1 unaffected: a non-faulted shard set has zero behavioral change). **READ-ONLY shards:** fault injection via tiny COPY fixtures under `data/eval_results/_fixtures/` or manifest-override envs, NEVER the real `data/seismic_150m/` files. |
+| gate environment variables | `SFU_SEISMIC_SHARD_FAULT_BOUNDARY=1` (load+search fault isolation), `SFU_SEISMIC_SHARD_SEARCH_TIMEOUT_S` (default 30), re-admit cooldown `SFU_SEISMIC_SHARD_REPROBE_S` (default 10). Default OFF = bit-identical federation (T1 unaffected: a non-faulted shard set has zero behavioral change). **READ-ONLY shards:** fault injection via tiny COPY fixtures under `data/eval_results/_fixtures/` or manifest-override environment variables, NEVER the real `data/seismic_150m/` files. |
 | result | `data/eval_results/wi10_*.json`; verdict → `DEMO_DEPENDABILITY.md` §WI-10. |
 
 **MEASURED 2026-07-17** (`wi10_shard_isolation_20260717_023630.json`): **PASS — all
@@ -1019,7 +1019,7 @@ read-only); manifest-override + corrupt fixture under `_fixtures/` for load faul
 | hypothesis | WI-3/7 measured capacity (~2.9 qps warm knee). Past capacity the serve must degrade gracefully — bounded in-flight concurrency + bounded accept queue, clean HTTP 429 + `Retry-After` on shed, NEVER an unbounded pileup (the cliff where p95 → ∞ + connection resets). |
 | prediction (*est.*) | Driving load at 2–4× the WI-7 warm knee: p95 of ACCEPTED requests stays within ~2× the WI-7 warm p95 (no collapse), shed requests get clean 429s (no timeouts/connection resets), and the serve returns to WI-7 baseline within one bar after load drops. |
 | decision rule | bars PASS if: (a) accepted-request p95 during overload ≤ ~3× the WI-7 warm p95 (bounded tail, not ∞), (b) shed fraction returns clean 429 (no `socket.timeout`/ConnectionResetError among sheds), (c) post-overload p50 returns to within ~1.5× the pre-overload baseline within the recovery bar. |
-| gate envs | `SFU_DEMO_OVERLOAD_SHED=1`, `SFU_DEMO_MAX_INFLIGHT` (default 2× WI-7 knee workers), `SFU_DEMO_ACCEPT_QUEUE` (default 64). Default OFF = unbounded (wave-2 behavior). |
+| gate environment variables | `SFU_DEMO_OVERLOAD_SHED=1`, `SFU_DEMO_MAX_INFLIGHT` (default 2× WI-7 knee workers), `SFU_DEMO_ACCEPT_QUEUE` (default 64). Default OFF = unbounded (wave-2 behavior). |
 | result | `data/eval_results/wi11_*.json`; verdict → `DEMO_DEPENDABILITY.md` §WI-11. |
 
 **MEASURED 2026-07-17** (`wi11_overload_20260717_030631.json`): **PASS — all 3
@@ -1032,10 +1032,10 @@ unbounded pileup; raised socket backlog kept collapses a small minority.
 ### WI-12 repeatable reliability soak job — the pre-launch gate (system)
 | field | value |
 |---|---|
-| hypothesis | A single runnable job `scripts/archive/demo_dependability/reliability_soak.sh` the owner can run before any demo launch: ~40-min soak at modest QPS with a SCHEDULED fault timeline injected mid-soak (a WI-9 leg fault, a WI-10 shard fault, a WI-11 overload burst, a WI-3/6 watchdog SIGKILL/restart) emits one timeline report JSON + markdown summary: availability %, error budget, per-phase p50/p95, every degradation/recovery event with timestamps, PASS/FAIL vs pre-registered bars. |
+| hypothesis | A single runnable job `scripts/archive/demo_dependability/reliability_soak.sh` the owner can run before any demo launch: ~40-min soak at modest QPS with a SCHEDULED fault timeline injected mid-soak (a WI-9 leg fault, a WI-10 shard fault, a WI-11 overload burst, a WI-3/6 watchdog SIGKILL/restart) emits one timeline report JSON + markdown summary: availability %, error budget, per-phase p50/p95, every degradation/recovery event with timestamps, PASS/FAIL versus pre-registered bars. |
 | prediction (*est.*) | End-to-end run: availability ≥ 95% over the soak (degraded-ok counts as available; 5xx counts against), every injected fault surfaces a `degraded`/`degraded_shards` event + a recovery event on its timeline, the per-phase p95 within each fault window stays bounded (no collapse across faults). |
 | decision rule | bars PASS if: (a) availability ≥ 95% (5xx + timeouts ≤ 5% of accepted), (b) every injected fault produces a degradation event + a recovery event with both timestamps recorded, (c) the soak's worst-phase p95 ≤ ~5× the warm baseline (no cascade collapse across compounded faults). Run ONCE end-to-end tonight (bars pre-registered first). |
-| gate envs | compose WI-9/10/11 + WI-6 + watchdog all ON for the soak; the job itself is staging-only. `SFU_DEMO_SOAK_QPS` (default 0.3), `SFU_DEMO_SOAK_MIN` (default 40). |
+| gate environment variables | compose WI-9/10/11 + WI-6 + watchdog all ON for the soak; the job itself is staging-only. `SFU_DEMO_SOAK_QPS` (default 0.3), `SFU_DEMO_SOAK_MIN` (default 40). |
 | result | `data/eval_results/wi12_soak_*.json` + `.md`; verdict → `DEMO_DEPENDABILITY.md` §WI-12 + this row. Named the **pre-launch reliability gate** in `docs/README.md`. |
 
 **MEASURED 2026-07-17** (`wi12_soak_20260717_032757.json` + `.md`; 30 min @ 0.3
@@ -1068,7 +1068,7 @@ than 9p's 82.2%). Root cause (direct in-process timing,
 (federation auto-selects `parallel`, confirming the path is no longer flagged
 slow), but first-touching 42 GB on *this sandboxed container's* WSL2-virtualized
 overlay still costs ~80–95 s under memory pressure (served working set ~85 GB+
-vs 56 GB container RAM) plus a ~18 s non-disk encoder/hydration overhead
+versus 56 GB container RAM) plus a ~18 s non-disk encoder/hydration overhead
 present in both arms. Verdict: MEASURED, NOT PASSED here — the ext4 hypothesis
 is confirmed in direction; a real droplet's native NVMe (the deploy shape this
 was proxying) is expected to clear the bar where this sandbox does not. Full
@@ -1089,10 +1089,10 @@ flips; `data/seismic_150m/` READ-ONLY.
 ### WI-13 versioned update + rollback for the demo host (system)
 | field | value |
 |---|---|
-| hypothesis | The demo's update unit is the 4-tuple (code rev, seismic .so variant, index manifest, model files). The repo ALREADY serves off an immutable-artifact + manifest-flip pattern with one-env rollback (E5/E8 rollouts — `THIN_CLIENT_SWAP.md` §+retriever `_seismic_backend`). Codifying it: (a) a `deploy_versions.json` capturing the four components with sha256 + absolute date, generated by script; (b) an `update_demo.sh` staging flow: git pull → verify artifact checksums → stage new beside old (never in-place) → flip manifest/env → warm-restart via the WI-3/6 watchdog (wait-warm) → health+smoke gate → AUTO-ROLLBACK on gate failure (flip back, warm-restart, verify). (c) PROOF against the staging serve with FIXTURE artifacts. |
+| hypothesis | The demo's update unit is the 4-tuple (code rev, seismic .so variant, index manifest, model files). The repository ALREADY serves off an immutable-artifact + manifest-flip pattern with one-env rollback (E5/E8 rollouts — `THIN_CLIENT_SWAP.md` §+retriever `_seismic_backend`). Codifying it: (a) a `deploy_versions.json` capturing the four components with sha256 + absolute date, generated by script; (b) an `update_demo.sh` staging flow: git pull → verify artifact checksums → stage new beside old (never in-place) → flip manifest/env → warm-restart via the WI-3/6 watchdog (wait-warm) → health+smoke gate → AUTO-ROLLBACK on gate failure (flip back, warm-restart, verify). (c) PROOF against the staging serve with FIXTURE artifacts. |
 | prediction (*est.*) | One successful fixture update: a stable serve is running; the updater stages a *new* fixture manifest + .so, flips, the watchdog warm-restarts (WI-6 wait-warm), the post-flip health+smoke gate passes, downtime = the warm-restart window (seconds-to-minutes on 9p), no rollback. One deliberately-broken fixture update (corrupt fixture .so or a failing smoke): the gate FAILS, the updater AUTO-ROLLS BACK to the prior manifest/env (old files still present under the stage-beside discipline), warm-restarts, and the post-rollback gate passes → serve ends in a SERVING state (the rollback is not itself a failure). Both timelines recorded with per-step timestamps. |
 | decision rule | bars PASS if all hold: (a) the success arm flips to the new version with a passing post-flip gate + no rollback, (b) the broken arm's gate FAILS and the auto-rollback restores a serving state whose post-rollback health+smoke gate PASSES (serve answers real queries on the rolled-back version), (c) the stage-beside discipline means the pre-update artifacts survive the broken flip (rollback does not depend on re-fetch), (d) `deploy_versions.json` checksums verify before + after for each arm (a checksum mismatch aborts BEFORE the flip). |
-| gate envs | the flow exercises the EXISTING WI-3/6 watchdog + staging serve + manifest ladder; the only new env is the updater's own: `SFU_DEMO_UPDATE_PORT` (staging port), `SFU_DEMO_UPDATE_GATE_QUERIES` (smoke count), `SFU_DEMO_UPDATE_NO_ROLLBACK=1` (debug kill-switch). No served-default flip — the updater points a *staging* serve at a *staging* manifest, never the promoted e5_v2 default. |
+| gate environment variables | the flow exercises the EXISTING WI-3/6 watchdog + staging serve + manifest ladder; the only new environment is the updater's own: `SFU_DEMO_UPDATE_PORT` (staging port), `SFU_DEMO_UPDATE_GATE_QUERIES` (smoke count), `SFU_DEMO_UPDATE_NO_ROLLBACK=1` (debug kill-switch). No served-default flip — the updater points a *staging* serve at a *staging* manifest, never the promoted e5_v2 default. |
 | result | `data/eval_results/wi13_update_*.json`; verdict → `DEMO_DEPENDABILITY.md` §WI-13. |
 
 **MEASURED 2026-07-17** (`wi13_update_success_20260717_045419.json` +
@@ -1125,8 +1125,8 @@ flips; `data/seismic_150m/` READ-ONLY.
 |---|---|
 | hypothesis | A 20–185 GB bundle can't be re-downloaded per update; the WI-8 `portable_stack_manifest.json` becomes the UPDATE CONTRACT once it carries per-artifact sha256 + version + byte size (shard-granular for indexes — immutable shards mean an index update = replace the CHANGED shard files + flip the bundle manifest). (a) extend the WI-8 generator with sha256+version+bytes per artifact; (b) `updater_check.py`: given a local bundle manifest + a "remote" manifest FILE (simulated locally, NO network), emit the delta plan (files to fetch, total download bytes, files unchanged, apply order: artifacts first, manifest flip last, old files kept until verify — crash-safe); (c) `updater_apply.py` staging proof on a small FIXTURE bundle: apply a delta (one changed shard fixture + one changed model fixture), verify checksums, flip, prove the pre-update bundle is restorable (rollback = re-flip to old manifest, old files present). |
 | prediction (*est.*) | (a) the versioned manifest lists every artifact with a stable sha256 (shards + .so + models + tantivy segments); (b) for a delta with 1 changed shard fixture + 1 changed model fixture: `updater_check.py` reports exactly those 2 files to fetch, the rest unchanged, total download bytes = sum of the 2 changed, apply order = changed-artifacts → verify → manifest-flip-last; (c) `updater_apply.py` applies the delta, post-apply checksums verify, the flipped bundle serves; rollback re-flips to the old manifest + the old shard/model files are STILL present (kept by the keep-old-until-verify discipline) → pre-update bundle restorable crash-safely. Different update classes cost wildly different bytes (E8 re-conversion = all shards change ~26 GB; encoder distill = models only ~1 GB; .so rebuild = 2.7 MB). |
-| decision rule | bars PASS if all hold: (a) every manifest artifact carries sha256+version+bytes (the contract is machine-checkable), (b) the delta plan names exactly the changed files + a crash-safe apply order (manifest flip last, old files retained), (c) the apply proof verifies post-apply checksums AND proves rollback by re-flipping to the old manifest with old files present, (d) the per-class delta-byte expectations (all-shards vs models-only vs .so-only) are recorded in the doc with the known pending-upgrade mapping. DESIGN-ONLY (no build here): the `semantic_docid_ingest` LSM track is flagged as the eventual incremental-DATA path, not built this wave. |
-| gate envs | no served path touched; the fixture bundle lives under `data/eval_results/_fixtures/`. `SFU_PORTABLE_BUNDLE_FIXTURE_DIR` (default the _fixtures dir). |
+| decision rule | bars PASS if all hold: (a) every manifest artifact carries sha256+version+bytes (the contract is machine-checkable), (b) the delta plan names exactly the changed files + a crash-safe apply order (manifest flip last, old files retained), (c) the apply proof verifies post-apply checksums AND proves rollback by re-flipping to the old manifest with old files present, (d) the per-class delta-byte expectations (all-shards versus models-only versus .so-only) are recorded in the doc with the known pending-upgrade mapping. DESIGN-ONLY (no build here): the `semantic_docid_ingest` LSM track is flagged as the eventual incremental-DATA path, not built this wave. |
+| gate environment variables | no served path touched; the fixture bundle lives under `data/eval_results/_fixtures/`. `SFU_PORTABLE_BUNDLE_FIXTURE_DIR` (default the _fixtures directory). |
 | result | `data/eval_results/portable_stack_manifest.json` (versioned) + `wi14_delta_plan_*.json`; verdict → `PORTABLE_STACK_MANIFEST.md` §(e). |
 
 **MEASURED 2026-07-17** (`wi14_apply_proof_20260717.json` +
@@ -1143,7 +1143,7 @@ flips; `data/seismic_150m/` READ-ONLY.
   (old files retained, no re-fetch). `wi14_apply_delta_20260717.json`.
 - apply proof (bars c+d): PASS — 2 files staged beside old (old untouched),
   sha256-verified before the flip, manifest flipped v1→v2, then rollback re-flips
-  to v1 with old shard0 dir + old shard1/data.bin + old splade weight ALL still
+  to v1 with old shard0 directory + old shard1/data.bin + old splade weight ALL still
   present (keep-old-until-verify → crash-safe, no re-fetch). `overall=PASS`,
   bars `{b_fetch_exact, c_applied_and_verified, d_rollback_old_files_present}`
   all True.
@@ -1167,7 +1167,7 @@ touched ONLY to fix a defect the testbed found (commit `3836f64`, see bar L-D).
 | hypothesis | A layered action-generation testbed over one shared invariant oracle (zero pageerror + zero console.error + zero overflow + event-loop alive + honesty floor) catches GUI regressions the 4-static-viewport `e2e_sweep.mjs` misses — especially across the width axis and under chaos (backend-dead, hang, 429-storm, storage-corrupt). Vendored gremlins.js + seeded Chance ⇒ every failure replays deterministically. |
 | prediction (*est.*) | L-A: every interactive element enumerates green (zero pageerror/console.error/overflow). L-B: 100% of the spec-§2 states + events reached/fired. L-C: zero pageerror across N=10 seeds × 5 modes × 60 s. L-D: zero overflow across the 320→1920 w-sweep + mid-skeleton resize no-shift. Total runtime ≤ 20 min. |
 | decision rule | bars PASS if all hold: (a) L-A zero pageerror/console.error/overflow, (b) L-B all_states_reached AND all_events_fired, (c) L-C zero pageerror across the matrix AND every failing seed replay-confirmed then in `regression_seeds.json` (runs first, forever), (d) L-D mid_skeleton_no_shift AND zero overflow across the w-sweep (the 4px-tolerance bar). A bar that can't pass is recorded honestly with the failing seed/action — refuted expectations are valid results (drive-prompt rule). |
-| gate envs | `PW=/home/vscode/.npm/_npx/e41f203b7505f1fb/node_modules` (Playwright in the npx cache, NOT node_modules — the e2e_sweep pattern); `GUITB_SEEDS`, `GUITB_ATTACK_MS` scale L-C; the static server is `scripts/gui_testbed/static_server.mjs` (no backend; app boots to mock+banner). |
+| gate environment variables | `PW=/home/vscode/.npm/_npx/e41f203b7505f1fb/node_modules` (Playwright in the npx cache, NOT node_modules — the e2e_sweep pattern); `GUITB_SEEDS`, `GUITB_ATTACK_MS` scale L-C; the static server is `scripts/gui_testbed/static_server.mjs` (no backend; app boots to mock+banner). |
 | result | `data/eval_results/gui_testbed_2026-07-17.json` (roll-up) + `gui_testbed_l{a,b,c,d}_*_2026-07-17.json`; `scripts/gui_testbed/regression_seeds.json`; verdict → `GUI_INTERACTION_TESTBED_PLAN.md` §0 "MEASURED 2026-07-17". |
 
 **MEASURED 2026-07-17** (`gui_testbed_la_enum_2026-07-17.json` + lb/ld +
@@ -1203,7 +1203,7 @@ roll-up): **bars by-layer — L-A PASS, L-B PASS, L-D partial (1/101 widths).**
 | field | value |
 |---|---|
 | hypothesis | A vendored axe-core a11y scan per screen extends the invariant oracle with WCAG 2.1 AA findings the functional layers (pageerror/console/overflow) don't cover; recording them honestly surfaces remediation debt without blocking the gate. |
-| prediction (*est.*) | a handful of contrast + label + ARIA violations, mostly in the icon-button + dark-sidebar styling; the role="switch" toggles may trip aria-allowed/required-attr (aria-pressed vs aria-checked). |
+| prediction (*est.*) | a handful of contrast + label + ARIA violations, mostly in the icon-button + dark-sidebar styling; the role="switch" toggles may trip aria-allowed/required-attr (aria-pressed versus aria-checked). |
 | decision rule | MEASUREMENT-ONLY (not a gate) — record every violation: id, impact, count, node target + failure summary. Fix NOTHING outside web/ defect rules (drive-prompt WI-16f). Verdict goes to `gui_testbed_lf_a11y_2026-07-17.json` + the plan §0 table. |
 | result | `data/eval_results/gui_testbed_lf_a11y_2026-07-17.json`; verdict → `GUI_INTERACTION_TESTBED_PLAN.md` §0. |
 
@@ -1221,22 +1221,22 @@ NO fixes this wave (WI-16f is measurement-only by directive).
 Owner decision 2026-07-18: wire the existing `lib/cache.ResponseCache` into the
 GUI `/api/search` path as a read-through result cache and pre-seed it with the
 demo's own queries. Keystroke speculation is OUT of scope. Contract terms are
-owner-audited 2026-07-18 (binding — see `src/lib/result_cache.py` docstring
+owner-audited 2026-07-18 (binding — see `source/lib/result_cache.py` docstring
 header) — the bars below check them.
 
 | field | value |
 |---|---|
 | hypothesis | A read-through result cache on `/api/search` (normalized+versioned key; never cache errors/degraded/cold; cache-failure fall-through; TTL hours, max_size ≥ 200) makes repeat demo queries land as cache hits (retrieval+cross-encoder skipped) with byte-identical results, while adding no measurable miss-path regression — so a live reviewer clicking the planted seed queries gets instant results. |
 | prediction (*est.*) | A: cache-hit p50 < cold-miss p50 for every seed query (the cache removes the cross-encoder re-rank + retrieval; even warm the hit is visibly faster). B: cached response == fresh-uncached (parsed equality) for every seed query. C: cache-ON-first-hit p50 within noise of cache-OFF p50 (the miss path adds sub-ms dict-lookup overhead; no throughput regression). D (pre-seed): after serve start + warmup + primer, all seed queries are cache-resident (counters: resident ≥ seed count, no stores after the primer on re-prime). |
-| decision rule | bars PASS if all hold: (a) A — every seed query's hit p50 < cold-miss latency; (b) B — byte-parity holds for every seed query; (c) C — miss-path p95 not pathologically elevated (< 60 s, i.e. no regression vs the known warm-search floor); (d) D — the post-primer `/health` `result_cache.resident` ≥ seed-list size AND a re-prime via `scripts/prime_result_cache.py` is idempotent (resident count stable, hits incremented, no new stores). A bar that can't pass is recorded honestly with the failing query. |
-| gate envs | `SFU_RESULT_CACHE=1` (default ON staging; `=0` one-env rollback), `SFU_CACHE_PRESEED=1` (default ON; `=0` disables the primer), `SFU_HTTP_WARMUP=1` (the primer waits for warmup); staging serve launched via `scripts/serve_http.sh`. |
-| result | WI-17a wiring: `src/lib/result_cache.py` + `src/sfu_library_mcp_http.py` (`api_search`/`/health`/`lifespan`); tests `src/tests/test_result_cache.py` (26/26). WI-17b primer: on-start `_run_cache_preseed` + standalone `scripts/prime_result_cache.py` + seed list `data/eval_results/demo_seed_queries.txt` (landing examples from `web/src/search.jsx`). WI-17c efficacy: `scripts/experiments/eval_result_cache_ab.py` → `data/eval_results/result_cache_ab_2026-07-18.json`. |
+| decision rule | bars PASS if all hold: (a) A — every seed query's hit p50 < cold-miss latency; (b) B — byte-parity holds for every seed query; (c) C — miss-path p95 not pathologically elevated (< 60 s, that is, no regression versus the known warm-search floor); (d) D — the post-primer `/health` `result_cache.resident` ≥ seed-list size AND a re-prime via `scripts/prime_result_cache.py` is idempotent (resident count stable, hits incremented, no new stores). A bar that can't pass is recorded honestly with the failing query. |
+| gate environment variables | `SFU_RESULT_CACHE=1` (default ON staging; `=0` one-env rollback), `SFU_CACHE_PRESEED=1` (default ON; `=0` disables the primer), `SFU_HTTP_WARMUP=1` (the primer waits for warmup); staging serve launched via `scripts/serve_http.sh`. |
+| result | WI-17a wiring: `source/lib/result_cache.py` + `source/sfu_library_mcp_http.py` (`api_search`/`/health`/`lifespan`); tests `source/tests/test_result_cache.py` (26/26). WI-17b primer: on-start `_run_cache_preseed` + standalone `scripts/prime_result_cache.py` + seed list `data/eval_results/demo_seed_queries.txt` (landing examples from `web/source/search.jsx`). WI-17c efficacy: `scripts/experiments/eval_result_cache_ab.py` → `data/eval_results/result_cache_ab_2026-07-18.json`. |
 
 **MEASURED 2026-07-18** (`result_cache_ab_2026-07-18.json`, warm+primed staging
 serve): **all 4 bars PASS** (HOST-NOTE-W7-2 fix applied same session — the
 arithmetic + OFF-vs-ON parity leg both added).
-- A (cold-miss vs cache-hit, n=20/leg, 6 seed queries): hit p50 **3.7–4.1 ms**
-  vs genuine cold-miss p50 **0.2–3.0 s** (warm-search floor; variance = SEISMIC
+- A (cold-miss versus cache-hit, n=20/leg, 6 seed queries): hit p50 **3.7–4.1 ms**
+  versus genuine cold-miss p50 **0.2–3.0 s** (warm-search floor; variance = SEISMIC
   working-set warmth — ~0.2 s for already-paged queries, ~2.5–3.0 s for
   cold-region queries) = **50×–776× speedup** per seed query. **F6: every
   `speedup_p50x` reproduces exactly from the stored `cold_miss_p50_ms`/
@@ -1246,7 +1246,7 @@ arithmetic + OFF-vs-ON parity leg both added).
 - B (byte-parity, round-trip): cached response == stored response (round-trip
   identity) for all 6 seed queries. ✅
 - **B2 (byte-parity, OFF-vs-ON — the genuine contract bar):** serve restart
-  `SFU_RESULT_CACHE=0` (fresh path) vs `=1` (cache hit); parsed-JSON equality
+  `SFU_RESULT_CACHE=0` (fresh path) versus `=1` (cache hit); parsed-JSON equality
   of result set + meta + notes for all 6 seed queries → **PASS**. A cached
   response is byte-identical to a fresh uncached run of the same query
   (`scripts/experiments/eval_result_cache_parity.py`). (HOST-NOTE-W7-2: the original
@@ -1254,7 +1254,7 @@ arithmetic + OFF-vs-ON parity leg both added).
   that gap; the pre-registered bar is now genuinely met.) ✅
 - C (miss-path no-regression): fresh-nonce queries (genuine misses) latencies
   0.26–3.0 s = the known warm-search floor; the cache wrapper's
-  get→None→search→put overhead is sub-ms vs the seconds-scale retrieval → no
+  get→None→search→put overhead is sub-ms versus the seconds-scale retrieval → no
   measurable miss-path regression. ✅
 - D (pre-seed, WI-17b): after serve start + warmup (151.2 s) + primer, all 6
   seed queries cache-resident (`/health result_cache.resident=6`); re-prime via
@@ -1281,9 +1281,9 @@ the owner flips the default, not the build.
 | hypothesis | A debounced searchbar prediction that speculatively primes the read-through result cache (predictor-before-literal, single-slot, guard-suppressed) lets a real Enter-submit land a cache HIT instead of a cold retrieval — so Enter→response approaches the wave-7 ~4 ms hit floor rather than the 0.2–3.0 s warm-retrieval floor — at an acceptable GPU cost (≤ a few speculative backend executions per completed search) and without regressing concurrent real searches. |
 | prediction (*est.*) | (a) arm B pre-seed hit p50 ≤ 10 ms (wave-7 reproduced); (b) arm C medium-profile predictor-mode hit-rate ≥ 80% with hit latency ≤ 2× arm-B p50; (c) parity 6/6 (speculation-primed response byte-identical to a fresh cache-OFF run of the same normalized query); (d) arm D (cache-ON miss) within 10% of arm A AND arm E (interference) within 15% of arm A; (e) waste ≤ 3 speculative backend executions per completed search at medium profile. |
 | decision rule | bars PASS if ALL hold. A miss is recorded honestly (not renegotiated). Interleaved A/Bs only — trials interleaved across arms within each cell (never all-A-then-all-B). Arm-C trial hygiene: valid only if its query was NOT cache-resident before the typing simulation began (probed before each trial; contaminated trials discarded + logged). F6: every headline recomputed from the raw per-trial samples in the results JSON. |
-| gate envs | `SFU_SEARCH_SPECULATE=1` enables (default OFF); the benchmark enables it explicitly per arm. `SFU_RESULT_CACHE=1`, `SFU_CACHE_PRESEED=1`, `SFU_HTTP_WARMUP=1` for the warm+primed cells. Speculation guards suppress when: warming, degraded (WI-9/WI-13), cache disabled, overload/shed (WI-11), or typed text < min length (default ≥ 8 chars after normalize). |
-| MEASURED (2026-07-28, WI-19b) | **NOT ALL PASS (3 of 6 bars FAIL) — recommend speculation OFF.** Bars recomputed from `data/eval_results/speculation_ab_2026-07-28.json` raw per-trial samples: (a) B preseed p50 **4.98 ms — PASS**; (b) C-medium predictor hit-rate **0.20 — FAIL** (<0.80) and hit latency **2493.41 ms — FAIL** (>2× B); (c) G parity **5/6 — FAIL** (<6, single-query byte divergence on "digital divide broadband access" — REAL and UNEXPLAINED, possible retrieval nondeterminism under differing warm state; not a cache-hit artifact since OFF baselines were on a cache-OFF serve; wave-7 OFF-vs-ON was 6/6); (d) D within-10% of A **FAIL** but directional: D p50 1978.76 ms is 36% *faster* than A 3080.57 ms (warm-miss beats cold-OFF; miss path does not regress beyond warm floor — D-all-genuine-miss check PASS); D-all-genuine-miss **PASS** (W9-3 contamination fixed); (e) E interference p50 1324.69 ms within 15% of A **PASS**; (e') waste 1.1 spec execs/search at medium **PASS**. C-predictor per-profile hit-rate slow 1.00 / medium 0.20 / fast 0.15 (n_valid=20/profile, 0 anomalies); C-literal 0.0 across profiles (structural: prefix-key store ≠ full-query Enter key). Owner recommendation: OFF — predictor value confined to the slow-profile known/in-pool scenario, not demo-representative profiles; waste bounded so OFF is low-regret. Feature ships built+wired (tests 24/24); default stays OFF. Bar (b) is a refuted pre-registered bar, recorded not renegotiated. |
-| result | WI-18a build: `src/lib/speculation.py` + `/api/speculate` route in `src/sfu_library_mcp_http.py` + SearchBar debounce helper in `web/src/search.jsx`; tests `src/tests/test_speculation.py`. WI-18b/via WI-19b benchmark: `scripts/experiments/eval_speculation_ab.py` → `data/eval_results/speculation_ab_2026-07-28.json` (raw per-trial samples + event timelines, merged A-G; WI-19a real-time playback protocol, HOST-NOTE-W8-3 fix option a); query pool `data/eval_results/speculation_bench_queries.txt`. (The 2026-07-18 file holds arm A only and is historical after the 2026-07-28 container rebuild + serve restart.) See MEASURED row above for bar PASS/FAIL. |
+| gate environment variables | `SFU_SEARCH_SPECULATE=1` enables (default OFF); the benchmark enables it explicitly per arm. `SFU_RESULT_CACHE=1`, `SFU_CACHE_PRESEED=1`, `SFU_HTTP_WARMUP=1` for the warm+primed cells. Speculation guards suppress when: warming, degraded (WI-9/WI-13), cache disabled, overload/shed (WI-11), or typed text < min length (default ≥ 8 chars after normalize). |
+| MEASURED (2026-07-28, WI-19b) | **NOT ALL PASS (3 of 6 bars FAIL) — recommend speculation OFF.** Bars recomputed from `data/eval_results/speculation_ab_2026-07-28.json` raw per-trial samples: (a) B preseed p50 **4.98 ms — PASS**; (b) C-medium predictor hit-rate **0.20 — FAIL** (<0.80) and hit latency **2493.41 ms — FAIL** (>2× B); (c) G parity **5/6 — FAIL** (<6, single-query byte divergence on "digital divide broadband access" — REAL and UNEXPLAINED, possible retrieval nondeterminism under differing warm state; not a cache-hit artifact since OFF baselines were on a cache-OFF serve; wave-7 OFF-vs-ON was 6/6); (d) D within-10% of A **FAIL** but directional: D p50 1978.76 ms is 36% *faster* than A 3080.57 ms (warm-miss beats cold-OFF; miss path does not regress beyond warm floor — D-all-genuine-miss check PASS); D-all-genuine-miss **PASS** (W9-3 contamination fixed); (e) E interference p50 1324.69 ms within 15% of A **PASS**; (e') waste 1.1 specification execs/search at medium **PASS**. C-predictor per-profile hit-rate slow 1.00 / medium 0.20 / fast 0.15 (n_valid=20/profile, 0 anomalies); C-literal 0.0 across profiles (structural: prefix-key store ≠ full-query Enter key). Owner recommendation: OFF — predictor value confined to the slow-profile known/in-pool scenario, not demo-representative profiles; waste bounded so OFF is low-regret. Feature ships built+wired (tests 24/24); default stays OFF. Bar (b) is a refuted pre-registered bar, recorded not renegotiated. |
+| result | WI-18a build: `source/lib/speculation.py` + `/api/speculate` route in `source/sfu_library_mcp_http.py` + SearchBar debounce helper in `web/source/search.jsx`; tests `source/tests/test_speculation.py`. WI-18b/via WI-19b benchmark: `scripts/experiments/eval_speculation_ab.py` → `data/eval_results/speculation_ab_2026-07-28.json` (raw per-trial samples + event timelines, merged A-G; WI-19a real-time playback protocol, HOST-NOTE-W8-3 fix option a); query pool `data/eval_results/speculation_bench_queries.txt`. (The 2026-07-18 file holds arm A only and is historical after the 2026-07-28 container rebuild + serve restart.) See MEASURED row above for bar PASS/FAIL. |
 
 ## Q11-C4 layer-truncated student distillation build (2026-07-28 — PRE-REGISTERED before run)
 
@@ -1292,19 +1292,19 @@ same-space encoder candidate (cheap tier closed 2026-07-10: C1 0.533 / C2
 0.357 / C3 skipped / C5 0.006; C4 untrained pre-gate L4 **0.464** with L12
 harness control 0.999 — alive, decidable only by an actual distillation
 build). Unblocked container-side by the 2026-07-28 doc-14 correction: the
-dev container has CUDA on the host's RTX 4070 Ti SUPER (16 GB). Rule Zero:
+development container has CUDA on the host's RTX 4070 Ti SUPER (16 GB). Rule Zero:
 shards/index untouched; every artifact is a new file; worst outcome is a
 KILL verdict in a JSON.
 
 | field | value |
 |---|---|
-| method | **Teacher:** the served 12-layer SPLADE reconstructed as a torch `BertForMaskedLM` from `models/splade_onnx/model.onnx` initializers (HF parameter names are preserved in the export — verified 2026-07-28); MANDATORY parity gate vs the ONNX session on real queries BEFORE any training (sparse-qvec agreement in log1p-ReLU-maxpool space). **Distill set:** pseudo-queries = doc titles sampled from `data/thinclient_index/meta.sqlite` via random-rowid probing (sparse OpenAlex-style rowids, no full scans over 9p) + real query pools in-repo; the n=100 `diverse_queries.json` gate set is EXCLUDED from training (holdout — the gate must never score on training data). **Student:** teacher layers 1–4 + embeddings + MLM head, warm-started from teacher weights (the pre-gate's L4 truncation as init). **Loss v1:** MSE on the sparse query vector in `log(1+ReLU(logits))` space (activation-space distill against the frozen teacher; retrieval score is linear in the qvec, so qvec error bounds every doc-score error). **Pre-registered escalation (one round):** if v1 plateaus under the bar, add margin-MSE on sampled doc pairs (doc 14 §5.1 wording) and/or more titles+epochs — then the verdict is final. |
-| gate (inherited doc 14 §4, unchanged) | n=100 real queries; merged 8-shard AND worst-case shards 1–2 overlap@10 vs the served fused encoder **≥ 0.99**; overlap@50 recorded as tail check; `SequentialSeismicBackend`, e5 manifest, same harness lineage as `q11_c4_pregate.py` (whose L12 control measured 0.999 — harness exact). Student runs as ONNX export at gate time (the serving shape). |
-| prediction (*est.*, write-before-run) | KALE retained 92.5% at 2 layers with distillation; a 4-layer warm-started activation-space distill of OUR model on in-domain titles lands merged overlap@10 **0.95–0.99** — near the bar, genuinely uncertain either side. Encode speedup **3–6×** vs the served fused path (pre-gate L4 timing was contended; this run records a clean number). Wall-clock per doc 14 correction: teacher qvecs minutes-to-tens-of-minutes, training a few hours/epoch-set, gate ~1 h. |
+| method | **Teacher:** the served 12-layer SPLADE reconstructed as a torch `BertForMaskedLM` from `models/splade_onnx/model.onnx` initializers (HF parameter names are preserved in the export — verified 2026-07-28); MANDATORY parity gate versus the ONNX session on real queries BEFORE any training (sparse-qvec agreement in log1p-ReLU-maxpool space). **Distill set:** pseudo-queries = doc titles sampled from `data/thinclient_index/meta.sqlite` via random-rowid probing (sparse OpenAlex-style rowids, no full scans over 9p) + real query pools in-repo; the n=100 `diverse_queries.json` gate set is EXCLUDED from training (holdout — the gate must never score on training data). **Student:** teacher layers 1–4 + embeddings + MLM head, warm-started from teacher weights (the pre-gate's L4 truncation as init). **Loss v1:** MSE on the sparse query vector in `log(1+ReLU(logits))` space (activation-space distill against the frozen teacher; retrieval score is linear in the qvec, so qvec error bounds every doc-score error). **Pre-registered escalation (one round):** if v1 plateaus under the bar, add margin-MSE on sampled doc pairs (doc 14 §5.1 wording) and/or more titles+epochs — then the verdict is final. |
+| gate (inherited doc 14 §4, unchanged) | n=100 real queries; merged 8-shard AND worst-case shards 1–2 overlap@10 versus the served fused encoder **≥ 0.99**; overlap@50 recorded as tail check; `SequentialSeismicBackend`, e5 manifest, same harness lineage as `q11_c4_pregate.py` (whose L12 control measured 0.999 — harness exact). Student runs as ONNX export at gate time (the serving shape). |
+| prediction (*est.*, write-before-run) | KALE retained 92.5% at 2 layers with distillation; a 4-layer warm-started activation-space distill of OUR model on in-domain titles lands merged overlap@10 **0.95–0.99** — near the bar, genuinely uncertain either side. Encode speedup **3–6×** versus the served fused path (pre-gate L4 timing was contended; this run records a clean number). Wall-clock per doc 14 correction: teacher qvecs minutes-to-tens-of-minutes, training a few hours/epoch-set, gate ~1 h. |
 | decision rule | merged AND shards 1–2 ≥ 0.99 → **PASS** → doc 14 §4.3 ship-gate path (env-gated `SFU_SPLADE_QUERY_ENCODER`-style, D2 promotion pattern; default NOT flipped by this work item). In [0.97, 0.99) → run the single pre-registered escalation round, then final verdict. < 0.97 after escalation (or < 0.97 with no plausible escalation lever) → **KILL, and the encoder book closes** (doc 14 §4: ~20 ms is the price of this doc space until a corpus re-encode). A miss is recorded, not renegotiated. F6: every headline recomputed from the raw per-query samples in the results JSON. |
 | planned artifacts | scripts `scripts/seismic_testbed/q11_c4_teacher_from_onnx.py`, `q11_c4_build_distill_set.py`, `q11_c4_train_student.py`, `q11_c4_gate_student.py`; models `models/sfu-splade-teacher-torch/` (reconstructed teacher), `models/sfu-splade-student-l4/` (+ ONNX export); training telemetry `data/eval_results/_q11_c4_train_status.json` + `_q11_c4_train.log` (hourly-report source); results `data/eval_results/q11_c4_teacher_parity_<date>.json`, `q11_c4_distill_gate_<date>.json`; verdict rows here + doc 14 §6 (same-commit rule). |
-| MEASURED round 1 (2026-07-28) | **FAIL — below the 0.97 escalation band; escalation round authorized by owner and launched.** Teacher parity PASS (max|Δ| 6.7e-5 log-space, top-64 overlap 1.0, n=100; `q11_c4_teacher_parity_20260728_1905.json`). Distill set 480,097 (480k titles + 97 real; gate/judge held out). Loss-v1 training (3 epochs, batch 256, 43 min on the 4070 Ti Super, ~99% GPU util): qvec dev MSE floored at 1.5e-4 but dev top-64 term overlap plateaued **0.670** (from 0.32 untrained). Stage-0 gate on `best`: **merged overlap@10 0.690, shard1 0.643, shard2 0.667** (overlap@50 0.662–0.674; per-query min 0.1) vs bar 0.99 — `q11_c4_distill_gate_20260728_2007.json`. Encode p50 16.84 vs fused-ref 29.26 ms (**1.74×**, conservative: student ONNX unfused — D2 fusion not yet applied). Diagnostic: dev top-64 proxy (0.670) tracks the backend gate (0.64–0.69) almost 1:1 — qvec-MSE recovers bulk energy, not ranking order. Escalation (the single pre-registered round, `q11_c4_train_student_v2.py`): + margin-MSE over REAL doc vectors sampled from shards 1–2 f16 forward (40k-doc pool, λ auto-balanced then frozen), init from round-1 `best`, 6 epochs. **Verdict after escalation is FINAL.** |
-| MEASURED round 2 / FINAL (2026-07-28) | **KILL — the encoder book closes (doc 14 §4).** Escalation trained 72 min (14,940 steps, 6 epochs, ~100% GPU): margin loss 0.45 → 0.13, dev top-64 proxy 0.670 → **0.765**, plateaued flat for the last ~2 epochs (objective ceiling, not undertraining). FINAL gate on `v2-best`: **merged overlap@10 0.760, shard1 0.726, shard2 0.752** (overlap@50 0.741–0.750; per-query min 0.3) vs bar 0.99 — `q11_c4_distill_gate_20260728_2127.json`; encode p50 17.65 vs fused 29.90 ms (1.69×, student unfused). Margin-MSE moved the number (+0.083 worst-arm over round 1) but a 4-layer student cannot hold the bar. Method finding worth keeping: the offline dev top-64 term-overlap proxy predicted the backend gate ~1:1 in BOTH rounds (0.670→0.643–0.690; 0.765→0.726–0.760) — future encoder candidates can be triaged without touching shards. Same-space encoder candidates are now ALL measured dead (C1 0.533, C2 0.357, C3 skipped-static, C4 distilled 0.726–0.760, C5 0.006): **~20 ms encode is the price of this doc space until a corpus re-encode** (doc 14 §5 branch). Rule Zero: shards untouched throughout. |
+| MEASURED round 1 (2026-07-28) | **FAIL — below the 0.97 escalation band; escalation round authorized by owner and launched.** Teacher parity PASS (max|Δ| 6.7e-5 log-space, top-64 overlap 1.0, n=100; `q11_c4_teacher_parity_20260728_1905.json`). Distill set 480,097 (480k titles + 97 real; gate/judge held out). Loss-v1 training (3 epochs, batch 256, 43 min on the 4070 Ti Super, ~99% GPU util): qvec dev MSE floored at 1.5e-4 but development top-64 term overlap plateaued **0.670** (from 0.32 untrained). Stage-0 gate on `best`: **merged overlap@10 0.690, shard1 0.643, shard2 0.667** (overlap@50 0.662–0.674; per-query min 0.1) versus bar 0.99 — `q11_c4_distill_gate_20260728_2007.json`. Encode p50 16.84 versus fused-ref 29.26 ms (**1.74×**, conservative: student ONNX unfused — D2 fusion not yet applied). Diagnostic: dev top-64 proxy (0.670) tracks the backend gate (0.64–0.69) almost 1:1 — qvec-MSE recovers bulk energy, not ranking order. Escalation (the single pre-registered round, `q11_c4_train_student_v2.py`): + margin-MSE over REAL doc vectors sampled from shards 1–2 f16 forward (40k-doc pool, λ auto-balanced then frozen), init from round-1 `best`, 6 epochs. **Verdict after escalation is FINAL.** |
+| MEASURED round 2 / FINAL (2026-07-28) | **KILL — the encoder book closes (doc 14 §4).** Escalation trained 72 min (14,940 steps, 6 epochs, ~100% GPU): margin loss 0.45 → 0.13, dev top-64 proxy 0.670 → **0.765**, plateaued flat for the last ~2 epochs (objective ceiling, not undertraining). FINAL gate on `v2-best`: **merged overlap@10 0.760, shard1 0.726, shard2 0.752** (overlap@50 0.741–0.750; per-query min 0.3) versus bar 0.99 — `q11_c4_distill_gate_20260728_2127.json`; encode p50 17.65 versus fused 29.90 ms (1.69×, student unfused). Margin-MSE moved the number (+0.083 worst-arm over round 1) but a 4-layer student cannot hold the bar. Method finding worth keeping: the offline development top-64 term-overlap proxy predicted the backend gate ~1:1 in BOTH rounds (0.670→0.643–0.690; 0.765→0.726–0.760) — future encoder candidates can be triaged without touching shards. Same-space encoder candidates are now ALL measured dead (C1 0.533, C2 0.357, C3 skipped-static, C4 distilled 0.726–0.760, C5 0.006): **~20 ms encode is the price of this doc space until a corpus re-encode** (doc 14 §5 branch). Rule Zero: shards untouched throughout. |
 
 ## Recording rules (same-commit doc rule applies)
 

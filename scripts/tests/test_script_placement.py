@@ -47,7 +47,7 @@ def test_rejects_one_off_outside_experiments():
 
 
 def test_rejects_code_at_src_and_repo_root():
-    assert _run("--paths", "src/helper.py").returncode == 1
+    assert _run("--paths", "source/helper.py").returncode == 1
     assert _run("--paths", "quick_fix.py").returncode == 1
 
 

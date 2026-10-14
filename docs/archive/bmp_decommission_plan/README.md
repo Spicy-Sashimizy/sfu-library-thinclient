@@ -1,12 +1,12 @@
 # bmp_decommission_plan/ — BMP→Qdrant decommission plan + metrics suite
 
-> **CLOSED SUPERSEDED 2026-07-06** — the BMP->Qdrant decommission was overtaken by the SEISMIC promotion (`docs/SEISMIC_ARCHIVE_SPLIT.md`; SEISMIC is the served SPLADE engine since 2026-07-06). Its DigitalOcean SKU/price tables are additionally unrunnable as of 2026-09-25 (cloud access ended, no droplet will ever be rented); only the measured RAM->latency model survives as evidence. Not current; do not resume.
+> **CLOSED SUPERSEDED 2026-07-06** — the BMP->Qdrant decommission was overtaken by the SEISMIC promotion (`docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md`; SEISMIC is the served SPLADE engine since 2026-07-06). Its DigitalOcean SKU/price tables are additionally unrunnable as of 2026-09-25 (cloud access ended, no droplet will ever be rented); only the measured RAM->latency model survives as evidence. Not current; do not resume.
 
 **Status:** CLOSED SUPERSEDED 2026-07-06
 
 Historical track: the decommission of the BMP sparse backend in favor of
 Qdrant, with its go/no-go gates and presentation metrics. Superseded in spirit
-by the later SEISMIC promotion (`docs/SEISMIC_ARCHIVE_SPLIT.md`, 2026-07-06)
+by the later SEISMIC promotion (`docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md`, 2026-07-06)
 but the measured numbers here remain referenced (e.g. `DO_SIZING.md` RAM
 floors quoted by `docs/seismic_150m_testbed/`).
 

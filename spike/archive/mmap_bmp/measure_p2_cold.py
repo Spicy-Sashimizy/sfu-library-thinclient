@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 mmap-BMP spike — P2 STEP 2: cold-p95 at persona scale (gate G3a/G3b).
 
 Runs the FORKED flat `bmp.Searcher` (`BMP_LOAD=flat`, mmap'd + lazy per-block

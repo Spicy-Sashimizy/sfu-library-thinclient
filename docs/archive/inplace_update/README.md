@@ -16,7 +16,10 @@ measured 2026-09-29 → 2026-09-30, closed 2026-09-30 by its own GO rule.
 Code and its own docs (evidence at the closing commit; paths as they were
 when the runs were made — to re-run, check out the parent of the closure
 commit, because the scripts import `spike.inplace_update` and name
-`scripts/experiments/` paths):
+`scripts/experiments/` paths). Re-runs need commit `6355ce83^`: at the
+2026-09-30 move the updater crate's Cargo path deps (`../../vectorium_fork`,
+`../../toolkit_fork`) and the `spike.inplace_update.*` imports broke at HEAD
+(note added 2026-10-11):
 
 | Was | Now |
 |---|---|

@@ -83,7 +83,7 @@ def child_import(so: str):
 
 
 def dead_ids_for_root(root: Path):
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from lib.thinclient.delta_layer import DeltaLayer
     layer = DeltaLayer(root)
     assert layer.livedocs is not None, root
@@ -246,7 +246,7 @@ def cmd_parity(a):
 
 
 def cmd_fixture(a):
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     sys.path.insert(0, str(REPO / "spike"))
     from lib.thinclient.livedocs import Livedocs
     from lib.thinclient.ordinals import OrdinalSpace

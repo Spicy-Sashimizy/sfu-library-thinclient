@@ -14,7 +14,7 @@ Results: `data/eval_results/delta_ingest_foldin_gates_20261001.json`.
 Code: `spike/delta_ingest/routing.py`, `spike/delta_ingest/foldin.py`,
 `spike/delta_ingest/ledger.py`, `spike/delta_ingest/generation.py` (two small
 hunks), `spike/delta_ingest/cli.py` (three subcommands),
-`src/lib/thinclient/delta_layer.py` (G4).
+`source/lib/thinclient/delta_layer.py` (G4).
 Tests (new files, tmp trees only): `scripts/tests/test_foldin_routing.py` (6),
 `test_foldin_guard.py` (21), `test_foldin_masks.py` (16), `test_foldin_e2e.py` (1).
 

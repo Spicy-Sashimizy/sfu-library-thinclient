@@ -67,7 +67,7 @@ plus `ConcurrentMergeScheduler`.
 **The tunables that actually matter (copy these names/intents):**
 | Lucene knob | Default | What it controls | Why it matters here |
 |---|---|---|---|
-| `segmentsPerTier` | 10 | how many segments before a merge fires | the direct **resident-set vs. write-amp** dial |
+| `segmentsPerTier` | 10 | how many segments before a merge fires | the direct **resident-set versus write-amp** dial |
 | `maxMergedSegmentMB` | 5120 | cap on a merged segment | bounds the localised-rebuild cost per compaction |
 | `floorSegmentMB` | 2 | tiny segments rounded up | stops a long tail of micro-segments killing mmap |
 | `maxMergeAtOnce` | 10 | fan-in per merge | bounds rebuild working-set |

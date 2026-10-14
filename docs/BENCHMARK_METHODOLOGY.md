@@ -48,7 +48,7 @@ The most extreme case: `Canadian documentary film Indigenous representation` sco
 **Judge backends (`--judge`):**
 - `claude` (default) — `claude-haiku-4-5-20251001` via `claude -p` subprocess (no API key needed — uses Claude Code session)
 - `ollama` — local Ollama REST, free (`--ollama-model`, `--ollama-url`)
-- `neuralwatt` (added 2026-06-29) — OpenAI-compatible `POST {NEURALWATT_BASE_URL}/chat/completions`, reads `NEURALWATT_API_KEY` / `NEURALWATT_BASE_URL` / `NEURALWATT_MODEL` from `.env`. Use a `-flex` model id (e.g. `kimi-k2.7-code-flex`) for NeuralWatt's discounted async tier. **`NEURALWATT_MAX_TOKENS` default = 2048** (was 512 — Kimi is a reasoning model; the 512 budget was exhausted by reasoning → empty `content`); raise it for larger batches. `_call_neuralwatt` raises a retryable error on null/empty content (with `finish_reason` + max_tokens hint) rather than crashing. Note: NeuralWatt is OpenAI-compatible ONLY (the Anthropic Messages API `/v1/messages` returns HTTP 403), so the `claude` CLI cannot be pointed at it — this backend is for re-baking `llm_judge_cache.json` only, not for routing the CLI. **Re-bake / agreement study 2026-06-29** (`scripts/seismic_testbed/kimi_vs_haiku_rebake.py`): re-judged a stratified 10-query / 343-pair sample with `kimi-k2.7-code-flex` against the existing Haiku cache (read-only; never writes it). **Kimi ≠ Haiku regime:** exact agreement only 50.1%, within-1 75.8%; Kimi mean grade 1.74 vs Haiku 2.01 (Kimi ~0.27 stricter); 35/181 (19%) of Haiku-grade-3 docs Kimi marked grade-0 → a full Kimi re-judge would shift NDCG, so it is NOT a drop-in swap for the Haiku cache G6 commits against. Result `data/eval_results/kimi_vs_haiku_rebake_20260629.json`. **Wired to SEISMIC 2026-06-30** (`scripts/seismic_testbed/seismic_quality_eval.py`): routes the neuralwatt/Kimi judge onto the SEISMIC 150M mmap retrieval path (not OpenSearch) + OpenAlex metadata, with an **isolated Kimi cache** (`seismic_kimi_judge_cache.json`; the Haiku `llm_judge_cache.json` is never touched). First result (120 q, 100% metadata coverage): **SEISMIC NDCG@10 0.944 / MRR@10 0.996 / P@10(≥2) 0.773** (`seismic_quality_kimi_20260630_084905.json`; see `seismic_150m_testbed/06_FINDINGS.md` 2026-06-30 row). Kimi-judged → NOT directly comparable to the Haiku baseline numbers below. **Status note 2026-09-27:** 0.944 (and the matched n=120 0.9262) scored IDs from the 2026-06-29 f16 build, not the shards served today; the served E8 dv-v2 number is in §"Served E8 dv-v2 SPLADE leg — absolute NDCG@10" at the end of this doc.  
+- `neuralwatt` (added 2026-06-29) — OpenAI-compatible `POST {NEURALWATT_BASE_URL}/chat/completions`, reads `NEURALWATT_API_KEY` / `NEURALWATT_BASE_URL` / `NEURALWATT_MODEL` from `.env`. Use a `-flex` model id (for example, `kimi-k2.7-code-flex`) for NeuralWatt's discounted async tier. **`NEURALWATT_MAX_TOKENS` default = 2048** (was 512 — Kimi is a reasoning model; the 512 budget was exhausted by reasoning → empty `content`); raise it for larger batches. `_call_neuralwatt` raises a retryable error on null/empty content (with `finish_reason` + max_tokens hint) rather than crashing. Note: NeuralWatt is OpenAI-compatible ONLY (the Anthropic Messages API `/v1/messages` returns HTTP 403), so the `claude` CLI cannot be pointed at it — this backend is for re-baking `llm_judge_cache.json` only, not for routing the CLI. **Re-bake / agreement study 2026-06-29** (`scripts/seismic_testbed/kimi_vs_haiku_rebake.py`): re-judged a stratified 10-query / 343-pair sample with `kimi-k2.7-code-flex` against the existing Haiku cache (read-only; never writes it). **Kimi ≠ Haiku regime:** exact agreement only 50.1%, within-1 75.8%; Kimi mean grade 1.74 versus Haiku 2.01 (Kimi ~0.27 stricter); 35/181 (19%) of Haiku-grade-3 docs Kimi marked grade-0 → a full Kimi re-judge would shift NDCG, so it is NOT a drop-in swap for the Haiku cache G6 commits against. Result `data/eval_results/kimi_vs_haiku_rebake_20260629.json`. **Wired to SEISMIC 2026-06-30** (`scripts/seismic_testbed/seismic_quality_eval.py`): routes the neuralwatt/Kimi judge onto the SEISMIC 150M mmap retrieval path (not OpenSearch) + OpenAlex metadata, with an **isolated Kimi cache** (`seismic_kimi_judge_cache.json`; the Haiku `llm_judge_cache.json` is never touched). First result (120 q, 100% metadata coverage): **SEISMIC NDCG@10 0.944 / MRR@10 0.996 / P@10(≥2) 0.773** (`seismic_quality_kimi_20260630_084905.json`; see `seismic_150m_testbed/06_FINDINGS.md` 2026-06-30 row). Kimi-judged → NOT directly comparable to the Haiku baseline numbers below. **Status note 2026-09-27:** 0.944 (and the matched n=120 0.9262) scored IDs from the 2026-06-29 f16 build, not the shards served today; the served E8 dv-v2 number is in §"Served E8 dv-v2 SPLADE leg — absolute NDCG@10" at the end of this doc.  
 **Results:** `data/eval_results/benchmark_llm_judge_final.json`  
 **Report:** `data/eval_results/benchmark_report_final.md`
 
@@ -100,7 +100,8 @@ even one engine cannot be held in a single process on the 24 GB host (capped via
 
 `retriever._load()` now samples `MemAvailable` before each shard and aborts with
 a clean `RuntimeError` (gate `SFU_LOAD_MEM_FLOOR_GB`, default 1.5) instead of
-being SIGKILLed mid-construction. The legacy `combined` single-process mode is
+being SIGKILLed mid-construction. *(2026-10-11: that guard and the BMP load it
+protected were removed; the code is kept by the owner.)* The legacy `combined` single-process mode is
 refused by default for the same reason.
 
 ### Section-shard-wave eval — gets 150M numbers on the 24 GB host (added 2026-06-17)
@@ -110,7 +111,8 @@ without ever holding the SPLADE set in one process. It exploits the fact that th
 legs **already merge across sections/shards by plain score-concatenation**:
 
 - **BM25F** runs on tantivy (mmap, ~0 resident) in one pass via the retriever's
-  `SFU_SKIP_BMP=1` flag (load tantivy/meta/dense, skip BMP). Output is identical
+  `SFU_SKIP_BMP=1` flag (load tantivy/meta/dense, skip BMP; gate removed
+  2026-10-11). Output is identical
   to `record-tc`'s bm25f field (same code path).
 - **SPLADE/BMP** scores are corpus-independent dot products, so each shard's
   top-K is recorded in a **fresh process per wave** (the only way to free BMP
@@ -127,7 +129,7 @@ cache, no engine live). Time-, not RAM-, bound: it reads the 68.6 GB BMP set onc
 # thin-client record on a small host (≈43 min at 150M, 27 waves, 8 GB budget):
 scripts/archive/bmp_era/eval_parity_section_waves.py run --index-root data/thinclient_index \
     --queries 40 --resident-budget-gb 8 --output <tc_record.json>
-# OpenSearch baseline (separate process):
+# OpenSearch baseline (separate process) — CANNOT RUN since 2026-06-11 (decommissioned; record-os exits with that message as of 2026-10-11):
 scripts/eval_thinclient_parity.py record-os --baseline-url <url> --queries 40 --output <os_record.json>
 # join → summary:
 scripts/eval_thinclient_parity.py compare --tc-record <tc_record.json> --os-record <os_record.json> --output <summary.json>
@@ -143,7 +145,7 @@ in `_load()`, so use the wave eval instead.
 ### MEASURED 150M parity (2026-06-18, first full-corpus run)
 
 40 diverse queries, LLM-judged NDCG@10 (same judge cache + method as above),
-thin-client (full `data/thinclient_index`) vs the 150M OpenSearch baseline.
+thin-client (full `data/thinclient_index`) versus the 150M OpenSearch baseline.
 Thin-client recorded via section-shard-waves (27 waves, 8 GB budget, ~43 min,
 min RAM 15.4 GB available, peak swap 2.1 GB — no OOM).
 
@@ -155,7 +157,7 @@ engines — apples-to-apples, equal denominator):
 | RRF NDCG@10 | **0.561** | 0.449 | **+0.112** (tc better) |
 | Per-query wins | **29 / 34** | 5 / 34 | tc wins 85% |
 
-Overlap@50 vs OpenSearch baseline (agreement, not quality — different engines):
+Overlap@50 versus OpenSearch baseline (agreement, not quality — different engines):
 bm25f **0.532**, splade **0.399**, rrf **0.476**.
 
 As-reported means (unequal denominators, for the record): tc_rrf 0.537 (39 judged
@@ -185,7 +187,7 @@ on overlap@10/@50, Kendall-τ, and head-to-head NDCG@10 over the union universe.
 
 **NUMBERS (30M in-memory gate, 2026-06-19, the prior baseline):** overlap@10
 **0.9875**, overlap@50 **0.9885**, Kendall-τ **0.9716**, NDCG@10 f32 **0.8681**
-vs quant **0.8681** (Δ **0.0000**) — engines tie exactly. Gate (overlap@10 ≥ 0.98,
+versus quant **0.8681** (Δ **0.0000**) — engines tie exactly. Gate (overlap@10 ≥ 0.98,
 τ ≥ 0.97, |Δ| ≤ 0.005) **PASSES**. Structural backstop: Qdrant sparse search is
 exact; BMP is block-max approximate (WAND), so recall(qdrant) ≥ recall(bmp).
 
@@ -220,19 +222,19 @@ full-corpus record-tc path viable for the first time.
 
 **NUMBERS (150M-live, 2026-06-25, MEASURED):** tc-qdrant RRF NDCG@10 = **0.5378**
 (39 judged headline) and **0.560** (34-query common subset — apples-to-apples
-with OpenSearch's 34-judged denominator) vs the BMP baseline 0.5368 / 0.561.
+with OpenSearch's 34-judged denominator) versus the BMP baseline 0.5368 / 0.561.
 **|Δ| = +0.0010 (39-judged) / −0.0009 (34-common)** → the two SPLADE backends
 are RRF-indistinguishable at 150M (< 0.001 on both subsets). The OpenSearch win
 is preserved identically: tc beats OS **+0.111** (common-34), **wins 29/34**
-— the same win count as the BMP baseline. Per-leg overlap@50 vs OS unchanged
-within noise (bm25f 0.532, splade 0.395, rrf 0.475). B2 gate (RRF qdrant vs
+— the same win count as the BMP baseline. Per-leg overlap@50 versus OS unchanged
+within noise (bm25f 0.532, splade 0.395, rrf 0.475). B2 gate (RRF qdrant versus
 BMP within noise + still beats OS) **PASSES**.
 
 **Script:** `scripts/eval_thinclient_parity.py compare` (record-tc via
 `SFU_SPLADE_BACKEND=qdrant`).
 **Result files:** `data/eval_results/thinclient_parity_qdrant_20260625_0001.json`
 (compare summary, provenance-stamped), `parity_record_tc_qdrant_20260625_0001.json`
-(tc record vs the live index). Baselines: `thinclient_parity_waves_150m.json`
+(tc record versus the live index). Baselines: `thinclient_parity_waves_150m.json`
 (BMP backend) + `parity_record_os_20260618_0028.json` (OpenSearch).
 **Date:** 2026-06-25.
 
@@ -242,12 +244,12 @@ BMP within noise + still beats OS) **PASSES**.
 `sfu-library-mcp-training` baselines (same NDCG@10/MRR@10/P@10 definitions,
 RRF k=60, `claude-haiku-4-5-20251001` judge + reused cache). Every number is
 labeled with metric/k/corpus/source-file/absolute-date and tagged
-`comparable-to-training` vs `new` (parity/ops, no training equivalent).
+`comparable-to-training` versus `new` (parity/ops, no training equivalent).
 
 **NUMBERS:** 42 metrics cataloged, **all `measured`** (no est./unmeasured false
 claims) — quality (BM25F/SPLADE/RRF/OpenAlex NDCG@10/MRR@10/P@10 + the B2
-tc-qdrant vs BMP-vs-OS RRF rows), parity (BMP-vs-Qdrant overlap/τ/NDCG-Δ +
-tc-vs-OS overlap@50 for both backends), ops (Qdrant latency p50/p95 at 150M
+tc-qdrant versus BMP-vs-OS RRF rows), parity (BMP-vs-Qdrant overlap/τ/NDCG-Δ +
+tc-vs-OS overlap@50 for both backends), operations (Qdrant latency p50/p95 at 150M
 RAM-bound + 30M fitting-tier, resident RAM, on-disk size, ingest throughput).
 Canonical ledger: `data/eval_results/METRICS_CATALOG.json`.
 
@@ -289,11 +291,11 @@ regime, so the paired Δ isolates the shard-set change. Both judges were run:
 95% CI −0.0023..−0.0001; served ≥ old on 106/120, worse on 14); Kimi **−0.0013**
 (SEM 0.0007, CI −0.0026..−0.0000; ≥ on 109/120, worse on 11). The Kimi pairing
 against the stored per-query grades of `rejudge_kimi_seismic_n120_20260630_2137.json`
-gives the identical Δ. Retrieval drift: mean overlap@10 vs the 2026-06-29 IDs
+gives the identical Δ. Retrieval drift: mean overlap@10 versus the 2026-06-29 IDs
 **0.9858**, exact top-10 order on 68/120. **Verdict:** the served leg is
 quality-equivalent to the build the G6 PASS was measured on — a statistically
 detectable but ~0.1-point NDCG cost of the dv/E5/E8 compression, consistent with
-the dv-v2 overlap@10 vs f16 of ~0.9955; the G6 non-inferiority margin over Qdrant
+the dv-v2 overlap@10 versus f16 of ~0.9955; the G6 non-inferiority margin over Qdrant
 (+0.0197 Kimi) is not consumed.
 
 **New judgments:** Haiku 118 CLI calls, 692 pair-judgments → **594 new unique
@@ -312,7 +314,7 @@ numbers only under the same within-own-top-10 NDCG definition — it is NOT
 comparable to the pooled-ideal Haiku numbers in `benchmark_llm_judge_final.json`
 (SPLADE 0.6534) or the RRF-system G6/A1 numbers (0.505–0.5378); (2) Kimi numbers
 are not comparable to Haiku numbers (Kimi ~0.27 grade stricter, agreement study
-above); (3) OpenAlex metadata coverage was 853/892 unique ids today (vs 877/877 on
+above); (3) OpenAlex metadata coverage was 853/892 unique ids today (versus 877/877 on
 2026-06-30): 39 ids now lack a title/abstract in OpenAlex (57 served / 58 old-arm
 pairs), newly judged ones from ID only. This is symmetric across arms, so the
 paired Δ is unaffected; the absolute numbers may be marginally understated.

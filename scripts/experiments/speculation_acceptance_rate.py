@@ -56,7 +56,7 @@ from datetime import date
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 TOPICS = REPO / "data/eval_results/dense_ablation_qrels_20260817.json"
 EVAL = REPO / "data/eval_results"
@@ -186,7 +186,8 @@ def install(retriever):
 
     orig_rr = tools.rerank_results
     orig_ce = tools.rerank_with_crossencoder
-    orig_lm = tools.rerank_with_lambdamart
+    # LambdaMART tier removed 2026-10-11; the wrapper is installed only if a build still has it
+    orig_lm = getattr(tools, "rerank_with_lambdamart", None)
     orig_cw = tools._cache_works
 
     def rerank_results(*a, **k):
@@ -215,7 +216,8 @@ def install(retriever):
 
     tools.rerank_results = rerank_results
     tools.rerank_with_crossencoder = ce
-    tools.rerank_with_lambdamart = lm
+    if orig_lm is not None:
+        setattr(tools, "rerank_with_lambdamart", lm)
     tools._cache_works = cache_works
 
 

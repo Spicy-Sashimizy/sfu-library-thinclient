@@ -61,7 +61,7 @@ import scipy.sparse as sp
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 import sys
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("quant_fidelity")

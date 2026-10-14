@@ -804,7 +804,7 @@ def capture_g_off_baseline(base, n=6) -> list:
     for q in qs:
         partial = q[: max(MIN_LEN, len(q) // 2)]
         import importlib
-        sys.path.insert(0, str(REPO / "src"))
+        sys.path.insert(0, str(REPO / "source"))
         from lib import speculation as _spec  # noqa: E402
         _spec.reset_pool_for_test()
         pred = _spec.predict(partial, force_literal=False)

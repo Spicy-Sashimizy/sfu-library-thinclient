@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CLOSED SUPERSEDED 2026-07-06 — off-BMP Qdrant ingest watchdog; SEISMIC promoted 2026-07-06 (docs/SEISMIC_ARCHIVE_SPLIT.md)
+# CLOSED SUPERSEDED 2026-07-06 — off-BMP Qdrant ingest watchdog; SEISMIC promoted 2026-07-06 (docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md)
 # Off-BMP Qdrant ingest watchdog — ONE check-and-heal pass. Idempotent; meant to
 # be called on an interval (e.g. via /loop ~15m).
 #

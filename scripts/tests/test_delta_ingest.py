@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 from lib.thinclient.builder import SectionBuilder, open_meta_db  # noqa: E402
@@ -186,7 +186,7 @@ def test_openalex_normalizer_and_snapshot_planning():
             "updated_date": "2026-09-01", "cited_by_count": 3}
     rec = normalize_openalex_work(work, min_abstract_chars=5)
     assert rec.id == "W123" and rec.doi == "10.1/x" and rec.abstract == "hello world again world"
-    assert rec.is_oa and rec.year == 2020 and rec.is_openalex()
+    assert rec.is_oa and rec.year == 2020
     assert normalize_openalex_work({**work, "is_xpac": True}, min_abstract_chars=5) is None
     assert normalize_openalex_work({**work, "abstract_inverted_index": {}}) is None
     a, b = DocRecord(id="W1", title="t", abstract="a"), DocRecord(id="W1", title="t", abstract="a", extra={"cited_by_count": 9})

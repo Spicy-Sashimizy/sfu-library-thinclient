@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 _spec = importlib.util.spec_from_file_location("f3f8_h", REPO / "scripts/experiments/eval_delta_ingest_foldin_f3f8.py")

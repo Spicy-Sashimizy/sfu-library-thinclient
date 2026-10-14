@@ -33,7 +33,7 @@ even at p95; cold p50 just under the 1 s line; cold p95 far over it.
 Paired same-day gate-OFF baseline (`f6_gateoff_baseline_20260714.json`):
 cold p50 666–676 ms, cold p95 4656–4686 ms, warm 52–54 ms — cold p95 matches
 the 2026-07-13 baseline (disk-bound, condition-immune), anchoring the 2.8×
-to the prefault alone. Result parity ON vs OFF: **10/10 identical** (top-10
+to the prefault alone. Result parity ON versus OFF: **10/10 identical** (top-10
 ids + scores, `seismic_result_parity.py`).
 
 ## T3 — Trust audit of "today's numbers" (operator-requested)
@@ -58,7 +58,7 @@ driver `scripts/seismic_testbed/r1_ram_ladder.py`.
 | 32 GB | 605 / 1275 ms | 20 ms (0) | 18 ms (0) | fits |
 | 24 GB | 584 / 1279 ms | 22 ms (0) | 19 ms (0) | fits |
 | 16 GB | 942 / 2176 ms | 463 ms (56k) | 135 ms (15k) | marginal — still converging at pass 3 (see 04_) |
-| 12 GB | 1855 / 4589 ms | 1381 ms (187k) | **22 ms (2.4k)** | boundary w/ hysteresis — converged |
+| 12 GB | 1855 / 4589 ms | 1381 ms (187k) | **22 ms (2.4k)** | boundary with hysteresis — converged |
 | 8 GB | 3392 / 7211 ms | 1997 ms (272k) | **2135 ms (261k)** | sustained thrash |
 | 6 GB | 4802 / 10949 ms | 5449 ms (560k) | **4924 ms (550k)** | sustained thrash |
 
@@ -86,7 +86,7 @@ fanned to all 8 shards. The 2026-07-03 E7b sweep was the single-shard one.
 
 Pin-ON (F3, `SFU_SEISMIC_PIN_BUDGET_GB=1.6`) at 8/6 GB after the defect-#6
 fix, and the F5 release-except cell at 16 GB — each dumping last-pass top-10
-results for quality-parity vs `r1_results_uncapped_ref.json`. Outcomes land
+results for quality-parity versus `r1_results_uncapped_ref.json`. Outcomes land
 in `11_EXPERIMENT_BACKLOG.md` (R1 section); this file intentionally does not
 pre-record them.
 
@@ -105,6 +105,6 @@ pre-record them.
   EINVAL'd madvise calls). Scope + accounting fixed in code 2026-08-31 (commit
   `5fcca7b1`); real-stack efficacy remains UNMEASURED — see the reconciled note above.
 - Quality-parity dump (the shared bar of both cells) — **DONE 2026-07-14** —
-  **40/40 bit-identical** (ids + scores) vs `r1_results_uncapped_ref.json` in all
+  **40/40 bit-identical** (ids + scores) versus `r1_results_uncapped_ref.json` in all
   three stressed cells (`r1_results_cap{8g_pin16,6g_pin16,16g_f5rel}.json`):
   pressure is latency-only, up to ~590k faults/pass.

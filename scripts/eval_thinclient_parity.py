@@ -2,6 +2,10 @@
 """Eval the thin-client stack (tantivy+BMP+usearch) against the OpenSearch
 baseline: per-leg overlap, latency, and LLM-judged NDCG@10.
 
+NOTE 2026-10-11: the OpenSearch baseline was decommissioned 2026-06-11 and its
+retriever archived; record-os and combined-with-baseline now exit with that message.
+Only record-tc, compare on existing records, and combined --no-baseline still run.
+
 Compares, per query (data/eval_results/diverse_queries.json):
   - thinclient bm25f  vs  OpenSearch bm25f   (top-k id overlap)
   - thinclient splade vs  OpenSearch splade  (top-k id overlap)
@@ -23,8 +27,8 @@ ONE process (the legacy `combined` mode) OOM-kills. Run each engine in its OWN
 process and join offline. The retriever has no close() hook, so only a fresh
 process releases the working set; the phases are therefore separate subcommands,
 sequenced by scripts/run_parity_safe.sh. NOTE: at 150M even one engine exceeds the
-24 GB host — record-tc OOMs in _load() (now a clean RuntimeError, gate
-SFU_LOAD_MEM_FLOOR_GB). Holding one whole engine in a process needs ~232 GB (an
+24 GB host — record-tc OOMed in _load() on BMP (a clean RuntimeError via the
+SFU_LOAD_MEM_FLOOR_GB gate until BMP was removed 2026-10-11). Holding one whole engine in a process needs ~232 GB (an
 artifact of BMP being load-into-memory only, NOT a serving target). For 150M
 numbers on a small host use scripts/archive/bmp_era/eval_parity_section_waves.py instead; the real
 serving fix is mmap-backed SPLADE or hot/cold residency (see THIN_CLIENT_SWAP.md):
@@ -65,7 +69,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("eval_thinclient")
 
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "source"))
 
 TOP_K = 50
 NDCG_K = 10
@@ -180,13 +184,7 @@ def cmd_record_tc(args) -> None:
 
 
 def cmd_record_os(args) -> None:
-    from lib.opensearch_retriever import OpenSearchRetriever
-    baseline = OpenSearchRetriever(
-        url=args.baseline_url, index=args.baseline_index,
-        splade_model_path=str(REPO_ROOT / "models/splade_onnx"), timeout=30)
-    out = Path(args.output) if args.output else _ts_default("parity_record_os")
-    _record("os", baseline, load_queries(args.queries), args.mem_floor_gb, out,
-            {"baseline": f"{args.baseline_url}/{args.baseline_index}", "top_k": TOP_K})
+    raise SystemExit("OpenSearch baseline decommissioned 2026-06-11 (record-os cannot run; see scripts/README.md)")
 
 
 def _summarize(tc_rows: list[dict], os_rows: list[dict] | None,
@@ -293,10 +291,7 @@ def cmd_combined(args) -> None:
     tc_rows, os_rows = [], None if args.no_baseline else []
     baseline = None
     if not args.no_baseline:
-        from lib.opensearch_retriever import OpenSearchRetriever
-        baseline = OpenSearchRetriever(
-            url=args.baseline_url, index=args.baseline_index,
-            splade_model_path=str(REPO_ROOT / "models/splade_onnx"), timeout=30)
+        raise SystemExit("OpenSearch baseline decommissioned 2026-06-11 (record-os cannot run; see scripts/README.md)")
 
     for rec in load_queries(args.queries):
         q, jk = rec["paraphrase"], rec.get("judge_key", rec["paraphrase"])

@@ -117,7 +117,7 @@ Reading (post-hoc, for the coordinator):
 - The pre-registered lever arm (not triggered).
 - Read latency of delta stores; flat/locator sidecar for generations (A3).
 - Found, not fixed (not this item's file): `AbstractStoreWriter._train`
-  (`src/lib/thinclient/abstracts.py:185-187`) compresses an untrained bucket
+  (`source/lib/thinclient/abstracts.py:185-187`) compresses an untrained bucket
   with plain zstd when latin has no dict yet, while the reader
   (`_build_v3_dctxs`, `abstracts.py:721-725`) would decode that bucket with
   `zdict_latin` if latin is trained later in the same store. Reachable only

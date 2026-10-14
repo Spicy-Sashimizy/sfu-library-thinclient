@@ -172,7 +172,7 @@ host. The seed is CPU-light (hash 1.3 s per 60k docs) and IO-bound.
    stored in `records`. A seeded base doc with an unchanged encode hash
    (5,530 of 9,965 in the primary subset) is still re-encoded. Reusing it would
    need a copy of the base SEISMIC forward vector.
-2. `src/lib/thinclient/abstracts.py:682` `AbstractStore` opens the sidecar
+2. `source/lib/thinclient/abstracts.py:682` `AbstractStore` opens the sidecar
    SQLite read-write (no `mode=ro`). It is harmless on this rollback-journal
    file, which gained no new files, but it is not read-only by construction.
 3. `scripts/snapshot_downloader.py:94` `DEFAULT_MIN_YEAR = 2015` and

@@ -6,7 +6,7 @@ Doc: docs/infrastructure/SCRIPT_HYGIENE_POLICY.md
 A staged change is SUBSTANTIAL when any of these holds (thresholds are env
 overridable): ``SFU_PREFLIGHT_MIN_FILES`` files touched (default 10),
 ``SFU_PREFLIGHT_MIN_LINES`` lines added+deleted (default 500), or any delete
-or rename of a code file under src/, scripts/, spike/ or web/. A substantial
+or rename of a code file under source/, scripts/, spike/ or web/. A substantial
 commit is allowed only when ``.claude/.preflight_stamp.json`` records a
 passing ``run`` over exactly the staged tree (``git write-tree``), and the
 restore tag that run created or reused is still an ancestor of HEAD.
@@ -33,11 +33,11 @@ REPO = Path(__file__).resolve().parents[2]
 STAMP = REPO / ".claude" / ".preflight_stamp.json"
 TOOLS = REPO / "scripts" / "repo_tools"
 CODE_EXT = (".py", ".sh", ".mjs", ".js", ".ps1", ".bat", ".rs", ".html", ".css", ".jsx")
-PROTECTED_PREFIX = ("src/", "scripts/", "spike/", "web/")
+PROTECTED_PREFIX = ("source/", "src/", "scripts/", "spike/", "web/")
 DEFAULT_TESTS = [
     "scripts/tests/test_script_placement.py",
     "scripts/tests/test_doc_status.py",
-    "src/tests",
+    "source/tests",
 ]
 TAG_MAX_AGE_H = 24
 

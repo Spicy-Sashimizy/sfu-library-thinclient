@@ -26,7 +26,7 @@ Code under test: the driver exports `git archive HEAD src` to
 to the repo) and the children import `lib` from there, so uncommitted edits
 other agents make in the shared working tree are NOT what is measured. The
 result file records the commit, the snapshot path, per-module sha256 and the
-dirty src/ files at run time.
+dirty source/ files at run time.
 
 Determinism controls:
   * remote abstracts: the retriever's `_fetch_remote_abstracts` is replaced by
@@ -279,12 +279,12 @@ def drive(args) -> int:
     arms = args.arms.split(",")
     commit = args.commit or git_commit()
     snap = SCRATCH / f"code_{commit[:8]}"
-    if not (snap / "src").exists():
+    if not (snap / "source").exists():
         snap.mkdir(parents=True, exist_ok=True)
         subprocess.check_call(f"git -C {REPO} archive {commit} src | tar -x -C {snap}", shell=True)
         for name in ("models", "data", ".env"):
             (snap / name).symlink_to(REPO / name)
-    dirty = subprocess.check_output(["git", "-C", str(REPO), "status", "--short", "src"], text=True).splitlines()
+    dirty = subprocess.check_output(["git", "-C", str(REPO), "status", "--short", "source"], text=True).splitlines()
     records = {}
     listing = {}
     stopped = {}
@@ -305,7 +305,7 @@ def drive(args) -> int:
             continue
         cmd = ["flock", LOCK, sys.executable, str(Path(__file__).resolve()), "child",
                "--arm", arm, "--passes", str(args.passes), "--rows-out", str(rows_out),
-               "--limit-topics", str(args.limit_topics), "--src", str(snap / "src")]
+               "--limit-topics", str(args.limit_topics), "--src", str(snap / "source")]
         tw = time.time()
         proc = subprocess.Popen(cmd, env=env, cwd=str(REPO))
         try:
@@ -416,7 +416,7 @@ def main() -> int:
     c.add_argument("--passes", type=int, default=2)
     c.add_argument("--rows-out", required=True)
     c.add_argument("--limit-topics", type=int, default=0)
-    c.add_argument("--src", default=str(REPO / "src"))
+    c.add_argument("--src", default=str(REPO / "source"))
     an = sub.add_parser("annotate")
     an.add_argument("--out", default=str(OUT))
     an.add_argument("--log", action="append", default=[], help="label=path")

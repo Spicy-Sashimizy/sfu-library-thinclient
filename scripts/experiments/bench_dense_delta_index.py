@@ -80,7 +80,7 @@ def main() -> None:
 
     import sys
 
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     import numpy as np
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -167,7 +167,7 @@ def main() -> None:
                 "mutable usearch b1 index, synthetic vectors",
         "host": {"cpu_count": os.cpu_count()},
         "dim": DIM,
-        "code": "src/lib/thinclient/dense_cache.py (DenseWarmCache.search)",
+        "code": "source/lib/thinclient/dense_cache.py (DenseWarmCache.search)",
         "gate": "SFU_DENSE_DELTA_USEARCH_MIN (default 0 = brute force)",
         "sizes": rows,
     }

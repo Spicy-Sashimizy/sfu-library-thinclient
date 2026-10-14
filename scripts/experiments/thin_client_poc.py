@@ -32,7 +32,7 @@ import requests
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("thin_client_poc")
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "source"))
 
 REPO_ROOT = Path(__file__).parent.parent
 WORK_DIR = REPO_ROOT / "data/thin_client_poc"

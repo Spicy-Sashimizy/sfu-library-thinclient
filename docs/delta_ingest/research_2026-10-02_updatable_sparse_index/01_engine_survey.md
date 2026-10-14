@@ -1,6 +1,6 @@
 # Updatable, disk-resident learned-sparse / impact indexes: engine survey (as of 2026-10-02)
 
-**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repo root `research_notes/`/`reports/` 2026-10-10)
+**Status:** ACTIVE (research input to the delta_ingest track; compiled 2026-10-02, moved from the repository root `research_notes/`/`reports/` 2026-10-10)
 
 Context: 150M SPLADE docs, ~85 nnz/doc, 8 mmap SEISMIC shards, one host with 32–48 GB RAM. Scope clarification from the owner (received mid-task): the idea being checked is to take **only the updater** (insert/update/delete/merge machinery) from an existing product and attach it to our system, with SEISMIC shards and tantivy still serving, possibly through a translation layer. The whole engine is not being adopted. Each engine section below has an "Updater separability" block. Whole-engine RAM/latency facts are kept as secondary context.
 
@@ -15,7 +15,7 @@ The 2026-09-29 claim is partly outdated. In Qdrant the *mutable* sparse index (a
 
 ### Cited Findings
 - The sparse index has been available since v1.7.0. It is exact (no approximation). "All sparse vectors added to the collection are immediately indexed in the mutable version of a sparse index." The docs also mention "a more compact and efficient immutable sparse index, which is constructed during the same optimization process as the dense vector index." [read] — [Qdrant indexing docs](https://qdrant.tech/documentation/concepts/indexing/#sparse-vector-index)
-- Memory tiers for the sparse index: `pinned` (default, "loaded into memory"), `cached` ("pre-loaded into the disk cache on startup, though it may be evicted under memory pressure") and `cold` ("stored on disk, which saves memory at the cost of search performance"). Config: `"sparse_vectors": {"text": {"index": {"memory": "cold"}}}`. [read] — [Qdrant indexing docs](https://qdrant.tech/documentation/concepts/indexing/#sparse-vector-index)
+- Memory tiers for the sparse index: `pinned` (default, "loaded into memory"), `cached` ("pre-loaded into the disk cache on startup, though it may be evicted under memory pressure") and `cold` ("stored on disk, which saves memory at the cost of search performance"). Configuration: `"sparse_vectors": {"text": {"index": {"memory": "cold"}}}`. [read] — [Qdrant indexing docs](https://qdrant.tech/documentation/concepts/indexing/#sparse-vector-index)
 - "For sparse vectors, only the sparse vector index has a `memory` parameter." "Qdrant doesn't offer a RAM cache for sparse vectors, since their values aren't read during the index search step itself, only when a point is fetched." Legacy mapping: `pinned` = `on_disk: false`, `cold` = `on_disk: true`. Memory tiers were introduced in v1.19. [read] — [Qdrant Memory Tiers](https://qdrant.tech/documentation/ops-configuration/memory-tiers/)
 - The Qdrant 1.19 release blog is dated 2026-08-05. It says "sparse indexes have gained a new `cached` tier". It gives no sparse performance numbers. [read] — [Qdrant 1.19 blog](https://qdrant.tech/blog/qdrant-1.19.x/). The latest server release is v1.19.1 (2026-09-04) [read, GitHub API] — [releases](https://github.com/qdrant/qdrant/releases)
 - In source, the segment-level enum has these index variants: `SparseRam(InvertedIndexRam)`, `SparseCompressedImmutableRam{F32,F16,U8}` and `SparseCompressedMmap{F32,F16,U8}` (`InvertedIndexCompressedMmap<W, MmapFile>`). Only the mmap variants implement `populate()` / `clear_cache()`. [read] — [lib/segment/src/index/vector_index_base.rs](https://github.com/qdrant/qdrant/blob/master/lib/segment/src/index/vector_index_base.rs)
@@ -36,7 +36,7 @@ The 2026-09-29 claim is partly outdated. In Qdrant the *mutable* sparse index (a
 
 ### Gaps
 - No official Qdrant sparse benchmark at ≥ 100M with RAM/latency/build-time numbers was found.
-- Official numbers for cold vs cached vs pinned sparse latency were not found.
+- Official numbers for cold versus cached versus pinned sparse latency were not found.
 - Whether the optimizer's merge of sparse segments needs the full source posting lists in RAM was not verified in source.
 
 ---
@@ -55,7 +55,7 @@ The earlier claim mostly holds: fast `wand`/`dotProduct` need a weightedset **at
 
 ### Updater separability
 1. The updater is the Vespa content node: proton document DB, transaction log, attribute flush, disk-index fusion. It is C++ inside the `vespa-engine/vespa` monorepo. [inferred]
-2. I found no evidence that it can be used as a standalone library. It is coupled to Vespa's document model and config system. [inferred]
+2. I found no evidence that it can be used as a standalone library. It is coupled to Vespa's document model and configuration system. [inferred]
 3. A translation layer would have to read Vespa attribute snapshot files or disk-index posting files. These are internal formats with no documented stability. [inferred]
 4. No precedent found.
 
@@ -214,7 +214,7 @@ Both now offer learned-sparse retrieval as a hosted service. Turbopuffer has `Sp
 - Chroma: "first class support for BM25 and SPLADE embeddings" in Chroma Cloud via the Search() API. No index details, date or numbers are given. [read] — [Chroma sparse vector page](https://www.trychroma.com/project/sparse-vector-search)
 
 ### Gaps
-- Index algorithm (exact vs approximate), limits, latency and dates are undocumented for both.
+- Index algorithm (exact versus approximate), limits, latency and dates are undocumented for both.
 
 ---
 
@@ -226,7 +226,7 @@ LanceDB has no sparse-vector support (issue open since 2024-12-10). For Manticor
 ### Cited Findings
 - LanceDB issue #1930 ("Support for sparse vectors for example SPLADE") is open, opened 2024-12-10, with no linked PRs. [read] — [lancedb #1930](https://github.com/lancedb/lancedb/issues/1930)
 - Manticore has dense vector search since 6.3.0 (HNSW). My search found no sparse vector feature. [snippet] — [Manticore vector search manual](https://manual.manticoresearch.com/vector-search)
-- PISA builds static compressed indexes (e.g. block-max) offline from a forward index. It has no incremental update or delete. [inferred, background knowledge; not re-verified]
+- PISA builds static compressed indexes (for example, block-max) offline from a forward index. It has no incremental update or delete. [inferred, background knowledge; not re-verified]
 
 ### Gaps
 - None of these three has any ≥ 100M learned-sparse RAM numbers.

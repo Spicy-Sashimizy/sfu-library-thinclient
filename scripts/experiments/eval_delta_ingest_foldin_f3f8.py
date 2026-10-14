@@ -67,7 +67,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "scripts" / "experiments"))
 import eval_delta_ingest_m4_read_amp as m4  # noqa: E402
@@ -120,7 +120,7 @@ def git_head() -> str:
 
 
 def git_dirty_spike() -> list[str]:
-    out = subprocess.run(["git", "-C", str(REPO), "status", "--short", "--", "spike/delta_ingest", "src"],
+    out = subprocess.run(["git", "-C", str(REPO), "status", "--short", "--", "spike/delta_ingest", "source"],
                          capture_output=True, text=True).stdout
     return [ln for ln in out.splitlines() if ln.strip()]
 
@@ -766,12 +766,12 @@ def main() -> int:
     sub.add_parser("setup")
     f8 = sub.add_parser("f8")
     f8.add_argument("--rows-out", required=True)
-    f8.add_argument("--src", default=str(REPO / "src"))
+    f8.add_argument("--src", default=str(REPO / "source"))
     f8.add_argument("--smoke", action="store_true")
     f8.add_argument("--quiet-wait", type=int, default=600)
     f3 = sub.add_parser("f3")
     f3.add_argument("--rows-out", required=True)
-    f3.add_argument("--src", default=str(REPO / "src"))
+    f3.add_argument("--src", default=str(REPO / "source"))
     f3.add_argument("--passes", type=int, default=2)
     f3.add_argument("--warmup", type=int, default=1)
     f3.add_argument("--limit-topics", type=int, default=0)

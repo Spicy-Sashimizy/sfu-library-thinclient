@@ -271,7 +271,7 @@ def _texts_one(name: str) -> str:
     .parse_part, for the A1 build (titles/abstracts feed BM25 sections)."""
     import numpy as np
     sys.path.insert(0, str(REPO))
-    sys.path.insert(0, str(REPO / "src"))
+    sys.path.insert(0, str(REPO / "source"))
     from spike.inplace_update import prep
     z = np.load(DOCS / name, allow_pickle=True)
     want = {int(z["num"][i]) for i in z["sel"]}
@@ -517,7 +517,7 @@ def median(xs):
 A1_CHILD = r'''
 import json, os, sys, time, resource
 sys.path.insert(0, sys.argv[1])
-sys.path.insert(0, sys.argv[1] + "/src")
+sys.path.insert(0, sys.argv[1] + "/source")
 from pathlib import Path
 import numpy as np
 from spike.delta_ingest.generation import build_generation
@@ -623,7 +623,7 @@ def cmd_b2(a):
 A3_BUILD_CHILD = r"""
 import json, sys, time
 sys.path.insert(0, sys.argv[1])
-sys.path.insert(0, sys.argv[1] + "/src")
+sys.path.insert(0, sys.argv[1] + "/source")
 from pathlib import Path
 from spike.delta_ingest.generation import build_seismic_shard
 t0 = time.perf_counter()

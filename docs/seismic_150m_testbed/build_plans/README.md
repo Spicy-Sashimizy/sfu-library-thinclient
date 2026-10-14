@@ -18,13 +18,13 @@ unresolved gate (G6 RRF parity) can finally be measured.
   Refined 150M projection (forward-floor + sub-linear scratch) ≈ **55–63 GB peak**.
   The earlier "25 GB power-law" lower band is NOT credible (it ignored the linear
   forward floor) — corrected here.
-- **Host:** WSL2 dev container = 32 GB RAM + 16 GB swap (48 GB addressable);
+- **Host:** WSL2 development container = 32 GB RAM + 16 GB swap (48 GB addressable);
   Windows host total = 64 GB. → a stock monolithic 150M build does **not** fit.
 - **Serving is already solvable:** Path C (mmap) measured **+0.041 GB anonymous
   RAM, 96 % file-backed**. The forward index can live on disk; page cache hydrates
   candidate vectors on demand (this is exactly how OpenSearch serves SEISMIC at
   billion-scale: forward on disk, pruned inverted index in RAM).
-- **Quality verdict is NOT changed by any plan here:** G2 overlap@10 vs Qdrant =
+- **Quality verdict is NOT changed by any plan here:** G2 overlap@10 versus Qdrant =
   **0.479**, fails the 0.95 bar on all three index levers (`02_GO_NO_GO_GATES.md`).
   These plans change *feasibility*, not whether SEISMIC beats Qdrant on quality.
   Their only job is to unblock the **G6 RRF system-level** measurement.

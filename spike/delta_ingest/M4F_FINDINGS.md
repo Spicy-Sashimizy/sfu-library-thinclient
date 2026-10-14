@@ -53,10 +53,10 @@ delta shard positions). Also recorded (not a 09 row): OFF vs ON `search_rrf`.
 **"all" row:** two `rrf-dump` processes, fused top-50 + final top-10
 (`tools._maybe_rerank`, as M1), every lever gate unset, roots n8 and n1: (a)
 the measured HEAD snapshot, (b) the same snapshot with exactly the three lever
-commits' `src/` diffs reverse-applied (`prelever-snapshot`; checked: retriever
+commits' `source/` diffs reverse-applied (`prelever-snapshot`; checked: retriever
 and backend equal the pre-lever parent, delta_layer differs only by FIX's
 O2 commit 2fc2cb5c, present in both arms). "Code before the levers" is
-operationalised that way so another agent's concurrent `src/` commit cannot
+operationalised that way so another agent's concurrent `source/` commit cannot
 show up as a lever effect. Verdict per lever: PASS iff 120/120 on both roots;
 a FAIL drops the lever from stack X with the first differing topic.
 
@@ -81,7 +81,7 @@ rows `/home/vscode/work/delta_ingest/serve/run_p_a396eec9b143ccddf11ed80c560a0c1
 Script `scripts/experiments/eval_delta_ingest_m4f.py` (`parity`, `rrf-dump`,
 `rrf-compare`, `summarize-parity`). Measured code: `git archive a396eec9 src`
 (contains the three lever commits and FIX's O2 2fc2cb5c); pre-lever arm =
-that snapshot with the `src/` diffs of 10bc02a5, fbde17bb, 930b5a71
+that snapshot with the `source/` diffs of 10bc02a5, fbde17bb, 930b5a71
 reverse-applied (no lever gate name left in it). Interpreter
 `/home/vscode/work/venv_local`, models from `/home/vscode/work/models_local`
 (+ the M1 embed-v5 copy), `SFU_SEISMIC_STAGE_DIR=""`, `SFU_META_STAGE_DIR=""`,

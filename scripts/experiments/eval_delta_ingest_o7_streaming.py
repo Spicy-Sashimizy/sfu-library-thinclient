@@ -39,7 +39,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(REPO))
 
 PARTITION = Path("/var/tmp/sfu_delta_B_20260929/works_updated_date=2026-09-15_part_0001.gz")

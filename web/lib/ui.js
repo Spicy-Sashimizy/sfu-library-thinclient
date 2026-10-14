@@ -39,13 +39,7 @@
     document.body.appendChild(pill);
   }
 
-  function reflectSource() {
-    const anyMock = Array.prototype.slice.call(arguments).some(r => r && r.source === "mock");
-    setMockBanner(anyMock);
-    return anyMock;
-  }
-
-  window.SFUUI = { setMockBanner: setMockBanner, reflectSource: reflectSource };
+  window.SFUUI = { setMockBanner: setMockBanner };
 
   
   

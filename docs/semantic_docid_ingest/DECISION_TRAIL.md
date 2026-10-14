@@ -21,7 +21,7 @@ data, under two hard constraints (any-hardware/elastic, immutable sparse leg).
    fits a section-routed reranker, and it optimises compute — the wrong axis for
    a storage-bound system.
 3. Auto-updater split into **Meaning A** (learn new docs into weights — unsolved,
-   rejected) vs **Meaning B** (forward-only semantic ID assignment at ingest —
+   rejected) versus **Meaning B** (forward-only semantic ID assignment at ingest —
    buildable). User confirmed target = extension of Meaning B.
 4. The two added constraints were found to **select for** the design:
    immutability → LSM with the ID as routing address; any-hardware/elastic →

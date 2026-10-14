@@ -1,4 +1,4 @@
-/* AUTO-GENERATED from src/index_manager.jsx by scripts/build_web.mjs — do not edit. */
+/* AUTO-GENERATED from source/index_manager.jsx by scripts/build_web.mjs — do not edit. */
 const NIcon = ({
   name,
   size = 16,

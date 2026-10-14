@@ -37,7 +37,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 
 TOPICS = REPO / "data" / "sfu_eval_queries.json"
 TITLES = Path("/home/vscode/work/delta_ingest/corpus_a/title_sample.json")

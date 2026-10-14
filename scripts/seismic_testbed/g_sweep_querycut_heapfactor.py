@@ -40,7 +40,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "source"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import seismic_backend  # noqa: E402  (the single-index SeismicBackend under test)

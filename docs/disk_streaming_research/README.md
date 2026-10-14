@@ -33,7 +33,7 @@ experiments proposed here, if adopted, get pre-registered into
 - The disk-streaming code being mapped lives in
   `spike/seismic_upstream/src/mmap_io.rs` (Rust mmap reader, `release_pages`,
   `prefault_floor`, `touch_bytes`, `leak_mmap_advise`) and
-  `src/lib/thinclient/sharded_seismic_backend.py` (Python parallel/sequential/
+  `source/lib/thinclient/sharded_seismic_backend.py` (Python parallel/sequential/
   hybrid serving backends).
 - Refuted-lever provenance + the recorded open risks live in
   `seismic_150m_testbed/` (esp. `06_FINDINGS.md`, `08_LATENCY_RESEARCH.md`,

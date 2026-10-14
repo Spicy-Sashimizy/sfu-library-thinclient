@@ -1,5 +1,7 @@
 # Forking BMP to mmap (the only code change the spike needs)
 
+> **CLOSED KILLED 2026-06-26** — SEISMIC federated mmap took the slot; evidence for docs/archive/sparse_engine_project/
+
 Goal: make `bmp.Searcher` read its `.bmp` file via `mmap` instead of
 `load_into_memory`, so `RssAnon` stays ~0 and the OS pages the index in/out as
 reclaimable page cache. **Source-checked layout (`src/index/posting_list.rs`):

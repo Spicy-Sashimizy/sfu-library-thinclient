@@ -10,15 +10,15 @@ RAM-efficient) — sharing pure module-level helpers, with no inheritance coupli
 of per-query behavior and no shared mutable instance state (lowest cascade risk;
 a parallel thread bug can't reach a sequential instance). `SFU_SEISMIC_FEDERATION`
 picks the class (since 2026-07-18 the unset default is FS-aware — sequential
-on 9p/virtiofs/NFS, parallel on native local disk; env always overrides —
+on 9p/virtiofs/NFS, parallel on native local disk; environment always overrides —
 `docs/CODE_INVARIANTS.md` retriever section). T1 result-equivalence verified bit-identical
 on a synthetic shard. Mechanism (A) serial loop + mechanism (B) `MADV_DONTNEED`
 `release_pages` (after each shard's search → hard ~1-shard resident guarantee) are
 **both shipped** for the sequential class only (parallel never calls (B); the `.so`
 rebuild is additive). Mechanism (C) `mlock`/`MADV_RANDOM` remains a **design-only
 future hook**. **150M latency/RSS/parity MEASURED 2026-07-16 (deployprep WI-1)** on
-the 64 GB container, swap-free: warm p50 5.29× parallel (248 vs 47 ms), peak
-RssFile 0.023× (0.27 vs 11.74 GB), T1 bit-identical 0/2000 — sequential's value is
+the 64 GB container, swap-free: warm p50 5.29× parallel (248 versus 47 ms), peak
+RssFile 0.023× (0.27 versus 11.74 GB), T1 bit-identical 0/2000 — sequential's value is
 the RAM floor, not warm speed; see `04_BENCHMARKING.md` "MEASURED 2026-07-16".
 The 31.6 GB swap-storm GO/KILL fork (H1) needs the constrained host — open
 host-queue item. Owner: TBD.
@@ -52,15 +52,15 @@ DiskANN/SPANN RAM-for-I/O trade) — see [`05_RESEARCH_SOURCES.md`](05_RESEARCH_
 
 ## Relationship to the parallel path (kept separate on purpose)
 
-| | Parallel federation (existing) | Sequential federation (this dir) |
+| | Parallel federation (existing) | Sequential federation (this directory) |
 |---|---|---|
-| Lives in | `docs/seismic_150m_testbed/`, `sharded_seismic_backend.py` (ThreadPoolExecutor) | this dir; a new serve-mode branch, env-gated, no change to parallel code |
+| Lives in | `docs/seismic_150m_testbed/`, `sharded_seismic_backend.py` (ThreadPoolExecutor) | this directory; a new serve-mode branch, env-gated, no change to parallel code |
 | Resident RAM | all shards (~66 GB working set) | ~1 shard at a time |
 | Latency | ≈ slowest single shard (max) | ≈ sum of shards |
 | Best on | a host with RAM ≥ resident set | a small/RAM-constrained host (the demo case) |
 | Index artifacts | the 8 C2 mmap shards | **the same 8 C2 mmap shards** |
 
-The two methods are mutually exclusive at runtime (one env flag), never co-active,
+The two methods are mutually exclusive at runtime (one environment flag), never co-active,
 and **share zero build state** beyond the immutable shards — so neither can
 destabilise the other.
 
@@ -72,7 +72,7 @@ destabilise the other.
 | [`01_ARCHITECTURE.md`](01_ARCHITECTURE.md) | How sequential federation works; the resident-bounding mechanisms; result-equivalence with parallel; code touch-points |
 | [`02_BUILD.md`](02_BUILD.md) | **Independent** build/artifact documentation — what sequential needs (same immutable shards), self-contained, no parallel-path dependency |
 | [`03_TESTING.md`](03_TESTING.md) | **Independent** test plan — correctness (== parallel), RAM-bound + swap-free assertions, no-silent-fallback, degrade contract |
-| [`04_BENCHMARKING.md`](04_BENCHMARKING.md) | Methodology to measure sequential vs parallel head-to-head on the current box |
+| [`04_BENCHMARKING.md`](04_BENCHMARKING.md) | Methodology to measure sequential versus parallel head-to-head on the current box |
 | [`05_RESEARCH_SOURCES.md`](05_RESEARCH_SOURCES.md) | Annotated bibliography of the online sources backing every design choice here |
 
 ## Efficacy-rule note (binding, per root CLAUDE.md)

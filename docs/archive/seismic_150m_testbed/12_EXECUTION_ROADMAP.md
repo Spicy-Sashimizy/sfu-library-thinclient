@@ -789,7 +789,7 @@ n_postings-down (blocked on build budget, backlog `11`), E7-readahead-on-ext4
   `qdrant` → `seismic` in the dev container (dv manifest as the code default;
   filtered-leg over-fetch + partial-manifest guards fixed pre-flip; 17/17
   serving tests). Qdrant/BMP slated for the archival-container split. Canonical:
-  `docs/SEISMIC_ARCHIVE_SPLIT.md` + `docs/THIN_CLIENT_SWAP.md` leg table.
+  `docs/archive/seismic_archive_split/SEISMIC_ARCHIVE_SPLIT.md` + `docs/THIN_CLIENT_SWAP.md` leg table.
 
 ## 5. Asset map (what everything runs against)
 

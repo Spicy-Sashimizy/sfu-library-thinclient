@@ -77,7 +77,7 @@ import numpy as np
 import zstandard
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "source"))
 
 CORPUS_ROWS = 150_413_098          # doc 18 §12, measured
 DICT_SIZE = 112 * 1024             # abstracts.py:49

@@ -257,7 +257,7 @@ doc routed to s, the dials `SFU_DELTA_FOLDIN_FRAC` / `_DEAD_FRAC` / `_MAX_AGE`
 (days; unset = OFF, so nothing fires by default) and the 24 h hysteresis after
 a fold publish. Output: `<delta_root>/trigger.json` (latest, atomic) +
 `trigger_log.jsonl` (one line per publish). It only reports; it never builds or
-publishes a fold, serving never reads it, and nothing under `src/` changed.
+publishes a fold, serving never reads it, and nothing under `source/` changed.
 **(b) tax is NOT implemented** (needs F0): `tax_ms` is null and
 `SFU_DELTA_FOLDIN_TAX_MS` is ignored. Readings of (a)/(c)/(d) — including the
 post-fold reading (folded docs leave (a); only copies dead in s′ count for

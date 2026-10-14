@@ -47,12 +47,12 @@ ships in the payload.
 
 The expensive part of the real sidecar build is the compression, not the
 format: `abstracts.py` hardcodes `COMPRESSION_LEVEL = 19`, which is why the hot
-section built at ~375 docs/s/worker vs ~1,050 non-hot (THIN_CLIENT_SWAP,
+section built at ~375 docs/s/worker versus ~1,050 non-hot (THIN_CLIENT_SWAP,
 measured 2026-06-13). The per-script **dictionary training** — which carries
-most of the ratio win on small records (ru −40% … zh −32% vs an English dict)
+most of the ratio win on small records (ru −40% … zh −32% versus an English dict)
 — is a cheap one-time 20k-doc sample per bucket and is level-independent.
 
-1. **Make the level overridable** (writer arg or env; default stays 19 —
+1. **Make the level overridable** (writer argument or environment; default stays 19 —
    nothing shipped changes).
 2. **Abstracts-only backfill script** (new, small): stream the NAS chunks →
    classify each work into its section (`sections.py`) → append to that
