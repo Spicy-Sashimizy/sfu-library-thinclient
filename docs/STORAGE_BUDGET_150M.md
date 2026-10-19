@@ -14,7 +14,7 @@ validation build (`data/thinclient_1m`), full method detail in
 |---|---|---|---|---|
 | BMP SPLADE shards | 167.6 GB | bsize 256 + clustered (section, top-SPLADE-term) insertion | **76.7 GB** | −54.2% at recall@50 0.967 versus 0.966; also −61% query latency |
 | tantivy BM25F | 44.5 GB | clustered ordering tested: **+0.7% — null result, not adopted** | 44.8 GB | tantivy already delta/bit-packs postings; ordering didn't help |
-| Abstract sidecar | 64.7 GB | clustered 32 KB blocks + per-(section×language) zstd-19 dicts (3.42×) | **52.9 GB** | bit-exact; 100-doc rerank fetch ≪ 300 ms budget |
+| Abstract sidecar | 64.7 GB | clustered 32 KB blocks + per-(section×language) zstd-19 dicts (3.42× on the 20k sample) | **52.9 GB** *est.* (sample projection; **measured 2026-10-19 on the served store: 71.6 GB *est.* at 150M, dictionaries −17.6 %** — §6) | bit-exact; 100-doc rerank fetch ≪ 300 ms budget |
 | meta.sqlite | 24.1 GB | numeric PK (W-id digits) + dict-zstd titles/DOIs + enum-int type/section (1.679×) | **14.4 GB** | round-trip verified 200/200 |
 | **Total (all live, all hot)** | **300.9 GB** | | **188.8 GB** | **−112.1 GB (−37.3%), all lossless** |
 
@@ -153,4 +153,51 @@ all-live / ~10 GB persona steady.
 ```bash
 .venv/bin/python3 scripts/experiments/eval_storage_levers.py        # BMP matrix + meta + pack + mainline-sim
 .venv/bin/python3 scripts/experiments/eval_text_compression.py      # sidecar variants + languages [--slm]
+.venv/bin/python3 spike/dict_effect_at_scale/eval_dict_effect_at_scale.py --procs 16   # §6 census, ~42 min
 ```
+
+## 6. Dictionary effect measured at scale (2026-10-19)
+
+**Status: MEASURED.** Script `spike/dict_effect_at_scale/eval_dict_effect_at_scale.py`
+(timed spike, no mainline imports) → `data/eval_results/dict_effect_at_scale_2026-10-19.json`
+(+ `dict_effect_at_scale_2026-10-19_hot_blocks.npz` per-block rows,
+`dict_effect_at_scale_2026-10-19_shared.zdict`,
+`dict_effect_at_scale_2026-10-19_cold_scan.json`,
+`dict_effect_at_scale_2026-10-19_decode_idle.json`); pre-registration and full tables in
+`spike/dict_effect_at_scale/README.md`. Supersedes the §1 sidecar row's
+"52.9 GB" as the figure to quote.
+
+**What was measured.** EVERY block of the served hot section
+`social_sciences__recent` (flat sidecar, 1,062,917 blocks, 23,398,073 docs,
+36.15 GB raw = 1,545 B/doc), decompressed with its shipped dictionary and
+recompressed at zstd-19 four ways. **Parity: 1,062,917 / 1,062,917 blocks
+byte-identical to the store.** Exact, no sampling interval.
+
+| arm (zstd-19) | section | B/doc | ratio | vs no dict | at 150M *est.* |
+|---|--:|--:|--:|--:|--:|
+| a shipped per-script dicts (as served) | 11.132 GB | 475.7 | 3.25× | **−17.6 %** | **71.6 GB** |
+| b no dictionary | 13.505 GB | 577.2 | 2.68× | — | 86.8 GB |
+| c one shared dict, random 20k-doc sample | 11.025 GB | 471.2 | 3.28× | −18.4 % | 70.9 GB |
+| d latin dict on every bucket | 11.169 GB | 477.4 | 3.24× | −17.3 % | 71.8 GB |
+
+- The dictionaries save **2.374 GB on the served section** and ≈ **15.3 GB at
+  150M** *est.* (the projection assumes the hot section's script mix and raw
+  bytes/doc; the nine cold sections have no sidecar to measure —
+  `_cold_scan.json`, 684 archive members, 0 abstract files).
+- "Any dictionary" is the lever; per-script routing adds 37.6 MB here because
+  98.7 % of this section's docs are Latin-script. Inside the non-Latin
+  buckets the routing is −21 % to −34 % (own dict) versus −4 % to −11 %
+  (latin dict), so it stays (1 byte per block).
+- A shared dictionary trained on a **random** sample beats the shipped set by
+  0.96 %: the shipped latin dict was trained on the first 20k docs in ingest
+  order. Cheap follow-up at the next rebuild (unmeasured beyond this arm).
+- Decode cost of the dictionary: **~7 µs per block** (idle, single process,
+  3,000 blocks × 3: 48.6 µs shipped dict vs 41.3 µs none, p99 84 vs 76 µs).
+- **Correction of the 2026-06-11 projection:** "64.7 → 52.9 GB" came from
+  351.8 B/doc on a 20k sample averaging 1,203 raw B/doc; the real store
+  averages 1,545. The relative saving held (−17.6 % vs the implied −18 %),
+  the absolute sizes were 35 % low. Every "measured 64.7 → 52.9 GB at 150M"
+  phrasing in the docs is now marked est.; the
+  `source/lib/thinclient/abstracts.py` docstring still carries the old wording
+  (left untouched by owner instruction, 2026-10-19: no mainline edits from
+  the spike).

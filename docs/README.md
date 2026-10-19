@@ -165,6 +165,7 @@ Spikes:
 | `spike/ebpf_pagecache/` | `README.md` in the spike (2026-09-25: COMPILES on clang 14.0.6 via `offline_build/`; LOAD IMPOSSIBLE on this host; nothing measured — §7); runnable-vs-blocked matrix in `TEST_SITUATIONS.md`; ties to `convergence_repro/PREREGISTRATION_T1D_FG.md` and `_T1D_PROBE.md` |
 | `spike/bm25_seismic/` | `seismic_150m_testbed/17_BM25_THROUGH_SEISMIC_SPIKE.md` |
 | `spike/meta_consolidation/` | `seismic_150m_testbed/18_ORDINAL_ADDRESSING_DESIGN.md` |
+| `spike/dict_effect_at_scale/` | `README.md` in the spike (pre-registration + findings, CLOSED MEASURED 2026-10-19: per-script zstd dicts −17.6 % on every block of the served sidecar, parity 1,062,917/1,062,917; results `data/eval_results/dict_effect_at_scale_2026-10-19.json`); write-up `STORAGE_BUDGET_150M.md` §6, `LEXICAL_STORAGE_RESEARCH.md` §8.1 |
 | `spike/delta_ingest/` | `delta_ingest/` (design `02_DESIGN.md`, measurements `03_SPIKE_PLAN.md` addenda, fold-in `spike/delta_ingest/FOLDIN_FINDINGS.md`) |
 | `spike/seismic_upstream/` (+ `*.patch`) | Build recipes: `seismic_150m_testbed/10_FORWARD_COMPRESSION_DESIGN.md` §7.7; portability rules: `spike/CLAUDE.md` |
 | `spike/toolkit_fork/`, `spike/vectorium_fork/`, `spike/seismic_testbed_instrumented/` | Vendored/instrumented forks — see `spike/CLAUDE.md` and their READMEs |

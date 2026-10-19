@@ -684,6 +684,36 @@ mirrored here:
   sections/ directory listing replaces a full 9p SQL scan; prefix samples are
   biased — never extrapolate as uniform.
 
+### spike/dict_effect_at_scale/eval_dict_effect_at_scale.py (2026-10-19, CLOSED MEASURED)
+
+- Timed IR spike, NOT product code: imports nothing from `source/`; the
+  production constants (DICT_SIZE 112 KB, level 19, BLOCK_TARGET 32 KB,
+  TRAIN_TARGET_DOCS 20,000, stamp file names) are copied, so a change to
+  `abstracts.py` defaults must be mirrored by hand before a re-run.
+- Reads the flat sidecar only (`blocks.bin` via `pread`, the three block
+  arrays, `dicts.json`, `zdict_<name>`, `loc_b/off/n.npy`, `locator.json`);
+  docs per block = `bincount(loc_b)`, valid only when `locator.json`
+  `skipped_non_wid == 0`. Never writes under `data/thinclient_index/`.
+- Parity `pass` means every block's recompression with its shipped dictionary
+  is byte-identical to the stored bytes; that only holds with the zstd
+  version the store was built with (1.5.7). A version drift reports
+  `roundtrip_pass` separately and `pass: false` — do not quote arm a as "what
+  is on disk" then.
+- Arm d reuses arm a's bytes for latin blocks and for buckets without their
+  own dictionary (mirrors the reader's latin fallback); arm c's dictionary is
+  trained on a uniform random doc sample (seed 20261019), which differs from
+  the writer's first-20k-in-ingest-order sample.
+- Per-block row dtype caps: `docs` and `dec_us_*` are uint16 (decode µs
+  capped at 65,535; the cap count is recorded per arm), `raw`/arm bytes
+  uint32. Decode timings in the census are under full 16-thread compression
+  load; the fair dictionary decode cost is the separate idle run
+  (`_decode_idle.json`).
+- Takes `/tmp/sfu_latency_measure.lock` (`O_EXCL`) for the census and removes
+  it in `finally`; refuses to start if it exists. `--cold-scan-only` streams
+  all nine packed archives (~17 min, single thread) into `<out>_cold_scan.json`
+  and the census embeds that file if present; the two modes are meant to run
+  concurrently.
+
 ## Names that look dead but are live — dead-code audit 2026-10-10
 
 - `scripts/demo_broker/app.py`: `_startup`, `_shutdown`, `app_static`,

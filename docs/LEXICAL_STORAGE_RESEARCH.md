@@ -359,6 +359,26 @@ per-(section×language) trained dictionaries; consider clustered 32 KB blocks
 (+6% ratio at +7 ms/100 docs) if B/doc matters more than point-lookup
 simplicity. SLM decode: cold-tier/archival only, exactly as §2 concluded.
 
+### 8.1 At-scale check of the dictionary lever (spike/dict_effect_at_scale, 2026-10-19)
+
+The 20k-sample numbers above were re-measured on the production store: every
+block of the served `social_sciences__recent` sidecar (1,062,917 blocks,
+23,398,073 docs), `spike/dict_effect_at_scale/eval_dict_effect_at_scale.py` →
+`data/eval_results/dict_effect_at_scale_2026-10-19.json`; parity 1,062,917 /
+1,062,917 byte-identical recompressions. Per-script zstd-19 dictionaries:
+**475.7 B/doc (3.25×) vs 577.2 B/doc (2.68×) without — −17.6 %, 2.374 GB on
+the section, ≈ 15.3 GB at 150M *est.***. Raw abstracts average **1,545 B/doc**
+on the real store, not the sample's 1,203, so the "351.8 B/doc = 52.9 GB"
+projection was 35 % low in GB while its relative saving held. A shared
+dictionary trained on a random 20k sample is 0.96 % smaller than the shipped
+per-script set (the shipped latin dict was trained on the first 20k docs in
+ingest order); per-script routing is worth 0.34 % on this 98.7 %-Latin
+section but −21 % to −34 % inside the non-Latin buckets. Dictionary decode
+cost ≈ 7 µs per 32 KB block. Cold sections carry no sidecar, so no cold
+number exists (nine archives scanned, 0 abstract members). Tables and
+per-bucket detail: `spike/dict_effect_at_scale/README.md`;
+`STORAGE_BUDGET_150M.md` §6.
+
 ## 9. ALL-LEVERS measured matrix (scripts/experiments/eval_storage_levers.py, 2026-06-11)
 
 BMP on 100k real docs with production SPLADE vectors; recall@50 versus EXACT
@@ -385,12 +405,12 @@ dict) → the new tech beats Lucene's existing stored-fields optimization by
 **35.6%**; artifact cold-pack ratio measured **2.10×**.
 
 ### Whole-DB @150M, all levers, all lossless
-bmp 167.6→76.7 · tantivy 44.5→44.8 · abstracts 64.7→52.9 · meta 24.1→14.4
+bmp 167.6→76.7 · tantivy 44.5→44.8 · abstracts 64.7→52.9 (*est.*; measured at scale 2026-10-19: 71.6 GB with dicts vs 86.8 without, §8.1) · meta 24.1→14.4
 = **300.9 → 188.8 GB (−112.1 GB, −37.3%)**, recall/parity gates all green.
 
 ### Mainline (Lucene combined2 141.3 GB) hypothetical with the same tech
 In-Lucene abstract storage ≈ 546 B/doc ≈ 82 GB of the 141.3. Externalizing to
-the full-config sidecar (351.8 B/doc = 52.9 GB) → **141.3 → ~112 GB (−21%),
+the full-config sidecar (351.8 B/doc = 52.9 GB *est.* from the 20k sample; the served store measures 475.7 B/doc, §8.1) → **141.3 → ~112 GB (−21%),
 zero ranking change** (extern_display measured 80/80 score parity; sidecar is
 bit-exact). Remaining mainline-only lever: BP doc-ID reorder (est. 1–6 GB,
 unmeasured). Caveats: sidecar joins the update pipeline; _reindex can no

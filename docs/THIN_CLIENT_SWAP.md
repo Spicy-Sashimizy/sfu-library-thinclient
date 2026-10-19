@@ -1047,8 +1047,12 @@ checks added).
   "no abstract", never an error. Previously it was a direct keyless
   `requests.get` that 429'd on every query on this network. Contract:
   `docs/EXTERNAL_API_CONTRACT.md`. Sidecar format v3: script-bucketed clustered 32 KB blocks, zstd-19
-  with per-script trained dicts (measured 64.7→52.9 GB at 150M); readers
-  handle v1 (per-doc) and v2 (+ru dict).
+  with per-script trained dicts (projected 64.7→52.9 GB at 150M from the
+  2026-06-11 20k sample, *est.*; **measured 2026-10-19 on every block of the
+  served store: 475.7 B/doc, dictionaries −17.6 % vs none, 71.6 vs 86.8 GB at
+  150M *est.*, parity 1,062,917/1,062,917 —
+  `docs/STORAGE_BUDGET_150M.md` §6**); v1/v2 stores are refused since
+  2026-10-11 (only v3 and v3-flat are served).
 - `meta.sqlite` is v2: W-ids as INTEGER PRIMARY KEY with a TEXT overflow
   table (measured ~10 GB at 150M versus 24 GB v1 — but see the as-built 24.9 GB
   note below); the retriever auto-detects v1/v2.
