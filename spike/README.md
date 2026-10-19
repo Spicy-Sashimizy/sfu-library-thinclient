@@ -16,6 +16,7 @@ comments (policy exemption).
 | `ebpf_pagecache/` | cache_ext eBPF eviction-policy spike (compiles; cannot load here); `cache_ext_upstream/` inside it is a gitignored vendored checkout, the tracked part is `cache_ext_hotset.patch` + `offline_build/` | its `README.md` |
 | `bm25_seismic/` | BM25 served through SEISMIC spike | `docs/seismic_150m_testbed/17_BM25_THROUGH_SEISMIC_SPIKE.md` |
 | `meta_consolidation/` | ordinal-addressing / metadata consolidation benches | `docs/seismic_150m_testbed/18_ORDINAL_ADDRESSING_DESIGN.md` |
+| `dict_effect_at_scale/` | ACTIVE 2026-10-19: per-script zstd dictionary effect measured on EVERY block of the production abstract sidecar (hot section census, four arms, parity gate); timed information-retrieval spike, no mainline imports. Results `data/eval_results/dict_effect_at_scale_2026-10-19.json` | its `README.md`; `docs/STORAGE_BUDGET_150M.md` |
 | `archive/` | closed spikes kept as evidence: `mmap_bmp/`, `smallmachine_levers/`, `block_prefetch/`, `inplace_update/`, `n2_mphf/` (MPHF viability for ordinal addressing, CLOSED MEASURED 2026-09-27, moved 2026-10-11; its `README.md`) | `docs/README.md` §Closed tracks |
 
 Work directories (`work*/`, `.venv-lance/`) and the two vendored checkouts (`seismic_upstream/`, `ebpf_pagecache/cache_ext_upstream/`) are gitignored.
