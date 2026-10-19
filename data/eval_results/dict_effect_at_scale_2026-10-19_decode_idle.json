@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-19",
+  "note": "single-process idle-host decode of 3000 random hot blocks x3 reps, output discarded identically per arm; complements the under-load per-block timings in the census",
+  "seed": 20261019,
+  "blocks": 3000,
+  "reps": 3,
+  "arms": {
+    "shipped": {
+      "mean_us": 48.6,
+      "p50_us": 46.1,
+      "p99_us": 84.0,
+      "n": 9000
+    },
+    "nodict": {
+      "mean_us": 41.3,
+      "p50_us": 38.9,
+      "p99_us": 75.7,
+      "n": 9000
+    },
+    "shared": {
+      "mean_us": 47.6,
+      "p50_us": 45.2,
+      "p99_us": 83.8,
+      "n": 9000
+    }
+  }
+}

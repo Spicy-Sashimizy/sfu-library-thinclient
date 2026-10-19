@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-19",
+  "scan_secs": 1011.1,
+  "status": "NOT MEASURABLE: every packed section was built with abstracts_stored == 0 (cold policy: no sidecar), so there are no cold blocks to sample",
+  "any_abstract_blocks": false,
+  "any_scan_error": false,
+  "sections": {
+    "cs_math__archive": {
+      "archive": "data/thinclient_index/packed/cs_math__archive.tar.zst",
+      "archive_bytes": 183482886,
+      "build_status_docs": 482528,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 28,
+      "member_bytes_total": 359664223,
+      "abstract_members": [],
+      "scan_secs": 2.0,
+      "abstract_blocks_available": false
+    },
+    "cs_math__recent": {
+      "archive": "data/thinclient_index/packed/cs_math__recent.tar.zst",
+      "archive_bytes": 7662315676,
+      "build_status_docs": 22279259,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 90,
+      "member_bytes_total": 14589999471,
+      "abstract_members": [],
+      "scan_secs": 163.1,
+      "abstract_blocks_available": false
+    },
+    "med_bio__archive": {
+      "archive": "data/thinclient_index/packed/med_bio__archive.tar.zst",
+      "archive_bytes": 75710202,
+      "build_status_docs": 149551,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 28,
+      "member_bytes_total": 151958860,
+      "abstract_members": [],
+      "scan_secs": 1.4,
+      "abstract_blocks_available": false
+    },
+    "med_bio__recent": {
+      "archive": "data/thinclient_index/packed/med_bio__recent.tar.zst",
+      "archive_bytes": 9446596934,
+      "build_status_docs": 23279830,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 120,
+      "member_bytes_total": 17661831669,
+      "abstract_members": [],
+      "scan_secs": 215.7,
+      "abstract_blocks_available": false
+    },
+    "other__archive": {
+      "archive": "data/thinclient_index/packed/other__archive.tar.zst",
+      "archive_bytes": 1230214305,
+      "build_status_docs": 2907826,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 64,
+      "member_bytes_total": 2422289110,
+      "abstract_members": [],
+      "scan_secs": 32.0,
+      "abstract_blocks_available": false
+    },
+    "other__recent": {
+      "archive": "data/thinclient_index/packed/other__recent.tar.zst",
+      "archive_bytes": 19385124674,
+      "build_status_docs": 54912186,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 190,
+      "member_bytes_total": 36053531973,
+      "abstract_members": [],
+      "scan_secs": 440.6,
+      "abstract_blocks_available": false
+    },
+    "phys_eng__archive": {
+      "archive": "data/thinclient_index/packed/phys_eng__archive.tar.zst",
+      "archive_bytes": 78350743,
+      "build_status_docs": 164376,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 28,
+      "member_bytes_total": 157174231,
+      "abstract_members": [],
+      "scan_secs": 2.8,
+      "abstract_blocks_available": false
+    },
+    "phys_eng__recent": {
+      "archive": "data/thinclient_index/packed/phys_eng__recent.tar.zst",
+      "archive_bytes": 6536274130,
+      "build_status_docs": 22061449,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 108,
+      "member_bytes_total": 12217328911,
+      "abstract_members": [],
+      "scan_secs": 145.6,
+      "abstract_blocks_available": false
+    },
+    "social_sciences__archive": {
+      "archive": "data/thinclient_index/packed/social_sciences__archive.tar.zst",
+      "archive_bytes": 377175874,
+      "build_status_docs": 778020,
+      "build_status_abstracts_stored": 0,
+      "build_status_hot": false,
+      "live_dir_entries": [
+        "tantivy"
+      ],
+      "scan_error": null,
+      "members": 28,
+      "member_bytes_total": 711484905,
+      "abstract_members": [],
+      "scan_secs": 7.6,
+      "abstract_blocks_available": false
+    }
+  }
+}
