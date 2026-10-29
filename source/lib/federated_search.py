@@ -1,7 +1,10 @@
 """Federated search router — Option C (Federated Hybrid).
 
 Routes queries between live OpenAlex API and local OpenSearch index:
-  - Fresh queries (within federated_recency_days, or explicit temporal cues) → LIVE_API
+  - Date filters starting inside federated_recency_days, or lying entirely past the
+    local index's coverage end, or explicit temporal cues → LIVE_API
+  - Date filters the local index fully covers never route live by date
+  - A live-leg failure falls back to the local route (last_live_fallback)
   - Zero-coverage subjects (no local index data) → LIVE_API (Q2.1)
   - Soft-live subjects (OpenAlex beats local RRF) → LIVE_API unless overridden (Q2.2)
   - Historical queries → LOCAL_INDEX
@@ -11,6 +14,7 @@ RRF fusion formula: score = Σ 1 / (k + rank_i) where k=60.
 """
 
 import contextlib
+import functools
 import logging
 import re
 from datetime import date, timedelta
@@ -21,10 +25,51 @@ from lib import speculative_rerank
 
 logger = logging.getLogger("sfu_library_mcp")
 
-_TEMPORAL_CUES = re.compile(
-    r"\b(recent|latest|new|2025|2026|current|this year|last year|emerging)\b",
-    re.IGNORECASE,
-)
+_CUE_WORDS = r"recent|latest|new|current|this year|last year|emerging"
+
+
+@functools.lru_cache(maxsize=4)
+def _cues_for_year(year: int) -> re.Pattern:
+    return re.compile(rf"\b({_CUE_WORDS}|{year - 1}|{year})\b", re.IGNORECASE)
+
+
+def temporal_cues(today: date | None = None) -> re.Pattern:
+    """Temporal-cue regex for a given day: the fixed cue words plus the current and
+    previous calendar years, so the year cues follow the calendar instead of a literal."""
+    return _cues_for_year((today or date.today()).year)
+
+
+def _parse_bound(text: Any, end: bool) -> date | None:
+    text = str(text or "").strip()
+    if not text:
+        return None
+    try:
+        if len(text) >= 10:
+            return date.fromisoformat(text[:10])
+        year = int(text[:4])
+        return date(year, 12, 31) if end else date(year, 1, 1)
+    except ValueError:
+        return None
+
+
+def requested_range(filters: dict) -> tuple[date | None, date | None]:
+    """(start, end) publication dates asked for by OpenAlex-style filters.
+
+    Reads ``publication_year`` (``"2024"`` or ``"2020-2024"``) first, then
+    ``from_publication_date`` / ``to_publication_date``. Either bound is None
+    when the filters leave it open.
+    """
+    lo = hi = None
+    py = filters.get("publication_year")
+    if py:
+        a, sep, b = str(py).partition("-")
+        lo = _parse_bound(a, False)
+        hi = _parse_bound(b if sep else a, True)
+    if lo is None:
+        lo = _parse_bound(filters.get("from_publication_date"), False)
+    if hi is None:
+        hi = _parse_bound(filters.get("to_publication_date"), True)
+    return lo, hi
 
 _RRF_K = 60
 
@@ -155,6 +200,19 @@ class FederatedSearchRouter:
         self.recency_days = recency_days
         self.local_rrf_enabled = local_rrf_enabled
         self.last_degraded = False
+        self.last_live_fallback = False
+
+    def local_coverage_end(self) -> date | None:
+        """Newest publication date the local index can hold, from the retriever's
+        ``coverage_end()``; None when the retriever has none or it does not return a date."""
+        fn = getattr(self._opensearch, "coverage_end", None)
+        if fn is None:
+            return None
+        try:
+            out = fn()
+        except Exception:
+            return None
+        return out if isinstance(out, date) else None
 
     def route(
         self,
@@ -165,9 +223,13 @@ class FederatedSearchRouter:
     ) -> SearchSource:
         """Determine which backend(s) to query.
 
-        Rules (evaluated in order):
-        1. from_publication_date within recency_days → LIVE_API
-        2. Temporal cue words in query → LIVE_API
+        Rules (evaluated in order; the date rules read publication_year,
+        from_publication_date and to_publication_date via requested_range):
+        1a. requested range starts after the local index's coverage end → LIVE_API
+        1b. requested range ends on or before the coverage end → date rules skipped
+        1c. requested range starts within recency_days of today → LIVE_API
+            (1a/1b need a retriever with ``coverage_end()``; otherwise only 1c runs)
+        2. Temporal cue words in query (incl. current/previous year) → LIVE_API
         3. subject_hint in ALWAYS_LIVE_SUBJECTS (zero local coverage) → LIVE_API (Q2.1)
         4. subject_hint in SOFT_LIVE_SUBJECTS → LIVE_API unless prefer_local (Q2.2)
         5. Everything else → LOCAL_RRF (when local_rrf_enabled) else LOCAL_INDEX
@@ -182,17 +244,19 @@ class FederatedSearchRouter:
                 keeps soft-live subjects on the local route. Has no effect on the
                 hard ALWAYS_LIVE_SUBJECTS list (those have no usable local data).
         """
-        from_date_str = filters.get("from_publication_date", "")
-        if from_date_str:
-            try:
-                from_date = date.fromisoformat(from_date_str[:10])
-                cutoff = date.today() - timedelta(days=self.recency_days)
-                if from_date >= cutoff:
-                    return SearchSource.LIVE_API
-            except ValueError:
-                pass
+        today = date.today()
+        lo, hi = requested_range(filters)
+        if lo is not None or hi is not None:
+            coverage_end = self.local_coverage_end()
+            end = hi if hi is not None else today
+            if coverage_end is not None and lo is not None and lo > coverage_end:
+                return SearchSource.LIVE_API
+            fully_covered = coverage_end is not None and end <= coverage_end
+            if (not fully_covered and lo is not None
+                    and lo >= today - timedelta(days=self.recency_days)):
+                return SearchSource.LIVE_API
 
-        if _TEMPORAL_CUES.search(query):
+        if temporal_cues(today).search(query):
             return SearchSource.LIVE_API
 
         if subject_hint in ALWAYS_LIVE_SUBJECTS:
@@ -230,6 +294,7 @@ class FederatedSearchRouter:
         live_results: list[dict] = []
         local_results: list[dict] = []
         self.last_degraded = False
+        self.last_live_fallback = False
 
         if source == SearchSource.LIVE_API:
             try:
@@ -238,7 +303,10 @@ class FederatedSearchRouter:
                 )
                 live_results = data.get("results", [])
             except Exception:
-                logger.exception("FederatedSearchRouter: live API search failed")
+                logger.exception("FederatedSearchRouter: live API search failed; falling back to the local route")
+                self.last_live_fallback = True
+                source = (SearchSource.LOCAL_RRF if self.local_rrf_enabled
+                          else SearchSource.LOCAL_INDEX)
 
         if source == SearchSource.LOCAL_INDEX:
             try:

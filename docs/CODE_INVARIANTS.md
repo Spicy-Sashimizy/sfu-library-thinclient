@@ -1118,6 +1118,37 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
 - The router coordinates two independent backends and must never crash the
   calling handler (clients narrow their own exceptions; the router's broad
   except is deliberate).
+- **Routing is either/or** (2026-10-29): a query is answered by the live
+  OpenAlex leg OR the local legs, never a fusion of both. Local hits carry
+  `source="thinclient"`; live hits carry the journal display name.
+- **Date rules read every date filter** (2026-10-29): `requested_range()`
+  reads `publication_year` (`"2024"` / `"2020-2024"`), then
+  `from_publication_date` / `to_publication_date`. `tools.py` writes a
+  `publication_year` range when BOTH `year_from` and `year_to` are set, so
+  a router that read only `from_publication_date` never routed that case
+  live (the pre-2026-10-29 defect).
+- **Coverage-aware date routing** (2026-10-29): with a retriever exposing
+  `coverage_end()` (ThinClientRetriever: manifest `built` day, or the delta
+  layer's publish day when later), a requested range that starts after the
+  coverage end routes live at any window, and a range that ends on or
+  before it never routes live by date. Only then does the
+  `SFU_FEDERATED_RECENCY_DAYS` start-date window apply. The rule retires
+  itself as coverage freshens (monthly rebuild, delta ingest); the window
+  stays the owner's knob for the partially-covered open-ended case
+  (`year_from=<this year>` with a June build). Routing effect on ranking
+  quality: IMPLEMENTED, EFFICACY UNMEASURED (no date-filtered judged set).
+- **Year cues follow the calendar** (2026-10-29): `temporal_cues(today)`
+  compiles the fixed cue words plus the current and previous calendar
+  years (lru-cached per year); no literal year may be re-added to the
+  pattern. The bare words `new` and `current` are known false triggers
+  ("New Zealand", "electric current") — recorded, not changed.
+- **Live failure falls back to the local route** (2026-10-29): a live-leg
+  exception (OpenAlex down, circuit open, quota) re-routes the same query
+  to LOCAL_RRF (or LOCAL_INDEX when RRF is off) and sets
+  `last_live_fallback`; `tools.py` prefixes the
+  `_LIVE_FALLBACK_NOTE`. `last_degraded` keeps its meaning (local legs
+  unavailable) and is set only if the fallback itself fails. Before
+  2026-10-29 a live failure returned an empty list with no notice.
 
 ## source/lib/opensearch_retriever.py (query encoders)
 

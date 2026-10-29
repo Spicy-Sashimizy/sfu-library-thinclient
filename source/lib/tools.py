@@ -191,6 +191,8 @@ def _get_openalex() -> "OpenAlexClient":
 
 
 _federated_router = None
+_LIVE_FALLBACK_NOTE = ("The live OpenAlex search failed; these results come from the "
+                       "local index, which may not include the newest work.")
 _thinclient_retriever = None
 
 
@@ -415,7 +417,9 @@ TOOL_DEFINITIONS: list[Tool] = [
             "TIPS:\n"
             "- Use the returned DOI with save_to_zotero or get_full_text_link\n"
             "- For citations/references of a specific paper use get_citations / get_references\n"
-            "- For biomedical literature add search_biomedical for PubMed coverage"
+            "- For biomedical literature add search_biomedical for PubMed coverage\n"
+            "- For work newer than the local index, put 'recent', 'latest' or the current year "
+            "in the query text; a year range that lies past the local index also searches live"
         ),
         inputSchema={
             "type": "object",
@@ -1026,6 +1030,8 @@ async def _handle_search_academic(args: dict) -> list[TextContent]:
         _note_result_ids(results)
         data = {"results": results, "meta": {"count": len(results)}}
         text = format_openalex_results(data, query)
+        if getattr(router, "last_live_fallback", False):
+            text = "[Note: " + _LIVE_FALLBACK_NOTE + "]\n\n" + text
         if getattr(router, "last_degraded", False):
             text = (
                 "[Note: the local search index is currently unavailable; "
@@ -1143,6 +1149,8 @@ async def search_academic_structured(args: dict) -> dict:
             )
         except Exception:
             logger.debug("serve query-log emit failed (non-fatal)")
+        if getattr(router, "last_live_fallback", False):
+            notes.append(_LIVE_FALLBACK_NOTE)
         if getattr(router, "last_degraded", False):
             notes.append("The local search index is currently unavailable; results may be incomplete.")
 

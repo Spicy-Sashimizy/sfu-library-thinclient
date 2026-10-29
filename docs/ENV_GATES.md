@@ -183,7 +183,7 @@ secret `/run/secrets/<name>` first, then the environment var; never put values i
 | `SFU_CB_TIMEOUT` | `config.py` → `lib/zotero.py` | `60.0` (s) | Zotero circuit-breaker open time |
 | `SFU_DB_REGISTRY_CACHE_TTL` | `config.py` → `tools._get_registry` | `86400` (s) | SFU database-registry cache TTL |
 | `SFU_DB_REGISTRY_CACHE_FILE` | `config.py` → `tools._get_registry` | `/tmp/sfu_databases_cache.json` | SFU database-registry cache file |
-| `SFU_FEDERATED_RECENCY_DAYS` | `config.py` → federated router | `30` | queries about the last N days route to the live OpenAlex API |
+| `SFU_FEDERATED_RECENCY_DAYS` | `config.py` → federated router | `30` | a date filter whose start lies within the last N days routes to the live OpenAlex API, unless the local index fully covers the requested range (its `coverage_end()`); a range starting after the coverage end routes live at any N; cue words in the query text route live regardless (2026-10-29) |
 | `SFU_ZOTERO_API_KEY` | `config.py` (secret `zotero_api_key`) → `zotero.py` | unset | Zotero API credential; empty ⇒ Zotero tools fail (configuration warning) |
 | `SFU_ZOTERO_USER_ID` | `config.py` (secret `zotero_user_id`) → `zotero.py` | unset | Zotero library user id; empty ⇒ Zotero tools fail |
 | `SFU_SEMANTIC_SCHOLAR_API_KEY` | `config.py` (secret `semantic_scholar_api_key`) | unset | Semantic Scholar credential; empty ⇒ unauthenticated, lower rate limit |

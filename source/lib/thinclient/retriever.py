@@ -35,6 +35,7 @@ from __future__ import annotations
 import contextlib
 import contextvars
 import json
+from datetime import date, datetime, timezone
 import logging
 import os
 import sqlite3
@@ -655,6 +656,25 @@ class ThinClientRetriever:
             return sub
         return None
 
+    def coverage_end(self) -> date | None:
+        """Newest publication date the served index can hold: the manifest's
+        ``built`` day, or the delta layer's publish day when later (its stamp
+        ends in an epoch). None when neither parses, so callers fall back."""
+        out: date | None = None
+        try:
+            out = date.fromisoformat(str(self._manifest().get("built", ""))[:10])
+        except (TypeError, ValueError):
+            out = None
+        stamp = str(getattr(self._delta, "stamp", "") or "")
+        try:
+            epoch = int(stamp.rsplit("-", 1)[-1])
+            delta_day = datetime.fromtimestamp(epoch, tz=timezone.utc).date()
+            if out is None or delta_day > out:
+                out = delta_day
+        except (TypeError, ValueError, OverflowError, OSError):
+            pass
+        return out
+
     def metrics(self) -> dict:
         """Per-leg latency/error counters + index coverage (for /health)."""
         try:
@@ -666,6 +686,7 @@ class ThinClientRetriever:
         for m in legs.values():
             m["avg_ms"] = round(m["total_ms"] / max(m["count"], 1), 1)
             m["total_ms"] = round(m["total_ms"], 1)
+        coverage = self.coverage_end()
         return {
             "legs": legs,
             "live_sections": sorted(self._sections),
@@ -678,6 +699,7 @@ class ThinClientRetriever:
             "meta_staged": bool(self._meta_path
                                 and self._meta_path != self.root / "meta.sqlite"),
             "manifest": self._manifest(),
+            "coverage_end": (coverage.isoformat() if coverage else None),
             "delta": self._delta.info() if self._delta is not None else None,
         }
 

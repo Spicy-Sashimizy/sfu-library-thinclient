@@ -11,6 +11,8 @@ from lib.federated_search import (
     SearchSource,
     _normalize_doi,
     _rrf_merge,
+    requested_range,
+    temporal_cues,
 )
 
 
@@ -102,14 +104,88 @@ def test_route_old_date_filter_goes_to_local_index_when_rrf_disabled():
     assert router.route("machine learning", {"from_publication_date": old}) == SearchSource.LOCAL_INDEX
 
 
+def _make_coverage_router(coverage_end, recency_days=30):
+    oa = MagicMock()
+    os_ = MagicMock()
+    os_.coverage_end = lambda: coverage_end
+    return FederatedSearchRouter(oa, os_, recency_days=recency_days)
+
+
+def test_requested_range_reads_publication_year_range():
+    assert requested_range({"publication_year": "2020-2024"}) == (date(2020, 1, 1), date(2024, 12, 31))
+    assert requested_range({"publication_year": "2024"}) == (date(2024, 1, 1), date(2024, 12, 31))
+
+
+def test_requested_range_reads_from_and_to_dates():
+    assert requested_range({"from_publication_date": "2026-01-01"}) == (date(2026, 1, 1), None)
+    assert requested_range({"to_publication_date": "2020-12-31"}) == (None, date(2020, 12, 31))
+    assert requested_range({}) == (None, None)
+    assert requested_range({"from_publication_date": "garbage"}) == (None, None)
+
+
+def test_route_publication_year_range_starting_in_window_goes_to_live():
+    router = _make_router(recency_days=400)
+    y = date.today().year
+    assert router.route("anything", {"publication_year": f"{y}-{y}"}) == SearchSource.LIVE_API
+
+
+def test_route_publication_year_range_old_stays_local():
+    router = _make_router(recency_days=400)
+    assert router.route("anything", {"publication_year": "2015-2018"}) == SearchSource.LOCAL_RRF
+
+
+def test_route_range_entirely_past_coverage_goes_to_live_outside_window():
+    today = date.today()
+    router = _make_coverage_router(today - timedelta(days=400), recency_days=30)
+    start = (today - timedelta(days=200)).isoformat()
+    assert router.route("anything", {"from_publication_date": start}) == SearchSource.LIVE_API
+
+
+def test_route_range_inside_coverage_stays_local_despite_window():
+    today = date.today()
+    router = _make_coverage_router(today, recency_days=30)
+    filters = {
+        "from_publication_date": (today - timedelta(days=5)).isoformat(),
+        "to_publication_date": (today - timedelta(days=1)).isoformat(),
+    }
+    assert router.route("anything", filters) == SearchSource.LOCAL_RRF
+
+
+def test_route_open_ended_old_start_stays_local_with_stale_coverage():
+    today = date.today()
+    router = _make_coverage_router(today - timedelta(days=100), recency_days=30)
+    assert router.route("anything", {"from_publication_date": "2018-01-01"}) == SearchSource.LOCAL_RRF
+
+
+def test_route_open_ended_recent_start_goes_live_with_stale_coverage():
+    today = date.today()
+    router = _make_coverage_router(today - timedelta(days=100), recency_days=30)
+    start = (today - timedelta(days=10)).isoformat()
+    assert router.route("anything", {"from_publication_date": start}) == SearchSource.LIVE_API
+
+
+def test_route_ignores_non_date_coverage_end():
+    router = _make_coverage_router("not-a-date", recency_days=30)
+    assert router.local_coverage_end() is None
+    assert router.route("anything", {"from_publication_date": "2018-01-01"}) == SearchSource.LOCAL_RRF
+
+
+def test_temporal_cues_follow_the_calendar_year():
+    cues = temporal_cues(date(2031, 5, 1))
+    assert cues.search("AI papers 2031")
+    assert cues.search("AI papers 2030")
+    assert not cues.search("AI papers 2026")
+    assert temporal_cues().search(f"AI papers {date.today().year}")
+
+
 def test_route_temporal_cue_recent_goes_to_live():
     router = _make_router()
     assert router.route("recent advances in CRISPR", {}) == SearchSource.LIVE_API
 
 
-def test_route_temporal_cue_2025_goes_to_live():
+def test_route_temporal_cue_previous_year_goes_to_live():
     router = _make_router()
-    assert router.route("AI papers 2025", {}) == SearchSource.LIVE_API
+    assert router.route(f"AI papers {date.today().year - 1}", {}) == SearchSource.LIVE_API
 
 
 def test_route_historical_query_goes_to_local_rrf():
@@ -146,11 +222,43 @@ def test_search_local_only_calls_only_opensearch():
     assert results[0]["doi"] == "10.1/b"
 
 
-def test_search_live_exception_returns_empty():
+def test_search_live_exception_falls_back_to_local_rrf():
     router, oa, os_ = _make_full_router()
     oa.search_works.side_effect = RuntimeError("down")
     results = router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
+    assert os_.search.call_count == 2
+    assert [d["doi"] for d in results] == ["10.1/b"]
+    assert router.last_live_fallback is True
+    assert router.last_degraded is False
+
+
+def test_search_live_exception_falls_back_to_local_index_when_rrf_disabled():
+    oa = MagicMock()
+    os_ = MagicMock()
+    oa.search_works.side_effect = RuntimeError("down")
+    os_.search.return_value = [_doc("10.1/b", "LocalB")]
+    router = FederatedSearchRouter(oa, os_, recency_days=30, local_rrf_enabled=False)
+    results = router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
+    os_.search.assert_called_once()
+    assert [d["doi"] for d in results] == ["10.1/b"]
+    assert router.last_live_fallback is True
+
+
+def test_search_live_then_local_both_down_sets_degraded():
+    router, oa, os_ = _make_full_router()
+    oa.search_works.side_effect = RuntimeError("down")
+    os_.search.side_effect = RuntimeError("down")
+    results = router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
     assert results == []
+    assert router.last_live_fallback is True
+    assert router.last_degraded is True
+
+
+def test_search_live_success_resets_fallback_flag():
+    router, oa, os_ = _make_full_router()
+    router.last_live_fallback = True
+    router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
+    assert router.last_live_fallback is False
 
 
 def test_search_local_exception_returns_empty():

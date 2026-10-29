@@ -581,3 +581,18 @@ async def test_mcp_index_tools(tmp_path, monkeypatch):
     assert "already live" in out[0].text
     out = await tools._dispatch_tool("reload_index", {})
     assert json.loads(out[0].text)["reloaded"]["live_sections"]
+
+
+def test_coverage_end_reads_manifest_built_and_delta_epoch(tmp_path):
+    from datetime import date
+    from types import SimpleNamespace
+    (tmp_path / "manifest.json").write_text('{"built": "2026-06-16T03:00:21"}')
+    r = ThinClientRetriever(index_root=str(tmp_path), remote_abstracts=False)
+    assert r.coverage_end() == date(2026, 6, 16)
+    r._delta = SimpleNamespace(stamp="g0003-1790000000")
+    assert r.coverage_end() == date(2026, 9, 21)
+    r._delta = SimpleNamespace(stamp="g0003-1700000000")
+    assert r.coverage_end() == date(2026, 6, 16)
+    r._delta = None
+    (tmp_path / "manifest.json").write_text('{"built": "soon"}')
+    assert r.coverage_end() is None
