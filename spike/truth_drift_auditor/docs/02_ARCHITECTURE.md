@@ -125,3 +125,80 @@ sub-second claim-level pre-judgment would be an encoder such as LettuceDetect
 (~100–500 ms CPU), deliberately left out of the pilot until a judged set exists
 to calibrate it. Expected writer-visible latency with the thin-client leg off:
 a comment ~5–10 s after typing stops, dominated by the poll interval and tier 1.
+
+## 9. Decision tree (every branch as implemented in `pipeline.py` / `docs_watcher.py`)
+
+```
+                 Google Doc  (poll documents.get every 3-5 s)   |   exported .md/.txt (batch)
+                                   |                                        |
+                                   +-------------------+--------------------+
+                                                       v
+                                      split into paragraphs; sha1(text) each
+                                                       |
+                                              hash seen before?
+                                             /                  \
+                                          yes                    no
+                                           |                      |
+                                         [skip]                   v
+                                   ================= TIER 0: deterministic =================
+                                   | 0a numeric_check                                      |
+                                   |    extract numbers+units per sentence                 |
+                                   |    alias phrase matches the sentence?                 |
+                                   |      no  -> numeric = []                              |
+                                   |      yes -> number nearest the phrase                 |
+                                   |             |written-expected| / |expected| <= tol ?  |
+                                   |               yes -> OK note                           |
+                                   |               no  -> MISMATCH note (expected, path)    |
+                                   | 0b Vale installed?                                    |
+                                   |      no  -> skipped                                   |
+                                   |      yes -> YAML rule alerts                          |
+                                   | 0c evidence retrieval (chained)                       |
+                                   |    leg 1: local text  /  PaperQA2 (sparse or local    |
+                                   |           embedding, skip_summary => no LLM)          |
+                                   |      hits >= min_hits -> stop                         |
+                                   |      hits <  min_hits -> thin client enabled?         |
+                                   |                            no  -> evidence as is      |
+                                   |                            yes -> POST /api/search    |
+                                   | 0d package: evidence + numeric notes + paragraph      |
+                                   =========================================================
+                                                       |
+                                   ---------------- first model call ----------------------
+                                   | TIER 1  Haiku 5.5 via SDK, effort low, cached system |
+                                   |         prompt, JSON-schema output                   |
+                                   |   stop_reason refusal / unparseable                  |
+                                   |      -> claims = [], error recorded                  |
+                                   |   ok -> per claim: verdict in {SUPPORTED,            |
+                                   |         CONTRADICTED, NO_EVIDENCE, NOT_CHECKABLE},   |
+                                   |         quote located by str.find -> span            |
+                                   --------------------------------------------------------
+                                                       |
+                                   ============ escalation policy: deterministic ===========
+                                   | any CONTRADICTED with confidence < low_confidence ? --+
+                                   | >= min_contradicted paragraphs in last `window` ? ----+
+                                   | numeric MISMATCH and numeric_mismatch_escalates ? ----+--> any yes
+                                   | model returned escalate = true ? ---------------------+      |
+                                   =========================================================      |
+                                           | all no                                               v
+                                           |                               ------------------------------------------
+                                           |                               | TIER 2  claude -p --output-format json |
+                                           |                               |   --model claude-fable-5-1, MCP tools  |
+                                           |                               |   re-verify, structural drift,         |
+                                           |                               |   ONE consolidated comment             |
+                                           |                               |   (CLI missing -> "[tier2 skipped]")   |
+                                           |                               ------------------------------------------
+                                           +---------------------------+------------+
+                                                                       v
+                                            drifted? = any numeric MISMATCH or any CONTRADICTED
+                                                     /                            \
+                                                   no                              yes
+                                                    |                               |
+                                           mark hash seen;              --post-comments on?
+                                           print report (batch)          /              \
+                                                                       no                yes
+                                                                        |                 |
+                                                                print JSON report   Drive comments.create
+                                                                                    (unanchored, quotedFileContent)
+                                                                                    mark hash seen
+```
+
+`NO_EVIDENCE` and `NOT_CHECKABLE` never count as drift and never post a comment.
