@@ -1142,13 +1142,19 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
   years (lru-cached per year); no literal year may be re-added to the
   pattern. The bare words `new` and `current` are known false triggers
   ("New Zealand", "electric current") — recorded, not changed.
-- **Live failure falls back to the local route** (2026-10-29): a live-leg
-  exception (OpenAlex down, circuit open, quota) re-routes the same query
-  to LOCAL_RRF (or LOCAL_INDEX when RRF is off) and sets
-  `last_live_fallback`; `tools.py` prefixes the
-  `_LIVE_FALLBACK_NOTE`. `last_degraded` keeps its meaning (local legs
-  unavailable) and is set only if the fallback itself fails. Before
-  2026-10-29 a live failure returned an empty list with no notice.
+- **Live failure falls back to the local route** (2026-10-29): the
+  OpenAlex client never raises — `_get` returns None on budget, breaker,
+  429 storm, 4xx (a bad key is a 401, swallowed as not-found) and
+  transport failure — so `search_works` answers
+  `{"results": [], "meta": {"count": 0}, "degraded": True}` in that case.
+  The router treats that flag, or an exception, as a live failure:
+  re-routes the same query to LOCAL_RRF (or LOCAL_INDEX when RRF is off)
+  and sets `last_live_fallback`; `tools.py` prefixes the
+  `_LIVE_FALLBACK_NOTE`. A genuine zero-hit live answer (no flag) is NOT
+  a fallback. `last_degraded` keeps its meaning (local legs unavailable)
+  and is set only if the fallback itself fails. Before 2026-10-29 a live
+  failure returned an empty list with no notice (observed 2026-10-29: a
+  key with a trailing CR from a CRLF `.env` gave 401 → silent empty).
 
 ## source/lib/opensearch_retriever.py (query encoders)
 

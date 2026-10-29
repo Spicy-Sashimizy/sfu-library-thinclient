@@ -390,7 +390,13 @@ class OpenAlexClient:
         page: int = 1,
         per_page: int = 10,
     ) -> dict:
-        """Search works. filters keys are OpenAlex filter names, values are filter values."""
+        """Search works. filters keys are OpenAlex filter names, values are filter values.
+
+        When ``_get`` returned nothing (budget exhausted, breaker open, 429
+        storm, 4xx such as a 401 bad key, or any transport failure) the result
+        carries ``degraded: True`` beside the empty ``results`` so the caller
+        can tell "no hits" from "no answer". Never raises.
+        """
         params: dict[str, Any] = {
             "search": query,
             "per_page": per_page,
@@ -401,6 +407,8 @@ class OpenAlexClient:
         if filters:
             params["filter"] = ",".join(f"{k}:{v}" for k, v in filters.items())
         data = self._get("/works", params)
+        if data is None:
+            return {"results": [], "meta": {"count": 0}, "degraded": True}
         if not data:
             return {"results": [], "meta": {"count": 0}}
         result = {

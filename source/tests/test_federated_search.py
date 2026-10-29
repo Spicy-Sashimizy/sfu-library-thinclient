@@ -254,6 +254,24 @@ def test_search_live_then_local_both_down_sets_degraded():
     assert router.last_degraded is True
 
 
+def test_search_live_degraded_answer_falls_back_to_local_rrf():
+    router, oa, os_ = _make_full_router()
+    oa.search_works.return_value = {"results": [], "meta": {"count": 0}, "degraded": True}
+    results = router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
+    assert os_.search.call_count == 2
+    assert [d["doi"] for d in results] == ["10.1/b"]
+    assert router.last_live_fallback is True
+
+
+def test_search_live_genuine_zero_hits_does_not_fall_back():
+    router, oa, os_ = _make_full_router()
+    oa.search_works.return_value = {"results": [], "meta": {"count": 0}}
+    results = router.search("query", {}, top_k=10, force_source=SearchSource.LIVE_API)
+    os_.search.assert_not_called()
+    assert results == []
+    assert router.last_live_fallback is False
+
+
 def test_search_live_success_resets_fallback_flag():
     router, oa, os_ = _make_full_router()
     router.last_live_fallback = True

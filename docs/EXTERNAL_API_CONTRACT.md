@@ -38,6 +38,22 @@ only in `source/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 > which is the code's behaviour, not OpenAlex's current terms. Sources and
 > detail: `docs/delta_ingest/01_RESEARCH.md` §1.2. Re-verifying the client
 > is open work, outside the delta-ingest spike.
+>
+> **Verified 2026-10-29 against the live endpoint with the project key**
+> (`/works?search=machine learning`, direct `requests` probe, 1 call each):
+> `from_publication_date`, `to_publication_date` and `publication_year`
+> filters all return 200 on the free key (785,833 works from 2026-01-01;
+> 272,910 in 2026-07-01..2026-10-29), each answer carrying
+> `meta.cost_usd = 0.001`; the same request with NO key also returned 200,
+> so anonymous access was still served that day. `from_updated_date` →
+> **429 `Plan upgrade required`** ("part of daily sync, which comes with the
+> Member+ and Partner plans"). A malformed or bogus key → **401 `Invalid or
+> missing API key`**, which `_get` swallows as not-found; since 2026-10-29
+> `search_works` marks that answer `degraded: True` and the federated
+> router falls back to the local route with a note. Operational trap: an
+> `.env` with CRLF line endings sourced in a shell appends `\r` to the key
+> and produces exactly that 401. The serving search leg sends only
+> publication-date filters, never the sync filters.
 
 | Service | Limit | Notes |
 |---|---|---|
@@ -54,7 +70,8 @@ only in `source/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 - Only **successful** (2xx) OpenAlex responses increment the daily tracker;
   cache hits, 429s, 4xx-as-not-found and requests blocked by the budget or
   the breaker cost nothing against it. At the limit `_get` returns `None`
-  (never raises), and every caller treats that as "no data".
+  (never raises); `search_works` turns that into a `degraded: True` answer
+  (2026-10-29) and every other caller treats it as "no data".
 - Batch abstract fetches from serving-path code 429-storm the polite pool
   — harnesses set `remote_abstracts=False` (see
   `CODE_INVARIANTS_SCRIPTS.md` WI-9 entry).

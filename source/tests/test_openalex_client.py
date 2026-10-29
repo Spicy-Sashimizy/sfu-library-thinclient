@@ -321,3 +321,29 @@ class TestFetchAbstractsByIds:
             assert client.fetch_abstracts_by_ids(["W1"]) == {}
         assert "OpenAlex request failed" in caplog.text
         assert _FAKE_KEY not in caplog.text
+
+
+class TestSearchWorksDegraded:
+    def test_search_works_flags_degraded_when_get_returns_none(self):
+        client = _make_client()
+        with patch("requests.get", return_value=_error_response(401)):
+            result = client.search_works("machine learning", filters={"from_publication_date": "2026-01-01"})
+        assert result["results"] == []
+        assert result["degraded"] is True
+
+    def test_search_works_flags_degraded_when_budget_exhausted(self):
+        client = _make_client()
+        client._tracker._count = client._tracker.limit
+        with patch("requests.get") as get:
+            result = client.search_works("machine learning")
+        get.assert_not_called()
+        assert result["results"] == []
+        assert result["degraded"] is True
+
+    def test_search_works_success_has_no_degraded_flag(self):
+        client = _make_client()
+        payload = {"results": [{"id": "https://openalex.org/W1", "title": "T"}], "meta": {"count": 1}}
+        with patch("requests.get", return_value=_ok_response(payload)):
+            result = client.search_works("machine learning")
+        assert "degraded" not in result
+        assert result["meta"]["count"] == 1

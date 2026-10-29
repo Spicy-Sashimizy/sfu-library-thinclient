@@ -4,7 +4,8 @@ Routes queries between live OpenAlex API and local OpenSearch index:
   - Date filters starting inside federated_recency_days, or lying entirely past the
     local index's coverage end, or explicit temporal cues → LIVE_API
   - Date filters the local index fully covers never route live by date
-  - A live-leg failure falls back to the local route (last_live_fallback)
+  - A live-leg failure (exception, or the client's ``degraded`` answer) falls
+    back to the local route (last_live_fallback)
   - Zero-coverage subjects (no local index data) → LIVE_API (Q2.1)
   - Soft-live subjects (OpenAlex beats local RRF) → LIVE_API unless overridden (Q2.2)
   - Historical queries → LOCAL_INDEX
@@ -297,13 +298,19 @@ class FederatedSearchRouter:
         self.last_live_fallback = False
 
         if source == SearchSource.LIVE_API:
+            live_failed = False
             try:
                 data = self._openalex.search_works(
                     query, filters=filters, per_page=top_k
                 )
-                live_results = data.get("results", [])
+                live_failed = bool(data.get("degraded"))
+                live_results = [] if live_failed else data.get("results", [])
+                if live_failed:
+                    logger.warning("FederatedSearchRouter: live API returned no answer; falling back to the local route")
             except Exception:
                 logger.exception("FederatedSearchRouter: live API search failed; falling back to the local route")
+                live_failed = True
+            if live_failed:
                 self.last_live_fallback = True
                 source = (SearchSource.LOCAL_RRF if self.local_rrf_enabled
                           else SearchSource.LOCAL_INDEX)
