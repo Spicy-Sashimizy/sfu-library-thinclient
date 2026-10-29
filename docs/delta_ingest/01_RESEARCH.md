@@ -43,12 +43,22 @@ pricing all changed.
 ### 1.2 API
 
 - `from_created_date` / `from_updated_date` exist but are **paid-plan only**
-  (Member+ $10k/yr). Unauthenticated probes returned 429 (inconclusive).
+  (Member+ $10k/yr). Unauthenticated probes returned 429 (inconclusive on
+  2026-09-29); **confirmed 2026-10-29** with the project key: 429
+  `Plan upgrade required` — "part of daily sync, which comes with the Member+
+  and Partner plans" — and by OpenAlex support the same day (no free
+  increases; premium daily snapshot and changefiles are paid too). The
+  spike CLI's default `--filter from_created_date:2026-01-01`
+  (`spike/delta_ingest/cli.py`) therefore cannot run on the free key.
 - Keys mandatory since **2026-02-13**; "No more polite pool! No more email
   parameter." Free key $1/day; list+filter $0.10/1,000 calls; search
   $1/1,000; hard cap 100 req/s; every response carries `meta.cost_usd`.
-  `per_page` max 100; cursor paging unbounded but "don't use cursor paging to
-  download the entire dataset".
+  `per_page` max 100 per the 2026-09-29 docs read — **measured 2026-10-29:
+  `per_page=200` returns 200 works with a cursor** (support states 200 per
+  filter page); cursor paging unbounded but "don't use cursor paging to
+  download the entire dataset". Credit model per support 2026-10-29: 10,000
+  credits/day, search 10, filter page 1, single-id GET free
+  (`docs/EXTERNAL_API_CONTRACT.md` note of that date).
 - A merged-away id answers **301** on single-entity GET; `is_retracted`
   arrives as an ordinary update (the record stays).
 - ⚠ **`EXTERNAL_API_CONTRACT.md` still describes the mailto polite pool
@@ -56,6 +66,55 @@ pricing all changed.
   behaviour, not OpenAlex's current terms; a dated note was added there in
   this commit. Re-verifying the live client against the key-only regime is
   outside this spike.
+
+### 1.2a Addendum 2026-10-29 — free daily feed by publication date
+
+**Status of this subsection: MEASURED volumes, DESIGN ONLY for ingest;
+nothing built, no default changed.** OpenAlex support (2026-10-29) suggests
+`filter=from_publication_date:<d>&sort=publication_date` as the free way to
+pull new publications: open on the free tier, 1 credit per page of 200.
+Corpus-wide counts measured that day with the project key (`/works`, no
+`search`, 1 credit each; `to_publication_date:2026-10-29` added because
+forward-dated issue records exist — newest seen `2027-10-27`, 3,961 of the
+7-day window):
+
+| Window (publication_date) | Works | Pages of 200 | Credits = pages |
+|---|---:|---:|---:|
+| 2026-10-22 .. 2026-10-29 (7 d), all domains | 305,297 | 1,527 | 1,527 (15 % of a day) |
+| 2026-06-16 (base build) .. 2026-10-29, all domains | 11,142,846 | 55,715 | 5.6 days of budget |
+| 7 d, `primary_topic.domain.id:domains/2` (Social Sciences) | 42,760 | 214 | 214 |
+| since build, Social Sciences | 1,466,960 | 7,335 | 73 % of a day |
+| 7 d, `primary_topic.field.id:fields/33` (Political Science) | 18,461 | 93 | 93 |
+
+The feed page carries full work objects: 172 of 200 (86 %) had an
+`abstract_inverted_index`, so abstracts for the delta come with the pull at
+no extra credit. `spike/delta_ingest/adapters.py::OpenAlexApiAdapter` takes an
+arbitrary `filter_expr`, so `--source openalex-api --filter
+'from_publication_date:…,to_publication_date:…'` works today without code.
+
+**What it covers and what it cannot.** A publication-date pull sees works
+whose *stated* date is in the window. Each daily run must re-scan a trailing
+window to catch late arrivals (works OpenAlex ingests weeks after their
+publication date); a 7-day trailing re-scan costs ~1.5 K credits/day
+corpus-wide, ~0.2 K for Social Sciences, and anything arriving later than
+the window is only caught by the next quarterly snapshot. It never sees
+**updates** to existing records (retractions, merges, citation counts,
+corrected metadata) — the 1:15–1:30 new:updated ratio of §1.1 — so the
+snapshot adapter stays the only free path for those; this feed replaces
+nothing, it fills the snapshot's lag for *new* work only.
+
+**Is it meaningful for delta ingest?** For supply, yes: the free tier can
+deliver every new publication daily (corpus-wide ~44 K works/day *measured
+over 7 days*) at ≤ 15 % of the credit budget, or the hot Social Sciences
+slice at ~2 %. **The binding constraint is serving-side, not the API**: doc
+10 F0 measured c = 21.35 ms per million live delta docs per query (upper
+bound), so the 8 ms sections-tier budget is spent at ≈ 375 K delta docs —
+≈ 8–9 days of the corpus-wide feed, ≈ 60 days of the Social Sciences slice
+(*est.* from the measured rates) — and fold-in is not promotable as measured
+(F0, F3, F8 FAIL; F7 FLAGGED), with `SFU_DELTA_ROOT` default OFF. The feed
+therefore makes a *scoped* delta (hot sections only, ~6 K docs/day) the
+realistic first use, and leaves the promotion decision exactly where doc 10
+and doc 11 left it. Nothing here changes a verdict.
 
 ### 1.3 Abstracts
 

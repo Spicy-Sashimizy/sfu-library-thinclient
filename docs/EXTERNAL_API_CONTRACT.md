@@ -54,6 +54,25 @@ only in `source/lib/openalex.py`, `semantic_scholar.py`, `retry.py`,
 > `.env` with CRLF line endings sourced in a shell appends `\r` to the key
 > and produces exactly that 401. The serving search leg sends only
 > publication-date filters, never the sync filters.
+>
+> **OpenAlex support answer, received 2026-10-29** (ticket by the owner;
+> answered by an agent under staff supervision — authoritative for the free
+> plan's terms, quoted figures): no academic or ad-hoc increases on free
+> keys; the incremental options (daily premium snapshot, changefiles,
+> `from_updated_date` / `from_created_date`) are Member+ and Partner only.
+> The free key is **$1 a day = 10,000 credits**: a **search costs 10
+> credits**, a **filter page costs 1 credit** (up to **200 works** per page),
+> and a **single-work GET by id (`/works/W…`) costs nothing** and returns the
+> abstract. Suggested free feed for new publications: `from_publication_date`
+> + `sort=publication_date` (measured in `docs/delta_ingest/01_RESEARCH.md`
+> §1.2a). **Consequences for this client (open work, nothing changed):**
+> `DailyCallTracker` counts every 2xx as one call against 900, which is the
+> right ceiling for searches (10,000 / 10 = 1,000) but charges the
+> serving-path abstract hydration (`fetch_abstracts_by_ids`, a filter-only
+> page of 50 ids = 1 credit) ten times its real price; a credit-aware tracker
+> reading `meta.cost_usd` (1 credit = $0.0001 as observed) would be exact. A
+> live-routed search with a date filter costs 11 credits, so the 900-search
+> ceiling stands for the federated router.
 
 | Service | Limit | Notes |
 |---|---|---|
