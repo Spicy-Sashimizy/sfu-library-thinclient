@@ -192,17 +192,18 @@ pre-registered bars live in source at pinned commits), `**/vendor/`
 `*.service`, supervisor `*.conf`, `*.ps1`, `*.bat`, compose YAML,
 requirements pins).
 
-## Code search: Pommel MCP tools FIRST
+## Code search
 
-Semantic/intent search (architecture, "how does X work", related code):
-- `mcp__pommel__pommel_search_local` — current project (FASTEST; Explore
-  agents start here)
-- `mcp__pommel__pommel_search_project` / `_search_all` / `_list_projects` /
-  `_reindex` (after major changes)
-
-Grep/Glob only for: exact strings, simple patterns, filename searches.
-HTTP fallback + the cross-container port map (when MCP unavailable):
-`docs/infrastructure/POMMEL_ACCESS.md` (local, untracked since 2026-10-10).
+Grep/Glob for literal text, filenames, config keys, log strings and
+whole-tree sweeps. The LSP tool (pyright, typescript, gopls, rust-analyzer,
+clangd are preinstalled) for symbol questions in typed code: definitions,
+references, type at a position, call hierarchy, especially before a rename
+or refactor. Trust an LSP result instead of re-reading the file, but treat
+find-references as incomplete for dynamic patterns (mocks, string imports,
+templates) and confirm those with Grep. Type diagnostics arrive after every
+edit with no tool call. If LSP returns an error, the server is down: say so
+rather than silently falling back to Grep. Details:
+`.claude/reference/CLAUDEBOX_TOOLING.md`.
 
 ---
 
