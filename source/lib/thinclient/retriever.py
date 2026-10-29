@@ -676,7 +676,8 @@ class ThinClientRetriever:
         return out
 
     def metrics(self) -> dict:
-        """Per-leg latency/error counters + index coverage (for /health)."""
+        """Per-leg latency/error counters + index coverage (``coverage_end``),
+        served by ``get_index_status`` / ``GET /api/index_status``, not ``/health``."""
         try:
             self._load()
         except Exception:

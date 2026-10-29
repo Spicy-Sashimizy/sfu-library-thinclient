@@ -75,7 +75,7 @@ laptop; the **subset tier** carries the handout's real size (below).
 
 | Leg / artifact | Path | Measured size | Notes |
 |---|---|---|---|
-| **SEISMIC SPLADE** (8 shards) | `data/seismic_150m/index/plan01/global_shard{0..7}of8.dotvbyte.e5.v2.mmap` | **66.24 GB** (on-disk = mmap-resident) | the promoted E8 dv-v2 layout; per-shard mmap_dir sizes in the JSON twin |
+| **SEISMIC SPLADE** (8 shards) | `data/seismic_150m/index/plan01/global_shard{0..7}of8.dotvbyte.e5.v2.mmap` | **44.41 GB** (41.36 GiB; `du -sb` over the eight `*.e5.v2.mmap` directories, re-measured 2026-10-19; on-disk = mmap-resident). **Correction 2026-10-19:** this cell read 66.24 GB from 2026-07-17 until today; that figure is the f16 `global_shard*of8.mmap` set (66.24 GB measured the same day), not the served dv-v2 shards. The dotvbyte forward codec is what takes the set 66.24 → 44.41 GB on disk | the promoted E8 dv-v2 layout; per-shard mmap_dir sizes in the JSON twin |
 | **BM25F** (tantivy) + meta + packed | `data/thinclient_index/` | **114.80 GB** total | includes `meta.sqlite` 24.91 GB + `packed/` abstracts 44.98 GB + `dense/` 0.36 GB + 8 tantivy sections |
 | └ meta.sqlite | `data/thinclient_index/meta.sqlite` | 24.91 GB | the docs/doi/year/section metadata db (citation axis absent — WI-5) |
 | └ packed abstracts | `data/thinclient_index/packed/` | 44.98 GB | zstd-compressed abstracts (the hydration leg) |
