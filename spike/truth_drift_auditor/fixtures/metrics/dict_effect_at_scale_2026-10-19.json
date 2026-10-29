@@ -1,0 +1,753 @@
+{
+  "date": "2026-10-19",
+  "script": "spike/dict_effect_at_scale/eval_dict_effect_at_scale.py",
+  "config": {
+    "seed": 20261019,
+    "host": "SHITBOX-sfu-library-thinclient",
+    "cpu": "x86_64",
+    "cpu_count": 16,
+    "procs": 16,
+    "chunk": 500,
+    "python": "3.11.2",
+    "zstandard": "0.25.0",
+    "zstd": "1.5.7",
+    "zstd_level": 19,
+    "dict_size": 114688,
+    "block_target": 32768,
+    "train_docs": 20000,
+    "limit_blocks": null,
+    "hot_section": "social_sciences__recent",
+    "flat_dir": "/workspaces/sfu-library-thinclient/data/thinclient_index/sections/social_sciences__recent/abstracts.sqlite.flat",
+    "flat_store_id": "01ce8b7f-b9f3-442a-8c23-2ff5997651aa",
+    "blocks_per_bucket": {
+      "latin": 1040407,
+      "cyrillic": 11948,
+      "hangul": 3795,
+      "arabic": 3870,
+      "han": 1961,
+      "greek": 647,
+      "kana": 289
+    },
+    "shipped_dicts": {
+      "latin": {
+        "bytes": 114688,
+        "sha256": "3270ed9fb1e73312697d922760cf61e8e7da3a20b0af5d9e7ad992563016cb16"
+      },
+      "cyrillic": {
+        "bytes": 114688,
+        "sha256": "56e57355f828f5c527688dddd63b70019cf4678926474686ab5bfd98b84a9472"
+      },
+      "hangul": {
+        "bytes": 114688,
+        "sha256": "9db6a782c9d9f4e5a73fe68c42dc3723e91e5ff9a3c47fbeaa539f173882b418"
+      },
+      "arabic": {
+        "bytes": 114688,
+        "sha256": "83afa4186fb4daaf3517a2420c56a825386960de1e30e108854145d238162789"
+      },
+      "han": {
+        "bytes": 114688,
+        "sha256": "2bbab3603eeb6bf0e44a30db6de4a7b0b2b89c9cb2f76e3c11ee86bd0b6ce58b"
+      },
+      "greek": {
+        "bytes": 114688,
+        "sha256": "df04b849f789fe90e0224a1772847c90a2c21a0bf79234f853a5278562703e01"
+      },
+      "kana": {
+        "bytes": 114688,
+        "sha256": "6dc62829d3697571a510ec9ea0669adb6f1f967f6d1d5f51207883e98606faaa"
+      }
+    },
+    "shared_dict": {
+      "n_samples": 20000,
+      "n_blocks_touched": 19811,
+      "sample_bytes": 30699065,
+      "composition_by_bucket": {
+        "latin": 19766,
+        "cyrillic": 133,
+        "hangul": 45,
+        "arabic": 25,
+        "han": 26,
+        "greek": 3,
+        "kana": 2
+      },
+      "read_secs": 5.94,
+      "train_secs": 2.03,
+      "sha256": "6f728b0b42a3cef99c664825f555b0db80e10fd7524ea0adee69ef95131b3a0e",
+      "dict_id": 1259647962,
+      "path": "data/eval_results/dict_effect_at_scale_2026-10-19_shared.zdict"
+    },
+    "arms": {
+      "a_shipped": "the block's shipped per-script dictionary",
+      "b_nodict": "zstd-19, no dictionary",
+      "c_shared": "one 112 KB dictionary trained on a mixed 20k-doc sample drawn uniformly over all buckets (differs from a in two ways at once: shared vs per-script, and a uniform random sample vs each bucket's first 20k docs in ingest order)",
+      "d_latin": "the latin dictionary applied to every bucket (equals a for latin and for buckets that shipped without their own dictionary)"
+    }
+  },
+  "hot": {
+    "section": "social_sciences__recent",
+    "census": true,
+    "per_bucket": {
+      "latin": {
+        "dict_id": 0,
+        "has_own_dict": true,
+        "blocks": 1040407,
+        "docs": 23094200,
+        "raw_bytes": 35369008975,
+        "stored_bytes": 10935487704,
+        "raw_bytes_per_doc": 1531.51,
+        "arms": {
+          "a_shipped": {
+            "bytes": 10935487704,
+            "bytes_per_block": 10510.8,
+            "bytes_per_doc": 473.52,
+            "ratio_raw_over_arm": 3.2343,
+            "pct_vs_b_nodict": -17.46,
+            "decode_us_mean": 189.6,
+            "decode_us_p50": 146.0,
+            "decode_us_p99": 883.9
+          },
+          "b_nodict": {
+            "bytes": 13248202280,
+            "bytes_per_block": 12733.7,
+            "bytes_per_doc": 573.66,
+            "ratio_raw_over_arm": 2.6697,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 83.5,
+            "decode_us_p50": 69.0,
+            "decode_us_p99": 233.0
+          },
+          "c_shared": {
+            "bytes": 10793919363,
+            "bytes_per_block": 10374.7,
+            "bytes_per_doc": 467.39,
+            "ratio_raw_over_arm": 3.2768,
+            "pct_vs_b_nodict": -18.53,
+            "decode_us_mean": 86.6,
+            "decode_us_p50": 72.0,
+            "decode_us_p99": 246.0
+          },
+          "d_latin": {
+            "bytes": 10935487704,
+            "bytes_per_block": 10510.8,
+            "bytes_per_doc": 473.52,
+            "ratio_raw_over_arm": 3.2343,
+            "pct_vs_b_nodict": -17.46,
+            "decode_us_mean": 189.6,
+            "decode_us_p50": 146.0,
+            "decode_us_p99": 883.9
+          }
+        },
+        "parity": {
+          "identical": 1040407,
+          "roundtrip_ok": 1040407,
+          "blocks": 1040407
+        },
+        "encode_us_per_block_mean": 36313.7
+      },
+      "cyrillic": {
+        "dict_id": 1,
+        "has_own_dict": true,
+        "blocks": 11948,
+        "docs": 163203,
+        "raw_bytes": 415666762,
+        "stored_bytes": 96759111,
+        "raw_bytes_per_doc": 2546.93,
+        "arms": {
+          "a_shipped": {
+            "bytes": 96759111,
+            "bytes_per_block": 8098.4,
+            "bytes_per_doc": 592.88,
+            "ratio_raw_over_arm": 4.2959,
+            "pct_vs_b_nodict": -25.01,
+            "decode_us_mean": 172.4,
+            "decode_us_p50": 132.0,
+            "decode_us_p99": 895.5
+          },
+          "b_nodict": {
+            "bytes": 129034130,
+            "bytes_per_block": 10799.6,
+            "bytes_per_doc": 790.64,
+            "ratio_raw_over_arm": 3.2214,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 82.8,
+            "decode_us_p50": 69.0,
+            "decode_us_p99": 241.0
+          },
+          "c_shared": {
+            "bytes": 113856909,
+            "bytes_per_block": 9529.4,
+            "bytes_per_doc": 697.64,
+            "ratio_raw_over_arm": 3.6508,
+            "pct_vs_b_nodict": -11.76,
+            "decode_us_mean": 91.5,
+            "decode_us_p50": 74.0,
+            "decode_us_p99": 291.5
+          },
+          "d_latin": {
+            "bytes": 115933295,
+            "bytes_per_block": 9703.2,
+            "bytes_per_doc": 710.36,
+            "ratio_raw_over_arm": 3.5854,
+            "pct_vs_b_nodict": -10.15,
+            "decode_us_mean": 80.6,
+            "decode_us_p50": 64.0,
+            "decode_us_p99": 220.1
+          }
+        },
+        "parity": {
+          "identical": 11948,
+          "roundtrip_ok": 11948,
+          "blocks": 11948
+        },
+        "encode_us_per_block_mean": 53425.3
+      },
+      "hangul": {
+        "dict_id": 2,
+        "has_own_dict": true,
+        "blocks": 3795,
+        "docs": 62936,
+        "raw_bytes": 129083876,
+        "stored_bytes": 35763602,
+        "raw_bytes_per_doc": 2051.03,
+        "arms": {
+          "a_shipped": {
+            "bytes": 35763602,
+            "bytes_per_block": 9423.9,
+            "bytes_per_doc": 568.25,
+            "ratio_raw_over_arm": 3.6094,
+            "pct_vs_b_nodict": -22.18,
+            "decode_us_mean": 214.0,
+            "decode_us_p50": 147.0,
+            "decode_us_p99": 1165.5
+          },
+          "b_nodict": {
+            "bytes": 45957610,
+            "bytes_per_block": 12110.0,
+            "bytes_per_doc": 730.23,
+            "ratio_raw_over_arm": 2.8088,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 90.4,
+            "decode_us_p50": 76.0,
+            "decode_us_p99": 238.2
+          },
+          "c_shared": {
+            "bytes": 43393613,
+            "bytes_per_block": 11434.4,
+            "bytes_per_doc": 689.49,
+            "ratio_raw_over_arm": 2.9747,
+            "pct_vs_b_nodict": -5.58,
+            "decode_us_mean": 96.4,
+            "decode_us_p50": 79.0,
+            "decode_us_p99": 361.5
+          },
+          "d_latin": {
+            "bytes": 43344765,
+            "bytes_per_block": 11421.5,
+            "bytes_per_doc": 688.71,
+            "ratio_raw_over_arm": 2.9781,
+            "pct_vs_b_nodict": -5.69,
+            "decode_us_mean": 91.2,
+            "decode_us_p50": 71.0,
+            "decode_us_p99": 231.2
+          }
+        },
+        "parity": {
+          "identical": 3795,
+          "roundtrip_ok": 3795,
+          "blocks": 3795
+        },
+        "encode_us_per_block_mean": 45349.3
+      },
+      "arabic": {
+        "dict_id": 3,
+        "has_own_dict": true,
+        "blocks": 3870,
+        "docs": 36873,
+        "raw_bytes": 136291895,
+        "stored_bytes": 33324356,
+        "raw_bytes_per_doc": 3696.25,
+        "arms": {
+          "a_shipped": {
+            "bytes": 33324356,
+            "bytes_per_block": 8610.9,
+            "bytes_per_doc": 903.76,
+            "ratio_raw_over_arm": 4.0899,
+            "pct_vs_b_nodict": -22.67,
+            "decode_us_mean": 183.9,
+            "decode_us_p50": 140.0,
+            "decode_us_p99": 904.5
+          },
+          "b_nodict": {
+            "bytes": 43092769,
+            "bytes_per_block": 11135.1,
+            "bytes_per_doc": 1168.68,
+            "ratio_raw_over_arm": 3.1628,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 91.2,
+            "decode_us_p50": 71.0,
+            "decode_us_p99": 309.3
+          },
+          "c_shared": {
+            "bytes": 38515467,
+            "bytes_per_block": 9952.3,
+            "bytes_per_doc": 1044.54,
+            "ratio_raw_over_arm": 3.5386,
+            "pct_vs_b_nodict": -10.62,
+            "decode_us_mean": 102.9,
+            "decode_us_p50": 78.0,
+            "decode_us_p99": 421.7
+          },
+          "d_latin": {
+            "bytes": 38467622,
+            "bytes_per_block": 9940.0,
+            "bytes_per_doc": 1043.25,
+            "ratio_raw_over_arm": 3.543,
+            "pct_vs_b_nodict": -10.73,
+            "decode_us_mean": 81.6,
+            "decode_us_p50": 66.0,
+            "decode_us_p99": 271.2
+          }
+        },
+        "parity": {
+          "identical": 3870,
+          "roundtrip_ok": 3870,
+          "blocks": 3870
+        },
+        "encode_us_per_block_mean": 55761.4
+      },
+      "han": {
+        "dict_id": 4,
+        "has_own_dict": true,
+        "blocks": 1961,
+        "docs": 30400,
+        "raw_bytes": 68783277,
+        "stored_bytes": 22956729,
+        "raw_bytes_per_doc": 2262.61,
+        "arms": {
+          "a_shipped": {
+            "bytes": 22956729,
+            "bytes_per_block": 11706.6,
+            "bytes_per_doc": 755.16,
+            "ratio_raw_over_arm": 2.9962,
+            "pct_vs_b_nodict": -20.92,
+            "decode_us_mean": 229.1,
+            "decode_us_p50": 163.0,
+            "decode_us_p99": 1347.4
+          },
+          "b_nodict": {
+            "bytes": 29029622,
+            "bytes_per_block": 14803.5,
+            "bytes_per_doc": 954.92,
+            "ratio_raw_over_arm": 2.3694,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 100.7,
+            "decode_us_p50": 84.0,
+            "decode_us_p99": 323.0
+          },
+          "c_shared": {
+            "bytes": 26036738,
+            "bytes_per_block": 13277.3,
+            "bytes_per_doc": 856.47,
+            "ratio_raw_over_arm": 2.6418,
+            "pct_vs_b_nodict": -10.31,
+            "decode_us_mean": 123.8,
+            "decode_us_p50": 90.0,
+            "decode_us_p99": 473.8
+          },
+          "d_latin": {
+            "bytes": 26134285,
+            "bytes_per_block": 13327.0,
+            "bytes_per_doc": 859.68,
+            "ratio_raw_over_arm": 2.6319,
+            "pct_vs_b_nodict": -9.97,
+            "decode_us_mean": 103.5,
+            "decode_us_p50": 78.0,
+            "decode_us_p99": 336.2
+          }
+        },
+        "parity": {
+          "identical": 1961,
+          "roundtrip_ok": 1961,
+          "blocks": 1961
+        },
+        "encode_us_per_block_mean": 45287.2
+      },
+      "greek": {
+        "dict_id": 5,
+        "has_own_dict": true,
+        "blocks": 647,
+        "docs": 5586,
+        "raw_bytes": 23215411,
+        "stored_bytes": 4614740,
+        "raw_bytes_per_doc": 4156.0,
+        "arms": {
+          "a_shipped": {
+            "bytes": 4614740,
+            "bytes_per_block": 7132.5,
+            "bytes_per_doc": 826.13,
+            "ratio_raw_over_arm": 5.0307,
+            "pct_vs_b_nodict": -25.67,
+            "decode_us_mean": 141.9,
+            "decode_us_p50": 113.0,
+            "decode_us_p99": 1333.9
+          },
+          "b_nodict": {
+            "bytes": 6208050,
+            "bytes_per_block": 9595.1,
+            "bytes_per_doc": 1111.36,
+            "ratio_raw_over_arm": 3.7396,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 59.6,
+            "decode_us_p50": 59.0,
+            "decode_us_p99": 150.2
+          },
+          "c_shared": {
+            "bytes": 5973616,
+            "bytes_per_block": 9232.8,
+            "bytes_per_doc": 1069.39,
+            "ratio_raw_over_arm": 3.8863,
+            "pct_vs_b_nodict": -3.78,
+            "decode_us_mean": 63.7,
+            "decode_us_p50": 60.0,
+            "decode_us_p99": 149.6
+          },
+          "d_latin": {
+            "bytes": 5983814,
+            "bytes_per_block": 9248.6,
+            "bytes_per_doc": 1071.22,
+            "ratio_raw_over_arm": 3.8797,
+            "pct_vs_b_nodict": -3.61,
+            "decode_us_mean": 59.2,
+            "decode_us_p50": 56.0,
+            "decode_us_p99": 169.9
+          }
+        },
+        "parity": {
+          "identical": 647,
+          "roundtrip_ok": 647,
+          "blocks": 647
+        },
+        "encode_us_per_block_mean": 48708.3
+      },
+      "kana": {
+        "dict_id": 6,
+        "has_own_dict": true,
+        "blocks": 289,
+        "docs": 4875,
+        "raw_bytes": 10611976,
+        "stored_bytes": 2605615,
+        "raw_bytes_per_doc": 2176.82,
+        "arms": {
+          "a_shipped": {
+            "bytes": 2605615,
+            "bytes_per_block": 9016.0,
+            "bytes_per_doc": 534.49,
+            "ratio_raw_over_arm": 4.0727,
+            "pct_vs_b_nodict": -33.52,
+            "decode_us_mean": 116.9,
+            "decode_us_p50": 98.0,
+            "decode_us_p99": 579.6
+          },
+          "b_nodict": {
+            "bytes": 3919579,
+            "bytes_per_block": 13562.6,
+            "bytes_per_doc": 804.02,
+            "ratio_raw_over_arm": 2.7074,
+            "pct_vs_b_nodict": 0.0,
+            "decode_us_mean": 70.0,
+            "decode_us_p50": 59.0,
+            "decode_us_p99": 123.1
+          },
+          "c_shared": {
+            "bytes": 3678492,
+            "bytes_per_block": 12728.3,
+            "bytes_per_doc": 754.56,
+            "ratio_raw_over_arm": 2.8849,
+            "pct_vs_b_nodict": -6.15,
+            "decode_us_mean": 73.6,
+            "decode_us_p50": 62.0,
+            "decode_us_p99": 206.1
+          },
+          "d_latin": {
+            "bytes": 3688940,
+            "bytes_per_block": 12764.5,
+            "bytes_per_doc": 756.71,
+            "ratio_raw_over_arm": 2.8767,
+            "pct_vs_b_nodict": -5.88,
+            "decode_us_mean": 60.9,
+            "decode_us_p50": 56.0,
+            "decode_us_p99": 106.6
+          }
+        },
+        "parity": {
+          "identical": 289,
+          "roundtrip_ok": 289,
+          "blocks": 289
+        },
+        "encode_us_per_block_mean": 29388.1
+      }
+    },
+    "totals": {
+      "blocks": 1062917,
+      "docs": 23398073,
+      "raw_bytes": 36152662172,
+      "stored_bytes": 11131511857,
+      "raw_bytes_per_doc": 1545.11,
+      "arms": {
+        "a_shipped": {
+          "bytes": 11131511857,
+          "gb": 11.132,
+          "bytes_per_doc": 475.74,
+          "ratio_raw_over_arm": 3.2478,
+          "pct_vs_b_nodict": -17.58,
+          "saved_vs_b_nodict_bytes": 2373932183,
+          "decode_us_mean": 189.5,
+          "decode_us_p50": 146.0,
+          "decode_us_p99": 885.0
+        },
+        "b_nodict": {
+          "bytes": 13505444040,
+          "gb": 13.505,
+          "bytes_per_doc": 577.2,
+          "ratio_raw_over_arm": 2.6769,
+          "pct_vs_b_nodict": 0.0,
+          "saved_vs_b_nodict_bytes": 0,
+          "decode_us_mean": 83.5,
+          "decode_us_p50": 69.0,
+          "decode_us_p99": 233.0
+        },
+        "c_shared": {
+          "bytes": 11025374198,
+          "gb": 11.025,
+          "bytes_per_doc": 471.21,
+          "ratio_raw_over_arm": 3.279,
+          "pct_vs_b_nodict": -18.36,
+          "saved_vs_b_nodict_bytes": 2480069842,
+          "decode_us_mean": 86.8,
+          "decode_us_p50": 72.0,
+          "decode_us_p99": 248.0
+        },
+        "d_latin": {
+          "bytes": 11169040425,
+          "gb": 11.169,
+          "bytes_per_doc": 477.35,
+          "ratio_raw_over_arm": 3.2369,
+          "pct_vs_b_nodict": -17.3,
+          "saved_vs_b_nodict_bytes": 2336403615,
+          "decode_us_mean": 187.3,
+          "decode_us_p50": 146.0,
+          "decode_us_p99": 874.0
+        }
+      }
+    },
+    "parity": {
+      "blocks": 1062917,
+      "identical_to_store": 1062917,
+      "roundtrip_ok": 1062917,
+      "stored_bytes_equal_arm_a": true,
+      "non_identical_blocks_first_20": [],
+      "roundtrip_failures_first_20": [],
+      "criterion": "pass requires every block's recompression with its shipped dictionary to equal the stored bytes; roundtrip_ok is reported as the weaker fallback",
+      "pass": true,
+      "roundtrip_pass": true
+    },
+    "wall_secs_incl_load_and_train": 2546.5,
+    "docs_in_measured_blocks": 23398073,
+    "locator": {
+      "rows": 23398073,
+      "skipped_non_wid": 0,
+      "built_utc": "2026-08-17T01:15:06"
+    },
+    "build_status_abstracts_stored": 26322924,
+    "doc_count_note": "build_status abstracts_stored counts every add() including re-adds whose blocks finish() later deleted (the empty slots); the locator rows are the served docs",
+    "decode_timing_note": "measured under full 16-thread zstd-19 compression load, not serving latency; dec_us_d equals dec_us_a for latin-dict blocks",
+    "decode_us_capped_at_65535": {
+      "a_shipped": 0,
+      "b_nodict": 2,
+      "c_shared": 0,
+      "d_latin": 0
+    },
+    "per_block_rows": "data/eval_results/dict_effect_at_scale_2026-10-19_hot_blocks.npz"
+  },
+  "whole_database_projection": {
+    "basis": "every block of the hot section (census: no sampling interval)",
+    "hot_section_docs": 23398073,
+    "corpus_docs": 150413098,
+    "method": "arm bytes_per_doc from the hot section x 150,413,098 docs; est. \u2014 assumes the whole corpus has the hot section's script mix and raw bytes/doc",
+    "interval": null,
+    "interval_note": "no cold-section abstract blocks exist to sample (see cold_sections), so no bootstrap interval is possible; the hot figure is exact",
+    "arms_gb_at_150m_est": {
+      "a_shipped": 71.56,
+      "b_nodict": 86.82,
+      "c_shared": 70.88,
+      "d_latin": 71.8
+    },
+    "dict_saving_vs_nodict_gb_at_150m_est": 15.26,
+    "prior_projection_2026_06_11": {
+      "claim": "64.7 -> 52.9 GB at 150M (351.8 B/doc from a 20k sample)",
+      "measured_hot_a_shipped_bytes_per_doc": 475.74,
+      "measured_hot_raw_bytes_per_doc": 1545.11,
+      "sample_raw_bytes_per_doc_2026_06_11": 1203
+    }
+  },
+  "timings": {
+    "hot_wall_secs": 2546.5,
+    "shared_dict_train_secs": 2.03,
+    "total_wall_secs": 2551.1
+  },
+  "cold_sections": {
+    "date": "2026-10-19",
+    "scan_secs": 1011.1,
+    "status": "NOT MEASURABLE: every packed section was built with abstracts_stored == 0 (cold policy: no sidecar), so there are no cold blocks to sample",
+    "any_abstract_blocks": false,
+    "any_scan_error": false,
+    "sections": {
+      "cs_math__archive": {
+        "archive": "data/thinclient_index/packed/cs_math__archive.tar.zst",
+        "archive_bytes": 183482886,
+        "build_status_docs": 482528,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 28,
+        "member_bytes_total": 359664223,
+        "abstract_members": [],
+        "scan_secs": 2.0,
+        "abstract_blocks_available": false
+      },
+      "cs_math__recent": {
+        "archive": "data/thinclient_index/packed/cs_math__recent.tar.zst",
+        "archive_bytes": 7662315676,
+        "build_status_docs": 22279259,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 90,
+        "member_bytes_total": 14589999471,
+        "abstract_members": [],
+        "scan_secs": 163.1,
+        "abstract_blocks_available": false
+      },
+      "med_bio__archive": {
+        "archive": "data/thinclient_index/packed/med_bio__archive.tar.zst",
+        "archive_bytes": 75710202,
+        "build_status_docs": 149551,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 28,
+        "member_bytes_total": 151958860,
+        "abstract_members": [],
+        "scan_secs": 1.4,
+        "abstract_blocks_available": false
+      },
+      "med_bio__recent": {
+        "archive": "data/thinclient_index/packed/med_bio__recent.tar.zst",
+        "archive_bytes": 9446596934,
+        "build_status_docs": 23279830,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 120,
+        "member_bytes_total": 17661831669,
+        "abstract_members": [],
+        "scan_secs": 215.7,
+        "abstract_blocks_available": false
+      },
+      "other__archive": {
+        "archive": "data/thinclient_index/packed/other__archive.tar.zst",
+        "archive_bytes": 1230214305,
+        "build_status_docs": 2907826,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 64,
+        "member_bytes_total": 2422289110,
+        "abstract_members": [],
+        "scan_secs": 32.0,
+        "abstract_blocks_available": false
+      },
+      "other__recent": {
+        "archive": "data/thinclient_index/packed/other__recent.tar.zst",
+        "archive_bytes": 19385124674,
+        "build_status_docs": 54912186,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 190,
+        "member_bytes_total": 36053531973,
+        "abstract_members": [],
+        "scan_secs": 440.6,
+        "abstract_blocks_available": false
+      },
+      "phys_eng__archive": {
+        "archive": "data/thinclient_index/packed/phys_eng__archive.tar.zst",
+        "archive_bytes": 78350743,
+        "build_status_docs": 164376,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 28,
+        "member_bytes_total": 157174231,
+        "abstract_members": [],
+        "scan_secs": 2.8,
+        "abstract_blocks_available": false
+      },
+      "phys_eng__recent": {
+        "archive": "data/thinclient_index/packed/phys_eng__recent.tar.zst",
+        "archive_bytes": 6536274130,
+        "build_status_docs": 22061449,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 108,
+        "member_bytes_total": 12217328911,
+        "abstract_members": [],
+        "scan_secs": 145.6,
+        "abstract_blocks_available": false
+      },
+      "social_sciences__archive": {
+        "archive": "data/thinclient_index/packed/social_sciences__archive.tar.zst",
+        "archive_bytes": 377175874,
+        "build_status_docs": 778020,
+        "build_status_abstracts_stored": 0,
+        "build_status_hot": false,
+        "live_dir_entries": [
+          "tantivy"
+        ],
+        "scan_error": null,
+        "members": 28,
+        "member_bytes_total": 711484905,
+        "abstract_members": [],
+        "scan_secs": 7.6,
+        "abstract_blocks_available": false
+      }
+    },
+    "file": "data/eval_results/dict_effect_at_scale_2026-10-19_cold_scan.json"
+  }
+}

@@ -1,0 +1,8 @@
+{"paragraph": "On the served social-sciences section the per-script zstd dictionaries reduce the stored abstract sidecar by 17.6 % relative to compressing the same blocks with no dictionary, a saving of about 2.37 GB.", "label": "ok", "note": "matches dict_effect_at_scale_2026-10-19 hot.totals (-17.58 %, 2.374 GB)"}
+{"paragraph": "On the served social-sciences section the per-script zstd dictionaries reduce the stored abstract sidecar by 25 % relative to compressing the same blocks with no dictionary.", "label": "drifted", "note": "number drift: measured -17.58 %"}
+{"paragraph": "Projected over the full 150M-work corpus the abstract sidecar is estimated at 71.6 GB with dictionaries, versus 86.8 GB without them.", "label": "ok", "note": "matches whole_database_projection"}
+{"paragraph": "Projected over the full 150M-work corpus the abstract sidecar is estimated at about 60 GB with dictionaries.", "label": "drifted", "note": "number drift: 71.56 GB est."}
+{"paragraph": "Dictionary compression also makes decoding faster than the no-dictionary baseline, so it is a pure win for serving latency.", "label": "drifted", "note": "meaning drift: measured decode_us_mean is 189.5 (dict) vs 83.5 (no dict); decode is slower with dictionaries"}
+{"paragraph": "At 100 rows the Lance fetch was 1.72x slower than SQLite at p50 on the 20M-row fixture.", "label": "ok", "note": "c5_lance_vs_sqlite"}
+{"paragraph": "Building the 20M-document SEISMIC index took 1021.76 s with a peak RSS of 9.5 GB.", "label": "ok", "note": "seismic_build_scale_20m"}
+{"paragraph": "The pilot will be run on three writers during November and we expect it to be well received.", "label": "ok", "note": "not checkable: plan + opinion, must not be flagged"}

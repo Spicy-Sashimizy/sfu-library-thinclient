@@ -1,0 +1,62 @@
+{
+ "date": "2026-09-25",
+ "torch_threads": 8,
+ "cross_encoder": {
+  "model": "CrossEncoder",
+  "arms": [
+   {
+    "arm": "B_full_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 7.033348083496094e-06,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 1.9073486328125e-06,
+    "ranking_changed": false
+   },
+   {
+    "arm": "D_reversed_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 7.033348083496094e-06,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_vs_B_full",
+    "bit_identical": true,
+    "max_abs_diff": 0.0,
+    "ranking_changed": false
+   }
+  ]
+ },
+ "stage1_embedding": {
+  "model": "/workspaces/sfu-library-thinclient/models/sfu-academic-embed-v5",
+  "arms": [
+   {
+    "arm": "B_full_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 1.7881393432617188e-07,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 1.1920928955078125e-07,
+    "ranking_changed": false
+   },
+   {
+    "arm": "D_reversed_batch_vs_alone",
+    "bit_identical": false,
+    "max_abs_diff": 1.7881393432617188e-07,
+    "ranking_changed": false
+   },
+   {
+    "arm": "C_mixed_vs_B_full",
+    "bit_identical": false,
+    "max_abs_diff": 1.7881393432617188e-07,
+    "ranking_changed": false
+   }
+  ]
+ }
+}

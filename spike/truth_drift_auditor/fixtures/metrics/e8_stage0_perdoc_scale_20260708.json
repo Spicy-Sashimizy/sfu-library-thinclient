@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "date": "2026-07-08",
+    "script": "scripts/seismic_testbed/e8_stage0_perdoc_scale.py",
+    "lineage": "e6b_fixedu8_quality.py (E6 phase C method)",
+    "n_queries": 100,
+    "k_prime": 200,
+    "shards": [
+      "global_shard1of8.mmap",
+      "global_shard2of8.mmap"
+    ],
+    "bars": "perdoc ov@10 >= fixedu8 AND >= 0.99 on both shards -> GO; below fixedu8 -> KILL (12_EXECUTION_ROADMAP.md Q1)",
+    "wall_seconds": 302.2
+  },
+  "shards": {
+    "global_shard1of8.mmap": {
+      "perdoc": {
+        "overlap@10_mean": 0.997,
+        "overlap@10_min": 0.9,
+        "overlap@50_mean": 0.9962
+      },
+      "fixedu8": {
+        "overlap@10_mean": 0.985,
+        "overlap@10_min": 0.9,
+        "overlap@50_mean": 0.992
+      }
+    },
+    "global_shard2of8.mmap": {
+      "perdoc": {
+        "overlap@10_mean": 0.993,
+        "overlap@10_min": 0.9,
+        "overlap@50_mean": 0.9964
+      },
+      "fixedu8": {
+        "overlap@10_mean": 0.984,
+        "overlap@10_min": 0.9,
+        "overlap@50_mean": 0.992
+      }
+    }
+  },
+  "verdict": {
+    "perdoc_ge_fixedu8_both_shards": true,
+    "perdoc_ge_0.99_both_shards": true,
+    "e8_stage0": "GO"
+  }
+}

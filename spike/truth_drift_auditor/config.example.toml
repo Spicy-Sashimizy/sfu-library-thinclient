@@ -1,0 +1,107 @@
+# truth_drift_auditor — pilot configuration. Copy to config.toml and edit.
+# Paths are relative to this file. Secrets come from the environment (.env.example).
+
+[metrics]
+# The numerical technical base of truth: a directory of measured-results JSON files.
+# Shipped with copies of six thin-client data/eval_results files (fixtures/metrics/MANIFEST.md).
+directory = "fixtures/metrics"
+
+# phrase -> metrics path aliases. A sentence that mentions the phrase and a number with the
+# unit is compared against the measured value. Prefix phrase with "re:" for a regex.
+[[metrics.aliases]]
+phrase = "re:dictionar\\w+.*(served|hot)[\\w\\s-]*section|(served|hot)[\\w\\s-]*section.*dictionar\\w+"
+path = "dict_effect_at_scale_2026-10-19:hot.totals.arms.a_shipped.pct_vs_b_nodict"
+unit = "%"
+tolerance_rel = 0.02
+note = "per-script zstd dictionaries vs no dictionary, social_sciences__recent census 2026-10-19"
+
+[[metrics.aliases]]
+phrase = "re:dictionar\\w+ save"
+path = "dict_effect_at_scale_2026-10-19:hot.totals.arms.a_shipped.gb"
+unit = "GB"
+tolerance_rel = 0.03
+note = "stored bytes with shipped dictionaries on the served section (11.132 GB)"
+
+[[metrics.aliases]]
+phrase = "re:sidecar.*150\\s?M.*dictionar|150\\s?M.*sidecar.*dictionar"
+path = "dict_effect_at_scale_2026-10-19:whole_database_projection.arms_gb_at_150m_est.a_shipped"
+unit = "GB"
+tolerance_rel = 0.02
+note = "71.56 GB est. at 150M with dictionaries"
+
+[[metrics.aliases]]
+phrase = "re:(without|no)[\\s-]?dictionar\\w+.*150\\s?M|150\\s?M.*(without|no)[\\s-]?dictionar"
+path = "dict_effect_at_scale_2026-10-19:whole_database_projection.arms_gb_at_150m_est.b_nodict"
+unit = "GB"
+tolerance_rel = 0.02
+
+[[metrics.aliases]]
+phrase = "re:lance.*(over|versus|vs).*sqlite|sqlite.*(over|versus|vs).*lance"
+path = "c5_lance_vs_sqlite_20260802_0636:results.100.lance_over_sqlite"
+unit = "x"
+tolerance_rel = 0.05
+note = "Lance/SQLite p50 ratio at 100 rows (1.72x)"
+
+[[metrics.aliases]]
+phrase = "re:20\\s?M.*build|build.*20\\s?M"
+path = "seismic_build_scale_20m:build_seconds"
+unit = "s"
+tolerance_rel = 0.02
+note = "SEISMIC 20M build 1021.76 s"
+
+[[metrics.aliases]]
+phrase = "re:peak (rss|memory).*20\\s?M|20\\s?M.*peak (rss|memory)"
+path = "seismic_build_scale_20m:peak_rss_gb"
+unit = "GB"
+tolerance_rel = 0.03
+
+[corpus]
+# Directory of .md/.txt files searched by the dependency-free local retriever
+# (your literature review as text). Always on when the directory exists.
+local_text_dir = "fixtures/corpus"
+min_hits_before_fallback = 1
+
+[corpus.paperqa]
+# PaperQA2 over PDFs (Zotero attachments + the lit review). Off by default; needs
+# `pip install 'paper-qa[zotero,local]'` and ANTHROPIC_API_KEY (or a local model).
+enabled = false
+llm = "claude-haiku-5-5"
+embedding = "sparse"            # "sparse" = keyword only; "st-all-MiniLM-L6-v2" = local dense; hybrid-<model>
+documents_dir = "corpus_pdfs"   # create and drop PDFs / the lit review here
+skip_summary = true             # true = retrieval stays model-free (no per-chunk LLM summary); false = PaperQA2 default
+zotero = false                  # true -> also pull PDFs from the Zotero web API (ZOTERO_USER_ID, ZOTERO_API_KEY)
+zotero_limit = 200
+
+[thinclient]
+# Optional second evidence leg: the SFU library thin client's POST /api/search.
+# Off by default. See docs/03_THIN_CLIENT_INTERFACE.md. Nothing here imports the thin client.
+enabled = false
+base_url = "http://localhost:8788"
+# year_from = 2020
+# year_to = 2026
+
+[tier1]
+model = "claude-haiku-5-5"
+effort = "low"
+evidence_k = 5
+
+[tier2]
+model = "claude-fable-5-1"
+max_turns = 12
+# mcp_config = "mcp.tier2.json"   # optional: give the reviewer PaperQA2 / thin-client tools
+# allowed_tools = ["Read", "Bash(vale *)"]
+
+[escalation]
+low_confidence = 0.7
+min_contradicted_in_window = 2
+window = 5
+numeric_mismatch_escalates = false
+
+[vale]
+enabled = true
+# config = "vale/.vale.ini"
+
+[google]
+credentials_json = "secrets/credentials.json"
+token_json = "secrets/token.json"
+poll_interval_s = 4.0

@@ -1,0 +1,9 @@
+# Core (tier 1 + metrics + local retriever). Python >= 3.11 (tomllib).
+anthropic>=0.102
+# Google Docs watcher
+google-api-python-client>=2.150
+google-auth-oauthlib>=1.2
+# Evidence over PDFs / Zotero (optional, heavy):
+# paper-qa[zotero,local]>=5
+# Tests
+pytest>=8
