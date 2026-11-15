@@ -1238,7 +1238,16 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
   basename. Items that already have a PDF child are skipped unless
   `force=true`. The API key needs file-write access. Pinned by
   `test_tools_unit.py::TestAttachPdfToZotero` and
-  `test_zotero.py::TestPdfAttachment`. `sfu_databases.py`: domain matching tries the parent domain
+  `test_zotero.py::TestPdfAttachment`.
+- `save_to_zotero` `item_type` (2026-11-15): when given, it is validated
+  against `fetch_zotero_item_types()` (refused before any write if unknown;
+  accepted unchecked only if the type list is unreachable) and stored as
+  `metadata["zotero_item_type"]`, which `metadata_to_zotero_item` uses
+  verbatim ahead of the OpenAlex `resource_type` mapping, for DOI and manual
+  saves alike. The schema carries no `default` for `item_type` on purpose:
+  a client that auto-fills defaults would otherwise force every DOI save to
+  `document`. Omitted ⇒ DOI saves keep the looked-up type, manual saves fall
+  back to `document`. Pinned by `test_tools_unit.py::TestSaveItemTypeOverride`. `sfu_databases.py`: domain matching tries the parent domain
   (`journals.sagepub.com` → `sagepub.com`).
 
 ## source/tests — conventions & pinned invariants

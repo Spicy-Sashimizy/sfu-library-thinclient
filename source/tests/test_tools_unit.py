@@ -477,3 +477,49 @@ class TestAttachPdfToZotero:
         key, path = zot.attach_file.call_args.args
         assert key == "K1" and path.endswith("/FIC paper.pdf")
         assert "PDF ATTACHED TO ZOTERO" in result[0].text
+
+
+class TestSaveItemTypeOverride:
+    """2026-11-15: an explicit item_type overrides the type OpenAlex reports for a DOI."""
+
+    @pytest.fixture
+    def zot(self):
+        from unittest.mock import MagicMock
+        client = MagicMock()
+        client.check_duplicate.return_value = {"is_duplicate": False}
+        client.metadata_to_zotero_item.side_effect = lambda m: {"itemType": m.get("zotero_item_type") or "journalArticle"}
+        client.create_item.return_value = "NEWKEY"
+        work = {"title": "Forward Index Compression", "authors": ["Bruch, Sebastian"], "resource_type": "preprint"}
+
+        async def fake_fetch(doi):
+            return dict(work)
+
+        with patch("lib.tools._ensure_zotero_auth", return_value=None), \
+             patch("lib.tools._get_zotero_client", return_value=client), \
+             patch("lib.tools._get_features", return_value={}), \
+             patch("lib.tools._fetch_work_metadata", side_effect=fake_fetch), \
+             patch("lib.tools.enrich_metadata_from_crossref", side_effect=lambda m: m), \
+             patch("lib.tools.fetch_zotero_item_types", return_value=["bookSection", "preprint", "document"]):
+            yield client
+
+    @pytest.mark.asyncio
+    async def test_doi_save_uses_requested_type(self, zot):
+        result = await handle_tool_call("save_to_zotero", {"doi": "10.1007/x", "item_type": "bookSection"})
+        assert zot.metadata_to_zotero_item.call_args.args[0]["zotero_item_type"] == "bookSection"
+        assert "NEWKEY" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_doi_save_without_type_keeps_lookup(self, zot):
+        await handle_tool_call("save_to_zotero", {"doi": "10.1007/x"})
+        assert "zotero_item_type" not in zot.metadata_to_zotero_item.call_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_unknown_type_refused_before_write(self, zot):
+        result = await handle_tool_call("save_to_zotero", {"doi": "10.1007/x", "item_type": "chapterish"})
+        assert result[0].text.startswith("'chapterish' is not a Zotero item type.")
+        zot.create_item.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_manual_save_honours_exact_type(self, zot):
+        await handle_tool_call("save_to_zotero", {"title": "A preprint", "item_type": "preprint"})
+        assert zot.metadata_to_zotero_item.call_args.args[0]["zotero_item_type"] == "preprint"

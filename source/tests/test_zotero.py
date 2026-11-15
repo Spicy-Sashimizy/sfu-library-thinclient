@@ -228,6 +228,15 @@ class TestInvalidFieldFiltering:
         assert item["volume"] == "521"
         assert "ISBN" not in item
 
+    def test_explicit_zotero_item_type_overrides_resource_type(self, zot_client):
+        item = zot_client.metadata_to_zotero_item({
+            "title": "GRIP", "resource_type": "article", "zotero_item_type": "preprint",
+            "source": "arXiv (Cornell University)", "issn": "2331-8422",
+        })
+        assert item["itemType"] == "preprint"
+        assert item["repository"] == "arXiv (Cornell University)"
+        assert "ISSN" not in item and "publicationTitle" not in item
+
     def test_schema_unavailable_drops_only_empty_fields(self, zot_client, zotero_schema):
         zotero_schema.side_effect = lambda item_type: None
         item = zot_client.metadata_to_zotero_item({

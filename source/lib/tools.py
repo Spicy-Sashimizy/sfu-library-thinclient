@@ -647,9 +647,10 @@ TOOL_DEFINITIONS: list[Tool] = [
                     "type": "string",
                     "description": (
                         "Any valid Zotero item type, e.g. 'journalArticle', 'computerProgram', "
-                        "'thesis', 'blogPost'. Full list: https://api.zotero.org/itemTypes"
+                        "'thesis', 'blogPost'. Full list: https://api.zotero.org/itemTypes. "
+                        "When given, it overrides the type looked up from the DOI; omit it to keep that type "
+                        "(manual saves without a DOI default to 'document')."
                     ),
-                    "default": "document",
                 },
                 "journal": {"type": "string", "description": "Journal or publication name (articles)"},
                 "publisher": {"type": "string", "description": "Publisher or studio name"},
@@ -852,9 +853,10 @@ async def get_tool_definitions() -> list[Tool]:
         "description": (
             f"Any valid Zotero item type ({len(item_types)} types fetched live from "
             "https://api.zotero.org/itemTypes). "
-            "E.g. 'journalArticle', 'computerProgram', 'thesis', 'blogPost'."
+            "E.g. 'journalArticle', 'computerProgram', 'thesis', 'blogPost'. "
+            "When given, it overrides the type looked up from the DOI; omit it to keep that type "
+            "(manual saves without a DOI default to 'document')."
         ),
-        "default": "document",
     }
 
     patched: list[Tool] = []
@@ -1823,6 +1825,15 @@ async def _handle_save_to_zotero(args: dict) -> list[TextContent]:
         metadata = _build_manual_metadata(args)
     else:
         return [TextContent(type="text", text="Provide a DOI or at minimum a title to save to Zotero.")]
+
+    requested_type = (args.get("item_type") or "").strip()
+    if requested_type:
+        valid_types = await asyncio.get_event_loop().run_in_executor(None, fetch_zotero_item_types)
+        if valid_types and requested_type not in valid_types:
+            return [TextContent(type="text", text=(
+                f"'{requested_type}' is not a Zotero item type. Valid types: {', '.join(sorted(valid_types))}"
+            ))]
+        metadata["zotero_item_type"] = requested_type
     zot = _get_zotero_client()
 
     try:

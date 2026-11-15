@@ -335,7 +335,7 @@ class ZoteroClient:
             "dissertation": "thesis",
             "other": "document",
         }
-        item_type = type_map.get(resource_type, "document")
+        item_type = metadata.get("zotero_item_type") or type_map.get(resource_type, "document")
 
         authors = metadata.get("authors") or metadata.get("creators", [])
         creators = [self._parse_author_name(a) for a in authors]
