@@ -7,7 +7,8 @@ import pytest
 
 from lib.config import ServerConfig
 from lib.retry import CircuitBreaker
-from lib.zotero import ZoteroClient, ZoteroError
+from lib import zotero as zotero_mod
+from lib.zotero import ZoteroClient, ZoteroError, fetch_zotero_item_type_fields
 
 
 @pytest.fixture
@@ -27,6 +28,35 @@ def mock_pyzotero():
         mock_instance = MagicMock()
         mock_zot.return_value = mock_instance
         yield mock_instance
+
+
+ZOTERO_FIELDS_2026_11_15 = {
+    "document": ["title", "abstractNote", "type", "date", "publisher", "place", "DOI", "citationKey",
+                 "url", "accessDate", "archive", "archiveLocation", "shortTitle", "language",
+                 "libraryCatalog", "callNumber", "rights", "extra"],
+    "preprint": ["title", "abstractNote", "genre", "repository", "archiveID", "place", "date", "series",
+                 "seriesNumber", "DOI", "citationKey", "url", "accessDate", "archive", "archiveLocation",
+                 "shortTitle", "language", "libraryCatalog", "callNumber", "rights", "extra"],
+    "journalArticle": ["title", "abstractNote", "publicationTitle", "publisher", "place", "date", "volume",
+                       "issue", "section", "partNumber", "partTitle", "pages", "series", "seriesTitle",
+                       "seriesText", "journalAbbreviation", "DOI", "citationKey", "url", "accessDate",
+                       "PMID", "PMCID", "ISSN", "archive", "archiveLocation", "shortTitle", "language",
+                       "libraryCatalog", "callNumber", "rights", "extra"],
+    "book": ["title", "abstractNote", "series", "seriesNumber", "volume", "numberOfVolumes", "edition",
+             "date", "publisher", "place", "originalDate", "originalPublisher", "originalPlace", "format",
+             "numPages", "ISBN", "DOI", "citationKey", "url", "accessDate", "ISSN", "archive",
+             "archiveLocation", "shortTitle", "language", "libraryCatalog", "callNumber", "rights", "extra"],
+}
+
+
+@pytest.fixture(autouse=True)
+def zotero_schema():
+    """Serve item-type fields from a snapshot of api.zotero.org/itemTypeFields (fetched 2026-11-15)."""
+    def fake(item_type):
+        fields = ZOTERO_FIELDS_2026_11_15.get(item_type)
+        return frozenset(fields) if fields else None
+    with patch("lib.zotero.fetch_zotero_item_type_fields", side_effect=fake) as m:
+        yield m
 
 
 @pytest.fixture
@@ -162,6 +192,64 @@ class TestMetadataToZoteroItem:
         }
         item = zot_client.metadata_to_zotero_item(metadata)
         assert "https://openalex.org/W123" in item["extra"]
+
+
+class TestInvalidFieldFiltering:
+    """Regression: `'ISSN' is not a valid field for type 'document'` (seen 2026-11-14)."""
+
+    def test_document_drops_issn_and_journal_fields(self, zot_client):
+        item = zot_client.metadata_to_zotero_item({
+            "title": "Some Report", "authors": ["Doe, Jane"], "resource_type": "other",
+            "issn": "1234-5678", "volume": "3", "issue": "2", "pages": "1-9",
+            "source": "Somewhere", "doi": "10.1/abc",
+        })
+        assert item["itemType"] == "document"
+        for bad in ("ISSN", "ISBN", "volume", "issue", "pages", "publicationTitle"):
+            assert bad not in item
+        assert item["DOI"] == "10.1/abc"
+        assert item["creators"][0]["lastName"] == "Doe"
+
+    def test_openalex_preprint_maps_to_zotero_preprint(self, zot_client):
+        item = zot_client.metadata_to_zotero_item({
+            "title": "Bridging Dense and Sparse MIPS", "authors": ["Chen, Tao"],
+            "resource_type": "preprint", "source": "arXiv (Cornell University)",
+            "issn": "2331-8422", "volume": "", "doi": "10.48550/arxiv.2501.00001",
+        })
+        assert item["itemType"] == "preprint"
+        assert item["repository"] == "arXiv (Cornell University)"
+        assert "ISSN" not in item and "volume" not in item
+
+    def test_journal_article_keeps_issn(self, zot_client):
+        item = zot_client.metadata_to_zotero_item({
+            "title": "Deep Learning", "resource_type": "article", "source": "Nature",
+            "issn": "0028-0836", "volume": "521",
+        })
+        assert item["ISSN"] == "0028-0836"
+        assert item["volume"] == "521"
+        assert "ISBN" not in item
+
+    def test_schema_unavailable_drops_only_empty_fields(self, zot_client, zotero_schema):
+        zotero_schema.side_effect = lambda item_type: None
+        item = zot_client.metadata_to_zotero_item({
+            "title": "X", "resource_type": "other", "issn": "", "doi": "10.1/x",
+        })
+        assert "ISSN" not in item
+        assert item["DOI"] == "10.1/x"
+
+
+class TestFetchItemTypeFields:
+    def test_fetch_caches_and_falls_back(self, monkeypatch):
+        monkeypatch.setattr(zotero_mod, "_item_type_fields_cache", {})
+        resp = MagicMock()
+        resp.json.return_value = [{"field": "title"}, {"field": "DOI"}]
+        with patch("lib.zotero.requests.get", return_value=resp) as get:
+            assert fetch_zotero_item_type_fields("document") == frozenset({"title", "DOI"})
+            assert fetch_zotero_item_type_fields("document") == frozenset({"title", "DOI"})
+            assert get.call_count == 1
+        with patch("lib.zotero.requests.get", side_effect=OSError("offline")):
+            assert fetch_zotero_item_type_fields("preprint") is None
+            monkeypatch.setattr(zotero_mod, "_ITEM_TYPES_TTL", -1)
+            assert fetch_zotero_item_type_fields("document") == frozenset({"title", "DOI"})
 
 
 class TestDuplicateDetection:

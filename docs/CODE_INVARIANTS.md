@@ -1213,7 +1213,20 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
   `list_zotero_collections`, `verify_credentials` backs `get_zotero_status`,
   and the save path (`find_or_create_collection`, `ensure_authenticated`,
   `check_duplicate`) shares `_format_item` / `format_item_summary`. Read-tool
-  `limit` is clamped to 100 in `tools.py`. `sfu_databases.py`: domain matching tries the parent domain
+  `limit` is clamped to 100 in `tools.py`.
+- `zotero.py` (2026-11-15): every item `metadata_to_zotero_item` returns goes
+  through `drop_invalid_fields`, which keeps only the fields
+  `https://api.zotero.org/itemTypeFields?itemType=<type>` lists for that type
+  (cached 24 h per type, previous entry reused on network error) plus
+  `itemType` / `creators` / `tags` / `collections` / `relations`. If a type's
+  field list was never fetched, it drops only empty-valued fields. This fixes
+  `'ISSN' is not a valid field for type 'document'` (2026-11-14): the mapper
+  sets `ISSN` / `ISBN` / `volume` / `issue` for every type, and the API rejects
+  the whole item on one invalid field. OpenAlex `preprint` maps to Zotero
+  `preprint` (source → `repository`) and `dissertation` to `thesis`; they used
+  to fall through to `document`. Pinned by `source/tests/test_zotero.py::
+  TestInvalidFieldFiltering` / `TestFetchItemTypeFields`, which use a
+  2026-11-15 snapshot of the endpoint instead of the network. `sfu_databases.py`: domain matching tries the parent domain
   (`journals.sagepub.com` → `sagepub.com`).
 
 ## source/tests — conventions & pinned invariants

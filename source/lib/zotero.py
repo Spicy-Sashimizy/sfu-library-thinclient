@@ -50,6 +50,56 @@ def fetch_zotero_item_types() -> list[str]:
         return _item_types_cache
 
 
+_item_type_fields_cache: dict[str, tuple[float, frozenset[str]]] = {}
+_ITEM_BASE_KEYS = frozenset({"itemType", "creators", "tags", "collections", "relations"})
+
+
+def fetch_zotero_item_type_fields(item_type: str) -> frozenset[str] | None:
+    """Return the field names Zotero accepts for `item_type` (public API, no auth).
+
+    Cached per type for 24 hours. Falls back to the previous cache entry on
+    network error; returns None if this type's fields have never been fetched.
+    """
+    with _item_types_lock:
+        now = time.time()
+        cached = _item_type_fields_cache.get(item_type)
+        if cached and now - cached[0] < _ITEM_TYPES_TTL:
+            return cached[1]
+        try:
+            resp = requests.get(
+                "https://api.zotero.org/itemTypeFields",
+                params={"itemType": item_type},
+                timeout=10,
+            )
+            resp.raise_for_status()
+            fields = frozenset(entry["field"] for entry in resp.json())
+            _item_type_fields_cache[item_type] = (now, fields)
+            return fields
+        except Exception as e:
+            logger.warning("Could not fetch Zotero fields for %s: %s", item_type, e)
+            return cached[1] if cached else None
+
+
+def drop_invalid_fields(item: dict) -> dict:
+    """Remove fields Zotero rejects for the item's type.
+
+    Uses the live per-type field list; when it is unavailable, drops only
+    empty-valued fields so blank defaults (ISSN, volume, ...) never reach the API.
+    """
+    allowed = fetch_zotero_item_type_fields(item.get("itemType", ""))
+    dropped = []
+    for key in list(item):
+        if key in _ITEM_BASE_KEYS:
+            continue
+        if (allowed is not None and key not in allowed) or (allowed is None and item[key] in ("", None)):
+            if item[key] not in ("", None):
+                dropped.append(key)
+            del item[key]
+    if dropped:
+        logger.info("Dropped fields invalid for %s: %s", item.get("itemType"), ", ".join(dropped))
+    return item
+
+
 class ZoteroError(Exception):
     """Raised when a Zotero API operation fails."""
     pass
@@ -230,6 +280,8 @@ class ZoteroClient:
             "audio": "audioRecording",
             "patent": "patent",
             "presentation": "presentation",
+            "preprint": "preprint",
+            "dissertation": "thesis",
             "other": "document",
         }
         item_type = type_map.get(resource_type, "document")
@@ -309,6 +361,10 @@ class ZoteroClient:
             item["repository"] = metadata.get("publisher", "")
             if metadata.get("url"):
                 item["url"] = metadata["url"]
+        elif item_type == "preprint":
+            item["repository"] = metadata.get("source", "") or metadata.get("publisher", "")
+            if metadata.get("url"):
+                item["url"] = metadata["url"]
         else:
             item["publicationTitle"] = metadata.get("source", "")
             item["publisher"] = metadata.get("publisher", "")
@@ -319,7 +375,7 @@ class ZoteroClient:
         if record_id:
             item["extra"] = f"{RECORD_ID_TAG}: {record_id}"
 
-        return item
+        return drop_invalid_fields(item)
 
 
     def create_item(self, zotero_item: dict, collection_key: str | None = None) -> str:

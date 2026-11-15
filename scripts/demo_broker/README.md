@@ -219,7 +219,7 @@ reclaimed nothing fires — the heartbeat going missing is the signal.
 | `DEMO_SESSION_RATE_MAX` | `30` | max requests per session per window |
 | `DEMO_SESSION_RATE_WINDOW_S` | `60` | rate window (seconds) |
 | `DEMO_SESSION_DAILY_MAX` | `500` | max requests per session per 24h |
-| `DEMO_BLOCKED_TOOLS` | `save_to_zotero,batch_save_to_zotero` | MCP tools blocked for visitors |
+| `DEMO_BLOCKED_TOOLS` | `save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status` | MCP tools blocked for visitors (Zotero reads too since 2026-11-15: they expose the owner's library) |
 | `DEMO_LOG_PATH` | `data/demo_broker/broker.jsonl` | durable rotating JSONL event log |
 
 ## Multi-tenant access (per-person, account-free)

@@ -535,12 +535,12 @@ both servers advertise 22 tools over stdio and `/mcp`: the search tools (`search
 the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 `find_open_access`, `get_full_text_link`), the library tools
 (`browse_library_databases`, `check_library_access`), the Zotero write tools
-`save_to_zotero` / `batch_save_to_zotero` (which the demo broker blocks for
-visitors), the Zotero read tools `list_zotero_collections`, `search_zotero`
-(`query`, `limit` default 20 / max 100), `get_zotero_collection_items`
-(`collection_name`, `limit` default 50 / max 100) and `get_zotero_status`
-(not in the broker's `DEMO_BLOCKED_TOOLS` default, so demo visitors can read the
-configured Zotero library), and the four index-management tools above. None is
+`save_to_zotero` / `batch_save_to_zotero`, the Zotero read tools
+`list_zotero_collections`, `search_zotero` (`query`, `limit` default 20 / max
+100), `get_zotero_collection_items` (`collection_name`, `limit` default 50 / max
+100) and `get_zotero_status` (the demo broker's `DEMO_BLOCKED_TOOLS` blocks all
+six Zotero tools for visitors; the reads since 2026-11-15, because they expose
+the owner's library), and the four index-management tools above. None is
 called by the web GUI except through `/api/*`. The nine tools no doc named
 (`generate_citation`, `batch_generate_citations`, `export_search_results`,
 `list_zotero_collections`, `search_zotero`, `get_zotero_collection_items`,
