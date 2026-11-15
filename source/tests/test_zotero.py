@@ -8,7 +8,7 @@ import pytest
 from lib.config import ServerConfig
 from lib.retry import CircuitBreaker
 from lib import zotero as zotero_mod
-from lib.zotero import ZoteroClient, ZoteroError, fetch_zotero_item_type_fields
+from lib.zotero import ZoteroClient, ZoteroError, download_pdf, fetch_zotero_item_type_fields
 
 
 @pytest.fixture
@@ -250,6 +250,58 @@ class TestFetchItemTypeFields:
             assert fetch_zotero_item_type_fields("preprint") is None
             monkeypatch.setattr(zotero_mod, "_ITEM_TYPES_TTL", -1)
             assert fetch_zotero_item_type_fields("document") == frozenset({"title", "DOI"})
+
+
+class TestPdfAttachment:
+    def _resp(self, chunks):
+        resp = MagicMock()
+        resp.__enter__.return_value = resp
+        resp.iter_content.return_value = chunks
+        return resp
+
+    def test_download_rewrites_arxiv_abs(self, tmp_path):
+        dest = tmp_path / "a.pdf"
+        with patch("lib.zotero.requests.get", return_value=self._resp([b"%PDF-1.7", b" rest"])) as get:
+            assert download_pdf("https://arxiv.org/abs/2610.30425v1", str(dest)) == 13
+        assert get.call_args.args[0] == "https://arxiv.org/pdf/2610.30425v1"
+
+    def test_download_rejects_html_and_removes_partial(self, tmp_path):
+        dest = tmp_path / "a.pdf"
+        with patch("lib.zotero.requests.get", return_value=self._resp([b"<html>login</html>"])):
+            with pytest.raises(ZoteroError, match="not a PDF"):
+                download_pdf("https://example.org/paper", str(dest))
+        assert not dest.exists()
+
+    def test_download_enforces_size_cap(self, tmp_path):
+        dest = tmp_path / "a.pdf"
+        with patch("lib.zotero.requests.get", return_value=self._resp([b"%PDF-" + b"x" * 20])):
+            with pytest.raises(ZoteroError, match="limit"):
+                download_pdf("https://example.org/a.pdf", str(dest), max_bytes=10)
+        assert not dest.exists()
+
+    def test_download_rejects_non_http(self, tmp_path):
+        with pytest.raises(ZoteroError, match="http"):
+            download_pdf("file:///etc/passwd", str(tmp_path / "a.pdf"))
+
+    def test_pdf_attachments_filters_children(self, zot_client, mock_pyzotero):
+        mock_pyzotero.children.return_value = [
+            {"data": {"key": "A1", "itemType": "attachment", "contentType": "application/pdf"}},
+            {"data": {"key": "A2", "itemType": "attachment", "contentType": "text/html"}},
+            {"data": {"key": "N1", "itemType": "note"}},
+        ]
+        assert [a["key"] for a in zot_client.get_pdf_attachments("K1")] == ["A1"]
+
+    def test_attach_file_raises_on_failure(self, zot_client, mock_pyzotero):
+        mock_pyzotero.attachment_simple.return_value = {"success": [], "failure": [{"key": "x"}], "unchanged": []}
+        with pytest.raises(ZoteroError, match="upload failed"):
+            zot_client.attach_file("K1", "/tmp/a.pdf")
+        mock_pyzotero.attachment_simple.assert_called_once_with(["/tmp/a.pdf"], "K1")
+
+    def test_get_item_missing_returns_none(self, zot_client, mock_pyzotero):
+        class ResourceNotFoundError(Exception):
+            pass
+        mock_pyzotero.item.side_effect = ResourceNotFoundError("Code: 404")
+        assert zot_client.get_item("NOPE") is None
 
 
 class TestDuplicateDetection:

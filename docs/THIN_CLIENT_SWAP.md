@@ -529,8 +529,8 @@ log (`SFU_METRICS_LOG_PATH` / `SFU_QUERY_LOG_PATH`), and four
 index-management MCP tools: `get_index_status`, `list_personas`,
 `request_section_unpack`, `reload_index`.
 
-**Full MCP tool surface (trimmed 2026-10-12, Zotero reads restored 2026-11-15):**
-both servers advertise 22 tools over stdio and `/mcp`: the search tools (`search_academic`,
+**Full MCP tool surface (trimmed 2026-10-12, Zotero reads restored and PDF attach added 2026-11-15):**
+both servers advertise 23 tools over stdio and `/mcp`: the search tools (`search_academic`,
 `search_by_author`, `search_by_doi`, `search_by_topic`, `search_biomedical`),
 the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 `find_open_access`, `get_full_text_link`), the library tools
@@ -538,9 +538,12 @@ the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 `save_to_zotero` / `batch_save_to_zotero`, the Zotero read tools
 `list_zotero_collections`, `search_zotero` (`query`, `limit` default 20 / max
 100), `get_zotero_collection_items` (`collection_name`, `limit` default 50 / max
-100) and `get_zotero_status` (the demo broker's `DEMO_BLOCKED_TOOLS` blocks all
-six Zotero tools for visitors; the reads since 2026-11-15, because they expose
-the owner's library), and the four index-management tools above. None is
+100) and `get_zotero_status`, `attach_pdf_to_zotero` (`item_key`, one of
+`pdf_url` / `file_path`, `filename`, `force`; uploads a stored-file PDF under an
+existing item, IMPLEMENTED 2026-11-15, unit-tested, not yet exercised against the
+live library) (the demo broker's `DEMO_BLOCKED_TOOLS` default blocks all seven
+Zotero tools for visitors; the reads since 2026-11-15, because they expose the
+owner's library), and the four index-management tools above. None is
 called by the web GUI except through `/api/*`. The nine tools no doc named
 (`generate_citation`, `batch_generate_citations`, `export_search_results`,
 `list_zotero_collections`, `search_zotero`, `get_zotero_collection_items`,

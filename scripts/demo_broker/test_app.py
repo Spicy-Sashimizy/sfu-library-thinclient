@@ -166,7 +166,8 @@ class TestBrokerWiring(unittest.TestCase):
         self.assertEqual(
             app._rpc_info(b'{"method":"tools/call","params":{"name":"save_to_zotero"}}'),
             (True, "save_to_zotero"))
-        for name in ("list_zotero_collections", "search_zotero", "get_zotero_collection_items", "get_zotero_status"):
+        for name in ("list_zotero_collections", "search_zotero", "get_zotero_collection_items", "get_zotero_status",
+                     "attach_pdf_to_zotero"):
             body = ('{"method":"tools/call","params":{"name":"%s"}}' % name).encode()
             self.assertEqual(app._rpc_info(body), (True, name))
         self.assertEqual(app._rpc_info(b'{"method":"initialize"}'), (False, None))

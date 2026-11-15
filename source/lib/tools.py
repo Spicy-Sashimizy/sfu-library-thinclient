@@ -4,6 +4,9 @@ import asyncio
 import contextvars
 import json
 import logging
+import os
+import re
+import tempfile
 import time
 from typing import Any
 
@@ -25,7 +28,9 @@ from lib.reranker import (
 )
 from lib.config import SERVER_VERSION
 from lib.validators import sanitize_search_query
-from lib.zotero import ZoteroClient, ZoteroError, fetch_zotero_item_types
+from lib.zotero import (
+    PDF_MAX_BYTES, ZoteroClient, ZoteroError, download_pdf, fetch_zotero_item_types, is_pdf_file,
+)
 
 logger = logging.getLogger("sfu_library_mcp")
 
@@ -746,6 +751,33 @@ TOOL_DEFINITIONS: list[Tool] = [
         inputSchema={"type": "object", "properties": {}},
     ),
     Tool(
+        name="attach_pdf_to_zotero",
+        description=(
+            "Attach a PDF to an existing Zotero item as a stored file. Get item_key from "
+            "search_zotero or get_zotero_collection_items ('Zotero Key'). Give pdf_url (arXiv "
+            "/abs/ links are converted to /pdf/) or file_path (a path visible to the MCP server, "
+            "not the user's own computer). Skips items that already have a PDF unless force=true."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "item_key": {"type": "string", "description": "Zotero key of the parent item"},
+                "pdf_url": {"type": "string", "description": "http(s) URL of the PDF"},
+                "file_path": {"type": "string", "description": "PDF path on the MCP server's filesystem"},
+                "filename": {
+                    "type": "string",
+                    "description": "Attachment file name (default: derived from the item title)",
+                },
+                "force": {
+                    "type": "boolean",
+                    "description": "Attach even if the item already has a PDF (default: false)",
+                    "default": False,
+                },
+            },
+            "required": ["item_key"],
+        },
+    ),
+    Tool(
         name="get_index_status",
         description=(
             "Status of the local thin-client search index: live/packed sections, "
@@ -996,6 +1028,7 @@ async def _dispatch_tool(name: str, arguments: dict[str, Any]) -> list[TextConte
         "search_zotero": _handle_search_zotero,
         "get_zotero_collection_items": _handle_get_zotero_collection_items,
         "get_zotero_status": _handle_get_zotero_status,
+        "attach_pdf_to_zotero": _handle_attach_pdf_to_zotero,
         "get_index_status": _handle_get_index_status,
         "list_personas": _handle_list_personas,
         "request_section_unpack": _handle_request_section_unpack,
@@ -1995,3 +2028,74 @@ async def _handle_get_zotero_status(args: dict) -> list[TextContent]:
     return [TextContent(type="text", text="\n".join(output))]
 
 
+def _attachment_filename(requested: str, title: str) -> str:
+    base = requested or title or "attachment"
+    base = re.sub(r"\.pdf$", "", base, flags=re.I)
+    base = re.sub(r'[\\/:*?"<>|\x00-\x1f]+', " ", base).strip()[:120].strip() or "attachment"
+    return f"{base}.pdf"
+
+
+async def _handle_attach_pdf_to_zotero(args: dict) -> list[TextContent]:
+    auth_err = _ensure_zotero_auth()
+    if auth_err:
+        return auth_err
+
+    item_key = (args.get("item_key") or "").strip()
+    pdf_url = (args.get("pdf_url") or "").strip()
+    file_path = (args.get("file_path") or "").strip()
+    if not item_key:
+        return [TextContent(type="text", text="No item_key provided.")]
+    if bool(pdf_url) == bool(file_path):
+        return [TextContent(type="text", text="Provide exactly one of pdf_url or file_path.")]
+
+    zot = _get_zotero_client()
+    loop = asyncio.get_event_loop()
+    try:
+        item = await loop.run_in_executor(None, zot.get_item, item_key)
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero error: {e}")]
+    if not item:
+        return [TextContent(type="text", text=f"No Zotero item with key '{item_key}'.")]
+    data = item.get("data", {})
+    if data.get("itemType") in ("attachment", "note"):
+        return [TextContent(type="text", text=f"Item '{item_key}' is a {data['itemType']}, not a parent item.")]
+    title = data.get("title", "")
+
+    if not args.get("force"):
+        try:
+            existing = await loop.run_in_executor(None, zot.get_pdf_attachments, item_key)
+        except ZoteroError as e:
+            return [TextContent(type="text", text=f"Zotero error: {e}")]
+        if existing:
+            names = ", ".join(a.get("filename") or a.get("title") or a.get("key", "") for a in existing)
+            return [TextContent(type="text", text=(
+                f"'{title}' already has a PDF ({names}). Nothing attached; pass force=true to add another."
+            ))]
+
+    filename = _attachment_filename(args.get("filename", ""), title)
+    with tempfile.TemporaryDirectory(prefix="duck_zotero_") as tmp:
+        upload_path = os.path.join(tmp, filename)
+        try:
+            if pdf_url:
+                size = await loop.run_in_executor(None, download_pdf, pdf_url, upload_path)
+            else:
+                if not os.path.isfile(file_path):
+                    return [TextContent(type="text", text=f"File not found on the MCP server: {file_path}")]
+                size = os.path.getsize(file_path)
+                if size > PDF_MAX_BYTES:
+                    return [TextContent(type="text", text=f"File exceeds {PDF_MAX_BYTES // (1024 * 1024)} MB limit.")]
+                if not is_pdf_file(file_path):
+                    return [TextContent(type="text", text=f"Not a PDF (no %PDF header): {file_path}")]
+                os.symlink(os.path.abspath(file_path), upload_path)
+            await loop.run_in_executor(None, zot.attach_file, item_key, upload_path)
+        except ZoteroError as e:
+            return [TextContent(type="text", text=f"Attach failed: {e}")]
+
+    output = [
+        "=" * 50, "PDF ATTACHED TO ZOTERO", "=" * 50,
+        f"\nItem: {title or item_key}",
+        f"Zotero Key: {item_key}",
+        f"File: {filename} ({size / (1024 * 1024):.1f} MB)",
+        f"Source: {pdf_url or file_path}",
+    ]
+    return [TextContent(type="text", text="\n".join(output))]

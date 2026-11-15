@@ -70,7 +70,7 @@ SAMPLE_SFU_DB = {
 
 class TestToolDefinitions:
     def test_tool_count(self):
-        assert len(TOOL_DEFINITIONS) == 22
+        assert len(TOOL_DEFINITIONS) == 23
 
     def test_new_tool_names_present(self):
         names = {t.name for t in TOOL_DEFINITIONS}
@@ -410,3 +410,70 @@ class TestZoteroReadTools:
         with patch("lib.tools._get_features", return_value={"zotero_enabled": False}):
             result = await handle_tool_call("get_zotero_status", {})
         assert result[0].text == "Zotero integration is disabled."
+
+
+class TestAttachPdfToZotero:
+    @pytest.fixture
+    def zot(self):
+        from unittest.mock import MagicMock
+        client = MagicMock()
+        client.get_item.return_value = {"data": {"key": "K1", "itemType": "preprint", "title": "Getting a GRIP"}}
+        client.get_pdf_attachments.return_value = []
+        with patch("lib.tools._ensure_zotero_auth", return_value=None), \
+             patch("lib.tools._get_zotero_client", return_value=client), \
+             patch("lib.tools._get_features", return_value={}):
+            yield client
+
+    @pytest.mark.asyncio
+    async def test_requires_exactly_one_source(self, zot):
+        both = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "K1", "pdf_url": "https://x/a.pdf", "file_path": "/a.pdf"})
+        neither = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "K1"})
+        assert both[0].text == neither[0].text == "Provide exactly one of pdf_url or file_path."
+        zot.attach_file.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_unknown_item(self, zot):
+        zot.get_item.return_value = None
+        result = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "NOPE", "pdf_url": "https://x/a.pdf"})
+        assert result[0].text == "No Zotero item with key 'NOPE'."
+
+    @pytest.mark.asyncio
+    async def test_skips_item_that_already_has_pdf(self, zot):
+        zot.get_pdf_attachments.return_value = [{"filename": "grip.pdf"}]
+        result = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "K1", "pdf_url": "https://x/a.pdf"})
+        assert "already has a PDF (grip.pdf)" in result[0].text
+        zot.attach_file.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_url_download_uploads_title_named_file(self, zot):
+        def fake_download(url, dest):
+            with open(dest, "wb") as f:
+                f.write(b"%PDF-1.7 test")
+            return 13
+        uploaded = {}
+        zot.attach_file.side_effect = lambda key, path: uploaded.update(key=key, name=path.rsplit("/", 1)[-1])
+        with patch("lib.tools.download_pdf", side_effect=fake_download) as dl:
+            result = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "K1", "pdf_url": "https://arxiv.org/abs/2610.30425v1"})
+        dl.assert_called_once()
+        assert uploaded == {"key": "K1", "name": "Getting a GRIP.pdf"}
+        assert "PDF ATTACHED TO ZOTERO" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_file_path_rejects_non_pdf(self, zot, tmp_path):
+        f = tmp_path / "notes.pdf"
+        f.write_bytes(b"hello")
+        result = await handle_tool_call("attach_pdf_to_zotero", {"item_key": "K1", "file_path": str(f)})
+        assert result[0].text.startswith("Not a PDF")
+        zot.attach_file.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_file_path_uploads_with_force(self, zot, tmp_path):
+        f = tmp_path / "2602.05445v1.pdf"
+        f.write_bytes(b"%PDF-1.5 body")
+        zot.get_pdf_attachments.return_value = [{"filename": "old.pdf"}]
+        result = await handle_tool_call("attach_pdf_to_zotero", {
+            "item_key": "K1", "file_path": str(f), "filename": "FIC paper", "force": True,
+        })
+        key, path = zot.attach_file.call_args.args
+        assert key == "K1" and path.endswith("/FIC paper.pdf")
+        assert "PDF ATTACHED TO ZOTERO" in result[0].text

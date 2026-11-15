@@ -1226,7 +1226,19 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
   `preprint` (source → `repository`) and `dissertation` to `thesis`; they used
   to fall through to `document`. Pinned by `source/tests/test_zotero.py::
   TestInvalidFieldFiltering` / `TestFetchItemTypeFields`, which use a
-  2026-11-15 snapshot of the endpoint instead of the network. `sfu_databases.py`: domain matching tries the parent domain
+  2026-11-15 snapshot of the endpoint instead of the network.
+- `attach_pdf_to_zotero` (2026-11-15): `file_path` is resolved on the MCP
+  server's filesystem (inside `research-hybrid-duck` for Claude Desktop), never
+  the caller's machine, so the user's Downloads folder is not reachable; prefer
+  `pdf_url`. `zotero.download_pdf` accepts only http(s), rewrites arXiv
+  `/abs/` to `/pdf/`, caps the body at `PDF_MAX_BYTES` (100 MB), requires the
+  `%PDF-` header, and deletes the partial file on every failure. The upload is
+  staged in a temp dir under the title-derived file name (a symlink for
+  `file_path`) because pyzotero's `attachment_simple` names the attachment by
+  basename. Items that already have a PDF child are skipped unless
+  `force=true`. The API key needs file-write access. Pinned by
+  `test_tools_unit.py::TestAttachPdfToZotero` and
+  `test_zotero.py::TestPdfAttachment`. `sfu_databases.py`: domain matching tries the parent domain
   (`journals.sagepub.com` → `sagepub.com`).
 
 ## source/tests — conventions & pinned invariants

@@ -6,6 +6,7 @@ wraps all API calls with a circuit breaker.
 """
 
 import logging
+import os
 import re
 import threading
 import time
@@ -48,6 +49,56 @@ def fetch_zotero_item_types() -> list[str]:
             if _item_types_cache is None:
                 _item_types_cache = []
         return _item_types_cache
+
+
+PDF_MAX_BYTES = 100 * 1024 * 1024
+
+
+def download_pdf(url: str, dest_path: str, max_bytes: int = PDF_MAX_BYTES) -> int:
+    """Stream a PDF from an http(s) URL to `dest_path`. Returns the byte count.
+
+    arXiv `/abs/` links are rewritten to `/pdf/`. Raises ZoteroError when the
+    URL is not http(s), the download fails or exceeds `max_bytes`, or the body
+    is not a PDF; the partial file is removed in every failure case.
+    """
+    if not re.match(r"^https?://", url or "", re.I):
+        raise ZoteroError("pdf_url must be an http(s) URL")
+    url = re.sub(r"(arxiv\.org)/abs/", r"\1/pdf/", url, flags=re.I)
+    written = 0
+    try:
+        with requests.get(url, stream=True, timeout=60, headers={"User-Agent": "DuckLibrary/1.0"}) as resp:
+            resp.raise_for_status()
+            with open(dest_path, "wb") as f:
+                for chunk in resp.iter_content(chunk_size=65536):
+                    written += len(chunk)
+                    if written > max_bytes:
+                        raise ZoteroError(f"PDF exceeds {max_bytes // (1024 * 1024)} MB limit")
+                    f.write(chunk)
+        if not is_pdf_file(dest_path):
+            raise ZoteroError("Downloaded file is not a PDF (no %PDF header)")
+        return written
+    except ZoteroError:
+        _remove_quietly(dest_path)
+        raise
+    except Exception as e:
+        _remove_quietly(dest_path)
+        raise ZoteroError(f"PDF download failed: {e}") from e
+
+
+def is_pdf_file(path: str) -> bool:
+    """True when the file starts with the %PDF magic bytes."""
+    try:
+        with open(path, "rb") as f:
+            return f.read(5) == b"%PDF-"
+    except OSError:
+        return False
+
+
+def _remove_quietly(path: str) -> None:
+    try:
+        os.remove(path)
+    except OSError:
+        pass
 
 
 _item_type_fields_cache: dict[str, tuple[float, frozenset[str]]] = {}
@@ -555,6 +606,36 @@ class ZoteroClient:
             parts.append(f"Zotero Key: {key}")
 
         return "\n".join(parts)
+
+    def get_item(self, item_key: str) -> dict | None:
+        """Return the raw item for `item_key`, or None if the library has no such item."""
+        try:
+            return self._call_zotero("get_item", self.zot.item, item_key)
+        except ZoteroError as e:
+            if type(e.__cause__).__name__ == "ResourceNotFoundError" or "404" in str(e):
+                return None
+            raise
+
+    def get_pdf_attachments(self, item_key: str) -> list[dict]:
+        """Return the PDF attachment children of `item_key` (raw data dicts)."""
+        children = self._call_zotero("get_children", self.zot.children, item_key)
+        return [
+            c.get("data", {}) for c in children
+            if c.get("data", {}).get("itemType") == "attachment"
+            and c.get("data", {}).get("contentType") == "application/pdf"
+        ]
+
+    def attach_file(self, item_key: str, file_path: str) -> dict:
+        """Upload `file_path` as a stored-file attachment under `item_key`.
+
+        Returns pyzotero's attachment_simple result ({"success", "failure",
+        "unchanged"}); raises ZoteroError when the upload did not succeed.
+        """
+        resp = self._call_zotero("attach_file", self.zot.attachment_simple, [file_path], item_key)
+        if not resp or (not resp.get("success") and not resp.get("unchanged")):
+            raise ZoteroError(f"Attachment upload failed: {resp}")
+        logger.info("Attached %s to Zotero item %s", os.path.basename(file_path), item_key)
+        return resp
 
     def search_items(self, query: str, limit: int = 20) -> list[dict]:
         """Search the user's Zotero library. Returns formatted item list."""

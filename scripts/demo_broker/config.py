@@ -93,7 +93,7 @@ class Config:
     concurrent_notify_cooldown_s: int = field(default_factory=lambda: _i("DEMO_CONCURRENT_NOTIFY_COOLDOWN_S", 600))
     blocked_tools: frozenset[str] = field(
         default_factory=lambda: frozenset(
-            os.environ.get("DEMO_BLOCKED_TOOLS", "save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status").replace(" ", "").split(",")))
+            os.environ.get("DEMO_BLOCKED_TOOLS", "save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status,attach_pdf_to_zotero").replace(" ", "").split(",")))
 
     notify_webhook: str = field(default_factory=lambda: os.environ.get("DEMO_NOTIFY_WEBHOOK", ""))
     notify_kind: str = field(default_factory=lambda: os.environ.get("DEMO_NOTIFY_KIND", "ntfy"))
