@@ -9,7 +9,7 @@
 #   python/lib/python3.11/site-packages/sfu_bundle.pth
 #                           relative import path -> ../../../../ext and ../../../../app/src
 #   ext/seismic/            the WI-4 portable x86-64-v3 seismic .so (+ __init__.py)
-#   app/src/                src/lib/ (incl. lib/thinclient/) + the two server entry points
+#   app/src/                source/lib/ (incl. lib/thinclient/) + the two server entry points
 #   bin/sfu-python          isolated launcher (drops PYTHONPATH/PYTHONHOME/user site)
 #   bin/bundle_check.py     imports / smoke self-check
 #   BUNDLE_MANIFEST.json    every file: path, sha256, bytes, category
@@ -111,7 +111,7 @@ printf '%s\n' \
 mkdir -p "$OUT/app/src"
 ( cd "$REPO/source" && find lib -type f -name '*.py' -print0 | sort -z \
     | xargs -0 -I{} install -D -m 0644 {} "$OUT/app/src/{}" )
-install -m 0644 "$REPO/src/sfu_library_mcp_http.py" "$REPO/src/sfu_library_mcp_server.py" "$OUT/app/src/"
+install -m 0644 "$REPO/source/sfu_library_mcp_http.py" "$REPO/source/sfu_library_mcp_server.py" "$OUT/app/src/"
 
 SITE="$OUT/python/lib/python3.11/site-packages"
 printf '%s\n' '../../../../ext' '../../../../app/src' > "$SITE/sfu_bundle.pth"
