@@ -93,7 +93,7 @@ class Config:
     concurrent_notify_cooldown_s: int = field(default_factory=lambda: _i("DEMO_CONCURRENT_NOTIFY_COOLDOWN_S", 600))
     blocked_tools: frozenset[str] = field(
         default_factory=lambda: frozenset(
-            os.environ.get("DEMO_BLOCKED_TOOLS", "save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status,attach_pdf_to_zotero").replace(" ", "").split(",")))
+            os.environ.get("DEMO_BLOCKED_TOOLS", "save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status,attach_pdf_to_zotero,export_zotero_citations,get_zotero_annotations,get_zotero_notes,get_zotero_fulltext,add_zotero_note,update_zotero_item,modify_zotero_collections,modify_zotero_tags,trash_zotero_item,restore_zotero_item,list_zotero_trash,list_unfiled_zotero_items,advanced_search_zotero,get_zotero_recent_changes,manage_zotero_collection,get_zotero_library_stats,find_zotero_duplicates,list_zotero_tags").replace(" ", "").split(",")))
 
     notify_webhook: str = field(default_factory=lambda: os.environ.get("DEMO_NOTIFY_WEBHOOK", ""))
     notify_kind: str = field(default_factory=lambda: os.environ.get("DEMO_NOTIFY_KIND", "ntfy"))

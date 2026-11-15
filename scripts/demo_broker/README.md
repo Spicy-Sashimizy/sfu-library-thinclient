@@ -219,7 +219,7 @@ reclaimed nothing fires — the heartbeat going missing is the signal.
 | `DEMO_SESSION_RATE_MAX` | `30` | max requests per session per window |
 | `DEMO_SESSION_RATE_WINDOW_S` | `60` | rate window (seconds) |
 | `DEMO_SESSION_DAILY_MAX` | `500` | max requests per session per 24h |
-| `DEMO_BLOCKED_TOOLS` | `save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status,attach_pdf_to_zotero` | MCP tools blocked for visitors (Zotero reads too since 2026-11-15: they expose the owner's library) |
+| `DEMO_BLOCKED_TOOLS` | `save_to_zotero,batch_save_to_zotero,list_zotero_collections,search_zotero,get_zotero_collection_items,get_zotero_status,attach_pdf_to_zotero,export_zotero_citations,get_zotero_annotations,get_zotero_notes,get_zotero_fulltext,add_zotero_note,update_zotero_item,modify_zotero_collections,modify_zotero_tags,trash_zotero_item,restore_zotero_item,list_zotero_trash,list_unfiled_zotero_items,advanced_search_zotero,get_zotero_recent_changes,manage_zotero_collection,get_zotero_library_stats,find_zotero_duplicates,list_zotero_tags` | MCP tools blocked for visitors (every Zotero tool, reads included since 2026-11-15: they expose or change the owner's library) |
 | `DEMO_LOG_PATH` | `data/demo_broker/broker.jsonl` | durable rotating JSONL event log |
 
 ## Multi-tenant access (per-person, account-free)

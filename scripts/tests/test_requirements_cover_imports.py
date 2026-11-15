@@ -25,6 +25,7 @@ IMPORT_TO_DIST = {
     "uvicorn": "uvicorn",
     "pydantic": "pydantic",
     "pyzotero": "pyzotero",
+    "bibtexparser": "bibtexparser",
     "sentence_transformers": "sentence-transformers",
     "torch": "torch",
     "transformers": "transformers",

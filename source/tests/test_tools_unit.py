@@ -70,7 +70,7 @@ SAMPLE_SFU_DB = {
 
 class TestToolDefinitions:
     def test_tool_count(self):
-        assert len(TOOL_DEFINITIONS) == 23
+        assert len(TOOL_DEFINITIONS) == 41
 
     def test_new_tool_names_present(self):
         names = {t.name for t in TOOL_DEFINITIONS}
@@ -523,3 +523,16 @@ class TestSaveItemTypeOverride:
     async def test_manual_save_honours_exact_type(self, zot):
         await handle_tool_call("save_to_zotero", {"title": "A preprint", "item_type": "preprint"})
         assert zot.metadata_to_zotero_item.call_args.args[0]["zotero_item_type"] == "preprint"
+
+
+class TestDemoBrokerBlocksZotero:
+    """Every Zotero tool must be in the demo broker's default block list (visitors never touch the owner's library)."""
+
+    def test_every_zotero_tool_blocked_by_default(self):
+        import re
+        from pathlib import Path
+        cfg = (Path(__file__).resolve().parents[2] / "scripts/demo_broker/config.py").read_text()
+        default = re.search(r'"DEMO_BLOCKED_TOOLS",\s*"([^"]+)"', cfg).group(1)
+        blocked = set(default.split(","))
+        zotero_tools = {t.name for t in TOOL_DEFINITIONS if "zotero" in t.name}
+        assert zotero_tools - blocked == set()

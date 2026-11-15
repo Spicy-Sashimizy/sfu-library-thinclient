@@ -529,8 +529,8 @@ log (`SFU_METRICS_LOG_PATH` / `SFU_QUERY_LOG_PATH`), and four
 index-management MCP tools: `get_index_status`, `list_personas`,
 `request_section_unpack`, `reload_index`.
 
-**Full MCP tool surface (trimmed 2026-10-12, Zotero reads restored and PDF attach added 2026-11-15):**
-both servers advertise 23 tools over stdio and `/mcp`: the search tools (`search_academic`,
+**Full MCP tool surface (trimmed 2026-10-12; Zotero reads restored, PDF attach and the Zotero library toolset added 2026-11-15):**
+both servers advertise 41 tools over stdio and `/mcp`: the search tools (`search_academic`,
 `search_by_author`, `search_by_doi`, `search_by_topic`, `search_biomedical`),
 the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 `find_open_access`, `get_full_text_link`), the library tools
@@ -541,9 +541,23 @@ the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 100) and `get_zotero_status`, `attach_pdf_to_zotero` (`item_key`, one of
 `pdf_url` / `file_path`, `filename`, `force`; uploads a stored-file PDF under an
 existing item, IMPLEMENTED 2026-11-15, unit-tested, not yet exercised against the
-live library) (the demo broker's `DEMO_BLOCKED_TOOLS` default blocks all seven
-Zotero tools for visitors; the reads since 2026-11-15, because they expose the
-owner's library), and the four index-management tools above. None is
+live library), the Zotero library toolset added 2026-11-15 (IMPLEMENTED,
+unit-tested with mocks; see `CODE_INVARIANTS.md` §zotero.py for the API rules
+each one follows): read — `export_zotero_citations` (Zotero-formatted
+bibliography / citations in any CSL style, BibTeX, BibLaTeX, RIS, CSL-JSON),
+`get_zotero_annotations`, `get_zotero_notes`, `get_zotero_fulltext`,
+`advanced_search_zotero`, `get_zotero_recent_changes`,
+`get_zotero_library_stats`, `find_zotero_duplicates` (report only; the Web API
+has no merge), `list_zotero_tags`, `list_zotero_trash`,
+`list_unfiled_zotero_items`; write — `add_zotero_note`, `update_zotero_item`,
+`modify_zotero_collections`, `modify_zotero_tags`, `manage_zotero_collection`
+(create / rename / move, no delete), `trash_zotero_item` /
+`restore_zotero_item` (recoverable trash only; permanent delete and emptying
+the trash are deliberately not exposed, owner decision 2026-11-15). The demo
+broker's `DEMO_BLOCKED_TOOLS` default blocks every Zotero tool for visitors
+(the reads since 2026-11-15, because they expose the owner's library;
+`test_tools_unit.py::TestDemoBrokerBlocksZotero` fails if a new Zotero tool is
+missing from it), and the four index-management tools above. None is
 called by the web GUI except through `/api/*`. The nine tools no doc named
 (`generate_citation`, `batch_generate_citations`, `export_search_results`,
 `list_zotero_collections`, `search_zotero`, `get_zotero_collection_items`,

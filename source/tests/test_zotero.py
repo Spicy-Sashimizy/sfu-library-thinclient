@@ -61,6 +61,13 @@ def zotero_schema():
 
 @pytest.fixture
 def zot_client(zot_config, mock_pyzotero):
+    """Client whose raw `/items` GETs are answered by the mocked `zot.items(**params)`."""
+    def retrieve(path, params=None):
+        resp = MagicMock(status_code=200, headers={})
+        query = {k: v for k, v in (params or {}).items() if k != "format"}
+        resp.json.return_value = mock_pyzotero.items(**query) if path.endswith("/items") else []
+        return resp
+    mock_pyzotero._retrieve_data.side_effect = retrieve
     client = ZoteroClient(zot_config)
     client._zot = mock_pyzotero
     return client
@@ -389,6 +396,25 @@ class TestDuplicateDetection:
         result = zot_client.check_duplicate(metadata)
         assert result["is_duplicate"] is False
         assert mock_pyzotero.items.call_count >= 1
+
+
+class TestTagsInQuery:
+    """pyzotero's @retrieve treats any URL containing "tags" as a tag listing; searches must bypass it."""
+
+    def test_search_for_tags_word_returns_items(self, zot_client, mock_pyzotero):
+        mock_pyzotero.items.return_value = [{"data": {"key": "K9", "title": "Learning tags for retrieval"}}]
+        result = zot_client.search_items("tags", 5)
+        assert result[0]["title"] == "Learning tags for retrieval"
+        path = mock_pyzotero._retrieve_data.call_args.args[0]
+        assert path.endswith("/items")
+
+    def test_duplicate_check_with_tags_in_title(self, zot_client, mock_pyzotero):
+        mock_pyzotero.items.return_value = [{"data": {
+            "key": "K9", "title": "Learning Tags for Retrieval",
+            "creators": [{"lastName": "Smith", "firstName": "A"}],
+        }}]
+        dup = zot_client.check_duplicate({"title": "Learning Tags for Retrieval", "authors": ["Smith, A"]})
+        assert dup["is_duplicate"] is True and dup["match_type"] == "title+author"
 
 
 class TestCollections:

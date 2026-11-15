@@ -1247,7 +1247,53 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
   saves alike. The schema carries no `default` for `item_type` on purpose:
   a client that auto-fills defaults would otherwise force every DOI save to
   `document`. Omitted ⇒ DOI saves keep the looked-up type, manual saves fall
-  back to `document`. Pinned by `test_tools_unit.py::TestSaveItemTypeOverride`. `sfu_databases.py`: domain matching tries the parent domain
+  back to `document`. Pinned by `test_tools_unit.py::TestSaveItemTypeOverride`.
+- Zotero library toolset (2026-11-15; built by parallel agents, merged in one
+  commit; every rule below is pinned by `source/tests/test_zotero_{citations,
+  reading,editing,trash,library_tools}.py`, all mocked, none run live yet):
+  - **pyzotero `@retrieve` quirk:** it treats any request URL containing
+    "tags" as a tag listing and drops tag `meta`. New reads go through
+    `ZoteroClient._raw_get` / `_raw_get_all` (pyzotero's `_retrieve_data`,
+    keeping its backoff and error handling, plus `Total-Results` /
+    `Last-Modified-Version`, and raising on any non-2xx including a 429
+    pyzotero swallowed). `search_items` and the three `check_duplicate`
+    queries use `_query_items` (same path) since 2026-11-15, so a search or
+    a title containing "tags" works (`test_zotero.py::TestTagsInQuery`).
+  - **Silent 429 on writes:** pyzotero's `backoff_check` writes can return
+    True after a swallowed 429. `manage_zotero_collection` re-reads after
+    every write and reports a mismatch as "not visible on re-read".
+  - **Versioned writes:** every write carries the object version
+    (`version` or `If-Unmodified-Since-Version`); 412 → "changed since read,
+    retry", 428 → "version missing". 412/404 count as circuit-breaker
+    failures in `_call_zotero`.
+  - **Limits:** ≤ 50 item keys per read or write call, ≤ 100 results per
+    page; scan caps 1000 (stats, unfiled, children), 2000 (duplicates), 500
+    (tags), 50 titles in recent changes, `max_chars` ≤ 100000 per fulltext
+    page; each cap is stated in the tool output when hit.
+  - **Citation export:** use Atom `content=<fmt>`, never `format=<fmt>`, for
+    bibtex / biblatex / ris / csljson (pyzotero 1.10 returns a bibtexparser
+    object for `format=bibtex` and crashes on `format=ris`); `biblatex`
+    registers the bibtex processor on the pyzotero instance; `bib` uses
+    `format=bib` (server-sorted, so IEEE numbering is right), which ignores
+    `limit` (API cap 150), so collection bibliographies are cut to `limit`
+    after they come back; `style` / `locale` only apply to bib / citation.
+  - **Reading:** full text is `GET items/<attachmentKey>/fulltext`; a 404 or
+    empty content means "not indexed" (only Zotero desktop indexes and syncs
+    it). Annotations are children of the attachment (`itemType
+    annotation`), sorted by `annotationSortIndex`; linked-URL attachments
+    are never treated as files.
+  - **Editing:** `update_zotero_item` refuses field names the target type
+    doesn't allow (it does not silently drop requested fields) and writes
+    nothing if the type's field list can't be fetched; on a type change it
+    omits fields the new type lacks and reports them as dropped (server-side
+    remapping on type change is unverified live). Replaced creators are all
+    `author`. Notes are HTML-escaped Markdown subset; links http(s) only.
+  - **Trash:** the Web API docs don't document `deleted`; Zotero's server
+    source accepts `deleted: 1/0` on partial updates. pyzotero's
+    `update_item(s)` reject that field, so trash / restore send
+    `{key, version, deleted}` through `create_items` (a POST with key +
+    version is a versioned partial update). Only the parent is flagged; its
+    children hide and return with it. `sfu_databases.py`: domain matching tries the parent domain
   (`journals.sagepub.com` → `sagepub.com`).
 
 ## source/tests — conventions & pinned invariants

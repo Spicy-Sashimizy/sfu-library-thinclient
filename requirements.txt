@@ -7,6 +7,7 @@ uvicorn>=0.40
 
 # Zotero integration
 pyzotero>=1.10
+bibtexparser>=1.4.3,<2
 
 # Embedding models for local semantic reranking
 sentence-transformers>=5.4

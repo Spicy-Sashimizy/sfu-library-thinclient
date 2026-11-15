@@ -12,7 +12,7 @@ in `docs/CODE_INVARIANTS.md`; every `SFU_*` environment gate is in
 | Path | What |
 |---|---|
 | `sfu_library_mcp_http.py` | HTTP entry point (Starlette/uvicorn): `/api/*` for the web GUI, `/app` static files, `/health`, `/analytics` + `/engagement` (GUI tracking endpoints, wired 2026-10-12), the result cache and speculation plumbing. Start it with `scripts/serve_http.sh` |
-| `sfu_library_mcp_server.py` | stdio MCP entry point for Claude Desktop (same tool set, `lib/tools.py`: 23 tools registered as of 2026-11-15: cut from 27 on 2026-10-12, Zotero read tools restored and `attach_pdf_to_zotero` added 2026-11-15) |
+| `sfu_library_mcp_server.py` | stdio MCP entry point for Claude Desktop (same tool set, `lib/tools.py`: 41 tools registered as of 2026-11-15: cut from 27 on 2026-10-12; Zotero read tools restored, `attach_pdf_to_zotero` and the Zotero library toolset added 2026-11-15) |
 | `lib/` | the package — serving stack, external clients, and a few legacy modules; map in `lib/README.md` |
 | `lib/thinclient/` | the index-side package: builders, sidecars, the retriever and the SEISMIC backends; map in `lib/thinclient/CLAUDE.md` and `lib/README.md` |
 | `tests/` | the `source` half of the pytest suite: 27 `test_*.py` files as of 2026-10-13 (the other half is `scripts/tests/`; both run from `pytest.ini` at the root). `manual_smoke_mcp_tools.py` is the only non-pytest file left (a print-style smoke script) |
