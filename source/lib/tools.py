@@ -697,6 +697,55 @@ TOOL_DEFINITIONS: list[Tool] = [
         },
     ),
     Tool(
+        name="list_zotero_collections",
+        description="List all collections in the user's Zotero library with item counts.",
+        inputSchema={"type": "object", "properties": {}},
+    ),
+    Tool(
+        name="search_zotero",
+        description=(
+            "Search the user's existing Zotero library. Use this BEFORE saving to check for "
+            "duplicates, and to answer questions about what the user already has saved. "
+            "Returns titles, authors, dates, types, DOIs, collections, and tags."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query to find items in the Zotero library"},
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of results (default: 20, max: 100)",
+                    "default": 20,
+                },
+            },
+            "required": ["query"],
+        },
+    ),
+    Tool(
+        name="get_zotero_collection_items",
+        description=(
+            "List all items in a specific Zotero collection. Use to browse what's already "
+            "saved in a collection or to help the user review their saved research."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "collection_name": {"type": "string", "description": "Name of the Zotero collection to list items from"},
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of items to return (default: 50, max: 100)",
+                    "default": 50,
+                },
+            },
+            "required": ["collection_name"],
+        },
+    ),
+    Tool(
+        name="get_zotero_status",
+        description="Check Zotero API connection, credentials, and permissions.",
+        inputSchema={"type": "object", "properties": {}},
+    ),
+    Tool(
         name="get_index_status",
         description=(
             "Status of the local thin-client search index: live/packed sections, "
@@ -943,6 +992,10 @@ async def _dispatch_tool(name: str, arguments: dict[str, Any]) -> list[TextConte
         "search_biomedical": _handle_search_biomedical,
         "save_to_zotero": _handle_save_to_zotero,
         "batch_save_to_zotero": _handle_batch_save_to_zotero,
+        "list_zotero_collections": _handle_list_zotero_collections,
+        "search_zotero": _handle_search_zotero,
+        "get_zotero_collection_items": _handle_get_zotero_collection_items,
+        "get_zotero_status": _handle_get_zotero_status,
         "get_index_status": _handle_get_index_status,
         "list_personas": _handle_list_personas,
         "request_section_unpack": _handle_request_section_unpack,
@@ -1832,6 +1885,113 @@ async def _handle_batch_save_to_zotero(args: dict) -> list[TextContent]:
         f"\nCollection: {collection_name or '(none)'}",
         f"Results: {saved} saved, {skipped} skipped, {failed} failed\n",
     ] + details
+    return [TextContent(type="text", text="\n".join(output))]
+
+
+async def _handle_list_zotero_collections(args: dict) -> list[TextContent]:
+    auth_err = _ensure_zotero_auth()
+    if auth_err:
+        return auth_err
+
+    zot = _get_zotero_client()
+    try:
+        collections = zot.list_collections()
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero error: {e}")]
+
+    if not collections:
+        return [TextContent(type="text", text="No collections found in your Zotero library.")]
+
+    output = ["=" * 50, f"ZOTERO COLLECTIONS ({len(collections)})", "=" * 50, ""]
+    for c in collections:
+        parent = f" (in: {c['parent_key']})" if c.get("parent_key") else ""
+        output.append(f"  {c['name']} — {c['num_items']} items{parent}")
+        output.append(f"    Key: {c['key']}")
+    return [TextContent(type="text", text="\n".join(output))]
+
+
+def _format_zotero_items(heading: str, items: list[dict], zot: ZoteroClient) -> list[TextContent]:
+    output = ["=" * 50, heading, "=" * 50, ""]
+    for i, item in enumerate(items, 1):
+        output.append(f"--- Item {i} ---")
+        output.append(zot.format_item_summary(item))
+        output.append("")
+    return [TextContent(type="text", text="\n".join(output))]
+
+
+async def _handle_search_zotero(args: dict) -> list[TextContent]:
+    auth_err = _ensure_zotero_auth()
+    if auth_err:
+        return auth_err
+
+    query = args.get("query", "")
+    limit = min(args.get("limit", 20), 100)
+    if not query:
+        return [TextContent(type="text", text="No search query provided.")]
+
+    zot = _get_zotero_client()
+    try:
+        items = zot.search_items(query, limit)
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero search error: {e}")]
+
+    if not items:
+        return [TextContent(type="text", text=f"No items found in Zotero for '{query}'.")]
+    return _format_zotero_items(f"ZOTERO SEARCH: '{query}' ({len(items)} results)", items, zot)
+
+
+async def _handle_get_zotero_collection_items(args: dict) -> list[TextContent]:
+    auth_err = _ensure_zotero_auth()
+    if auth_err:
+        return auth_err
+
+    collection_name = args.get("collection_name", "")
+    limit = min(args.get("limit", 50), 100)
+    if not collection_name:
+        return [TextContent(type="text", text="No collection name provided.")]
+
+    zot = _get_zotero_client()
+    try:
+        collection_key = zot.find_collection_by_name(collection_name)
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero error: {e}")]
+    if not collection_key:
+        return [TextContent(type="text", text=f"Collection '{collection_name}' not found in Zotero.")]
+
+    try:
+        items = zot.get_collection_items(collection_key, limit)
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero error: {e}")]
+
+    if not items:
+        return [TextContent(type="text", text=f"No items in collection '{collection_name}'.")]
+    return _format_zotero_items(f"ZOTERO COLLECTION: '{collection_name}' ({len(items)} items)", items, zot)
+
+
+async def _handle_get_zotero_status(args: dict) -> list[TextContent]:
+    if not _get_features().get("zotero_enabled", True):
+        return [TextContent(type="text", text="Zotero integration is disabled.")]
+
+    try:
+        result = _get_zotero_client().verify_credentials()
+    except ZoteroError as e:
+        return [TextContent(type="text", text=f"Zotero error: {e}")]
+
+    output = ["=" * 50, "ZOTERO STATUS", "=" * 50]
+    if result["valid"]:
+        access = result.get("access", {})
+        output += [
+            "\nCredentials: VALID",
+            f"Username: {result.get('username', 'N/A')}",
+            f"User ID: {result.get('userID', 'N/A')}",
+            "\nPermissions:",
+            f"  Library access: {access.get('library', False)}",
+            f"  File access: {access.get('files', False)}",
+            f"  Notes access: {access.get('notes', False)}",
+            f"  Write access: {access.get('write', False)}",
+        ]
+    else:
+        output += ["\nCredentials: INVALID", f"Reason: {result.get('message', 'Unknown')}"]
     return [TextContent(type="text", text="\n".join(output))]
 
 

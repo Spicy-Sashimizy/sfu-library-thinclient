@@ -286,6 +286,25 @@ class TestCollections:
         assert result[0]["num_items"] == 10
 
 
+class TestReadItems:
+    def test_search_items_formats_results(self, zot_client, mock_pyzotero):
+        mock_pyzotero.items.return_value = [
+            {"data": {"key": "K1", "title": "HNSW", "creators": [{"lastName": "Malkov", "firstName": "Yu"}],
+                      "itemType": "journalArticle", "DOI": "10.1/x", "tags": [{"tag": "ann"}]}},
+        ]
+        result = zot_client.search_items("hnsw", 5)
+        mock_pyzotero.items.assert_called_once_with(q="hnsw", limit=5, sort="date", direction="desc")
+        assert result[0]["key"] == "K1"
+        assert result[0]["authors"] == ["Malkov, Yu"]
+        assert result[0]["tags"] == ["ann"]
+
+    def test_get_collection_items(self, zot_client, mock_pyzotero):
+        mock_pyzotero.collection_items.return_value = [{"data": {"key": "K2", "title": "SPLADE"}}]
+        result = zot_client.get_collection_items("COL1", 10)
+        mock_pyzotero.collection_items.assert_called_once_with("COL1", limit=10)
+        assert result[0]["title"] == "SPLADE"
+
+
 class TestSubcollections:
     def test_find_collection_by_name_with_parent(self, zot_client, mock_pyzotero):
         """Should only match collections under the specified parent."""

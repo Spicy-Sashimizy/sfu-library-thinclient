@@ -1207,11 +1207,13 @@ Gate `SFU_SEARCH_DRAFT_STREAM` (default OFF; forced off under
 - `engagement.py`: event taxonomy mirrors the design's `ACTION_STYLE` /
   session-replay kinds.
 - `zotero.py`: `search_items` / `get_collection_items` were retired
-  2026-10-12 with the Zotero read MCP tools (owner decision);
-  `list_collections`, `find_collection_by_name`, `verify_credentials`,
-  `_format_item` and `format_item_summary` stay because the save path
-  (`find_or_create_collection`, `ensure_authenticated`, `check_duplicate`)
-  uses them. `sfu_databases.py`: domain matching tries the parent domain
+  2026-10-12 with the Zotero read MCP tools (owner decision) and restored
+  2026-11-15 with them; they back `search_zotero` /
+  `get_zotero_collection_items`, `list_collections` backs
+  `list_zotero_collections`, `verify_credentials` backs `get_zotero_status`,
+  and the save path (`find_or_create_collection`, `ensure_authenticated`,
+  `check_duplicate`) shares `_format_item` / `format_item_summary`. Read-tool
+  `limit` is clamped to 100 in `tools.py`. `sfu_databases.py`: domain matching tries the parent domain
   (`journals.sagepub.com` → `sagepub.com`).
 
 ## source/tests — conventions & pinned invariants

@@ -500,6 +500,29 @@ class ZoteroClient:
 
         return "\n".join(parts)
 
+    def search_items(self, query: str, limit: int = 20) -> list[dict]:
+        """Search the user's Zotero library. Returns formatted item list."""
+        items = self._call_zotero(
+            "search_items",
+            self.zot.items,
+            q=query,
+            limit=limit,
+            sort="date",
+            direction="desc",
+        )
+        logger.info("Zotero search for '%s': %d results", query, len(items))
+        return [self._format_item(item) for item in items]
+
+    def get_collection_items(self, collection_key: str, limit: int = 50) -> list[dict]:
+        """Get items in a specific collection. Returns formatted item list."""
+        items = self._call_zotero(
+            "get_collection_items",
+            self.zot.collection_items,
+            collection_key,
+            limit=limit,
+        )
+        return [self._format_item(item) for item in items]
+
 
     def check_duplicate(self, metadata: dict) -> dict:
         """Multi-signal deconfliction before saving.

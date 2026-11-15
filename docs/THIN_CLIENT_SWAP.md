@@ -529,21 +529,29 @@ log (`SFU_METRICS_LOG_PATH` / `SFU_QUERY_LOG_PATH`), and four
 index-management MCP tools: `get_index_status`, `list_personas`,
 `request_section_unpack`, `reload_index`.
 
-**Full MCP tool surface (trimmed 2026-10-12, owner decision):** both servers
-advertise 18 tools over stdio and `/mcp`: the search tools (`search_academic`,
+**Full MCP tool surface (trimmed 2026-10-12, Zotero reads restored 2026-11-15):**
+both servers advertise 22 tools over stdio and `/mcp`: the search tools (`search_academic`,
 `search_by_author`, `search_by_doi`, `search_by_topic`, `search_biomedical`),
 the doc-level tools (`get_citations`, `get_references`, `get_paper_summary`,
 `find_open_access`, `get_full_text_link`), the library tools
 (`browse_library_databases`, `check_library_access`), the Zotero write tools
 `save_to_zotero` / `batch_save_to_zotero` (which the demo broker blocks for
-visitors) and the four index-management tools above. None is called by the web
-GUI except through `/api/*`. The nine tools no doc named (`generate_citation`,
-`batch_generate_citations`, `export_search_results`, `list_zotero_collections`,
-`search_zotero`, `get_zotero_collection_items`, `get_zotero_status`,
-`get_openalex_budget`, `record_engagement`) were removed 2026-10-12 by owner
-decision (`infrastructure/CODEBASE_TRIAGE_2026-10-11.md` decision 6), together
-with the APA/MLA/Chicago/BibTeX/RIS formatters in `citations.py` and the
-Zotero read helpers only they used; calling one now returns "Unknown tool".
+visitors), the Zotero read tools `list_zotero_collections`, `search_zotero`
+(`query`, `limit` default 20 / max 100), `get_zotero_collection_items`
+(`collection_name`, `limit` default 50 / max 100) and `get_zotero_status`
+(not in the broker's `DEMO_BLOCKED_TOOLS` default, so demo visitors can read the
+configured Zotero library), and the four index-management tools above. None is
+called by the web GUI except through `/api/*`. The nine tools no doc named
+(`generate_citation`, `batch_generate_citations`, `export_search_results`,
+`list_zotero_collections`, `search_zotero`, `get_zotero_collection_items`,
+`get_zotero_status`, `get_openalex_budget`, `record_engagement`) were removed
+2026-10-12 by owner decision (`infrastructure/CODEBASE_TRIAGE_2026-10-11.md`
+decision 6), together with the APA/MLA/Chicago/BibTeX/RIS formatters in
+`citations.py` and the Zotero read helpers only they used. On 2026-11-15 the
+owner restored the four Zotero read tools and `ZoteroClient.search_items` /
+`get_collection_items`, ported from the `sfu-library-mcp` server's
+`src/lib/tools.py` (same schemas and output); the other five still return
+"Unknown tool".
 The GUI records engagement through `POST /engagement` (`lib/engagement.py`
 stays). The removed code is kept by the owner (restore tag
 `pre-owner-decisions-2026-10-12`).

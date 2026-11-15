@@ -70,7 +70,7 @@ SAMPLE_SFU_DB = {
 
 class TestToolDefinitions:
     def test_tool_count(self):
-        assert len(TOOL_DEFINITIONS) == 18
+        assert len(TOOL_DEFINITIONS) == 22
 
     def test_new_tool_names_present(self):
         names = {t.name for t in TOOL_DEFINITIONS}
@@ -85,6 +85,10 @@ class TestToolDefinitions:
     def test_zotero_tools_kept(self):
         names = {t.name for t in TOOL_DEFINITIONS}
         assert {"save_to_zotero", "batch_save_to_zotero"}.issubset(names)
+
+    def test_zotero_read_tools_restored(self):
+        names = {t.name for t in TOOL_DEFINITIONS}
+        assert set(ZOTERO_READ_TOOLS).issubset(names)
 
     def test_all_tools_have_object_schemas(self):
         for tool in TOOL_DEFINITIONS:
@@ -315,15 +319,18 @@ class TestUnknownTool:
         assert "Unknown tool" in result[0].text
 
 
+ZOTERO_READ_TOOLS = (
+    "list_zotero_collections", "search_zotero", "get_zotero_collection_items", "get_zotero_status",
+)
+
 OWNER_TRIMMED_TOOLS_2026_10_12 = (
     "generate_citation", "batch_generate_citations", "export_search_results",
-    "list_zotero_collections", "search_zotero", "get_zotero_collection_items",
-    "get_zotero_status", "get_openalex_budget", "record_engagement",
+    "get_openalex_budget", "record_engagement",
 )
 
 
 class TestOwnerToolTrim20261012:
-    """Pin the 2026-10-12 owner decision: the nine undocumented MCP tools are gone."""
+    """Pin the 2026-10-12 owner decision minus the Zotero read tools restored 2026-11-15."""
 
     def test_trimmed_names_absent_from_definitions(self):
         names = {t.name for t in TOOL_DEFINITIONS}
@@ -335,3 +342,71 @@ class TestOwnerToolTrim20261012:
         from lib.tools import _dispatch_tool
         result = await _dispatch_tool(name, {})
         assert result[0].text == f"Unknown tool: {name}"
+
+
+class TestZoteroReadTools:
+    """The four Zotero read tools restored 2026-11-15 (ported from sfu-library-mcp)."""
+
+    @pytest.fixture
+    def zot(self):
+        from unittest.mock import MagicMock
+        client = MagicMock()
+        client.format_item_summary.side_effect = lambda item: f"Title: {item['title']}"
+        with patch("lib.tools._ensure_zotero_auth", return_value=None), \
+             patch("lib.tools._get_zotero_client", return_value=client), \
+             patch("lib.tools._get_features", return_value={}):
+            yield client
+
+    @pytest.mark.asyncio
+    async def test_search_zotero_caps_limit_and_formats(self, zot):
+        zot.search_items.return_value = [{"title": "HNSW"}]
+        result = await handle_tool_call("search_zotero", {"query": "hnsw", "limit": 500})
+        zot.search_items.assert_called_once_with("hnsw", 100)
+        assert "ZOTERO SEARCH: 'hnsw' (1 results)" in result[0].text
+        assert "Title: HNSW" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_search_zotero_requires_query(self, zot):
+        result = await handle_tool_call("search_zotero", {})
+        assert result[0].text == "No search query provided."
+        zot.search_items.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_list_collections(self, zot):
+        zot.list_collections.return_value = [
+            {"key": "C1", "name": "Retrieval", "parent_key": "", "num_items": 3},
+        ]
+        result = await handle_tool_call("list_zotero_collections", {})
+        assert "ZOTERO COLLECTIONS (1)" in result[0].text
+        assert "Retrieval — 3 items" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_collection_items_not_found(self, zot):
+        zot.find_collection_by_name.return_value = None
+        result = await handle_tool_call("get_zotero_collection_items", {"collection_name": "Nope"})
+        assert result[0].text == "Collection 'Nope' not found in Zotero."
+        zot.get_collection_items.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_collection_items_listed(self, zot):
+        zot.find_collection_by_name.return_value = "C1"
+        zot.get_collection_items.return_value = [{"title": "SPLADE"}]
+        result = await handle_tool_call("get_zotero_collection_items", {"collection_name": "Retrieval"})
+        zot.get_collection_items.assert_called_once_with("C1", 50)
+        assert "ZOTERO COLLECTION: 'Retrieval' (1 items)" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_status_reports_permissions(self, zot):
+        zot.verify_credentials.return_value = {
+            "valid": True, "username": "u", "userID": 1,
+            "access": {"library": True, "files": False, "notes": True, "write": True},
+        }
+        result = await handle_tool_call("get_zotero_status", {})
+        assert "Credentials: VALID" in result[0].text
+        assert "Write access: True" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_status_disabled_gate(self):
+        with patch("lib.tools._get_features", return_value={"zotero_enabled": False}):
+            result = await handle_tool_call("get_zotero_status", {})
+        assert result[0].text == "Zotero integration is disabled."
